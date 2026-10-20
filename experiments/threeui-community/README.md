@@ -1,6 +1,6 @@
 # Hermes × ThreeUI — isolated Community motion lab
 
-**State:** CODED / STATIC_TESTED_LOCALLY; npm package build + browser QA **not yet verified**. Independent design experiment, not part of Hermes Astro, published URLs, `src/components/HomeMasterScene.astro`, or open Home v3 PR #1970.
+**State:** ISOLATED_LAB_CI_PASS (exact current-head verification pending for this documentation-only commit); **NOT PRODUCTION / NOT VISUALLY APPROVED**. Independent design experiment, not part of Hermes Astro, published URLs, `src/components/HomeMasterScene.astro`, or open Home v3 PR #1970.
 
 Source: https://github.com/MengTo/threeui, package `@designcodeio/threeui@1.2.0` (MIT Community code; Pro/Beta are not included). No license-restricted imagery/font assets have been copied. Runtime is an isolated React/Vite app because Hermes production uses Astro/Node 22.
 
@@ -34,3 +34,14 @@ Owner: Design/IT. NEXT_ACTION: run isolated dependency install/build and manual 
 - **Visual QA found a meaningful defect:** the initial shader blend darkened the entire content surface and reduced copy readability. Fixed by masking motion towards the right and using screen blending; tested computed styles and captured active WebGL frames again.
 - **Visual adoption judgment:** text readability is now protected, but the shader is barely visible in the static frame; therefore these components have **not** demonstrated enough commercial benefit to replace existing authentic cinematic video in Home v3. Keep as an experimental Website Factory technique for fitting client cases only. Do not promote solely due to passing tests.
 - Real iPhone/Safari, GPU performance, Lighthouse/CLS and exact-owner approval are still unverified. Browser Chromium PASS does not equal cross-device or production approval.
+
+## Performance gate — 20 October 2026
+
+- Changed from importing entire library CSS (27.02 KB gzip in earlier Vite CI) to ~1.10 KB gzip of explicitly scoped canvas+layout CSS. No global style import.
+- At successful CI head `4896acd9636f7b8cf4b1f4cbdc11320fe8671597`: initial JS 62,438 + CSS 1,104 = **63,542 gzip bytes**. The isolated Three.js dynamic chunk remains **125,096 gzip bytes**, fetched only upon opt-in on desktop when WebGL + connection/device budgets permit. It is *not* production site's baseline.
+- `npm run test:size` enforces initial JS+CSS <=85 KB gzip, entry JS <=75 KB, CSS <=12 KB, and separately split Three.js <=150 KB. A failed threshold blocks the lab PR.
+- 10 Chromium cases PASS: mobile static, heavy libraries absent at first paint, reduced motion, Save-Data, 2G/low-memory fallback, desktop opt-in renderer. Source: https://github.com/officeus-create/Hermes/actions/runs/39462154147
+- **Mobile device policy:** no WebGL on <=767px or coarse-pointer devices; no implicit WebGL on slow 2G, Save-Data, <=4GB RAM or <=4 hardware threads. Real-phone FPS/thermal, visual approval, and CWV p75 remain unknown.
+- Never cite synthetic CI visual output as a live speed/SEO improvement. No Astro, SEO, or Home v3 changes until independent product performance/contrast/owner signoff. Prefer static poster over invisible shader.
+
+**Next:** independent visual review, upstream license/dependency lockfile review and representative mid-range mobile (real hardware) verification before promoting *any* effect. This lab itself remains isolated.
