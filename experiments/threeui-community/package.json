@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite --host 127.0.0.1",
     "build": "vite build",
-    "test": "node --test pilot.test.mjs"
+    "test": "node --test pilot.test.mjs",
+    "test:visual": "playwright test --config playwright.config.mjs"
   },
   "dependencies": {
     "@designcodeio/threeui": "1.2.0",
@@ -15,6 +16,7 @@
     "three": "0.149.0"
   },
   "devDependencies": {
+    "@playwright/test": "1.61.1",
     "vite": "7.3.1"
   }
 }
