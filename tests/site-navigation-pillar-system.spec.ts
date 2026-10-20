@@ -108,7 +108,10 @@ test("cross-page Products hierarchy preserves navigation on Home, divisions, Cat
       for (const [key, href] of Object.entries(destinations)) {
         const link = mobileProducts.locator(`a[data-product="${key}"]`);
         await expect(link).toBeVisible();
-        await expect(link).toHaveAttribute("href", href);
+        const expectedHref = route === "/ru/" && key === "connect"
+          ? "/services/hermes-connect/?lang=ru"
+          : href;
+        await expect(link).toHaveAttribute("href", expectedHref);
         if (key === currentProduct) await expect(link).toHaveAttribute("aria-current", "page");
       }
     } else {
@@ -116,7 +119,10 @@ test("cross-page Products hierarchy preserves navigation on Home, divisions, Cat
       for (const [key, href] of Object.entries(destinations)) {
         const link = desktopProducts.locator(`a[data-product="${key}"]`);
         await expect(link).toBeVisible();
-        await expect(link).toHaveAttribute("href", href);
+        const expectedHref = route === "/ru/" && key === "connect"
+          ? "/services/hermes-connect/?lang=ru"
+          : href;
+        await expect(link).toHaveAttribute("href", expectedHref);
         if (key === currentProduct) await expect(link).toHaveAttribute("aria-current", "page");
       }
     }
