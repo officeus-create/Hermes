@@ -40,6 +40,7 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
       <h1 id="home-master-title" class="home-master-display" aria-label="Four directions.">Four <span>direct<span class="home-display-i" aria-hidden="true">i</span>ons.</span></h1>
       <p class="home-master-script">Choose yours.</p>
       <p class="home-master-ink-note">Logistics, technology, learning and marketing for your business. One Hermes ecosystem.</p>
+      <div class="home-portal-controls"><p>Hover a direction to preview the film. On touch, press and hold.</p><button type="button" data-home-sound-toggle aria-pressed="false" aria-label="Enable preview music">Sound off</button></div>
     </header>
     <span id="journey" class="home-legacy-anchor" aria-hidden="true"></span>
     <nav class="home-master-stage" id="paths" aria-label="Hermes operating directions">
@@ -49,7 +50,7 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
         return (
           <a class={`home-master-route home-master-route-${path.id}`} href={`/paths/${path.id}/`}
             style={`--route-accent:${meta.accent}`}
-            aria-label={`${meta.goal}: ${path.brandLabel} — ${meta.detail}. Example flow: ${flowLabel}.`} data-home-route data-route-id={path.id}>
+            aria-label={`${meta.goal}: ${path.brandLabel} — ${meta.detail}. Example flow: ${flowLabel}.`} data-home-route data-route-id={path.id} data-home-portal-active="false">
             <span class="home-portal-art" aria-hidden="true">
               {path.id === "logistics" ? (
                 <span class="home-logistics-layer-stack" data-home-cinematic-slot="logistics" data-cinematic-source-policy="local-only">
@@ -374,7 +375,7 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
     const syncCinematic = () => {
       if (!cinematicVideo) return;
       // A hidden, reduced-motion or Save-Data visit must not download the movie.
-      const shouldPause = reduced.matches || Boolean(connection?.saveData) || !visible || document.hidden || !cinematicAvailable;
+      const shouldPause = reduced.matches || Boolean(connection?.saveData) || !visible || logisticsRoute?.dataset.homePortalActive !== "true" || document.hidden || !cinematicAvailable;
       if (shouldPause) {
         cinematicVideo.pause();
         return;
@@ -414,7 +415,7 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
         syncCinematic();
         return;
       }
-      if (!visible || document.hidden) {
+      if (!visible || logisticsRoute?.dataset.homePortalActive !== "true" || document.hidden) {
         stop();
         setMotionState("paused");
         syncCinematic();
@@ -468,6 +469,7 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
       update();
     });
     logisticsRoute?.addEventListener("pointerenter", nudgeWeather);
+    logisticsRoute?.addEventListener("home-portal-activation", update);
     logisticsRoute?.addEventListener("focusin", nudgeWeather);
     reduced.addEventListener("change", update);
     connection?.addEventListener?.("change", update);
@@ -747,6 +749,11 @@ animation:home-logistics-rain 1.45s linear infinite;opacity:.28;filter:blur(.18p
 .home-master-route-marketing::after{background:linear-gradient(180deg,transparent,#382230 27%,#382230)}
 .home-master-route-technology::after{background:linear-gradient(180deg,transparent,#113a31 27%,#113a31)}
 .home-master-route-academy::after{background:linear-gradient(180deg,transparent,#443422 27%,#443422)}
+.home-portal-controls{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:12px;margin:16px 0 6px;color:#536175;font-size:.82rem}
+.home-portal-controls p{margin:0}
+.home-portal-controls button{font:700 .79rem/1.2 var(--font-body);padding:9px 15px;border:1px solid #c5ced9;border-radius:999px;background:#fff;color:#172c47;cursor:pointer}
+.home-portal-controls button[aria-pressed="true"]{background:#10233b;color:#fff;border-color:#10233b}
+.home-portal-controls button:focus-visible{outline:3px solid #2866b0;outline-offset:2px}
 .home-master-route-copy{display:grid;gap:12px;min-width:0;width:100%}
 .home-master-route-copy small{display:flex;align-items:center;gap:10px;font:700 clamp(.58rem,.85vw,.85rem)/1.3 var(--font-body);letter-spacing:.12em;text-transform:uppercase}
 .home-master-route-copy i{display:block;width:5px;height:18px;border-radius:5px;background:var(--route-accent)}
