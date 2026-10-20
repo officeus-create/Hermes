@@ -100,6 +100,9 @@ const isInsightsRoute = currentPath === "/insights/" || currentPath.startsWith("
 const isOpportunitiesRoute = currentPath === "/opportunities/" || currentPath.startsWith("/opportunities/");
 const contactLabel = activeLocale === "en" ? "Start a conversation" : localizedLabels[activeLocale].contact;
 const signInLabel = activeLocale === "en" ? "Sign in" : localizedLabels[activeLocale].signIn;
+// The Home and localized overview Products navigation must preserve Hermes Connect's
+// supported ?lang= locale when crossing from a localized corporate page.
+const connectProductHref = activeLocale === "en" ? "/services/hermes-connect/" : `/services/hermes-connect/?lang=${activeLocale}`;
 const section = (["logistics", "marketing", "technology", "academy"] as DirectionId[]).find((slug) => currentPath.includes(`/paths/${slug}`));
 const localizedOwnerDirection = directionForOwnerPath(currentPath);
 const languageDirection = section ?? localizedOwnerDirection;
@@ -166,7 +169,7 @@ const languageLinks = siteLocales.filter((language) => !isCatalogLocaleRoute || 
     <details class="desktop-products-menu" data-hermes-products>
       <summary aria-controls="hermes-products-grid">Products <ChevronDown size={14} aria-hidden="true" /></summary>
       <div class="desktop-products-grid" id="hermes-products-grid" role="group" aria-label="Hermes products and opportunities">
-        <a href="/services/hermes-connect/" data-product="connect" aria-current={isHermesConnectRoute ? "page" : undefined}>
+        <a href={connectProductHref} data-product="connect" aria-current={isHermesConnectRoute ? "page" : undefined}>
           <strong>Hermes Connect</strong><span>AI operating system · live pilot</span>
           {homeUpdates?.connect && <span class="home-update-sheen" data-home-update={homeUpdates.connect.publishedAt} data-update-description="home-connect-update" hidden aria-hidden="true"></span>}
         </a>
@@ -226,7 +229,7 @@ const languageLinks = siteLocales.filter((language) => !isCatalogLocaleRoute || 
     <details class="mobile-products-menu" data-hermes-products>
       <summary class="mobile-nav-pillar mobile-secondary-start">Products <ChevronDown size={17} aria-hidden="true" /></summary>
       <div class="mobile-products-grid" role="group" aria-label="Products">
-        <a href="/services/hermes-connect/" data-product="connect" aria-current={isHermesConnectRoute ? "page" : undefined}>Hermes Connect</a>
+        <a href={connectProductHref} data-product="connect" aria-current={isHermesConnectRoute ? "page" : undefined}>Hermes Connect</a>
         <a href="/businesses/" data-product="catalog" aria-current={isCatalogRoute ? "page" : undefined}>Catalog</a>
         <a href="/insights/" data-product="insights" aria-current={isInsightsRoute ? "page" : undefined}>Insights</a>
         <a href="/opportunities/" data-product="opportunities" aria-current={isOpportunitiesRoute ? "page" : undefined}>Opportunities</a>
