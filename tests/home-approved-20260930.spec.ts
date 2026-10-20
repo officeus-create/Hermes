@@ -268,6 +268,7 @@ test('Home Logistics keeps a camera-locked mobile environment across weather sta
  const scene=page.locator('[data-home-logistics-scene-image]');
  const echo=page.locator('[data-home-logistics-echo]');
  await route.scrollIntoViewIfNeeded();
+ await route.hover();
  await expect(scene).toHaveCSS('animation-name','none');
  await expect(scene).toHaveCSS('transform','none');
  await expect(echo).toHaveAttribute('data-logistics-echo-motion','running');
@@ -318,6 +319,7 @@ test('Home Logistics carries six owned equipment and weather states without chan
  expect(decoded.every(Boolean)).toBe(true);
  await expect(page.locator('[data-route-id="logistics"]')).toHaveAttribute('href','/paths/logistics/');
  await page.locator('#paths').scrollIntoViewIfNeeded();
+ await page.locator('[data-route-id="logistics"]').hover();
  await expect(echo).toHaveAttribute('data-logistics-echo-motion','running');
  await expect(echo).toHaveAttribute('data-logistics-equipment-cycle-ms','15600');
  await expect(echo).toHaveAttribute('data-logistics-weather-cycle-ms','5200');
