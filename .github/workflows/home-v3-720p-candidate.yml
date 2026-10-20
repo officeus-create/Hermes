@@ -42,8 +42,8 @@ jobs:
             docs/design/HOME_V3_720P_CANDIDATE_METADATA.tsv
 
   stage-on-preview-branch:
-    # Write scope is separate from the read-only rendering job and never runs on PRs.
-    if: github.event_name == 'push' && github.ref == 'refs/heads/feat/home-v3-720p-quality-candidate-20261021'
+    # Write scope is isolated to this exact trusted same-repository PR head branch; preview assets only.
+    if: github.event_name == 'pull_request' && github.head_ref == 'feat/home-v3-720p-quality-candidate-20261021' && github.event.pull_request.head.repo.full_name == 'officeus-create/Hermes'
     needs: render-preview
     permissions:
       contents: write
