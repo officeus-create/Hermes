@@ -781,4 +781,13 @@ animation:home-logistics-rain 1.45s linear infinite;opacity:.28;filter:blur(.18p
 .home-master-route-technology .home-system-display,
 .home-master-route-academy .home-academy-living{display:none!important}
 @media(prefers-reduced-motion:reduce){:is(.home-marketing-layer-stack,.home-cinematic-layer-stack)>video{display:none!important;transition:none!important}}
+/* iOS touch/split-view safeguard: the 701–760px tablet grid can show one
+   narrow column with a blank right pane when Safari changes visual viewport
+   during browser chrome/zoom transitions. Keep touch navigation single-column
+   until a genuinely wide tablet layout is available; desktop remains 2-col. */
+@media (hover:none) and (pointer:coarse) and (min-width:701px) and (max-width:820px){
+  .home-master-shell{width:calc(100% - 24px)}
+  .home-master-stage{grid-template-columns:minmax(0,1fr);gap:10px;border:0;border-radius:26px;overflow:visible;box-shadow:none;background:transparent}
+  .home-master-route{min-width:0;width:100%;aspect-ratio:4/5;border:1px solid rgba(17,19,24,.1);border-radius:24px}
+}
 </style>
