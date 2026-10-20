@@ -151,7 +151,7 @@ const languageLinks = siteLocales.filter((language) => !isCatalogLocaleRoute || 
 {isHermesConnectExperienceRoute && <link rel="stylesheet" href={hermesConnectSafePolishUrl} />}
 {isHermesConnectRoute && <link rel="stylesheet" href={hermesRepairPublicShellUrl} />}
 
-<header class={`site-header site-header-${theme}`} data-header>
+<header class={`site-header site-header-${theme}`} data-header data-home-portal={isApprovedHome ? "true" : undefined}>
   <a class="wordmark" href={activeLocale === "en" ? "/#top" : `${localeConfig[activeLocale].path}#top`} aria-label="Hermes home">
     <span class="wordmark-mark">H</span>
     <span>{site.brand}</span>
@@ -414,6 +414,13 @@ const languageLinks = siteLocales.filter((language) => !isCatalogLocaleRoute || 
   .site-header .home-update-sheen:not([hidden]) { position:absolute;z-index:-1;inset:4px auto 4px 10%;width:32%;border-radius:999px;display:block;pointer-events:none;background:linear-gradient(90deg,transparent,#8a7ffc55,transparent);box-shadow:0 0 12px #9f94ff88;animation:home-update-glimmer 1.35s ease-in-out 2;opacity:0; }
   @keyframes home-update-glimmer { 0%,100%{opacity:0;transform:translateX(0)} 25%,70%{opacity:.9} 85%{opacity:0;transform:translateX(190%)} }
   @media (prefers-reduced-motion:reduce) { .site-header .home-update-sheen:not([hidden]){animation:none!important;opacity:.35;} }
+  .site-header[data-home-portal="true"] {
+    /* Owner review palette on Home only. Real product/Connect colors remain unchanged. */
+    --nav-logistics: #2866b0;
+    --nav-technology: #16715b;
+    --nav-academy: #926b3a;
+    --nav-marketing: #a65d78;
+  }
   .site-header {
     --nav-logistics: #1E88FF;
     --nav-marketing: #00C853;
