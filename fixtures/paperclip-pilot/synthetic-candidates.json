@@ -1,0 +1,13 @@
+[
+  {
+    "source_id": "HERMES-PILOT-001",
+    "source_url": "https://github.com/officeus-create/Hermes/issues/0",
+    "title": "Review synthetic accessibility issue without editing the site",
+    "department": "QA",
+    "data_classification": "SYNTHETIC",
+    "approved": true,
+    "owner": "codex",
+    "qa_owner": "qa-independent",
+    "acceptance": ["Record one reproducible fixture result and independent review"]
+  }
+]
