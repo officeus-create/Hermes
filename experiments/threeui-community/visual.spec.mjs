@@ -86,3 +86,44 @@ test('real opt-in WebGL scenes render without uncaught browser failures', async 
   }
   expect(errors, `uncaught exceptions during activation: ${errors.join('; ')}`).toEqual([]);
 });
+
+
+test('mobile viewport never downloads expensive WebGL chunks even when tapped', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  const heavyRequests = [];
+  page.on('request', req => {
+    if (/three\\.module-|EmeraldHorizonBackground-|DotMatrixBackground-/.test(req.url())) heavyRequests.push(req.url());
+  });
+  await page.goto('/');
+  await expect(page.getByRole('button', { name: 'Activate WebGL preview' })).toBeVisible();
+  expect(heavyRequests).toEqual([]);
+  await page.getByRole('button', { name: 'Activate WebGL preview' }).click();
+  await expect(page.getByRole('status')).toContainText('Static fallback');
+  await expect(page.locator('.visual canvas')).toHaveCount(0);
+  expect(heavyRequests).toEqual([]);
+});
+
+test('desktop initially paints static HTML without downloading Three.js', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  const heavyRequests = [];
+  page.on('request', req => {
+    if (/three\\.module-|EmeraldHorizonBackground-|DotMatrixBackground-/.test(req.url())) heavyRequests.push(req.url());
+  });
+  await page.goto('/');
+  await expect(page.getByRole('heading', { level: 2 })).toBeVisible();
+  await page.waitForTimeout(250);
+  expect(heavyRequests).toEqual([]);
+  await expect(page.locator('canvas')).toHaveCount(0);
+});
+
+test('low memory and slow connections remain static even on desktop', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, 'deviceMemory', { configurable: true, value: 2 });
+    Object.defineProperty(navigator, 'connection', { configurable: true, value: { effectiveType: '2g', saveData: false } });
+  });
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Activate WebGL preview' }).click();
+  await expect(page.getByRole('status')).toContainText('Static fallback');
+  await expect(page.locator('canvas')).toHaveCount(0);
+});
