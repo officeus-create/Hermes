@@ -1,0 +1,69 @@
+name: Paperclip genuine isolated startup smoke
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/paperclip-sandbox-startup.yml'
+      - 'docs/PAPERCLIP_REVIEW_ONLY_PILOT_2026-10-20.md'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  paperclip-actual-server:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      PAPERCLIP_NO_BROWSER: '1'
+      PAPERCLIP_OPEN_ON_LISTEN: 'false'
+      PAPERCLIP_TELEMETRY_DISABLED: '1'
+      DO_NOT_TRACK: '1'
+      CI: 'true'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.11.0'
+      - name: Boot isolated official Paperclip with zero provider credentials
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          unset OPENAI_API_KEY ANTHROPIC_API_KEY OPENROUTER_API_KEY GOOGLE_API_KEY
+          export HOME="$RUNNER_TEMP/paperclip-disposable/home"
+          export PAPERCLIP_HOME="$HOME/.paperclip"
+          mkdir -p "$HOME"
+          cd "$RUNNER_TEMP"
+          LOG="$RUNNER_TEMP/paperclip-disposable/startup.log"
+          mkdir -p "$(dirname "$LOG")"
+          npx --yes --registry=https://registry.npmjs.org paperclipai@2026.720.0 test-drive --data-dir "$RUNNER_TEMP/paperclip-disposable/instance" --no-browser > "$LOG" 2>&1 &
+          PID=$!
+          cleanup() {
+            kill "$PID" 2>/dev/null || true
+            wait "$PID" 2>/dev/null || true
+            # Disposable runner only, never user files.
+            rm -rf "$RUNNER_TEMP/paperclip-disposable"
+          }
+          trap cleanup EXIT
+          ok=0
+          for _ in $(seq 1 80); do
+            if curl --max-time 2 -fsS -o /dev/null http://127.0.0.1:3100/; then
+              ok=1
+              break
+            fi
+            if ! kill -0 "$PID" 2>/dev/null; then
+              echo 'Paperclip startup exited before health check'
+              tail -n 80 "$LOG" | sed -E 's/(token|key|secret|password)=([^[:space:]]+)/\1=[REDACTED]/Ig' || true
+              exit 1
+            fi
+            sleep 3
+          done
+          if [[ "$ok" != 1 ]]; then
+            echo 'Paperclip loopback server startup timed out'
+            tail -n 80 "$LOG" | sed -E 's/(token|key|secret|password)=([^[:space:]]+)/\1=[REDACTED]/Ig' || true
+            exit 1
+          fi
+          echo 'PAPERCLIP_LOOPBACK_HTTP_OK'
+          curl --max-time 5 -fsS -o /dev/null http://127.0.0.1:3100/
+          if ss -ltn 2>/dev/null | grep -E '^LISTEN.*0\.0\.0\.0:3100\b'; then
+            echo 'Unsafe public Paperclip bind discovered'
+            exit 1
+          fi
+          echo 'NO_PROVIDER_KEYS_AND_NO_AGENT_TASKS'
