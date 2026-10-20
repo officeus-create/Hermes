@@ -25,9 +25,9 @@ test("homepage entry uses four architectural system scene and keeps the canonica
   expect(new Set(visual.map((item) => item.accent)).size).toBe(4);
   expect(visual.map((item) => item.href)).toEqual([
     "/paths/logistics/",
-    "/paths/marketing/",
     "/paths/technology/",
     "/paths/academy/",
+    "/paths/marketing/",
   ]);
 
   await expect(page.locator('link[rel="preload"][href*="hermes-ecosystem-hero"]')).toHaveCount(0);
