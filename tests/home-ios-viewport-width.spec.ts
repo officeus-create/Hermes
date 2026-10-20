@@ -65,3 +65,26 @@ test("all four Home portals follow the full iPhone viewport after sizing and nav
     await context.close();
   }
 });
+
+
+test("Home resists a narrower ancestor while header stays viewport-wide", async ({ page }) => {
+  await page.setViewportSize({ width: 428, height: 926 });
+  await page.goto("/");
+  const before = await page.locator(".home-master-stage").boundingBox();
+  expect(before?.width).toBeGreaterThan(400);
+
+  // Reproduce the screenshot's geometry without assuming an unverified
+  // Safari engine root cause: the shell ancestor becomes approximately half
+  // width while the fixed header continues to span the visual viewport.
+  await page.locator("main").evaluate((main) => { main.style.width = "54%"; });
+  const after = await page.evaluate(() => {
+    const stage = document.querySelector(".home-master-stage")!.getBoundingClientRect();
+    const header = document.querySelector(".site-header")!.getBoundingClientRect();
+    const cards = [...document.querySelectorAll(".home-master-route")].map(node => node.getBoundingClientRect().width);
+    return { stage: stage.width, header: header.width, cards, scroll: document.documentElement.scrollWidth };
+  });
+  expect(after.header).toBeGreaterThan(400);
+  expect(after.stage).toBeGreaterThan(400);
+  for (const width of after.cards) expect(width).toBeGreaterThan(400);
+  expect(after.scroll).toBeLessThanOrEqual(429);
+});
