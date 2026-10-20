@@ -96,11 +96,7 @@ const schema = {
   name: recommendation.title,
   description: recommendation.summary,
   url: canonicalUrl,
-  provider: {
-    "@type": "Organization",
-    name: "Hermes Logistics",
-    url: "https://hermeslogisticsus.com/paths/logistics/",
-  },
+  provider: { "@id": "https://hermeslogisticsus.com/#logistics" },
   areaServed: { "@type": "Country", name: "United States" },
 };
 import "../../../styles/features/case.css";

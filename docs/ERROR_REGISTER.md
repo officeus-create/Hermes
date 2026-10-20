@@ -679,3 +679,19 @@ WORKING_APPROACH: Preserve the one-video maximum and canvas ban; require exactly
 EVIDENCE: On commit `506178f7fb99dd6275ca7d748efde6cbd4691d6f`, the five focused Home suites pass 22/22 across desktop and 390px mobile. `npm run build` passes with 411 pages and zero errors. Full required checks and fresh exact-head GitHub CI remain the release gate.
 LESSON: When an approved progressive enhancement changes a media contract, update source, runtime, reduced-motion and fallback assertions together; DOM presence is not equivalent to motion under reduced-motion preferences.
 REUSE_RULE: Allow only narrowly identified local enhancement media, retain semantic/static fallbacks, and reject generic weakening of canvas, remote-provider, split-layer or accessibility contracts.
+
+## ERR-SEO-RECOMMENDATION-PROVIDER-20261020 — RESOLVED_IN_DRAFT_PR / CI_PENDING / NOT_LIVE
+
+PROBLEM: Guided logistics customer/dealer/broker recommendation routes emitted `Service.provider` as an isolated inline Organization called "Hermes Logistics" with a direction URL rather than the approved Hermes Logistics LLC `#logistics` Organization entity.
+
+ROOT_CAUSE: Shared logistics recommendation template used a separate legacy provider object instead of the stable entity reference already used by the Logistics direction and other commercial services.
+
+FAILED_APPROACH: Promoting the unapproved isolated label to a fresh organization node or inventing sameAs/structured-data fields to optimize for AI; neither is supported by approved legal facts and neither guarantees rich results.
+
+WORKING_APPROACH: PR #1968 replaces only the provider object with `{"@id":"https://hermeslogisticsus.com/#logistics"}`, extends the pre-existing source-level entity split Playwright regression to three existing recommendation types, and preserves existing canonical, robots, navigation and intake behavior.
+
+EVIDENCE: `src/pages/index.astro`, `src/pages/paths/[slug].astro`, `src/data/public-entity-registry.ts`, and `tests/entity-split.spec.ts` on `main` `e84f3516a6dbfcf58e09749a9b7c7c670558b434`. Exact-head CI, protected-main review/merge, Codex-owned live readback and Google Search outcome still pending. This was a schema consistency defect, NOT verified ranking loss or an AI-indexing defect.
+
+LESSON: Reuse the approved entity @id on Service providers across all existing canonical directions; never fragment the graph by repeating weaker differently named Organization objects.
+
+REUSE_RULE: Keep new entity references and structured facts grounded in approved public legal identity. A clean JSON-LD diff is only a CODE stage; GSC URL inspection, real indexing and qualified revenue measurements remain separate.
