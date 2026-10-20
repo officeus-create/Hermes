@@ -58,9 +58,11 @@
     connection?.addEventListener?.("change", sync);
     if ("IntersectionObserver" in window) {
       const observer = new IntersectionObserver((entries) => {
-        intersects = entries.some((entry) => entry.isIntersecting);
+        // Wait until the visitor can actually see the film: avoids loading
+        // Technology's HD video merely because its top touches the fold.
+        intersects = entries.some((entry) => entry.isIntersecting && entry.intersectionRatio >= 0.4);
         sync();
-      }, { rootMargin: "100px", threshold: 0.01 });
+      }, { rootMargin: "0px", threshold: 0.4 });
       observer.observe(stage);
     } else {
       intersects = true;
