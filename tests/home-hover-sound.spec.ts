@@ -53,3 +53,19 @@ test("evidence cards keep original semantic links and direction order", async ({
   await expect(page.locator("[data-home-proof-decision] [data-proof-service]")).toHaveCount(4);
   await expect(page.locator("[data-home-proof-decision] [data-proof-evidence]")).toHaveCount(4);
 });
+
+
+test("touch press previews a pillar only for the duration of the hold", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+  const route = page.locator('[data-route-id="technology"]');
+  await route.scrollIntoViewIfNeeded();
+  await route.dispatchEvent("pointerdown", { pointerType: "touch" });
+  await expect(route).toHaveAttribute("data-home-portal-active", "true");
+  await expect(route.locator("[data-home-technology-cinematic]")).toHaveAttribute("data-media-state", "ready", { timeout: 15000 });
+  await route.dispatchEvent("pointerup", { pointerType: "touch" });
+  await expect(route).toHaveAttribute("data-home-portal-active", "false");
+  await expect(route.locator("[data-home-technology-cinematic]")).toHaveAttribute("data-media-state", "poster");
+  await expect(page).toHaveURL("/");
+});
