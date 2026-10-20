@@ -1,0 +1,22 @@
+name: Paperclip candidate pilot (no agents)
+on:
+  pull_request:
+    paths:
+      - 'scripts/paperclip-pilot-candidates*'
+      - 'fixtures/paperclip-pilot/**'
+      - '.github/workflows/paperclip-pilot-check.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validate-synthetic:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --test scripts/paperclip-pilot-candidates.test.mjs
+      - run: node scripts/paperclip-pilot-candidates.mjs fixtures/paperclip-pilot/synthetic-candidates.json
+# This workflow never installs Paperclip, runs an agent, or uses secrets.
