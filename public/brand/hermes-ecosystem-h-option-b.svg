@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" role="img" aria-labelledby="hermes-title hermes-desc">
+  <title id="hermes-title">Hermes ecosystem H</title>
+  <desc id="hermes-desc">An H formed by two softly bowed uprights and a long premium green crossbar which covers the left upright and meets the right upright without overhanging.</desc>
+  <rect width="100" height="100" rx="22" fill="#10233B"/>
+  <!-- Owner-selected Option B: blue upright first. -->
+  <path d="M25 19 C26 30 27 42 27 50 C27 61 26 70 25 81 H40 C40.3 69 41 60 41 50 C41 40 40 30 40 19 Z" fill="#7EA9C7"/>
+  <!-- Crossbar: over the left upright, from its mid-height outer edge to the inner edge of coral. -->
+  <rect x="27" y="44" width="41" height="13" fill="#16715B"/>
+  <!-- Right upright is painted last to guarantee a flush meeting, never an overhang. -->
+  <path d="M66 19 C67.5 32 68 43 68 50 C68 63 67 69 66 81 H81 C82.2 69 83 62 83 50 C83 38 82 31 81 19 Z" fill="#D8926B"/>
+</svg>
