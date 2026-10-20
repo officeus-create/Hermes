@@ -10,7 +10,7 @@ permissions:
 jobs:
   android-build:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
@@ -30,12 +30,29 @@ jobs:
           test -s experiments/android-ai-control/app/build/outputs/apk/debug/app-debug.apk
           sha256sum experiments/android-ai-control/app/build/outputs/apk/debug/app-debug.apk > experiments/android-ai-control/app/build/outputs/apk/debug/app-debug.apk.sha256
           cat experiments/android-ai-control/app/build/outputs/apk/debug/app-debug.apk.sha256
+      - name: Install and launch on clean Android emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          profile: pixel_6
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -no-audio -no-boot-anim
+          script: |
+            adb install experiments/android-ai-control/app/build/outputs/apk/debug/app-debug.apk
+            adb shell am start -n us.hermeslogistics.aicontrol/.MainActivity
+            sleep 5
+            adb shell dumpsys activity activities | grep us.hermeslogistics.aicontrol
+            adb shell screencap -p /sdcard/hermes-ai-control-preview.png
+            adb pull /sdcard/hermes-ai-control-preview.png experiments/android-ai-control/app/build/outputs/apk/debug/phone-emulator.png
       - uses: actions/upload-artifact@v4
         with:
           name: Hermes-AI-Control-Android-preview
           path: |
             experiments/android-ai-control/app/build/outputs/apk/debug/app-debug.apk
             experiments/android-ai-control/app/build/outputs/apk/debug/app-debug.apk.sha256
+            experiments/android-ai-control/app/build/outputs/apk/debug/phone-emulator.png
           retention-days: 7
           if-no-files-found: error
 # Debug-signed APK for owner testing, never app store or public production.
