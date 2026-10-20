@@ -201,7 +201,7 @@ test('Home Logistics displays one integrated truck scene without a duplicate flo
  await expect(route.locator('[data-home-logistics-scene-image]')).toBeVisible();
 });
 
-test('all four Home directions explain a causal workflow and remain static on touch',async({browser,page},testInfo)=>{
+test('all four Home directions keep accessible workflows behind quiet visual portals on touch',async({browser,page},testInfo)=>{
  await page.emulateMedia({reducedMotion:'no-preference'});
  await page.setViewportSize({width:1440,height:1000});
  await page.goto('/');
@@ -222,10 +222,10 @@ test('all four Home directions explain a causal workflow and remain static on to
    await expect(route.locator('[data-home-logistics-scene-image]')).toBeVisible();
    await expect(route.locator('.home-road-flow')).toHaveCount(0);
   } else {
-   await expect(explainer).toHaveCSS('opacity','1');
-   for(const id of ['event','system','human','outcome']) {
-    await expect(explainer.locator(`[data-live-step="${id}"]`)).toHaveCSS('opacity','1');
-   }
+   // Claude Home v3 uses real art, not tiny demo dashboards over the portal.
+   await expect(explainer).toHaveCSS('display','none');
+   await expect(route.locator('.home-portal-art img')).toBeVisible();
+   await expect(route.locator('[data-home-pillar-proof]')).toBeHidden();
   }
   const accessibleName=(await route.getAttribute('aria-label')||'').toLowerCase();
   expect(accessibleName).toContain('example flow:');
@@ -244,21 +244,17 @@ test('all four Home directions explain a causal workflow and remain static on to
   } else if(direction==='logistics') {
    await expect(mobileExplainer).toHaveCSS('display','none');
    await expect(mobile.locator('[data-home-logistics-scene-image]')).toBeVisible();
-  } else if(direction==='technology') {
-   await expect(mobileExplainer).toHaveCSS('display','none');
-   await expect(mobile.locator('[data-home-pillar-proof="systems"]')).toBeVisible();
-  } else if(direction==='academy') {
-   await expect(mobileExplainer).toHaveCSS('display','none');
-   await expect(mobile.locator('[data-home-pillar-proof="progress"]')).toBeVisible();
   } else {
-   await expect(mobileExplainer).toHaveCSS('opacity','1');
-   const labelSizes=await mobileExplainer.locator('[data-live-step] em').evaluateAll(nodes=>nodes.map(node=>parseFloat(getComputedStyle(node).fontSize)));
-   expect(Math.min(...labelSizes)).toBeGreaterThanOrEqual(10);
+   await expect(mobileExplainer).toHaveCSS('display','none');
+   const route=mobile.locator(`[data-route-id="${direction}"]`);
+   await expect(route.locator('.home-portal-art img')).toBeVisible();
+   await expect(route.locator('[data-home-pillar-proof]')).toBeHidden();
+   await expect(route.locator('.home-master-route-copy strong')).toBeVisible();
   }
   for (const label of labels) await expect(mobileExplainer).toContainText(label);
  }
- const academyProofSizes=await mobile.locator('[data-home-pillar-proof="progress"] small').evaluateAll(nodes=>nodes.map(node=>parseFloat(getComputedStyle(node).fontSize)));
- expect(Math.min(...academyProofSizes)).toBeGreaterThanOrEqual(9.5);
+ const visibleTitleSizes=await mobile.locator('.home-master-route-copy strong').evaluateAll(nodes=>nodes.map(node=>parseFloat(getComputedStyle(node).fontSize)));
+ expect(Math.min(...visibleTitleSizes)).toBeGreaterThanOrEqual(20);
  expect(await mobile.evaluate(()=>document.documentElement.scrollWidth>innerWidth)).toBe(false);
  await touch.close();
 });
