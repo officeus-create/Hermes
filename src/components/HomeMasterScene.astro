@@ -5,28 +5,28 @@ import { publicPaths } from "../data/public-paths";
 const flowStages = ["event", "system", "human", "outcome"] as const;
 const routeMeta: Record<string, { accent: string; detail: string; displayNumber: string; crop: number; goal: string; flow: readonly [string, string, string, string]; flowPath: string }> = {
   logistics: {
-    accent: "var(--hermes-logistics)",
+    accent: "var(--home-direction-logistics)",
     detail: "Car hauling · dealers · shippers · carriers",
     flow: ["Request", "Route fit", "Human review", "Handoff"],
     flowPath: "M10 14 C26 8 31 39 47 34 S67 12 88 20",
     displayNumber: "01", crop: 20, goal: "Move freight",
   },
   marketing: {
-    accent: "var(--hermes-marketing)",
+    accent: "var(--home-direction-marketing)",
     detail: "Website · SEO/GEO · customer acquisition",
     flow: ["Content + news", "Search + social", "Website action", "CRM evidence"],
     flowPath: "M9 37 C25 13 39 49 54 31 S75 15 91 19",
     displayNumber: "04", crop: 296, goal: "Grow demand",
   },
   technology: {
-    accent: "var(--hermes-technology)",
+    accent: "var(--home-direction-technology)",
     detail: "CRM · automation · custom software",
     flow: ["Hermes Connect", "Website Factory", "Social connectors", "QA readback"],
     flowPath: "M9 18 H31 V41 H56 V25 H77 V40 H91",
     displayNumber: "02", crop: 556, goal: "Build systems",
   },
   academy: {
-    accent: "var(--hermes-academy)",
+    accent: "var(--home-direction-academy)",
     detail: "Logistics · marketing · IT/AI · sales · operations",
     flow: ["Task", "Practice", "Feedback", "Next level"],
     flowPath: "M9 48 H30 V38 H51 V28 H71 V18 H91",
@@ -468,7 +468,13 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
 </script>
 <script is:inline src="/scripts/home-marketing-video.js"></script>
 <style>
-.home-master{position:relative;overflow:hidden;padding:8.5rem 0 1.5rem;background:#f7f6f3;color:#111318}
+.home-master{position:relative;overflow:hidden;padding:8.5rem 0 1.5rem;background:#f7f6f3;color:#111318;
+  /* Home-only preview; do not change Hermes Connect or division pages. */
+  --home-direction-logistics:#2866b0;
+  --home-direction-technology:#16715b;
+  --home-direction-academy:#926b3a;
+  --home-direction-marketing:#a65d78;
+}
 .home-master::before{content:"";display:none}
 .home-master-shell{position:relative;width:min(1480px,calc(100% - 40px));margin:auto}
 .home-master-intro{padding:0 24px 26px;scroll-margin-top:6rem}
@@ -664,9 +670,9 @@ animation:home-logistics-rain 1.45s linear infinite;opacity:.28;filter:blur(.18p
 @keyframes home-academy-progress-pulse{0%,100%{opacity:.45}50%{opacity:.95}}
 @keyframes home-ink-write{0%,15%{stroke-dashoffset:90}60%,100%{stroke-dashoffset:0}}
 .home-master-route::after{content:"";position:absolute;z-index:-1;inset:65% 0 0;background:linear-gradient(180deg,transparent 0%,#122940 27%,#122940 100%)}
-.home-master-route-marketing::after{background:linear-gradient(180deg,transparent,#172a23 27%,#172a23)}
-.home-master-route-technology::after{background:linear-gradient(180deg,transparent,#44362e 27%,#44362e)}
-.home-master-route-academy::after{background:linear-gradient(180deg,transparent,#382b50 27%,#382b50)}
+.home-master-route-marketing::after{background:linear-gradient(180deg,transparent,#382230 27%,#382230)}
+.home-master-route-technology::after{background:linear-gradient(180deg,transparent,#113a31 27%,#113a31)}
+.home-master-route-academy::after{background:linear-gradient(180deg,transparent,#443422 27%,#443422)}
 .home-master-route-copy{display:grid;gap:12px;min-width:0;width:100%}
 .home-master-route-copy small{display:flex;align-items:center;gap:10px;font:700 clamp(.58rem,.85vw,.85rem)/1.3 var(--font-body);letter-spacing:.12em;text-transform:uppercase}
 .home-master-route-copy i{display:block;width:5px;height:18px;border-radius:5px;background:var(--route-accent)}
