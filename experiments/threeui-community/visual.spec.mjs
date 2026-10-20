@@ -57,3 +57,29 @@ test('opt-in activation never changes links or semantic content', async ({ page 
     await expect(page.locator('.visual canvas')).toHaveCount(0);
   }
 });
+
+
+test('real opt-in WebGL scenes render without uncaught browser failures', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  const errors = [];
+  page.on('pageerror', error => errors.push(error.message));
+  await page.goto('/');
+  mkdirSync('test-results/screenshots', { recursive: true });
+  for (const direction of ['marketing','technology','academy']) {
+    await page.getByRole('button', { name: direction, exact: true }).click();
+    await page.getByRole('button', { name: 'Activate WebGL preview' }).click();
+    const fallback = await page.getByRole('status').count();
+    if (fallback > 0) {
+      await expect(page.getByRole('status')).toContainText('Static fallback');
+      await page.screenshot({ path: `test-results/screenshots/desktop-${direction}-webgl-unavailable.png`, fullPage: true });
+      continue;
+    }
+    await expect(page.getByRole('button', { name: 'Pause animation' })).toBeVisible();
+    await expect(page.locator('.visual canvas')).toBeVisible({ timeout: 20000 });
+    await page.waitForTimeout(600);
+    await page.screenshot({ path: `test-results/screenshots/desktop-${direction}-webgl-active.png`, fullPage: true });
+    await page.getByRole('button', { name: 'Pause animation' }).click();
+    await expect(page.locator('.visual canvas')).toHaveCount(0);
+  }
+  expect(errors, `uncaught exceptions during activation: ${errors.join('; ')}`).toEqual([]);
+});
