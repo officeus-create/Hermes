@@ -4,6 +4,7 @@ on:
     paths:
       - '.github/workflows/paperclip-sandbox-startup.yml'
       - 'docs/PAPERCLIP_REVIEW_ONLY_PILOT_2026-10-20.md'
+      - 'scripts/paperclip-ephemeral-api-smoke.mjs'
   workflow_dispatch:
 permissions:
   contents: read
@@ -66,4 +67,5 @@ jobs:
             echo 'Unsafe public Paperclip bind discovered'
             exit 1
           fi
-          echo 'NO_PROVIDER_KEYS_AND_NO_AGENT_TASKS'
+          node "$GITHUB_WORKSPACE/scripts/paperclip-ephemeral-api-smoke.mjs"
+          echo 'NO_PROVIDER_KEYS_NO_ACTUAL_MODEL_TASKS'
