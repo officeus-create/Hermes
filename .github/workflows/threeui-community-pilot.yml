@@ -8,9 +8,9 @@ on:
 permissions:
   contents: read
 jobs:
-  build-isolated-preview:
+  build-and-browser-qa:
     runs-on: ubuntu-latest
-    timeout-minutes: 8
+    timeout-minutes: 15
     defaults:
       run:
         working-directory: experiments/threeui-community
@@ -20,7 +20,16 @@ jobs:
         with:
           node-version: '22'
       - run: npm test
-      # No Hermes credentials, network connections to internal services, or deployment.
       - run: npm install --ignore-scripts --no-audit --no-fund
       - run: npm run build
       - run: test -f dist/index.html
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:visual
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: threeui-synthetic-browser-evidence
+          path: experiments/threeui-community/test-results/
+          retention-days: 7
+          if-no-files-found: ignore
+# No deploy, no Hermes customer data, no production UI.
