@@ -55,9 +55,14 @@ for (const width of [390, 430, 768, 1024, 1440]) {
     ? route.locator('[data-home-logistics-scene-image]')
     : route.locator('.home-portal-art img');
    if(routeId==='marketing') {
-    // V4 Marketing replaces the legacy poster with server-rendered, animated CSS/SVG stages.
-    await expect(image).toHaveCount(0);
-    await expect(route.locator('.home-marketing-card')).toHaveCount(4);
+    // Living Marketing replaces the hidden legacy CSS cards with a real local documentary clip.
+    await expect(image).toHaveCount(1);
+    await expect(image).toBeVisible();
+    await expect(route.locator('[data-home-marketing-cinematic]')).toHaveCount(1);
+    await expect(route.locator('[data-home-marketing-video]')).toHaveCount(1);
+    await expect(route.locator('[data-home-marketing-journey]')).toBeHidden();
+    await expect(image).toHaveAttribute('src','/media/home/marketing-team-poster.jpg');
+    await expect.poll(()=>image.evaluate(n=>(n as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
     continue;
    }
    await expect(image).toHaveCount(1);
@@ -110,8 +115,10 @@ test('approved portals stay usable without JavaScript and honor reduced motion',
   const explainer=page.locator(`[data-home-explainer="${direction}"]`);
   for (const label of labels) await expect(explainer).toContainText(label);
   if(direction==='marketing') {
-   await expect(page.locator('[data-home-marketing-journey]')).toBeVisible();
-   await expect(explainer).toHaveCSS('display','none'); // original duplicated workflow is superseded
+   await expect(page.locator('[data-home-marketing-journey]')).toBeHidden();
+   await expect(page.locator('[data-home-marketing-cinematic] img')).toBeVisible();
+   await expect(page.locator('[data-home-marketing-video] source')).not.toHaveAttribute('src',/.+/);
+   await expect(explainer).toHaveCSS('display','none'); // pure scene, no overlaid workflow
   } else if(direction==='logistics') {
    await expect(page.locator('[data-home-logistics-scene-image]')).toBeVisible();
    await expect(explainer).toHaveCSS('display','none'); // cinematic field stays free of HUD
@@ -202,8 +209,8 @@ test('all four Home directions explain a causal workflow and remain static on to
   }
   if(direction==='marketing') {
    await expect(explainer).toHaveCSS('display','none');
-   await expect(route.locator('[data-home-marketing-journey]')).toHaveCSS('opacity','1');
-   await expect(route.locator('.home-marketing-card')).toHaveCount(4);
+   await expect(route.locator('[data-home-marketing-cinematic]')).toBeVisible();
+   await expect(route.locator('[data-home-marketing-journey]')).toBeHidden();
   } else if(direction==='logistics') {
    await expect(explainer).toHaveCSS('display','none');
    await expect(route.locator('[data-home-logistics-scene-image]')).toBeVisible();
@@ -226,7 +233,8 @@ test('all four Home directions explain a causal workflow and remain static on to
   const mobileExplainer=mobile.locator(`[data-home-explainer="${direction}"]`);
   if(direction==='marketing') {
    await expect(mobileExplainer).toHaveCSS('display','none');
-   await expect(mobile.locator('[data-home-marketing-journey]')).toHaveCSS('opacity','1');
+   await expect(mobile.locator('[data-home-marketing-cinematic]')).toBeVisible();
+   await expect(mobile.locator('[data-home-marketing-journey]')).toBeHidden();
   } else if(direction==='logistics') {
    await expect(mobileExplainer).toHaveCSS('display','none');
    await expect(mobile.locator('[data-home-logistics-scene-image]')).toBeVisible();
@@ -373,42 +381,34 @@ test('Home uses a quiet corporate shell and purposeful direction scenes',async({
  await mobileContext.close();
 });
 
-// Superseded finite-leaves motion contract: CEO selected an always-live Marketing journey
-// whose CSS animations run only when visible and honor reduced motion.
-test('Home Marketing journey animates only in view and keeps a static readable fallback',async({page})=>{
+// Owner-led Marketing transition from decorative cards to one actual working-team movie.
+test('Marketing documentary scene plays only in viewport and stays still when scrolled away',async({page})=>{
  await page.emulateMedia({reducedMotion:'no-preference'});
- await page.setViewportSize({width:1440,height:1200});
+ await page.setViewportSize({width:1440,height:1000});
  await page.goto('/');
- const scene=page.locator('[data-home-marketing-journey]');
- const pulse=scene.locator('.home-marketing-pulse');
- await expect(scene).toHaveCount(1);
- await expect(scene).toHaveAttribute('aria-hidden','true');
+ const scene=page.locator('[data-home-marketing-cinematic]');
+ const video=scene.locator('video');
  await scene.scrollIntoViewIfNeeded();
- await expect(scene).toHaveAttribute('data-journey-motion','running');
- await expect(pulse).toHaveCSS('animation-name','home-marketing-current');
- await expect(pulse).toHaveCSS('animation-iteration-count','infinite');
+ await expect.poll(()=>scene.getAttribute('data-media-state')).toBe('ready');
  await page.locator('footer').scrollIntoViewIfNeeded();
- await expect(scene).toHaveAttribute('data-journey-motion','paused');
- await expect(pulse).toHaveCSS('animation-name','none');
+ await expect.poll(()=>scene.getAttribute('data-media-state')).toBe('poster');
+ expect(await video.evaluate(n=>(n as HTMLVideoElement).paused)).toBe(true);
  await scene.scrollIntoViewIfNeeded();
- await expect(scene).toHaveAttribute('data-journey-motion','running');
- await expect(pulse).toHaveCSS('animation-name','home-marketing-current');
+ await expect.poll(()=>scene.getAttribute('data-media-state')).toBe('ready');
 });
 
-test('Home Marketing animation respects live reduced-motion preference and remains decorative',async({page})=>{
+test('Marketing documentary scene honors live reduced-motion changes and never fakes motion',async({page})=>{
  await page.emulateMedia({reducedMotion:'reduce'});
  await page.goto('/');
- const scene=page.locator('[data-home-marketing-journey]');
- const pulse=scene.locator('.home-marketing-pulse');
- await expect(scene).toHaveAttribute('aria-hidden','true');
- await expect(scene.locator('.home-marketing-beacon')).toHaveAttribute('aria-hidden','true');
- await expect(scene).toHaveAttribute('data-journey-motion','reduced');
- await expect(pulse).toHaveCSS('animation-name','none');
- await page.emulateMedia({reducedMotion:'no-preference'});
+ const scene=page.locator('[data-home-marketing-cinematic]');
+ const video=scene.locator('video');
  await scene.scrollIntoViewIfNeeded();
- await expect(scene).toHaveAttribute('data-journey-motion','running');
- await expect(pulse).toHaveCSS('animation-name','home-marketing-current');
+ await expect(scene.locator('source')).not.toHaveAttribute('src',/.+/);
+ await expect(scene.locator('img')).toBeVisible();
+ await page.emulateMedia({reducedMotion:'no-preference'});
+ await expect.poll(()=>scene.getAttribute('data-media-state')).toBe('ready');
  await page.emulateMedia({reducedMotion:'reduce'});
- await expect(scene).toHaveAttribute('data-journey-motion','reduced');
- await expect(pulse).toHaveCSS('animation-name','none');
+ await expect.poll(()=>scene.getAttribute('data-media-state')).toBe('poster');
+ await expect(video).toBeHidden();
+ expect(await video.evaluate(n=>(n as HTMLVideoElement).paused)).toBe(true);
 });

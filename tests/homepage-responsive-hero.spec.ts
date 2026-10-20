@@ -35,9 +35,10 @@ test("homepage entry uses four architectural system scene and keeps the canonica
   await expect(page.locator(".home-portal-art picture")).toHaveCount(2);
   await expect(page.locator("[data-home-logistics-scene-image]")).toHaveCount(1);
   await expect(page.locator("[data-home-logistics-scene-image]")).toHaveAttribute("src", "/images/logistics-living/car-hauler-512.webp");
-  // CEO-approved V4 Marketing removes decorative leaves; validate the purposeful scene instead.
-  await expect(page.locator('[data-home-marketing-journey]')).toHaveCount(1);
-  await expect(page.locator('[data-home-marketing-journey] .home-marketing-card')).toHaveCount(4);
+  // Owner-directed living Marketing has a real local scene instead of a visible mock dashboard.
+  await expect(page.locator('[data-home-marketing-cinematic]')).toHaveCount(1);
+  await expect(page.locator('[data-home-marketing-cinematic] img')).toHaveAttribute('src','/media/home/marketing-team-poster.jpg');
+  await expect(page.locator('[data-home-marketing-journey]')).toBeHidden();
   await expect(page.locator('.home-moving-leaves')).toHaveCount(0);
   await expect(page.locator('.home-master-stage [data-home-cinematic-video="logistics"]')).toHaveCount(1);
   await expect(page.locator('.home-master-stage [data-home-cinematic-video="logistics"] source')).toHaveAttribute(

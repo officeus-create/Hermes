@@ -21,8 +21,8 @@ test("homepage keeps V4 interaction polish lightweight without hidden media runt
   expect(scene).toContain('decoding="async"');
   expect(scene).not.toContain("<canvas");
   const videoTags = scene.match(/<video\b/g) ?? [];
-  expect(videoTags.length).toBeLessThanOrEqual(1);
-  if (videoTags.length === 1) {
+  expect(videoTags.length).toBeLessThanOrEqual(2);
+  if (videoTags.length >= 1) {
     expect(scene).toContain('data-home-cinematic-video="logistics"');
     expect(scene).toContain('autoplay');
     expect(scene).toContain('muted');
@@ -39,6 +39,19 @@ test("homepage keeps V4 interaction polish lightweight without hidden media runt
     expect(bytes).toBeGreaterThan(200_000);
     expect(bytes).toBeLessThan(8_000_000);
   }
+  expect(scene).toContain('data-home-marketing-cinematic');
+  expect(scene).toContain('data-home-marketing-video');
+  expect(scene).toContain('data-desktop-src="/media/home/marketing-team-v1.mp4"');
+  expect(scene).toContain('data-mobile-src="/media/home/marketing-team-v1.mp4"');
+  expect(scene).toContain('src="/media/home/marketing-team-poster.jpg"');
+  const marketingRuntime = read("public/scripts/home-marketing-video.js");
+  expect(marketingRuntime).toContain("IntersectionObserver");
+  expect(marketingRuntime).toContain("prefers-reduced-motion: reduce");
+  expect(marketingRuntime).toContain("saveData");
+  const media = ["marketing-team-v1.mp4", "marketing-team-poster.jpg"];
+  for (const file of media) expect(fs.existsSync(path.join(root, "public/media/home", file))).toBe(true);
+  expect(fs.statSync(path.join(root, "public/media/home/marketing-team-v1.mp4")).size).toBeLessThan(8_000_000);
+
   expect(layer).not.toContain("new Image()");
   expect(layer).not.toContain("IntersectionObserver");
   expect(layer).not.toContain("data-image-ready");
