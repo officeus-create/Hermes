@@ -86,8 +86,13 @@ for (const width of [390, 430, 768, 1024, 1440]) {
    await expect(page.locator('.header-actions .hc-account-menu')).toHaveCount(1);
   }
   const nav=width<1181?page.locator('#mobile-menu'):page.locator('.desktop-nav');
-  expect(await nav.locator('a').evaluateAll(nodes=>nodes.findIndex(n=>n.textContent?.trim()==='Connect')<nodes.findIndex(n=>n.textContent?.trim()==='Catalog'))).toBe(true);
-  await expect(nav.getByRole('link',{name:'Connect',exact:true,includeHidden:true})).toHaveAttribute('href','/services/hermes-connect/');
+  const products=nav.locator('[data-hermes-products]');
+  await expect(products).toHaveCount(1);
+  await expect(products.locator('a[data-product]')).toHaveCount(4);
+  await expect(products.locator('a[data-product="connect"]')).toHaveAttribute('href','/services/hermes-connect/');
+  await expect(products.locator('a[data-product="catalog"]')).toHaveAttribute('href','/businesses/');
+  await expect(products.locator('a[data-product="insights"]')).toHaveAttribute('href','/insights/');
+  await expect(products.locator('a[data-product="opportunities"]')).toHaveAttribute('href','/opportunities/');
  });
 }
 
@@ -136,7 +141,8 @@ test('Home opens the existing Connect and sign-in flows, then returns with brows
  await page.setViewportSize({width:390,height:844});
  await page.goto('/');
  await page.getByRole('button',{name:'Open navigation'}).click();
- await page.locator('#mobile-menu').getByRole('link',{name:'Connect',exact:true}).click();
+ await page.locator('#mobile-menu [data-hermes-products] > summary').click();
+ await page.locator('#mobile-menu a[data-product="connect"]').click();
  await expect(page).toHaveURL(/\/services\/hermes-connect\/$/);
  await expect(page.locator('#hc-title')).toBeVisible();
  await page.waitForLoadState('load');
