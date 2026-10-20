@@ -57,16 +57,15 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
                     class="home-logistics-cinematic"
                     data-home-cinematic-video="logistics"
                     data-home-cinematic-version="v1"
-                    autoplay
                     muted
                     loop
                     playsinline
-                    preload="metadata"
+                    preload="none"
                     poster="/images/logistics-living/car-hauler-512.webp"
                     aria-hidden="true"
                     tabindex="-1"
                   >
-                    <source src="/media/home/logistics-golden-v1.mp4" type="video/mp4" />
+                    <source data-cinematic-src="/media/home/logistics-golden-v1.mp4" type="video/mp4" />
                   </video>
                   <img
                     data-home-logistics-scene-image
@@ -315,8 +314,13 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
     const weatherStates = ["sun", "fog", "dusk", "rain"] as const;
     const sceneImage = document.querySelector<HTMLImageElement>("[data-home-logistics-scene-image]");
     const cinematicVideo = document.querySelector<HTMLVideoElement>('[data-home-cinematic-video="logistics"]');
+    const cinematicSource = cinematicVideo?.querySelector<HTMLSourceElement>("[data-cinematic-src]");
     const logisticsRoute = logisticsEcho.closest<HTMLElement>("[data-home-route]");
     const reduced = matchMedia("(prefers-reduced-motion: reduce)");
+    const connection = (navigator as Navigator & {
+      connection?: { saveData?: boolean; addEventListener?: (type: string, callback: () => void) => void }
+    }).connection;
+    let cinematicSourceAttached = false;
     let cinematicAvailable = Boolean(cinematicVideo);
     let sceneIndex = 0;
     let weatherIndex = 0;
@@ -369,14 +373,29 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
     };
     const syncCinematic = () => {
       if (!cinematicVideo) return;
-      const shouldPause = reduced.matches || !visible || document.hidden || !cinematicAvailable;
+      // A hidden, reduced-motion or Save-Data visit must not download the movie.
+      const shouldPause = reduced.matches || Boolean(connection?.saveData) || !visible || document.hidden || !cinematicAvailable;
       if (shouldPause) {
         cinematicVideo.pause();
         return;
       }
-      void cinematicVideo.play().catch(() => {
-        // Muted autoplay can still be blocked by a browser policy. The poster/image remains the fallback.
-      });
+      if (!cinematicSourceAttached) {
+        const src = cinematicSource?.dataset.cinematicSrc;
+        if (!src?.startsWith("/media/home/") || !cinematicSource) {
+          cinematicAvailable = false;
+          cinematicVideo.hidden = true;
+          logisticsRoute?.setAttribute("data-logistics-cinematic", "fallback");
+          return;
+        }
+        cinematicSource.src = src;
+        cinematicSourceAttached = true;
+        cinematicVideo.load();
+      }
+      if (cinematicVideo.paused) {
+        void cinematicVideo.play().catch(() => {
+          // Autoplay can still be blocked: keep the image/poster fallback visible.
+        });
+      }
     };
     const update = () => {
       if (reduced.matches) {
@@ -451,6 +470,7 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
     logisticsRoute?.addEventListener("pointerenter", nudgeWeather);
     logisticsRoute?.addEventListener("focusin", nudgeWeather);
     reduced.addEventListener("change", update);
+    connection?.addEventListener?.("change", update);
     document.addEventListener("visibilitychange", update);
     update();
   }
