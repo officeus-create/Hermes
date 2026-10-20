@@ -1,5 +1,5 @@
-// Marketing V4 motion evidence: current consent-safe CSS/SVG scene, not the retired leaves WAAPI layer.
-// Capture illustrative animation in-view, then genuinely still reduced-motion state.
+// Marketing cinematic evidence: real locally hosted documentary video, never the retired mock-card CSS animation.
+// Capture genuine progression (video currentTime advances), then the actual reduced-motion static poster.
 import { chromium } from '@playwright/test';
 import { mkdir, writeFile } from 'node:fs/promises';
 
@@ -23,39 +23,52 @@ try {
         .map(image=>image.decode()));
       return posters.map(image=>({src:image.currentSrc,width:image.naturalWidth,height:image.naturalHeight}));
     });
-    const scene=page.locator('[data-home-marketing-journey]');
+    const scene=page.locator('[data-home-marketing-cinematic]');
     await scene.scrollIntoViewIfNeeded();
     await page.waitForFunction(()=>{
-      const node=document.querySelector('[data-home-marketing-journey]');
-      const pulse=node?.querySelector('.home-marketing-pulse');
-      return node?.getAttribute('data-journey-motion')==='running' && pulse && getComputedStyle(pulse).animationName==='home-marketing-current';
-    },null,{timeout:10000});
-
-    // Freeze real CSS/SVG animation at a reproducible 3.6s checkpoint; no fake animation state.
-    const midpoint=await page.evaluate(()=>{
-      const scene=document.querySelector('[data-home-marketing-journey]');
-      const animations=scene.getAnimations({subtree:true});
-      if(!animations.length) throw new Error('Marketing in-view animation missing');
-      for(const animation of animations) {animation.pause(); animation.currentTime=3600;}
-      return {running:scene.dataset.journeyMotion,animationCount:animations.length};
+      const stage=document.querySelector('[data-home-marketing-cinematic]');
+      const video=stage?.querySelector('video');
+      return stage?.getAttribute('data-media-state')==='ready' &&
+             video && video.readyState>=2 && !video.paused &&
+             video.currentTime>=0;
+    },null,{timeout:15000});
+    // Verify real frame progression; setting a CSS animation currentTime would be false proof here.
+    const midpoint=await page.evaluate(async()=>{
+      const stage=document.querySelector('[data-home-marketing-cinematic]');
+      const video=stage.querySelector('video');
+      const start=video.currentTime;
+      await new Promise(resolve=>setTimeout(resolve,850));
+      const end=video.currentTime;
+      if(end-start<.15) throw new Error('Marketing video did not advance real frames');
+      return {source:video.currentSrc,videoTimeStart:start,videoTimeEnd:end,playing:!video.paused};
     });
     await page.screenshot({path:`${directory}/home-${width}-motion-midpoint.png`,fullPage:false,animations:'allow'});
     await page.emulateMedia({reducedMotion:'reduce'});
     await page.waitForFunction(()=>{
-      const scene=document.querySelector('[data-home-marketing-journey]');
-      const pulse=scene?.querySelector('.home-marketing-pulse');
-      return scene?.getAttribute('data-journey-motion')==='reduced' && pulse && getComputedStyle(pulse).animationName==='none';
+      const stage=document.querySelector('[data-home-marketing-cinematic]');
+      const video=stage?.querySelector('video');
+      const poster=stage?.querySelector('img');
+      return stage?.getAttribute('data-media-state')==='poster' &&
+             video?.paused && video && getComputedStyle(video).display==='none' &&
+             poster?.complete && poster.naturalWidth>0;
     },null,{timeout:10000});
     await page.screenshot({path:`${directory}/home-${width}-settled.png`,fullPage:false});
     if(width===390) await page.screenshot({path:`${directory}/home-390-full-settled.png`,fullPage:true});
     await page.screenshot({path:`${directory}/home-${width}-reduced.png`,fullPage:false});
-    const geometry=await page.evaluate(()=>({
-      width:innerWidth,
-      scrollWidth:document.documentElement.scrollWidth,
-      marketingMotion:document.querySelector('[data-home-marketing-journey]')?.dataset.journeyMotion,
-      animationName:getComputedStyle(document.querySelector('.home-marketing-pulse')).animationName
-    }));
-    if(geometry.scrollWidth>width||geometry.marketingMotion!=='reduced'||geometry.animationName!=='none') {
+    const geometry=await page.evaluate(()=>{
+      const stage=document.querySelector('[data-home-marketing-cinematic]');
+      const video=stage.querySelector('video');
+      return {
+        width:innerWidth,
+        scrollWidth:document.documentElement.scrollWidth,
+        marketingMotion:stage.dataset.mediaState,
+        videoPaused:video.paused,
+        videoDisplay:getComputedStyle(video).display,
+        posterWidth:stage.querySelector('img').naturalWidth
+      };
+    });
+    if(geometry.scrollWidth>width||geometry.marketingMotion!=='poster'||
+       !geometry.videoPaused||geometry.videoDisplay!=='none'||!geometry.posterWidth) {
       throw new Error(`Home Marketing geometry/reduced-motion failed at ${width}: ${JSON.stringify(geometry)}`);
     }
     if(width===1440) {
@@ -115,19 +128,20 @@ try {
       await page.waitForTimeout(120);
       const geometry=await page.evaluate(()=>{
         const stage=document.querySelector('.home-master-stage');
-        const marketing=document.querySelector('[data-home-marketing-journey]');
+        const marketing=document.querySelector('[data-home-marketing-cinematic]');
         const css=getComputedStyle(stage);
         return {
           width:innerWidth,scrollWidth:document.documentElement.scrollWidth,
           columns:css.gridTemplateColumns.trim().split(/\s+/).length,
           marketingVisible:getComputedStyle(marketing).display!=='none',
-          marketingStages:marketing.querySelectorAll('.home-marketing-card').length,
-          marketingMotion:marketing.dataset.journeyMotion
+          marketingStages:marketing.querySelectorAll('video').length,
+          marketingPosters:marketing.querySelectorAll('img').length,
+          marketingMotion:marketing.dataset.mediaState
         };
       });
       const expectedColumns=width<=700?1:width<=1000?2:4;
       if(geometry.scrollWidth>width || geometry.columns!==expectedColumns ||
-         !geometry.marketingVisible || geometry.marketingStages!==4 || geometry.marketingMotion!=='reduced') {
+         !geometry.marketingVisible || geometry.marketingStages!==1 || geometry.marketingPosters!==1 || geometry.marketingMotion!=='poster') {
         throw new Error(`Owner-review capture geometry failed at ${width}: ${JSON.stringify(geometry)}`);
       }
       await page.screenshot({path:`${directory}/home-${width}-review-no-analytics.png`,fullPage:true,animations:'disabled'});
@@ -148,7 +162,7 @@ try {
     const selector=direction==='logistics'
       ? '[data-route-id="logistics"]'
       : direction==='marketing'
-        ? '[data-home-marketing-journey]'
+        ? '[data-home-marketing-cinematic]'
         : direction==='technology'
           ? '[data-home-pillar-proof="systems"]'
           : '[data-home-pillar-proof="progress"]';
