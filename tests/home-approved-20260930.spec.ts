@@ -69,7 +69,7 @@ for (const width of [390, 430, 768, 1024, 1440]) {
    await expect(image).toBeVisible();
    await image.evaluate(node=>(node as HTMLImageElement).decode());
    await expect.poll(()=>image.evaluate(node=>(node as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
-   expect(await image.evaluate(node=>(node as HTMLImageElement).currentSrc)).toMatch(/(?:\/images\/logistics-living\/[a-z-]+-(?:512|887)\.webp|\/media\/home\/(?:technology|academy)-claude-v3-poster\.jpg)$/);
+   expect(await image.evaluate(node=>(node as HTMLImageElement).currentSrc)).toMatch(/(?:\/images\/logistics-living\/[a-z-]+-(?:512|887)\.webp|\/media\/home\/(?:technology|academy)-claude-v3-poster(?:-(?:400|720)\.webp|\.jpg))$/);
   }
   expect(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth)).toBe(false);
   if(width<1181){
@@ -171,7 +171,7 @@ test('Home opens the existing Connect and sign-in flows, then returns with brows
 
 test('compact Home CTA reaches native contact actions and approved artwork loads once',async({page})=>{
  const artwork:string[]=[];
- page.on('request',r=>{if(/\/media\/home\/(?:technology|academy)-claude-v3-poster\.jpg/.test(r.url()))artwork.push(r.url())});
+ page.on('request',r=>{if(/\/media\/home\/(?:technology|academy)-claude-v3-poster(?:-(?:400|720)\.webp|\.jpg)/.test(r.url()))artwork.push(r.url())});
  await page.setViewportSize({width:1440,height:1000});
  await page.goto('/');
  await page.locator('.header-cta').click();
@@ -182,9 +182,9 @@ test('compact Home CTA reaches native contact actions and approved artwork loads
  await expect(page.locator('[data-home-contact-fallback]')).toHaveAttribute('href','mailto:officeus@hermeslogisticsus.com');
  await page.getByRole('link',{name:'Explore Hermes Connect',exact:true}).click();
  await expect(page).toHaveURL(/\/services\/hermes-connect\/$/);
- // Only the two new local film posters are requested, without redundant image sources.
+ // The responsive posters are requested without duplicate WebP candidate fetches.
  expect(artwork.length).toBeGreaterThanOrEqual(2);
- expect(artwork.every(url=>/claude-v3-poster\.jpg/.test(url))).toBe(true);
+ expect(artwork.every(url=>/claude-v3-poster(?:-(?:400|720)\.webp|\.jpg)/.test(url))).toBe(true);
  expect(new Set(artwork).size).toBe(artwork.length);
 });
 
