@@ -86,6 +86,9 @@ test("Logistics commercial and resource Service providers resolve to the approve
     "/logistics/resources/wisconsin-car-shipping-cost-guide/",
     "/logistics/resources/dispatch-service-vs-self-dispatch/",
     "/logistics/resources/new-authority-car-hauler-readiness-checklist/",
+    "/paths/logistics/shippers-dealers/",
+    "/paths/logistics/brokers/carrier-capacity/",
+    "/paths/logistics/customers/vehicle-transport/",
     "/ru/logistics/",
   ];
 
