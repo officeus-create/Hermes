@@ -50,7 +50,7 @@ test("homepage keeps four Claude v3 cinematic routes and the canonical social pr
   await expect(page.locator('.home-moving-leaves')).toHaveCount(0);
   await expect(page.locator('.home-master-stage [data-home-cinematic-video="logistics"]')).toHaveCount(1);
   await expect(page.locator('.home-master-stage [data-home-cinematic-video="logistics"] source')).toHaveAttribute(
-    "src",
+    "data-cinematic-src",
     "/media/home/logistics-golden-v1.mp4",
   );
   await expect(page.locator(".home-master-stage canvas")).toHaveCount(0);
