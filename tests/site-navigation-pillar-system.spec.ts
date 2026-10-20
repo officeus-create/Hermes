@@ -128,3 +128,38 @@ test("cross-page Products hierarchy preserves navigation on Home, divisions, Cat
     }
   }
 });
+
+
+test("Products navigation remains stable at 320px and the 1180px desktop breakpoint", async ({ browser }, testInfo) => {
+  for (const width of [320, 1180, 1181]) {
+    const context = await browser.newContext({
+      baseURL: testInfo.project.use.baseURL,
+      viewport: { width, height: 900 },
+      hasTouch: width <= 1180,
+      reducedMotion: "reduce",
+    });
+    try {
+      const page = await context.newPage();
+      await page.goto("/");
+      const mobileButton = page.locator("[data-menu-button]");
+      let products;
+      if (await mobileButton.isVisible()) {
+        await mobileButton.click();
+        products = page.locator("#mobile-menu .mobile-products-menu");
+      } else {
+        products = page.locator(".desktop-nav .desktop-products-menu");
+      }
+      await products.locator("summary").click();
+      await expect(products.locator("a[data-product]")).toHaveCount(4);
+      for (const link of await products.locator("a[data-product]").all()) {
+        await expect(link).toBeVisible();
+      }
+      expect(
+        await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1),
+        `No horizontal overflow with expanded Products menu at ${width}px`
+      ).toBe(true);
+    } finally {
+      await context.close();
+    }
+  }
+});
