@@ -35,14 +35,14 @@ test("Home keeps native routes and shows living details without layout overflow"
 test("Home update glow follows a dated public Insight and expires after seven days", async ({ page }) => {
   await page.addInitScript(() => { Date.now = () => Date.parse("2026-10-08T12:00:00Z"); });
   await page.goto("/");
-  const insights = page.locator('.desktop-nav a[data-nav-tone="insights"]');
+  const insights = page.locator('.desktop-products-grid a[data-product="insights"]');
   await expect(insights).toHaveClass(/has-home-update/);
   await expect(insights).toHaveAttribute("aria-describedby", "home-insights-update");
-  await expect(page.locator('.desktop-nav a[data-nav-tone="connect"]')).not.toHaveClass(/has-home-update/);
-  await expect(page.locator('.desktop-nav a[data-nav-tone="catalog"]')).not.toHaveClass(/has-home-update/);
+  await expect(page.locator('.desktop-products-grid a[data-product="connect"]')).not.toHaveClass(/has-home-update/);
+  await expect(page.locator('.desktop-products-grid a[data-product="catalog"]')).not.toHaveClass(/has-home-update/);
   const futurePage = await page.context().newPage();
   await futurePage.addInitScript(() => { Date.now = () => Date.parse("2026-10-16T12:00:00Z"); });
   await futurePage.goto("/");
-  await expect(futurePage.locator('.desktop-nav a[data-nav-tone="insights"]')).not.toHaveClass(/has-home-update/);
+  await expect(futurePage.locator('.desktop-products-grid a[data-product="insights"]')).not.toHaveClass(/has-home-update/);
   await futurePage.close();
 });
