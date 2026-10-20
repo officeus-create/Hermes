@@ -37,7 +37,7 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
 <section class="home-master" id="top" aria-labelledby="home-master-title">
   <div class="home-master-shell">
     <header class="home-master-intro" id="about">
-      <h1 id="home-master-title" class="home-master-display" aria-label="Four directions.">Four <span>direct<span class="home-display-i">i</span>ons.</span></h1>
+      <h1 id="home-master-title" class="home-master-display" aria-label="Four directions.">Four <span>direct<span class="home-display-i" aria-hidden="true">ı</span>ons.</span></h1>
       <p class="home-master-script">Choose yours.</p>
       <p class="home-master-ink-note">Logistics, technology, learning and marketing for your business. One Hermes ecosystem.</p>
     </header>
@@ -480,7 +480,8 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
 .home-master-intro{padding:0 24px 26px;scroll-margin-top:6rem}
 .home-master-display{margin:0;font:800 clamp(3.8rem,7.6vw,7.8rem)/1.02 var(--font-display);letter-spacing:-.075em}
 .home-master-display span{color:inherit}
-.home-display-i{display:inline-block;transform-origin:50% 90%;animation:home-letter-hop 5.8s ease-in-out 1s infinite}
+.home-display-i{position:relative;display:inline-block;color:inherit}
+.home-display-i::after{content:"";position:absolute;left:50%;top:.11em;width:.145em;height:.145em;border-radius:50%;background:#16715b;transform:translate(-50%,0);transform-origin:50% 160%;animation:hermes-home-i-dot-bounce 4.8s cubic-bezier(.3,.8,.25,1) 1.2s infinite}
 .home-master-script{position:relative;width:max-content;max-width:100%;margin:.55rem 0 1rem;color:#59606b;font:650 clamp(.98rem,1.35vw,1.15rem)/1.35 var(--font-body);letter-spacing:.08em;text-transform:uppercase;transform:none}
 .home-master-script::after{content:none}
 .home-master-ink-note{max-width:60ch;margin:0;color:#666c79;font-size:clamp(.96rem,1.22vw,1.16rem);line-height:1.6}
@@ -657,7 +658,7 @@ animation:home-logistics-rain 1.45s linear infinite;opacity:.28;filter:blur(.18p
 @keyframes home-logistics-snow{to{background-position:0 46px,10px 58px}}
 @keyframes home-logistics-heat{from{transform:translateY(0) scaleY(1);filter:blur(0)}to{transform:translateY(-3px) scaleY(1.03);filter:blur(.35px)}}
 @keyframes home-logistics-cloud{from{transform:translateX(-2%)}to{transform:translateX(2.5%)}}
-@keyframes home-letter-hop{0%,8%,100%{transform:translateY(0) rotate(0)}2.8%{transform:translateY(-.14em) rotate(-7deg)}5.2%{transform:translateY(.015em) rotate(2deg)}}
+@keyframes hermes-home-i-dot-bounce{0%,84%,100%{transform:translate(-50%,0) scale(1)}89%{transform:translate(-50%,-.2em) scale(.9,1.08)}93%{transform:translate(-50%,.025em) scale(1.12,.86)}96%{transform:translate(-50%,-.045em) scale(.97,1.03)}}
 @keyframes home-underline-draw{from{transform:rotate(-2deg) scaleX(0)}to{transform:rotate(-2deg) scaleX(1)}}
 @keyframes home-road-streak{0%,100%{opacity:0;translate:0 0}22%,65%{opacity:.8}75%{opacity:0;translate:-25px 42px}}
 
@@ -692,7 +693,7 @@ animation:home-logistics-rain 1.45s linear infinite;opacity:.28;filter:blur(.18p
 }
 @media(hover:none){.home-live-explainer,.home-live-step{opacity:1;transform:none}.home-live-path path{stroke-dashoffset:0}}
 @media(max-width:700px) and (hover:none){.home-master-route-arrow{display:none}.home-master-route-copy strong{padding-right:0}}
-@media(prefers-reduced-motion:reduce){.home-logistics-cinematic{display:none!important}.home-master-route-logistics .home-portal-art img{animation:none!important;transform:none!important}.home-logistics-weather{animation:none!important;transition:none!important}.home-portal-art img{transition:none!important}.home-display-i,.home-master-script::after,.home-scene-detail,.home-scene-detail *{animation:none!important;transition:none!important}.home-live-explainer,.home-live-step{opacity:1!important;transform:none!important;transition:none!important}.home-live-path path{stroke-dashoffset:0!important;animation:none!important}}
+@media(prefers-reduced-motion:reduce){.home-logistics-cinematic{display:none!important}.home-master-route-logistics .home-portal-art img{animation:none!important;transform:none!important}.home-logistics-weather{animation:none!important;transition:none!important}.home-portal-art img{transition:none!important}.home-display-i,.home-display-i::after,.home-master-script::after,.home-scene-detail,.home-scene-detail *{animation:none!important;transition:none!important}.home-live-explainer,.home-live-step{opacity:1!important;transform:none!important;transition:none!important}.home-live-path path{stroke-dashoffset:0!important;animation:none!important}}
 /* Phase 1: the real creative process is the visual proof, without decorative mock dashboards. */
 .home-marketing-layer-stack{position:absolute;inset:0;display:block;overflow:hidden;background:#cdc8c5}
 .home-marketing-layer-stack>img,.home-marketing-layer-stack>video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 50%}
