@@ -1,0 +1,41 @@
+name: Hermes AI phone companion (debug preview)
+on:
+  pull_request:
+    paths:
+      - 'experiments/android-ai-control/**'
+      - '.github/workflows/hermes-ai-android-companion-preview.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  android-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.11.1'
+      - name: Source safety contracts
+        run: node experiments/android-ai-control/tests/contract.test.mjs
+      - name: Compile debug-signed preview APK
+        run: gradle --no-daemon -p experiments/android-ai-control :app:assembleDebug
+      - name: Verify APK and checksum
+        shell: bash
+        run: |
+          test -s experiments/android-ai-control/app/build/outputs/apk/debug/app-debug.apk
+          sha256sum experiments/android-ai-control/app/build/outputs/apk/debug/app-debug.apk > experiments/android-ai-control/app/build/outputs/apk/debug/app-debug.apk.sha256
+          cat experiments/android-ai-control/app/build/outputs/apk/debug/app-debug.apk.sha256
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Hermes-AI-Control-Android-preview
+          path: |
+            experiments/android-ai-control/app/build/outputs/apk/debug/app-debug.apk
+            experiments/android-ai-control/app/build/outputs/apk/debug/app-debug.apk.sha256
+          retention-days: 7
+          if-no-files-found: error
+# Debug-signed APK for owner testing, never app store or public production.
