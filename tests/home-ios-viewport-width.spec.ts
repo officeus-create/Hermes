@@ -6,66 +6,55 @@ import { expect, test } from "@playwright/test";
  * occupied only a narrow left column with a large blank strip to the right.
  * Tests use the actual mobile viewport size, not the image's resized pixels.
  */
-test("all four Home portals follow the full iPhone viewport after sizing and navigation", async ({ browser }, testInfo) => {
-  const context = await browser.newContext({
-    baseURL: testInfo.project.use.baseURL,
-    viewport: { width: 428, height: 926 },
-    deviceScaleFactor: 3,
-    hasTouch: true,
-    isMobile: true,
-    reducedMotion: "reduce",
-  });
-  try {
-    const page = await context.newPage();
-    await page.goto("/");
-    await expect(page.locator(".home-master-route")).toHaveCount(4);
-
-    const readLayout = () => page.evaluate(() => {
-      const rect = (selector: string) => {
-        const element = document.querySelector(selector);
-        if (!element) throw new Error(`Missing selector: ${selector}`);
-        const bounds = element.getBoundingClientRect();
-        return { x: bounds.x, width: bounds.width };
-      };
-      return {
-        viewport: innerWidth,
-        pageWidth: document.documentElement.scrollWidth,
-        header: rect(".site-header"),
-        home: rect(".home-master"),
-        shell: rect(".home-master-shell"),
-        stage: rect(".home-master-stage"),
-        cards: [...document.querySelectorAll(".home-master-route")].map((element) => element.getBoundingClientRect().width),
-      };
+test("all four Home portals follow the complete iPhone viewport", async ({ browser }, testInfo) => {
+  // Fresh mobile contexts are required here. Playwright cannot change a
+  // mobile device's screen dimensions merely by resizing the page viewport,
+  // so an in-place resize produces misleading innerWidth readings.
+  for (const width of [320, 375, 390, 428, 430, 640, 700]) {
+    const context = await browser.newContext({
+      baseURL: testInfo.project.use.baseURL,
+      viewport: { width, height: 926 },
+      screen: { width, height: 926 },
+      deviceScaleFactor: 3,
+      hasTouch: true,
+      isMobile: true,
+      reducedMotion: "reduce",
     });
-    const assertMobile = async (expectedWidth: number) => {
-      const layout = await readLayout();
-      expect(layout.viewport).toBe(expectedWidth);
-      expect(layout.pageWidth).toBeLessThanOrEqual(expectedWidth + 1);
-      expect(layout.home.width).toBeGreaterThanOrEqual(expectedWidth - 1);
-      expect(layout.shell.width).toBeGreaterThanOrEqual(expectedWidth - 1);
-      expect(Math.abs(layout.stage.width - (expectedWidth - 24))).toBeLessThanOrEqual(2);
+    try {
+      const page = await context.newPage();
+      await page.goto("/");
+      await expect(page.locator(".home-master-route")).toHaveCount(4);
+      const layout = await page.evaluate(() => {
+        const widthOf = (selector: string) => {
+          const element = document.querySelector(selector);
+          if (!element) throw new Error(`Missing selector: ${selector}`);
+          return element.getBoundingClientRect().width;
+        };
+        return {
+          viewport: innerWidth,
+          pageWidth: document.documentElement.scrollWidth,
+          header: widthOf(".site-header"),
+          home: widthOf(".home-master"),
+          shell: widthOf(".home-master-shell"),
+          stage: widthOf(".home-master-stage"),
+          cards: [...document.querySelectorAll(".home-master-route")].map((element) => element.getBoundingClientRect().width),
+        };
+      });
+      expect(layout.viewport).toBe(width);
+      expect(layout.pageWidth).toBeLessThanOrEqual(width + 1);
+      expect(layout.home).toBeGreaterThanOrEqual(width - 1);
+      expect(layout.shell).toBeGreaterThanOrEqual(width - 1);
+      expect(Math.abs(layout.stage - (width - 24))).toBeLessThanOrEqual(2);
       expect(layout.cards).toHaveLength(4);
-      for (const width of layout.cards) {
-        expect(Math.abs(width - layout.stage.width)).toBeLessThanOrEqual(2);
+      for (const cardWidth of layout.cards) {
+        expect(Math.abs(cardWidth - layout.stage)).toBeLessThanOrEqual(2);
       }
-      expect(layout.header.width).toBeGreaterThanOrEqual(expectedWidth - 20);
-    };
-
-    await assertMobile(428);
-
-    // Rotations, Safari in-app browser bar changes and bfcache reloads can
-    // change the effective viewport without reloading the entire document.
-    for (const width of [390, 375, 320, 430, 640, 700, 428]) {
-      await page.setViewportSize({ width, height: 926 });
-      await assertMobile(width);
+      expect(layout.header).toBeGreaterThanOrEqual(width - 20);
+    } finally {
+      await context.close();
     }
-    await page.reload();
-    await assertMobile(428);
-  } finally {
-    await context.close();
   }
 });
-
 
 test("Home resists a narrower ancestor while header stays viewport-wide", async ({ page }) => {
   await page.setViewportSize({ width: 428, height: 926 });
