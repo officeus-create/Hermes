@@ -67,8 +67,6 @@ try {
           ? route.locator('[data-home-cinematic-slot="logistics"]')
           : route.locator("[data-home-progressive-cinematic]");
 
-        if (id !== "logistics") await route.hover();
-
         await page.waitForFunction(
           ({ id }) => {
             const route = document.querySelector(`[data-route-id="${id}"]`);
