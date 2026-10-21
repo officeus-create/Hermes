@@ -28,7 +28,7 @@
         const lightweightSrc = mobile.matches ? source.dataset.mobileSrc : source.dataset.desktopSrc;
         // Prefer sharper source only for Retina / expanded portals. Do not raise the
         // initial page's network cost, and keep low-resolution film on 2G connections.
-        const connectionSlow = ["slow-2g", "2g"].includes(connection?.effectiveType ?? "");
+        const connectionSlow = ["slow-2g", "2g", "3g"].includes(connection?.effectiveType ?? "") || (typeof connection?.downlink === "number" && connection.downlink < 1.5);
         const needsDetail = window.devicePixelRatio >= 1.5 || stage.getBoundingClientRect().width >= 600;
         const useSharp = needsDetail && !connectionSlow && Boolean(source.dataset.sharpSrc);
         const nextSrc = useSharp ? source.dataset.sharpSrc : lightweightSrc;
