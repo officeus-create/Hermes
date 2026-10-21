@@ -32,7 +32,7 @@ test("Home Retina touch portals choose 720p only after becoming visible", async 
   } finally {await context.close();}
 });
 
-test("Home slow 2G network stays on 540p despite Retina DPR", async ({browser}, testInfo) => {
+test("Home slow 3G network stays on 540p despite Retina DPR", async ({browser}, testInfo) => {
   const context=await browser.newContext({
     baseURL:testInfo.project.use.baseURL,
     viewport:{width:390,height:844},deviceScaleFactor:3,isMobile:true,hasTouch:true,reducedMotion:"no-preference",
@@ -41,7 +41,7 @@ test("Home slow 2G network stays on 540p despite Retina DPR", async ({browser}, 
     await context.addInitScript(() => {
       Object.defineProperty(navigator,"connection",{
         configurable:true,
-        value:{saveData:false,effectiveType:"2g",addEventListener(){}},
+        value:{saveData:false,effectiveType:"3g",downlink:1.2,addEventListener(){}},
       });
     });
     const page=await context.newPage();
