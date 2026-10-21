@@ -98,7 +98,7 @@ const navigation = activeLocale === "en"
 const isCatalogRoute = currentPath === "/businesses/" || currentPath.startsWith("/businesses/");
 const isInsightsRoute = currentPath === "/insights/" || currentPath.startsWith("/insights/");
 const isOpportunitiesRoute = currentPath === "/opportunities/" || currentPath.startsWith("/opportunities/");
-const contactLabel = activeLocale === "en" ? "Start a conversation" : localizedLabels[activeLocale].contact;
+const contactLabel = activeLocale === "en" ? (isApprovedHome ? "Contact" : "Start a conversation") : localizedLabels[activeLocale].contact;
 const signInLabel = activeLocale === "en" ? "Sign in" : localizedLabels[activeLocale].signIn;
 // The Home and localized overview Products navigation must preserve Hermes Connect's
 // supported ?lang= locale when crossing from a localized corporate page.
