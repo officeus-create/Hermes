@@ -1257,6 +1257,8 @@ h3 { font-size: 1.75rem; }
 
 
 .footer-brand { margin-bottom: .6rem; font-family: var(--font-display); font-size: 1.4rem; font-weight: 750; text-transform: none; }
+.footer-brand-approved { display:flex; align-items:center; gap:12px; font-size:1.05rem; font-weight:700; letter-spacing:.32em; text-transform:uppercase; }
+.footer-brand-approved img { width:36px; height:36px; flex:none; }
 .footer-main > div > p:last-child { max-width: 420px; color: rgba(255,255,255,.6); }
 .footer-main nav { display: grid; gap: .6rem; font-size: .9rem; }
 .footer-social a { color: rgba(255,255,255,.72); }
