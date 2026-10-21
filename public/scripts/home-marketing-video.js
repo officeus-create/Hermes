@@ -1,60 +1,82 @@
-// Claude Home v3: shared, optional, locally hosted video layers for the three people
-// portals. Logistics has its independent Golden Scene. No external video requests.
-// Reduced Motion and Save-Data are poster-only; no source is attached until visible.
+// Hermes Home v3: interactive, source-locked local cinematic windows.
+// On fine-pointer desktops the hovered/focused window comes alive; touch devices
+// autoplay only while visibly onscreen. No network request for offscreen footage.
+// Save-Data and reduced-motion remain poster-only for accessibility/bandwidth.
 (() => {
   const stages = document.querySelectorAll("[data-home-progressive-cinematic]");
   if (!stages.length) return;
   const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
-  const mobile = window.matchMedia("(max-width: 700px)");
+  const finePointer = window.matchMedia("(hover: hover) and (pointer: fine)");
   const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-  const pausedByPolicy = () => reduced.matches || Boolean(connection?.saveData);
+  const posterOnly = () => reduced.matches || Boolean(connection?.saveData);
+  const poorNetwork = () => ["slow-2g", "2g", "3g"].includes(connection?.effectiveType) ||
+    (typeof connection?.downlink === "number" && connection.downlink < 1.5);
 
   stages.forEach((stage) => {
     const video = stage.querySelector("[data-home-progressive-video]");
     const source = stage.querySelector("[data-home-progressive-source]");
-    if (!video || !source) return;
+    const route = stage.closest("[data-home-route]");
+    if (!video || !source || !route) return;
     let intersects = false;
+    let active = false;
     let loaded = false;
     let unavailable = false;
-
     const sync = () => {
-      const shouldRun = intersects && !document.hidden && !pausedByPolicy() && !unavailable;
+      const requested = finePointer.matches ? active : intersects;
+      const shouldRun = intersects && requested && !document.hidden && !posterOnly() && !unavailable;
       if (!shouldRun) {
         video.pause();
         stage.dataset.mediaState = "poster";
+        stage.dataset.videoInteraction = "idle";
         return;
       }
       if (!loaded) {
-        const nextSrc = mobile.matches ? source.dataset.mobileSrc : source.dataset.desktopSrc;
-        if (!nextSrc || !nextSrc.startsWith("/media/home/")) {
+        const useHd = Boolean(source.dataset.hdSrc) && !poorNetwork() &&
+          (stage.getBoundingClientRect().width >= 600 ||
+           (finePointer.matches && window.devicePixelRatio >= 1.5));
+        const nextSrc = useHd ? source.dataset.hdSrc :
+          finePointer.matches ? source.dataset.desktopSrc : source.dataset.mobileSrc;
+        if (!nextSrc || !/^\/media\/home\/[a-z0-9-]+\.mp4$/.test(nextSrc)) {
           unavailable = true;
           stage.dataset.mediaState = "poster";
           return;
         }
         source.src = nextSrc;
+        stage.dataset.videoQuality = useHd ? "hd" : "standard";
         loaded = true;
         video.load();
       }
+      stage.dataset.videoInteraction = "active";
       void video.play().catch(() => {
-        video.pause();
         stage.dataset.mediaState = "poster";
+        stage.dataset.videoInteraction = "blocked";
       });
     };
+    const activate = () => { active = true; sync(); };
+    const deactivate = () => {
+      active = route.matches(":hover") || route.matches(":focus-within");
+      sync();
+    };
+    route.addEventListener("pointerenter", activate);
+    route.addEventListener("pointerleave", () => { active = route.matches(":focus-within"); sync(); });
+    route.addEventListener("focusin", activate);
+    route.addEventListener("focusout", () => requestAnimationFrame(deactivate));
     video.addEventListener("playing", () => { stage.dataset.mediaState = "ready"; });
     video.addEventListener("error", () => {
       unavailable = true;
-      stage.dataset.mediaState = "poster";
       video.pause();
+      stage.dataset.mediaState = "poster";
+      stage.dataset.videoInteraction = "failed";
     });
     document.addEventListener("visibilitychange", sync);
     reduced.addEventListener?.("change", sync);
+    finePointer.addEventListener?.("change", sync);
     connection?.addEventListener?.("change", sync);
     if ("IntersectionObserver" in window) {
-      const observer = new IntersectionObserver((entries) => {
-        intersects = entries.some((entry) => entry.isIntersecting);
+      new IntersectionObserver((entries) => {
+        intersects = entries.some(entry => entry.isIntersecting && entry.intersectionRatio >= 0.15);
         sync();
-      }, { rootMargin: "100px", threshold: 0.01 });
-      observer.observe(stage);
+      }, { rootMargin: "0px", threshold: [0, 0.15, 0.4] }).observe(stage);
     } else {
       intersects = true;
       sync();
