@@ -241,6 +241,13 @@ jobs:
           CONTACT_RUNTIME_DELAY_MS: "5000"
         run: node scripts/check-production-contact-runtime.mjs
 
+      - name: Verify Home production video delivery, decode, playback, and visible motion
+        env:
+          HOME_VIDEO_RUNTIME_URL: https://hermeslogisticsus.com/
+          HOME_VIDEO_RUNTIME_ATTEMPTS: "4"
+          HOME_VIDEO_RUNTIME_DELAY_MS: "5000"
+        run: node scripts/check-production-home-video-runtime.mjs
+
       - name: Verify Connect custom subdomain
         env:
           CONNECT_EXPECTATION: approved_web_app
