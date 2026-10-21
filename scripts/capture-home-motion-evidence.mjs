@@ -9,7 +9,7 @@ const browser=await chromium.launch();
 const results=[];
 try {
   for(const width of [1440,390]) {
-    const context=await browser.newContext({viewport:{width,height:width===1440?1200:844},reducedMotion:'no-preference',deviceScaleFactor:width===1440?2:1});
+    const context=await browser.newContext({viewport:{width,height:width===1440?1200:844},reducedMotion:'no-preference',deviceScaleFactor:width===1440?2:1,isMobile:width===390,hasTouch:width===390});
     const page=await context.newPage();
     await page.goto('http://127.0.0.1:4321/',{waitUntil:'load'});
     await page.evaluate(()=>document.fonts.ready);
@@ -25,6 +25,8 @@ try {
     });
     const scene=page.locator('[data-home-marketing-cinematic]');
     await scene.scrollIntoViewIfNeeded();
+    // Desktop cinema is deliberately hover/focus activated. Touch still auto-plays when visible.
+    if(width===1440) await page.locator('[data-route-id="marketing"]').hover();
     await page.waitForFunction(()=>{
       const stage=document.querySelector('[data-home-marketing-cinematic]');
       const video=stage?.querySelector('video');
