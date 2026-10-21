@@ -92,3 +92,26 @@ test("touch tablet at 760px uses whole-width clickable portals without affecting
     } finally { await context.close(); }
   }
 });
+
+
+test("Home navigation stays fixed while scrolling past the four directions to Contact", async ({ page }) => {
+  for (const width of [390, 1440]) {
+    await page.setViewportSize({ width, height: 844 });
+    await page.goto("/");
+    await expect(page.locator(".site-header")).toBeVisible();
+    await page.locator("#contact").scrollIntoViewIfNeeded();
+    const nav = await page.locator(".site-header").evaluate(element => {
+      const rect = element.getBoundingClientRect();
+      return {
+        position: getComputedStyle(element).position,
+        top: rect.top,
+        bottom: rect.bottom,
+        viewportHeight: innerHeight,
+      };
+    });
+    expect(nav.position).toBe("fixed");
+    expect(nav.top).toBeGreaterThanOrEqual(-1);
+    expect(nav.bottom).toBeLessThan(nav.viewportHeight);
+    await expect(page.locator(".site-header .wordmark")).toHaveAttribute("href", "/#top");
+  }
+});
