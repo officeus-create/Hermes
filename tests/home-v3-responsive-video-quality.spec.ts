@@ -14,6 +14,14 @@ test("Home Retina touch portals choose 720p only after becoming visible", async 
     isMobile:true,hasTouch:true,reducedMotion:"no-preference",
   });
   try {
+    // Make "fast Retina" deterministic; CI's actual navigator.connection may
+    // correctly trigger the production 540p slow-link fallback.
+    await context.addInitScript(() => {
+      Object.defineProperty(navigator, "connection", {
+        configurable: true,
+        value: { saveData: false, effectiveType: "4g", downlink: 10, addEventListener() {} },
+      });
+    });
     const page=await context.newPage();
     const requested:string[]=[];
     page.on("request", req => {if(req.url().endsWith("-720.mp4")) requested.push(req.url());});
