@@ -327,7 +327,7 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
       travelDot.style.left = `${targetRect.left - headingRect.left + targetRect.width / 2}px`;
       travelDot.style.top = `${targetRect.top - headingRect.top + targetRect.height * 0.08}px`;
       travelDot.style.backgroundColor = `var(${dotPalette[dotIndex]})`;
-      travelDot.dataset.homeDotPosition = dotTargets[dotIndex].dataset.homeDotTarget;
+      travelDot.dataset.homeDotPosition = dotTargets[dotIndex].dataset.homeDotTarget ?? "d";
       travelDot.classList.add("is-ready");
     };
     const stopDot = () => {
