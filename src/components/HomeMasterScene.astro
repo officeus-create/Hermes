@@ -73,7 +73,7 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
                     data-logistics-scene-ready="car-hauler"
                     src="/images/logistics-living/car-hauler-512.webp"
                     srcset="/images/logistics-living/car-hauler-512.webp 512w, /images/logistics-living/car-hauler-768.webp 768w, /images/logistics-living/car-hauler-887.webp 887w"
-                    sizes="(max-width:700px) calc(100vw - 24px), (min-width:701px) and (max-width:1000px) calc((100vw - 40px) / 2), (min-width:1520px) 368px, calc((100vw - 50px) / 4)"
+                    sizes="(max-width:700px) calc(100vw - 24px), (hover: none) and (pointer: coarse) and (min-width:701px) and (max-width:820px) calc(100vw - 24px), (min-width:701px) and (max-width:1000px) calc((100vw - 40px) / 2), (min-width:1520px) 368px, calc((100vw - 50px) / 4)"
                     width="887"
                     height="1590"
                     aria-hidden="true"
@@ -120,7 +120,7 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
                     src="/media/home/technology-claude-v3-poster.jpg"
                     width="540"
                     height="960"
-                    sizes="(max-width:700px) calc(100vw - 24px), (min-width:701px) and (max-width:1000px) calc((100vw - 40px) / 2), (min-width:1520px) 368px, calc((100vw - 50px) / 4)"
+                    sizes="(max-width:700px) calc(100vw - 24px), (hover: none) and (pointer: coarse) and (min-width:701px) and (max-width:820px) calc(100vw - 24px), (min-width:701px) and (max-width:1000px) calc((100vw - 40px) / 2), (min-width:1520px) 368px, calc((100vw - 50px) / 4)"
                     alt="Illustrative footage of developers collaborating at a computer"
                     aria-hidden="true"
                     loading="lazy"
@@ -150,7 +150,7 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
                     src="/media/home/academy-claude-v3-poster.jpg"
                     width="540"
                     height="960"
-                    sizes="(max-width:700px) calc(100vw - 24px), (min-width:701px) and (max-width:1000px) calc((100vw - 40px) / 2), (min-width:1520px) 368px, calc((100vw - 50px) / 4)"
+                    sizes="(max-width:700px) calc(100vw - 24px), (hover: none) and (pointer: coarse) and (min-width:701px) and (max-width:820px) calc(100vw - 24px), (min-width:701px) and (max-width:1000px) calc((100vw - 40px) / 2), (min-width:1520px) 368px, calc((100vw - 50px) / 4)"
                     alt="Illustrative footage of a business training presentation"
                     aria-hidden="true"
                     loading="lazy"
@@ -779,4 +779,11 @@ animation:home-logistics-rain 1.45s linear infinite;opacity:.28;filter:blur(.18p
 .home-master-route-technology .home-system-display,
 .home-master-route-academy .home-academy-living{display:none!important}
 @media(prefers-reduced-motion:reduce){:is(.home-marketing-layer-stack,.home-cinematic-layer-stack)>video{display:none!important;transition:none!important}}
+/* Touch Safari/iPad split view: keep four clear full-width actions at 701–820px.
+   Desktop/tablet mouse remains a responsive two-column layout. */
+@media (hover:none) and (pointer:coarse) and (min-width:701px) and (max-width:820px){
+  .home-master-shell{width:calc(100% - 24px)}
+  .home-master-stage{grid-template-columns:minmax(0,1fr);gap:10px;border:0;border-radius:26px;overflow:visible;box-shadow:none;background:transparent}
+  .home-master-route{min-width:0;width:100%;aspect-ratio:4/5;border:1px solid rgba(17,19,24,.1);border-radius:24px}
+}
 </style>
