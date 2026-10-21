@@ -419,10 +419,10 @@ const languageLinks = siteLocales.filter((language) => !isCatalogLocaleRoute || 
   .site-header[data-home-portal="true"] .wordmark > span:last-child { font-weight:700; font-size:.94rem; letter-spacing:.32em; text-transform:uppercase; }
   .site-header[data-home-portal="true"] {
     /* Owner review palette on Home only. Real product/Connect colors remain unchanged. */
-    --nav-logistics: #2866b0;
-    --nav-technology: #f97316;
-    --nav-academy: #7c5cff;
-    --nav-marketing: #16715b;
+    --nav-logistics: var(--dir-logistics);
+    --nav-technology: var(--dir-technology);
+    --nav-academy: var(--dir-academy);
+    --nav-marketing: var(--dir-marketing);
   }
   .site-header {
     --nav-logistics: #1E88FF;
