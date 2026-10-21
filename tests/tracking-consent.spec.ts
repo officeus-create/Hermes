@@ -54,6 +54,9 @@ test("analytics stays off before choice and after decline", async ({ page }) => 
 
   await page.reload({ waitUntil: "domcontentloaded" });
   await expect(page.getByRole("heading", { name: "Choose whether to allow website analytics." })).toBeHidden();
+  // Persisted denial must keep GA transport disabled on every navigation,
+  // not only within the click handler that initially rejected consent.
+  await expect.poll(() => page.evaluate(() => Reflect.get(window, "ga-disable-G-RY26321PVW"))).toBe(true);
   await page.waitForTimeout(400);
   expect(analyticsRequests).toEqual([]);
 });
