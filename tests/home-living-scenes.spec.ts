@@ -78,7 +78,7 @@ test("Home keeps a visible direction arrow on touch devices", async ({ browser }
 });
 
 
-test("Home uses the approved Premium Green and the correct four-division color hierarchy", async ({ page }) => {
+test("Home uses Claude 21 October approved four-direction palette without rewriting inner divisions", async ({ page }) => {
   await page.goto("/");
   const palette = await page.evaluate(() => {
     const home = getComputedStyle(document.querySelector(".home-master")!);
@@ -98,7 +98,8 @@ test("Home uses the approved Premium Green and the correct four-division color h
       },
     };
   });
-  const colors = { logistics: "#2866b0", technology: "#f97316", academy: "#7c5cff", marketing: "#16715b" };
+  // 21 Oct Claude Home v3 approval supersedes the September portal palette.
+  const colors = { logistics: "#2f6bf6", technology: "#38b6f5", academy: "#12b886", marketing: "#ff7a59" };
   expect(palette.home).toEqual(colors);
   expect(palette.header).toEqual(colors);
   await page.goto("/paths/technology/");
