@@ -1,4 +1,5 @@
-import { createHash } from "node:crypto";\nimport { chromium } from "@playwright/test";
+import { createHash } from "node:crypto";
+import { chromium } from "@playwright/test";
 
 const allowedHosts = new Set(["hermeslogisticsus.com", "www.hermeslogisticsus.com"]);
 const target = new URL(process.env.HOME_VIDEO_RUNTIME_URL || "https://hermeslogisticsus.com/");
@@ -82,7 +83,9 @@ try {
             if (video.paused || video.error) return false;
             if (id !== "logistics" && stage.getAttribute("data-media-state") !== "ready") return false;
             const style = getComputedStyle(video);
-            return style.display !== "none" && style.visibility !== "hidden" && Number.parseFloat(style.opacity || "1") > 0.5;
+            return style.display !== "none"
+              && style.visibility !== "hidden"
+              && Number.parseFloat(style.opacity || "1") > 0.5;
           },
           { id },
           { timeout: 20_000 },
@@ -112,9 +115,16 @@ try {
           error: node.error?.code ?? null,
         }));
 
-        const advancedBy = after.currentTime - before.currentTime;
+        const advancedBy = after.currentTime >= before.currentTime
+          ? after.currentTime - before.currentTime
+          : Number.isFinite(before.duration) && before.duration > 0
+            ? (before.duration - before.currentTime) + after.currentTime
+            : 0;
         if (advancedBy < 0.35) {
           throw new Error(`${id} video currentTime did not advance enough: ${advancedBy.toFixed(3)}s`);
+        }
+        if (frameBefore === frameAfter) {
+          throw new Error(`${id} video rendered identical frames across a 1.2s playback sample`);
         }
         if (after.paused || after.readyState < 2 || after.error) {
           throw new Error(`${id} video stopped or lost decode readiness after playback sample`);
@@ -139,7 +149,7 @@ try {
           dimensions: `${before.videoWidth}x${before.videoHeight}`,
           advancedBy: Number(advancedBy.toFixed(3)),
           opacity: before.opacity,
-          visibleFrameChanged: frameBefore !== frameAfter,
+          visibleFrameChanged: true,
           stageState: await stage.getAttribute("data-media-state"),
         });
       }
