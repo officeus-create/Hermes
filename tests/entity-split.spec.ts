@@ -131,13 +131,31 @@ test("marketing page keeps visible ProgressoPro positioning without premature sa
   ).toBeFalsy();
 });
 
-test("homepage visibly identifies the Wisconsin logistics business and routes qualified prospects to existing owners", async ({ page }) => {
+test("Home v3 preserves the Logistics legal owner, resources and discovery through canonical pages", async ({ page }) => {
   await page.goto("/");
-  const panel = page.getByRole("region", { name: "Hermes Logistics LLC" });
-  await expect(panel.getByRole("heading", { name: "Hermes Logistics LLC" })).toBeVisible();
-  await expect(panel).toContainText("DFI entity H062724");
-  await expect(panel).toContainText("freight, acceptance, rates and revenue are not guaranteed");
-  await expect(panel.getByRole("link", { name: "Car-hauling dispatch" })).toHaveAttribute("href", "/logistics/car-hauling-dispatch/");
-  await expect(panel.getByRole("link", { name: "Free carrier RPM calculator" })).toHaveAttribute("href", "/logistics/resources/rpm-calculator/");
-  await expect(panel.getByRole("link", { name: "Verify company identity" })).toHaveAttribute("href", "/company-information/");
+  // The compact four-direction chooser replaces the old legal-identity promo panel,
+  // but does not remove the corporate identity schema or its owner URLs.
+  const logisticsRoute = page.locator('[data-home-route][data-route-id="logistics"]');
+  await expect(logisticsRoute).toHaveAttribute("href", "/paths/logistics/");
+  await expect(page.getByRole("contentinfo").getByRole("link", { name: "Company Information" })).toHaveAttribute("href", "/company-information/");
+  const homeEntities = await readJsonLd(page);
+  const logistics = homeEntities.find(
+    (entity) => entity?.["@type"] === "Organization" && entity?.["@id"] === "https://hermeslogisticsus.com/#logistics",
+  );
+  expect(logistics?.identifier?.value).toBe("H062724");
+  expect(logistics?.mainEntityOfPage).toBe("https://hermeslogisticsus.com/company-information/");
+
+  await page.goto("/company-information/");
+  await expect(page.getByRole("heading", { name: "Hermes Logistics LLC — Company Information" })).toBeVisible();
+  await expect(page.getByText("H062724").first()).toBeVisible();
+
+  // Qualified commercial and research paths remain live in their existing owners.
+  for (const route of ["/logistics/car-hauling-dispatch/", "/logistics/resources/rpm-calculator/"]) {
+    const response = await page.request.get(route);
+    expect(response.status(), route).toBe(200);
+  }
+  await page.goto("/insights/");
+  const preserved = page.locator("#homepage-evidence-archive");
+  await expect(preserved).toBeVisible();
+  await expect(preserved.getByRole("link", { name: /Logistics · Company information/ })).toHaveAttribute("href", "/company-information/");
 });

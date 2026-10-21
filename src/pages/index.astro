@@ -2,10 +2,8 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import ecosystemHeroImage from "../assets/hermes-ecosystem-hero.jpg";
 import HomeMasterScene from "../components/HomeMasterScene.astro";
-import HomeProofDecision from "../components/HomeProofDecision.astro";
 import HomePerformanceLayer from "../components/HomePerformanceLayer.astro";
 import HomeRecoveryFinish from "../components/HomeRecoveryFinish.astro";
-import PublicTrafficCounter from "../components/PublicTrafficCounter.astro";
 import SiteFooter from "../components/SiteFooter.astro";
 import SiteHeader from "../components/SiteHeader.astro";
 import { languageAlternates } from "../data/locales";
@@ -27,8 +25,8 @@ const organizationSchema = {
   logo: {
     "@type": "ImageObject",
     "@id": "https://hermeslogisticsus.com/#logo",
-    url: "https://hermeslogisticsus.com/favicon.svg",
-    contentUrl: "https://hermeslogisticsus.com/favicon.svg",
+    url: "https://hermeslogisticsus.com/brand/hermes-mark.svg",
+    contentUrl: "https://hermeslogisticsus.com/brand/hermes-mark.svg",
     caption: "Hermes",
   },
   image: ecosystemHeroUrl,
@@ -91,27 +89,7 @@ const websiteSchema = {
   <SiteHeader contactHref="#contact" theme="light" />
   <main id="main-content" class="hermes-home-recovery">
     <HomeMasterScene />
-    <HomeProofDecision locale="en" />
-    <section class="home-logistics-identity" aria-labelledby="home-logistics-identity-title">
-      <div class="home-logistics-identity-inner">
-        <div>
-          <p class="home-logistics-identity-kicker">U.S. carrier and vehicle transport</p>
-          <h2 id="home-logistics-identity-title">Hermes Logistics LLC</h2>
-          <p>Wisconsin HERMES LOGISTICS, LLC (DFI entity H062724) is the U.S. logistics business represented on this website. Owner-operators, fleets, dealers and shippers can review relevant services and submit an operating-fit inquiry; freight, acceptance, rates and revenue are not guaranteed.</p>
-        </div>
-        <nav class="home-logistics-identity-links" aria-label="Hermes Logistics business links">
-          <a href="/logistics/car-hauling-dispatch/">Car-hauling dispatch</a>
-          <a href="/logistics/resources/rpm-calculator/">Free carrier RPM calculator</a>
-          <a href="/company-information/">Verify company identity</a>
-        </nav>
-      </div>
-    </section>
-    <section class="home-traffic-inline-section" aria-label="Hermes public site activity">
-      <div class="home-traffic-inline-inner">
-        <PublicTrafficCounter />
-        <p class="home-traffic-disclosure">Only consented first-party browser activity is counted. Sessions are not unique visitors or customers.</p>
-      </div>
-    </section>
+
   </main>
   <div id="contact" class="home-contact-shell">
     <HomeRecoveryFinish />
@@ -120,23 +98,4 @@ const websiteSchema = {
   <HomePerformanceLayer />
 </BaseLayout>
 
-<style>
 
-  .home-logistics-identity { background: #f7f6f3; padding: clamp(24px, 3.5vw, 52px) 0 16px; color: #202935; }
-  .home-logistics-identity-inner { width: min(1080px, calc(100% - 40px)); margin-inline: auto; display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(220px, .7fr); align-items: center; gap: 22px; }
-  .home-logistics-identity-kicker { margin: 0 0 5px; color: #335ba3; text-transform: uppercase; font-size: .72rem; letter-spacing: .09em; font-weight: 800; }
-  .home-logistics-identity h2 { margin: 0 0 8px; font-size: clamp(1.2rem, 2.4vw, 1.7rem); line-height: 1.2; }
-  .home-logistics-identity p:not(.home-logistics-identity-kicker) { margin: 0; max-width: 68ch; color: #566273; line-height: 1.6; font-size: .91rem; }
-  .home-logistics-identity-links { display: grid; gap: 7px; }
-  .home-logistics-identity-links a { min-height: 42px; display: flex; align-items: center; padding: 9px 12px; border: 1px solid #d8e0e9; border-radius: 10px; background: #fff; color: #214778; font-size: .86rem; font-weight: 750; text-decoration: none; }
-  .home-logistics-identity-links a:hover, .home-logistics-identity-links a:focus-visible { border-color: #6d88ad; text-decoration: underline; text-underline-offset: 3px; }
-  @media(max-width:720px) { .home-logistics-identity-inner { grid-template-columns: 1fr; } }
-  .home-traffic-inline-section { padding: clamp(20px, 3vw, 40px) 0; background: #f7f6f3; }
-  .home-traffic-inline-inner { width: min(1080px, calc(100% - 40px)); margin-inline: auto; }
-  .home-traffic-inline-section .home-traffic-inline-inner :global([data-public-traffic-counter]) {
-    position: static; inset: auto; z-index: auto; width: 100%; max-width: none;
-    background: #fff; border-color: #dfe2e7; box-shadow: 0 12px 32px rgba(17, 19, 24, .06);
-    backdrop-filter: none;
-  }
-  .home-traffic-disclosure { margin: 10px 6px 0; font-size: .76rem; line-height: 1.5; color: #667181; }
-</style>

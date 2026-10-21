@@ -42,3 +42,24 @@ test("Insights discovery exposes URLs only for standalone articles", async ({ pa
     expect(feed).not.toContain(url);
   }
 });
+
+test("homepage evidence archive keeps four original public sources accessible without inventing news pages", async ({ page, request }) => {
+  await page.goto("/insights/");
+  const archive = page.locator("#homepage-evidence-archive");
+  await expect(archive.getByRole("heading", { name: /four clearer directions/i })).toBeVisible();
+  const expected = [
+    "/company-information/",
+    "/case/it-development/",
+    "/academy/resources/",
+    "/case/appleton-vehicle-transport-seo/",
+  ];
+  const links = archive.getByRole("link");
+  await expect(links).toHaveCount(expected.length);
+  expect(await links.evaluateAll(nodes => nodes.map(link => link.getAttribute("href")))).toEqual(expected);
+  for (const href of expected) {
+    const response = await request.get(href);
+    expect(response.status(), `Retained source must remain reachable: ${href}`).toBe(200);
+  }
+  await expect(archive).toContainText("consent-gated");
+  await expect(page.locator(".insights-preservation-update [data-public-traffic-count]")).toHaveCount(0);
+});

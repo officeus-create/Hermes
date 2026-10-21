@@ -27,7 +27,7 @@ if (organization) {
   if (organization.name !== "Hermes") errors.push("Organization name must be Hermes");
   if (organization.url !== "https://hermeslogisticsus.com/") errors.push("Organization URL must use the canonical HTTPS homepage");
   if (organization.email !== "officeus@hermeslogisticsus.com") errors.push("Organization email does not match the approved general contact");
-  if (organization.logo?.url !== "https://hermeslogisticsus.com/favicon.svg") errors.push("Organization logo URL is missing or not canonical");
+  if (organization.logo?.url !== "https://hermeslogisticsus.com/brand/hermes-mark.svg") errors.push("Organization logo URL is missing or not canonical");
   if (organization.contactPoint?.telephone) errors.push("Organization must not publish a telephone until a dedicated Logistics number is approved");
   if (organization.contactPoint?.email !== "officeus@hermeslogisticsus.com") errors.push("Organization Logistics Sales email is missing or unapproved");
   const sameAs = new Set(Array.isArray(organization.sameAs) ? organization.sameAs : []);

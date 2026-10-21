@@ -159,7 +159,7 @@ const privacyHref = locale === "ru" ? "/ru/privacy/" : "/privacy/";
 <footer class="site-footer">
   <div class="shell footer-main">
     <div class="footer-intro">
-      <p class="footer-brand">{site.brand}</p>
+      <p class={`footer-brand${currentPath === "/" ? " footer-brand-approved" : ""}`}>{currentPath === "/" && <img src="/brand/hermes-mark.svg" alt="Hermes corporate H mark" width="36" height="36" decoding="async" />}<span>{site.brand}</span></p>
       <p>{localized.statement}</p>
       <p class="footer-location">{publicLocationBoundary}</p>
       <HermesConnectLauncher variant="footer" />

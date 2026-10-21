@@ -69,7 +69,7 @@ for (const width of [390, 430, 768, 1024, 1440]) {
    await expect(image).toBeVisible();
    await image.evaluate(node=>(node as HTMLImageElement).decode());
    await expect.poll(()=>image.evaluate(node=>(node as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
-   expect(await image.evaluate(node=>(node as HTMLImageElement).currentSrc)).toMatch(/(?:\/images\/logistics-living\/[a-z-]+-(?:512|887)\.webp|\/media\/home\/(?:technology|academy)-claude-v3-poster\.jpg)$/);
+   expect(await image.evaluate(node=>(node as HTMLImageElement).currentSrc)).toMatch(/(?:\/images\/logistics-living\/[a-z-]+-(?:512|768|887)\.webp|\/media\/home\/(?:technology|academy)-claude-v3-poster\.jpg)$/);
   }
   expect(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth)).toBe(false);
   if(width<1181){
@@ -176,8 +176,8 @@ test('compact Home CTA reaches native contact actions and approved artwork loads
  await page.goto('/');
  await page.locator('.header-cta').click();
  await expect(page).toHaveURL(/\/#contact$/);
- await expect(page.getByRole('heading',{name:'Let’s build your next step.'})).toBeInViewport();
- await expect(page.getByRole('group',{name:'Hermes contact options'})).toBeVisible();
+ await expect(page.getByRole('heading',{name:'Not sure which direction fits?'})).toBeInViewport();
+ await expect(page.getByRole('navigation',{name:'Contact Hermes by direction'})).toBeVisible();
  await expect(page.locator('[data-home-primary-contact]')).toHaveAttribute('href','/contacts/');
  await expect(page.locator('[data-home-contact-fallback]')).toHaveAttribute('href','mailto:officeus@hermeslogisticsus.com');
  await page.getByRole('link',{name:'Explore Hermes Connect',exact:true}).click();

@@ -19,19 +19,21 @@ test("Home keeps native routes and shows living details without layout overflow"
   await expect(page.locator(".home-master-route")).toHaveCount(4);
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
   await page.emulateMedia({ reducedMotion: "no-preference" });
-  // The owner-approved motion moves only the premium-green dot, never the letter stem.
+  // Claude 21 Oct approval: one decorative dot travels d → r → c → i
+  // over 5.2 s and cycles through Logistics, Technology, Academy and Marketing.
   const homeI = page.locator(".home-display-i");
+  const travelDot = page.locator("[data-home-travel-dot]");
   await expect(homeI).toHaveText("i");
   await expect(page.locator("#home-master-title")).toHaveText("Four directions.");
   await expect(homeI).toHaveCSS("animation-name", "none");
-  const dotMotion = await homeI.evaluate((element) => {
-    const dot = getComputedStyle(element, "::after");
-    return { name: dot.animationName, duration: dot.animationDuration, color: dot.backgroundColor };
-  });
-  expect(dotMotion).toEqual({ name: "hermes-home-i-dot-bounce", duration: "4.8s", color: "rgb(22, 113, 91)" });
+  await expect(page.locator("[data-home-dot-target]")).toHaveCount(4);
+  await expect(travelDot).toHaveClass(/is-ready/);
+  await expect(travelDot).toHaveAttribute("data-home-dot-position", /^(d|r|c|i)$/);
+  const startPosition = await travelDot.getAttribute("data-home-dot-position");
+  await expect.poll(() => travelDot.getAttribute("data-home-dot-position"), { timeout: 3400 }).not.toBe(startPosition);
   await page.emulateMedia({ reducedMotion: "reduce" });
-  await expect(page.locator(".home-display-i")).toHaveCSS("animation-name", "none");
-  expect(await page.locator(".home-display-i").evaluate((element) => getComputedStyle(element, "::after").animationName)).toBe("none");
+  await expect(travelDot).toHaveCSS("display", "none");
+  await expect(homeI).toHaveCSS("animation-name", "none");
   const livingProofs = page.locator("[data-home-living-motion]");
   await expect(livingProofs).toHaveCount(2);
   for (const proof of await livingProofs.all()) {
@@ -78,7 +80,7 @@ test("Home keeps a visible direction arrow on touch devices", async ({ browser }
 });
 
 
-test("Home uses the approved Premium Green and the correct four-division color hierarchy", async ({ page }) => {
+test("Home uses Claude 21 October approved four-direction palette without rewriting inner divisions", async ({ page }) => {
   await page.goto("/");
   const palette = await page.evaluate(() => {
     const home = getComputedStyle(document.querySelector(".home-master")!);
@@ -98,7 +100,8 @@ test("Home uses the approved Premium Green and the correct four-division color h
       },
     };
   });
-  const colors = { logistics: "#2866b0", technology: "#f97316", academy: "#7c5cff", marketing: "#16715b" };
+  // 21 Oct Claude Home v3 approval supersedes the September portal palette.
+  const colors = { logistics: "#2f6bf6", technology: "#38b6f5", academy: "#12b886", marketing: "#ff7a59" };
   expect(palette.home).toEqual(colors);
   expect(palette.header).toEqual(colors);
   await page.goto("/paths/technology/");
