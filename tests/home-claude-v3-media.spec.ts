@@ -18,6 +18,7 @@ test("all three Claude v3 people scenes play locally and preserve native routes"
     await expect(stage.locator("img")).toHaveAttribute("src", `/media/home/${film.poster}`);
     await expect(stage.locator("source")).toHaveAttribute("data-mobile-src", `/media/home/${film.video}`);
     await stage.scrollIntoViewIfNeeded();
+    await route.focus(); // Keyboard focus activates the video on fine-pointer desktops.
     await expect.poll(() => stage.getAttribute("data-media-state"), { timeout: 15000 }).toBe("ready");
     await expect(stage.locator("source")).toHaveAttribute("src", `/media/home/${film.video}`);
     const t0 = await video.evaluate(node => (node as HTMLVideoElement).currentTime);

@@ -11,6 +11,7 @@ test("Marketing source lock requires authentic local media and no false UI claim
   await expect(route.locator('[data-home-explainer="marketing"]')).toBeHidden();
   await expect(route.locator(".home-moving-leaves")).toHaveCount(0);
   await route.scrollIntoViewIfNeeded();
+  await route.focus();
   await expect.poll(async () => route.locator("[data-home-marketing-cinematic] source").getAttribute("src")).toBe("/media/home/marketing-team-v1.mp4");
   expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false);
 });
