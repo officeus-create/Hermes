@@ -36,7 +36,8 @@ test("tablet keeps four routes in two columns; Marketing retains cinematic sourc
   await page.goto("/");
   const stage = page.locator(".home-master-stage");
   const countColumns = () => stage.evaluate(node => getComputedStyle(node).gridTemplateColumns.trim().split(/\s+/).length);
-  expect(await countColumns()).toBe(2);
+  const coarseTouch = await page.evaluate(() => matchMedia("(hover:none) and (pointer:coarse)").matches);
+  expect(await countColumns()).toBe(coarseTouch ? 1 : 2);
   const marketing=stage.locator('[data-route-id="marketing"]');
   await expect(marketing.locator("[data-home-marketing-cinematic]")).toHaveCount(1);
   await expect(marketing.locator("img")).toHaveAttribute("src","/media/home/marketing-team-poster.jpg");
