@@ -84,6 +84,7 @@ const t = copy[accountLocale];
       identity?: { name?: string | null; email?: string | null };
       owned_businesses?: Array<{ key?: string; name?: string; href?: string | null; workspace_state?: string }>;
       workspaces?: Array<{ key?: string; href?: string; available?: boolean; state?: Record<string, unknown> }>;
+      delegated_access?: Array<{ company_ref?: string; workspace_ref?: string | null; role?: string }>;
     };
 
     const supported = new Set(["en", "ru", "uk", "es", "it", "fr"]);
@@ -108,6 +109,7 @@ const t = copy[accountLocale];
       hr: "/demos/hermes-connect/hr-admin.html",
       ai: "/services/hermes-connect/internal/ai-connect/",
       beauty: "/services/hermes-connect/beauty/workspace/",
+      dealer: "/services/hermes-connect/dealers/workspace/crm/",
     };
     const withLocale = (path: string) => {
       const url = new URL(path, window.location.origin);
@@ -173,6 +175,15 @@ const t = copy[accountLocale];
 
         const owned = Array.isArray(payload.owned_businesses) ? payload.owned_businesses : [];
         const workspaces = Array.isArray(payload.workspaces) ? payload.workspaces : [];
+        // This is a navigation hint only. The Dealer CRM server independently
+        // re-checks membership and actions. Never derive a URL from user data.
+        const delegated = Array.isArray(payload.delegated_access) ? payload.delegated_access : [];
+        const dealerGrants = delegated.filter((grant) =>
+          typeof grant?.company_ref === "string" &&
+          /^company:[A-Za-z0-9_-]{1,160}$/.test(grant.company_ref) &&
+          grant.workspace_ref === `dealer_crm:${grant.company_ref}` &&
+          ["admin", "member", "read_only"].includes(String(grant.role))
+        );
         const repairBusiness = owned.find((item) => item?.key === "repair_shop");
         const beautyBusiness = owned.find((item) => item?.key === "beauty_salon");
         const academyBusiness = owned.find((item) => item?.key === "academy_business");
@@ -191,6 +202,10 @@ const t = copy[accountLocale];
           if (hrWorkspace) entries.push({ key: "hr", label: runtimeCopy.hr, kind: runtimeCopy.internal, href: hrWorkspace.href });
           if (aiWorkspace) entries.push({ key: "ai", label: runtimeCopy.ai, kind: runtimeCopy.internal, href: aiWorkspace.href });
           if (beautyBusiness) entries.push({ key: "beauty", label: String(beautyBusiness.name || runtimeCopy.beauty), kind: runtimeCopy.owned, href: beautyBusiness.href || undefined });
+          dealerGrants.forEach((grant) => entries.push({
+            key: "dealer", label: `Dealer CRM · ${grant.company_ref?.slice("company:".length) || ""}`,
+            kind: runtimeCopy.company, href: workspacePaths.dealer,
+          }));
 
           if (!dynamicWorkspaces || entries.length === 0) {
             root.hidden = true;
@@ -269,6 +284,28 @@ const t = copy[accountLocale];
           if (beauty) beauty.hidden = false;
         }
 
+        // Private-workspace menus use the same server-scoped delegated grants.
+        const list = root.querySelector<HTMLElement>(".hc-account-workspaces");
+        if (list) dealerGrants.forEach((grant) => {
+          const link = document.createElement("a");
+          link.className = "hc-account-workspace dealer";
+          link.dataset.hcWorkspaceLink = "dealer";
+          link.href = withLocale(workspacePaths.dealer);
+          const dot = document.createElement("span");
+          dot.className = "hc-workspace-dot";
+          dot.setAttribute("aria-hidden", "true");
+          const copy = document.createElement("span");
+          const label = document.createElement("strong");
+          label.textContent = `Dealer CRM · ${grant.company_ref?.slice("company:".length) || ""}`;
+          const detail = document.createElement("small");
+          detail.textContent = runtimeCopy.company;
+          copy.append(label, detail);
+          const action = document.createElement("em");
+          action.textContent = runtimeCopy.open;
+          link.append(dot, copy, action);
+          list.append(link);
+          if (root instanceof HTMLDetailsElement) link.addEventListener("click", () => { root.open = false; });
+        });
         root.hidden = false;
         hideSignInFallback();
       }).catch(() => {
