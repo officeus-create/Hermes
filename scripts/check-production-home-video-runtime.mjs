@@ -1,4 +1,4 @@
-import { chromium } from "@playwright/test";
+import { createHash } from "node:crypto";\nimport { chromium } from "@playwright/test";
 
 const allowedHosts = new Set(["hermeslogisticsus.com", "www.hermeslogisticsus.com"]);
 const target = new URL(process.env.HOME_VIDEO_RUNTIME_URL || "https://hermeslogisticsus.com/");
@@ -90,6 +90,7 @@ try {
 
         const before = await video.evaluate((node) => ({
           currentTime: node.currentTime,
+          duration: node.duration,
           readyState: node.readyState,
           networkState: node.networkState,
           paused: node.paused,
@@ -101,7 +102,9 @@ try {
           visibility: getComputedStyle(node).visibility,
           opacity: getComputedStyle(node).opacity,
         }));
+        const frameBefore = createHash("sha256").update(await video.screenshot()).digest("hex");
         await page.waitForTimeout(1200);
+        const frameAfter = createHash("sha256").update(await video.screenshot()).digest("hex");
         const after = await video.evaluate((node) => ({
           currentTime: node.currentTime,
           readyState: node.readyState,
@@ -136,6 +139,7 @@ try {
           dimensions: `${before.videoWidth}x${before.videoHeight}`,
           advancedBy: Number(advancedBy.toFixed(3)),
           opacity: before.opacity,
+          visibleFrameChanged: frameBefore !== frameAfter,
           stageState: await stage.getAttribute("data-media-state"),
         });
       }
