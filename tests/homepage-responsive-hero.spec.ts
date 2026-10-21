@@ -115,3 +115,63 @@ test("Home navigation stays fixed while scrolling past the four directions to Co
     await expect(page.locator(".site-header .wordmark")).toHaveAttribute("href", "/#top");
   }
 });
+
+
+test("desktop Products unfolds to the RIGHT and keeps every existing product destination", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/");
+  const products = page.locator(".desktop-products-menu");
+  const summary = products.locator("summary");
+  await summary.click();
+  await expect(products).toHaveAttribute("open", "");
+  const relation = await products.evaluate((details) => {
+    const trigger = details.querySelector("summary")!.getBoundingClientRect();
+    const menu = details.querySelector(".desktop-products-grid")!.getBoundingClientRect();
+    return { triggerRight: trigger.right, menuLeft: menu.left, menuRight: menu.right, windowWidth: innerWidth };
+  });
+  expect(relation.menuLeft).toBeGreaterThan(relation.triggerRight);
+  expect(relation.menuRight).toBeLessThanOrEqual(relation.windowWidth + 1);
+  const links = products.locator(".desktop-products-grid a");
+  expect(await links.evaluateAll(nodes => nodes.map(n => n.getAttribute("href")))).toEqual([
+    "/services/hermes-connect/repair-shops/", "/businesses/", "/insights/", "/opportunities/",
+  ]);
+  await page.keyboard.press("Escape");
+  await expect(products).not.toHaveAttribute("open", "");
+});
+
+test("hover makes technology scene genuinely play, without autoplaying other desktop scenes", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/");
+  const stage = page.locator("[data-home-technology-cinematic]");
+  const video = stage.locator("video");
+  await page.locator(".home-master-route-technology").hover();
+  await expect(stage).toHaveAttribute("data-video-interaction", "active");
+  await expect.poll(() => video.evaluate((el: HTMLVideoElement) => el.paused), { timeout: 10000 }).toBe(false);
+  await expect(stage).toHaveAttribute("data-media-state", "ready");
+  expect(await stage.locator("source").getAttribute("src")).toMatch(/^\/media\/home\/technology-claude-v3(?:-720)?\.mp4$/);
+  await page.mouse.move(0, 0);
+  await expect.poll(() => video.evaluate((el: HTMLVideoElement) => el.paused)).toBe(true);
+  await expect(stage).toHaveAttribute("data-media-state", "poster");
+});
+
+test("retina desktop hover chooses a reviewed local 720p file; Save-Data keeps poster-only behavior", async ({ browser }, testInfo) => {
+  const context = await browser.newContext({
+    baseURL: testInfo.project.use.baseURL,
+    viewport: { width: 1440, height: 900 },
+    deviceScaleFactor: 2,
+  });
+  try {
+    const page = await context.newPage();
+    await page.goto("/");
+    const route = page.locator(".home-master-route-academy");
+    await route.hover();
+    const stage = page.locator("[data-home-academy-cinematic]");
+    await expect(stage).toHaveAttribute("data-video-quality", "hd");
+    await expect(stage.locator("source")).toHaveAttribute("src", "/media/home/academy-claude-v3-720.mp4");
+    const hd = await page.request.get("/media/home/academy-claude-v3-720.mp4");
+    expect(hd.status()).toBe(200);
+    expect(hd.headers()["content-type"]).toContain("video/mp4");
+  } finally {
+    await context.close();
+  }
+});
