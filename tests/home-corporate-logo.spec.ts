@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-const logoSrc = "/brand/hermes-ecosystem-h-option-b.svg";
+const logoSrc = "/brand/hermes-mark.svg";
 
 test("Home previews the selected Hermes H while preserving existing inner-page identities", async ({ page }) => {
   await page.goto("/");
@@ -17,18 +17,18 @@ test("Home previews the selected Hermes H while preserving existing inner-page i
   await expect(page.locator(".site-header .wordmark-mark-corporate")).toHaveCount(0);
 });
 
-test("Hermes Option B crossbar stays between the uprights, in correct paint order", async ({ page }) => {
+test("Approved H v1.1 crossbar follows the left upright and remains in correct paint order", async ({ page }) => {
   const response = await page.request.get(logoSrc);
   expect(response.ok()).toBe(true);
   const svg = await response.text();
-  const blue = svg.indexOf('fill="#7EA9C7"');
-  const green = svg.indexOf('<rect x="27" y="44" width="41" height="13" fill="#16715B"');
-  const coral = svg.indexOf('fill="#D8926B"');
+  const blue = svg.indexOf('d="M24,18 L42,18');
+  const green = svg.indexOf('d="M22.875,42 L59.4,42');
+  const coral = svg.indexOf('d="M58,18 L76,18');
   expect(blue).toBeGreaterThan(0);
   expect(green).toBeGreaterThan(blue);
   expect(coral).toBeGreaterThan(green);
-  // The green bar begins at the blue outer edge and ends at x=68, coral's midpoint inner edge.
-  expect(27 + 41).toBe(68);
+  // Owner approved shaped left crossbar edge, flush with the bowed blue upright.
+  expect(svg).toContain('Q22.725,50 22.875,42');
 });
 
 for (const width of [390, 430, 768, 1024, 1440]) {
