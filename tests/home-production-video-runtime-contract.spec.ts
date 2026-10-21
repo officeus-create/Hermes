@@ -11,12 +11,17 @@ test("production release verifies all four Home videos beyond asset availability
   for (const id of ["logistics", "technology", "academy", "marketing"]) {
     expect(probe).toContain(`"${id}"`);
   }
-  expect(probe).toContain("video.readyState");
-  expect(probe).toContain("video.currentTime");
-  expect(probe).toContain("video.videoWidth");
-  expect(probe).toContain("data-media-state");
-  expect(probe).toContain("video/mp4");
+
+  expect(probe).toContain("currentTime: node.currentTime");
+  expect(probe).toContain("readyState: node.readyState");
+  expect(probe).toContain("videoWidth: node.videoWidth");
+  expect(probe).toContain("videoHeight: node.videoHeight");
+  expect(probe).toContain('stage.getAttribute("data-media-state")');
+  expect(probe).toContain('contentType.includes("video/mp4")');
   expect(probe).toContain("[200, 206]");
+  expect(probe).toContain('createHash("sha256")');
+  expect(probe).toContain("frameBefore === frameAfter");
+  expect(probe).toContain("advancedBy < 0.35");
   expect(workflow).toContain("Verify Home production video delivery, decode, playback, and visible motion");
   expect(workflow).toContain("node scripts/check-production-home-video-runtime.mjs");
 });
