@@ -1,0 +1,58 @@
+name: Home WebKit touch-width evidence
+
+on:
+  pull_request:
+    paths:
+      - 'src/components/HomeMasterScene.astro'
+      - 'tests/homepage-responsive-hero.spec.ts'
+      - 'scripts/qa-home-webkit-touch.mjs'
+      - '.github/workflows/home-webkit-touch.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: home-webkit-touch-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  webkit-layout:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Node.js from project version
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - name: Install JS dependencies
+        run: npm ci
+      - name: Build current website
+        run: npm run build
+      - name: Install WebKit engine and system libraries
+        run: npx playwright install --with-deps webkit
+      - name: WebKit touch and mouse smoke including screenshots
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          python3 -m http.server 4321 --directory dist > /tmp/home-webkit-preview.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
+          for attempt in {1..45}; do
+            if curl -fsS http://127.0.0.1:4321/ >/dev/null; then break; fi
+            sleep 1
+          done
+          curl -fsS http://127.0.0.1:4321/ >/dev/null
+          node scripts/qa-home-webkit-touch.mjs
+      - name: Preserve WebKit screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: home-webkit-touch-${{ github.event.pull_request.head.sha }}
+          retention-days: 14
+          if-no-files-found: warn
+          path: artifacts/home-webkit-touch/*.png
