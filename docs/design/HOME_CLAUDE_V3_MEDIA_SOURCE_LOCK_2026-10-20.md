@@ -1,6 +1,6 @@
 # Hermes Home v3 — owner-source film transfer (review-only)
 
-Status: DRAFT PR #1970. Do **not** describe this as owner-released, merged or live.
+Status (corrected 2026-10-21): **PR #1970 MERGED into main on 2026-10-20** (merge commit `a18f7d603ee6a564fe92c7cad94ac89c38ef9506`). The public English Home visibly contains the four source-matched scenes; this is not a fresh Cloudflare deployed-SHA proof or owner acceptance of every video-loop/frame detail. Current touch-width fix #1982 and 720p media experiment #1984 remain separate unmerged draft PRs, and neither should be described as live.
 Canonical visual source: Claude Home v3 standalone export archived on 2026-10-20 in the Hermes Design Hub on Google Drive. It is a bundler; root-only grep does not expose nested source reliably.
 See: https://drive.google.com/file/d/1is9eoeOKY3j72w_8nX3-yiyv91exuKDg/view
 
