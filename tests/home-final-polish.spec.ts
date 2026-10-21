@@ -39,9 +39,10 @@ test("homepage keeps four architectural master scene and shared direction signal
 test("homepage contact finish keeps one primary route plus office-email fallback without a form wall", async ({ page }) => {
   await page.goto("/");
 
-  const contactOptions = page.getByLabel("Hermes contact options");
-  await expect(contactOptions.getByRole("link")).toHaveCount(2);
-  await expect(contactOptions.getByRole("link", { name: /Talk to Hermes/i })).toHaveAttribute("href", "/contacts/");
+  const contactOptions = page.getByRole("navigation", { name: "Contact Hermes by direction" });
+  await expect(contactOptions.getByRole("link")).toHaveCount(4);
+  await expect(page.locator("[data-home-primary-contact]")).toHaveAttribute("href", "/contacts/");
+  await expect(page.getByRole("heading", { name: "Not sure which direction fits?" })).toBeVisible();
   await expect(page.locator("[data-home-contact-fallback]")).toHaveAttribute(
     "href",
     "mailto:officeus@hermeslogisticsus.com",
