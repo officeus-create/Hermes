@@ -54,6 +54,10 @@ import SiteFooter from "../../../../components/SiteFooter.astro";
             <h2 data-i18n="signIn">Sign in</h2>
             <p class="muted" data-i18n="signInCopy">Use the email and password attached to your shared Hermes identity.</p>
             <p class="alert" data-access-alert role="status"></p>
+            <div class="access-social" data-access-google hidden>
+              <div class="access-google-button" data-google-auth-button aria-label="Continue with Google"></div>
+              <p class="access-divider" data-i18n="orEmail">or continue with email</p>
+            </div>
             <label>Email<input name="email" type="email" autocomplete="username" required /></label>
             <label><span data-i18n="password">Password</span><input name="password" type="password" autocomplete="current-password" minlength="8" required /></label>
             <button class="primary" type="submit" data-i18n="secureLogin">Secure login</button>
@@ -133,7 +137,7 @@ import SiteFooter from "../../../../components/SiteFooter.astro";
       architecture:"Архітектура Hermes Connect",notUniversal:"Не одна CRM для всіх бізнесів.",notUniversalCopy:"Один canonical business profile може мати vertical-specific workspace. Нові verticals підключаються до тієї ж Hermes identity і Catalog, а не створюють дублікати компаній.",
       repairShort:"Repair Shop",academyShort:"Academy",liveProduct:"Live product",businessCrm:"Business CRM + learner",privateFoundation:"Private foundation",logistics:"Logistics",marketing:"Marketing",professional:"Professional Services",preparing:"Готується",
       boundary:"Реєстрація Hermes-акаунта не публікує бізнес у Catalog автоматично. Публікація бізнес-профілю — окремий opt-in. Приватні CRM-дані не стають публічними.",
-      loginError:"Не вдалося увійти. Перевірте email і пароль."
+      loginError:"Не вдалося увійти. Перевірте email і пароль.",orEmail:"або продовжити через email",googleError:"Не вдалося увійти через Google."
     },
     en: {
       pilotBoundary:"Repair Shop is the current live pilot. Account registration is followed by shop setup; it does not confirm activation or customer results.",
@@ -147,7 +151,7 @@ import SiteFooter from "../../../../components/SiteFooter.astro";
       architecture:"Hermes Connect architecture",notUniversal:"Not one CRM for every business.",notUniversalCopy:"One canonical business profile can have a vertical-specific workspace. New verticals attach to the same Hermes identity and Catalog instead of creating duplicate companies.",
       repairShort:"Repair Shop",academyShort:"Academy",liveProduct:"Live product",businessCrm:"Business CRM + learner",privateFoundation:"Private foundation",logistics:"Logistics",marketing:"Marketing",professional:"Professional Services",preparing:"Preparing",
       boundary:"Creating a Hermes account does not publish the business to Catalog automatically. Public business listing is a separate opt-in. Private CRM data never becomes public by registration alone.",
-      loginError:"We could not sign you in. Check your email and password."
+      loginError:"We could not sign you in. Check your email and password.",orEmail:"or continue with email",googleError:"Google sign-in could not be completed."
     }
   } as const;
   type Lang = keyof typeof dictionary;
@@ -262,6 +266,90 @@ import SiteFooter from "../../../../components/SiteFooter.astro";
     }
   });
 
+  // Reuse the existing Hermes Google endpoint and one shared session; never create a parallel auth stack.
+  // Do not display a provider button unless /api/auth/providers confirms the real provider is enabled.
+  type GoogleIdentityApi = {
+    initialize: (options: {
+      client_id: string;
+      auto_select: boolean;
+      callback: (result: { credential?: string }) => void | Promise<void>;
+    }) => void;
+    renderButton: (element: HTMLElement, options: Record<string, string | number>) => void;
+  };
+  const googleIdentity = (): GoogleIdentityApi | undefined =>
+    (globalThis as typeof globalThis & { google?: { accounts?: { id?: GoogleIdentityApi } } }).google?.accounts?.id;
+  const googleAuthBlock = document.querySelector<HTMLElement>("[data-access-google]");
+  const googleButton = document.querySelector<HTMLElement>("[data-google-auth-button]");
+  const loadGoogleIdentityScript = () => new Promise<void>((resolve, reject) => {
+    if (googleIdentity()) return resolve();
+    const existing = document.querySelector<HTMLScriptElement>('script[data-hermes-google-identity]');
+    if (existing) {
+      existing.addEventListener("load", () => resolve(), { once: true });
+      existing.addEventListener("error", reject, { once: true });
+      return;
+    }
+    const script = document.createElement("script");
+    script.src = "https://accounts.google.com/gsi/client";
+    script.async = true;
+    script.defer = true;
+    script.dataset.hermesGoogleIdentity = "";
+    script.addEventListener("load", () => resolve(), { once: true });
+    script.addEventListener("error", reject, { once: true });
+    document.head.appendChild(script);
+  });
+
+  const setupSocialAuth = async () => {
+    if (!googleButton || !googleAuthBlock) return;
+    try {
+      const response = await fetch("/api/auth/providers", {
+        credentials: "same-origin",
+        headers: { Accept: "application/json" },
+      });
+      if (!response.ok) return;
+      const providers = await response.json().catch(() => ({}));
+      if (!providers?.google?.enabled || !providers.google.client_id) return;
+      await loadGoogleIdentityScript();
+      const googleApi = googleIdentity();
+      if (!googleApi) return;
+      googleApi.initialize({
+        client_id: providers.google.client_id,
+        auto_select: false,
+        callback: async (result: { credential?: string }) => {
+          const credential = String(result?.credential || "");
+          if (!credential) return;
+          if (alert) alert.textContent = "";
+          try {
+            const login = await fetch("/api/auth/google", {
+              method: "POST",
+              credentials: "same-origin",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ credential }),
+            });
+            const payload = await login.json().catch(() => ({}));
+            if (!login.ok || !payload?.success) throw new Error("google_login_failed");
+            const destination = await accountDestination();
+            window.location.assign(withLang(destination));
+          } catch {
+            if (alert) alert.textContent = dictionary[lang].googleError;
+          }
+        },
+      });
+      googleApi.renderButton(googleButton, {
+        type: "standard",
+        theme: "outline",
+        size: "large",
+        text: "continue_with",
+        shape: "rectangular",
+        logo_alignment: "left",
+        width: 290,
+      });
+      googleAuthBlock.hidden = false;
+    } catch {
+      // Email/password remains available. Never show a nonfunctional Google button.
+    }
+  };
+  void setupSocialAuth();
+
   document.querySelector<HTMLElement>("[data-access-logout]")?.addEventListener("click", async () => {
     await fetch("/api/auth/logout", { method: "POST", credentials: "same-origin" }).catch(() => null);
     await check();
@@ -276,7 +364,7 @@ import SiteFooter from "../../../../components/SiteFooter.astro";
   .access-intro{max-width:940px;margin-bottom:28px}.eyebrow,.status{margin:0 0 10px;color:#6d56d9;font-size:11px;font-weight:850;letter-spacing:.12em;text-transform:uppercase}.access-intro h1{max-width:900px;margin:0;font-size:clamp(46px,7vw,82px);line-height:.96;letter-spacing:-.055em}.access-intro>p:last-child{max-width:850px;color:#617087;line-height:1.7;font-size:17px}
   .ai-entry-context{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;align-items:center;margin:0 0 18px;padding:14px 16px;border:1px solid #d6cdf8;border-radius:16px;background:linear-gradient(135deg,#fff,#f7f3ff);box-shadow:0 12px 30px rgba(64,50,120,.05)}.ai-entry-context[hidden]{display:none}.ai-entry-context strong{font-size:14px}.ai-entry-context p{grid-column:1/-1;margin:0;color:#66758a;font-size:12px;line-height:1.55}
     .access-grid{display:grid;grid-template-columns:.78fr 1.22fr;gap:18px;align-items:start}.access-card{padding:26px;border:1px solid #dce4ed;border-radius:22px;background:#fff;box-shadow:0 24px 60px rgba(24,40,68,.07)}.access-card h2{margin:0 0 10px;font-size:clamp(27px,3vw,36px);letter-spacing:-.025em}.muted{color:#68778a;line-height:1.6}.status.success{color:#16815f}.access-card form{display:grid;gap:14px}.access-card label{display:grid;gap:6px;font-size:12px;font-weight:800}.access-card input{width:100%;box-sizing:border-box;padding:12px 13px;border:1px solid #cfd9e4;border-radius:10px;font:inherit}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}.primary,.access-card button{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 15px;border-radius:11px;text-decoration:none;font-weight:800}.primary,.access-card button.primary{border:1px solid #151b27;background:#151b27;color:#fff}.access-card button:not(.primary){border:1px solid #cfd9e4;background:#fff;color:#244c73}.alert{min-height:1.4em;margin:0;color:#a33b3b;font-size:12px}
-  .business-options{display:grid;gap:10px;margin-top:18px}.business-option{display:grid;grid-template-columns:1fr auto;gap:6px 14px;padding:16px;border:1px solid #dce4ed;border-radius:16px;background:#fbfcfe;color:#1e2d40;text-decoration:none;transition:.15s ease}.business-option:hover,.business-option:focus-visible{transform:translateY(-1px);border-color:#9daec2;box-shadow:0 12px 28px rgba(32,58,88,.08)}.business-option.academy{border-color:#cfc5f0;background:linear-gradient(135deg,#fff,#f7f3ff)}.business-option.live{border-color:#bfd9ef;background:linear-gradient(135deg,#fff,#f2f9ff)}.business-option strong{font-size:17px}.business-option small{grid-column:1/-1;color:#68778a;line-height:1.5}.business-option em{grid-row:1;font-style:normal;color:#265e92;font-size:12px;font-weight:900;align-self:center}.option-state{display:inline-flex;width:max-content;padding:4px 7px;border-radius:999px;background:#eaf5ff;color:#14679e;font-size:9px;font-weight:900;letter-spacing:.08em}.academy .option-state{background:#efe9ff;color:#6547af}.option-state.neutral{background:#edf1f5;color:#536479}
+  .access-social{display:grid;justify-items:center;gap:12px}.access-social[hidden]{display:none}.access-google-button{min-height:44px;max-width:100%}.access-divider{font-size:12px;color:#68778a;margin:0}.business-options{display:grid;gap:10px;margin-top:18px}.business-option{display:grid;grid-template-columns:1fr auto;gap:6px 14px;padding:16px;border:1px solid #dce4ed;border-radius:16px;background:#fbfcfe;color:#1e2d40;text-decoration:none;transition:.15s ease}.business-option:hover,.business-option:focus-visible{transform:translateY(-1px);border-color:#9daec2;box-shadow:0 12px 28px rgba(32,58,88,.08)}.business-option.academy{border-color:#cfc5f0;background:linear-gradient(135deg,#fff,#f7f3ff)}.business-option.live{border-color:#bfd9ef;background:linear-gradient(135deg,#fff,#f2f9ff)}.business-option strong{font-size:17px}.business-option small{grid-column:1/-1;color:#68778a;line-height:1.5}.business-option em{grid-row:1;font-style:normal;color:#265e92;font-size:12px;font-weight:900;align-self:center}.option-state{display:inline-flex;width:max-content;padding:4px 7px;border-radius:999px;background:#eaf5ff;color:#14679e;font-size:9px;font-weight:900;letter-spacing:.08em}.academy .option-state{background:#efe9ff;color:#6547af}.option-state.neutral{background:#edf1f5;color:#536479}
   .vertical-map{display:grid;grid-template-columns:.75fr 1.25fr;gap:22px;margin-top:20px;padding:26px;border:1px solid #dce4ed;border-radius:22px;background:#fff}.vertical-map h2{margin:4px 0 10px;font-size:clamp(28px,4vw,44px);letter-spacing:-.035em}.vertical-map>div>p:last-child{color:#67768a;line-height:1.65}.vertical-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.vertical-list article{display:grid;grid-template-columns:auto 1fr;column-gap:10px;align-items:center;padding:13px;border:1px solid #e0e6ed;border-radius:14px;background:#fbfcfd}.vertical-list article>span{grid-row:1/3;color:#8995a5;font-size:10px;font-weight:900}.vertical-list strong{font-size:13px}.vertical-list small{color:#627287;font-size:10px}.vertical-list .preparing{opacity:.72}
   .access-boundary{margin:18px 0 0;padding:15px 17px;border:1px solid #f1dfb9;border-radius:14px;background:#fff9ec;color:#76571d;line-height:1.6;font-size:12px}
   @media(max-width:850px){.access-page{padding:100px 16px 60px}.access-grid,.vertical-map{grid-template-columns:1fr}.access-intro h1{font-size:clamp(44px,13vw,66px)}}@media(max-width:560px){.vertical-list{grid-template-columns:1fr}.access-toolbar{align-items:flex-start}}
