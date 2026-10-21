@@ -7,15 +7,15 @@ import { contactHandoffRoutes } from "../src/lib/contact";
 test("public Four Directions use canonical Hermes direction entities", () => {
   expect(publicPaths.map(({ brandLabel }) => brandLabel)).toEqual([
     "Hermes Logistics",
-    "Hermes Marketing",
     "Hermes Technology",
     "Hermes Academy",
+    "Hermes Marketing",
   ]);
   expect(publicPaths.map(({ category }) => category)).toEqual([
     "Hermes Logistics",
-    "Hermes Marketing",
     "Hermes Technology",
     "Hermes Academy",
+    "Hermes Marketing",
   ]);
 });
 

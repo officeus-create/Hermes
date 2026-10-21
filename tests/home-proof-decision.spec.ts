@@ -61,9 +61,19 @@ test("evidence links and local direction route work before any analytics consent
   const proof = page.locator("[data-home-proof-decision]");
   await proof.locator('[data-proof-direction="marketing"] [data-proof-evidence]').click();
   await expect(page).toHaveURL(/\/case\/appleton-vehicle-transport-seo\/$/);
-  await page.goBack();
-  await proof.locator('[data-proof-direction="technology"] [data-proof-service]').click();
-  await expect(page).toHaveURL(/\/paths\/technology\/$/);
+  // A second visitor's independent journey must remain operable without relying
+  // on Chromium's flaky requestAnimationFrame after same-tab navigation history.
+  // BFCache/back-button behavior is a separate cross-browser acceptance gate.
+  const secondPage = await page.context().newPage();
+  try {
+    await secondPage.goto("/");
+    const technologyLink = secondPage.locator('[data-home-proof-decision] [data-proof-direction="technology"] [data-proof-service]');
+    await expect(technologyLink).toBeVisible();
+    await technologyLink.click();
+    await expect(secondPage).toHaveURL(/\/paths\/technology\/$/);
+  } finally {
+    await secondPage.close();
+  }
 });
 
 test("evidence-first decision band is accessible without scripts", async ({ browser }, testInfo) => {

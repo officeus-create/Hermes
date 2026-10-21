@@ -75,7 +75,7 @@ const localizedLabels = {
   it: { logistics: "Logistica", marketing: "Marketing", academy: "Academy", technology: "Sviluppo IT", contact: "Inizia una conversazione", home: "Home", signIn: "Accedi" },
   fr: { logistics: "Logistique", marketing: "Marketing", academy: "Académie", technology: "Développement IT", contact: "Démarrer une conversation", home: "Accueil", signIn: "Connexion" },
 };
-const directionOrder: Record<string, number> = { logistics: 0, marketing: 1, technology: 2, academy: 3 };
+const directionOrder: Record<string, number> = { logistics: 0, technology: 1, academy: 2, marketing: 3 };
 const navDirectionId = (href: string) => href.match(/^paths\/([^/]+)\//)?.[1] ?? "";
 const orderedNavigation = [...site.navigation].sort(
   (a, b) => (directionOrder[navDirectionId(a.href)] ?? 99) - (directionOrder[navDirectionId(b.href)] ?? 99),
@@ -100,6 +100,9 @@ const isInsightsRoute = currentPath === "/insights/" || currentPath.startsWith("
 const isOpportunitiesRoute = currentPath === "/opportunities/" || currentPath.startsWith("/opportunities/");
 const contactLabel = activeLocale === "en" ? "Start a conversation" : localizedLabels[activeLocale].contact;
 const signInLabel = activeLocale === "en" ? "Sign in" : localizedLabels[activeLocale].signIn;
+// The Home and localized overview Products navigation must preserve Hermes Connect's
+// supported ?lang= locale when crossing from a localized corporate page.
+const connectProductHref = activeLocale === "en" ? "/services/hermes-connect/" : `/services/hermes-connect/?lang=${activeLocale}`;
 const section = (["logistics", "marketing", "technology", "academy"] as DirectionId[]).find((slug) => currentPath.includes(`/paths/${slug}`));
 const localizedOwnerDirection = directionForOwnerPath(currentPath);
 const languageDirection = section ?? localizedOwnerDirection;
@@ -151,18 +154,38 @@ const languageLinks = siteLocales.filter((language) => !isCatalogLocaleRoute || 
 {isHermesConnectExperienceRoute && <link rel="stylesheet" href={hermesConnectSafePolishUrl} />}
 {isHermesConnectRoute && <link rel="stylesheet" href={hermesRepairPublicShellUrl} />}
 
-<header class={`site-header site-header-${theme}`} data-header>
+<header class={`site-header site-header-${theme}`} data-header data-home-portal={isApprovedHome ? "true" : undefined}>
   <a class="wordmark" href={activeLocale === "en" ? "/#top" : `${localeConfig[activeLocale].path}#top`} aria-label="Hermes home">
-    <span class="wordmark-mark">H</span>
+    {isApprovedHome ? (
+      <span class="wordmark-mark wordmark-mark-corporate"><img src="/brand/hermes-ecosystem-h-option-b.svg" alt="Hermes ecosystem mark" width="36" height="36" decoding="async" /></span>
+    ) : (
+      <span class="wordmark-mark">H</span>
+    )}
     <span>{site.brand}</span>
   </a>
 
   <nav class="desktop-nav desktop-nav--ecosystem" aria-label="Primary navigation">
     {navigation.map((item) => <a class="nav-primary-link" data-nav-tone={item.key} href={item.url} aria-current={item.active ? "page" : undefined}>{item.label}{item.key === "academy" && homeUpdates?.academy && <span class="home-update-sheen" data-home-update={homeUpdates.academy.publishedAt} data-update-description="home-academy-update" hidden aria-hidden="true"></span>}</a>)}
-    <a class="nav-secondary-link nav-secondary-start" data-nav-tone="insights" href="/insights/" aria-current={isInsightsRoute ? "page" : undefined}>Insights{homeUpdates?.insights && <span class="home-update-sheen" data-home-update={homeUpdates.insights.publishedAt} data-update-description="home-insights-update" hidden aria-hidden="true"></span>}</a>
-    {isApprovedHome && <a class="nav-secondary-link" data-nav-tone="connect" href="/services/hermes-connect/">Connect{homeUpdates?.connect && <span class="home-update-sheen" data-home-update={homeUpdates.connect.publishedAt} data-update-description="home-connect-update" hidden aria-hidden="true"></span>}</a>}
-    <a class="nav-secondary-link catalog-nav-link" data-nav-tone="catalog" href="/businesses/" aria-current={isCatalogRoute ? "page" : undefined}><span>Catalog</span>{homeUpdates?.catalog && <span class="home-update-sheen" data-home-update={homeUpdates.catalog.publishedAt} data-update-description="home-catalog-update" hidden aria-hidden="true"></span>}</a>
-    <a class="nav-secondary-link opportunities-nav-link" data-nav-tone="opportunities" href="/opportunities/" aria-current={isOpportunitiesRoute ? "page" : undefined}>Opportunities</a>
+    <details class="desktop-products-menu" data-hermes-products>
+      <summary aria-controls="hermes-products-grid">Products <ChevronDown size={14} aria-hidden="true" /></summary>
+      <div class="desktop-products-grid" id="hermes-products-grid" role="group" aria-label="Hermes products and opportunities">
+        <a href={connectProductHref} data-product="connect" aria-current={isHermesConnectRoute ? "page" : undefined}>
+          <strong>Hermes Connect</strong><span>AI operating system · live pilot</span>
+          {homeUpdates?.connect && <span class="home-update-sheen" data-home-update={homeUpdates.connect.publishedAt} data-update-description="home-connect-update" hidden aria-hidden="true"></span>}
+        </a>
+        <a href="/businesses/" data-product="catalog" aria-current={isCatalogRoute ? "page" : undefined}>
+          <strong>Catalog</strong><span>Business directory</span>
+          {homeUpdates?.catalog && <span class="home-update-sheen" data-home-update={homeUpdates.catalog.publishedAt} data-update-description="home-catalog-update" hidden aria-hidden="true"></span>}
+        </a>
+        <a href="/insights/" data-product="insights" aria-current={isInsightsRoute ? "page" : undefined}>
+          <strong>Insights</strong><span>News and case studies</span>
+          {homeUpdates?.insights && <span class="home-update-sheen" data-home-update={homeUpdates.insights.publishedAt} data-update-description="home-insights-update" hidden aria-hidden="true"></span>}
+        </a>
+        <a href="/opportunities/" data-product="opportunities" aria-current={isOpportunitiesRoute ? "page" : undefined}>
+          <strong>Opportunities</strong><span>Careers and partnerships</span>
+        </a>
+      </div>
+    </details>
   </nav>
 
   <div class="header-actions">
@@ -203,18 +226,15 @@ const languageLinks = siteLocales.filter((language) => !isCatalogLocaleRoute || 
 
   <nav class="mobile-nav" id="mobile-menu" aria-label="Mobile navigation" data-mobile-menu hidden>
     {navigation.map((item) => <a class="mobile-nav-pillar" data-nav-tone={item.key} href={item.url} aria-current={item.active ? "page" : undefined}>{item.label}{item.key === "academy" && homeUpdates?.academy && <span class="home-update-sheen" data-home-update={homeUpdates.academy.publishedAt} data-update-description="home-academy-update" hidden aria-hidden="true"></span>}</a>)}
-    <a class="mobile-nav-pillar mobile-secondary-start" data-nav-tone="insights" href="/insights/" aria-current={isInsightsRoute ? "page" : undefined}>Insights{homeUpdates?.insights && <span class="home-update-sheen" data-home-update={homeUpdates.insights.publishedAt} data-update-description="home-insights-update" hidden aria-hidden="true"></span>}</a>
-    {isApprovedHome && <a class="mobile-nav-pillar" data-nav-tone="connect" href="/services/hermes-connect/">Connect{homeUpdates?.connect && <span class="home-update-sheen" data-home-update={homeUpdates.connect.publishedAt} data-update-description="home-connect-update" hidden aria-hidden="true"></span>}</a>}
-    <a class="mobile-nav-pillar mobile-catalog-link" data-nav-tone="catalog" href="/businesses/" aria-current={isCatalogRoute ? "page" : undefined}><span>Catalog</span>{homeUpdates?.catalog && <span class="home-update-sheen" data-home-update={homeUpdates.catalog.publishedAt} data-update-description="home-catalog-update" hidden aria-hidden="true"></span>}</a>
-    <a class="mobile-nav-pillar mobile-opportunities-link" data-nav-tone="opportunities" href="/opportunities/" aria-current={isOpportunitiesRoute ? "page" : undefined}>Opportunities</a>
-    {!isApprovedHome && <HermesConnectLauncher
-      variant="mobile"
-      href="/services/hermes-connect/repair-shops/"
-      label="Hermes Connect"
-      sublabel="Repair Shops · current live pilot"
-      locale={activeLocale}
-      class="nav-tone-connect"
-    />}
+    <details class="mobile-products-menu" data-hermes-products>
+      <summary class="mobile-nav-pillar mobile-secondary-start">Products <ChevronDown size={17} aria-hidden="true" /></summary>
+      <div class="mobile-products-grid" role="group" aria-label="Products">
+        <a href={connectProductHref} data-product="connect" aria-current={isHermesConnectRoute ? "page" : undefined}>Hermes Connect</a>
+        <a href="/businesses/" data-product="catalog" aria-current={isCatalogRoute ? "page" : undefined}>Catalog</a>
+        <a href="/insights/" data-product="insights" aria-current={isInsightsRoute ? "page" : undefined}>Insights</a>
+        <a href="/opportunities/" data-product="opportunities" aria-current={isOpportunitiesRoute ? "page" : undefined}>Opportunities</a>
+      </div>
+    </details>
     <a class="mobile-nav-pillar mobile-login-link" data-nav-tone="account" data-hermes-sign-in href="/services/hermes-connect/access/">{signInLabel}</a>
     {privateWorkspace && <div class="hc-mobile-account-panel"><HermesConnectAccountSwitcher current={privateWorkspace} locale={activeLocale} /></div>}
     {!privateWorkspace && <div class="hc-mobile-account-panel"><HermesConnectAccountSwitcher current={publicWorkspace} publicSafe locale={activeLocale} /></div>}
@@ -308,6 +328,22 @@ const languageLinks = siteLocales.filter((language) => !isCatalogLocaleRoute || 
     if (target instanceof Node && !menu?.contains(target) && !button.contains(target)) closeMenu();
   });
 
+  const productsMenus = document.querySelectorAll<HTMLDetailsElement>("[data-hermes-products]");
+  document.addEventListener("keydown", (event) => {
+    if (event.key !== "Escape") return;
+    productsMenus.forEach((productsMenu) => {
+      if (!productsMenu.open) return;
+      productsMenu.open = false;
+      productsMenu.querySelector<HTMLElement>("summary")?.focus();
+    });
+  });
+  document.addEventListener("click", (event) => {
+    if (!(event.target instanceof Node)) return;
+    productsMenus.forEach((productsMenu) => {
+      if (productsMenu.open && !productsMenu.contains(event.target as Node)) productsMenu.open = false;
+    });
+  });
+
   const languageMenus = document.querySelectorAll<HTMLDetailsElement>("[data-language-menu]");
   document.addEventListener("click", (event) => {
     const target = event.target;
@@ -320,10 +356,74 @@ const languageLinks = siteLocales.filter((language) => !isCatalogLocaleRoute || 
 
 <style is:global>
   .home-update-descriptions { position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap; }
+
+  /* WEB4: owner-selected four primary directions, compact functional Products menu.
+     Keep the canonical destinations, locale/account controls and non-Home routes. */
+  .site-header .desktop-products-menu { position: relative; flex: none; color: inherit; }
+  .site-header .desktop-products-menu > summary {
+    display: inline-flex; align-items: center; justify-content: center; gap: .45rem;
+    min-height: 40px; padding: .45rem .82rem; cursor: pointer; list-style: none;
+    border: 1px solid color-mix(in srgb,currentColor 17%,transparent);
+    border-radius: 999px; background: color-mix(in srgb,currentColor 5%,transparent);
+    color: inherit; font-size: .8rem; font-weight: 740; white-space: nowrap;
+  }
+  .site-header .desktop-products-menu > summary::-webkit-details-marker,
+  .site-header .mobile-products-menu > summary::-webkit-details-marker { display: none; }
+  .site-header .desktop-products-menu > summary:focus-visible,
+  .site-header .mobile-products-menu > summary:focus-visible { outline: 2px solid #2766c2; outline-offset: 3px; }
+  .site-header .desktop-products-menu[open] > summary { background: color-mix(in srgb,currentColor 9%,transparent); }
+  .site-header .desktop-products-menu > summary svg,
+  .site-header .mobile-products-menu > summary svg { transition: transform .17s ease; }
+  .site-header .desktop-products-menu[open] > summary svg,
+  .site-header .mobile-products-menu[open] > summary svg { transform: rotate(180deg); }
+  .site-header .desktop-products-grid {
+    position: absolute; z-index: 80; left: 0; top: calc(100% + 10px);
+    display: grid; grid-template-columns: repeat(2,minmax(0,1fr));
+    width: min(410px,calc(100vw - 36px)); gap: 8px; padding: 12px;
+    border: 1px solid #dfe4e9; border-radius: 18px; background: #fbfcfd;
+    box-shadow: 0 18px 48px rgba(11,22,42,.16);
+    color: #102036;
+  }
+  .site-header .desktop-products-menu:not([open]) > .desktop-products-grid { display: none; }
+  .site-header .desktop-products-grid > a {
+    position: relative; display: flex; flex-direction: column; align-items: flex-start;
+    justify-content: center; gap: 5px; min-height: 72px; padding: 12px;
+    border-radius: 12px; background: #f3f5f7; color: #102036;
+    text-decoration: none; line-height: 1.24;
+  }
+  .site-header .desktop-products-grid > a strong { font-size: .86rem; }
+  .site-header .desktop-products-grid > a > span:not(.home-update-sheen) { color: #4d5c6e; font-size: .72rem; }
+  .site-header .desktop-products-grid > a:hover,
+  .site-header .desktop-products-grid > a:focus-visible,
+  .site-header .desktop-products-grid > a[aria-current="page"] { background: #e7eef6; outline-offset: 2px; }
+  .site-header .mobile-products-menu > summary { display: flex; align-items: center; justify-content: space-between; cursor: pointer; list-style: none; }
+  .site-header .mobile-products-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 8px; padding: 8px 0 10px; }
+  .site-header .mobile-products-menu:not([open]) > .mobile-products-grid { display: none; }
+  .site-header .mobile-products-grid > a { display: flex; align-items: center; min-height: 48px; padding: 10px 12px; border: 1px solid color-mix(in srgb,currentColor 17%,transparent); border-radius: 10px; font-size: .82rem; text-decoration: none; }
+  .site-header .mobile-products-grid > a:focus-visible { outline: 2px solid #2766c2; outline-offset: 2px; }
+  @media (max-width: 1180px) and (min-width: 901px) {
+    .site-header .desktop-products-grid { left: auto; right: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .site-header .desktop-products-menu > summary svg,
+    .site-header .mobile-products-menu > summary svg { transition: none; }
+  }
+
   .site-header .has-home-update { isolation:isolate;box-shadow:inset 0 0 0 1px #7b67ec66;border-radius:8px; }
   .site-header .home-update-sheen:not([hidden]) { position:absolute;z-index:-1;inset:4px auto 4px 10%;width:32%;border-radius:999px;display:block;pointer-events:none;background:linear-gradient(90deg,transparent,#8a7ffc55,transparent);box-shadow:0 0 12px #9f94ff88;animation:home-update-glimmer 1.35s ease-in-out 2;opacity:0; }
   @keyframes home-update-glimmer { 0%,100%{opacity:0;transform:translateX(0)} 25%,70%{opacity:.9} 85%{opacity:0;transform:translateX(190%)} }
   @media (prefers-reduced-motion:reduce) { .site-header .home-update-sheen:not([hidden]){animation:none!important;opacity:.35;} }
+  /* Scope the candidate corporate mark to Home: product and inner-page identities remain untouched. */
+  .site-header[data-home-portal="true"] .wordmark-mark-corporate { width:36px; height:36px; border:0; border-radius:9px; overflow:hidden; flex:none; }
+  .site-header[data-home-portal="true"] .wordmark-mark-corporate img { display:block; width:100%; height:100%; }
+  .site-header[data-home-portal="true"] .wordmark > span:last-child { font-weight:780; font-size:.94rem; letter-spacing:.17em; text-transform:uppercase; }
+  .site-header[data-home-portal="true"] {
+    /* Owner review palette on Home only. Real product/Connect colors remain unchanged. */
+    --nav-logistics: #2866b0;
+    --nav-technology: #f97316;
+    --nav-academy: #7c5cff;
+    --nav-marketing: #16715b;
+  }
   .site-header {
     --nav-logistics: #1E88FF;
     --nav-marketing: #00C853;

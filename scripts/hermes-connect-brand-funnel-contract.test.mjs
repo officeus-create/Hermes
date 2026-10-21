@@ -17,7 +17,8 @@ assert(launcher.includes("hermes-connect-header-launcher"), "Launcher: header va
 
 const header = await text("src/components/SiteHeader.astro");
 assert(header.includes("HermesConnectLauncher"), "Header: missing Hermes Connect launcher.");
-assert(header.includes('variant="header"') && header.includes('variant="mobile"'), "Header: desktop and mobile launcher variants are required.");
+assert(header.includes('variant="header"'), "Header: existing desktop Connect launcher is required on non-Home pages.");
+assert(header.includes('class="mobile-products-menu"') && header.includes('data-product="connect"'), "Header: mobile users must retain one canonical Connect product entry without a duplicate launcher.");
 assert(header.includes('href="/services/hermes-connect/repair-shops/"'), "Header: current Repair Shop product entry is required.");
 assert(header.includes("isHermesConnectRoute"), "Header: Connect-specific language routing is required.");
 assert(header.includes("isLoadBoardRoute") && header.includes("isHermesConnectExperienceRoute"), "Header: canonical Load Board must retain the Hermes Connect experience shell without creating another Load Board route.");

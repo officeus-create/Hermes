@@ -89,7 +89,7 @@ for (const width of [390, 430, 768, 1024, 1440]) {
 
     expect(state.hasStage).toBe(true);
     expect(state.overflow).toBe(false);
-    expect(state.routeIds).toEqual(["logistics", "marketing", "technology", "academy"]);
+    expect(state.routeIds).toEqual(["logistics", "technology", "academy", "marketing"]);
     expect(Math.min(...state.routeWidths)).toBeGreaterThan(120);
   });
 }

@@ -18,7 +18,7 @@ const publicLocationBoundary = locale === "ru"
   ? "Логистика в США · международная координация по электронной почте"
   : "U.S. logistics · International email coordination";
 const showTransportRequestActions = currentPath === "/logistics/request-vehicle-transport/";
-const directionOrder = { logistics: 0, marketing: 1, technology: 2, academy: 3 } as const;
+const directionOrder = { logistics: 0, technology: 1, academy: 2, marketing: 3 } as const;
 const directionRank = (href: string) => {
   const pathMatch = href.match(/\/paths\/(logistics|marketing|technology|academy)\/?$/);
   const hashMatch = href.match(/#(logistics|marketing|technology|academy)$/);
