@@ -49,7 +49,7 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
         return (
           <a class={`home-master-route home-master-route-${path.id}`} href={`/paths/${path.id}/`}
             style={`--route-accent:${meta.accent}`}
-            aria-label={`${meta.goal}: ${path.brandLabel} — ${meta.detail}. Example flow: ${flowLabel}.`} data-home-route data-route-id={path.id}>
+            aria-label={`${meta.goal}: ${path.brandLabel} — ${meta.detail}.`} data-home-route data-route-id={path.id}>
             <span class="home-portal-art" aria-hidden="true">
               {path.id === "logistics" ? (
                 <span class="home-logistics-layer-stack" data-home-cinematic-slot="logistics" data-cinematic-source-policy="local-only">
@@ -540,7 +540,7 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
 </script>
 <script is:inline src="/scripts/home-marketing-video.js"></script>
 <style>
-.home-master{position:relative;overflow:hidden;padding:8.5rem 0 1.5rem;background:#f7f6f3;color:#111318;
+.home-master{--hermes-logistics:var(--dir-logistics);--hermes-technology:var(--dir-technology);--hermes-academy:var(--dir-academy);--hermes-marketing:var(--dir-marketing);position:relative;overflow:hidden;padding:8.5rem 0 1.5rem;background:#f7f6f3;color:#111318;
   /* Home-only preview; do not change Hermes Connect or division pages. */
   --hermes-logistics:#2866b0;
   --hermes-technology:#f97316;
@@ -744,9 +744,9 @@ animation:home-logistics-rain 1.45s linear infinite;opacity:.28;filter:blur(.18p
 @keyframes home-academy-progress-pulse{0%,100%{opacity:.45}50%{opacity:.95}}
 @keyframes home-ink-write{0%,15%{stroke-dashoffset:90}60%,100%{stroke-dashoffset:0}}
 .home-master-route::after{content:"";position:absolute;z-index:-1;inset:65% 0 0;background:linear-gradient(180deg,transparent 0%,#122940 27%,#122940 100%)}
-.home-master-route-marketing::after{background:linear-gradient(180deg,transparent,#382230 27%,#382230)}
-.home-master-route-technology::after{background:linear-gradient(180deg,transparent,#113a31 27%,#113a31)}
-.home-master-route-academy::after{background:linear-gradient(180deg,transparent,#443422 27%,#443422)}
+.home-master-route-marketing::after{background:linear-gradient(180deg,transparent,#4a241e 27%,#4a241e)}
+.home-master-route-technology::after{background:linear-gradient(180deg,transparent,#052e49 27%,#052e49)}
+.home-master-route-academy::after{background:linear-gradient(180deg,transparent,#06402f 27%,#06402f)}
 .home-master-route-copy{display:grid;gap:12px;min-width:0;width:100%}
 .home-master-route-copy small{display:flex;align-items:center;gap:10px;font:700 clamp(.58rem,.85vw,.85rem)/1.3 var(--font-body);letter-spacing:.12em;text-transform:uppercase}
 .home-master-route-copy i{display:block;width:5px;height:18px;border-radius:5px;background:var(--route-accent)}
