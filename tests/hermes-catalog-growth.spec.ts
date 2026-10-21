@@ -68,9 +68,12 @@ test("Hermes Connect stays a secondary product entry in the pillar navigation", 
   await page.goto("/businesses/", { waitUntil: "domcontentloaded" });
   if (isMobile) {
     await page.locator("[data-menu-button]").click();
-    const launcher = page.locator('[data-hermes-connect-launcher="mobile"]');
-    await expect(launcher).toBeVisible();
-    await expect(launcher).toHaveAttribute("href", "/services/hermes-connect/");
+    const products = page.locator("#mobile-menu .mobile-products-menu");
+    await products.locator("summary").click();
+    const connect = products.getByRole("link", { name: "Hermes Connect" });
+    await expect(connect).toBeVisible();
+    await expect(connect).toHaveAttribute("href", "/services/hermes-connect/");
+    await expect(connect).toHaveAttribute("data-product", "connect");
     return;
   }
   const launcher = page.locator('[data-hermes-connect-launcher="header"]');

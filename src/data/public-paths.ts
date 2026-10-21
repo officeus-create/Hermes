@@ -10,9 +10,9 @@ const publicDirectionOverrides: Partial<Record<PathDetail["id"], Partial<PathDet
 
 const directionOrder: Record<PathDetail["id"], number> = {
   logistics: 0,
-  marketing: 1,
-  technology: 2,
-  academy: 3,
+  technology: 1,
+  academy: 2,
+  marketing: 3,
 };
 
 export const publicPaths: PathDetail[] = site.paths

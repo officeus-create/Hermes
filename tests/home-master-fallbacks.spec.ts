@@ -2,9 +2,9 @@ import { expect, test } from "@playwright/test";
 
 const directions = [
   ["logistics", "Hermes Logistics", "Move freight"],
-  ["marketing", "Hermes Marketing", "Grow demand"],
   ["technology", "Hermes Technology", "Build systems"],
   ["academy", "Hermes Academy", "Develop people"],
+  ["marketing", "Hermes Marketing", "Grow demand"],
 ] as const;
 
 test("Home exposes goal-based navigation and direct routes without JavaScript", async ({ browser, baseURL }) => {
@@ -40,7 +40,7 @@ test("Home keyboard order matches the four direction choices and Enter navigates
     expect(outline.width).toBeGreaterThanOrEqual(3);
   }
   await page.keyboard.press("Enter");
-  await expect(page).toHaveURL(/\/paths\/academy\/$/);
+  await expect(page).toHaveURL(/\/paths\/marketing\/$/);
 });
 
 for (const width of [390, 430, 768, 1024, 1440]) {
@@ -55,7 +55,7 @@ for (const width of [390, 430, 768, 1024, 1440]) {
     for (const ring of motion) {
       expect(ring.name).toBe("none");
     }
-    await expect(page.locator(".home-master-ink-note")).toHaveText("Logistics, marketing, technology and learning for your business. One Hermes ecosystem.");
+    await expect(page.locator(".home-master-ink-note")).toHaveText("Logistics, technology, learning and marketing for your business. One Hermes ecosystem.");
     if (width === 390 || width === 1440) {
       await test.info().attach(`home-v4-${width}px`, { body: await page.screenshot({ fullPage: true }), contentType: "image/png" });
     }
