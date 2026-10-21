@@ -45,10 +45,12 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
     <nav class="home-master-stage" id="paths" aria-label="Hermes operating directions">
       {publicPaths.map((path) => {
         const meta = routeMeta[path.id] ?? routeMeta.logistics;
+        // Retain the accessible workflow summary even when visual workflow HUDs are hidden.
+        const flowLabel = meta.flow.join(", ").toLowerCase();
         return (
           <a class={`home-master-route home-master-route-${path.id}`} href={`/paths/${path.id}/`}
             style={`--route-accent:${meta.accent}`}
-            aria-label={`${meta.goal}: ${path.brandLabel} — ${meta.detail}.`} data-home-route data-route-id={path.id}>
+            aria-label={`${meta.goal}: ${path.brandLabel} — ${meta.detail}. Example flow: ${flowLabel}.`} data-home-route data-route-id={path.id}>
             <span class="home-portal-art" aria-hidden="true">
               {path.id === "logistics" ? (
                 <span class="home-logistics-layer-stack" data-home-cinematic-slot="logistics" data-cinematic-source-policy="local-only">
