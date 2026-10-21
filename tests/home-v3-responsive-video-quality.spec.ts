@@ -22,7 +22,7 @@ test("Home Retina touch portals choose 720p only after becoming visible", async 
     for (const film of sources) {
       const scene=page.locator(`[data-route-id="${film.id}"] [data-home-progressive-cinematic]`);
       const source=scene.locator("source");
-      await expect(scene.locator("img")).toHaveAttribute("srcset",new RegExp(`/${film.poster}-400\\.webp 400w, /${film.poster}-720\\.webp 720w`));
+      await expect(scene.locator("img")).toHaveAttribute("srcset",new RegExp(`/media/home/${film.poster}-400\\.webp 400w, /media/home/${film.poster}-720\\.webp 720w`));
       await scene.scrollIntoViewIfNeeded();
       await expect(source).toHaveAttribute("src",`/media/home/${film.sharp}`);
       await expect(scene).toHaveAttribute("data-media-quality","sharp-720");
