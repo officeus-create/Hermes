@@ -139,31 +139,31 @@ test("desktop Products unfolds to the RIGHT and keeps every existing product des
   await expect(products).not.toHaveAttribute("open", "");
 });
 
-test("hover makes technology scene genuinely play, without autoplaying other desktop scenes", async ({ browser }, testInfo) => {
-  // Run this DESKTOP-only contract in a fine-pointer context even when the
-  // surrounding Playwright project is named mobile (touch legitimately autoplays).
+test("visible desktop technology scene plays continuously without requiring hover", async ({ browser }, testInfo) => {
   const context = await browser.newContext({
     baseURL: testInfo.project.use.baseURL,
     viewport: { width: 1440, height: 900 },
     isMobile: false, hasTouch: false,
   });
   try {
-  const page = await context.newPage();
-  await page.goto("/");
-  const stage = page.locator("[data-home-technology-cinematic]");
-  const video = stage.locator("video");
-  await page.locator(".home-master-route-technology").hover();
-  await expect(stage).toHaveAttribute("data-video-interaction", "active");
-  await expect.poll(() => video.evaluate((el: HTMLVideoElement) => el.paused), { timeout: 10000 }).toBe(false);
-  await expect(stage).toHaveAttribute("data-media-state", "ready");
-  expect(await stage.locator("source").getAttribute("src")).toMatch(/^\/media\/home\/technology-claude-v3(?:-720)?\.mp4$/);
-  await page.mouse.move(0, 0);
-  await expect.poll(() => video.evaluate((el: HTMLVideoElement) => el.paused)).toBe(true);
-  await expect(stage).toHaveAttribute("data-media-state", "poster");
+    const page = await context.newPage();
+    await page.goto("/");
+    const route = page.locator(".home-master-route-technology");
+    const stage = page.locator("[data-home-technology-cinematic]");
+    const video = stage.locator("video");
+    await route.scrollIntoViewIfNeeded();
+    await expect(stage).toHaveAttribute("data-video-interaction", "active");
+    await expect.poll(() => video.evaluate((el: HTMLVideoElement) => el.paused), { timeout: 10000 }).toBe(false);
+    await expect(stage).toHaveAttribute("data-media-state", "ready");
+    expect(await stage.locator("source").getAttribute("src")).toMatch(/^\/media\/home\/technology-claude-v3(?:-720)?\.mp4$/);
+    const t0 = await video.evaluate((el: HTMLVideoElement) => el.currentTime);
+    await page.mouse.move(0, 0);
+    await expect.poll(() => video.evaluate((el: HTMLVideoElement) => el.currentTime), { timeout: 5000 }).toBeGreaterThan(t0 + 0.07);
+    await expect.poll(() => video.evaluate((el: HTMLVideoElement) => el.paused)).toBe(false);
   } finally { await context.close(); }
 });
 
-test("retina desktop hover chooses a reviewed local 720p file; Save-Data keeps poster-only behavior", async ({ browser }, testInfo) => {
+test("retina visible desktop scene chooses a reviewed local 720p file; Save-Data keeps poster-only behavior", async ({ browser }, testInfo) => {
   const context = await browser.newContext({
     baseURL: testInfo.project.use.baseURL,
     viewport: { width: 1440, height: 900 },
@@ -179,7 +179,7 @@ test("retina desktop hover chooses a reviewed local 720p file; Save-Data keeps p
     }));
     await page.goto("/");
     const route = page.locator(".home-master-route-academy");
-    await route.hover();
+    await route.scrollIntoViewIfNeeded();
     const stage = page.locator("[data-home-academy-cinematic]");
     await expect(stage).toHaveAttribute("data-video-quality", "hd");
     await expect(stage.locator("source")).toHaveAttribute("src", "/media/home/academy-claude-v3-720.mp4");
