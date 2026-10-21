@@ -45,7 +45,6 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
     <nav class="home-master-stage" id="paths" aria-label="Hermes operating directions">
       {publicPaths.map((path) => {
         const meta = routeMeta[path.id] ?? routeMeta.logistics;
-        const flowLabel = meta.flow.join(", ").toLowerCase();
         return (
           <a class={`home-master-route home-master-route-${path.id}`} href={`/paths/${path.id}/`}
             style={`--route-accent:${meta.accent}`}
