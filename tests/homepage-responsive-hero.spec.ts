@@ -55,3 +55,40 @@ test("homepage keeps four Claude v3 cinematic routes and the canonical social pr
   );
   await expect(page.locator(".home-master-stage canvas")).toHaveCount(0);
 });
+
+
+test("approved English Home v3 is an accessible four-choice entrance followed by Contact", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+  await expect(page.getByRole("heading", { name: "Four directions." })).toBeVisible();
+  await expect(page.locator("[data-home-route]")).toHaveCount(4);
+  await expect(page.locator("[data-home-proof-decision]")).toHaveCount(0);
+  await expect(page.locator(".home-traffic-inline-section")).toHaveCount(0);
+  await expect(page.locator("#contact [data-home-primary-contact]")).toHaveAttribute("href", "/contacts/");
+  await expect(page.locator("#contact [data-home-contact-fallback]")).toHaveAttribute("href", "mailto:officeus@hermeslogisticsus.com");
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
+});
+
+test("touch tablet at 760px uses whole-width clickable portals without affecting mouse layout", async ({ browser }, testInfo) => {
+  for (const touch of [true, false]) {
+    const context = await browser.newContext({
+      baseURL: testInfo.project.use.baseURL,
+      viewport: { width: 760, height: 900 },
+      isMobile: touch, hasTouch: touch, reducedMotion: "reduce",
+    });
+    try {
+      const page = await context.newPage();
+      await page.goto("/");
+      const geometry = await page.locator(".home-master-stage").evaluate((stage) => ({
+        columns: getComputedStyle(stage).gridTemplateColumns.trim().split(/\s+/).length,
+        width: stage.getBoundingClientRect().width,
+        cards: [...stage.querySelectorAll(".home-master-route")].map(card => card.getBoundingClientRect().width),
+        overflow: document.documentElement.scrollWidth > innerWidth,
+      }));
+      expect(geometry.columns).toBe(touch ? 1 : 2);
+      expect(geometry.cards).toHaveLength(4);
+      expect(geometry.overflow).toBe(false);
+      if (touch) expect(geometry.cards.every(width => width >= geometry.width * .95)).toBe(true);
+    } finally { await context.close(); }
+  }
+});
