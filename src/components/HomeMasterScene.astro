@@ -37,7 +37,7 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
 <section class="home-master" id="top" aria-labelledby="home-master-title">
   <div class="home-master-shell">
     <header class="home-master-intro" id="about">
-      <h1 id="home-master-title" class="home-master-display" aria-label="Four directions.">Four <span>direct<span class="home-display-i" aria-hidden="true">i</span>ons.</span></h1>
+      <h1 id="home-master-title" class="home-master-display" aria-label="Four directions.">Four <span class="home-display-word"><span data-home-dot-target="d">d</span>i<span data-home-dot-target="r">r</span>e<span data-home-dot-target="c">c</span>t<span class="home-display-i" data-home-dot-target="i">i</span>ons.</span><span class="home-display-travel-dot" data-home-travel-dot aria-hidden="true"></span></h1>
       <p class="home-master-script">Choose yours.</p>
       <p class="home-master-ink-note">Logistics, technology, learning and marketing for your business. One Hermes ecosystem.</p>
     </header>
@@ -309,6 +309,50 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
 <script>
   import { trackCtaClicked, trackEvent, trackTrackSelected } from "../lib/analytics.ts";
 
+  // Owner-approved Claude Home v3: one dot travels d → r → c → i every 5.2 s,
+  // cycling the four division colors. Decorative only; no extra layout nodes.
+  const dotHeading = document.querySelector<HTMLElement>(".home-master-display");
+  const travelDot = dotHeading?.querySelector<HTMLElement>("[data-home-travel-dot]");
+  const dotTargets = Array.from(dotHeading?.querySelectorAll<HTMLElement>("[data-home-dot-target]") ?? []);
+  if (dotHeading && travelDot && dotTargets.length === 4) {
+    const dotReducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
+    const dotPalette = ["--dir-logistics", "--dir-technology", "--dir-academy", "--dir-marketing"];
+    let dotIndex = 0;
+    let dotTimer: number | undefined;
+    const positionDot = () => {
+      if (dotReducedMotion.matches || document.hidden) return;
+      const headingRect = dotHeading.getBoundingClientRect();
+      const targetRect = dotTargets[dotIndex].getBoundingClientRect();
+      if (!targetRect.width) return;
+      travelDot.style.left = `${targetRect.left - headingRect.left + targetRect.width / 2}px`;
+      travelDot.style.top = `${targetRect.top - headingRect.top + targetRect.height * 0.08}px`;
+      travelDot.style.backgroundColor = `var(${dotPalette[dotIndex]})`;
+      travelDot.dataset.homeDotPosition = dotTargets[dotIndex].dataset.homeDotTarget;
+      travelDot.classList.add("is-ready");
+    };
+    const stopDot = () => {
+      if (dotTimer !== undefined) window.clearInterval(dotTimer);
+      dotTimer = undefined;
+      travelDot.classList.remove("is-ready");
+    };
+    const startDot = () => {
+      stopDot();
+      if (dotReducedMotion.matches || document.hidden) return;
+      dotIndex = 0;
+      requestAnimationFrame(positionDot);
+      dotTimer = window.setInterval(() => {
+        dotIndex = (dotIndex + 1) % dotTargets.length;
+        positionDot();
+      }, 1300);
+    };
+    startDot();
+    dotReducedMotion.addEventListener("change", startDot);
+    document.addEventListener("visibilitychange", startDot);
+    window.addEventListener("resize", positionDot, { passive: true });
+    void document.fonts?.ready.then(positionDot);
+    window.addEventListener("pagehide", stopDot, { once: true });
+  }
+
   const logisticsEcho = document.querySelector<HTMLElement>("[data-home-logistics-echo]");
   if (logisticsEcho && window.IntersectionObserver) {
     const scenes = ["car-hauler", "dry-van", "reefer", "flatbed", "step-deck", "hotshot"] as const;
@@ -550,9 +594,12 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
 .home-master-intro{padding:0 24px 26px;scroll-margin-top:6rem}
 .home-master-display{margin:0;font:800 clamp(3.8rem,7.6vw,7.8rem)/1.02 var(--font-display);letter-spacing:-.075em}
 .home-master-display span{color:inherit}
-.home-master-display .home-display-i{position:relative;display:inline-block;color:transparent}
-.home-display-i::before{content:"ı";position:absolute;left:0;top:0;color:#111318;pointer-events:none}
-.home-display-i::after{content:"";position:absolute;left:50%;top:.11em;width:.145em;height:.145em;border-radius:50%;background:#16715b;transform:translate(-50%,0);transform-origin:50% 160%;animation:hermes-home-i-dot-bounce 4.8s cubic-bezier(.3,.8,.25,1) 1.2s infinite}
+.home-master-display{position:relative}
+.home-master-display .home-display-word{color:inherit}
+.home-master-display [data-home-dot-target]{color:inherit}
+.home-master-display .home-display-travel-dot{position:absolute;z-index:2;left:0;top:0;width:.13em;height:.13em;border-radius:50%;pointer-events:none;opacity:0;transform:translate(-50%,-40%);background:var(--dir-logistics);transition:left .68s cubic-bezier(.22,1,.36,1),top .68s cubic-bezier(.22,1,.36,1),background-color .38s ease,opacity .18s ease}
+.home-master-display .home-display-travel-dot.is-ready{opacity:1}
+@media(prefers-reduced-motion:reduce){.home-master-display .home-display-travel-dot{display:none!important;transition:none!important}}
 .home-master-script{position:relative;width:max-content;max-width:100%;margin:.55rem 0 1rem;color:#59606b;font:650 clamp(.98rem,1.35vw,1.15rem)/1.35 var(--font-body);letter-spacing:.08em;text-transform:uppercase;transform:none}
 .home-master-script::after{content:none}
 .home-master-ink-note{max-width:60ch;margin:0;color:#666c79;font-size:clamp(.96rem,1.22vw,1.16rem);line-height:1.6}
@@ -729,7 +776,6 @@ animation:home-logistics-rain 1.45s linear infinite;opacity:.28;filter:blur(.18p
 @keyframes home-logistics-snow{to{background-position:0 46px,10px 58px}}
 @keyframes home-logistics-heat{from{transform:translateY(0) scaleY(1);filter:blur(0)}to{transform:translateY(-3px) scaleY(1.03);filter:blur(.35px)}}
 @keyframes home-logistics-cloud{from{transform:translateX(-2%)}to{transform:translateX(2.5%)}}
-@keyframes hermes-home-i-dot-bounce{0%,84%,100%{transform:translate(-50%,0) scale(1)}89%{transform:translate(-50%,-.2em) scale(.9,1.08)}93%{transform:translate(-50%,.025em) scale(1.12,.86)}96%{transform:translate(-50%,-.045em) scale(.97,1.03)}}
 @keyframes home-underline-draw{from{transform:rotate(-2deg) scaleX(0)}to{transform:rotate(-2deg) scaleX(1)}}
 @keyframes home-road-streak{0%,100%{opacity:0;translate:0 0}22%,65%{opacity:.8}75%{opacity:0;translate:-25px 42px}}
 
