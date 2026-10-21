@@ -157,7 +157,7 @@ const languageLinks = siteLocales.filter((language) => !isCatalogLocaleRoute || 
 <header class={`site-header site-header-${theme}`} data-header data-home-portal={isApprovedHome ? "true" : undefined}>
   <a class="wordmark" href={activeLocale === "en" ? "/#top" : `${localeConfig[activeLocale].path}#top`} aria-label="Hermes home">
     {isApprovedHome ? (
-      <span class="wordmark-mark wordmark-mark-corporate"><img src="/brand/hermes-ecosystem-h-option-b.svg" alt="Hermes ecosystem mark" width="36" height="36" decoding="async" /></span>
+      <span class="wordmark-mark wordmark-mark-corporate"><img src="/brand/hermes-mark.svg" alt="Hermes" width="36" height="36" decoding="async" /></span>
     ) : (
       <span class="wordmark-mark">H</span>
     )}
@@ -416,7 +416,7 @@ const languageLinks = siteLocales.filter((language) => !isCatalogLocaleRoute || 
   /* Scope the candidate corporate mark to Home: product and inner-page identities remain untouched. */
   .site-header[data-home-portal="true"] .wordmark-mark-corporate { width:36px; height:36px; border:0; border-radius:9px; overflow:hidden; flex:none; }
   .site-header[data-home-portal="true"] .wordmark-mark-corporate img { display:block; width:100%; height:100%; }
-  .site-header[data-home-portal="true"] .wordmark > span:last-child { font-weight:780; font-size:.94rem; letter-spacing:.17em; text-transform:uppercase; }
+  .site-header[data-home-portal="true"] .wordmark > span:last-child { font-weight:700; font-size:.94rem; letter-spacing:.32em; text-transform:uppercase; }
   .site-header[data-home-portal="true"] {
     /* Owner review palette on Home only. Real product/Connect colors remain unchanged. */
     --nav-logistics: #2866b0;
