@@ -16,7 +16,7 @@ The new versions are about 3.57x larger in bytes combined. **Do not claim improv
 - Four native anchors and current Light/Premium Green homepage composition remain intact. The Logistics Golden v1 video is unchanged.
 - The three people scenes add `srcset` posters with an old JPEG fallback. WebP posters are lazy-loaded; no visual animation requires JavaScript.
 - On-device video selection occurs only once at **40% real viewport visibility** (no positive root margin): 720p when DPR >= 1.5 or the actual portal is >= 600 CSS pixels wide; 540p otherwise. This avoids HD network requests for barely visible second cards on mobile.
-- Effective connection `slow-2g` or `2g` stays 540p even at Retina DPR. `Save-Data` and `prefers-reduced-motion` block all three video downloads; static scene remains.
+- Effective connection `slow-2g`, `2g`, `3g` or estimated downlink below 1.5 Mbps stays 540p even at Retina DPR. `Save-Data` and `prefers-reduced-motion` block all three video downloads; static scene remains.
 - Existing local-only, muted, playsinline, pause-on-background, pause-offscreen, and no-synthetic-live-data protections remain.
 - Only **one** media variant per scene should be fetched in a session. No preload of all videos or remote Pexels requests in browser.
 
@@ -28,3 +28,10 @@ The new versions are about 3.57x larger in bytes combined. **Do not claim improv
 5. Owner visually approves selected candidate before reclassifying this draft as a release.
 
 Known limitation: CI screenshots and Chromium device emulation do not prove physical Safari behavior. Data Saver / slow-network features must not be bypassed.
+
+## Source-aware motion assessment — 21 October
+- Actual original Claude standalone confirms three selected Pexels defaults: Marketing 6774593, Technology 6804109, Academy 7413799. Alternatives 7652729 and 9034497 remain design references, not published assets.
+- Independent offline decoded-frame checks on all three 720p samples found last-to-first discontinuity about **15–22× median consecutive-frame change** at 144×256 luminance. Alternative 5–7s starting/ending trims still showed conspicuous scene discontinuities. No claim of seamless playback is permitted.
+- Do not blend two stock actors with a face-ghost crossfade to hide cuts. Keep the original clips for visual review; seek a naturally loopable owner-approved source/edit rather than adding misleading synthetic movement. The read-only candidate workflow now records non-blocking seam metrics for each release sample.
+- Main-page Logos: selected Option B corporate H geometry follows the 20 October Claude handoff; sitewide rollout must wait for final owner visual acceptance. Hermes Connect logo Option 02 must remain unchanged.
+- Original Claude screenshot used an older Logistics → Marketing → Technology → Academy order and four-bars placeholder mark. Newer owner choice supersedes it: Logistics → Technology → Academy → Marketing and the Option B corporate H. Do not restore historical order or rejected logomark during visual matching.
