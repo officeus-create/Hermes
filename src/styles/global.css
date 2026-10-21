@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "./hermes-direction-colors.css";
 @font-face {
  font-family: "Nothing You Could Do";
  font-style: normal;
