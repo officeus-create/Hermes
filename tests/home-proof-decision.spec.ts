@@ -104,7 +104,7 @@ test("mobile contact remains visually available after proof cards and deferred s
   // until scrolled into view. This tests the ACTUAL visitor journey.
   const contact = page.locator("#contact .home-final-contact");
   await contact.scrollIntoViewIfNeeded();
-  await expect(contact.getByRole("heading", { name: /build your.*next step/i })).toBeVisible();
+  await expect(contact.getByRole("heading", { name: /not sure which direction fits\?/i })).toBeVisible();
   const primary = contact.locator("[data-home-primary-contact]");
   await expect(primary).toBeVisible();
   await expect(primary).toHaveAttribute("href", "/contacts/");
