@@ -119,7 +119,7 @@ try {
       const contentReady=await page.evaluate(()=>{
         const contact=document.querySelector('.home-final-contact h2');
         const footer=document.querySelector('#contact footer');
-        return Boolean(contact?.textContent?.includes('build your') &&
+        return Boolean(contact?.textContent?.includes('Not sure which direction fits?') &&
                        footer?.textContent?.includes('Hermes'));
       });
       if(!contentReady) throw new Error(`Home contact/footer failed real scroll rendering at ${width}px`);
