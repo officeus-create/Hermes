@@ -30,6 +30,11 @@ jobs:
           ffmpeg -version | head -n 1
       - name: Download approved high-resolution stock source and render preview
         run: bash scripts/media/build-home-v3-720p-candidate.sh
+      - name: Quantify loop seam without ghosting or interpolation
+        shell: bash
+        run: |
+          mkdir -p docs/design
+          python3 scripts/media/check-home-video-loop-seams.py | tee docs/design/HOME_V3_720P_LOOP_QA.tsv
       - name: Upload visual candidate and source audit as artifact
         uses: actions/upload-artifact@v4
         with:
@@ -40,3 +45,4 @@ jobs:
             public/media/home/*-poster-400.webp
             public/media/home/*-poster-720.webp
             docs/design/HOME_V3_720P_CANDIDATE_METADATA.tsv
+            docs/design/HOME_V3_720P_LOOP_QA.tsv
