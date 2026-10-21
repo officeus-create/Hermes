@@ -1,0 +1,28 @@
+name: Home v3 multi-shot source preflight (review only)
+on:
+  pull_request:
+    paths:
+      - "src/data/home-cinematic-sources.json"
+      - "scripts/media/verify-home-multishot*"
+      - "scripts/media/render-home-v3-two-shots.sh"
+      - ".github/workflows/home-v3-multishot-preflight.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-proof-not-release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Verify source lock and fail-closed unit tests
+        run: node --test scripts/media/verify-home-multishot.test.mjs
+      - name: Print truthful source gap (not a release approval)
+        run: |
+          node scripts/media/verify-home-multishot.mjs > "$RUNNER_TEMP/home-source-readiness.json"
+          cat "$RUNNER_TEMP/home-source-readiness.json"
+          echo "Source inventory checks only. This pass does not approve or deploy any video." >> "$GITHUB_STEP_SUMMARY"
+          cat "$RUNNER_TEMP/home-source-readiness.json" >> "$GITHUB_STEP_SUMMARY"
