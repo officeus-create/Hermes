@@ -1,0 +1,98 @@
+{
+  "schemaVersion": 1,
+  "recordedDate": "2026-10-22",
+  "verifiedProductionCommit": "3c7dc5befdaaeb988b4ba97a9378455d52b56895",
+  "canonicalIssue": "https://github.com/officeus-create/Hermes/issues/1986",
+  "minimumDistinctMovingSourceClipsPerPanel": 2,
+  "sourceScope": "21 Oct Claude Home v3 release README and published repo four self-hosted MP4s. IDs are owner-listed REFERENCES, not verified downloaded/licensed assets.",
+  "sourceLicenseInfo": "Pexels general commercial-use license; independently verify each actual source, identifiable-person use, third-party logos and no implied Hermes endorsement.",
+  "panels": [
+    {
+      "id": "logistics",
+      "current": {
+        "path": "public/media/home/logistics-golden-v1.mp4",
+        "source": "existing-published-golden-scene",
+        "evidence": "Published on main; original source master not yet independently located"
+      },
+      "candidates": [
+        {
+          "provider": "pexels",
+          "id": "9339061",
+          "status": "source-listed-only"
+        },
+        {
+          "provider": "pexels",
+          "id": "18749847",
+          "status": "source-listed-only"
+        },
+        {
+          "provider": "pexels",
+          "id": "9339073",
+          "status": "source-listed-only"
+        }
+      ]
+    },
+    {
+      "id": "technology",
+      "current": {
+        "path": "public/media/home/technology-claude-v3.mp4",
+        "source": "pexels:6804109",
+        "evidence": "PR #1970 and #1984 owner-source lock; exact local checked-in video"
+      },
+      "candidates": [
+        {
+          "provider": "pexels",
+          "id": "6804117",
+          "status": "source-listed-only"
+        },
+        {
+          "provider": "pexels",
+          "id": "6804121",
+          "status": "source-listed-only"
+        }
+      ]
+    },
+    {
+      "id": "academy",
+      "current": {
+        "path": "public/media/home/academy-claude-v3.mp4",
+        "source": "pexels:7413799",
+        "evidence": "PR #1970 and #1984 owner-source lock; exact local checked-in video"
+      },
+      "candidates": [
+        {
+          "provider": "pexels",
+          "id": "9034497",
+          "status": "source-listed-only"
+        }
+      ]
+    },
+    {
+      "id": "marketing",
+      "current": {
+        "path": "public/media/home/marketing-team-v1.mp4",
+        "source": "pexels:6774593",
+        "evidence": "PR #1970 and #1984 owner-source lock; exact local checked-in video"
+      },
+      "candidates": [
+        {
+          "provider": "pexels",
+          "id": "7963107",
+          "status": "source-listed-only"
+        },
+        {
+          "provider": "pexels",
+          "id": "7947516",
+          "status": "source-listed-only"
+        },
+        {
+          "provider": "pexels",
+          "id": "3253113",
+          "status": "source-listed-only"
+        }
+      ]
+    }
+  ],
+  "reviewedAdditionalSources": [],
+  "releaseApproval": null
+}
