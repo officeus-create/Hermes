@@ -1,32 +1,56 @@
 ---
 import { ArrowUpRight } from "@lucide/astro";
 import { site } from "../data/site";
+const directions = [
+  { label: "Logistics", description: "Carrier, dealer or shipper inquiry", href: "/paths/logistics/", key: "logistics" },
+  { label: "Technology", description: "Website, CRM or software brief", href: "/paths/technology/", key: "technology" },
+  { label: "Academy", description: "Learning and team training", href: "/paths/academy/", key: "academy" },
+  { label: "Marketing", description: "Marketing and SEO/GEO brief", href: "/paths/marketing/", key: "marketing" },
+];
 ---
 <section class="home-final-contact" aria-labelledby="home-final-contact-title">
- <div class="home-final-contact-inner">
-  <p class="home-final-contact-kicker">CONTACT <span aria-hidden="true"></span></p>
-  <h2 id="home-final-contact-title">Let’s build your<br /><span>next step.</span></h2>
-  <p>Our team is here to help. Logistics, marketing, technology and learning, all in one Hermes ecosystem.</p>
-  <div class="home-final-contact-actions" role="group" aria-label="Hermes contact options">
-   <a class="home-final-contact-action" href="/contacts/" data-home-primary-contact>Talk to Hermes <ArrowUpRight size={18} aria-hidden="true" /></a>
-   <a class="home-final-contact-action home-connect-action" href="/services/hermes-connect/">Explore Hermes Connect</a>
+  <div class="home-final-contact-inner">
+    <div class="home-final-contact-row">
+      <p class="home-final-contact-kicker">CONTACT</p>
+      <h2 id="home-final-contact-title">Not sure which direction fits?</h2>
+      <a class="home-contact-email" href={site.logisticsEmail.href} data-home-contact-fallback>{site.logisticsEmail.value}</a>
+      <a class="home-final-contact-action" href="/contacts/" data-home-primary-contact>Describe your request <ArrowUpRight size={18} aria-hidden="true" /></a>
+    </div>
+    <nav class="home-contact-directions" aria-label="Contact Hermes by direction">
+      {directions.map((item) => (
+        <a class="home-contact-direction" href={item.href} data-direction={item.key}>
+          <span class="home-contact-direction-label">{item.label}</span>
+          <strong>{item.description} <span aria-hidden="true">→</span></strong>
+        </a>
+      ))}
+    </nav>
+    <p class="home-contact-product-link">Looking for an existing tool? <a href="/services/hermes-connect/">Explore Hermes Connect</a></p>
   </div>
-  <a class="home-contact-fallback" href={site.logisticsEmail.href} data-home-contact-fallback>{site.logisticsEmail.value}</a>
- </div>
 </section>
 <style>
-.home-final-contact{position:relative;isolation:isolate;min-height:460px;padding:clamp(40px,6vw,80px) 0;color:#101332;background:linear-gradient(130deg,#fafbff,#e3edff88,#e9e0ff88)}
-.home-final-contact::before{content:"";position:absolute;z-index:-1;right:0;bottom:0;width:100%;aspect-ratio:1111/458;background:linear-gradient(100deg,#fafbff 0%,#fafbff 55%,#fafbff00 79%),url('/images/home-20261001/contact.webp') right bottom/100% auto no-repeat}
-.home-final-contact-inner{width:min(1380px,calc(100% - 92px));margin:auto;position:relative}
-.home-final-contact-kicker{display:flex;align-items:center;gap:16px;margin:0 0 25px;color:#6c659a;font-size:.65rem;letter-spacing:.2em;font-weight:800}
-.home-final-contact-kicker span{height:1px;width:70px;background:#8b7fff}
-.home-final-contact h2{margin:0;max-width:12ch;font:800 clamp(2.6rem,5.5vw,5.2rem)/.98 var(--font-display);letter-spacing:-.065em;color:#090b31}
-.home-final-contact h2 span{background:linear-gradient(95deg,#0b164a,#5169e0);background-clip:text;-webkit-text-fill-color:transparent}
-.home-final-contact-inner>p:not(.home-final-contact-kicker){max-width:48ch;margin:20px 0 24px;color:#505680;font-size:1.05rem;line-height:1.6}
-.home-final-contact-actions{display:flex;gap:12px;flex-wrap:wrap}
-.home-final-contact-action{display:inline-flex;align-items:center;justify-content:center;gap:14px;min-height:48px;padding:12px 30px;border-radius:999px;background:linear-gradient(100deg,#17194c,#514eac);color:#fff;font-weight:700;font-size:.85rem;text-decoration:none}
-.home-connect-action{border:1px solid #a7abd2;color:#161a48;background:#ffffffb0;font-weight:500}
-.home-contact-fallback{display:inline-block;margin-top:18px;color:#505680;font-size:.85rem;text-underline-offset:4px}
-.home-final-contact a:focus-visible{outline:3px solid #5743c2;outline-offset:4px}
-@media(max-width:700px){.home-final-contact::before{display:none}.home-final-contact{min-height:440px;background:radial-gradient(ellipse at 95% 90%,#bfeaff,#e9e0ff88 45%,#fafbff 75%)}.home-final-contact-inner{width:calc(100% - 40px)}.home-final-contact h2{font-size:2.8rem}.home-final-contact-action{padding-inline:24px}}
+.home-final-contact{position:relative;padding:clamp(42px,5.3vw,74px) 0 clamp(24px,3vw,44px);background:#f7f6f3;color:#111318}
+.home-final-contact-inner{width:min(1380px,calc(100% - 48px));margin-inline:auto}
+.home-final-contact-row{display:grid;grid-template-columns:auto minmax(0,1fr) auto auto;gap:clamp(14px,2vw,30px);align-items:center;padding-bottom:30px;border-bottom:1px solid #d9dfe5}
+.home-final-contact-kicker{margin:0;font:750 .7rem/1.2 var(--font-mono);letter-spacing:.15em;color:#58657a}
+.home-final-contact h2{margin:0;font:800 clamp(1.3rem,2.6vw,2.65rem)/1.12 var(--font-display);letter-spacing:-.045em;color:#111318}
+.home-contact-email{white-space:nowrap;font:700 .85rem/1.3 var(--font-body);color:#0a164f;text-decoration:none}
+.home-contact-email:hover{text-decoration:underline;text-underline-offset:3px}
+.home-final-contact-action{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:48px;white-space:nowrap;padding:12px 22px;border-radius:999px;background:#0a164f;color:#fff;text-decoration:none;font:750 .85rem/1.2 var(--font-body)}
+.home-final-contact-action:hover{background:#173271}
+.home-contact-directions{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(12px,2vw,34px);padding-top:22px}
+.home-contact-direction{min-width:0;display:grid;align-content:start;gap:9px;color:#111318;text-decoration:none;padding:1px 0 9px}
+.home-contact-direction-label{display:flex;align-items:center;gap:9px;color:#0a164f;text-transform:uppercase;font:750 .72rem/1.4 var(--font-body);letter-spacing:.11em}
+.home-contact-direction-label::before{content:"";display:block;width:4px;height:14px;flex:none;border-radius:3px;background:var(--direction-accent)}
+.home-contact-direction[data-direction="logistics"]{--direction-accent:var(--dir-logistics)}
+.home-contact-direction[data-direction="technology"]{--direction-accent:var(--dir-technology)}
+.home-contact-direction[data-direction="academy"]{--direction-accent:var(--dir-academy)}
+.home-contact-direction[data-direction="marketing"]{--direction-accent:var(--dir-marketing)}
+.home-contact-direction strong{font:700 clamp(.78rem,1vw,.95rem)/1.5 var(--font-body)}
+.home-contact-direction:hover strong{text-decoration:underline;text-underline-offset:3px}
+.home-contact-product-link{margin:17px 0 0;font-size:.78rem;color:#607085}
+.home-contact-product-link a{color:#0a164f;text-decoration:underline;text-underline-offset:3px}
+.home-final-contact a:focus-visible{outline:3px solid #2f6bf6;outline-offset:4px}
+@media(max-width:1180px){.home-final-contact-row{grid-template-columns:auto minmax(0,1fr) auto}.home-contact-email{grid-column:2}.home-final-contact-action{grid-column:3;grid-row:1 / span 2}}
+@media(max-width:820px){.home-final-contact-inner{width:calc(100% - 32px)}.home-final-contact-row{grid-template-columns:1fr;gap:14px}.home-contact-email,.home-final-contact-action{grid-column:1;grid-row:auto;justify-self:start}.home-contact-directions{grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}}
+@media(max-width:450px){.home-contact-directions{grid-template-columns:1fr 1fr;column-gap:14px}.home-contact-direction strong{font-size:.79rem}.home-final-contact h2{font-size:1.7rem}}
 </style>
