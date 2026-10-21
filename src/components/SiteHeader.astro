@@ -376,13 +376,23 @@ const languageLinks = siteLocales.filter((language) => !isCatalogLocaleRoute || 
   .site-header .mobile-products-menu > summary svg { transition: transform .17s ease; }
   .site-header .desktop-products-menu[open] > summary svg,
   .site-header .mobile-products-menu[open] > summary svg { transform: rotate(180deg); }
+  /* Horizontal Products flyout: opens to the RIGHT of its trigger, not below.
+     Native details/summary preserve keyboard, touch and Escape interaction. */
   .site-header .desktop-products-grid {
-    position: absolute; z-index: 80; left: 0; top: calc(100% + 10px);
+    position: absolute; z-index: 80; left: calc(100% + 12px); top: 50%;
+    transform: translateY(-50%);
     display: grid; grid-template-columns: repeat(2,minmax(0,1fr));
-    width: min(410px,calc(100vw - 36px)); gap: 8px; padding: 12px;
+    width: min(368px,calc(100vw - 36px)); gap: 8px; padding: 12px;
     border: 1px solid #dfe4e9; border-radius: 18px; background: #fbfcfd;
     box-shadow: 0 18px 48px rgba(11,22,42,.16);
     color: #102036;
+  }
+  .site-header .desktop-products-menu[open] > .desktop-products-grid {
+    animation: hermes-products-right-reveal .18s ease-out both;
+  }
+  @keyframes hermes-products-right-reveal {
+    from { opacity: 0; translate: -8px 0; }
+    to { opacity: 1; translate: 0 0; }
   }
   .site-header .desktop-products-menu:not([open]) > .desktop-products-grid { display: none; }
   .site-header .desktop-products-grid > a {
@@ -401,8 +411,12 @@ const languageLinks = siteLocales.filter((language) => !isCatalogLocaleRoute || 
   .site-header .mobile-products-menu:not([open]) > .mobile-products-grid { display: none; }
   .site-header .mobile-products-grid > a { display: flex; align-items: center; min-height: 48px; padding: 10px 12px; border: 1px solid color-mix(in srgb,currentColor 17%,transparent); border-radius: 10px; font-size: .82rem; text-decoration: none; }
   .site-header .mobile-products-grid > a:focus-visible { outline: 2px solid #2766c2; outline-offset: 2px; }
+  /* Narrow non-Home desktop shells may need the safe compact fallback.
+     The 4-way Home switches to mobile navigation by 1180px. */
   @media (max-width: 1180px) and (min-width: 901px) {
-    .site-header .desktop-products-grid { left: auto; right: 0; }
+    .site-header:not([data-home-portal="true"]) .desktop-products-grid {
+      left: auto; right: 0; top: calc(100% + 10px); transform: none;
+    }
   }
   @media (prefers-reduced-motion: reduce) {
     .site-header .desktop-products-menu > summary svg,
