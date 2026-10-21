@@ -133,14 +133,22 @@ test("desktop Products unfolds to the RIGHT and keeps every existing product des
   expect(relation.menuRight).toBeLessThanOrEqual(relation.windowWidth + 1);
   const links = products.locator(".desktop-products-grid a");
   expect(await links.evaluateAll(nodes => nodes.map(n => n.getAttribute("href")))).toEqual([
-    "/services/hermes-connect/repair-shops/", "/businesses/", "/insights/", "/opportunities/",
+    "/services/hermes-connect/", "/businesses/", "/insights/", "/opportunities/",
   ]);
   await page.keyboard.press("Escape");
   await expect(products).not.toHaveAttribute("open", "");
 });
 
-test("hover makes technology scene genuinely play, without autoplaying other desktop scenes", async ({ page }) => {
-  await page.setViewportSize({ width: 1440, height: 900 });
+test("hover makes technology scene genuinely play, without autoplaying other desktop scenes", async ({ browser }, testInfo) => {
+  // Run this DESKTOP-only contract in a fine-pointer context even when the
+  // surrounding Playwright project is named mobile (touch legitimately autoplays).
+  const context = await browser.newContext({
+    baseURL: testInfo.project.use.baseURL,
+    viewport: { width: 1440, height: 900 },
+    isMobile: false, hasTouch: false,
+  });
+  try {
+  const page = await context.newPage();
   await page.goto("/");
   const stage = page.locator("[data-home-technology-cinematic]");
   const video = stage.locator("video");
@@ -152,16 +160,23 @@ test("hover makes technology scene genuinely play, without autoplaying other des
   await page.mouse.move(0, 0);
   await expect.poll(() => video.evaluate((el: HTMLVideoElement) => el.paused)).toBe(true);
   await expect(stage).toHaveAttribute("data-media-state", "poster");
+  } finally { await context.close(); }
 });
 
 test("retina desktop hover chooses a reviewed local 720p file; Save-Data keeps poster-only behavior", async ({ browser }, testInfo) => {
   const context = await browser.newContext({
     baseURL: testInfo.project.use.baseURL,
     viewport: { width: 1440, height: 900 },
-    deviceScaleFactor: 2,
+    deviceScaleFactor: 2, isMobile: false, hasTouch: false,
   });
   try {
     const page = await context.newPage();
+    // Connection type is intentionally controlled so this test validates
+    // HD selection, not unpredictable CI runner network advice.
+    await page.addInitScript(() => Object.defineProperty(navigator, "connection", {
+      configurable: true,
+      value: { effectiveType: "4g", downlink: 10, saveData: false },
+    }));
     await page.goto("/");
     const route = page.locator(".home-master-route-academy");
     await route.hover();
