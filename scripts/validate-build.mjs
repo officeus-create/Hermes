@@ -184,7 +184,7 @@ const required = [
   "Move freight",
   "Grow demand",
   "Build systems",
-  "Develop people",
+  "Learn by doing",
   "Car hauling · dealers · shippers · carriers",
   "Website · SEO/GEO · customer acquisition",
   "CRM · automation · custom software",

@@ -60,7 +60,18 @@ assert.equal(masterSource.includes("home-moving-truck"), false, "Logistics must 
 assert.equal(masterSource.includes("home-academy-book"), false, "Academy must not introduce a separate CSS book over its original architecture");
 assert.equal(masterSource.includes("home-moving-leaves"), false, "Marketing must not restore unrelated decorative leaves");
 assert.equal(masterSource.includes("home-story-board"), false, "Marketing must not restore competing mock-card decoration");
-assert.ok(masterSource.includes("data-home-marketing-journey"), "Marketing must carry the selected self-contained attention-to-inquiry scene");
+assert.ok(masterSource.includes("data-home-marketing-cinematic"), "Marketing must keep the approved real cinematic scene");
+assert.ok(!masterSource.includes("data-home-marketing-journey"), "Retired Marketing HUD must not return to Home");
+assert.ok(!masterSource.includes("data-home-explainer"), "Retired workflow explainers must not return to Home");
+for (const retiredSelector of [
+  ".home-live-explainer",
+  ".home-marketing-journey",
+  ".home-system-display",
+  ".home-academy-living",
+  "--flow-panel",
+]) {
+  assert.ok(!masterSource.includes(retiredSelector), `Retired Home selector must not return: ${retiredSelector}`);
+}
 for (const stage of ["01 / CONTENT", "02 / DISCOVERY", "03 / WEBSITE", "04 / INQUIRY"]) {
   assert.ok(masterSource.includes(stage), `Marketing living scene must preserve causal stage: ${stage}`);
 }
