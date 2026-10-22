@@ -11,6 +11,8 @@ import LogisticsCommercialLinks from "../../components/LogisticsCommercialLinks.
 import MarketingEngagementModel from "../../components/MarketingEngagementModel.astro";
 import MarketingPackageSelector from "../../components/MarketingPackageSelector.astro";
 import PathDetailPage from "../../components/PathDetailPage.astro";
+import DirectionStory from "../../components/DirectionStory.astro";
+import type { DirectionStoryId } from "../../data/direction-story";
 import PathVerifiedAdvantages from "../../components/PathVerifiedAdvantages.astro";
 import SiteFooter from "../../components/SiteFooter.astro";
 import SiteHeader from "../../components/SiteHeader.astro";
@@ -125,6 +127,7 @@ const schema = [
   {path.id === "logistics" && <LogisticsCommercialLinks />}
   <HermesConnectLauncher variant="banner" context={path.id as any} />
   <ContactCTA selectedPath={contactInterestCategory} />
+  <DirectionStory direction={path.id as DirectionStoryId} part="final" note={path.localFocus} />
   <SiteFooter />
 </BaseLayout>
 

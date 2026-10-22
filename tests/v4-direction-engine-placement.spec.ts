@@ -4,26 +4,28 @@ test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => sessionStorage.setItem("hermes-intro-seen", "true"));
 });
 
+// Approved Claude Design direction skeleton (2026-10-22) replaced the V4 signature engines:
+// every direction opens with one guiding question, then pillars, steps, real-status proof
+// and the ecosystem, and ends with FAQ + Insights stories.
 const engines = [
-  { route: "/paths/logistics/", selector: "[data-logistics-spatial-operations]", label: "Spatial Operations" },
-  { route: "/paths/marketing/", selector: "[data-marketing-flow]", label: "Attention & Demand" },
-  { route: "/paths/technology/", selector: ".technology-build-pulse", label: "Digital Systems" },
-  { route: "/paths/academy/", selector: "[data-academy-flow]", label: "Human Progress" },
+  { route: "/paths/logistics/", selector: '[data-direction-story="logistics"]', label: "Who are you today?" },
+  { route: "/paths/marketing/", selector: '[data-direction-story="marketing"]', label: "Where do you lose customers?" },
+  { route: "/paths/technology/", selector: '[data-direction-story="technology"]', label: "Where does work leak today?" },
+  { route: "/paths/academy/", selector: '[data-direction-story="academy"]', label: "What do you want to become?" },
 ];
 
 for (const engine of engines) {
-  test(`${engine.route} presents its V4 signature engine before the generic overview`, async ({ page }) => {
+  test(`${engine.route} presents the approved direction story before FAQ and stories`, async ({ page }) => {
     await page.goto(engine.route);
-    const signature = page.locator(engine.selector);
-    const overview = page.locator(".detail-overview");
-    await expect(signature).toBeVisible();
-    await expect(signature).toContainText(engine.label);
+    const story = page.locator(engine.selector);
+    await expect(story).toBeVisible();
+    await expect(story.locator("h2").first()).toHaveText(engine.label);
 
     const order = await page.evaluate(({ selector }) => {
-      const signature = document.querySelector(selector);
-      const overview = document.querySelector(".detail-overview");
-      if (!signature || !overview) return null;
-      return Boolean(signature.compareDocumentPosition(overview) & Node.DOCUMENT_POSITION_FOLLOWING);
+      const story = document.querySelector(selector);
+      const bottom = document.querySelector("[data-direction-story-bottom]");
+      if (!story || !bottom) return null;
+      return Boolean(story.compareDocumentPosition(bottom) & Node.DOCUMENT_POSITION_FOLLOWING);
     }, { selector: engine.selector });
 
     expect(order).toBe(true);
@@ -35,6 +37,13 @@ test("Marketing labels its signature scene as illustrative rather than live perf
   await expect(page.locator("[data-marketing-flow]")).toContainText(
     "Illustrative workflow — not live reach, ad spend, lead, conversion, attribution, or revenue data.",
   );
+});
+
+test("Marketing proof cards carry their real status instead of performance claims", async ({ page }) => {
+  await page.goto("/paths/marketing/");
+  const proof = page.locator('[data-direction-story="marketing"] .ds-proof-card');
+  await expect(proof).toHaveCount(3);
+  await expect(proof.locator(".ds-status")).toHaveText(["LIVE", "PREVIEW", "LIVE"]);
 });
 
 for (const route of ["/services/website-development/", "/services/website-redesign/"]) {
