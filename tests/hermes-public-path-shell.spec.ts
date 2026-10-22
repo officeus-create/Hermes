@@ -63,12 +63,14 @@ for (const direction of directions) {
     }, { slug: direction.slug });
 
     expect(visual).not.toBeNull();
-    expect(visual!.heroColor).toBe("rgb(17, 19, 24)");
+    // Canonical Hermes Obsidian #0b0d12 (src/styles/hermes-brand-system.css).
+    expect(visual!.heroColor).toBe("rgb(11, 13, 18)");
     expect(visual!.heroBackground).toBe("rgb(247, 246, 243)");
     expect(visual!.primaryBackground).toBe("rgb(10, 22, 79)");
     expect(visual!.primaryColor).toBe("rgb(255, 255, 255)");
     expect(visual!.primaryRadius).toBe("12px");
-    expect(visual!.windowRadius).toBe("34px");
+    const narrow = (page.viewportSize()?.width ?? 1280) <= 430;
+    expect(visual!.windowRadius).toBe(narrow ? "26px" : "34px");
     expect(visual!.windowBackground).toBe(direction.tone);
     expect(visual!.accentBackground).toBe(direction.accent);
     expect(visual!.overflow).toBe(false);

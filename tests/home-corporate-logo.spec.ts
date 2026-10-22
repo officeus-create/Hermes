@@ -18,7 +18,9 @@ test("Home and approved Directions share Hermes H v1.1 while product surfaces ke
     await expect(directionMark).toHaveCount(1);
     await expect(directionMark).toHaveAttribute("src", logoSrc);
     await expect(page.locator(".site-header .hermes-connect-header-launcher")).toHaveCount(0);
-    await expect(page.locator(".site-header [data-hermes-products]")).toHaveCount(1);
+    // Desktop and mobile Products menus both render (mobile lives in the collapsed menu).
+    await expect(page.locator(".site-header .desktop-products-menu[data-hermes-products]")).toHaveCount(1);
+    await expect(page.locator(".site-header .mobile-products-menu[data-hermes-products]")).toHaveCount(1);
   }
 
   await page.goto("/paths/technology/");
