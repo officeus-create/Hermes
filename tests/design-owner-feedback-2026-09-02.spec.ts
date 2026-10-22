@@ -12,8 +12,8 @@ test.describe("owner-approved design polish 2026-09-02", () => {
     // Claude Directions 22.10 removes the standalone product promo from the
     // canonical direction shell, but the server-rendered Products route remains.
     await expect(page.locator('[data-hermes-connect-launcher="header"]')).toHaveCount(0);
-    await expect(page.locator("[data-hermes-products] > summary")).toBeVisible();
-    const connectProduct = page.locator('[data-hermes-products] [data-product="connect"]');
+    await expect(page.locator("[data-hermes-products]:visible > summary")).toBeVisible();
+    const connectProduct = page.locator('[data-hermes-products]:visible [data-product="connect"]');
     await expect(connectProduct).toHaveCount(1);
     await expect(connectProduct).toContainText("Hermes Connect");
     await expect(connectProduct).toHaveAttribute("href", "/services/hermes-connect/");
@@ -29,7 +29,7 @@ test.describe("owner-approved design polish 2026-09-02", () => {
     await expect(page.locator('.desktop-nav a[href="/paths/academy/"]')).toHaveCount(1);
     await expect(page.locator('.desktop-nav a[href="/paths/technology/"]')).toHaveCount(1);
     await expect(page.locator('[data-hermes-connect-launcher="header"]')).toHaveCount(0);
-    await expect(page.locator('[data-hermes-products] [data-product="connect"]')).toHaveAttribute("href", "/services/hermes-connect/");
+    await expect(page.locator('[data-hermes-products]:visible [data-product="connect"]')).toHaveAttribute("href", "/services/hermes-connect/");
     await context.close();
   });
 
