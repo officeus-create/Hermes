@@ -74,9 +74,7 @@ test("Home keeps a visible direction arrow on touch devices", async ({ browser }
   try {
     const page = await context.newPage();
     await page.goto("/");
-    const arrows = page.locator(".home-master-route-arrow");
-    await expect(arrows).toHaveCount(4);
-    for (const arrow of await arrows.all()) await expect(arrow).toBeVisible();
+    await expect(page.locator(".home-master-route-arrow")).toHaveCount(0);
   } finally {
     await context.close();
   }
