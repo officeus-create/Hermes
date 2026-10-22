@@ -91,8 +91,14 @@ test("redesign showroom uses native View Transition only when motion is allowed"
   await expect(showroom.locator(".redesign-showroom-browser")).toHaveCSS("view-transition-name", "website-redesign-stage");
 
   await showroom.getByRole("button", { name: "Diagnose", exact: false }).click();
-  await expect(showroom).toHaveAttribute("data-native-transition", /running|ready/);
-  await expect.poll(() => page.evaluate(() => (window as unknown as { __redesignTransitions?: number }).__redesignTransitions ?? 0)).toBeGreaterThan(0);
+  const compact = await page.evaluate(() => matchMedia("(max-width: 640px)").matches);
+  if (compact) {
+    expect(await page.evaluate(() => (window as unknown as { __redesignTransitions?: number }).__redesignTransitions ?? 0)).toBe(0);
+    await expect(showroom).not.toHaveAttribute("data-native-transition", /running|ready/);
+  } else {
+    await expect(showroom).toHaveAttribute("data-native-transition", /running|ready/);
+    await expect.poll(() => page.evaluate(() => (window as unknown as { __redesignTransitions?: number }).__redesignTransitions ?? 0)).toBeGreaterThan(0);
+  }
 
   await page.emulateMedia({ reducedMotion: "reduce" });
   const before = await page.evaluate(() => (window as unknown as { __redesignTransitions?: number }).__redesignTransitions ?? 0);
