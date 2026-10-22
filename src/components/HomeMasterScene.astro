@@ -1,14 +1,12 @@
 ---
 import { publicPaths } from "../data/public-paths";
 
-const flowStages = ["event", "system", "human", "outcome"] as const;
-const routeMeta: Record<string, { accent: string; detail: string; searchDetail?: string; displayNumber: string; crop: number; goal: string; flow: readonly [string, string, string, string]; flowPath: string }> = {
+const routeMeta: Record<string, { accent: string; detail: string; searchDetail?: string; displayNumber: string; crop: number; goal: string; flow: readonly [string, string, string, string] }> = {
   logistics: {
     accent: "var(--hermes-logistics)",
     detail: "Dealers · shippers · carriers · dispatch service",
     searchDetail: "Car hauling · dealers · shippers · carriers",
     flow: ["Request", "Route fit", "Human review", "Handoff"],
-    flowPath: "M10 14 C26 8 31 39 47 34 S67 12 88 20",
     displayNumber: "01", crop: 20, goal: "Move freight",
   },
   marketing: {
@@ -16,7 +14,6 @@ const routeMeta: Record<string, { accent: string; detail: string; searchDetail?:
     detail: "Websites · SMM · SEO/GEO · customer acquisition",
     searchDetail: "Website · SEO/GEO · customer acquisition",
     flow: ["Content + news", "Search + social", "Website action", "CRM evidence"],
-    flowPath: "M9 37 C25 13 39 49 54 31 S75 15 91 19",
     displayNumber: "04", crop: 296, goal: "Grow demand",
   },
   technology: {
@@ -24,7 +21,6 @@ const routeMeta: Record<string, { accent: string; detail: string; searchDetail?:
     detail: "CRM systems · websites · IT development",
     searchDetail: "CRM · automation · custom software",
     flow: ["Hermes Connect", "Website Factory", "Social connectors", "QA readback"],
-    flowPath: "M9 18 H31 V41 H56 V25 H77 V40 H91",
     displayNumber: "02", crop: 556, goal: "Build systems",
   },
   academy: {
@@ -32,7 +28,6 @@ const routeMeta: Record<string, { accent: string; detail: string; searchDetail?:
     detail: "U.S. logistics · sales · marketing · operations",
     searchDetail: "Logistics · marketing · IT/AI · sales · operations",
     flow: ["Task", "Practice", "Feedback", "Next level"],
-    flowPath: "M9 48 H30 V38 H51 V28 H71 V18 H91",
     displayNumber: "03", crop: 818, goal: "Learn by doing",
   },
 };
@@ -199,107 +194,8 @@ const routeMeta: Record<string, { accent: string; detail: string; searchDetail?:
               </span>
             )}
             
-            <span class={`home-live-explainer home-live-explainer-${path.id}`} data-home-explainer={path.id} aria-hidden="true">
-              <span class="home-live-kicker">Example workflow</span>
-              <svg class="home-live-path" viewBox="0 0 100 58" preserveAspectRatio="none" aria-hidden="true">
-                <path d={meta.flowPath} />
-              </svg>
-              {meta.flow.map((label, index) => (
-                <span class="home-live-step" data-live-step={flowStages[index]} data-live-index={index}>
-                  <b>{String(index + 1).padStart(2, "0")}</b><em>{label}</em>
-                </span>
               ))}
             </span>
-            {path.id === "marketing" && (
-              <span class="home-scene-detail home-marketing-journey" data-home-pillar-proof="attention" data-home-marketing-journey data-journey-motion="paused" aria-hidden="true">
-                <span class="home-marketing-caption">ATTENTION <i></i> DEMAND</span>
-                <svg class="home-marketing-conductor" viewBox="0 0 300 480" preserveAspectRatio="none" aria-hidden="true">
-                  <path class="home-marketing-track" d="M104 82 C240 105 248 153 192 188 S55 252 132 296 S258 361 205 408" />
-                  <path class="home-marketing-pulse" d="M104 82 C240 105 248 153 192 188 S55 252 132 296 S258 361 205 408" />
-                </svg>
-                <span class="home-marketing-card home-marketing-content">
-                  <small><i></i> 01 / CONTENT + NEWS</small>
-                  <span class="home-marketing-media"><b class="home-marketing-play"></b><em></em></span>
-                  <span class="home-marketing-card-lines"><i></i><i></i></span>
-                </span>
-                <span class="home-marketing-card home-marketing-discovery">
-                  <small><i></i> 02 / DISCOVERY + DISTRIBUTION</small>
-                  <span class="home-marketing-channels"><i>Search</i><i>Threads</i><i>IG</i><i>FB</i><i>TG</i></span>
-                  <span class="home-marketing-search"><i></i><b></b></span>
-                </span>
-                <span class="home-marketing-card home-marketing-site">
-                  <small><i></i> 03 / WEBSITE ACTION</small>
-                  <span class="home-marketing-browser"><b></b><i></i><em></em></span>
-                </span>
-                <span class="home-marketing-card home-marketing-inquiry">
-                  <small><i></i> 04 / INQUIRY → CRM EVIDENCE</small>
-                  <span class="home-marketing-person"><i></i><b></b><em></em></span>
-                  <span class="home-marketing-beacon" aria-hidden="true"><i></i></span>
-                </span>
-              </span>
-            )}
-            {path.id === "technology" && (
-              <span class="home-scene-detail home-system-display home-product-choreography" aria-hidden="true" data-home-pillar-proof="systems" data-home-living-motion data-motion-state="idle">
-                <span class="home-system-caption">REAL PRODUCT UI <i></i> TRUTHFUL STATES</span>
-                <span class="home-system-card home-system-connect" data-tech-source="/services/hermes-connect/repair-shops/dashboard/">
-                  <small>01 / HERMES CONNECT</small>
-                  <strong>SHOP OWNER WORKSPACE</strong>
-                  <span class="home-tech-mini home-tech-connect-ui"><i>Services</i><i>Booking inbox</i><i>Catalog inquiries</i></span>
-                  <em>private CRM surface</em>
-                </span>
-                <span class="home-system-wire home-system-wire-a"><i></i></span>
-                <span class="home-system-card home-system-factory" data-tech-source="/services/website-development/">
-                  <small>02 / WEBSITE DELIVERY</small>
-                  <strong>SEMANTIC BUILD</strong>
-                  <span class="home-tech-mini home-tech-factory-ui"><i>Responsive</i><i>Canonical</i><i>Schema</i></span>
-                  <em>business context → release evidence</em>
-                </span>
-                <span class="home-system-wire home-system-wire-b"><i></i></span>
-                <span class="home-system-card home-system-social" data-tech-source="/services/hermes-connect/repair-shops/social/">
-                  <small>03 / SOCIAL STUDIO</small>
-                  <strong>OWNER AUTHORIZATION</strong>
-                  <span class="home-tech-mini home-tech-social-ui"><i>IG</i><i>f</i><i>@</i><b>provider readback</b></span>
-                  <em>connect ≠ writable until verified</em>
-                </span>
-                <span class="home-system-wire home-system-wire-c"><i></i></span>
-                <span class="home-system-card home-system-readback" data-tech-source="/services/website-development/">
-                  <small>04 / QA + READBACK</small>
-                  <strong><i></i> RELEASE EVIDENCE</strong>
-                  <span class="home-tech-mini home-tech-readback-ui"><i>Build</i><i>Browser</i><i>390 / 1440</i><i>Readback</i></span>
-                  <em>deploy ≠ live until readback</em>
-                </span>
-              </span>
-            )}
-            {path.id === "academy" && (
-              <span class="home-scene-detail home-learning-detail home-academy-living" aria-hidden="true" data-home-pillar-proof="progress" data-home-living-motion data-motion-state="idle" data-academy-source="/services/hermes-connect/academy/">
-                <span class="home-academy-caption">HUMAN PROGRESS <i></i> REVIEWED EVIDENCE</span>
-                <span class="home-academy-sunlight"></span>
-                <span class="home-academy-leaf-shadow"><i></i><i></i><i></i></span>
-                <span class="home-academy-workflow">
-                  <span class="home-academy-state home-academy-attempt">
-                    <small>01 / TASK + PRACTICE</small>
-                    <strong>Practice before consequence</strong>
-                    <em>attempt becomes evidence</em>
-                  </span>
-                  <span class="home-academy-state home-academy-feedback">
-                    <small>02 / HUMAN FEEDBACK</small>
-                    <strong>One precise correction</strong>
-                    <em>reviewer feedback</em>
-                  </span>
-                  <span class="home-academy-state home-academy-retry">
-                    <small>03 / RETRY</small>
-                    <strong>Show the change</strong>
-                    <em>reviewed second attempt</em>
-                  </span>
-                  <span class="home-academy-state home-academy-gate">
-                    <small>04 / PROGRESSION</small>
-                    <strong>Human decision</strong>
-                    <em>not automatic</em>
-                  </span>
-                </span>
-                <span class="home-academy-progress"><small>TASK</small><i></i><small>PRACTICE</small><i></i><small>FEEDBACK</small><i></i><small>NEXT STEP</small></span>
-              </span>
-            )}
             <span class="home-master-route-copy">
               <small><i aria-hidden="true" data-home-route-bar></i>{meta.goal}</small>
               <strong>Hermes<br />{path.brandLabel.replace("Hermes ", "")}</strong>
@@ -571,57 +467,6 @@ const routeMeta: Record<string, { accent: string; detail: string; searchDetail?:
     document.addEventListener("visibilitychange", update);
     update();
   }
-
-  // The Marketing portal is a lightweight, decorative proof replay; no customer data or generated metrics.
-  // CSS/SVG runs only while visible and stops on tab hide, mobile motion preference, or when out of view.
-  const marketingJourney = document.querySelector<HTMLElement>("[data-home-marketing-journey]");
-  if (marketingJourney) {
-    const preference = window.matchMedia("(prefers-reduced-motion: reduce)");
-    let inView = false;
-    const updateJourney = () => {
-      marketingJourney.dataset.journeyMotion = preference.matches ? "reduced" : inView && !document.hidden ? "running" : "paused";
-    };
-    if ("IntersectionObserver" in window) {
-      const observer = new IntersectionObserver((entries) => {
-        inView = entries.some((entry) => entry.isIntersecting && entry.intersectionRatio >= .2);
-        updateJourney();
-      }, { threshold: .2 });
-      observer.observe(marketingJourney);
-    } else {
-      inView = true;
-    }
-    preference.addEventListener("change", updateJourney);
-    document.addEventListener("visibilitychange", updateJourney);
-    updateJourney();
-  }
-
-  const livingProofScenes = document.querySelectorAll<HTMLElement>("[data-home-living-motion]");
-  const livingReduced = window.matchMedia("(prefers-reduced-motion: reduce)");
-  const livingVisibility = new Map<HTMLElement, boolean>();
-  const syncLivingProof = (scene: HTMLElement) => {
-    scene.dataset.motionState = livingReduced.matches ? "reduced" : livingVisibility.get(scene) && !document.hidden ? "running" : "paused";
-  };
-  if ("IntersectionObserver" in window) {
-    const livingObserver = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        const scene = entry.target as HTMLElement;
-        livingVisibility.set(scene, entry.isIntersecting && entry.intersectionRatio >= .2);
-        syncLivingProof(scene);
-      });
-    }, { threshold: .2 });
-    livingProofScenes.forEach((scene) => {
-      livingVisibility.set(scene, false);
-      livingObserver.observe(scene);
-      syncLivingProof(scene);
-    });
-  } else {
-    livingProofScenes.forEach((scene) => {
-      livingVisibility.set(scene, true);
-      syncLivingProof(scene);
-    });
-  }
-  livingReduced.addEventListener("change", () => livingProofScenes.forEach(syncLivingProof));
-  document.addEventListener("visibilitychange", () => livingProofScenes.forEach(syncLivingProof));
 
   document.querySelectorAll<HTMLAnchorElement>("[data-home-route]").forEach((link) => {
     link.addEventListener("click", () => {
