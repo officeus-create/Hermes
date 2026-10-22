@@ -4,10 +4,10 @@ test("Home keeps native routes and shows living details without layout overflow"
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
   await expect(page.getByRole("heading", { name: "Four directions." })).toBeVisible();
-  await expect(page.locator(".home-scene-detail")).toHaveCount(3);
+  await expect(page.locator(".home-scene-detail")).toHaveCount(0);
   // Home keeps a quiet visual chooser: Tech/Academy mini-dashboards are not pasted over art.
-  await expect(page.locator('[data-home-pillar-proof="systems"]')).toBeHidden();
-  await expect(page.locator('[data-home-pillar-proof="progress"]')).toBeHidden();
+  await expect(page.locator('[data-home-pillar-proof="systems"]')).toHaveCount(0);
+  await expect(page.locator('[data-home-pillar-proof="progress"]')).toHaveCount(0);
   await expect(page.locator('[data-route-id="logistics"] .home-scene-detail')).toHaveCount(0);
   await expect(page.locator('[data-route-id="logistics"] [data-home-cinematic-slot="logistics"]')).toBeVisible();
   await expect(page.locator('.home-master-stage [data-home-cinematic-video="logistics"]')).toHaveCount(1);
@@ -37,16 +37,11 @@ test("Home keeps native routes and shows living details without layout overflow"
   await page.emulateMedia({ reducedMotion: "reduce" });
   await expect(travelDot).toHaveCSS("display", "none");
   for (const letter of await homeI.all()) await expect(letter).toHaveCSS("animation-name", "none");
-  const livingProofs = page.locator("[data-home-living-motion]");
-  await expect(livingProofs).toHaveCount(2);
-  for (const proof of await livingProofs.all()) {
-    await expect(proof).toHaveAttribute("data-motion-state", "reduced");
-  }
-  // Approved Marketing V4 removes the decorative story cards: reduced motion must
-  // keep its real four-stage SVG scene readable and entirely still.
+  // Retired mock dashboards and workflow HUDs are not kept in the DOM.
+  await expect(page.locator("[data-home-living-motion]")).toHaveCount(0);
   await expect(page.locator(".home-story-frame")).toHaveCount(0);
-  await expect(page.locator("[data-home-marketing-journey]")).toHaveAttribute("data-journey-motion", "reduced");
-  await expect(page.locator(".home-marketing-pulse")).toHaveCSS("animation-name", "none");
+  await expect(page.locator("[data-home-marketing-journey]")).toHaveCount(0);
+  await expect(page.locator("[data-home-explainer]")).toHaveCount(0);
 });
 
 test("Home update glow follows a dated public Insight and expires after seven days", async ({ page }) => {
