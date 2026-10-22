@@ -80,13 +80,16 @@ for (const width of [390, 430, 768, 1024, 1440]) {
    const cta=page.locator('.header-cta');
    const box=await cta.boundingBox();
    expect(box!.height).toBeGreaterThanOrEqual(44);
-   expect(box!.width).toBeLessThanOrEqual(125);
+   // Approved Claude Design header: the Ink pill reads "Start a conversation" on every page.
+   expect(box!.width).toBeLessThanOrEqual(220);
+   await expect(cta).toContainText('Start a conversation');
    await expect(page.locator('.header-actions .hc-account-menu')).toHaveCount(1);
   }
   const nav=width<1181?page.locator('#mobile-menu'):page.locator('.desktop-nav');
   const products=nav.locator('[data-hermes-products]');
   await expect(products).toHaveCount(1);
-  await expect(products.locator('a[data-product]')).toHaveCount(4);
+  await expect(products.locator('a[data-product]')).toHaveCount(5);
+  await expect(products.locator('a[data-product="all-products"]')).toHaveAttribute('href','/products/');
   await expect(products.locator('a[data-product="connect"]')).toHaveAttribute('href','/services/hermes-connect/');
   await expect(products.locator('a[data-product="catalog"]')).toHaveAttribute('href','/businesses/');
   await expect(products.locator('a[data-product="insights"]')).toHaveAttribute('href','/insights/');

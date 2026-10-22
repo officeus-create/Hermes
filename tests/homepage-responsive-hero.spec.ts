@@ -117,7 +117,7 @@ test("Home navigation stays fixed while scrolling past the four directions to Co
 });
 
 
-test("desktop Products unfolds to the RIGHT and keeps every existing product destination", async ({ page }) => {
+test("desktop Products drops down under its trigger and keeps every existing product destination", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/");
   const products = page.locator(".desktop-products-menu");
@@ -127,13 +127,15 @@ test("desktop Products unfolds to the RIGHT and keeps every existing product des
   const relation = await products.evaluate((details) => {
     const trigger = details.querySelector("summary")!.getBoundingClientRect();
     const menu = details.querySelector(".desktop-products-grid")!.getBoundingClientRect();
-    return { triggerRight: trigger.right, menuLeft: menu.left, menuRight: menu.right, windowWidth: innerWidth };
+    return { triggerBottom: trigger.bottom, menuTop: menu.top, menuLeft: menu.left, menuRight: menu.right, windowWidth: innerWidth };
   });
-  expect(relation.menuLeft).toBeGreaterThan(relation.triggerRight);
+  // Owner 22.10: the flyout opened upward off-screen; it now drops down below the header.
+  expect(relation.menuTop).toBeGreaterThan(relation.triggerBottom);
+  expect(relation.menuLeft).toBeGreaterThanOrEqual(0);
   expect(relation.menuRight).toBeLessThanOrEqual(relation.windowWidth + 1);
   const links = products.locator(".desktop-products-grid a");
   expect(await links.evaluateAll(nodes => nodes.map(n => n.getAttribute("href")))).toEqual([
-    "/services/hermes-connect/", "/businesses/", "/insights/", "/opportunities/",
+    "/products/", "/services/hermes-connect/", "/businesses/", "/insights/", "/opportunities/",
   ]);
   await page.keyboard.press("Escape");
   await expect(products).not.toHaveAttribute("open", "");
