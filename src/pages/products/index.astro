@@ -1,0 +1,72 @@
+---
+// Approved Claude Design "Hermes Directions" Products page: the product family on the
+// same direction skeleton, with every product carrying its real status.
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import DirectionHero from "../../components/DirectionHero.astro";
+import DirectionStory from "../../components/DirectionStory.astro";
+import SiteFooter from "../../components/SiteFooter.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import { directionStories } from "../../data/direction-story";
+import "../../styles/hermes-public-path-shell.css";
+import "../../styles/hermes-public-division-colors.css";
+
+const canonicalUrl = "https://hermeslogisticsus.com/products/";
+const title = "Hermes Products: Connect, Load Board and Catalog";
+const description =
+  "Products Hermes builds, runs and uses itself — Hermes Connect CRM (Repair Shops live pilot), the Hermes Load Board and the Hermes Catalog — each shown with its real status.";
+
+const hero = {
+  accent: "#0a164f",
+  tone: "#0a164f",
+  kicker: "Hermes Products · built and run by us",
+  title: "Products we build, run and use ourselves.",
+  summary: "Every Hermes direction runs on software we made. Each product carries its real status — live, pilot, private or preview.",
+  primary: { label: "Explore Hermes Connect", href: "/services/hermes-connect/" },
+  secondary: { label: "Sign in", href: "/services/hermes-connect/access/" },
+  reassurance: "Repair Shops is the current live pilot; other modules are shown as reference until verified.",
+  windowLabel: "Live window · product team",
+  windowLine: "Software we use every day.",
+  video: "/media/home/technology-film-v2-540.mp4",
+  poster: "/media/home/technology-film-v2-poster.jpg",
+};
+
+const faq = directionStories.products.faq;
+const schema = [
+  {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: title,
+    description,
+    url: canonicalUrl,
+    hasPart: [
+      { "@type": "SoftwareApplication", name: "Hermes Connect", url: "https://hermeslogisticsus.com/services/hermes-connect/", applicationCategory: "BusinessApplication" },
+      { "@type": "WebApplication", name: "Hermes Load Board", url: "https://hermeslogisticsus.com/load-board/" },
+      { "@type": "WebPage", name: "Hermes Catalog", url: "https://hermeslogisticsus.com/businesses/" },
+    ],
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://hermeslogisticsus.com/" },
+      { "@type": "ListItem", position: 2, name: "Products", item: canonicalUrl },
+    ],
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faq.map((item) => ({ "@type": "Question", name: item.question, acceptedAnswer: { "@type": "Answer", text: item.answer } })),
+  },
+];
+---
+
+<BaseLayout title={title} description={description} image="/images/direction-technology-real-2026.jpg" schema={schema}>
+  <SiteHeader contactHref="/contacts/" theme="light" />
+  <main id="main-content" class="detail-page detail-page-products">
+    <DirectionHero hero={hero} alt="Illustrative footage of a product team working together at a screen" />
+    <DirectionStory direction="products" part="top" />
+    <DirectionStory direction="products" part="faq" />
+  </main>
+  <DirectionStory direction="products" part="final" />
+  <SiteFooter />
+</BaseLayout>

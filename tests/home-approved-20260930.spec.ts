@@ -44,10 +44,8 @@ for (const width of [390, 430, 768, 1024, 1440]) {
   await expect(routes).toHaveCount(4);
   for(const route of await routes.all()) {
    await expect(route).toBeVisible();
-   expect(await route.evaluate(n=>{
-    const title=n.querySelector('strong')!.getBoundingClientRect();const arrow=n.querySelector('.home-master-route-arrow')!.getBoundingClientRect();
-    return title.left<arrow.right&&title.right>arrow.left&&title.top<arrow.bottom&&title.bottom>arrow.top;
-   })).toBe(false);
+   // Owner 22.10: the circled arrows were removed; the whole window stays the native link.
+   await expect(route.locator('.home-master-route-arrow')).toHaveCount(0);
    const routeId=await route.getAttribute('data-route-id');
    // Logistics owns one coherent local scene. The Golden Scene source-lock
    // test owns cinematic/fallback provenance and prevents split truck layers.

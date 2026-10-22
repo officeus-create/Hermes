@@ -238,8 +238,13 @@ const homeFooterGroups = [
     </div>
     <nav class="footer-social" aria-label="Social media">
       {site.social.map((item) => (
-        <a href={item.href} target="_blank" rel="noopener noreferrer">
-          {item.label}
+        <a href={item.href} target="_blank" rel="noopener noreferrer" data-social={item.label.toLowerCase()}>
+          <span class="footer-social-icon" aria-hidden="true">
+            {item.label === "Instagram" && <svg viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1" fill="currentColor" stroke="none"/></svg>}
+            {item.label === "Threads" && <svg viewBox="0 0 24 24"><path d="M16.6 11.2c-.3-2.6-2-4-4.5-4-2.7 0-4.6 2-4.6 4.8 0 3 2 4.9 4.8 4.9 2.3 0 3.9-1.3 3.9-3.1 0-1.6-1.3-2.6-3.3-2.6-1.6 0-2.6.8-2.6 1.9 0 1 .9 1.6 2 1.6 1.9 0 2.9-1.7 2.9-4.2"/><path d="M12 21c-5 0-8.5-3.4-8.5-9S7 3 12 3s7.6 2.6 8.3 6.4"/></svg>}
+            {item.label === "Telegram" && <svg viewBox="0 0 24 24"><path d="M21 4 3 11.2l6.2 2.3L18 7.3l-6.6 7.6 6.3 4.6z"/></svg>}
+          </span>
+          <span>{item.label}</span>
         </a>
       ))}
     </nav>
@@ -323,6 +328,7 @@ const homeFooterGroups = [
       padding-top: .15rem;
     }
 
+
     .footer-primary-nav a:focus-visible,
     .footer-contacts a:focus-visible,
     .footer-social a:focus-visible {
@@ -331,4 +337,9 @@ const homeFooterGroups = [
       outline-offset: 3px;
     }
   }
+  /* Approved Claude Design footer: brand icons in circles next to each social label. */
+  .footer-social a { display: inline-flex; align-items: center; gap: .55rem; }
+  .footer-social-icon { display: grid; place-items: center; width: 34px; height: 34px; border: 1px solid color-mix(in srgb, currentColor 28%, transparent); border-radius: 50%; transition: background-color .2s ease, transform .2s ease; }
+  .footer-social-icon svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+  .footer-social a:is(:hover, :focus-visible) .footer-social-icon { background: color-mix(in srgb, currentColor 12%, transparent); transform: translateY(-2px); }
 </style>

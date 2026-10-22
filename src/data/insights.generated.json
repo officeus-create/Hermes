@@ -1,5 +1,176 @@
 [
   {
+    "id": "hermes-academy-international-roadmap-2026",
+    "direction": "academy",
+    "slug": "academy-international-roadmap-where-we-train",
+    "title": "Hermes Academy International Roadmap: Where We Train and Why | Hermes Insights",
+    "description": "How Hermes Business Academy organises international entry routes — a dedicated London path for U.S. logistics training, country pages and email-coordinated applications — and why every route starts with readiness and human review.",
+    "eyebrow": "Academy / Roadmap · International Entry Routes · 22 October 2026",
+    "h1": "Hermes Academy international roadmap: where we train and why",
+    "conciseAnswer": "Hermes Business Academy is coordinated internationally by email and publishes dedicated entry routes for learners outside the United States, such as the London path for U.S. logistics training. Every route leads to the same practical method — awareness, understanding and application — and to a human review of readiness before participation. Training does not guarantee employment, income or clients.",
+    "explanation": [
+      "Hermes Business Academy teaches work that is anchored in the U.S. market — dispatch, load planning, carrier and broker workflows, sales and operations — while learners can apply from other countries. That is why the Academy is coordinated by email rather than through a local office, and why each public route explains what the training covers and what it does not promise.",
+      "The clearest example is the London entry path. It presents U.S. logistics training for people building practical market skills from the UK: operations, load planning, carrier and broker workflows, sales, negotiation and disciplined pipeline work. It also states a real readiness requirement — live U.S.-market communication tracks require spoken English at B2+ — and that training is educational and does not guarantee employment or income.",
+      "Country pages follow the same pattern in the visitor's language. They point to U.S. Logistics Operations training, the online marketing track and the operations leadership pathway, and each one repeats that future roles depend on assessment and available work. Leadership development is described as a development goal, not as current vacancies.",
+      "Whichever route a learner arrives through, the next step is the same: try a public exercise, then prepare an application for human review. The application workflow prepares a preview and an explicit contact handoff; it does not take payment, reserve a seat or enroll anyone automatically. Program dates, scope and prices are published only when a specific offer is approved."
+    ],
+    "takeaways": [
+      "International learners apply through email-coordinated, documented entry routes",
+      "The London path covers U.S. logistics training and states a B2+ spoken-English requirement for live tracks",
+      "Every route leads to the same method and a human readiness review",
+      "No route guarantees employment, income, clients or a seat"
+    ],
+    "faq": [
+      {
+        "question": "Can I train with Hermes Academy from outside the United States?",
+        "answer": "Yes, learners can apply from other countries. The Academy is coordinated by email, and dedicated routes such as the London path explain scope and readiness requirements."
+      },
+      {
+        "question": "What English level is needed?",
+        "answer": "Live U.S.-market communication tracks on the London path require spoken English at B2+. Other requirements depend on the approved program and format."
+      },
+      {
+        "question": "Does applying mean I am enrolled?",
+        "answer": "No. The application prepares your details for human review. It does not take payment, reserve a seat or enroll you; dates and prices are published only for an approved offer."
+      }
+    ],
+    "related": [
+      {
+        "title": "Hermes Academy London",
+        "body": "U.S. logistics training routes for learners in the UK.",
+        "href": "/gb/london/academy/"
+      },
+      {
+        "title": "How training works",
+        "body": "Stages, exercises, feedback, rules and progression.",
+        "href": "/academy/how-training-works/"
+      },
+      {
+        "title": "Hermes Academy",
+        "body": "Practical tracks with precise human feedback.",
+        "href": "/paths/academy/"
+      }
+    ],
+    "primaryAction": {
+      "label": "Explore the London entry path",
+      "href": "/gb/london/academy/"
+    },
+    "secondaryAction": {
+      "label": "Try a public exercise",
+      "href": "/academy/resources/"
+    },
+    "sourceLabel": "Hermes Academy London entry path and international Academy pages, 22 October 2026",
+    "sourceUrl": "https://hermeslogisticsus.com/gb/london/academy/",
+    "authorName": "Hermes Academy",
+    "keywords": [
+      "Hermes Academy London",
+      "U.S. logistics training UK",
+      "international dispatch training",
+      "online logistics course",
+      "Academy entry routes",
+      "Hermes Business Academy"
+    ],
+    "publicationScore": {
+      "score": 78,
+      "recommendation": "standalone",
+      "reasons": [
+        "Answers where and how international learners can start",
+        "Grounded in published London and country entry pages",
+        "Links the method, the London route and the Academy hub"
+      ]
+    },
+    "sourcePublishedAt": "2026-10-22",
+    "datePublished": "2026-10-22",
+    "dateModified": "2026-10-22",
+    "contentTier": "standalone",
+    "currentMarketClaim": false
+  },
+  {
+    "id": "hermes-academy-ai-assistant-learning-lab-2026",
+    "direction": "academy",
+    "slug": "building-an-ai-assistant-as-a-learning-lab",
+    "title": "Building an AI Assistant as a Learning Lab | Hermes Insights",
+    "description": "Why the Hermes Academy IT & AI track treats an AI assistant as a practice project: map one workflow, review the use case, define human approval and test it — the same discipline Hermes Technology applies to client systems.",
+    "eyebrow": "Academy / IT & AI Track · Practice Method · 22 October 2026",
+    "h1": "Building an AI assistant as a learning lab",
+    "conciseAnswer": "In the Hermes Academy IT & AI track, an AI assistant is a useful practice project because it forces every important skill at once: mapping a real workflow, deciding what the assistant may and may not do, keeping a person in charge of the final decision and testing failure cases. The goal is capability with business processes, not a demo.",
+    "explanation": [
+      "AI experiments often stay fragmented because product goals, data, automation, testing and business ownership are not connected. The IT & AI track addresses exactly that problem. Its public scope covers product thinking, web systems, automation, AI workflows, data boundaries, testing and practical implementation around real business processes.",
+      "An assistant built around one defined role is a compact way to practise all of it. The learner starts with product and workflow mapping: who uses the assistant, which steps it supports and which result the business needs. Then comes an AI use-case review — what the assistant should answer, what information it is allowed to use and where it must stop and hand over to a person.",
+      "Hermes Technology builds client assistants on the same principles: assistants grounded in approved knowledge, approval gates and audit logs, with people keeping the final decision. Practising against those rules teaches learners that a useful assistant is defined as much by its boundaries as by its answers.",
+      "The last part is testing and implementation exercises: workflows, permissions and failure scenarios. As in every Academy track, the work moves from awareness to understanding to application, with feedback and a visible second attempt. Track visibility does not mean a paid cohort is open, and training does not guarantee employment or income."
+    ],
+    "takeaways": [
+      "An assistant around one defined role exercises workflow mapping, data boundaries and testing together",
+      "Human approval and clear limits are part of the design, not an afterthought",
+      "The track uses the same principles Hermes Technology applies to client assistants"
+    ],
+    "faq": [
+      {
+        "question": "Do I need to be a programmer to start the IT & AI track?",
+        "answer": "The public scope starts with product and workflow thinking before implementation. The suitable starting level is confirmed through readiness review for the approved format."
+      },
+      {
+        "question": "Will I build a real product for a client?",
+        "answer": "Not by default. Exercises are practice; access to real operations or client work is not promised and depends on separate approval."
+      },
+      {
+        "question": "Is a paid IT & AI cohort open now?",
+        "answer": "A visible learning track does not mean a paid cohort or enrollment window is open. Dates, scope and prices are published only for an approved offer."
+      }
+    ],
+    "related": [
+      {
+        "title": "Hermes Academy",
+        "body": "Five practical tracks including IT & AI.",
+        "href": "/paths/academy/"
+      },
+      {
+        "title": "Hermes Technology",
+        "body": "AI assistants, CRM and automation built around real workflows.",
+        "href": "/paths/technology/"
+      },
+      {
+        "title": "How training works",
+        "body": "Stages, exercises, feedback, rules and progression.",
+        "href": "/academy/how-training-works/"
+      }
+    ],
+    "primaryAction": {
+      "label": "Explore the IT & AI track",
+      "href": "/paths/academy/#academy-it"
+    },
+    "secondaryAction": {
+      "label": "Try a public exercise",
+      "href": "/academy/resources/"
+    },
+    "sourceLabel": "Hermes Academy IT & AI track scope and Hermes Technology assistant principles, 22 October 2026",
+    "sourceUrl": "https://hermeslogisticsus.com/academy/resources/",
+    "authorName": "Hermes Academy",
+    "keywords": [
+      "AI assistant training",
+      "IT and AI course",
+      "learn AI workflows",
+      "AI use case review",
+      "human in the loop AI",
+      "Hermes Academy IT & AI"
+    ],
+    "publicationScore": {
+      "score": 78,
+      "recommendation": "standalone",
+      "reasons": [
+        "Explains a concrete practice approach of a public track",
+        "Grounded in published track scope and Technology principles",
+        "Links Academy and Technology owners"
+      ]
+    },
+    "sourcePublishedAt": "2026-10-22",
+    "datePublished": "2026-10-22",
+    "dateModified": "2026-10-22",
+    "contentTier": "standalone",
+    "currentMarketClaim": false
+  },
+  {
     "id": "hermes-technology-custom-ai-automation-project-brief-2026",
     "direction": "technology",
     "slug": "custom-ai-automation-business-systems-project-brief",
@@ -170,6 +341,92 @@
     }
   },
   {
+    "id": "hermes-custom-system-makes-work-visible-2026",
+    "direction": "technology",
+    "slug": "five-ways-custom-system-makes-work-visible",
+    "title": "Five Ways a Custom System Makes Work Visible | Hermes Insights",
+    "description": "Five practical ways a custom CRM or operations system makes a service business easier to run: one intake, clear statuses, validation before records are written, approval gates and management dashboards.",
+    "eyebrow": "Technology / How We Built It · Operations Systems · 22 October 2026",
+    "h1": "Five ways a custom system makes work visible",
+    "conciseAnswer": "A custom system earns its cost when work stops disappearing between inboxes, chats and spreadsheets. Hermes Technology builds for five kinds of visibility: one intake, a clear status on every record, validation before anything enters the CRM, approval gates with an audit trail, and dashboards for management.",
+    "explanation": [
+      "One intake. Requests that arrive by email, form, message and phone are the first place work gets lost. A single intake gives every request the same starting point and the same required information, so nobody has to reconstruct a conversation later.",
+      "A status on every record. Customer pipelines, responsibilities and statuses make it obvious who owns the next step and what is waiting. In the Repair Shops workflow, for example, appointment requests move through clear statuses with the history attached to each booking.",
+      "Validation before the write. Our CRM validation preview shows the idea: automated checks flag missing identifiers, missing contacts and possible duplicates, and records wait in a review queue before anything is written to the CRM. The checks provide review indicators, not approval. Approval gates and audit logs then keep the final decision with a person and record who made it.",
+      "Dashboards for management. Once intake, statuses and approvals are consistent, a management dashboard can show load, exceptions and next actions in one view instead of being assembled by hand. We start with the smallest useful version of one workflow, test it in real work and only then expand."
+    ],
+    "takeaways": [
+      "Give every request one intake and the same required information",
+      "Put a status and an owner on every record",
+      "Validate and review before writing to the CRM",
+      "Keep people in charge of approvals, with an audit trail"
+    ],
+    "faq": [
+      {
+        "question": "Do we need to replace all our tools at once?",
+        "answer": "No. Work starts with the smallest useful version of one workflow, tested in real work, and existing tools can be connected where suitable."
+      },
+      {
+        "question": "Does automated validation approve records?",
+        "answer": "No. Automated checks raise review indicators such as possible duplicates or missing identifiers; a person makes the approval decision."
+      },
+      {
+        "question": "What kinds of businesses is this for?",
+        "answer": "Service businesses, logistics teams, sales and recruiting organisations, agencies and professional services."
+      }
+    ],
+    "related": [
+      {
+        "title": "Hermes Technology",
+        "body": "Software shaped around how you actually work.",
+        "href": "/paths/technology/"
+      },
+      {
+        "title": "CRM validation preview",
+        "body": "Intake, duplicate checks and review queues before any CRM write.",
+        "href": "/demos/crm-validation/"
+      },
+      {
+        "title": "Hermes Connect",
+        "body": "CRM and operations workspace for service businesses.",
+        "href": "/services/hermes-connect/"
+      }
+    ],
+    "primaryAction": {
+      "label": "Build your project brief",
+      "href": "/paths/technology/#project-brief"
+    },
+    "secondaryAction": {
+      "label": "See the validation preview",
+      "href": "/demos/crm-validation/"
+    },
+    "sourceLabel": "Hermes Technology service pages and CRM validation preview, 22 October 2026",
+    "sourceUrl": "https://hermeslogisticsus.com/demos/crm-validation/",
+    "authorName": "Hermes Technology",
+    "keywords": [
+      "custom CRM development",
+      "operations visibility",
+      "CRM data validation",
+      "approval workflow",
+      "management dashboard",
+      "business process automation"
+    ],
+    "publicationScore": {
+      "score": 78,
+      "recommendation": "standalone",
+      "reasons": [
+        "Grounded in a public preview and current service scope",
+        "Practical guidance for service businesses",
+        "Links Technology, the validation preview and Hermes Connect"
+      ]
+    },
+    "sourcePublishedAt": "2026-10-22",
+    "datePublished": "2026-10-22",
+    "dateModified": "2026-10-22",
+    "contentTier": "standalone",
+    "currentMarketClaim": false
+  },
+  {
     "id": "hermes-home-redesign-four-live-windows-2026",
     "direction": "technology",
     "slug": "home-redesign-four-live-video-windows",
@@ -257,6 +514,178 @@
     }
   },
   {
+    "id": "hermes-website-built-inside-its-system-2026",
+    "direction": "technology",
+    "slug": "how-the-hermes-website-was-built",
+    "title": "How This Website Was Built Inside the System It Represents | Hermes Insights",
+    "description": "How Hermes built its own corporate website as a product: discovery, information architecture, an original interface system, static engineering, quality assurance and a repeatable production release.",
+    "eyebrow": "Technology / How We Built It · Website Case · 22 October 2026",
+    "h1": "How this website was built inside the system it represents",
+    "conciseAnswer": "The Hermes website is built the way we build for clients: business discovery, information architecture, an original interface system, product engineering, quality assurance and a repeatable production release. It introduces four directions without blending their audiences, and every release is checked on desktop and mobile before it reaches the live domain.",
+    "explanation": [
+      "Hermes needed one website for four different businesses — Logistics, Technology, Academy and Marketing — without mixing their audiences or exposing internal company knowledge. The answer was progressive disclosure: a visitor first chooses a direction, then sees its services, process, evidence and the right contact route.",
+      "The work followed a full product cycle rather than a template. Business discovery defined the four directions, their audiences, public boundaries and the action each visitor should take. Information architecture organised one corporate entrance, four focused service paths and direct contact routes. An original interface system added a restrained corporate design language, direction colours, live video windows and responsive motion that respects reduced-motion settings.",
+      "Product engineering produced a fast static website with reusable content, components, structured metadata and controlled contact previews. Quality assurance covers desktop and mobile layouts, keyboard behaviour, reduced motion, images, overflow, routing, forms and browser errors, and each release runs through automated checks before it is merged and deployed.",
+      "AI assists research, implementation and review; final product decisions remain human-led. The site keeps evolving in version history instead of being rebuilt from zero — the latest redesign, with live direction films and new direction pages, shipped through the same flow."
+    ],
+    "takeaways": [
+      "Let visitors choose a direction before showing details",
+      "Treat the website as a product with discovery, architecture and QA",
+      "Check every release on desktop and mobile before it goes live",
+      "Keep product decisions human-led"
+    ],
+    "faq": [
+      {
+        "question": "Is the Hermes website a template?",
+        "answer": "No. It was designed and built as a product, from business discovery and information architecture to an original interface system and tested releases."
+      },
+      {
+        "question": "How is quality checked?",
+        "answer": "Each release is checked for desktop and mobile layouts, keyboard use, reduced motion, images, overflow, routing, forms and browser errors before it goes live."
+      },
+      {
+        "question": "Can Hermes build a website like this for my business?",
+        "answer": "Yes. Hermes Technology builds custom websites and digital front doors; start with a project brief so the scope fits your goals."
+      }
+    ],
+    "related": [
+      {
+        "title": "Website case study",
+        "body": "One digital front door for four businesses.",
+        "href": "/case/it-development/"
+      },
+      {
+        "title": "Website development",
+        "body": "Custom, fast websites built for search and AI discovery.",
+        "href": "/services/website-development/"
+      },
+      {
+        "title": "Hermes Technology",
+        "body": "Websites, CRM, AI assistants and automation as one flow.",
+        "href": "/paths/technology/"
+      }
+    ],
+    "primaryAction": {
+      "label": "Read the website case study",
+      "href": "/case/it-development/"
+    },
+    "secondaryAction": {
+      "label": "Build your project brief",
+      "href": "/paths/technology/#project-brief"
+    },
+    "sourceLabel": "Hermes website case study and website development service page, 22 October 2026",
+    "sourceUrl": "https://hermeslogisticsus.com/services/website-development/",
+    "authorName": "Hermes Technology",
+    "keywords": [
+      "custom website development",
+      "website case study",
+      "Astro static website",
+      "website quality assurance",
+      "corporate website design",
+      "Hermes Technology"
+    ],
+    "publicationScore": {
+      "score": 78,
+      "recommendation": "standalone",
+      "reasons": [
+        "First-party case grounded in the public case study",
+        "Shows the delivery process clients will receive",
+        "Links the case, service and Technology owner page"
+      ]
+    },
+    "sourcePublishedAt": "2026-10-22",
+    "datePublished": "2026-10-22",
+    "dateModified": "2026-10-22",
+    "contentTier": "standalone",
+    "currentMarketClaim": false
+  },
+  {
+    "id": "hermes-academy-correction-loop-2026",
+    "direction": "academy",
+    "slug": "inside-the-correction-loop-attempt-feedback-retry",
+    "title": "Inside the Correction Loop: Attempt, Feedback, Retry | Hermes Insights",
+    "description": "How Hermes Business Academy turns practice into capability: a first attempt treated as evidence, self-review, one precise human correction, a visible second attempt and a human progression decision.",
+    "eyebrow": "Academy / Method · Correction Loop · 22 October 2026",
+    "h1": "Inside the correction loop: attempt, feedback, retry",
+    "conciseAnswer": "The Hermes Academy method is built on one idea: a single correction should change the next attempt. Learners explain and practise, review their own work first, receive one precise correction from a human reviewer, try again visibly, and then transfer the skill to a changed scenario before a person decides whether they progress.",
+    "explanation": [
+      "Most training measures whether someone finished the material. The Academy measures whether the next attempt got better. That is why the first attempt is treated as evidence, not a verdict: it shows what the learner already understands and exactly where the gap is.",
+      "The loop has three movements. Explain and practise: understand the context, explain it in your own words and try the work in realistic scenarios before any live responsibility. Review and retry: name your own gap first, receive human feedback from a reviewer and make a visible second attempt. Transfer and grow: use the skill in a changed situation, ideally without notes, and then pass a human progression gate.",
+      "This sits inside the Academy's three learning stages — awareness, understanding and application — and inside a clear participation lifecycle: application, human review, orientation, learning and practice, feedback and quality. Exercises may include scripts, scenarios, documents, recordings, analysis, briefs and revisions when the format supports them.",
+      "Progression stays human. A reviewer decides whether a learner should continue, repeat, change direction, pause or complete the approved stage. No certification is represented unless an approved offer defines it, and training does not guarantee employment, income, clients or promotion."
+    ],
+    "takeaways": [
+      "A first attempt is evidence of the gap, not a verdict",
+      "Self-review comes before one precise human correction",
+      "The skill must transfer to a changed scenario before progression",
+      "A person, not a score, decides the next stage"
+    ],
+    "faq": [
+      {
+        "question": "How often do learners receive feedback?",
+        "answer": "The feedback rhythm depends on the approved program and format. The method itself is fixed: self-review, a human correction and a visible second attempt."
+      },
+      {
+        "question": "What happens if my second attempt is still weak?",
+        "answer": "A reviewer may ask you to repeat, change direction or pause. Progression is a human decision, not an automatic pass."
+      },
+      {
+        "question": "Do I get a certificate at the end?",
+        "answer": "No certification is represented unless an approved offer explicitly defines the issuer, assessment and terms. Current public pages do not promise certification."
+      }
+    ],
+    "related": [
+      {
+        "title": "How training works",
+        "body": "Stages, exercises, feedback, rules and progression.",
+        "href": "/academy/how-training-works/"
+      },
+      {
+        "title": "Academy resources",
+        "body": "Try a public exercise before you apply.",
+        "href": "/academy/resources/"
+      },
+      {
+        "title": "Hermes Academy",
+        "body": "Learn the work by doing the work.",
+        "href": "/paths/academy/"
+      }
+    ],
+    "primaryAction": {
+      "label": "See how training works",
+      "href": "/academy/how-training-works/"
+    },
+    "secondaryAction": {
+      "label": "Apply for review",
+      "href": "/academy/apply/"
+    },
+    "sourceLabel": "Hermes Business Academy method and How Training Works page, 22 October 2026",
+    "sourceUrl": "https://hermeslogisticsus.com/academy/how-training-works/",
+    "authorName": "Hermes Academy",
+    "keywords": [
+      "feedback based training",
+      "practice and feedback learning",
+      "correction loop",
+      "deliberate practice",
+      "how Hermes Academy works",
+      "human review training"
+    ],
+    "publicationScore": {
+      "score": 78,
+      "recommendation": "standalone",
+      "reasons": [
+        "Explains the core Academy method in depth",
+        "Grounded in the published How Training Works page",
+        "Strong link to the application path"
+      ]
+    },
+    "sourcePublishedAt": "2026-10-22",
+    "datePublished": "2026-10-22",
+    "dateModified": "2026-10-22",
+    "contentTier": "standalone",
+    "currentMarketClaim": false
+  },
+  {
     "id": "hermes-academy-skills-real-business-work-2026",
     "direction": "academy",
     "slug": "learn-skills-real-business-work-academy-path",
@@ -342,6 +771,92 @@
     }
   },
   {
+    "id": "hermes-load-board-live-vs-preview-2026",
+    "direction": "logistics",
+    "slug": "load-board-live-freight-vs-previews",
+    "title": "How the Hermes Load Board Separates Live Freight From Previews | Hermes Insights",
+    "description": "Why the Hermes car-hauling Load Board keeps approved live records and labelled, non-bookable preview rows in two separate layers — and why the live section is allowed to show zero.",
+    "eyebrow": "Logistics / How We Built It · Load Board · 22 October 2026",
+    "h1": "How the Load Board separates live freight from previews",
+    "conciseAnswer": "The Hermes Load Board has two layers that never mix. The live marketplace shows only approved, active, unexpired public records that pass source, permission, freshness and public-visibility checks — and it may show zero. A separate market preview lets carriers evaluate lane, equipment, deadhead, timing and paperwork, and every preview row is clearly marked and not bookable.",
+    "explanation": [
+      "A load board is only useful if a carrier can trust what it shows. The most common way a board loses that trust is by mixing real loads with examples, stale postings or rows nobody has permission to publish. We designed the Hermes Load Board around one rule: a visitor must always be able to tell what is live and what is an illustration.",
+      "The live marketplace is source-gated. A record appears there only when it is approved, active and not expired, and only when the source, permission, freshness and public-visibility checks pass. If nothing passes, the live section says so and shows zero rather than filling the space with something that looks like freight.",
+      "The market preview exists for a different job: helping a carrier decide whether a lane is worth their time. Preview rows can be filtered by city, radius and equipment, and they show the inputs a carrier weighs — lane, equipment, deadhead, timing, paperwork, payment terms and carrier approval. Every preview row is labelled as a preview and is not bookable. The RPM and deadhead calculator uses only the numbers the visitor enters and does not claim a live market rate.",
+      "Shippers and dealers use the same page to start a vehicle transport request, and carriers move from the preview into the carrier-access workflow. Keeping the two layers apart is what lets the board be honest on a quiet day and useful on a busy one."
+    ],
+    "takeaways": [
+      "Live records appear only after source, permission, freshness and visibility checks",
+      "The live section may show zero instead of padding with examples",
+      "Preview rows are clearly labelled and never bookable",
+      "The calculator uses only the numbers you enter"
+    ],
+    "faq": [
+      {
+        "question": "Can I book a load from the preview rows?",
+        "answer": "No. Preview rows are clearly marked as previews and are not bookable. They exist to evaluate lane, equipment, timing and paperwork fit."
+      },
+      {
+        "question": "Why does the live marketplace sometimes show zero loads?",
+        "answer": "The live section shows only approved, active, unexpired public records that pass the source, permission, freshness and visibility checks. When none pass, it shows zero rather than presenting examples as live freight."
+      },
+      {
+        "question": "Is the rate calculator a market quote?",
+        "answer": "No. The RPM and deadhead estimate uses only the numbers you enter and does not claim a live market rate."
+      }
+    ],
+    "related": [
+      {
+        "title": "Hermes Load Board",
+        "body": "Search source-gated active records and review the labelled market preview.",
+        "href": "/load-board/"
+      },
+      {
+        "title": "Hermes Logistics",
+        "body": "Dispatch and back-office support for owner-operators and small fleets.",
+        "href": "/paths/logistics/"
+      },
+      {
+        "title": "Carrier Knowledge Hub",
+        "body": "Checklists and guides before your next transport or carrier review.",
+        "href": "/logistics/resources/"
+      }
+    ],
+    "primaryAction": {
+      "label": "Open the Load Board",
+      "href": "/load-board/"
+    },
+    "secondaryAction": {
+      "label": "Start carrier review",
+      "href": "/logistics/start-car-hauling-dispatch/"
+    },
+    "sourceLabel": "Hermes Load Board public page and live/preview rules, 22 October 2026",
+    "sourceUrl": "https://hermeslogisticsus.com/load-board/",
+    "authorName": "Hermes Logistics",
+    "keywords": [
+      "car hauling load board",
+      "load board live vs preview",
+      "source-gated loads",
+      "auto transport loads",
+      "RPM deadhead calculator",
+      "Hermes Load Board"
+    ],
+    "publicationScore": {
+      "score": 78,
+      "recommendation": "standalone",
+      "reasons": [
+        "Explains a live product rule visible on the Load Board",
+        "Answers a recurring carrier trust question",
+        "Links the Load Board, Logistics owner page and carrier resources"
+      ]
+    },
+    "sourcePublishedAt": "2026-10-22",
+    "datePublished": "2026-10-22",
+    "dateModified": "2026-10-22",
+    "contentTier": "standalone",
+    "currentMarketClaim": false
+  },
+  {
     "id": "hermes-logistics-direction-page-refresh-2026",
     "direction": "logistics",
     "slug": "logistics-page-refresh-dispatch-load-board",
@@ -425,6 +940,264 @@
         "Distinct update intent that does not compete with the Logistics owner page"
       ]
     }
+  },
+  {
+    "id": "hermes-logistics-request-to-handoff-2026",
+    "direction": "logistics",
+    "slug": "logistics-review-request-to-handoff",
+    "title": "From Request to Handoff: Inside a Hermes Logistics Review | Hermes Insights",
+    "description": "The five steps a logistics request moves through at Hermes — context, route and equipment fit, source and capacity boundary, human review and a controlled handoff — and why a person confirms the decision.",
+    "eyebrow": "Logistics / How We Built It · Review Process · 22 October 2026",
+    "h1": "From request to handoff: inside a Hermes logistics review",
+    "conciseAnswer": "Every Hermes logistics request moves through five steps: request context, route and equipment fit, source and capacity boundary, human review and a controlled handoff. Software helps sort and check the request, but a carrier, manager or Hermes team member confirms the operational decision before any real commitment.",
+    "explanation": [
+      "Logistics requests arrive from very different people: a dealer moving inventory, a broker looking for capacity, an owner-operator looking for steady loads. Treating them all with one form wastes everyone's time. The first step is request context — who needs help, what is moving or being evaluated, and which operating path is relevant.",
+      "The second step is route and equipment fit. Route, equipment, authority, service scope and other known constraints shape the next recommendation. The third step is the source and capacity boundary: the review shows only what an approved source can truthfully support. Unknown availability never becomes a live claim, and preview examples stay labelled and non-bookable.",
+      "The fourth step is human review. A carrier, manager or Hermes staff member reviews fit, timing, terms, authority, insurance, capacity or customer context where it applies, before any real operating commitment. Software can prepare the decision; it does not make it.",
+      "The fifth step is a controlled handoff into the workflow that owns the next action — the Find Your Path recommendation, the Load Board, the carrier intake or a direct team review — without creating a second logistics backend. On the live site the car-hauling dispatch intake submits a carrier's details to the logistics team for review; most other forms prepare a summary the visitor sends themselves."
+    ],
+    "takeaways": [
+      "Start with context: who needs help and what is moving",
+      "Fit is checked against route, equipment, authority and scope",
+      "Unknown availability never becomes a live claim",
+      "A person confirms the decision before any real commitment"
+    ],
+    "faq": [
+      {
+        "question": "Does software approve my load or carrier setup automatically?",
+        "answer": "No. Software helps sort and check a request, but a carrier, manager or Hermes team member reviews fit, terms, authority and insurance before any real operating commitment."
+      },
+      {
+        "question": "Where does my request go after the review?",
+        "answer": "Into the workflow that owns the next action: a Find Your Path recommendation, the Load Board, the carrier intake or a direct team review."
+      },
+      {
+        "question": "How do I start as a carrier?",
+        "answer": "Use Start carrier review on the Hermes Logistics page. The car-hauling dispatch intake asks about your equipment, lanes and operating details for a reviewed fit."
+      }
+    ],
+    "related": [
+      {
+        "title": "Find Your Logistics Path",
+        "body": "Answer a few questions and get the right next step.",
+        "href": "/paths/logistics/find-your-path/"
+      },
+      {
+        "title": "Car hauling dispatch",
+        "body": "Dispatch and back-office support for car haulers.",
+        "href": "/logistics/car-hauling-dispatch/"
+      },
+      {
+        "title": "Hermes Logistics",
+        "body": "Freight that moves. A team that answers.",
+        "href": "/paths/logistics/"
+      }
+    ],
+    "primaryAction": {
+      "label": "Start carrier review",
+      "href": "/logistics/start-car-hauling-dispatch/"
+    },
+    "secondaryAction": {
+      "label": "Find your logistics path",
+      "href": "/paths/logistics/find-your-path/"
+    },
+    "sourceLabel": "Hermes Logistics operating path and car-hauling dispatch pages, 22 October 2026",
+    "sourceUrl": "https://hermeslogisticsus.com/logistics/car-hauling-dispatch/",
+    "authorName": "Hermes Logistics",
+    "keywords": [
+      "logistics request review",
+      "car hauling dispatch process",
+      "carrier review",
+      "human review logistics",
+      "dispatch handoff",
+      "Hermes Logistics"
+    ],
+    "publicationScore": {
+      "score": 78,
+      "recommendation": "standalone",
+      "reasons": [
+        "Explains the visible five-step operating path",
+        "Sets expectations on human review before commitment",
+        "Links Find Your Path, dispatch and the Logistics owner page"
+      ]
+    },
+    "sourcePublishedAt": "2026-10-22",
+    "datePublished": "2026-10-22",
+    "dateModified": "2026-10-22",
+    "contentTier": "standalone",
+    "currentMarketClaim": false
+  },
+  {
+    "id": "hermes-logistics-seo-shippers-dealers-2026",
+    "direction": "marketing",
+    "slug": "logistics-seo-what-shippers-and-dealers-look-for",
+    "title": "Logistics SEO: What Shippers and Dealers Look For | Hermes Insights",
+    "description": "Lessons from the Hermes Appleton vehicle transport release: a local page that answers who it serves and what to prepare, separate checklists for auction pickup and carrier capacity, and honest measurement before any success claim.",
+    "eyebrow": "Marketing / Logistics SEO · Case Note · 22 October 2026",
+    "h1": "Logistics SEO: what shippers and dealers look for",
+    "conciseAnswer": "Shippers and dealers do not search for a city name — they look for a page that tells them who it serves, what information is needed and what can affect equipment and timing. Our Appleton vehicle transport release paired one local page with two national checklists and measured visibility in Search Console before claiming anything.",
+    "explanation": [
+      "A useful local logistics page needs more than a city name. It must answer who the page serves, what information is required, what can affect equipment and timing, and where the visitor should go next. That is the brief behind the Appleton vehicle transport page for dealers, auction participants, businesses, private customers and carriers in Appleton and the Fox Valley, Wisconsin.",
+      "Preparation guidance was split into separate resources so it can serve national searches without duplicating the local page. The Auction Vehicle Pickup Checklist covers release, condition, access, timing and pickup information. The Car Hauler Capacity Checklist covers equipment, authority, geography, capacity, schedule and operating constraints. Each URL has its own job and links to the next useful action.",
+      "Trust signals matter as much as keywords. The release uses visible breadcrumbs and structured data where applicable, and it publishes no invented rates, active-capacity claims, guaranteed pickup dates, customer identities or private shipment records. Operational history can suggest research topics; it does not automatically become public content.",
+      "Measurement comes before success claims. Search Console shows the exact Appleton page as visible but weak, and qualified outcomes are still unproven, so the published case keeps discovery, clicks, leads and revenue separate. One query family, warehousing, was a mismatch with the real service, and the decision was not to build a page for it on keyword alone."
+    ],
+    "takeaways": [
+      "Answer who the page serves, what to prepare and what affects equipment and timing",
+      "Split national preparation checklists from the local commercial page",
+      "Publish no invented rates, capacity or customer claims",
+      "Measure visibility before claiming results, and skip keywords the service cannot honestly serve"
+    ],
+    "faq": [
+      {
+        "question": "Does a city page alone rank a logistics company?",
+        "answer": "No. A city name is not enough; the page has to be useful for the specific shipper, dealer or carrier and be supported by honest, linked resources. Results depend on the market and competition."
+      },
+      {
+        "question": "Did the Appleton page generate leads?",
+        "answer": "The published case records search visibility only. Qualified outcomes are still unproven, and the case keeps discovery separate from leads and revenue."
+      },
+      {
+        "question": "Can Hermes do logistics SEO for my transport company?",
+        "answer": "Yes. Hermes Marketing offers SEO for logistics companies with the same rules: real service truth, useful pages and measurement before claims."
+      }
+    ],
+    "related": [
+      {
+        "title": "Appleton vehicle transport SEO case",
+        "body": "From one local service query to a useful logistics resource cluster.",
+        "href": "/case/appleton-vehicle-transport-seo/"
+      },
+      {
+        "title": "Appleton vehicle transport",
+        "body": "Local guide for dealers, auction customers, businesses and carriers.",
+        "href": "/logistics/appleton-wi-vehicle-transport/"
+      },
+      {
+        "title": "SEO for logistics companies",
+        "body": "Search visibility for trucking and transport businesses.",
+        "href": "/services/seo-for-logistics-companies/"
+      }
+    ],
+    "primaryAction": {
+      "label": "Read the Appleton SEO case",
+      "href": "/case/appleton-vehicle-transport-seo/"
+    },
+    "secondaryAction": {
+      "label": "Explore logistics SEO",
+      "href": "/services/seo-for-logistics-companies/"
+    },
+    "sourceLabel": "Hermes Appleton vehicle transport SEO case study, 22 October 2026",
+    "sourceUrl": "https://hermeslogisticsus.com/case/appleton-vehicle-transport-seo/",
+    "authorName": "Hermes Marketing",
+    "keywords": [
+      "logistics SEO",
+      "vehicle transport SEO",
+      "car shipping local SEO",
+      "SEO for transport companies",
+      "Appleton vehicle transport",
+      "auction vehicle pickup checklist"
+    ],
+    "publicationScore": {
+      "score": 78,
+      "recommendation": "standalone",
+      "reasons": [
+        "First-party case with honest measurement boundaries",
+        "Reusable guidance for logistics and transport websites",
+        "Links the case, the local page and the logistics SEO service"
+      ]
+    },
+    "sourcePublishedAt": "2026-10-22",
+    "datePublished": "2026-10-22",
+    "dateModified": "2026-10-22",
+    "contentTier": "standalone",
+    "currentMarketClaim": false
+  },
+  {
+    "id": "hermes-marketing-one-signal-growth-path-2026",
+    "direction": "marketing",
+    "slug": "one-signal-carried-to-learning-growth-path",
+    "title": "One Signal, Carried All the Way to Learning: Our Growth Path | Hermes Insights",
+    "description": "How Hermes Marketing connects strategy, content, distribution, qualified leads and learning into one loop — and why the next channel is added only when the data from the previous one justifies it.",
+    "eyebrow": "Marketing / Growth Method · Strategy to Learning · 22 October 2026",
+    "h1": "One signal, carried all the way to learning: our growth path",
+    "conciseAnswer": "Hermes Marketing treats growth as one signal followed through five steps: choose the signal (strategy), build the message (content), reach the market (distribution), connect demand to sales (qualified lead) and improve with evidence (learning). Each new channel or automation layer is added only when the previous stage produced a reason to fund it.",
+    "explanation": [
+      "Marketing often fails between departments: a campaign brings attention, the website does not convert it, sales never hear about it and nobody learns why. Our growth path is designed to carry one signal from the first decision to the final lesson, so every step can be checked against the one before it.",
+      "Strategy chooses the signal — the business outcome and audience that matter in the next cycle. Content builds the message around that signal. Distribution reaches the market through the channels that fit it, from search to social. The qualified-lead step connects demand to sales so the right inquiries reach a real conversation. Learning closes the loop: actual results refine the message, the workflow and the next actions.",
+      "On a longer horizon the same logic becomes a roadmap rather than a bundle. A common sequence is website, SEO, social media, paid acquisition, CRM and automation, but it is not a mandatory order. Existing assets, lead quality, sales capacity, market demand and budget decide what should happen next, and a 3, 6, 9 or 12-month plan can change as real data replaces assumptions.",
+      "This is also why we do not promise rankings or lead volumes. Results depend on the market, competition, offer, website, channels, investment and execution. What we commit to is the baseline, the scope and the measurements defined before the plan."
+    ],
+    "takeaways": [
+      "Follow one signal from strategy through content, distribution and qualified leads to learning",
+      "Add a channel or automation layer only when the previous stage justifies it",
+      "Treat the 3/6/9/12-month plan as a roadmap that changes with data",
+      "Define baseline and measurements before promising anything"
+    ],
+    "faq": [
+      {
+        "question": "Do we have to start with a new website?",
+        "answer": "No. If the current site can support the next measurable step, improving tracking, conversion, SEO, content or acquisition may be more useful than rebuilding it."
+      },
+      {
+        "question": "Does a bigger budget mean a bigger first project?",
+        "answer": "No. Budget is a planning constraint, not a target to spend. It helps define what can be tested first and how quickly."
+      },
+      {
+        "question": "Can marketing connect to our CRM?",
+        "answer": "Yes. Marketing and IT define the lead journey and the technical handoff together when the volume justifies it."
+      }
+    ],
+    "related": [
+      {
+        "title": "Business growth",
+        "body": "Start with the business problem, budget and next useful step.",
+        "href": "/business-growth/"
+      },
+      {
+        "title": "Hermes Marketing",
+        "body": "Turn attention into customers — again and again.",
+        "href": "/paths/marketing/"
+      },
+      {
+        "title": "SEO & GEO",
+        "body": "Visibility in search and AI answers on a sound technical base.",
+        "href": "/services/seo/"
+      }
+    ],
+    "primaryAction": {
+      "label": "Build a growth plan",
+      "href": "/business-growth/"
+    },
+    "secondaryAction": {
+      "label": "Explore Hermes Marketing",
+      "href": "/paths/marketing/"
+    },
+    "sourceLabel": "Hermes Marketing growth flow and Business Growth roadmap pages, 22 October 2026",
+    "sourceUrl": "https://hermeslogisticsus.com/business-growth/",
+    "authorName": "Hermes Marketing",
+    "keywords": [
+      "marketing growth loop",
+      "strategy to qualified lead",
+      "growth roadmap 3 6 9 12 months",
+      "marketing and sales alignment",
+      "evidence based marketing",
+      "Hermes Marketing"
+    ],
+    "publicationScore": {
+      "score": 78,
+      "recommendation": "standalone",
+      "reasons": [
+        "Explains the published growth flow end to end",
+        "Grounded in the Business Growth roadmap page",
+        "Links growth, marketing and SEO owners"
+      ]
+    },
+    "sourcePublishedAt": "2026-10-22",
+    "datePublished": "2026-10-22",
+    "dateModified": "2026-10-22",
+    "contentTier": "standalone",
+    "currentMarketClaim": false
   },
   {
     "id": "hermes-real-footage-instead-of-ai-artwork-2026",
@@ -513,6 +1286,92 @@
     }
   },
   {
+    "id": "hermes-connect-repair-shops-first-pilot-2026",
+    "direction": "technology",
+    "slug": "repair-shops-first-hermes-connect-pilot",
+    "title": "Repair Shops: The First Hermes Connect Pilot | Hermes Insights",
+    "description": "Why Repair Shops is the first live pilot of Hermes Connect: one booking link, shop profile and services, weekly availability, booking statuses and connected customer and vehicle history.",
+    "eyebrow": "Technology / How We Built It · Hermes Connect · 22 October 2026",
+    "h1": "Repair Shops: the first Hermes Connect pilot",
+    "conciseAnswer": "Repair Shops is the current live pilot of Hermes Connect. It gives independent repair shops one path from a customer's service request to organised follow-up: a public booking link, shop profile and services, weekly availability, booking statuses and customer and vehicle history in one workspace. Other Hermes Connect modules are shown as reference capabilities until they are verified.",
+    "explanation": [
+      "Independent repair shops lose time in the same place: service requests arrive by phone, message and walk-in, and the history ends up scattered across notes. That made repair shops a clear first workflow for Hermes Connect — specific enough to build properly and common enough to matter.",
+      "The pilot covers five essentials. One booking link lets customers choose a service and request a real available time. The shop profile keeps business facts and the service catalogue in one place. Weekly availability is set once instead of repeated in every conversation. Bookings move through clear statuses with history attached, and customer and vehicle context stays connected so the next interaction starts with useful information.",
+      "Setup is designed to build the real workflow before any payment decision. Current terms, including any setup period, are shown on the Repair Shops page and confirmed with the shop before any invoice. Shops can also approve one public profile for the Hermes Catalog.",
+      "We describe the pilot's status precisely: Repair Shops is live, while other verticals and modules are presented as reference capabilities until production verification. The same architecture is what Hermes Technology adapts for other service businesses."
+    ],
+    "takeaways": [
+      "Start a product with one specific, common workflow",
+      "Connect booking, availability, customers and vehicles in one place",
+      "Build the real workflow before asking for payment",
+      "Label every other module honestly until it is verified"
+    ],
+    "faq": [
+      {
+        "question": "Is all of Hermes Connect live?",
+        "answer": "No. Repair Shops is the current live pilot. Other modules are reference capabilities until they are verified in production."
+      },
+      {
+        "question": "What does Repair Shops cost?",
+        "answer": "Current terms, including any setup period, are shown on the Repair Shops page and confirmed with the shop before any invoice."
+      },
+      {
+        "question": "Can Hermes build a similar system for another type of business?",
+        "answer": "Yes. Hermes Technology adapts the same architecture for other service businesses, starting with the smallest useful workflow."
+      }
+    ],
+    "related": [
+      {
+        "title": "Hermes Connect · Repair Shops",
+        "body": "Bookings, customers and availability for independent repair shops.",
+        "href": "/services/hermes-connect/repair-shops/"
+      },
+      {
+        "title": "Hermes Connect",
+        "body": "The Hermes product family for service businesses.",
+        "href": "/services/hermes-connect/"
+      },
+      {
+        "title": "Hermes Catalog",
+        "body": "Approved public business profiles customers can find.",
+        "href": "/businesses/"
+      }
+    ],
+    "primaryAction": {
+      "label": "Explore Repair Shops",
+      "href": "/services/hermes-connect/repair-shops/"
+    },
+    "secondaryAction": {
+      "label": "Explore Hermes Connect",
+      "href": "/services/hermes-connect/"
+    },
+    "sourceLabel": "Hermes Connect Repair Shops product page, 22 October 2026",
+    "sourceUrl": "https://hermeslogisticsus.com/services/hermes-connect/repair-shops/",
+    "authorName": "Hermes Technology",
+    "keywords": [
+      "auto repair shop software",
+      "repair shop booking system",
+      "Hermes Connect",
+      "repair shop CRM",
+      "online scheduling for repair shops",
+      "service business CRM"
+    ],
+    "publicationScore": {
+      "score": 78,
+      "recommendation": "standalone",
+      "reasons": [
+        "Live product with a public page and clear status",
+        "Concrete workflow and pricing taken from the product page",
+        "Links the product, Hermes Connect and Catalog"
+      ]
+    },
+    "sourcePublishedAt": "2026-10-22",
+    "datePublished": "2026-10-22",
+    "dateModified": "2026-10-22",
+    "contentTier": "standalone",
+    "currentMarketClaim": false
+  },
+  {
     "id": "hermes-marketing-repeatable-growth-system-brief-2026",
     "direction": "marketing",
     "slug": "repeatable-growth-system-marketing-brief",
@@ -596,6 +1455,178 @@
         "Links the removed CTA destination back to its owner page"
       ]
     }
+  },
+  {
+    "id": "hermes-why-wisconsin-first-2026",
+    "direction": "logistics",
+    "slug": "why-hermes-logistics-started-wisconsin-first",
+    "title": "Why Hermes Logistics Started Wisconsin-First | Hermes Insights",
+    "description": "Why Hermes Logistics leads with Wisconsin while supporting eligible carriers across the United States, what the Wisconsin guides cover, and what we deliberately do not claim.",
+    "eyebrow": "Logistics / How We Built It · Service Area · 22 October 2026",
+    "h1": "Why we started Wisconsin-first",
+    "conciseAnswer": "Hermes Logistics leads with Wisconsin and supports eligible carriers and freight partners across the United States. Starting with one state let us build genuinely useful local content — statewide and city vehicle transport guides — instead of mass-produced city pages, and keep every service-area claim honest.",
+    "explanation": [
+      "A logistics company that claims to be everywhere at once usually ends up saying nothing specific anywhere. We chose a different starting point: one state where we could describe routes, requests and planning inputs in useful detail, while still supporting eligible carriers and partners across the United States.",
+      "That is why every Hermes direction page carries a clear service-area statement and why the Logistics page says “Wisconsin first · USA”. The Wisconsin vehicle transport hub covers dealer, auction, business and private requests, with local pages for areas such as Appleton, Milwaukee, Madison, Green Bay, Oshkosh, Kenosha, Racine, Eau Claire, La Crosse and Fond du Lac.",
+      "Just as important is what we decided not to do. We do not invent a Wisconsin address, we do not claim a physical office in every market, and we did not mass-generate city pages or add keyword stuffing. Each local page exists because it answers a real planning question for dealers, auction customers, businesses, private customers and car haulers.",
+      "Wisconsin-first is a starting point, not a boundary. Carriers outside the state can still start a carrier review, and shippers can request a route review for any eligible lane. The local guides simply mean that when a request touches Wisconsin, the planning information is already on the page."
+    ],
+    "takeaways": [
+      "One well-served state beats thin pages for every market",
+      "Service-area statements stay honest: Wisconsin first, eligible partners across the USA",
+      "No invented addresses, mass city pages or keyword stuffing",
+      "Local guides answer real planning questions"
+    ],
+    "faq": [
+      {
+        "question": "Does Hermes only work in Wisconsin?",
+        "answer": "No. Hermes Logistics leads with Wisconsin and supports eligible carriers and freight partners across the United States."
+      },
+      {
+        "question": "Does Hermes have an office in every Wisconsin city it covers?",
+        "answer": "No. The local pages are route and planning guides. Hermes does not claim a physical office in every market."
+      },
+      {
+        "question": "Where do I find the Wisconsin guides?",
+        "answer": "Start at the Wisconsin vehicle transport hub, which links to statewide services and city pages such as Appleton, Milwaukee and Madison."
+      }
+    ],
+    "related": [
+      {
+        "title": "Wisconsin vehicle transport",
+        "body": "Statewide hub with service and city guides.",
+        "href": "/logistics/wisconsin-vehicle-transport/"
+      },
+      {
+        "title": "Appleton vehicle transport",
+        "body": "A practical route guide for dealers, auctions, businesses and car haulers.",
+        "href": "/logistics/appleton-wi-vehicle-transport/"
+      },
+      {
+        "title": "Hermes Logistics",
+        "body": "Dispatch and back-office support, Wisconsin first.",
+        "href": "/paths/logistics/"
+      }
+    ],
+    "primaryAction": {
+      "label": "Open the Wisconsin guides",
+      "href": "/logistics/wisconsin-vehicle-transport/"
+    },
+    "secondaryAction": {
+      "label": "Start carrier review",
+      "href": "/logistics/start-car-hauling-dispatch/"
+    },
+    "sourceLabel": "Hermes Wisconsin vehicle transport hub and service-area rules, 22 October 2026",
+    "sourceUrl": "https://hermeslogisticsus.com/logistics/wisconsin-vehicle-transport/",
+    "authorName": "Hermes Logistics",
+    "keywords": [
+      "Wisconsin vehicle transport",
+      "Wisconsin truck dispatch",
+      "Wisconsin car hauling",
+      "Milwaukee vehicle transport",
+      "Appleton vehicle transport",
+      "Hermes Logistics Wisconsin"
+    ],
+    "publicationScore": {
+      "score": 78,
+      "recommendation": "standalone",
+      "reasons": [
+        "Explains a visible positioning choice on every direction page",
+        "Links the Wisconsin hub and city guides",
+        "Sets honest service-area boundaries"
+      ]
+    },
+    "sourcePublishedAt": "2026-10-22",
+    "datePublished": "2026-10-22",
+    "dateModified": "2026-10-22",
+    "contentTier": "standalone",
+    "currentMarketClaim": false
+  },
+  {
+    "id": "hermes-marketing-website-before-campaign-2026",
+    "direction": "marketing",
+    "slug": "why-we-built-the-website-before-the-campaign",
+    "title": "Why We Built the Website Before the Campaign | Hermes Insights",
+    "description": "Hermes built and tested its own website — one entrance for four directions with clear contact routes — before promoting it. Here is why a campaign needs a destination that explains, converts and measures, and when a website is not the first step.",
+    "eyebrow": "Marketing / Case Note · Website First · 22 October 2026",
+    "h1": "Why we built the website before the campaign",
+    "conciseAnswer": "A campaign can only be as good as the place it sends people. Hermes runs four different directions, so we first built one corporate website where each visitor chooses a direction and finds its services, evidence and the right contact route. Only a destination that explains, converts and measures makes paid or organic promotion worth its cost.",
+    "explanation": [
+      "Hermes covers logistics, technology, an academy and marketing. Promoting that mix before the website could explain it would have sent visitors to a page that tried to say everything at once. The assignment was to make a complex company feel clear, credible and ready for conversation without blending audiences or exposing internal company knowledge.",
+      "The solution is progressive disclosure. Visitors first choose a direction, then see its services, process, evidence and correct contact route. Each direction has its own customer journey and contact path, and the site carries search metadata, structured service data, a sitemap and AI-readable context so that search engines and assistants can understand it as well.",
+      "Quality was treated as part of the product. Releases check desktop and mobile layouts, keyboard behaviour, reduced motion, images, overflow, routing, forms and browser errors, and changes go through a repeatable build, test and deployment flow. That matters for marketing: a campaign that lands on a broken form or a slow page wastes the budget before anyone reads the offer.",
+      "This does not mean every business must start with a new website. If an existing site can support the next measurable step, improving tracking, conversion, SEO, content or acquisition may be more useful than rebuilding it. We built ours first because the old structure could not explain four directions — and because our own website is the first proof of the services we sell."
+    ],
+    "takeaways": [
+      "A campaign needs a destination that explains, converts and measures",
+      "Progressive disclosure lets one site serve four different audiences",
+      "Test forms, routes and mobile layouts before sending paid traffic",
+      "A new website is not automatically the first step for every business"
+    ],
+    "faq": [
+      {
+        "question": "Should every business build a website before advertising?",
+        "answer": "No. If the current site can support the next measurable step, improving tracking, conversion or acquisition may be more useful. A redesign should solve a specific problem."
+      },
+      {
+        "question": "What did Hermes check before promoting the site?",
+        "answer": "Layouts on desktop and mobile, keyboard use, reduced motion, images, overflow, routing, contact previews and browser errors, as part of a repeatable release process."
+      },
+      {
+        "question": "Can Hermes build the same kind of website for us?",
+        "answer": "Yes. Hermes Technology builds custom, fast websites, and Hermes Marketing connects them to search, social and sales follow-up."
+      }
+    ],
+    "related": [
+      {
+        "title": "Hermes website case study",
+        "body": "One digital front door for four businesses.",
+        "href": "/case/it-development/"
+      },
+      {
+        "title": "Website development",
+        "body": "Custom, fast, multilingual websites built for search and a clear path to contact.",
+        "href": "/services/website-development/"
+      },
+      {
+        "title": "Business growth",
+        "body": "Start with the business problem, budget and next useful step.",
+        "href": "/business-growth/"
+      }
+    ],
+    "primaryAction": {
+      "label": "See how the website was built",
+      "href": "/case/it-development/"
+    },
+    "secondaryAction": {
+      "label": "Request a growth review",
+      "href": "/paths/marketing/#contact"
+    },
+    "sourceLabel": "Hermes website case study and website development service page, 22 October 2026",
+    "sourceUrl": "https://hermeslogisticsus.com/services/website-redesign/",
+    "authorName": "Hermes Marketing",
+    "keywords": [
+      "website before marketing campaign",
+      "conversion ready website",
+      "landing page before ads",
+      "website development for service business",
+      "progressive disclosure website",
+      "Hermes Marketing"
+    ],
+    "publicationScore": {
+      "score": 78,
+      "recommendation": "standalone",
+      "reasons": [
+        "First-party case note with a verifiable live result",
+        "Practical guidance on sequencing website and campaigns",
+        "Links case study, website service and growth owners"
+      ]
+    },
+    "sourcePublishedAt": "2026-10-22",
+    "datePublished": "2026-10-22",
+    "dateModified": "2026-10-22",
+    "contentTier": "standalone",
+    "currentMarketClaim": false
   },
   {
     "id": "i-am-voice-first-startup-development-2026",

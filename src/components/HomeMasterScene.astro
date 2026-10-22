@@ -1,5 +1,4 @@
 ---
-import { ArrowUpRight } from "@lucide/astro";
 import { publicPaths } from "../data/public-paths";
 
 const flowStages = ["event", "system", "human", "outcome"] as const;
@@ -306,7 +305,6 @@ const routeMeta: Record<string, { accent: string; detail: string; searchDetail?:
               <strong>Hermes<br />{path.brandLabel.replace("Hermes ", "")}</strong>
               <span class="home-route-detail">{meta.detail}</span>
             </span>
-            <span class="home-master-route-arrow" aria-hidden="true"><ArrowUpRight size={24} /></span>
           </a>
         );
       })}
@@ -358,27 +356,26 @@ const routeMeta: Record<string, { accent: string; detail: string; searchDetail?:
         }));
       }
       travelDot.classList.add("is-ready");
-      target.classList.remove("home-dot-impact");
-      void target.offsetWidth;
-      target.classList.add("home-dot-impact");
+      // Effects play when the dot ARRIVES (after its glide), not when it leaves.
+      const isFinal = index === dotTargets.length - 1;
+      const arriveDelay = fromAbove ? 380 : 980;
       const bar = document.querySelector<HTMLElement>(`[data-home-route][data-route-id="${steps[index].route}"] [data-home-route-bar]`);
-      bar?.classList.remove("home-route-bar-impact");
-      if (bar) {
-        void bar.offsetWidth;
-        bar.classList.add("home-route-bar-impact");
-      }
-      // The same-colour stripe in the header answers too (Claude Design spec).
       const navStripe = document.querySelector<HTMLElement>(`.desktop-nav [data-nav-tone="${steps[index].route}"]`);
-      navStripe?.classList.remove("is-dot-landing");
-      if (navStripe) {
-        void navStripe.offsetWidth;
-        navStripe.classList.add("is-dot-landing");
-      }
-      window.setTimeout(() => {
-        navStripe?.classList.remove("is-dot-landing");
-        target.classList.remove("home-dot-impact");
-        bar?.classList.remove("home-route-bar-impact");
-      }, 620);
+      stepTimers.push(window.setTimeout(() => {
+        // The letter squashes under the dot; the dot hops (or, on the final period, drops and bounces).
+        for (const [element, className] of [[target, "home-dot-impact"], [travelDot, isFinal ? "is-final-bounce" : "is-hop"], [bar, "home-route-bar-impact"], [navStripe, "is-dot-landing"]] as const) {
+          if (!element) continue;
+          element.classList.remove(className);
+          void element.offsetWidth;
+          element.classList.add(className);
+        }
+        stepTimers.push(window.setTimeout(() => {
+          navStripe?.classList.remove("is-dot-landing");
+          target.classList.remove("home-dot-impact");
+          bar?.classList.remove("home-route-bar-impact");
+          travelDot.classList.remove("is-hop", "is-final-bounce");
+        }, isFinal ? 1500 : 700));
+      }, arriveDelay));
     };
     const runCycle = () => {
       clearDotTimers();
@@ -645,14 +642,18 @@ const routeMeta: Record<string, { accent: string; detail: string; searchDetail?:
 .home-master-display span{color:inherit}
 .home-master-display{position:relative}
 .home-master-display .home-display-word{color:inherit}
-.home-master-display [data-home-dot-target]{color:inherit}
+.home-master-display [data-home-dot-target]{color:inherit;display:inline-block;transform-origin:50% 92%}
 .home-master-display .home-display-travel-dot{position:absolute;z-index:2;left:0;top:0;width:.13em;height:.13em;border-radius:50%;pointer-events:none;opacity:0;transform:translate(-50%,-40%);background:var(--dir-logistics);transition:left 1.08s cubic-bezier(.22,1,.36,1),top 1.08s cubic-bezier(.22,1,.36,1),transform .42s cubic-bezier(.22,1,.36,1),background-color .38s ease,opacity .18s ease}
 .home-master-display .home-display-travel-dot.is-ready{opacity:1}
 .home-master-display [data-home-dot-target].home-dot-impact{animation:home-dot-letter-impact .62s cubic-bezier(.2,.8,.2,1)}
 .home-master-route-copy [data-home-route-bar].home-route-bar-impact{animation:home-route-bar-impact .62s cubic-bezier(.2,.8,.2,1)}
-@keyframes home-dot-letter-impact{0%,100%{transform:translateY(0)}42%{transform:translateY(.055em)}68%{transform:translateY(-.018em)}}
+@keyframes home-dot-letter-impact{0%,100%{transform:none}30%{transform:scale(1.07,.82)}60%{transform:scale(.97,1.05)}80%{transform:scale(1.01,.98)}}
+.home-master-display .home-display-travel-dot.is-hop{animation:home-dot-hop .62s cubic-bezier(.3,.7,.3,1)}
+.home-master-display .home-display-travel-dot.is-final-bounce{animation:home-dot-final-bounce 1.4s cubic-bezier(.3,.6,.4,1)}
+@keyframes home-dot-hop{0%{translate:0 0;scale:1}22%{translate:0 0;scale:1.4 .65}55%{translate:0 -.6em;scale:.88 1.16}82%{translate:0 0;scale:1.18 .84}100%{translate:0 0;scale:1}}
+@keyframes home-dot-final-bounce{0%{translate:0 0;scale:1.45 .6}18%{translate:0 -.9em;scale:.9 1.15}34%{translate:0 0;scale:1.3 .72}48%{translate:0 -.45em;scale:.94 1.08}62%{translate:0 0;scale:1.18 .84}74%{translate:0 -.18em;scale:1}86%{translate:0 0;scale:1.07 .93}100%{translate:0 0;scale:1}}
 @keyframes home-route-bar-impact{0%,100%{transform:translateY(0) scale(1,1)}42%{transform:translateY(-7px) scale(.8,1.45)}72%{transform:translateY(-2px) scale(1.35,.7)}}
-@media(prefers-reduced-motion:reduce){.home-master-display .home-display-travel-dot{display:none!important;transition:none!important}.home-master-display [data-home-dot-target],.home-master-route-copy [data-home-route-bar]{animation:none!important}}
+@media(prefers-reduced-motion:reduce){.home-master-display .home-display-travel-dot{display:none!important;transition:none!important;animation:none!important}.home-master-display [data-home-dot-target],.home-master-route-copy [data-home-route-bar]{animation:none!important}}
 .home-master-script{position:relative;width:max-content;max-width:100%;margin:.55rem 0 1rem;color:#59606b;font:650 clamp(.98rem,1.35vw,1.15rem)/1.35 var(--font-body);letter-spacing:.08em;text-transform:uppercase;transform:none}
 .home-master-script::after{content:none}
 .home-master-ink-note{max-width:92ch;text-wrap:balance;margin:0;color:#666c79;font-size:clamp(.96rem,1.22vw,1.16rem);line-height:1.6}
@@ -665,8 +666,10 @@ const routeMeta: Record<string, { accent: string; detail: string; searchDetail?:
 .home-master-route-academy{background:#0a3328}
 .home-master-route-marketing{background:#3b1e16}
 @media(hover:hover) and (pointer:fine) and (prefers-reduced-motion:no-preference){.home-master-route:is(:hover,:focus-visible){z-index:3;transform:translateY(-8px) scale(1.015);box-shadow:0 26px 58px rgba(10,22,79,.18)}}
-.home-master-route::before{content:"";position:absolute;z-index:4;left:0;right:0;bottom:0;height:6px;background:var(--route-accent);transform:scaleX(0);transform-origin:center;transition:transform .8s cubic-bezier(.22,1,.36,1);pointer-events:none}
-.home-master-route:is(:hover,:focus-visible)::before{transform:scaleX(1)}
+/* Owner 22.10: no hard lit bar — a soft colour shimmer of the direction tone flows along the base on hover. */
+.home-master-route::before{content:"";position:absolute;z-index:4;left:12%;right:12%;bottom:0;height:3px;border-radius:3px 3px 0 0;background:linear-gradient(90deg,transparent,var(--route-accent),color-mix(in srgb,var(--route-accent) 35%,#fff),var(--route-accent),transparent);background-size:220% 100%;opacity:0;transition:opacity .5s ease;pointer-events:none}
+.home-master-route:is(:hover,:focus-visible)::before{opacity:.85;animation:home-route-shimmer 2.4s linear infinite}
+@keyframes home-route-shimmer{from{background-position:110% 0}to{background-position:-110% 0}}
 .home-master-route-logistics{--flow-panel:#0b2139;--flow-kicker:#0b2139;--flow-border:#dff3ff99;--flow-dot:#a9e4ff;--flow-light:#9ed8ff;--flow-line:#d8f4ff;--flow-glow:#51bfff}
 .home-master-route-marketing{--flow-panel:#102c25;--flow-kicker:#102c25;--flow-border:#dfffe999;--flow-dot:#9de7b7;--flow-light:#a9edbf;--flow-line:#dcffe7;--flow-glow:#45ce78}
 .home-master-route-technology{--flow-panel:#3a281e;--flow-kicker:#3a281e;--flow-border:#ffe8c799;--flow-dot:#ffc274;--flow-light:#ffd096;--flow-line:#ffe4b5;--flow-glow:#ff9f4b}
@@ -873,7 +876,7 @@ animation:home-logistics-rain 1.45s linear infinite;opacity:.28;filter:blur(.18p
 }
 @media(hover:none){.home-live-explainer,.home-live-step{opacity:1;transform:none}.home-live-path path{stroke-dashoffset:0}}
 @media(max-width:700px) and (hover:none){.home-master-route-arrow{display:grid;width:44px;height:44px}.home-master-route-copy strong{padding-right:52px}}
-@media(prefers-reduced-motion:reduce){.home-master-route:is(:hover,:focus-visible){transform:none!important;box-shadow:none!important;transition:none!important}.home-master-route:is(:hover,:focus-visible)::before{transition:none!important}.home-logistics-cinematic{display:none!important}.home-master-route-logistics .home-portal-art img{animation:none!important;transform:none!important}.home-logistics-weather{animation:none!important;transition:none!important}.home-portal-art img{transition:none!important}.home-display-i,.home-display-i::after,.home-master-script::after,.home-scene-detail,.home-scene-detail *{animation:none!important;transition:none!important}.home-live-explainer,.home-live-step{opacity:1!important;transform:none!important;transition:none!important}.home-live-path path{stroke-dashoffset:0!important;animation:none!important}}
+@media(prefers-reduced-motion:reduce){.home-master-route:is(:hover,:focus-visible){transform:none!important;box-shadow:none!important;transition:none!important}.home-master-route:is(:hover,:focus-visible)::before{transition:none!important;animation:none!important}.home-logistics-cinematic{display:none!important}.home-master-route-logistics .home-portal-art img{animation:none!important;transform:none!important}.home-logistics-weather{animation:none!important;transition:none!important}.home-portal-art img{transition:none!important}.home-display-i,.home-display-i::after,.home-master-script::after,.home-scene-detail,.home-scene-detail *{animation:none!important;transition:none!important}.home-live-explainer,.home-live-step{opacity:1!important;transform:none!important;transition:none!important}.home-live-path path{stroke-dashoffset:0!important;animation:none!important}}
 /* Phase 1: the real creative process is the visual proof, without decorative mock dashboards. */
 :is(.home-marketing-layer-stack,.home-cinematic-layer-stack){position:absolute;inset:0;display:block;overflow:hidden;background:#cdc8c5}
 :is(.home-marketing-layer-stack,.home-cinematic-layer-stack)>img,
