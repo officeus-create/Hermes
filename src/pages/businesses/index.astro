@@ -50,7 +50,7 @@ const schema = [
           </label>
           <button type="submit">Search Catalog</button>
         </form>
-        <div class="popular-searches" aria-label="Popular catalog searches">
+        <div class="popular-searches" role="group" aria-label="Popular catalog searches">
           <span>Try:</span>
           {popularTerms.map((term) => <button type="button" data-catalog-query={term}>{term}</button>)}
         </div>
@@ -164,11 +164,11 @@ const schema = [
           <article><span class="market-kicker">Academy expansion</span><strong>110-country target registry</strong><p>Each target market carries a primary local language, optional secondary languages and the same four launch tracks: Logistics, Marketing, Sales and COO / Operations. These are recruitment and training targets, not confirmed local branches or open cohorts everywhere.</p><details><summary>View all 110 target countries + primary language</summary><div class="country-cloud">{academyCountryRegistry.map((country) => <span>{country.country} · {country.primaryLanguage}</span>)}</div></details><a class="catalog-benefit__link" href="/paths/academy/#academy-global-network">Explore international training and team pathways →</a></article>
           <article><span class="market-kicker">Marketing growth markets</span><strong>{priorityGrowthCities.length} priority global cities</strong><p>These cities are commercial targeting priorities for website, SEO/GEO, SMM and growth work delivered remotely or under an approved local scope. They are not claims of a Hermes office.</p><div class="city-cloud">{priorityGrowthCities.map((city) => <span>{city}</span>)}</div></article>
         </div>
-        <div class="academy-country-contract" aria-label="Academy country localization contract">
+        <div class="academy-country-contract" role="group" aria-label="Academy country localization contract">
           <div><span class="market-kicker">Country launch contract</span><h3>Local language first. One Academy truth underneath.</h3><p>Country pages do not invent a local office. A localized page can explain the training path, application, practice model and possible next roles in the market language while reusing the same canonical Academy curriculum and human-review boundaries.</p><div class="track-cloud">{academyLaunchTracks.map((track) => <span>{track === "operations" ? "COO / Operations" : track[0].toUpperCase() + track.slice(1)}</span>)}</div></div>
           <div><span class="market-kicker">Publication gate</span><h3>Compliance, payment and useful content before indexing.</h3><p>Every country remains registry-only until current sanctions/compliance screening, an available payment or invoicing path, an approved cohort/application route, native-language QA and unique useful content are all verified. Registration targets are not automatically sales-approved markets.</p></div>
         </div>
-        <div class="localized-country-grid" aria-label="Localized Academy country examples">
+        <div class="localized-country-grid" role="group" aria-label="Localized Academy country examples">
           {academyLocalizedSamples.map((country) => <article data-country-sample={country.slug}><div><span>{country.country}</span><small>{country.primaryLanguage}{country.secondaryLocales.length ? ` · + ${country.secondaryLocales.join(", ")}` : ""}</small></div><h3 lang={country.primaryLocale}>{country.localizedHeadline}</h3><p lang={country.primaryLocale}>{country.localizedBody}</p><footer><span>Localized Academy page live</span><span>Commercial terms reviewed at application</span></footer><a class="country-open" href={`/academy/countries/${country.slug}/`}>Open {country.primaryLanguage} Academy page →</a></article>)}
         </div>
         <p class="country-source-note">Future localized lesson/examples may be adapted from approved Hermes training and recruiting evidence, including historical Telegram/email/work sources, only after anonymization, current-fact reconciliation and privacy review. Raw candidate messages, personal data and unverified employment promises do not become public SEO content.</p>
