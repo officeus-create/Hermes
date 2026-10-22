@@ -3,7 +3,7 @@ import { expect, test } from "@playwright/test";
 const directions = [
   ["logistics", "Hermes Logistics", "Move freight"],
   ["technology", "Hermes Technology", "Build systems"],
-  ["academy", "Hermes Academy", "Develop people"],
+  ["academy", "Hermes Academy", "Learn by doing"],
   ["marketing", "Hermes Marketing", "Grow demand"],
 ] as const;
 
