@@ -465,17 +465,17 @@ const languageLinks = siteLocales.filter((language) => !isCatalogLocaleRoute || 
     overflow:hidden;
   }
   .site-header[data-approved-visual-shell="true"]> .direction-product-nav .direction-product-nav__inner{width:100%;max-width:none;min-height:54px;margin:0;padding:0}
-  @media(max-width:1100px){
-    .site-header[data-approved-visual-shell="true"]:has(> .direction-product-nav) .wordmark>span:last-child,
-    .site-header[data-approved-visual-shell="true"]:has(> .direction-product-nav) .header-cta{display:none}
+  @media (max-width:1100px) and (min-width:901px) {
+    .site-header[data-approved-visual-shell="true"]:has(> .direction-product-nav) .wordmark>span:last-child{display:none}
     .site-header[data-approved-visual-shell="true"]:has(> .direction-product-nav) .desktop-nav{display:flex;overflow:visible}
     .site-header[data-approved-visual-shell="true"]:has(> .direction-product-nav) .header-actions{display:flex}
     .site-header[data-approved-visual-shell="true"]:has(> .direction-product-nav) .menu-button{display:none}
   }
-  @media(max-width:640px){
+  @media(max-width:900px){
+    .site-header[data-approved-visual-shell="true"]:has(> .direction-product-nav) .desktop-nav,
     .site-header[data-approved-visual-shell="true"]:has(> .direction-product-nav) .header-actions{display:none}
     .site-header[data-approved-visual-shell="true"]:has(> .direction-product-nav) .menu-button{display:grid;color:#111318}
-    .site-header[data-approved-visual-shell="true"]:has(> .direction-product-nav) .desktop-nav{display:none}
+    .site-header[data-approved-visual-shell="true"]:has(> .direction-product-nav) .mobile-nav{top:calc(100% + 8px)}
     .site-header[data-approved-visual-shell="true"]> .direction-product-nav{padding-inline:8px}
   }
   .site-header[data-home-portal="true"],
@@ -854,6 +854,81 @@ const languageLinks = siteLocales.filter((language) => !isCatalogLocaleRoute || 
 .site-header .header-actions .hc-account-menu > summary .hc-account-menu-copy small,
 .site-header .header-actions .hc-account-menu > summary svg {
   color: rgba(236, 241, 250, .70) !important;
+}
+
+@media (min-width:901px) {
+  .site-header[data-approved-visual-shell="true"] .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    padding: 3px;
+    border: 1px solid rgba(17,19,24,.10);
+    border-radius: 999px;
+    background: rgba(255,255,255,.68);
+    box-shadow: 0 6px 18px rgba(17,19,24,.05);
+  }
+  .site-header[data-approved-visual-shell="true"] .header-login-link,
+  .site-header[data-approved-visual-shell="true"] .language-menu > summary {
+    min-height: 40px;
+    padding: 0 12px;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    color: #111318;
+    box-shadow: none;
+    font-size: .82rem;
+    font-weight: 650;
+  }
+  .site-header[data-approved-visual-shell="true"] .header-login-link:hover,
+  .site-header[data-approved-visual-shell="true"] .header-login-link:focus-visible,
+  .site-header[data-approved-visual-shell="true"] .language-menu > summary:hover,
+  .site-header[data-approved-visual-shell="true"] .language-menu > summary:focus-visible,
+  .site-header[data-approved-visual-shell="true"] .language-menu[open] > summary {
+    background: rgba(17,19,24,.055);
+  }
+  .site-header[data-approved-visual-shell="true"] .header-cta {
+    min-height: 40px;
+    padding: 0 16px;
+    border: 0;
+    border-radius: 999px;
+    background: #0a164f;
+    color: #fff;
+    box-shadow: none;
+    font-size: .82rem;
+    font-weight: 700;
+  }
+  .site-header[data-approved-visual-shell="true"] .header-actions .hc-account-menu > summary {
+    min-height: 40px;
+    max-width: 170px;
+    padding: 4px 10px 4px 5px;
+    border: 0 !important;
+    background: transparent !important;
+    color: #111318 !important;
+    box-shadow: none !important;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+  .site-header[data-approved-visual-shell="true"] .header-actions .hc-account-menu > summary:hover,
+  .site-header[data-approved-visual-shell="true"] .header-actions .hc-account-menu > summary:focus-visible,
+  .site-header[data-approved-visual-shell="true"] .header-actions .hc-account-menu[open] > summary {
+    border: 0 !important;
+    background: rgba(17,19,24,.055) !important;
+    color: #111318 !important;
+    box-shadow: none !important;
+    transform: none;
+  }
+  .site-header[data-approved-visual-shell="true"] .header-actions .hc-account-menu > summary .hc-account-avatar-compact {
+    background: #111318 !important;
+    color: #fff !important;
+    box-shadow: none !important;
+  }
+  .site-header[data-approved-visual-shell="true"] .header-actions .hc-account-menu > summary .hc-account-menu-copy strong,
+  .site-header[data-approved-visual-shell="true"] .header-actions .hc-account-menu > summary svg {
+    color: #111318 !important;
+  }
+  .site-header[data-approved-visual-shell="true"] .header-actions .hc-account-menu > summary .hc-account-menu-copy small {
+    display: none;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
