@@ -695,3 +695,47 @@ EVIDENCE: `src/pages/index.astro`, `src/pages/paths/[slug].astro`, `src/data/pub
 LESSON: Reuse the approved entity @id on Service providers across all existing canonical directions; never fragment the graph by repeating weaker differently named Organization objects.
 
 REUSE_RULE: Keep new entity references and structured facts grounded in approved public legal identity. A clean JSON-LD diff is only a CODE stage; GSC URL inspection, real indexing and qualified revenue measurements remain separate.
+
+## ERR-HOME-V3-SINGLE-SHOT-AND-SPACE-PATH-20261022 — RESOLVED_IN_PR / RELEASE_HOLD
+
+STATUS: Resolved on the review branch for PR #1997; no merge, deployment or production-success claim.
+
+PROBLEM: The approved Claude Home composition existed, but all four direction windows still contained one-shot media, so the visible result did not deliver the approved multi-shot films. Independently, `npm test` failed when the authorized checkout path contained a space (`WEB 2`).
+
+ROOT_CAUSE: Earlier implementation stopped after shell/CI work when the exact owner-approved stock masters were unavailable. The test harness also used `new URL(...).pathname` as a filesystem path without decoding `%20`, and the benchmark evidence scanner parsed an absolute repository path containing a space as an external read.
+
+FAILED_APPROACH: Treating posters, a hover-assisted playback assertion, green historical CI or repeated workflow polling as proof that the films were complete. Treating an encoded file URL pathname as a portable local path also made the required unit gate environment-dependent.
+
+WORKING_APPROACH: Recovered the ten exact Pexels source IDs embedded in the approved Claude Design, assembled four local 8–9 second multi-shot H.264 films with matching posters, kept the existing autonomous/reduced-motion/Save-Data runtime and route ownership unchanged, and created a ten-frame contact sheet. Decoded file-URL paths at the filesystem boundary and made repository-only evidence detection remove the exact repository root before absolute-path classification.
+
+EVIDENCE: `docs/evidence/home-v3-multishot-contact-sheet-2026-10-22.jpg`; updated source lock and media provenance; current-worktree `npm run build` PASS (411 pages, zero errors), `npm test` PASS, focused Home playback/route/responsive suites PASS 23/23. Full `npm run test:e2e` completed 2418 passed / 16 skipped / 2 unrelated timing flakes; both failures passed immediately when rerun together (Catalog CLS 0.0057–0.0817 and Repair Shop recovery PASS). Exact-head CI remains the release gate.
+
+LESSON: A cinematic acceptance criterion needs source provenance, actual multi-shot frames, autonomous normal-speed playback, reduced-motion fallback and current-head browser evidence. CI state and a static screenshot are necessary evidence, not the visible deliverable itself.
+
+REUSE_RULE: For approved film work, lock exact source IDs, self-host bounded outputs, verify first/middle/last frames plus `currentTime` without hover, preserve accessibility/network fallbacks, and test repository tooling from a path containing spaces. Never change unrelated product behavior to hide a one-run browser timing flake.
+
+## ERR-DIRECTIONS-LATEST-DESIGN-DRIFT-20261022 — RESOLVED_IN_BRANCH / EXACT_HEAD_CI_PENDING
+
+PROBLEM: PR #1997 completed the approved Home films but the four root Direction pages still reflected an older Claude prototype: separate full-width submenu, legacy hero copy, one CTA, a narrow media window with a solid lower third, outdated direction accents, and no semantic submenu motion.
+
+ROOT_CAUSE: The earlier implementation and handoff treated the first inspectable Directions export as final while the same approved Claude Design project later gained a joined header/submenu, new direction-specific copy and CTA pairs, full-window 4:5 media, corrected navigation order, and animated semantic icons.
+
+FAILED_APPROACH: Promoting the already-green PR head or using its historical screenshot/CI as evidence of visual completion. The exact approved design remained the authority and contained a materially newer iteration.
+
+WORKING_APPROACH: Re-read the live approved Claude Design, extracted its exact copy, links, colors, navigation order and window labels, then integrated those values into the existing shared Astro direction shell. Kept existing canonical routes, deeper operational sections, local multi-shot films, progressive media runtime, forms, analytics and search owners unchanged. Added nine reduced-motion-safe Logistics icon animations and attached the submenu inside the shared header at every viewport.
+
+EVIDENCE: Current worktree `npm run build` PASS (411 pages, zero errors); focused Claude Directions and WEB 10 Playwright suites PASS 22/22 across desktop and mobile, including exact copy, attached-header ownership, icon/order contracts, 390px containment and zero horizontal overflow. Full required tests and exact-head GitHub CI remain the release gate.
+
+LESSON: A named design project is a moving source until the owner freezes or approves a specific latest state. Before release, compare the current live design at the component/copy/interaction level rather than relying on an earlier implementation handoff.
+
+REUSE_RULE: For Claude-owned visual releases, perform a final live-design diff immediately before release, preserve existing business/search contracts, encode approved copy and interaction details in browser tests, and never promote an older green visual head when the approved project has advanced.
+
+## ERR-HOME-FILMS-IMMUTABLE-REUSE-AND-UNAPPROVED-SHOTS-20261022 — RESOLVED_IN_BRANCH / EXACT_HEAD_CI_PENDING
+
+PROBLEM: The multi-shot Home films on PR #1997 (`a56fb525`) re-encoded ten existing `/media/home/*` files and `car-hauler-512.webp` in place; Logistics dropped the approved golden car-hauler opening shot; Marketing used Pexels 7963107/7947516/3253113, which are not in the approved Claude Design, while the source lock claimed they were; the Technology 6804117 in-point showed a Cyrillic Windows batch-file prompt.
+
+ROOT_CAUSE: `/media/*` is served `immutable` for a year, so in-place byte changes never reach returning visitors. The source lock was written from the implementer's selection rather than re-read from the approved design's Video Sources list. Frames were not inspected at the crop actually shipped.
+
+WORKING_APPROACH: Restored every previously shipped file to its `main` bytes; built new `*-film-v2-*` films (new names) from the exact approved sequence: Logistics golden → 18749847 → 9339073 → 9339061; Technology 6804117 @19.4 s (after the Cyrillic line scrolls away) → 6804109; Academy 7413799 → 9034497; Marketing approved 6774593 "Planning wall" + owner-listed alternative 7652729. One shared grade, 0.6 s crossfades, H.264 High@3.1, every runtime file < 1.5 MB. Source lock rewritten; new contact sheet `docs/evidence/home-film-v2-contact-sheet-2026-10-22.jpg`.
+
+REUSE_RULE: Never change bytes behind an existing `/media/*` URL — always ship a new filename. Re-read the approved design's source list before writing provenance, and review the shipped crop frame by frame (text, logos, language) before committing.

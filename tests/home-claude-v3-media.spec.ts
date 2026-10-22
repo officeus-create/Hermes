@@ -1,9 +1,9 @@
 import { expect, test } from "@playwright/test";
 
 const films = [
-  { id: "marketing", video: "marketing-team-v1.mp4", poster: "marketing-team-poster.jpg" },
-  { id: "technology", video: "technology-claude-v3.mp4", poster: "technology-claude-v3-poster.jpg" },
-  { id: "academy", video: "academy-claude-v3.mp4", poster: "academy-claude-v3-poster.jpg" },
+  { id: "marketing", video: "marketing-film-v2-540.mp4", poster: "marketing-film-v2-poster.jpg" },
+  { id: "technology", video: "technology-film-v2-540.mp4", poster: "technology-film-v2-poster.jpg" },
+  { id: "academy", video: "academy-film-v2-540.mp4", poster: "academy-film-v2-poster.jpg" },
 ] as const;
 
 test("all three Claude v3 people scenes play locally and preserve native routes", async ({ page }) => {
@@ -18,7 +18,6 @@ test("all three Claude v3 people scenes play locally and preserve native routes"
     await expect(stage.locator("img")).toHaveAttribute("src", `/media/home/${film.poster}`);
     await expect(stage.locator("source")).toHaveAttribute("data-mobile-src", `/media/home/${film.video}`);
     await stage.scrollIntoViewIfNeeded();
-    await route.focus(); // Keyboard focus activates the video on fine-pointer desktops.
     await expect.poll(() => stage.getAttribute("data-media-state"), { timeout: 15000 }).toBe("ready");
     await expect(stage.locator("source")).toHaveAttribute("src", `/media/home/${film.video}`);
     const t0 = await video.evaluate(node => (node as HTMLVideoElement).currentTime);

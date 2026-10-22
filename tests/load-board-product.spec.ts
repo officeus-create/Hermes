@@ -11,7 +11,7 @@ test("main navigation uses the four clear business labels", async ({ page, isMob
   await expect(nav.getByRole("link", { name: "Logistics", exact: true })).toBeVisible();
   await expect(nav.getByRole("link", { name: "Marketing", exact: true })).toBeVisible();
   await expect(nav.getByRole("link", { name: "Academy", exact: true })).toBeVisible();
-  await expect(nav.getByRole("link", { name: "IT", exact: true })).toHaveAttribute("href", "/paths/technology/");
+  await expect(nav.getByRole("link", { name: "Technology", exact: true })).toHaveAttribute("href", "/paths/technology/");
 });
 
 test("Logistics exposes canonical Load Board first and keeps the audience hierarchy clear", async ({ page }) => {

@@ -5,7 +5,7 @@ import { join } from "node:path";
 // contract whenever the canonical Hermes Connect workspace gate runs in npm test.
 await import("./website-factory-contract.test.mjs");
 
-const root = new URL("../", import.meta.url).pathname;
+const root = decodeURIComponent(new URL("../", import.meta.url).pathname);
 const distRoot = join(root, "dist", "demos", "hermes-connect");
 
 function assert(condition, message) {

@@ -11,6 +11,7 @@ import HermesConnectAccountSwitcher from "./HermesConnectAccountSwitcher.astro";
 import HermesConnectDomReady from "./HermesConnectDomReady.astro";
 import HermesConnectExperience from "./HermesConnectExperience.astro";
 import HermesConnectLauncher from "./HermesConnectLauncher.astro";
+import DirectionProductNav from "./DirectionProductNav.astro";
 
 interface Props {
   theme?: "dark" | "light";
@@ -22,6 +23,8 @@ interface Props {
 const { theme = "dark", activePath, locale = "en", contactHref = "/contacts/" } = Astro.props;
 const currentPath = Astro.url.pathname;
 const isApprovedHome = currentPath === "/";
+const isApprovedDirectionShell = /^\/paths\/(logistics|technology|academy|marketing)\/$/.test(currentPath);
+const isApprovedVisualShell = isApprovedHome || isApprovedDirectionShell;
 const homeUpdates = isApprovedHome ? {
   academy: latestHomeUpdate("academy"),
   insights: latestHomeUpdate("insights"),
@@ -86,7 +89,7 @@ const orderedPaths = [...site.paths].sort(
 const navigation = activeLocale === "en"
   ? orderedNavigation.map((item) => {
       const url = `/${item.href}`;
-      const label = item.href === "paths/technology/" ? (isApprovedHome ? "Technology" : "IT") : item.label;
+      const label = item.href === "paths/technology/" ? (isApprovedVisualShell ? "Technology" : "IT") : item.label;
       return { ...item, key: navDirectionId(item.href), label, url, active: (activePath ?? currentPath) === url };
     })
   : orderedPaths.map((path) => ({
@@ -98,7 +101,7 @@ const navigation = activeLocale === "en"
 const isCatalogRoute = currentPath === "/businesses/" || currentPath.startsWith("/businesses/");
 const isInsightsRoute = currentPath === "/insights/" || currentPath.startsWith("/insights/");
 const isOpportunitiesRoute = currentPath === "/opportunities/" || currentPath.startsWith("/opportunities/");
-const contactLabel = activeLocale === "en" ? (isApprovedHome ? "Contact" : "Start a conversation") : localizedLabels[activeLocale].contact;
+const contactLabel = activeLocale === "en" ? (isApprovedDirectionShell ? "Start a conversation" : isApprovedHome ? "Contact" : "Start a conversation") : localizedLabels[activeLocale].contact;
 const signInLabel = activeLocale === "en" ? "Sign in" : localizedLabels[activeLocale].signIn;
 // The Home and localized overview Products navigation must preserve Hermes Connect's
 // supported ?lang= locale when crossing from a localized corporate page.
@@ -154,9 +157,9 @@ const languageLinks = siteLocales.filter((language) => !isCatalogLocaleRoute || 
 {isHermesConnectExperienceRoute && <link rel="stylesheet" href={hermesConnectSafePolishUrl} />}
 {isHermesConnectRoute && <link rel="stylesheet" href={hermesRepairPublicShellUrl} />}
 
-<header class={`site-header site-header-${theme}`} data-header data-home-portal={isApprovedHome ? "true" : undefined}>
+<header class={`site-header site-header-${theme}`} data-header data-home-portal={isApprovedHome ? "true" : undefined} data-approved-visual-shell={isApprovedVisualShell ? "true" : undefined}>
   <a class="wordmark" href={activeLocale === "en" ? "/#top" : `${localeConfig[activeLocale].path}#top`} aria-label="Hermes home">
-    {isApprovedHome ? (
+    {isApprovedVisualShell ? (
       <span class="wordmark-mark wordmark-mark-corporate"><img src="/brand/hermes-mark.svg" alt="Hermes" width="36" height="36" decoding="async" /></span>
     ) : (
       <span class="wordmark-mark">H</span>
@@ -189,7 +192,7 @@ const languageLinks = siteLocales.filter((language) => !isCatalogLocaleRoute || 
   </nav>
 
   <div class="header-actions">
-    {!isApprovedHome && <HermesConnectLauncher
+    {!isApprovedVisualShell && <HermesConnectLauncher
       variant="header"
       href="/services/hermes-connect/repair-shops/"
       label="Hermes Connect"
@@ -248,6 +251,7 @@ const languageLinks = siteLocales.filter((language) => !isCatalogLocaleRoute || 
       ))}
     </div>
   </nav>
+  {isApprovedDirectionShell && section && <DirectionProductNav direction={section} theme="light" locale={activeLocale === "ru" ? "ru" : "en"} />}
   {isApprovedHome && <span class="home-update-descriptions"><span id="home-academy-update" hidden>New Academy update within the last seven days.</span><span id="home-insights-update" hidden>New Insight within the last seven days.</span><span id="home-connect-update" hidden>New Connect update within the last seven days.</span><span id="home-catalog-update" hidden>New Catalog update within the last seven days.</span></span>}
 </header>
 
@@ -428,9 +432,64 @@ const languageLinks = siteLocales.filter((language) => !isCatalogLocaleRoute || 
   @keyframes home-update-glimmer { 0%,100%{opacity:0;transform:translateX(0)} 25%,70%{opacity:.9} 85%{opacity:0;transform:translateX(190%)} }
   @media (prefers-reduced-motion:reduce) { .site-header .home-update-sheen:not([hidden]){animation:none!important;opacity:.35;} }
   /* Scope the candidate corporate mark to Home: product and inner-page identities remain untouched. */
-  .site-header[data-home-portal="true"] .wordmark-mark-corporate { width:36px; height:36px; border:0; border-radius:9px; overflow:hidden; flex:none; }
-  .site-header[data-home-portal="true"] .wordmark-mark-corporate img { display:block; width:100%; height:100%; }
-  .site-header[data-home-portal="true"] .wordmark > span:last-child { font-weight:700; font-size:.94rem; letter-spacing:.32em; text-transform:uppercase; }
+  .site-header[data-approved-visual-shell="true"] .wordmark-mark-corporate { width:36px; height:36px; border:0; border-radius:9px; overflow:hidden; flex:none; }
+  .site-header[data-approved-visual-shell="true"] .wordmark-mark-corporate img { display:block; width:100%; height:100%; }
+  .site-header[data-approved-visual-shell="true"] .wordmark > span:last-child { font-weight:700; font-size:.94rem; letter-spacing:.32em; text-transform:uppercase; }
+  /* Claude Directions: one fixed, inspectable header panel with the active
+     direction submenu attached underneath. Canonical links and account entry
+     stay intact while the approved narrow layout scrolls horizontally. */
+  .site-header[data-approved-visual-shell="true"]:has(> .direction-product-nav) {
+    isolation:isolate;
+    top:12px;
+    right:auto;
+    left:50%;
+    width:min(1480px,calc(100% - 24px));
+    min-height:62px;
+    margin:0;
+    padding:0 8px 0 20px;
+    border:0;
+    background:transparent;
+    box-shadow:none;
+    backdrop-filter:none;
+    transform:translateX(-50%);
+    grid-template-columns:auto minmax(0,1fr) auto;
+    grid-template-rows:62px auto;
+    column-gap:18px;
+  }
+  .site-header[data-approved-visual-shell="true"]:has(> .direction-product-nav)::before {
+    position:absolute;z-index:-1;inset:0 0 auto;height:62px;border:1px solid rgba(17,19,24,.07);border-radius:999px;
+    background:rgba(255,255,255,.92);box-shadow:0 10px 30px rgba(10,22,79,.07);backdrop-filter:blur(18px);content:"";
+  }
+  .site-header[data-approved-visual-shell="true"]:has(> .direction-product-nav) .desktop-nav {
+    justify-self:center;max-width:100%;min-width:0;margin:0;gap:2px;overflow-x:auto;scrollbar-width:none;
+  }
+  .site-header[data-approved-visual-shell="true"]:has(> .direction-product-nav) .desktop-nav::-webkit-scrollbar{display:none}
+  .site-header[data-approved-visual-shell="true"]:has(> .direction-product-nav) .desktop-nav> a[data-nav-tone]{flex:0 0 auto;min-height:40px;padding:10px 14px;border-radius:999px;font-size:.94rem}
+  .site-header[data-approved-visual-shell="true"]:has(> .direction-product-nav) .desktop-nav> a[aria-current="page"]{background:rgba(10,22,79,.08)}
+  .site-header[data-approved-visual-shell="true"]:has(> .direction-product-nav) .desktop-nav> a[aria-current="page"]::after{display:none}
+  .site-header[data-approved-visual-shell="true"]:has(> .direction-product-nav) .desktop-products-menu>summary{min-height:40px;border:0;background:transparent;font-size:.94rem}
+  .site-header[data-approved-visual-shell="true"]:has(> .direction-product-nav) .header-actions{gap:4px}
+  .site-header[data-approved-visual-shell="true"]:has(> .direction-product-nav) .header-actions>.hc-account-menu{display:none}
+  .site-header[data-approved-visual-shell="true"]:has(> .direction-product-nav) .header-login-link{min-height:40px;padding:10px 14px;border:0;font-size:.94rem;font-weight:600}
+  .site-header[data-approved-visual-shell="true"]:has(> .direction-product-nav) .header-cta{min-height:46px;padding:0 22px;border-radius:999px;background:#0a164f;color:#fff;font-size:.94rem}
+  .site-header[data-approved-visual-shell="true"]> .direction-product-nav{
+    position:relative;top:auto;grid-column:1/-1;width:calc(100% - 56px);margin:-1px 28px 0;padding:0 14px 0 18px;border:1px solid rgba(17,19,24,.06);border-top:0;border-radius:0 0 18px 18px;background:rgba(255,255,255,.9);color:#111318;box-shadow:none;backdrop-filter:blur(18px);overflow:hidden;
+  }
+  .site-header[data-approved-visual-shell="true"]> .direction-product-nav .direction-product-nav__inner{width:100%;max-width:none;min-height:54px;margin:0;padding:0}
+  @media(max-width:1100px){
+    .site-header[data-approved-visual-shell="true"]:has(> .direction-product-nav) .wordmark>span:last-child,
+    .site-header[data-approved-visual-shell="true"]:has(> .direction-product-nav) .header-cta{display:none}
+    .site-header[data-approved-visual-shell="true"]:has(> .direction-product-nav) .desktop-nav{display:flex}
+    .site-header[data-approved-visual-shell="true"]:has(> .direction-product-nav) .header-actions{display:flex}
+    .site-header[data-approved-visual-shell="true"]:has(> .direction-product-nav) .menu-button{display:none}
+  }
+  @media(max-width:640px){
+    .site-header[data-approved-visual-shell="true"]:has(> .direction-product-nav){padding-left:8px;column-gap:6px}
+    .site-header[data-approved-visual-shell="true"]:has(> .direction-product-nav) .header-actions{display:none}
+    .site-header[data-approved-visual-shell="true"]:has(> .direction-product-nav) .menu-button{display:grid;color:#111318}
+    .site-header[data-approved-visual-shell="true"]:has(> .direction-product-nav) .desktop-nav{justify-self:stretch}
+    .site-header[data-approved-visual-shell="true"]> .direction-product-nav{width:calc(100% - 16px);margin-inline:8px;padding-inline:8px}
+  }
   .site-header[data-home-portal="true"] {
     /* Owner review palette on Home only. Real product/Connect colors remain unchanged. */
     --nav-logistics: var(--dir-logistics);
@@ -459,19 +518,40 @@ const languageLinks = siteLocales.filter((language) => !isCatalogLocaleRoute || 
     position: absolute;
     left: 0;
     width: 3px;
-    height: 18px;
+    height: 13px;
     border-radius: 999px;
     background: var(--nav-marker, currentColor);
     content: "";
     opacity: .9;
-    transition: height 180ms ease, width 180ms ease, opacity 180ms ease;
+    transform-origin: 50% 100%;
+    transition: opacity 180ms ease;
   }
+  /* Claude Design Home v3: the direction stripe hops on hover (squash → stretch → land). */
   .desktop-nav > a[data-nav-tone]:hover::before,
-  .desktop-nav > a[data-nav-tone]:focus-visible::before,
-  .desktop-nav > a[data-nav-tone][aria-current="page"]::before {
-    width: 5px;
-    height: 26px;
+  .desktop-nav > a[data-nav-tone]:focus-visible::before {
     opacity: 1;
+    animation: hermes-nav-stripe-hop 750ms cubic-bezier(.34,1.56,.64,1);
+  }
+  .desktop-nav > a[data-nav-tone][aria-current="page"]::before { opacity: 1; height: 18px; }
+  /* Home H1 dot landing nudges the same-colour stripe (class toggled by HomeMasterScene). */
+  .desktop-nav > a[data-nav-tone].is-dot-landing::before { animation: hermes-nav-dot-landing 500ms cubic-bezier(.34,1.56,.64,1); }
+  @keyframes hermes-nav-dot-landing {
+    0% { transform: scale(1, 1); }
+    35% { transform: scale(1.5, .65); }
+    70% { transform: scale(.85, 1.25); }
+    100% { transform: scale(1, 1); }
+  }
+  @keyframes hermes-nav-stripe-hop {
+    0% { transform: translateY(0) scale(1, 1); }
+    18% { transform: translateY(0) scale(1.35, .7); }
+    50% { transform: translateY(-7px) scale(.8, 1.45); }
+    82% { transform: translateY(0) scale(1.35, .7); }
+    100% { transform: translateY(0) scale(1, 1); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .desktop-nav > a[data-nav-tone]:hover::before,
+    .desktop-nav > a[data-nav-tone]:focus-visible::before,
+    .desktop-nav > a[data-nav-tone].is-dot-landing::before { animation: none; }
   }
   .desktop-nav [data-nav-tone="logistics"] { --nav-marker: var(--nav-logistics); }
   .desktop-nav [data-nav-tone="marketing"] { --nav-marker: var(--nav-marketing); }

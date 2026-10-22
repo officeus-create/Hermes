@@ -4,7 +4,7 @@ import { spawnSync } from "node:child_process";
 import "./logistics-path-indexability.test.mjs";
 import "./sitemap-lastmod-contract.test.mjs";
 
-const root = new URL("../", import.meta.url).pathname;
+const root = decodeURIComponent(new URL("../", import.meta.url).pathname);
 const verifierFiles = [
   "scripts/check-production-custom-domain.mjs",
   "scripts/check-production-seo-hygiene.mjs",

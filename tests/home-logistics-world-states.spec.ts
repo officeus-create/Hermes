@@ -47,8 +47,8 @@ test("Logistics golden scene stays coherent and local without split vehicle laye
   const video = route.locator('[data-home-cinematic-video="logistics"]');
   await expect(video).toHaveCount(1);
   await expect(video).toHaveAttribute("poster", "/images/logistics-living/car-hauler-512.webp");
-  await expect(video.locator('source[type="video/mp4"]')).toHaveAttribute("data-cinematic-src", "/media/home/logistics-golden-v1.mp4");
-  await expect(video.locator('source[type="video/mp4"]')).toHaveAttribute("src", "/media/home/logistics-golden-v1.mp4");
+  await expect(video.locator('source[type="video/mp4"]')).toHaveAttribute("data-cinematic-src", "/media/home/logistics-film-v2-540.mp4");
+  await expect(video.locator('source[type="video/mp4"]')).toHaveAttribute("src", "/media/home/logistics-film-v2-540.mp4");
   expect(await video.evaluate((node) => {
     const media = node as HTMLVideoElement;
     return {
@@ -86,7 +86,7 @@ test("Logistics reduced motion never fetches the hidden cinematic movie", async 
   await page.emulateMedia({ reducedMotion: "reduce" });
   const movieRequests: string[] = [];
   page.on("request", (request) => {
-    if (request.url().includes("/media/home/logistics-golden-v1.mp4")) movieRequests.push(request.url());
+    if (request.url().includes("/media/home/logistics-film-v2-540.mp4")) movieRequests.push(request.url());
   });
   await page.goto("/");
   await page.locator('[data-route-id="logistics"]').scrollIntoViewIfNeeded();
@@ -107,7 +107,7 @@ test("Logistics Save-Data renders the poster and never downloads video", async (
   await page.emulateMedia({ reducedMotion: "no-preference" });
   const requests: string[] = [];
   page.on("request", (request) => {
-    if (request.url().includes("/media/home/logistics-golden-v1.mp4")) requests.push(request.url());
+    if (request.url().includes("/media/home/logistics-film-v2-540.mp4")) requests.push(request.url());
   });
   await page.goto("/");
   await page.locator('[data-route-id="logistics"]').scrollIntoViewIfNeeded();
@@ -123,7 +123,7 @@ test("Logistics attaches movie and plays once actually visible", async ({ page }
   const video = route.locator('[data-home-cinematic-video="logistics"]');
   const source = video.locator("source");
   await route.scrollIntoViewIfNeeded();
-  await expect(source).toHaveAttribute("src", "/media/home/logistics-golden-v1.mp4");
+  await expect(source).toHaveAttribute("src", "/media/home/logistics-film-v2-540.mp4");
   await expect.poll(
     () => video.evaluate((node) => (node as HTMLVideoElement).currentTime),
     { timeout: 15000 }
@@ -139,5 +139,5 @@ test("Logistics begins downloading only after motion preference changes from red
   const source = route.locator('[data-home-cinematic-video="logistics"] source');
   await expect(source).not.toHaveAttribute("src", /.+/);
   await page.emulateMedia({ reducedMotion: "no-preference" });
-  await expect(source).toHaveAttribute("src", "/media/home/logistics-golden-v1.mp4");
+  await expect(source).toHaveAttribute("src", "/media/home/logistics-film-v2-540.mp4");
 });

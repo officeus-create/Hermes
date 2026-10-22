@@ -5,7 +5,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { classifyEvidenceScope } from "./ai/hermes-ai-benchmark.mjs";
 
-const root = new URL("..", import.meta.url).pathname;
+const root = decodeURIComponent(new URL("..", import.meta.url).pathname);
 const tempDir = await mkdtemp(join(tmpdir(), "hermes-ai-benchmark-"));
 const repositoryTempDir = await mkdtemp(join(root, ".hermes-ai-benchmark-"));
 try {
@@ -29,7 +29,7 @@ try {
   const symlinkedExternalPrompt = spawnSync(process.execPath, ["scripts/ai/hermes-ai-benchmark.mjs", "--prompt-file", symlinkedPrompt, "--output-dir", tempDir, "--dry-run"], { cwd: root, encoding: "utf8" });
   assert.notEqual(symlinkedExternalPrompt.status, 0);
   assert.match(symlinkedExternalPrompt.stderr, /--prompt-file must resolve to a file inside this repository/);
-  assert.equal(classifyEvidenceScope(`Read ${root}docs/AI_START_HERE.md`).status, "REPOSITORY_ONLY_OBSERVED");
+  assert.equal(classifyEvidenceScope(`Read ${join(root, "docs/AI_START_HERE.md")}`).status, "REPOSITORY_ONLY_OBSERVED");
   assert.deepEqual(classifyEvidenceScope("Read /Users/progressopro/.codex/memories/MEMORY.md"), {
     status: "REVIEW_REQUIRED_OUTSIDE_REPOSITORY_READ",
     outsideRepositoryReadCount: 1,

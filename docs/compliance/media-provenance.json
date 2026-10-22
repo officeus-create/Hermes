@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-04",
+  "updatedAt": "2026-10-22",
   "scope": {
     "description": "Material site visuals and first-party Hermes brand icons shipped by the public build.",
     "roots": [
@@ -184,12 +184,12 @@
     },
     {
       "path": "public/favicon.svg",
-      "sha256": "25153e5815a3d26fac5a8de1ec53a88458f1e6ffa9c368d734f0ba8d745874da",
+      "sha256": "065961a65050d966dbe13881cf26c4d0bd0a5a5afdf69754a2eeb85d0371572a",
       "firstTrackedCommit": "522df18c75a2bc924999431fdc5db3d2a647bd99",
       "classification": "FIRST_PARTY_BRAND_ARTIFACT",
       "provenanceStatus": "REPOSITORY_SOURCE_VERIFIED",
-      "source": "owner-controlled repository source",
-      "rightsEvidence": "owner-controlled repository history",
+      "source": "Google Drive owner-approved hermes-mark-flat v1.1.svg (2026-10-21), approved specifically for <=32px, favicon and print",
+      "rightsEvidence": "owner-controlled Drive source plus explicit owner approval of Hermes Mark H v1.1",
       "publicationDecision": "CURRENT_USE_ALLOWED"
     },
     {

@@ -7,7 +7,7 @@ test.describe("Academy and careers governance", () => {
     const response = await page.goto("/paths/academy/");
     expect(response?.ok()).toBeTruthy();
     await expect(page.locator("h1")).toHaveCount(1);
-    await expect(page.locator("h1")).toContainText("Build practical skills across five Hermes Academy tracks");
+    await expect(page.locator("h1")).toContainText("Learn the work by doing the work.");
 
     await page.getByRole("button", { name: /Choose a track/ }).click();
     await expect(page.getByRole("tab")).toHaveCount(5);

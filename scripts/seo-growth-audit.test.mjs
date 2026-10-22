@@ -1,7 +1,7 @@
 import { readFile, readdir } from "node:fs/promises";
 import { join } from "node:path";
 
-const root = new URL("../", import.meta.url).pathname;
+const root = decodeURIComponent(new URL("../", import.meta.url).pathname);
 const dist = join(root, "dist");
 const siteOrigin = "https://hermeslogisticsus.com";
 const canonicalHost = "hermeslogisticsus.com";

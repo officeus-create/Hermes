@@ -5,7 +5,7 @@ test("Marketing living window has local poster and never loads video in reduced 
   await page.goto("/");
   const stage = page.locator("[data-home-marketing-cinematic]");
   await expect(stage).toHaveCount(1);
-  await expect(stage.locator("img")).toHaveAttribute("src", "/media/home/marketing-team-poster.jpg");
+  await expect(stage.locator("img")).toHaveAttribute("src", "/media/home/marketing-film-v2-poster.jpg");
   await stage.scrollIntoViewIfNeeded();
   await expect(stage.locator("source")).not.toHaveAttribute("src", /.+/);
   await expect(stage.locator("video")).toBeHidden();
@@ -18,9 +18,8 @@ test("Marketing living window selects only Hermes-hosted media when visible", as
   await page.goto("/");
   const stage = page.locator("[data-home-marketing-cinematic]");
   await stage.scrollIntoViewIfNeeded();
-  await page.locator('[data-route-id="marketing"]').focus();
   await expect.poll(async () => stage.locator("source").getAttribute("src"), { timeout: 10000 })
-    .toMatch(/^\/media\/home\/marketing-team-v1\.mp4$/);
+    .toMatch(/^\/media\/home\/marketing-film-v2-540\.mp4$/);
 });
 
 test("Marketing honors Save-Data before assigning any video source", async ({ page }) => {
@@ -29,7 +28,7 @@ test("Marketing honors Save-Data before assigning any video source", async ({ pa
   });
   await page.emulateMedia({ reducedMotion: "no-preference" });
   const mediaCalls: string[] = [];
-  page.on("request", request => { if (request.url().includes("/media/home/marketing-team-v1.mp4")) mediaCalls.push(request.url()); });
+  page.on("request", request => { if (request.url().includes("/media/home/marketing-film-v2-540.mp4")) mediaCalls.push(request.url()); });
   await page.goto("/");
   const stage = page.locator("[data-home-marketing-cinematic]");
   await stage.scrollIntoViewIfNeeded();

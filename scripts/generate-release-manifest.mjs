@@ -1,7 +1,7 @@
 import { access, mkdir, readFile, readdir, stat, writeFile } from "node:fs/promises";
 import { join, relative, sep } from "node:path";
 
-const root = new URL("../", import.meta.url).pathname;
+const root = decodeURIComponent(new URL("../", import.meta.url).pathname);
 const dist = join(root, "dist");
 const publicDir = join(root, "public");
 const docsDir = join(root, "docs");

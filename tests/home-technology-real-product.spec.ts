@@ -22,7 +22,7 @@ test("Technology Home portal keeps clean artwork and preserves truthful product 
   expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false);
 
   await page.goto("/paths/technology/");
-  await expect(page.getByRole("heading", { level: 1 })).toContainText("Custom AI, Automation and Business Systems.");
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("Software shaped around how you actually work.");
 });
 
 test("Technology Home has a static accessible 390px reduced-motion image and route", async ({ page }) => {

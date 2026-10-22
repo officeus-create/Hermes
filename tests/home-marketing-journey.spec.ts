@@ -12,7 +12,6 @@ test("Marketing shows a real creative collaboration video without decorative HUD
   await expect(route).toHaveAttribute("href", "/paths/marketing/");
   await expect(route).toHaveAttribute("aria-label", /Example flow: content \+ news, search \+ social, website action, crm evidence/i);
   await scene.scrollIntoViewIfNeeded();
-  await route.focus();
   await expect.poll(() => scene.getAttribute("data-media-state")).toBe("ready");
   expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false);
 });
@@ -41,7 +40,7 @@ test("tablet keeps four routes in two columns; Marketing retains cinematic sourc
   expect(await countColumns()).toBe(coarseTouch ? 1 : 2);
   const marketing=stage.locator('[data-route-id="marketing"]');
   await expect(marketing.locator("[data-home-marketing-cinematic]")).toHaveCount(1);
-  await expect(marketing.locator("img")).toHaveAttribute("src","/media/home/marketing-team-poster.jpg");
+  await expect(marketing.locator("img")).toHaveAttribute("src","/media/home/marketing-film-v2-poster.jpg");
   for (const id of ["logistics", "technology", "academy"]) {
     const route = stage.locator(`[data-route-id="${id}"]`);
     const image = id === "logistics" ? route.locator("[data-home-logistics-scene-image]") : route.locator(".home-portal-art img");
@@ -49,7 +48,7 @@ test("tablet keeps four routes in two columns; Marketing retains cinematic sourc
     await expect(image).toHaveAttribute("sizes", /\(min-width:701px\) and \(max-width:1000px\)/);
   }
   await expect(stage.locator('[data-route-id="logistics"] [data-home-logistics-road-plate]')).toHaveCount(0);
-  await expect(stage.locator('[data-route-id="academy"] .home-portal-art img')).toHaveAttribute("src","/media/home/academy-claude-v3-poster.jpg");
+  await expect(stage.locator('[data-route-id="academy"] .home-portal-art img')).toHaveAttribute("src","/media/home/academy-film-v2-poster.jpg");
   await expect(stage.locator("[data-home-route]")).toHaveCount(4);
   expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false);
   await page.setViewportSize({ width: 1024, height: 900 });

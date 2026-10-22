@@ -835,7 +835,7 @@ test("marketing presents website, SEO, social media, and growth as connected ser
 test("business directions expose the approved service areas and service schema", async ({ page }) => {
   await page.goto("/paths/logistics/");
   await expect(page).toHaveTitle(/Wisconsin/);
-  await expect(page.getByText(/Wisconsin first/)).toBeVisible();
+  await expect(page.locator(".detail-service-area")).toContainText("Wisconsin first");
   await expect(page.locator('script[type="application/ld+json"]')).toHaveCount(1);
 
   for (const slug of ["marketing", "academy", "technology"]) {

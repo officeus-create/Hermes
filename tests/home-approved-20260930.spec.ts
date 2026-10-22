@@ -61,7 +61,7 @@ for (const width of [390, 430, 768, 1024, 1440]) {
     await expect(route.locator('[data-home-marketing-cinematic]')).toHaveCount(1);
     await expect(route.locator('[data-home-marketing-video]')).toHaveCount(1);
     await expect(route.locator('[data-home-marketing-journey]')).toBeHidden();
-    await expect(image).toHaveAttribute('src','/media/home/marketing-team-poster.jpg');
+    await expect(image).toHaveAttribute('src','/media/home/marketing-film-v2-poster.jpg');
     await expect.poll(()=>image.evaluate(n=>(n as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
     continue;
    }
@@ -69,7 +69,7 @@ for (const width of [390, 430, 768, 1024, 1440]) {
    await expect(image).toBeVisible();
    await image.evaluate(node=>(node as HTMLImageElement).decode());
    await expect.poll(()=>image.evaluate(node=>(node as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
-   expect(await image.evaluate(node=>(node as HTMLImageElement).currentSrc)).toMatch(/(?:\/images\/logistics-living\/[a-z-]+-(?:512|768|887)\.webp|\/media\/home\/(?:technology|academy)-claude-v3-poster\.jpg)$/);
+   expect(await image.evaluate(node=>(node as HTMLImageElement).currentSrc)).toMatch(/(?:\/images\/logistics-living\/[a-z-]+-(?:512|768|887)\.webp|\/media\/home\/(?:technology|academy)-film-v2-poster\.jpg)$/);
   }
   expect(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth)).toBe(false);
   if(width<1181){
@@ -171,7 +171,7 @@ test('Home opens the existing Connect and sign-in flows, then returns with brows
 
 test('compact Home CTA reaches native contact actions and approved artwork loads once',async({page})=>{
  const artwork:string[]=[];
- page.on('request',r=>{if(/\/media\/home\/(?:technology|academy)-claude-v3-poster\.jpg/.test(r.url()))artwork.push(r.url())});
+ page.on('request',r=>{if(/\/media\/home\/(?:technology|academy)-film-v2-poster\.jpg/.test(r.url()))artwork.push(r.url())});
  await page.setViewportSize({width:1440,height:1000});
  await page.goto('/');
  await page.locator('.header-cta').click();
@@ -184,7 +184,7 @@ test('compact Home CTA reaches native contact actions and approved artwork loads
  await expect(page).toHaveURL(/\/services\/hermes-connect\/$/);
  // Only the two new local film posters are requested, without redundant image sources.
  expect(artwork.length).toBeGreaterThanOrEqual(2);
- expect(artwork.every(url=>/claude-v3-poster\.jpg/.test(url))).toBe(true);
+ expect(artwork.every(url=>/film-v2-poster\.jpg/.test(url))).toBe(true);
  expect(new Set(artwork).size).toBe(artwork.length);
 });
 
@@ -391,13 +391,11 @@ test('Marketing documentary scene plays only in viewport and stays still when sc
  const scene=page.locator('[data-home-marketing-cinematic]');
  const video=scene.locator('video');
  await scene.scrollIntoViewIfNeeded();
- await page.locator('[data-route-id="marketing"]').focus();
  await expect.poll(()=>scene.getAttribute('data-media-state')).toBe('ready');
  await page.locator('footer').scrollIntoViewIfNeeded();
  await expect.poll(()=>scene.getAttribute('data-media-state')).toBe('poster');
  expect(await video.evaluate(n=>(n as HTMLVideoElement).paused)).toBe(true);
  await scene.scrollIntoViewIfNeeded();
- await page.locator('[data-route-id="marketing"]').focus();
  await expect.poll(()=>scene.getAttribute('data-media-state')).toBe('ready');
 });
 
@@ -410,7 +408,6 @@ test('Marketing documentary scene honors live reduced-motion changes and never f
  await expect(scene.locator('source')).not.toHaveAttribute('src',/.+/);
  await expect(scene.locator('img')).toBeVisible();
  await page.emulateMedia({reducedMotion:'no-preference'});
- await page.locator('[data-route-id="marketing"]').focus();
  await expect.poll(()=>scene.getAttribute('data-media-state')).toBe('ready');
  await page.emulateMedia({reducedMotion:'reduce'});
  await expect.poll(()=>scene.getAttribute('data-media-state')).toBe('poster');

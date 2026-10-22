@@ -20,8 +20,12 @@ test("Home exposes goal-based navigation and direct routes without JavaScript", 
     await expect(link).toHaveAttribute("href", `/paths/${id}/`);
     await expect(link).toContainText(goal);
   }
-  await navigation.getByRole("link", { name: /Move freight: Hermes Logistics/ }).click();
-  await expect(page).toHaveURL(/\/paths\/logistics\/$/);
+  const logisticsLink = navigation.getByRole("link", { name: /Move freight: Hermes Logistics/ });
+  await logisticsLink.focus();
+  await Promise.all([
+    page.waitForURL(/\/paths\/logistics\/$/),
+    page.keyboard.press("Enter"),
+  ]);
   await context.close();
 });
 
@@ -55,7 +59,7 @@ for (const width of [390, 430, 768, 1024, 1440]) {
     for (const ring of motion) {
       expect(ring.name).toBe("none");
     }
-    await expect(page.locator(".home-master-ink-note")).toHaveText("Logistics, technology, learning and marketing for your business. One Hermes ecosystem.");
+    await expect(page.locator(".home-master-ink-note")).toHaveText("Logistics, technology, learning and marketing for your business — one Hermes ecosystem.");
     if (width === 390 || width === 1440) {
       await test.info().attach(`home-v4-${width}px`, { body: await page.screenshot({ fullPage: true }), contentType: "image/png" });
     }

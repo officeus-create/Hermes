@@ -1,5 +1,177 @@
 [
   {
+    "id": "hermes-home-redesign-four-live-windows-2026",
+    "direction": "technology",
+    "slug": "home-redesign-four-live-video-windows",
+    "title": "Hermes Home Redesign: Four Live Video Windows That Stay Fast | Hermes Insights",
+    "description": "How Hermes rebuilt its home page around four live multi-shot video windows — one per direction — while keeping every film under 1.5 MB, honoring reduced motion and Save-Data, and never breaking cached media.",
+    "eyebrow": "Technology / Website Release · Hermes Home · 22 October 2026",
+    "h1": "Four live windows, one fast page: what we changed on the Hermes home page",
+    "conciseAnswer": "The Hermes home page now opens on four separate live windows — Logistics, Technology, Academy and Marketing — each playing a short multi-shot film of real work. Every film is self-hosted, under 1.5 MB, starts only when its window is visible, pauses off-screen, and falls back to a still poster for reduced motion, Save-Data and no-JavaScript visitors.",
+    "explanation": [
+      "A home page for four different businesses has one job: let a visitor recognise their own direction in a few seconds. We replaced a single shared strip of artwork with four separate rounded windows. Each window carries its direction colour, a one-line description of who it serves, and a short film that cuts between several real scenes — a car hauler on the highway and freight lanes for Logistics, code and a team at the screen for Technology, a trainer and a practice session for Academy, a planning wall and a team meeting for Marketing. The windows remain plain links, so the page still works as navigation before any video loads.",
+      "Video is the heaviest thing a page can ship, so the films follow a strict budget. Each runtime file stays under 1.5 MB, uses 540×960 frames for the four-column layout and a 720×1280 variant only where a window is wide enough to need it, carries no audio track and is encoded for fast start. Nothing is fetched from a third-party video CDN at runtime. A film is attached only when its window scrolls into view and pauses again when it leaves, so a visitor reading the contact section is not paying for four videos they cannot see.",
+      "Motion is optional by design. Visitors who ask their operating system for reduced motion, browsers that send Save-Data, and sessions without JavaScript all see a still poster frame and the same links. That keeps the page accessible and keeps the visual promise honest: the poster is a real frame from the film, not a different illustration.",
+      "One engineering detail matters for any site that ships media. Our media files are cached by browsers for a year as immutable. Re-encoding a film under the same file name would mean returning visitors never see the new version. Every new cut therefore gets a new file name, and the old files stay untouched. The same release also refreshed the four direction pages with clearer headlines, two concrete next steps each and a navigation bar attached to the header.",
+      "These are the same rules we apply to client websites at Hermes Technology: a measurable media budget, progressive loading, accessible fallbacks and cache-safe releases, checked by automated browser tests on desktop and mobile before anything goes live."
+    ],
+    "takeaways": [
+      "Give each audience its own visible entry point instead of one shared hero",
+      "Set a per-file media budget and load video only when it is actually visible",
+      "Treat reduced motion, Save-Data and no-JavaScript as first-class experiences",
+      "Never change bytes behind a cached media URL — ship a new file name"
+    ],
+    "faq": [
+      {
+        "question": "Do the home page videos slow the site down?",
+        "answer": "Each film is under 1.5 MB, self-hosted and loaded only when its window is visible. Off-screen windows pause, and visitors with reduced motion or Save-Data get a still poster instead of video."
+      },
+      {
+        "question": "Are the people in the films Hermes employees or customers?",
+        "answer": "No. The films use licensed stock footage to illustrate each type of work. They do not show Hermes staff, clients or real results."
+      },
+      {
+        "question": "Can Hermes build the same kind of page for my business?",
+        "answer": "Yes. Hermes Technology builds websites and business systems with the same performance budget, accessibility fallbacks and release checks. Start with a project brief so the scope matches your actual workflow."
+      }
+    ],
+    "related": [
+      {
+        "title": "Hermes Technology",
+        "body": "Websites, CRM systems, AI assistants and automation built as one connected flow.",
+        "href": "/paths/technology/"
+      },
+      {
+        "title": "Hermes Marketing",
+        "body": "Websites, SEO/GEO, social media and sales follow-up connected into one measurable growth system.",
+        "href": "/paths/marketing/"
+      },
+      {
+        "title": "Hermes Logistics",
+        "body": "Dispatch and back-office support for owner-operators and small fleets, plus reviewed vehicle transport.",
+        "href": "/paths/logistics/"
+      }
+    ],
+    "primaryAction": {
+      "label": "See the new Hermes home page",
+      "href": "/"
+    },
+    "secondaryAction": {
+      "label": "Explore Hermes Technology",
+      "href": "/paths/technology/"
+    },
+    "sourceLabel": "Hermes website release record — home page and direction pages, 22 October 2026",
+    "sourceUrl": "https://hermeslogisticsus.com/",
+    "sourcePublishedAt": "2026-10-22",
+    "datePublished": "2026-10-22",
+    "dateModified": "2026-10-22",
+    "authorName": "Hermes Technology",
+    "keywords": [
+      "website redesign",
+      "home page video performance",
+      "multi-shot video hero",
+      "reduced motion website",
+      "video under 1.5 MB",
+      "Hermes Technology websites"
+    ],
+    "contentTier": "standalone",
+    "currentMarketClaim": false,
+    "publicationScore": {
+      "score": 80,
+      "recommendation": "standalone",
+      "reasons": [
+        "First-party release with verifiable public result on the home page",
+        "Reusable web-performance and accessibility practices for service businesses",
+        "Distinct informational intent that links to all four direction owners"
+      ]
+    }
+  },
+  {
+    "id": "hermes-logistics-direction-page-refresh-2026",
+    "direction": "logistics",
+    "slug": "logistics-page-refresh-dispatch-load-board",
+    "title": "Hermes Logistics Page Refresh: Dispatch and Load Board Up Front | Hermes Insights",
+    "description": "The Hermes Logistics page now leads with car-hauling dispatch for owner-operators and small fleets, puts the Load Board one click away and states the month-to-month model before anyone fills in a form.",
+    "eyebrow": "Logistics / Website Update · Car Hauling Dispatch · 22 October 2026",
+    "h1": "The Hermes Logistics page now starts with dispatch and the Load Board",
+    "conciseAnswer": "We rebuilt the top of the Hermes Logistics page around the two actions carriers ask for most: starting car-hauling dispatch and opening the Load Board. The page states who it serves — owner-operators, small fleets, dealers and shippers — and the month-to-month model, with final terms confirmed in your agreement, before any form.",
+    "explanation": [
+      "Carriers rarely arrive on a logistics website to read a mission statement. They want to know whether the company works with their equipment and lanes, what the commitment looks like and how to start. The new page opens with a direct headline — \"Freight that moves. A team that answers.\" — followed by one sentence on what Hermes Logistics actually does: dispatch and back-office support for owner-operators and small fleets, and reviewed vehicle transport for dealers and shippers.",
+      "Two buttons sit under that sentence. The primary one starts car-hauling dispatch; the secondary one opens the Load Board. Directly beneath them the page says plainly that the model is month-to-month and that final terms are confirmed in your agreement. Putting the commercial model next to the call to action answers the first question an owner-operator asks before they decide to share any details.",
+      "A live window beside the headline shows the work itself: a car hauler on the highway and freight moving through real lanes. The logistics navigation is now attached to the site header, with icons for the Load Board, carriers and fleets, owner-operators, brokers, shippers and dealers, dispatch and back office, the carrier agreement and Find Your Path, so drivers can move between them on a phone without scrolling back to the top.",
+      "Nothing in the deeper content was removed. The frequently asked questions, the audience routes for carriers, brokers, shippers and dealers, and the direct department contacts remain on the page. Most forms on the site still prepare a summary you send yourself; the car-hauling dispatch intake on the live site submits your details to the logistics team for review."
+    ],
+    "takeaways": [
+      "Car-hauling dispatch and the Load Board are now the first two actions on the Logistics page",
+      "The month-to-month model is stated next to the call to action, with final terms in your agreement",
+      "Logistics navigation stays attached to the header on desktop and mobile"
+    ],
+    "faq": [
+      {
+        "question": "How do I start car-hauling dispatch with Hermes?",
+        "answer": "Open the Hermes Logistics page and choose Start car-hauling dispatch. The intake asks about your equipment, lanes and operating details so the team can review whether the fit is right before any agreement."
+      },
+      {
+        "question": "Is there a long-term contract?",
+        "answer": "Hermes Logistics works on a month-to-month model. Final terms are confirmed in your agreement before work begins."
+      },
+      {
+        "question": "Where is the Load Board?",
+        "answer": "The Load Board is the second button at the top of the Hermes Logistics page and is also linked in the logistics navigation attached to the header."
+      }
+    ],
+    "related": [
+      {
+        "title": "Hermes Logistics",
+        "body": "Dispatch and back-office support for owner-operators and small fleets, and reviewed vehicle transport.",
+        "href": "/paths/logistics/"
+      },
+      {
+        "title": "Start car-hauling dispatch",
+        "body": "Share your equipment, lanes and operating details for a reviewed dispatch fit.",
+        "href": "/logistics/start-car-hauling-dispatch/"
+      },
+      {
+        "title": "Car Hauling Load Board",
+        "body": "Open the Load Board workspace for car-hauling loads.",
+        "href": "/load-board/"
+      }
+    ],
+    "primaryAction": {
+      "label": "Start car-hauling dispatch",
+      "href": "/logistics/start-car-hauling-dispatch/"
+    },
+    "secondaryAction": {
+      "label": "Open the Load Board",
+      "href": "/load-board/"
+    },
+    "sourceLabel": "Hermes Logistics direction page release record, 22 October 2026",
+    "sourceUrl": "https://hermeslogisticsus.com/paths/logistics/",
+    "sourcePublishedAt": "2026-10-22",
+    "datePublished": "2026-10-22",
+    "dateModified": "2026-10-22",
+    "authorName": "Hermes Logistics",
+    "keywords": [
+      "car hauling dispatch",
+      "owner-operator dispatch service",
+      "car hauling load board",
+      "month-to-month dispatch",
+      "small fleet dispatch",
+      "Hermes Logistics"
+    ],
+    "contentTier": "standalone",
+    "currentMarketClaim": false,
+    "publicationScore": {
+      "score": 78,
+      "recommendation": "standalone",
+      "reasons": [
+        "First-party release that answers recurring carrier questions",
+        "Links the commercial owner page, dispatch intake and Load Board",
+        "Distinct update intent that does not compete with the Logistics owner page"
+      ]
+    }
+  },
+  {
     "id": "i-am-voice-first-startup-development-2026",
     "direction": "technology",
     "slug": "i-am-vision",

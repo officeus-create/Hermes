@@ -1,5 +1,5 @@
 ---
-import { ArrowLeft, ArrowRight, Check, MapPin } from "@lucide/astro";
+import { ArrowRight, Check, MapPin } from "@lucide/astro";
 import type { PathDetail } from "../data/site";
 import AcademyScreenFlow from "./AcademyScreenFlow.astro";
 import ItOperatingFlow from "./ItOperatingFlow.astro";
@@ -26,38 +26,132 @@ const isAcademy = path.id === "academy";
 const isLogistics = path.id === "logistics";
 const isMarketing = path.id === "marketing";
 const isTechnology = path.id === "technology";
-const primaryCtaHref = path.id === "technology" ? "#project-brief" : isLogistics ? "#find-your-path" : "#contact";
-const primaryCtaLabel = path.id === "technology"
-  ? "Build your project brief"
-  : isLogistics
-    ? "Find your logistics path"
-    : path.id === "marketing"
-      ? "Prepare a marketing brief"
-      : isAcademy
-        ? "Ask about the Academy path"
-        : "Start with a conversation";
 const directContactTitle = {
   logistics: "Reach the right logistics team.",
   marketing: "Reach ProgressoPro directly.",
   academy: "Ask about the right Academy path.",
   technology: "Discuss the system you want to build.",
 }[path.id] ?? "Reach the relevant team.";
+
+const directionHero = {
+  logistics: {
+    accent: "var(--dir-logistics)",
+    tone: "#132a47",
+    kicker: "Hermes Logistics · Wisconsin first · USA",
+    title: "Freight that moves. A team that answers.",
+    summary: "Dispatch and back-office support for owner-operators and small fleets — and reviewed vehicle transport for dealers and shippers.",
+    primary: { label: "Start carrier review", href: "/logistics/start-car-hauling-dispatch/" },
+    secondary: { label: "Open the Load Board", href: "/load-board/" },
+    reassurance: "Month-to-month model · final terms confirmed in your agreement.",
+    windowLabel: "Live window · on the road",
+    windowLine: "Every load, every lane — handled.",
+    video: "/media/home/logistics-film-v2-540.mp4",
+    poster: "/images/logistics-living/car-hauler-512.webp",
+  },
+  technology: {
+    accent: "var(--dir-technology)",
+    tone: "#0d3550",
+    kicker: "Hermes Technology · Human-led, AI-assisted",
+    title: "Software shaped around how you actually work.",
+    summary: "CRM systems, websites, AI assistants and automation — built as one connected flow, starting with the workflow that loses you time or customers today.",
+    primary: { label: "Build your project brief", href: "/paths/technology/#project-brief" },
+    secondary: { label: "Explore Hermes Connect", href: "/services/hermes-connect/" },
+    reassurance: "Start with one useful module. Expand only after it works in real use.",
+    windowLabel: "Live window · code in progress",
+    windowLine: "Built by our team, in production.",
+    video: "/media/home/technology-film-v2-540.mp4",
+    poster: "/media/home/technology-film-v2-poster.jpg",
+  },
+  academy: {
+    accent: "var(--dir-academy)",
+    tone: "#0e4434",
+    kicker: "Hermes Business Academy · Five tracks",
+    title: "Learn the work by doing the work.",
+    summary: "Practical tracks in U.S. logistics, marketing, IT & AI, sales and operations — with precise human feedback on every attempt.",
+    primary: { label: "Try a public exercise", href: "/academy/resources/" },
+    secondary: { label: "Apply for review", href: "/academy/apply/" },
+    reassurance: "No account or payment needed to try. Training does not guarantee employment or income.",
+    windowLabel: "Live window · learning in practice",
+    windowLine: "Real work, real feedback.",
+    video: "/media/home/academy-film-v2-540.mp4",
+    poster: "/media/home/academy-film-v2-poster.jpg",
+  },
+  marketing: {
+    accent: "var(--dir-marketing)",
+    tone: "#4b2619",
+    kicker: "Hermes Marketing · ProgressoPro",
+    title: "Turn attention into customers — again and again.",
+    summary: "Websites, SEO/GEO, social media and sales follow-up, connected into one growth system you can measure.",
+    primary: { label: "Request a growth review", href: "#contact" },
+    secondary: { label: "See the website we built for ourselves", href: "/case/it-development/" },
+    reassurance: "A diagnostic does not oblige you to continue. No fake ranking or lead promises.",
+    windowLabel: "Live window · content in production",
+    windowLine: "Content that brings customers.",
+    video: "/media/home/marketing-film-v2-540.mp4",
+    poster: "/media/home/marketing-film-v2-poster.jpg",
+  },
+}[path.id] ?? {
+  accent: "var(--dir-logistics)",
+  tone: "#132a47",
+  kicker: path.category,
+  title: path.title,
+  summary: path.audience,
+  primary: { label: "Start a conversation", href: "#contact" },
+  secondary: { label: "Explore Hermes", href: "/" },
+  reassurance: "The final scope is confirmed with the relevant team.",
+  windowLabel: "Live window",
+  windowLine: path.category,
+  video: "/media/home/logistics-film-v2-540.mp4",
+  poster: path.image,
+};
 ---
 
 <main id="main-content" class={`detail-page detail-page-${path.id}`}>
-  <section class="detail-hero" id="top" data-motion-hero>
-    <img class="detail-hero-media" src={path.image} alt={path.imageAlt} width="1400" height="1050" decoding="async" fetchpriority="high" loading="eager" />
-    <div class="detail-hero-shade"></div>
-    <div class="shell detail-hero-content">
-      <a class="detail-back" href="/#paths"><ArrowLeft size={18} aria-hidden="true" />All directions</a>
-      <p class="eyebrow hero-eyebrow">{path.number} · {path.category}</p>
-      <h1>{path.title}</h1>
-      <p>{path.audience}</p>
-      <a class="button button-primary" href={primaryCtaHref}>{primaryCtaLabel}<ArrowRight size={18} aria-hidden="true" /></a>
-      {isAcademy && <p class="detail-hero-next">Next: choose a learning track and try one public exercise before you decide whether to apply.</p>}
+  <section
+    class="detail-hero detail-hero-approved"
+    id="top"
+    data-motion-hero
+    data-direction-video-stage
+    data-media-state="poster"
+    style={`--direction-accent:${directionHero.accent};--direction-tone:${directionHero.tone}`}
+  >
+    <div class="shell detail-hero-approved-grid">
+      <div class="detail-hero-approved-copy">
+        <p class="eyebrow hero-eyebrow"><i aria-hidden="true"></i>{directionHero.kicker}</p>
+        <h1>{directionHero.title}</h1>
+        <p>{directionHero.summary}</p>
+        <div class="detail-hero-actions">
+          <a class="button button-primary" href={directionHero.primary.href}>{directionHero.primary.label}</a>
+          <a class="detail-hero-secondary" href={directionHero.secondary.href}>{directionHero.secondary.label}<ArrowRight size={18} aria-hidden="true" /></a>
+        </div>
+        <p class="detail-hero-reassurance">{directionHero.reassurance}</p>
+      </div>
+      <figure class="detail-hero-window">
+        <span class="detail-hero-window-media">
+          <img src={directionHero.poster} alt={path.imageAlt} width="540" height="960" decoding="async" fetchpriority="high" loading="eager" />
+          <video
+            data-direction-video
+            muted
+            loop
+            playsinline
+            preload="none"
+            poster={directionHero.poster}
+            aria-hidden="true"
+            tabindex="-1"
+          >
+            <source data-direction-video-source data-src={directionHero.video} type="video/mp4" />
+          </video>
+        </span>
+        <figcaption>
+          <span><small><i aria-hidden="true"></i>{directionHero.windowLabel}</small>
+          <strong>{directionHero.windowLine}</strong></span>
+          <a href={directionHero.secondary.href}>{directionHero.secondary.label}<ArrowRight size={17} aria-hidden="true" /></a>
+        </figcaption>
+      </figure>
     </div>
   </section>
 
+  <span id="direction-work" class="detail-anchor" aria-hidden="true"></span>
   {isLogistics && <LogisticsSpatialOperations />}
   {path.id === "marketing" && <MarketingGrowthFlow />}
   {path.id === "technology" && <TechnologyBuildPulse />}
@@ -66,7 +160,7 @@ const directContactTitle = {
   {isLogistics && <LogisticsAudienceHub />}
   {isLogistics && <HermesPathEngine />}
 
-  <section class="section detail-overview">
+  <section class="section detail-overview" id="direction-overview">
     <div class="shell detail-intro" data-reveal>
       <p class="eyebrow">The direction</p>
       <h2>A practical starting point.</h2>
@@ -217,7 +311,7 @@ const directContactTitle = {
   }
 
   {path.directContacts && (
-    <section class="section logistics-contacts" aria-labelledby="direct-contact-title">
+    <section class="section logistics-contacts" id="direction-contact" aria-labelledby="direct-contact-title">
       <div class="shell">
         <div class="section-heading" data-reveal><p class="eyebrow">Direct contacts</p><h2 id="direct-contact-title">{directContactTitle}</h2></div>
         <div class="direct-contact-grid" data-reveal>
@@ -249,3 +343,149 @@ const directContactTitle = {
     </section>
   )}
 </main>
+
+<script>
+  const directionStage = document.querySelector<HTMLElement>("[data-direction-video-stage]");
+  const directionVideo = directionStage?.querySelector<HTMLVideoElement>("[data-direction-video]");
+  const directionSource = directionVideo?.querySelector<HTMLSourceElement>("[data-direction-video-source]");
+  if (directionStage && directionVideo && directionSource) {
+    const reduced = matchMedia("(prefers-reduced-motion: reduce)");
+    const connection = (navigator as Navigator & {
+      connection?: { saveData?: boolean; addEventListener?: (type: string, callback: () => void) => void }
+    }).connection;
+    let visible = false;
+    let attached = false;
+    const sync = () => {
+      const posterOnly = reduced.matches || Boolean(connection?.saveData);
+      if (posterOnly || !visible || document.hidden) {
+        directionVideo.pause();
+        directionStage.dataset.mediaState = "poster";
+        return;
+      }
+      if (!attached) {
+        const src = directionSource.dataset.src;
+        if (!src || !/^\/media\/home\/[a-z0-9-]+\.mp4$/.test(src)) return;
+        directionSource.src = src;
+        attached = true;
+        directionVideo.load();
+      }
+      void directionVideo.play().catch(() => {
+        directionStage.dataset.mediaState = "poster";
+      });
+    };
+    directionVideo.addEventListener("playing", () => { directionStage.dataset.mediaState = "ready"; });
+    directionVideo.addEventListener("error", () => {
+      directionStage.dataset.mediaState = "poster";
+      directionVideo.pause();
+    });
+    document.addEventListener("visibilitychange", sync);
+    reduced.addEventListener?.("change", sync);
+    connection?.addEventListener?.("change", sync);
+    if ("IntersectionObserver" in window) {
+      new IntersectionObserver((entries) => {
+        visible = entries.some((entry) => entry.isIntersecting && entry.intersectionRatio >= .12);
+        sync();
+      }, { threshold: [0, .12, .45] }).observe(directionStage);
+    } else {
+      visible = true;
+      sync();
+    }
+  }
+</script>
+
+<style>
+  .detail-anchor{display:block;scroll-margin-top:9rem}
+  .detail-hero-approved{
+    min-height:auto;
+    display:block;
+    padding:clamp(10.5rem,14vw,12rem) 0 clamp(4rem,7vw,6.8rem);
+    background:#f7f6f3;
+    color:#111318;
+    overflow:clip;
+  }
+  .detail-hero-approved-grid{
+    display:grid;
+    grid-template-columns:minmax(0,1.05fr) minmax(320px,.95fr);
+    gap:clamp(1.75rem,4vw,4.5rem);
+    align-items:center;
+  }
+  .detail-hero-approved-copy{display:grid;justify-items:start;align-content:center;padding-inline:clamp(.25rem,2vw,1.5rem)}
+  .detail-hero-approved .hero-eyebrow{display:flex;align-items:center;gap:.75rem;margin:0 0 1.35rem;color:#59606b;font:500 .75rem/1.3 var(--font-mono);letter-spacing:.14em;text-transform:uppercase}
+  .detail-hero-approved .hero-eyebrow i{display:block;width:5px;height:18px;border-radius:3px;background:var(--direction-accent)}
+  .detail-hero-approved h1{
+    max-width:14ch;
+    margin:0 0 1.35rem;
+    color:#111318;
+    font-size:clamp(2.6rem,5.4vw,5.6rem);
+    line-height:1;
+    letter-spacing:-.06em;
+    text-wrap:balance;
+  }
+  .detail-hero-approved-copy>p:not(.eyebrow):not(.detail-hero-reassurance){
+    max-width:52ch;margin:0;color:#4a505c;font-size:clamp(1.06rem,1.3vw,1.25rem);line-height:1.6;text-wrap:pretty;
+  }
+  .detail-hero-actions{display:flex;flex-wrap:wrap;align-items:center;gap:.75rem 1.25rem;padding-top:1.75rem}
+  .detail-hero-approved .button-primary{min-height:54px;padding-inline:1.75rem;border-radius:999px;background:#0a164f;color:#fff;box-shadow:none}
+  .detail-hero-approved .button-primary:is(:hover,:focus-visible){background:#173271}
+  .detail-hero-secondary{display:inline-flex;align-items:center;gap:.5rem;min-height:54px;color:#0a164f;font-size:1.05rem;font-weight:700}
+  .detail-hero-secondary:is(:hover,:focus-visible){text-decoration:underline;text-underline-offset:.3em}
+  .detail-hero-reassurance{max-width:58ch;margin:1rem 0 0;color:#59606b;font-size:.94rem;line-height:1.5}
+  .detail-hero-window{
+    position:relative;
+    justify-self:end;
+    width:min(100%,520px);
+    aspect-ratio:4/5;
+    margin:0;
+    overflow:hidden;
+    border-radius:34px;
+    background:var(--direction-tone);
+    box-shadow:0 30px 80px rgba(10,22,79,.16);
+  }
+  .detail-hero-window-media{position:absolute;inset:0;overflow:hidden;background:var(--direction-tone)}
+  .detail-hero-window-media img,.detail-hero-window-media video{
+    position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;
+  }
+  .detail-hero-window-media img{z-index:0}
+  .detail-hero-window-media video{z-index:1;opacity:0;transition:opacity .45s ease}
+  [data-direction-video-stage][data-media-state="ready"] .detail-hero-window-media video{opacity:1}
+  .detail-hero-window::after{
+    content:"";
+    position:absolute;
+    inset:45% 0 0;
+    background:linear-gradient(180deg,transparent,rgba(5,10,30,.72));
+    pointer-events:none;
+  }
+  .detail-hero-window figcaption{
+    position:absolute;
+    z-index:3;
+    right:clamp(1.25rem,3vw,1.4rem);bottom:clamp(1.25rem,3vw,1.4rem);left:clamp(1.25rem,3vw,1.4rem);
+    display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:.9rem;
+    color:#fff;
+  }
+  .detail-hero-window figcaption>span{display:grid;gap:.4rem}
+  .detail-hero-window figcaption small{
+    display:flex;align-items:center;gap:.65rem;
+    font:800 .7rem/1.2 var(--font-body);
+    letter-spacing:.13em;text-transform:uppercase;
+  }
+  .detail-hero-window figcaption small i{width:5px;height:18px;border-radius:3px;background:var(--direction-accent)}
+  .detail-hero-window figcaption strong{max-width:20ch;font:800 clamp(1.1rem,1.7vw,1.5rem)/1.15 var(--font-display);letter-spacing:-.03em}
+  .detail-hero-window figcaption>a{display:inline-flex;align-items:center;gap:.5rem;min-height:48px;padding:0 1.25rem;border-radius:999px;background:#fff;color:#0a164f;font-weight:700}
+  .detail-hero-window figcaption>a:is(:hover,:focus-visible){transform:translateY(-2px)}
+  @media(max-width:900px){
+    .detail-hero-approved{padding-top:11.5rem}
+    .detail-hero-approved-grid{grid-template-columns:1fr;gap:2rem}
+    .detail-hero-window{justify-self:start;width:min(100%,520px);aspect-ratio:4/5}
+  }
+  @media(max-width:430px){
+    .detail-hero-approved{padding-top:10.75rem}
+    .detail-hero-approved-grid{width:calc(100% - 24px)}
+    .detail-hero-approved-copy{padding-inline:0}
+    .detail-hero-approved h1{font-size:clamp(2.7rem,13vw,4.2rem)}
+    .detail-hero-window{width:100%;border-radius:26px}
+    .detail-hero-window figcaption>a{width:100%;justify-content:center}
+  }
+  @media(prefers-reduced-motion:reduce){
+    .detail-hero-window-media video{display:none!important;transition:none!important}
+  }
+</style>

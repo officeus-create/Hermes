@@ -1,7 +1,7 @@
 import { access, readFile, readdir, stat } from "node:fs/promises";
 import { join } from "node:path";
 
-const root = new URL("../", import.meta.url).pathname;
+const root = decodeURIComponent(new URL("../", import.meta.url).pathname);
 const dist = join(root, "dist");
 const indexPath = join(dist, "index.html");
 const headers = await readFile(join(root, "public/_headers"), "utf8");
@@ -180,7 +180,7 @@ if (homeHeading !== "Four directions.") throw new Error("Homepage must retain th
 const required = [
   // The exact rendered h1 is checked above; its animated letter may have a nested span.
   "Choose yours.",
-  "One Hermes ecosystem.",
+  "one Hermes ecosystem.",
   "Move freight",
   "Grow demand",
   "Build systems",

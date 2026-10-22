@@ -3,7 +3,7 @@ import { join } from "node:path";
 import { HERMES_CONNECT_SOCIAL_CARD } from "../src/data/hermes-connect-social-card.ts";
 import { createHermesConnectSocialCardPng } from "../src/lib/hermes-connect-social-card-generator.ts";
 
-const root = new URL("../", import.meta.url).pathname;
+const root = decodeURIComponent(new URL("../", import.meta.url).pathname);
 const assert = (condition, message) => { if (!condition) throw new Error(message); };
 const text = (path) => readFile(join(root, path), "utf8");
 
