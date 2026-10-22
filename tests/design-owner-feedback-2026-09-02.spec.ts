@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 test.describe("owner-approved design polish 2026-09-02", () => {
-  test("public direction keeps rounded header and routes Hermes Connect to Product Hub", async ({ page }) => {
+  test("public direction keeps rounded approved header and routes Hermes Connect through Products", async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 1000 });
     await page.goto("/paths/marketing/");
 
@@ -9,10 +9,14 @@ test.describe("owner-approved design polish 2026-09-02", () => {
     await expect(header).toBeVisible();
     expect(parseFloat(await header.evaluate((node) => getComputedStyle(node).borderRadius))).toBeGreaterThanOrEqual(20);
 
-    const launcher = page.locator('[data-hermes-connect-launcher="header"]');
-    await expect(launcher).toBeVisible();
-    await expect(launcher).toContainText("Hermes Connect");
-    await expect(launcher).toHaveAttribute("href", /\/services\/hermes-connect\/$/);
+    // Claude Directions 22.10 removes the standalone product promo from the
+    // canonical direction shell, but the server-rendered Products route remains.
+    await expect(page.locator('[data-hermes-connect-launcher="header"]')).toHaveCount(0);
+    await expect(page.locator("[data-hermes-products] > summary")).toBeVisible();
+    const connectProduct = page.locator('[data-hermes-products] [data-product="connect"]');
+    await expect(connectProduct).toHaveCount(1);
+    await expect(connectProduct).toContainText("Hermes Connect");
+    await expect(connectProduct).toHaveAttribute("href", "/services/hermes-connect/");
   });
 
   test("primary Hermes link graph exists in server HTML without JavaScript", async ({ browser }) => {
@@ -24,7 +28,8 @@ test.describe("owner-approved design polish 2026-09-02", () => {
     await expect(page.locator('.desktop-nav a[href="/paths/marketing/"]')).toHaveCount(1);
     await expect(page.locator('.desktop-nav a[href="/paths/academy/"]')).toHaveCount(1);
     await expect(page.locator('.desktop-nav a[href="/paths/technology/"]')).toHaveCount(1);
-    await expect(page.locator('[data-hermes-connect-launcher="header"]')).toHaveAttribute("href", "/services/hermes-connect/");
+    await expect(page.locator('[data-hermes-connect-launcher="header"]')).toHaveCount(0);
+    await expect(page.locator('[data-hermes-products] [data-product="connect"]')).toHaveAttribute("href", "/services/hermes-connect/");
     await context.close();
   });
 
