@@ -106,6 +106,45 @@ const localized = {
 const localizedNav = [...localized.nav].sort((a, b) => directionRank(a.href) - directionRank(b.href));
 const localePath = localeConfig[locale].path;
 const privacyHref = locale === "ru" ? "/ru/privacy/" : "/privacy/";
+const homeFooterGroups = [
+  {
+    title: "Directions",
+    links: [
+      ...orderedSiteNavigation.map((item) => ({ label: item.label === "IT" ? "Technology" : item.label, href: `/${item.href}` })),
+      { label: "Insights", href: "/insights/" },
+      { label: "Case Studies", href: "/case/" },
+      { label: "Opportunities", href: "/opportunities/" },
+    ],
+  },
+  {
+    title: "Products & services",
+    links: [
+      { label: "Hermes Connect", href: "/services/hermes-connect/" },
+      { label: "Business Directory", href: "/businesses/" },
+      { label: "Website Development", href: "/services/website-development/" },
+      { label: "SEO Services", href: "/services/seo/" },
+      { label: "Wisconsin Vehicle Transport", href: "/logistics/wisconsin-vehicle-transport/" },
+      { label: "Dealer Vehicle Transport", href: "/logistics/dealer-vehicle-transportation/" },
+      { label: "Car Hauling Dispatch", href: "/logistics/car-hauling-dispatch/" },
+      { label: "Hermes Connect Access", href: "/download/" },
+    ],
+  },
+  {
+    title: "Company & legal",
+    links: [
+      { label: "About Hermes", href: "/about/" },
+      { label: "Company Information", href: "/company-information/" },
+      { label: "Contact", href: "/contacts/" },
+      { label: "Privacy", href: "/privacy/" },
+      { label: "Privacy Choices", href: "/privacy-choices/" },
+      { label: "Regional Privacy", href: "/regional-privacy/" },
+      { label: "Legal & Compliance", href: "/legal-compliance/" },
+      { label: "Terms of Use", href: "/terms/" },
+      { label: "Editorial & Corrections", href: "/editorial-policy/" },
+      { label: "Accessibility", href: "/accessibility/" },
+    ],
+  },
+] as const;
 ---
 
 {showTransportRequestActions && (
@@ -164,23 +203,34 @@ const privacyHref = locale === "ru" ? "/ru/privacy/" : "/privacy/";
       <p class="footer-location">{publicLocationBoundary}</p>
       <HermesConnectLauncher variant="footer" />
     </div>
-    <nav class="footer-primary-nav" aria-label="Footer navigation">
-      {localizedNav.map((item) => <a href={item.href}>{item.label}</a>)}
-      <a href={privacyHref}>{localized.privacy}</a>
-      {locale === "en" && (
-        <>
-          <a href="/legal-compliance/">Legal & Compliance</a>
-          <a href="/regional-privacy/">Regional Privacy</a>
-          <a href="/privacy-choices/">Privacy Choices</a>
-          <a href="/company-information/">Company Information</a>
-          <a href="/about/">About Hermes</a>
-          <a href="/download/">Hermes Connect Access</a>
-          <a href="/terms/">Terms of Use</a>
-          <a href="/editorial-policy/">Editorial & Corrections</a>
-          <a href="/accessibility/">Accessibility</a>
-        </>
-      )}
-    </nav>
+    {currentPath === "/" ? (
+      <nav class="footer-primary-nav footer-primary-nav--grouped" aria-label="Footer navigation">
+        {homeFooterGroups.map((group) => (
+          <section class="footer-link-group" aria-labelledby={`footer-${group.title.toLowerCase().replace(/[^a-z]+/g, "-")}`}>
+            <h2 id={`footer-${group.title.toLowerCase().replace(/[^a-z]+/g, "-")}`}>{group.title}</h2>
+            <div>{group.links.map((item) => <a href={item.href}>{item.label}</a>)}</div>
+          </section>
+        ))}
+      </nav>
+    ) : (
+      <nav class="footer-primary-nav" aria-label="Footer navigation">
+        {localizedNav.map((item) => <a href={item.href}>{item.label}</a>)}
+        <a href={privacyHref}>{localized.privacy}</a>
+        {locale === "en" && (
+          <>
+            <a href="/legal-compliance/">Legal & Compliance</a>
+            <a href="/regional-privacy/">Regional Privacy</a>
+            <a href="/privacy-choices/">Privacy Choices</a>
+            <a href="/company-information/">Company Information</a>
+            <a href="/about/">About Hermes</a>
+            <a href="/download/">Hermes Connect Access</a>
+            <a href="/terms/">Terms of Use</a>
+            <a href="/editorial-policy/">Editorial & Corrections</a>
+            <a href="/accessibility/">Accessibility</a>
+          </>
+        )}
+      </nav>
+    )}
     <div class="footer-contacts" aria-label="Contact options">
       <p class="footer-contacts-label">{localized.contact}</p>
       <a href={locale === "en" ? "/contacts/" : `${localePath}#contact`}>{localized.route}</a>
@@ -207,6 +257,26 @@ const privacyHref = locale === "ru" ? "/ru/privacy/" : "/privacy/";
 <RussianLocaleIntegrity />
 
 <style>
+  .footer-primary-nav--grouped {
+    grid-column: 2 / 5;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(1.4rem, 2.8vw, 3rem);
+  }
+  .footer-link-group { min-width: 0; }
+  .footer-link-group h2 {
+    margin: 0 0 .8rem;
+    color: rgba(255,255,255,.58);
+    font: 700 .68rem/1.2 var(--font-mono);
+    letter-spacing: .11em;
+    text-transform: uppercase;
+  }
+  .footer-link-group div { display: grid; gap: .58rem; }
+  .footer-link-group a { color: rgba(255,255,255,.78); font-size: .87rem; line-height: 1.35; }
+  .footer-link-group a:hover,.footer-link-group a:focus-visible { color:#fff; }
+  @media (max-width: 1050px) {
+    .footer-primary-nav--grouped { grid-column: 1 / -1; grid-template-columns: repeat(3, minmax(0,1fr)); }
+  }
   @media (max-width: 700px) {
     .site-footer { padding-top: 2.6rem; }
     .footer-main { grid-template-columns: 1fr; gap: .9rem; }
@@ -220,6 +290,8 @@ const privacyHref = locale === "ru" ? "/ru/privacy/" : "/privacy/";
       border-top: 1px solid rgba(255,255,255,.16);
     }
 
+    .footer-primary-nav--grouped { grid-template-columns:1fr; gap:1.3rem; }
+    .footer-link-group div { grid-template-columns:repeat(2,minmax(0,1fr)); gap:0 .85rem; }
     .footer-primary-nav a {
       display: flex;
       min-height: 44px;
