@@ -148,6 +148,7 @@ assert.doesNotMatch(
 const productionWorkflow = read(".github/workflows/cloudflare-pages-production-v2.yml");
 const productionContactMode = read("src/components/ProductionContactMode.astro");
 const productionContactRuntimeCheck = read("scripts/check-production-contact-runtime.mjs");
+const productionHomeVideoRuntimeCheck = read("scripts/check-home-video-production.mjs");
 for (const ignoredPath of [".github/**", "docs/**", "ai-collaboration/**", "tests/**", "README.md", "AGENTS.md", "CLAUDE.md"]) {
   assert.ok(productionWorkflow.includes(`- "${ignoredPath}"`), `Non-runtime path should not spend a production Pages build: ${ignoredPath}`);
 }
@@ -246,10 +247,44 @@ for (const marker of [
 }
 for (const marker of [
   "npx playwright install --with-deps chromium",
+  "node scripts/check-home-video-production.mjs",
   "node scripts/check-production-contact-runtime.mjs",
 ]) {
   assert.ok(productionWorkflow.includes(marker), `Production browser runtime verification is missing from the release workflow: ${marker}`);
 }
+for (const marker of [
+  'APPROVED_HOSTS = new Set(["hermeslogisticsus.com", "www.hermeslogisticsus.com"])',
+  'assert.equal(parsed.protocol, "https:"',
+  'assert.match(parsed.pathname, /^\\/media\\/home\\/[a-z0-9-]+\\.mp4$/',
+  'id: "logistics"',
+  'id: "technology"',
+  'id: "academy"',
+  'id: "marketing"',
+  'Range: "bytes=0-1023"',
+  'assert.equal(response.status, 206',
+  'videoNode.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA',
+  'videoNode.videoWidth > 0',
+  'videoNode.videoHeight > 0',
+  'videoNode.paused === false',
+  'currentTime did not advance',
+  'getImageData(0, 0, canvas.width, canvas.height)',
+  'page.mouse.move(0, 0)',
+  'reducedMotion: "reduce"',
+  'saveData: true',
+  'source must not be eagerly attached',
+]) {
+  assert.ok(productionHomeVideoRuntimeCheck.includes(marker), `Home video production proof is missing a mandatory runtime assertion: ${marker}`);
+}
+assert.doesNotMatch(
+  productionHomeVideoRuntimeCheck,
+  /\.click\(|\.fill\(|\.submit\(|request\.post\(/,
+  "Home video production verification must remain read-only.",
+);
+assert.ok(
+  productionWorkflow.includes("Home cinematic verification: four lanes require byte-range delivery, autonomous visible playback, visible frame change, reduced-motion fallback and Save-Data fallback"),
+  "Production release summary must retain explicit four-lane Home video proof.",
+);
+
 for (const marker of [
   'new Set(["hermeslogisticsus.com", "www.hermeslogisticsus.com"])',
   "javaScriptEnabled: false",
