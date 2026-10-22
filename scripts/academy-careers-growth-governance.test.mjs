@@ -15,7 +15,7 @@ import {
   weeklyGrowthScorecard,
 } from "../src/data/growth-release-governance.ts";
 
-const root = new URL("../", import.meta.url).pathname;
+const root = decodeURIComponent(new URL("../", import.meta.url).pathname);
 const dist = join(root, "dist");
 const academy = await readFile(join(dist, "paths/academy/index.html"), "utf8");
 const careers = await readFile(join(dist, "logistics/careers/index.html"), "utf8");

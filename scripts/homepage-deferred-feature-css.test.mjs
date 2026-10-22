@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 
-const root = new URL("../", import.meta.url).pathname;
+const root = decodeURIComponent(new URL("../", import.meta.url).pathname);
 const html = await readFile(join(root, "dist", "index.html"), "utf8");
 const brandCss = await readFile(join(root, "src", "styles", "hermes-brand-system.css"), "utf8");
 const homepageSource = await readFile(join(root, "src", "pages", "index.astro"), "utf8");

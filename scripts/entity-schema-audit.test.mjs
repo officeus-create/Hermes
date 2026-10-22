@@ -1,7 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 
-const root = new URL("../", import.meta.url).pathname;
+const root = decodeURIComponent(new URL("../", import.meta.url).pathname);
 const dist = join(root, "dist");
 const homepage = await readFile(join(dist, "index.html"), "utf8");
 const organizationId = "https://hermeslogisticsus.com/#organization";

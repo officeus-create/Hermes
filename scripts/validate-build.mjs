@@ -1,7 +1,7 @@
 import { access, readFile, readdir, stat } from "node:fs/promises";
 import { join } from "node:path";
 
-const root = new URL("../", import.meta.url).pathname;
+const root = decodeURIComponent(new URL("../", import.meta.url).pathname);
 const dist = join(root, "dist");
 const indexPath = join(dist, "index.html");
 const headers = await readFile(join(root, "public/_headers"), "utf8");

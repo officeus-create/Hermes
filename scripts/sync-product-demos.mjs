@@ -1,7 +1,7 @@
 import { cp, mkdir, readFile, writeFile } from "node:fs/promises";
 import { join, resolve } from "node:path";
 
-const websiteRoot = new URL("..", import.meta.url).pathname;
+const websiteRoot = decodeURIComponent(new URL("..", import.meta.url).pathname);
 const externalCrmRoot = process.env.HERMES_CRM_VALIDATION_SOURCE_DIR
   ? resolve(process.env.HERMES_CRM_VALIDATION_SOURCE_DIR)
   : null;

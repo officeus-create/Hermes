@@ -1,7 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 
-const root = new URL("../", import.meta.url).pathname;
+const root = decodeURIComponent(new URL("../", import.meta.url).pathname);
 const assert = (condition, message) => { if (!condition) throw new Error(message); };
 const text = (path) => readFile(join(root, path), "utf8");
 

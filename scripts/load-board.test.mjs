@@ -148,7 +148,7 @@ assert.deepEqual(rejected.routing, []);
 
 // Search ownership: role/equipment query parameters remain useful UI state,
 // but the rendered document must expose one organic canonical owner: /load-board/.
-const root = new URL("../", import.meta.url).pathname;
+const root = decodeURIComponent(new URL("../", import.meta.url).pathname);
 const loadBoardHtml = await readFile(join(root, "dist/load-board/index.html"), "utf8");
 assert.match(
   loadBoardHtml,

@@ -14,7 +14,7 @@ for(const [name,script] of Object.entries({
  const page=read(pageRoot+name+"/index.astro");
  assert.match(page,/noindex,nofollow/);
  assert.match(page,new RegExp("/scripts/workspaces/"+script+"\\.js"));
- execFileSync(process.execPath,["--check",new URL("../public/scripts/workspaces/"+script+".js",import.meta.url).pathname]);
+ execFileSync(process.execPath,["--check",decodeURIComponent(new URL("../public/scripts/workspaces/"+script+".js",import.meta.url).pathname)]);
 }
 assert(CARRIER_TYPES.has("carrier")&&CARRIER_TYPES.has("fleet")&&CARRIER_TYPES.has("owner_operator"));
 assert(!CARRIER_TYPES.has("broker")&&!CARRIER_TYPES.has("dealer"));
