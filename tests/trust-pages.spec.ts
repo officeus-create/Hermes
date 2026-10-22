@@ -31,6 +31,13 @@ test("English footer exposes all public trust routes", async ({ page }) => {
   await expect(footer.getByRole("link", { name: "Terms of Use" })).toHaveAttribute("href", "/terms/");
   await expect(footer.getByRole("link", { name: "Editorial & Corrections" })).toHaveAttribute("href", "/editorial-policy/");
   await expect(footer.getByRole("link", { name: "Accessibility" })).toHaveAttribute("href", "/accessibility/");
+
+  const social = footer.getByRole("navigation", { name: "Social media" });
+  await expect(social.getByRole("link", { name: "Instagram" })).toHaveAttribute("href", "https://www.instagram.com/hermes.logistics/");
+  await expect(social.getByRole("link", { name: "Threads" })).toHaveAttribute("href", "https://www.threads.com/@hermes.logistics");
+  await expect(social.getByRole("link", { name: "Telegram" })).toHaveAttribute("href", "https://t.me/+R-GepRJDbEQ1NjVi");
+  await expect(social.locator("[data-footer-social]")).toHaveCount(3);
+  await expect(social.getByRole("link", { name: "Facebook" })).toHaveCount(0);
 });
 
 test("trust sitemap and robots expose all trust URLs", async ({ request }) => {
