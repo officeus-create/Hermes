@@ -1,10 +1,10 @@
 import { expect, test } from "@playwright/test";
 
 const directions = [
-  { slug: "logistics", accent: "rgb(47, 107, 246)", tone: "rgb(19, 42, 71)" },
-  { slug: "technology", accent: "rgb(56, 182, 245)", tone: "rgb(10, 42, 62)" },
-  { slug: "academy", accent: "rgb(18, 184, 134)", tone: "rgb(10, 51, 40)" },
-  { slug: "marketing", accent: "rgb(255, 122, 89)", tone: "rgb(59, 30, 22)" },
+  { slug: "logistics", accent: "rgb(47, 107, 246)", tone: "rgb(19, 42, 71)", title: "Freight that moves. A team that answers.", secondary: "Open the Load Board" },
+  { slug: "technology", accent: "rgb(56, 182, 245)", tone: "rgb(13, 53, 80)", title: "Software shaped around how you actually work.", secondary: "Explore Hermes Connect" },
+  { slug: "academy", accent: "rgb(18, 184, 134)", tone: "rgb(14, 68, 52)", title: "Learn the work by doing the work.", secondary: "Apply for review" },
+  { slug: "marketing", accent: "rgb(255, 122, 89)", tone: "rgb(75, 38, 25)", title: "Turn attention into customers — again and again.", secondary: "See the website we built for ourselves" },
 ] as const;
 
 test.beforeEach(async ({ page }) => {
@@ -26,7 +26,10 @@ for (const direction of directions) {
     await expect(root).toBeVisible();
     await expect(hero).toBeVisible();
     await expect(heading).toBeVisible();
+    await expect(heading).toHaveText(direction.title);
     await expect(primary).toBeVisible();
+    await expect(hero.locator(".detail-hero-secondary")).toContainText(direction.secondary);
+    await expect(window.locator("figcaption > a")).toContainText(direction.secondary);
     await expect(window).toBeVisible();
     await expect(window.locator("[data-direction-video]")).toHaveCount(1);
 
@@ -68,7 +71,7 @@ for (const direction of directions) {
     expect(visual!.heroBackground).toBe("rgb(247, 246, 243)");
     expect(visual!.primaryBackground).toBe("rgb(10, 22, 79)");
     expect(visual!.primaryColor).toBe("rgb(255, 255, 255)");
-    expect(visual!.primaryRadius).toBe("12px");
+    expect(visual!.primaryRadius).toBe("999px");
     const narrow = (page.viewportSize()?.width ?? 1280) <= 430;
     expect(visual!.windowRadius).toBe(narrow ? "26px" : "34px");
     expect(visual!.windowBackground).toBe(direction.tone);
@@ -109,6 +112,30 @@ test("shared Claude Directions shell remains usable on a 390px mobile viewport",
   expect(mobile!.windowRadius).toBe("26px");
   expect(mobile!.windowWidth).toBeLessThanOrEqual(mobile!.heroWidth);
   expect(mobile!.headingInsideViewport).toBe(true);
+});
+
+test("latest Claude Directions header owns the attached submenu and Logistics icon motion", async ({ page }) => {
+  await page.goto("/paths/logistics/");
+
+  const header = page.locator("header.site-header");
+  const submenu = header.locator('[data-direction-product-nav="logistics"]');
+  await expect(submenu).toHaveCount(1);
+  await expect(page.locator('body > [data-direction-product-nav="logistics"]')).toHaveCount(0);
+  await expect(submenu.locator('[data-direction-product-link="load-board"] [data-direction-nav-icon="load-board"]')).toHaveCount(1);
+  await expect(submenu.locator('[data-direction-product-link="agreement"]')).toHaveText(/Agreement/);
+
+  const ids = await submenu.locator("[data-direction-product-link]").evaluateAll((links) => links.map((link) => link.getAttribute("data-direction-product-link")));
+  expect(ids).toEqual(["load-board", "carriers", "owner-operators", "brokers", "shippers-dealers", "operations", "agreement", "path", "catalog"]);
+
+  const geometry = await page.evaluate(() => {
+    const header = document.querySelector<HTMLElement>("header.site-header");
+    const submenu = header?.querySelector<HTMLElement>(".direction-product-nav");
+    if (!header || !submenu) return null;
+    const headerRect = header.getBoundingClientRect();
+    const submenuRect = submenu.getBoundingClientRect();
+    return { attached: Math.abs(submenuRect.bottom - headerRect.bottom) < 2, contained: submenuRect.left >= headerRect.left && submenuRect.right <= headerRect.right };
+  });
+  expect(geometry).toEqual({ attached: true, contained: true });
 });
 
 test("Logistics hero title remains contained on a 1440px viewport", async ({ page }) => {

@@ -713,3 +713,19 @@ EVIDENCE: `docs/evidence/home-v3-multishot-contact-sheet-2026-10-22.jpg`; update
 LESSON: A cinematic acceptance criterion needs source provenance, actual multi-shot frames, autonomous normal-speed playback, reduced-motion fallback and current-head browser evidence. CI state and a static screenshot are necessary evidence, not the visible deliverable itself.
 
 REUSE_RULE: For approved film work, lock exact source IDs, self-host bounded outputs, verify first/middle/last frames plus `currentTime` without hover, preserve accessibility/network fallbacks, and test repository tooling from a path containing spaces. Never change unrelated product behavior to hide a one-run browser timing flake.
+
+## ERR-DIRECTIONS-LATEST-DESIGN-DRIFT-20261022 — RESOLVED_IN_BRANCH / EXACT_HEAD_CI_PENDING
+
+PROBLEM: PR #1997 completed the approved Home films but the four root Direction pages still reflected an older Claude prototype: separate full-width submenu, legacy hero copy, one CTA, a narrow media window with a solid lower third, outdated direction accents, and no semantic submenu motion.
+
+ROOT_CAUSE: The earlier implementation and handoff treated the first inspectable Directions export as final while the same approved Claude Design project later gained a joined header/submenu, new direction-specific copy and CTA pairs, full-window 4:5 media, corrected navigation order, and animated semantic icons.
+
+FAILED_APPROACH: Promoting the already-green PR head or using its historical screenshot/CI as evidence of visual completion. The exact approved design remained the authority and contained a materially newer iteration.
+
+WORKING_APPROACH: Re-read the live approved Claude Design, extracted its exact copy, links, colors, navigation order and window labels, then integrated those values into the existing shared Astro direction shell. Kept existing canonical routes, deeper operational sections, local multi-shot films, progressive media runtime, forms, analytics and search owners unchanged. Added nine reduced-motion-safe Logistics icon animations and attached the submenu inside the shared header at every viewport.
+
+EVIDENCE: Current worktree `npm run build` PASS (411 pages, zero errors); focused Claude Directions and WEB 10 Playwright suites PASS 22/22 across desktop and mobile, including exact copy, attached-header ownership, icon/order contracts, 390px containment and zero horizontal overflow. Full required tests and exact-head GitHub CI remain the release gate.
+
+LESSON: A named design project is a moving source until the owner freezes or approves a specific latest state. Before release, compare the current live design at the component/copy/interaction level rather than relying on an earlier implementation handoff.
+
+REUSE_RULE: For Claude-owned visual releases, perform a final live-design diff immediately before release, preserve existing business/search contracts, encode approved copy and interaction details in browser tests, and never promote an older green visual head when the approved project has advanced.

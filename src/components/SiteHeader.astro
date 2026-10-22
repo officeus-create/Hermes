@@ -11,6 +11,7 @@ import HermesConnectAccountSwitcher from "./HermesConnectAccountSwitcher.astro";
 import HermesConnectDomReady from "./HermesConnectDomReady.astro";
 import HermesConnectExperience from "./HermesConnectExperience.astro";
 import HermesConnectLauncher from "./HermesConnectLauncher.astro";
+import DirectionProductNav from "./DirectionProductNav.astro";
 
 interface Props {
   theme?: "dark" | "light";
@@ -100,7 +101,7 @@ const navigation = activeLocale === "en"
 const isCatalogRoute = currentPath === "/businesses/" || currentPath.startsWith("/businesses/");
 const isInsightsRoute = currentPath === "/insights/" || currentPath.startsWith("/insights/");
 const isOpportunitiesRoute = currentPath === "/opportunities/" || currentPath.startsWith("/opportunities/");
-const contactLabel = activeLocale === "en" ? (isApprovedVisualShell ? "Contact" : "Start a conversation") : localizedLabels[activeLocale].contact;
+const contactLabel = activeLocale === "en" ? (isApprovedDirectionShell ? "Start a conversation" : isApprovedHome ? "Contact" : "Start a conversation") : localizedLabels[activeLocale].contact;
 const signInLabel = activeLocale === "en" ? "Sign in" : localizedLabels[activeLocale].signIn;
 // The Home and localized overview Products navigation must preserve Hermes Connect's
 // supported ?lang= locale when crossing from a localized corporate page.
@@ -250,6 +251,7 @@ const languageLinks = siteLocales.filter((language) => !isCatalogLocaleRoute || 
       ))}
     </div>
   </nav>
+  {isApprovedDirectionShell && section && <DirectionProductNav direction={section} theme="light" locale={activeLocale === "ru" ? "ru" : "en"} />}
   {isApprovedHome && <span class="home-update-descriptions"><span id="home-academy-update" hidden>New Academy update within the last seven days.</span><span id="home-insights-update" hidden>New Insight within the last seven days.</span><span id="home-connect-update" hidden>New Connect update within the last seven days.</span><span id="home-catalog-update" hidden>New Catalog update within the last seven days.</span></span>}
 </header>
 
@@ -433,6 +435,61 @@ const languageLinks = siteLocales.filter((language) => !isCatalogLocaleRoute || 
   .site-header[data-approved-visual-shell="true"] .wordmark-mark-corporate { width:36px; height:36px; border:0; border-radius:9px; overflow:hidden; flex:none; }
   .site-header[data-approved-visual-shell="true"] .wordmark-mark-corporate img { display:block; width:100%; height:100%; }
   .site-header[data-approved-visual-shell="true"] .wordmark > span:last-child { font-weight:700; font-size:.94rem; letter-spacing:.32em; text-transform:uppercase; }
+  /* Claude Directions: one fixed, inspectable header panel with the active
+     direction submenu attached underneath. Canonical links and account entry
+     stay intact while the approved narrow layout scrolls horizontally. */
+  .site-header[data-approved-visual-shell="true"]:has(> .direction-product-nav) {
+    isolation:isolate;
+    top:12px;
+    right:auto;
+    left:50%;
+    width:min(1480px,calc(100% - 24px));
+    min-height:62px;
+    margin:0;
+    padding:0 8px 0 20px;
+    border:0;
+    background:transparent;
+    box-shadow:none;
+    backdrop-filter:none;
+    transform:translateX(-50%);
+    grid-template-columns:auto minmax(0,1fr) auto;
+    grid-template-rows:62px auto;
+    column-gap:18px;
+  }
+  .site-header[data-approved-visual-shell="true"]:has(> .direction-product-nav)::before {
+    position:absolute;z-index:-1;inset:0 0 auto;height:62px;border:1px solid rgba(17,19,24,.07);border-radius:999px;
+    background:rgba(255,255,255,.92);box-shadow:0 10px 30px rgba(10,22,79,.07);backdrop-filter:blur(18px);content:"";
+  }
+  .site-header[data-approved-visual-shell="true"]:has(> .direction-product-nav) .desktop-nav {
+    justify-self:center;max-width:100%;min-width:0;margin:0;gap:2px;overflow-x:auto;scrollbar-width:none;
+  }
+  .site-header[data-approved-visual-shell="true"]:has(> .direction-product-nav) .desktop-nav::-webkit-scrollbar{display:none}
+  .site-header[data-approved-visual-shell="true"]:has(> .direction-product-nav) .desktop-nav> a[data-nav-tone]{flex:0 0 auto;min-height:40px;padding:10px 14px;border-radius:999px;font-size:.94rem}
+  .site-header[data-approved-visual-shell="true"]:has(> .direction-product-nav) .desktop-nav> a[aria-current="page"]{background:rgba(10,22,79,.08)}
+  .site-header[data-approved-visual-shell="true"]:has(> .direction-product-nav) .desktop-nav> a[aria-current="page"]::after{display:none}
+  .site-header[data-approved-visual-shell="true"]:has(> .direction-product-nav) .desktop-products-menu>summary{min-height:40px;border:0;background:transparent;font-size:.94rem}
+  .site-header[data-approved-visual-shell="true"]:has(> .direction-product-nav) .header-actions{gap:4px}
+  .site-header[data-approved-visual-shell="true"]:has(> .direction-product-nav) .header-actions>.hc-account-menu{display:none}
+  .site-header[data-approved-visual-shell="true"]:has(> .direction-product-nav) .header-login-link{min-height:40px;padding:10px 14px;border:0;font-size:.94rem;font-weight:600}
+  .site-header[data-approved-visual-shell="true"]:has(> .direction-product-nav) .header-cta{min-height:46px;padding:0 22px;border-radius:999px;background:#0a164f;color:#fff;font-size:.94rem}
+  .site-header[data-approved-visual-shell="true"]> .direction-product-nav{
+    position:relative;top:auto;grid-column:1/-1;width:calc(100% - 56px);margin:-1px 28px 0;padding:0 14px 0 18px;border:1px solid rgba(17,19,24,.06);border-top:0;border-radius:0 0 18px 18px;background:rgba(255,255,255,.9);color:#111318;box-shadow:none;backdrop-filter:blur(18px);overflow:hidden;
+  }
+  .site-header[data-approved-visual-shell="true"]> .direction-product-nav .direction-product-nav__inner{width:100%;max-width:none;min-height:54px;margin:0;padding:0}
+  @media(max-width:1100px){
+    .site-header[data-approved-visual-shell="true"]:has(> .direction-product-nav) .wordmark>span:last-child,
+    .site-header[data-approved-visual-shell="true"]:has(> .direction-product-nav) .header-cta{display:none}
+    .site-header[data-approved-visual-shell="true"]:has(> .direction-product-nav) .desktop-nav{display:flex}
+    .site-header[data-approved-visual-shell="true"]:has(> .direction-product-nav) .header-actions{display:flex}
+    .site-header[data-approved-visual-shell="true"]:has(> .direction-product-nav) .menu-button{display:none}
+  }
+  @media(max-width:640px){
+    .site-header[data-approved-visual-shell="true"]:has(> .direction-product-nav){padding-left:8px;column-gap:6px}
+    .site-header[data-approved-visual-shell="true"]:has(> .direction-product-nav) .header-actions{display:none}
+    .site-header[data-approved-visual-shell="true"]:has(> .direction-product-nav) .menu-button{display:grid;color:#111318}
+    .site-header[data-approved-visual-shell="true"]:has(> .direction-product-nav) .desktop-nav{justify-self:stretch}
+    .site-header[data-approved-visual-shell="true"]> .direction-product-nav{width:calc(100% - 16px);margin-inline:8px;padding-inline:8px}
+  }
   .site-header[data-home-portal="true"] {
     /* Owner review palette on Home only. Real product/Connect colors remain unchanged. */
     --nav-logistics: var(--dir-logistics);

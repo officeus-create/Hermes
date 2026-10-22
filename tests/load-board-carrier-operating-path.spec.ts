@@ -6,11 +6,13 @@ const source = async (path: string) => readFile(resolve(process.cwd(), path), "u
 
 test("canonical Load Board stays visible from Logistics and Technology direction entries", async () => {
   const page = await source("src/pages/paths/[slug].astro");
+  const header = await source("src/components/SiteHeader.astro");
   const nav = await source("src/components/DirectionProductNav.astro");
   const legacyNav = await source("src/components/LogisticsProductNav.astro");
   const spotlight = await source("src/components/LoadBoardProductSpotlight.astro");
 
-  expect(page).toContain('<DirectionProductNav direction={path.id as "logistics" | "marketing" | "technology" | "academy"} theme="light" />');
+  expect(page).toContain('<SiteHeader contactHref="#contact" theme="light" />');
+  expect(header).toContain('<DirectionProductNav direction={section} theme="light"');
   expect(nav).toContain('logistics: {');
   expect(nav).toContain('technology: {');
   expect(nav.match(/label: "Load Board", href: "\/load-board\/"/g)?.length).toBeGreaterThanOrEqual(2);
