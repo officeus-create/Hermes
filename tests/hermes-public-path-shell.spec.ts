@@ -194,15 +194,22 @@ test("all four Direction submenus keep visible icon motion and honor reduced-mot
           await expect(icons).toHaveCount(1);
           await link.hover();
 
-          const animationNames = await link.evaluate((node) =>
-            [...node.querySelectorAll<HTMLElement>("[data-direction-nav-icon] [class*='motion-'], .direction-product-nav__generic-icon")]
+          const motionState = await link.evaluate((node) => ({
+            item: node.getAttribute("data-direction-product-link"),
+            animationNames: [...node.querySelectorAll<HTMLElement>("[data-direction-nav-icon] [class*='motion-'], .direction-product-nav__generic-icon")]
               .map((element) => getComputedStyle(element).animationName),
-          );
+          }));
 
           if (reducedMotion === "reduce") {
-            expect(animationNames.every((name) => name === "none")).toBe(true);
+            expect(
+              motionState.animationNames.every((name) => name === "none"),
+              `${direction.id}:${motionState.item} must disable icon animation for reduced motion; got ${motionState.animationNames.join(",")}`,
+            ).toBe(true);
           } else {
-            expect(animationNames.some((name) => name !== "none")).toBe(true);
+            expect(
+              motionState.animationNames.some((name) => name !== "none"),
+              `${direction.id}:${motionState.item} must animate on hover; got ${motionState.animationNames.join(",")}`,
+            ).toBe(true);
           }
         }
       }
