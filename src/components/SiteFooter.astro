@@ -1,5 +1,5 @@
 ---
-import { ArrowUp, Mail } from "@lucide/astro";
+import { ArrowUp, AtSign, Mail, Send } from "@lucide/astro";
 import { site } from "../data/site";
 import { localeConfig, type SiteLocale } from "../data/locales";
 import { directionOwnerRoutes } from "../data/localized-direction-owners";
@@ -106,6 +106,11 @@ const localized = {
 const localizedNav = [...localized.nav].sort((a, b) => directionRank(a.href) - directionRank(b.href));
 const localePath = localeConfig[locale].path;
 const privacyHref = locale === "ru" ? "/ru/privacy/" : "/privacy/";
+const footerSocial = site.social.map((item) => ({
+  ...item,
+  icon: item.label === "Threads" ? AtSign : item.label === "Telegram" ? Send : null,
+}));
+
 const homeFooterGroups = [
   {
     title: "Directions",
@@ -237,11 +242,24 @@ const homeFooterGroups = [
       <a href="mailto:officeus@hermeslogisticsus.com">officeus@hermeslogisticsus.com</a>
     </div>
     <nav class="footer-social" aria-label="Social media">
-      {site.social.map((item) => (
-        <a href={item.href} target="_blank" rel="noopener noreferrer">
-          {item.label}
-        </a>
-      ))}
+      {footerSocial.map((item) => {
+        const Icon = item.icon;
+        return (
+          <a
+            href={item.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={item.label}
+            data-footer-social={item.label.toLowerCase()}
+            title={item.label}
+          >
+            {item.label === "Instagram"
+              ? <span class="footer-instagram-glyph" aria-hidden="true"><i></i></span>
+              : Icon && <Icon size={18} stroke-width={1.8} aria-hidden="true" />}
+            <span class="footer-social-label">{item.label}</span>
+          </a>
+        );
+      })}
     </nav>
     <a class="back-to-top" href="#top" aria-label="Back to top">
       <ArrowUp size={20} aria-hidden="true" />
@@ -257,6 +275,80 @@ const homeFooterGroups = [
 <RussianLocaleIntegrity />
 
 <style>
+  .footer-social {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .55rem;
+  }
+  .footer-social a {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    min-height: 40px;
+    padding: 0;
+    border: 1px solid rgba(255,255,255,.22);
+    border-radius: 999px;
+    background: rgba(255,255,255,.055);
+    color: rgba(255,255,255,.78);
+    transition: transform 180ms ease, border-color 180ms ease, background-color 180ms ease, color 180ms ease;
+  }
+  .footer-social a:hover,
+  .footer-social a:focus-visible {
+    transform: translateY(-1px);
+    border-color: rgba(255,255,255,.48);
+    background: rgba(255,255,255,.11);
+    color: #fff;
+  }
+  .footer-instagram-glyph {
+    position: relative;
+    width: 17px;
+    height: 17px;
+    border: 1.8px solid currentColor;
+    border-radius: 5px;
+    box-sizing: border-box;
+  }
+  .footer-instagram-glyph::before {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 6px;
+    height: 6px;
+    border: 1.6px solid currentColor;
+    border-radius: 999px;
+    content: "";
+    transform: translate(-50%,-50%);
+  }
+  .footer-instagram-glyph::after {
+    position: absolute;
+    top: 3px;
+    right: 3px;
+    width: 2px;
+    height: 2px;
+    border-radius: 999px;
+    background: currentColor;
+    content: "";
+  }
+  .footer-instagram-glyph i { display:none; }
+
+  .footer-social-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .footer-social a { transition: none; }
+    .footer-social a:hover,
+    .footer-social a:focus-visible { transform: none; }
+  }
+
   .footer-primary-nav--grouped {
     grid-column: 2 / 5;
     display: grid;
@@ -317,10 +409,8 @@ const homeFooterGroups = [
     }
 
     .footer-social {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0 1rem;
-      padding-top: .15rem;
+      gap: .55rem;
+      padding-top: .35rem;
     }
 
     .footer-primary-nav a:focus-visible,
