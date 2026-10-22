@@ -655,7 +655,7 @@
     {
       "path": "public/images/direction-logistics-real-2026.jpg",
       "sha256": "aa855e147601733246ac5af06f5feb7e488a5a5ca32d2d08741a0e06fb3b45bb",
-      "firstTrackedCommit": "PENDING_THIS_COMMIT",
+      "firstTrackedCommit": "28aed4a5f335319ac4f9d07f36d030bbcc6ae976",
       "classification": "OWNER_APPROVED_STOCK_VIDEO_DERIVATIVE",
       "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
       "source": "Still frame cut on 2026-10-22 from Pexels video 18749847 (trucks on an interstate) frame at 31.5 s, one of the shots in the owner-approved Claude Design direction films; 1400x1050 crop, self-hosted. Replaces the abstract AI artwork that no longer matched the approved design.",
@@ -665,7 +665,7 @@
     {
       "path": "public/images/direction-technology-real-2026.jpg",
       "sha256": "9eb94bc921c4c2aae3d99074407dccf4578948ac8fd12fbaeeb5b32a2e722c2e",
-      "firstTrackedCommit": "PENDING_THIS_COMMIT",
+      "firstTrackedCommit": "28aed4a5f335319ac4f9d07f36d030bbcc6ae976",
       "classification": "OWNER_APPROVED_STOCK_VIDEO_DERIVATIVE",
       "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
       "source": "Still frame cut on 2026-10-22 from Pexels video 6804109 (developers at a screen) frame at 1.0 s, one of the shots in the owner-approved Claude Design direction films; 1400x1050 crop, self-hosted. Replaces the abstract AI artwork that no longer matched the approved design.",
@@ -675,7 +675,7 @@
     {
       "path": "public/images/direction-academy-real-2026.jpg",
       "sha256": "fb9661c90921f5f0ccce265bb72970ad905568f7a63df277573e6cf3b36b78d6",
-      "firstTrackedCommit": "PENDING_THIS_COMMIT",
+      "firstTrackedCommit": "28aed4a5f335319ac4f9d07f36d030bbcc6ae976",
       "classification": "OWNER_APPROVED_STOCK_VIDEO_DERIVATIVE",
       "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
       "source": "Still frame cut on 2026-10-22 from Pexels video 9034497 (trainer at a flipchart) frame at 2.0 s, one of the shots in the owner-approved Claude Design direction films; 1400x1050 crop, self-hosted. Replaces the abstract AI artwork that no longer matched the approved design.",
@@ -685,7 +685,7 @@
     {
       "path": "public/images/direction-marketing-real-2026.jpg",
       "sha256": "b29a9a6665ac24da72130173db2c0fa5035a1487b4aa2357f57f9aac25e36da7",
-      "firstTrackedCommit": "PENDING_THIS_COMMIT",
+      "firstTrackedCommit": "28aed4a5f335319ac4f9d07f36d030bbcc6ae976",
       "classification": "OWNER_APPROVED_STOCK_VIDEO_DERIVATIVE",
       "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
       "source": "Still frame cut on 2026-10-22 from Pexels video 6774593 (\"Planning wall\") frame at 3.0 s, one of the shots in the owner-approved Claude Design direction films; 1400x1050 crop, self-hosted. Replaces the abstract AI artwork that no longer matched the approved design.",
@@ -695,7 +695,7 @@
     {
       "path": "src/assets/direction-logistics-real-2026.jpg",
       "sha256": "aa855e147601733246ac5af06f5feb7e488a5a5ca32d2d08741a0e06fb3b45bb",
-      "firstTrackedCommit": "PENDING_THIS_COMMIT",
+      "firstTrackedCommit": "28aed4a5f335319ac4f9d07f36d030bbcc6ae976",
       "classification": "OWNER_APPROVED_STOCK_VIDEO_DERIVATIVE",
       "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
       "source": "Still frame cut on 2026-10-22 from Pexels video 18749847 (trucks on an interstate) frame at 31.5 s, one of the shots in the owner-approved Claude Design direction films; 1400x1050 crop, self-hosted. Replaces the abstract AI artwork that no longer matched the approved design.",
@@ -705,7 +705,7 @@
     {
       "path": "public/images/hermes-live-home-2026.jpg",
       "sha256": "98bbfeb361a287a2821c7fdeb472b3198e6bafdfa79ac33dc016d49be3c4d8af",
-      "firstTrackedCommit": "PENDING_THIS_COMMIT",
+      "firstTrackedCommit": "28aed4a5f335319ac4f9d07f36d030bbcc6ae976",
       "classification": "FIRST_PARTY_PRODUCT_SCREENSHOT",
       "provenanceStatus": "REPOSITORY_SOURCE_VERIFIED",
       "source": "Screenshot of the Hermes home page rendered from this repository on 2026-10-22 (1440x900 viewport, poster frames shown, consent banner hidden). Film posters inside it are covered by the media/home source lock.",
