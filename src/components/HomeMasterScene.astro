@@ -3,31 +3,32 @@ import { ArrowUpRight } from "@lucide/astro";
 import { publicPaths } from "../data/public-paths";
 
 const flowStages = ["event", "system", "human", "outcome"] as const;
-const routeMeta: Record<string, { accent: string; detail: string; displayNumber: string; crop: number; goal: string; flow: readonly [string, string, string, string]; flowPath: string }> = {
+const routeMeta: Record<string, { accent: string; detail: string; searchDetail?: string; displayNumber: string; crop: number; goal: string; flow: readonly [string, string, string, string]; flowPath: string }> = {
   logistics: {
     accent: "var(--hermes-logistics)",
-    detail: "Car hauling · dealers · shippers · carriers",
+    detail: "Dealers · shippers · carriers · dispatch service",
+    searchDetail: "Car hauling for dealers, shippers and carriers",
     flow: ["Request", "Route fit", "Human review", "Handoff"],
     flowPath: "M10 14 C26 8 31 39 47 34 S67 12 88 20",
     displayNumber: "01", crop: 20, goal: "Move freight",
   },
   marketing: {
     accent: "var(--hermes-marketing)",
-    detail: "Website · SEO/GEO · customer acquisition",
+    detail: "Websites · SMM · SEO/GEO · customer acquisition",
     flow: ["Content + news", "Search + social", "Website action", "CRM evidence"],
     flowPath: "M9 37 C25 13 39 49 54 31 S75 15 91 19",
     displayNumber: "04", crop: 296, goal: "Grow demand",
   },
   technology: {
     accent: "var(--hermes-technology)",
-    detail: "CRM · automation · custom software",
+    detail: "CRM systems · websites · IT development",
     flow: ["Hermes Connect", "Website Factory", "Social connectors", "QA readback"],
     flowPath: "M9 18 H31 V41 H56 V25 H77 V40 H91",
     displayNumber: "02", crop: 556, goal: "Build systems",
   },
   academy: {
     accent: "var(--hermes-academy)",
-    detail: "Logistics · marketing · IT/AI · sales · operations",
+    detail: "U.S. logistics · sales · marketing · operations",
     flow: ["Task", "Practice", "Feedback", "Next level"],
     flowPath: "M9 48 H30 V38 H51 V28 H71 V18 H91",
     displayNumber: "03", crop: 818, goal: "Develop people",
@@ -37,7 +38,7 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
 <section class="home-master" id="top" aria-labelledby="home-master-title">
   <div class="home-master-shell">
     <header class="home-master-intro" id="about">
-      <h1 id="home-master-title" class="home-master-display" aria-label="Four directions.">Four <span class="home-display-word"><span data-home-dot-target="d">d</span>i<span data-home-dot-target="r">r</span>e<span data-home-dot-target="c">c</span>t<span class="home-display-i" data-home-dot-target="i">i</span>ons.</span><span class="home-display-travel-dot" data-home-travel-dot aria-hidden="true"></span></h1>
+      <h1 id="home-master-title" class="home-master-display" aria-label="Four directions."><span data-home-dot-target="f">F</span>our <span class="home-display-word">d<span class="home-display-i" data-home-dot-target="i1">i</span>r<span data-home-dot-target="e">e</span>ct<span class="home-display-i" data-home-dot-target="i2">i</span>ons<span data-home-dot-target="end">.</span></span><span class="home-display-travel-dot" data-home-travel-dot aria-hidden="true"></span></h1>
       <p class="home-master-script">Choose yours.</p>
       <p class="home-master-ink-note">Logistics, technology, learning and marketing for your business — one Hermes ecosystem.</p>
     </header>
@@ -50,7 +51,7 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
         return (
           <a class={`home-master-route home-master-route-${path.id}`} href={`/paths/${path.id}/`}
             style={`--route-accent:${meta.accent}`}
-            aria-label={`${meta.goal}: ${path.brandLabel} — ${meta.detail}. Example flow: ${flowLabel}.`} data-home-route data-route-id={path.id}>
+            aria-label={`${meta.goal}: ${path.brandLabel} — ${meta.searchDetail ? `${meta.searchDetail}. ` : ""}${meta.detail}. Example flow: ${flowLabel}.`} data-home-route data-route-id={path.id}>
             <span class="home-portal-art" aria-hidden="true">
               {path.id === "logistics" ? (
                 <span class="home-logistics-layer-stack" data-home-cinematic-slot="logistics" data-cinematic-source-policy="local-only">
@@ -298,7 +299,7 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
               </span>
             )}
             <span class="home-master-route-copy">
-              <small><i aria-hidden="true"></i>{meta.goal}</small>
+              <small><i aria-hidden="true" data-home-route-bar></i>{meta.goal}</small>
               <strong>Hermes<br />{path.brandLabel.replace("Hermes ", "")}</strong>
               <span class="home-route-detail">{meta.detail}</span>
             </span>
@@ -312,48 +313,82 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
 <script>
   import { trackCtaClicked, trackEvent, trackTrackSelected } from "../lib/analytics.ts";
 
-  // Owner-approved Claude Home v3: one dot travels d → r → c → i every 5.2 s,
-  // cycling the four division colors. Decorative only; no extra layout nodes.
+  // Owner-approved Claude Home v3: five-step 5.6 s flight inside a 9 s cycle.
+  // The dot lands F → first i → e → second i → final period. Each landing
+  // briefly answers in the matching direction bar. Hidden tabs cancel the cycle.
   const dotHeading = document.querySelector<HTMLElement>(".home-master-display");
   const travelDot = dotHeading?.querySelector<HTMLElement>("[data-home-travel-dot]");
   const dotTargets = Array.from(dotHeading?.querySelectorAll<HTMLElement>("[data-home-dot-target]") ?? []);
-  if (dotHeading && travelDot && dotTargets.length === 4) {
+  if (dotHeading && travelDot && dotTargets.length === 5) {
     const dotReducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
-    const dotPalette = ["--dir-logistics", "--dir-technology", "--dir-academy", "--dir-marketing"];
-    let dotIndex = 0;
-    let dotTimer: number | undefined;
-    const positionDot = () => {
-      if (dotReducedMotion.matches || document.hidden) return;
+    const steps = [
+      { color: "--dir-logistics", route: "logistics", at: 0 },
+      { color: "--dir-technology", route: "technology", at: 1400 },
+      { color: "--dir-academy", route: "academy", at: 2800 },
+      { color: "--dir-marketing", route: "marketing", at: 4200 },
+      { color: "--dir-marketing", route: "marketing", at: 5600 },
+    ] as const;
+    let cycleTimer: number | undefined;
+    let stepTimers: number[] = [];
+    const clearDotTimers = () => {
+      if (cycleTimer !== undefined) window.clearTimeout(cycleTimer);
+      cycleTimer = undefined;
+      stepTimers.forEach((timer) => window.clearTimeout(timer));
+      stepTimers = [];
+    };
+    const land = (index: number, fromAbove = false) => {
+      if (document.hidden || dotReducedMotion.matches) return;
+      const target = dotTargets[index];
       const headingRect = dotHeading.getBoundingClientRect();
-      const targetRect = dotTargets[dotIndex].getBoundingClientRect();
+      const targetRect = target.getBoundingClientRect();
       if (!targetRect.width) return;
+      travelDot.style.transition = fromAbove ? "none" : "";
       travelDot.style.left = `${targetRect.left - headingRect.left + targetRect.width / 2}px`;
       travelDot.style.top = `${targetRect.top - headingRect.top + targetRect.height * 0.08}px`;
-      travelDot.style.backgroundColor = `var(${dotPalette[dotIndex]})`;
-      travelDot.dataset.homeDotPosition = dotTargets[dotIndex].dataset.homeDotTarget ?? "d";
+      travelDot.style.backgroundColor = `var(${steps[index].color})`;
+      travelDot.dataset.homeDotPosition = target.dataset.homeDotTarget ?? String(index);
+      if (fromAbove) {
+        travelDot.style.transform = "translate(-50%,-320%)";
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+          travelDot.style.transition = "";
+          travelDot.style.transform = "translate(-50%,-40%)";
+        }));
+      }
       travelDot.classList.add("is-ready");
+      target.classList.remove("home-dot-impact");
+      void target.offsetWidth;
+      target.classList.add("home-dot-impact");
+      const bar = document.querySelector<HTMLElement>(`[data-home-route][data-route-id="${steps[index].route}"] [data-home-route-bar]`);
+      bar?.classList.remove("home-route-bar-impact");
+      if (bar) {
+        void bar.offsetWidth;
+        bar.classList.add("home-route-bar-impact");
+      }
+      window.setTimeout(() => {
+        target.classList.remove("home-dot-impact");
+        bar?.classList.remove("home-route-bar-impact");
+      }, 620);
     };
-    const stopDot = () => {
-      if (dotTimer !== undefined) window.clearInterval(dotTimer);
-      dotTimer = undefined;
-      travelDot.classList.remove("is-ready");
+    const runCycle = () => {
+      clearDotTimers();
+      if (document.hidden || dotReducedMotion.matches) {
+        travelDot.classList.remove("is-ready");
+        return;
+      }
+      steps.forEach((step, index) => {
+        stepTimers.push(window.setTimeout(() => land(index, index === 0), step.at));
+      });
+      cycleTimer = window.setTimeout(runCycle, 9000);
     };
-    const startDot = () => {
-      stopDot();
-      if (dotReducedMotion.matches || document.hidden) return;
-      dotIndex = 0;
-      requestAnimationFrame(positionDot);
-      dotTimer = window.setInterval(() => {
-        dotIndex = (dotIndex + 1) % dotTargets.length;
-        positionDot();
-      }, 1300);
-    };
-    startDot();
-    dotReducedMotion.addEventListener("change", startDot);
-    document.addEventListener("visibilitychange", startDot);
-    window.addEventListener("resize", positionDot, { passive: true });
-    void document.fonts?.ready.then(positionDot);
-    window.addEventListener("pagehide", stopDot, { once: true });
+    runCycle();
+    document.addEventListener("visibilitychange", runCycle);
+    dotReducedMotion.addEventListener?.("change", runCycle);
+    window.addEventListener("resize", () => {
+      const current = dotTargets.findIndex((target) => target.dataset.homeDotTarget === travelDot.dataset.homeDotPosition);
+      if (current >= 0 && !document.hidden && !dotReducedMotion.matches) land(current);
+    }, { passive: true });
+    void document.fonts?.ready.then(runCycle);
+    window.addEventListener("pagehide", clearDotTimers, { once: true });
   }
 
   const logisticsEcho = document.querySelector<HTMLElement>("[data-home-logistics-echo]");
@@ -600,20 +635,31 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
 .home-master-display{position:relative}
 .home-master-display .home-display-word{color:inherit}
 .home-master-display [data-home-dot-target]{color:inherit}
-.home-master-display .home-display-travel-dot{position:absolute;z-index:2;left:0;top:0;width:.13em;height:.13em;border-radius:50%;pointer-events:none;opacity:0;transform:translate(-50%,-40%);background:var(--dir-logistics);transition:left .68s cubic-bezier(.22,1,.36,1),top .68s cubic-bezier(.22,1,.36,1),background-color .38s ease,opacity .18s ease}
+.home-master-display .home-display-travel-dot{position:absolute;z-index:2;left:0;top:0;width:.13em;height:.13em;border-radius:50%;pointer-events:none;opacity:0;transform:translate(-50%,-40%);background:var(--dir-logistics);transition:left 1.08s cubic-bezier(.22,1,.36,1),top 1.08s cubic-bezier(.22,1,.36,1),transform .42s cubic-bezier(.22,1,.36,1),background-color .38s ease,opacity .18s ease}
 .home-master-display .home-display-travel-dot.is-ready{opacity:1}
-@media(prefers-reduced-motion:reduce){.home-master-display .home-display-travel-dot{display:none!important;transition:none!important}}
+.home-master-display [data-home-dot-target].home-dot-impact{animation:home-dot-letter-impact .62s cubic-bezier(.2,.8,.2,1)}
+.home-master-route-copy [data-home-route-bar].home-route-bar-impact{animation:home-route-bar-impact .62s cubic-bezier(.2,.8,.2,1)}
+@keyframes home-dot-letter-impact{0%,100%{transform:translateY(0)}42%{transform:translateY(.055em)}68%{transform:translateY(-.018em)}}
+@keyframes home-route-bar-impact{0%,100%{transform:translateY(0) scale(1,1)}42%{transform:translateY(-7px) scale(.8,1.45)}72%{transform:translateY(-2px) scale(1.35,.7)}}
+@media(prefers-reduced-motion:reduce){.home-master-display .home-display-travel-dot{display:none!important;transition:none!important}.home-master-display [data-home-dot-target],.home-master-route-copy [data-home-route-bar]{animation:none!important}}
 .home-master-script{position:relative;width:max-content;max-width:100%;margin:.55rem 0 1rem;color:#59606b;font:650 clamp(.98rem,1.35vw,1.15rem)/1.35 var(--font-body);letter-spacing:.08em;text-transform:uppercase;transform:none}
 .home-master-script::after{content:none}
 .home-master-ink-note{max-width:92ch;text-wrap:balance;margin:0;color:#666c79;font-size:clamp(.96rem,1.22vw,1.16rem);line-height:1.6}
 .home-legacy-anchor{display:block;scroll-margin-top:6rem}
 .home-master-stage{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;border:1px solid #dfe2e7;border-radius:34px;overflow:hidden;box-shadow:0 20px 54px rgba(17,19,24,.08);scroll-margin-top:6rem;background:#dfe2e7}
-.home-master-route{position:relative;isolation:isolate;aspect-ratio:267/568;min-width:0;display:flex;align-items:end;padding:clamp(18px,2.6vw,40px);text-decoration:none;color:#fff;overflow:hidden;background:#18273d}
+.home-master-route{position:relative;isolation:isolate;aspect-ratio:267/568;min-width:0;display:flex;align-items:end;padding:clamp(18px,2.6vw,40px);text-decoration:none;color:#fff;overflow:hidden;background:#18273d;transition:transform .8s cubic-bezier(.22,1,.36,1),box-shadow .8s cubic-bezier(.22,1,.36,1)}
+.home-master-route-logistics{background:#132a47}
+.home-master-route-technology{background:#0a2a3e}
+.home-master-route-academy{background:#0a3328}
+.home-master-route-marketing{background:#3b1e16}
+.home-master-route:is(:hover,:focus-visible){z-index:3;transform:translateY(-8px) scale(1.015);box-shadow:0 26px 58px rgba(10,22,79,.18)}
+.home-master-route::before{content:"";position:absolute;z-index:4;left:0;right:0;bottom:0;height:6px;background:var(--route-accent);transform:scaleX(0);transform-origin:center;transition:transform .8s cubic-bezier(.22,1,.36,1);pointer-events:none}
+.home-master-route:is(:hover,:focus-visible)::before{transform:scaleX(1)}
 .home-master-route-logistics{--flow-panel:#0b2139;--flow-kicker:#0b2139;--flow-border:#dff3ff99;--flow-dot:#a9e4ff;--flow-light:#9ed8ff;--flow-line:#d8f4ff;--flow-glow:#51bfff}
 .home-master-route-marketing{--flow-panel:#102c25;--flow-kicker:#102c25;--flow-border:#dfffe999;--flow-dot:#9de7b7;--flow-light:#a9edbf;--flow-line:#dcffe7;--flow-glow:#45ce78}
 .home-master-route-technology{--flow-panel:#3a281e;--flow-kicker:#3a281e;--flow-border:#ffe8c799;--flow-dot:#ffc274;--flow-light:#ffd096;--flow-line:#ffe4b5;--flow-glow:#ff9f4b}
 .home-master-route-academy{--flow-panel:#2d2044;--flow-kicker:#2d2044;--flow-border:#eee0ff99;--flow-dot:#c7a6ff;--flow-light:#d5bdff;--flow-line:#efe3ff;--flow-glow:#a979ff}
-.home-portal-art{position:absolute;z-index:-2;inset:0;overflow:hidden}
+.home-portal-art{position:absolute;z-index:-2;inset:0 0 34%;overflow:hidden}
 .home-portal-art picture{display:block;width:100%;height:92%}
 .home-portal-art img{display:block;width:100%;height:100%;object-fit:cover;object-position:center;transition:filter 180ms ease}
 /* Golden-scene contract: one coherent local scene only. No independent road/truck overlays. */
@@ -790,7 +836,11 @@ animation:home-logistics-rain 1.45s linear infinite;opacity:.28;filter:blur(.18p
 @keyframes home-academy-sun{from{opacity:.68;transform:translateX(-2%)}to{opacity:.92;transform:translateX(2%)}}
 @keyframes home-academy-progress-pulse{0%,100%{opacity:.45}50%{opacity:.95}}
 @keyframes home-ink-write{0%,15%{stroke-dashoffset:90}60%,100%{stroke-dashoffset:0}}
-.home-master-route::after{content:"";position:absolute;z-index:-1;inset:65% 0 0;background:linear-gradient(180deg,transparent 0%,#122940 27%,#122940 100%)}
+.home-master-route::after{content:"";position:absolute;z-index:-1;inset:58% 0 0;background:linear-gradient(180deg,transparent 0%,color-mix(in srgb,currentColor 0%,transparent) 1%,#132a47 36%,#132a47 100%);pointer-events:none}
+.home-master-route-logistics::after{background:linear-gradient(180deg,transparent 0%,#132a47e8 28%,#132a47 45%)}
+.home-master-route-technology::after{background:linear-gradient(180deg,transparent 0%,#0a2a3ee8 28%,#0a2a3e 45%)}
+.home-master-route-academy::after{background:linear-gradient(180deg,transparent 0%,#0a3328e8 28%,#0a3328 45%)}
+.home-master-route-marketing::after{background:linear-gradient(180deg,transparent 0%,#3b1e16e8 28%,#3b1e16 45%)}
 .home-master-route-marketing::after{background:linear-gradient(180deg,transparent,#4a241e 27%,#4a241e)}
 .home-master-route-technology::after{background:linear-gradient(180deg,transparent,#052e49 27%,#052e49)}
 .home-master-route-academy::after{background:linear-gradient(180deg,transparent,#06402f 27%,#06402f)}
@@ -803,7 +853,7 @@ animation:home-logistics-rain 1.45s linear infinite;opacity:.28;filter:blur(.18p
 .home-master-route:hover .home-portal-art img{filter:brightness(1.07)}
 .home-master-route:focus-visible{outline:4px solid #fff;outline-offset:-7px;box-shadow:inset 0 0 0 10px #131b52}
 @media(max-width:1000px){.home-master{padding-top:7rem}.home-master-route{padding:18px}.home-master-route-arrow{width:36px;height:36px;right:12px;top:60%}.home-master-route-copy strong{font-size:1.5rem}.home-route-detail{font-size:.73rem}.home-master-route-copy small{font-size:.6rem}}
-@media(max-width:700px){.home-logistics-cinematic{object-position:center 66%}.home-master{padding-top:6rem}.home-master-shell{width:calc(100% - 24px)}.home-master-intro{padding:0 8px 24px}.home-master-display{font-size:clamp(2.5rem,10.2vw,4.4rem);letter-spacing:-.065em}.home-master-script{font-size:.82rem}.home-master-stage{grid-template-columns:1fr;gap:10px;border:0;border-radius:26px;overflow:visible;box-shadow:none;background:transparent}.home-master-route{padding:20px 16px;aspect-ratio:4/5;border:1px solid rgba(17,19,24,.1);border-radius:24px}.home-master-route-copy{gap:8px}.home-master-route-copy strong{font-size:clamp(1.35rem,5vw,2rem);padding:0 52px 0 0}.home-master-route-copy small{font-size:.56rem;gap:6px;letter-spacing:.08em}.home-route-detail{font-size:.7rem}.home-master-route-arrow{right:12px;top:52%;width:36px;height:36px}.home-master-route-technology .home-master-route-arrow{top:46%}.home-master-route::after{inset:56% 0 0}.home-live-explainer{inset:7% 5px 57%;}.home-live-kicker{left:0;padding:4px 6px;font-size:.58rem}.home-live-path{display:none}.home-live-step{max-width:49%;padding:5px 7px;gap:4px;border-radius:10px}.home-live-step::before{width:4px;height:4px}.home-live-step b{font-size:.48rem}.home-live-step em{font-size:.625rem;line-height:1.14;white-space:normal}.home-live-step[data-live-step="event"]{left:0;top:34%}.home-live-step[data-live-step="system"]{left:51%;top:34%}.home-live-step[data-live-step="human"]{left:0;top:69%}.home-live-step[data-live-step="outcome"]{right:0;top:69%}.home-system-display,.home-learning-detail{inset:6% 5% 38%}.home-system-card{padding:7px;min-height:66px}.home-tech-mini i,.home-tech-mini b{font-size:.5rem;padding:3px}.home-system-card small,.home-system-caption,.home-academy-caption,.home-academy-progress small,.home-academy-state small{font-size:.625rem}.home-system-card strong,.home-system-readback strong{font-size:.66rem}.home-system-card em{font-size:.58rem}.home-academy-workflow{inset:14% 0 25% 49%;grid-template-columns:1fr;gap:3px}.home-academy-state{padding:5px}.home-academy-state strong{font-size:.68rem}.home-academy-state em{font-size:.58rem}.home-academy-progress{gap:4px}.home-academy-progress small{padding:4px 5px}}
+@media(max-width:700px){.home-master-route:is(:hover,:focus-visible){transform:none}.home-logistics-cinematic{object-position:center 66%}.home-master{padding-top:6rem}.home-master-shell{width:calc(100% - 24px)}.home-master-intro{padding:0 8px 24px}.home-master-display{font-size:clamp(2.5rem,10.2vw,4.4rem);letter-spacing:-.065em}.home-master-script{font-size:.82rem}.home-master-stage{grid-template-columns:1fr;gap:10px;border:0;border-radius:26px;overflow:visible;box-shadow:none;background:transparent}.home-master-route{padding:20px 16px;aspect-ratio:4/5;border:1px solid rgba(17,19,24,.1);border-radius:24px}.home-master-route-copy{gap:8px}.home-master-route-copy strong{font-size:clamp(1.35rem,5vw,2rem);padding:0 52px 0 0}.home-master-route-copy small{font-size:.56rem;gap:6px;letter-spacing:.08em}.home-route-detail{font-size:.7rem}.home-master-route-arrow{right:12px;top:52%;width:36px;height:36px}.home-master-route-technology .home-master-route-arrow{top:46%}.home-master-route::after{inset:56% 0 0}.home-live-explainer{inset:7% 5px 57%;}.home-live-kicker{left:0;padding:4px 6px;font-size:.58rem}.home-live-path{display:none}.home-live-step{max-width:49%;padding:5px 7px;gap:4px;border-radius:10px}.home-live-step::before{width:4px;height:4px}.home-live-step b{font-size:.48rem}.home-live-step em{font-size:.625rem;line-height:1.14;white-space:normal}.home-live-step[data-live-step="event"]{left:0;top:34%}.home-live-step[data-live-step="system"]{left:51%;top:34%}.home-live-step[data-live-step="human"]{left:0;top:69%}.home-live-step[data-live-step="outcome"]{right:0;top:69%}.home-system-display,.home-learning-detail{inset:6% 5% 38%}.home-system-card{padding:7px;min-height:66px}.home-tech-mini i,.home-tech-mini b{font-size:.5rem;padding:3px}.home-system-card small,.home-system-caption,.home-academy-caption,.home-academy-progress small,.home-academy-state small{font-size:.625rem}.home-system-card strong,.home-system-readback strong{font-size:.66rem}.home-system-card em{font-size:.58rem}.home-academy-workflow{inset:14% 0 25% 49%;grid-template-columns:1fr;gap:3px}.home-academy-state{padding:5px}.home-academy-state strong{font-size:.68rem}.home-academy-state em{font-size:.58rem}.home-academy-progress{gap:4px}.home-academy-progress small{padding:4px 5px}}
 @media(min-width:701px) and (max-width:1000px){
   /* Tablet: four 180px-wide pillars are illegible. Give each living scene real space. */
   .home-master-stage{grid-template-columns:repeat(2,minmax(0,1fr))}
