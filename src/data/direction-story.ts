@@ -1,7 +1,7 @@
 // Approved Claude Design "Hermes Directions" page skeleton (owner export 2026-10-22).
 // Copy, links and statuses come from the design CHANGELOG; statuses must stay truthful.
 
-export type DirectionStoryId = "logistics" | "technology" | "academy" | "marketing";
+export type DirectionStoryId = "logistics" | "technology" | "academy" | "marketing" | "products";
 export type ProofStatus = "LIVE" | "LIVE PILOT" | "SOURCE-GATED" | "PREVIEW" | "PRIVATE";
 
 export interface DirectionStory {
@@ -261,5 +261,65 @@ export const directionStories: Record<DirectionStoryId, DirectionStory> = {
     ],
     finalQuestion: "Want more of the right customers?",
     finalCta: { label: "Request a growth review", href: "#contact" },
+  },
+  products: {
+    question: {
+      kicker: "Start here · One question",
+      title: "What do you need?",
+      lead: "Pick the closest answer. You get the right product and one clear next step — no form first.",
+      answers: [
+        { title: "Run customers and bookings", body: "CRM, booking and follow-up for service businesses.", cta: "Hermes Connect · CRM", href: "/services/hermes-connect/" },
+        { title: "Find freight", body: "Lane and equipment search with verified access.", cta: "Load Board", href: "/load-board/" },
+        { title: "Be found by customers", body: "A public, search-ready business profile.", cta: "Catalog", href: "/businesses/" },
+        { title: "Join or partner with Hermes", body: "Vacancies, partnerships and ways to grow with us.", cta: "Opportunities", href: "/opportunities/" },
+      ],
+    },
+    pillars: {
+      kicker: "The family",
+      title: "One product family, one standard.",
+      items: [
+        { title: "Hermes Connect", body: "CRM and AI assistant for leads, bookings, customers and operations.", points: ["Repair Shops · live pilot", "Learner workspace", "Website Factory · private"] },
+        { title: "Hermes Load Board", body: "Freight marketplace with permissions and freshness controls.", points: ["Lane and equipment search", "Fresh-load alerts", "Verified access boundary"] },
+        { title: "Catalog & Insights", body: "Discovery for businesses and the story of how we build.", points: ["Business directory", "News and case studies", "Vacancies and partnerships"] },
+      ],
+      chipsLabel: "",
+      chips: [],
+    },
+    steps: {
+      kicker: "How it starts",
+      title: "Try it, then decide.",
+      items: [
+        { title: "Open a product", body: "See the live part and the clearly labelled previews." },
+        { title: "Talk to us", body: "Tell us the workflow you want to run." },
+        { title: "Start your space", body: "We set up the module that fits — and expand later." },
+      ],
+    },
+    proof: {
+      kicker: "Real status",
+      title: "What exists today.",
+      lead: "Every item carries its real status. We never present a preview as live.",
+      items: [
+        { status: "LIVE PILOT", title: "Hermes Connect · Repair Shops", body: "Shop profile, services, availability, booking and customers.", href: "/services/hermes-connect/repair-shops/" },
+        { status: "SOURCE-GATED", title: "Hermes Load Board", body: "Approved active records; previews stay non-bookable.", href: "/load-board/" },
+        { status: "LIVE", title: "Hermes Catalog", body: "Business directory with search-ready profiles.", href: "/businesses/" },
+      ],
+    },
+    ecosystem: {
+      title: "Every product serves a direction.",
+      lead: "Open the direction a product was built for.",
+      items: [
+        { direction: "logistics", label: "Logistics", title: "For logistics", body: "Load Board and carrier tools.", href: "/paths/logistics/" },
+        { direction: "technology", label: "Technology", title: "For technology clients", body: "Connect, Website Factory, custom builds.", href: "/paths/technology/" },
+        { direction: "academy", label: "Academy", title: "For learners", body: "Learner workspace and resources.", href: "/paths/academy/" },
+        { direction: "marketing", label: "Marketing", title: "For growth", body: "Catalog profiles and audits.", href: "/paths/marketing/" },
+      ],
+    },
+    faq: [
+      { question: "Is Hermes Connect live?", answer: "Repair Shops is the current live pilot. Other modules are reference capabilities until verified." },
+      { question: "Can I get my own version?", answer: "Yes — Hermes Technology adapts the same architecture for other businesses." },
+      { question: "Where do I sign in?", answer: "Use Sign in at the top of every page." },
+    ],
+    finalQuestion: "Which product should run your business?",
+    finalCta: { label: "Explore Hermes Connect", href: "/services/hermes-connect/" },
   },
 };

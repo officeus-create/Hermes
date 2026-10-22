@@ -65,7 +65,7 @@ test("Home update glow follows a dated public Insight and expires after seven da
 });
 
 
-test("Home keeps a visible direction arrow on touch devices", async ({ browser }, testInfo) => {
+test("Home windows stay full native links on touch without circled arrows", async ({ browser }, testInfo) => {
   const context = await browser.newContext({
     baseURL: testInfo.project.use.baseURL,
     viewport: { width: 390, height: 844 },
@@ -74,9 +74,11 @@ test("Home keeps a visible direction arrow on touch devices", async ({ browser }
   try {
     const page = await context.newPage();
     await page.goto("/");
-    const arrows = page.locator(".home-master-route-arrow");
-    await expect(arrows).toHaveCount(4);
-    for (const arrow of await arrows.all()) await expect(arrow).toBeVisible();
+    // Owner 22.10: circled arrows looked cheap and were removed; each window is the link itself.
+    await expect(page.locator(".home-master-route-arrow")).toHaveCount(0);
+    const routes = page.locator("[data-home-route]");
+    await expect(routes).toHaveCount(4);
+    for (const route of await routes.all()) await expect(route).toHaveAttribute("href", /^\/paths\/(logistics|technology|academy|marketing)\/$/);
   } finally {
     await context.close();
   }

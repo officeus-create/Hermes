@@ -44,10 +44,8 @@ for (const width of [390, 430, 768, 1024, 1440]) {
   await expect(routes).toHaveCount(4);
   for(const route of await routes.all()) {
    await expect(route).toBeVisible();
-   expect(await route.evaluate(n=>{
-    const title=n.querySelector('strong')!.getBoundingClientRect();const arrow=n.querySelector('.home-master-route-arrow')!.getBoundingClientRect();
-    return title.left<arrow.right&&title.right>arrow.left&&title.top<arrow.bottom&&title.bottom>arrow.top;
-   })).toBe(false);
+   // Owner 22.10: the circled arrows were removed; the whole window stays the native link.
+   await expect(route.locator('.home-master-route-arrow')).toHaveCount(0);
    const routeId=await route.getAttribute('data-route-id');
    // Logistics owns one coherent local scene. The Golden Scene source-lock
    // test owns cinematic/fallback provenance and prevents split truck layers.
@@ -82,13 +80,16 @@ for (const width of [390, 430, 768, 1024, 1440]) {
    const cta=page.locator('.header-cta');
    const box=await cta.boundingBox();
    expect(box!.height).toBeGreaterThanOrEqual(44);
-   expect(box!.width).toBeLessThanOrEqual(125);
+   // Approved Claude Design header: the Ink pill reads "Start a conversation" on every page.
+   expect(box!.width).toBeLessThanOrEqual(220);
+   await expect(cta).toContainText('Start a conversation');
    await expect(page.locator('.header-actions .hc-account-menu')).toHaveCount(1);
   }
   const nav=width<1181?page.locator('#mobile-menu'):page.locator('.desktop-nav');
   const products=nav.locator('[data-hermes-products]');
   await expect(products).toHaveCount(1);
-  await expect(products.locator('a[data-product]')).toHaveCount(4);
+  await expect(products.locator('a[data-product]')).toHaveCount(5);
+  await expect(products.locator('a[data-product="all-products"]')).toHaveAttribute('href','/products/');
   await expect(products.locator('a[data-product="connect"]')).toHaveAttribute('href','/services/hermes-connect/');
   await expect(products.locator('a[data-product="catalog"]')).toHaveAttribute('href','/businesses/');
   await expect(products.locator('a[data-product="insights"]')).toHaveAttribute('href','/insights/');

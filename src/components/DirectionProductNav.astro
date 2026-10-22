@@ -17,7 +17,7 @@ import {
 } from "@lucide/astro";
 import DirectionNavIcon from "./DirectionNavIcon.astro";
 
-export type DirectionId = "logistics" | "marketing" | "technology" | "academy" | "catalog";
+export type DirectionId = "logistics" | "marketing" | "technology" | "academy" | "catalog" | "products";
 
 interface Props {
   direction: DirectionId;
@@ -92,6 +92,20 @@ const configs = {
       { id: "method", label: "How Training Works", href: "/academy/how-training-works/", icon: BookOpen },
       { id: "apply", label: "Apply", href: "/academy/apply/", icon: GraduationCap },
       { id: "catalog", label: "Catalog", href: "/businesses/", icon: Building2 },
+    ],
+  },
+  products: {
+    brand: "Hermes Products",
+    subtitle: "Built and run by us",
+    home: "/products/",
+    accent: "#0a164f",
+    items: [
+      { id: "connect", label: "Hermes Connect", href: "/services/hermes-connect/", icon: Sparkles },
+      { id: "load-board", label: "Load Board", href: "/load-board/", icon: Route },
+      { id: "catalog", label: "Catalog", href: "/businesses/", icon: Search },
+      { id: "insights", label: "Insights", href: "/insights/", icon: BookOpen },
+      { id: "opportunities", label: "Opportunities", href: "/opportunities/", icon: BriefcaseBusiness },
+      { id: "case", label: "Case studies", href: "/case/", icon: Code2 },
     ],
   },
   catalog: {
@@ -251,21 +265,21 @@ const livingKind = (id: string) => (direction === "logistics" ? id : livingKinds
   .direction-product-nav__links a:hover::before,.direction-product-nav__links a:focus-visible::before,.direction-product-nav__links a[aria-current="page"]::before{width:3px;height:22px;opacity:1}
   .direction-product-nav__generic-icon{display:grid;place-items:center;color:var(--direction-nav-accent);transform-origin:50% 100%}
   .direction-product-nav__links a:is(:hover,:focus-visible) .direction-product-nav__generic-icon{animation:direction-icon-bounce .62s cubic-bezier(.34,1.56,.64,1)}
-  .direction-product-nav__links a:is(:hover,:focus-visible) [data-direction-nav-icon="load-board"] :global(.motion-route){animation:direction-route 1.05s ease-in-out infinite alternate}
-  .direction-product-nav__links a:is(:hover,:focus-visible) [data-direction-nav-icon="carriers"] :global(.motion-wheel){animation:direction-wheel .72s linear infinite;transform-origin:center}
-  .direction-product-nav__links a:is(:hover,:focus-visible) [data-direction-nav-icon="carriers"] :global(.motion-truck){animation:direction-truck .5s ease-in-out infinite alternate}
-  .direction-product-nav__links a:is(:hover,:focus-visible) [data-direction-nav-icon="owner-operators"] :global(.motion-person-left){animation:direction-person-left .7s ease-in-out infinite alternate}
-  .direction-product-nav__links a:is(:hover,:focus-visible) [data-direction-nav-icon="owner-operators"] :global(.motion-person-right){animation:direction-person-right .7s ease-in-out infinite alternate}
-  .direction-product-nav__links a:is(:hover,:focus-visible) [data-direction-nav-icon="brokers"] :global(.motion-case){animation:direction-case .7s ease-in-out infinite alternate;transform-origin:center}
-  .direction-product-nav__links a:is(:hover,:focus-visible) [data-direction-nav-icon="brokers"] :global(.motion-case-handle){animation:direction-case-handle .7s ease-in-out infinite alternate}
-  .direction-product-nav__links a:is(:hover,:focus-visible) [data-direction-nav-icon="shippers-dealers"] :global(.motion-car){animation:direction-car .85s ease-in-out infinite alternate}
-  .direction-product-nav__links a:is(:hover,:focus-visible) [data-direction-nav-icon="operations"] :global(.motion-phone){animation:direction-phone .22s ease-in-out infinite alternate;transform-origin:center}
-  .direction-product-nav__links a:is(:hover,:focus-visible) [data-direction-nav-icon="operations"] :global(.motion-signal){animation:direction-signal .8s steps(2,end) infinite}
-  .direction-product-nav__links a:is(:hover,:focus-visible) [data-direction-nav-icon="agreement"] :global(.motion-doc-line){stroke-dasharray:12;animation:direction-draw 1.15s ease-in-out infinite}
-  .direction-product-nav__links a:is(:hover,:focus-visible) [data-direction-nav-icon="agreement"] :global(.motion-doc-line-2){animation-delay:.12s}
-  .direction-product-nav__links a:is(:hover,:focus-visible) [data-direction-nav-icon="agreement"] :global(.motion-doc-line-3){animation-delay:.24s}
-  .direction-product-nav__links a:is(:hover,:focus-visible) [data-direction-nav-icon="path"] :global(.motion-arrow){stroke-dasharray:24;animation:direction-draw .85s ease-in-out infinite}
-  .direction-product-nav__links a:is(:hover,:focus-visible) [data-direction-nav-icon="catalog"] :global(.motion-search){animation:direction-search 1s ease-in-out infinite;transform-origin:center}
+  .direction-product-nav__links a:is(:hover,:focus-visible) :global([data-direction-nav-icon="load-board"]) :global(.motion-route){animation:direction-route 1.05s ease-in-out infinite alternate}
+  .direction-product-nav__links a:is(:hover,:focus-visible) :global([data-direction-nav-icon="carriers"]) :global(.motion-wheel){animation:direction-wheel .72s linear infinite;transform-origin:center}
+  .direction-product-nav__links a:is(:hover,:focus-visible) :global([data-direction-nav-icon="carriers"]) :global(.motion-truck){animation:direction-truck .5s ease-in-out infinite alternate}
+  .direction-product-nav__links a:is(:hover,:focus-visible) :global([data-direction-nav-icon="owner-operators"]) :global(.motion-person-left){animation:direction-person-left .7s ease-in-out infinite alternate}
+  .direction-product-nav__links a:is(:hover,:focus-visible) :global([data-direction-nav-icon="owner-operators"]) :global(.motion-person-right){animation:direction-person-right .7s ease-in-out infinite alternate}
+  .direction-product-nav__links a:is(:hover,:focus-visible) :global([data-direction-nav-icon="brokers"]) :global(.motion-case){animation:direction-case .7s ease-in-out infinite alternate;transform-origin:center}
+  .direction-product-nav__links a:is(:hover,:focus-visible) :global([data-direction-nav-icon="brokers"]) :global(.motion-case-handle){animation:direction-case-handle .7s ease-in-out infinite alternate}
+  .direction-product-nav__links a:is(:hover,:focus-visible) :global([data-direction-nav-icon="shippers-dealers"]) :global(.motion-car){animation:direction-car .85s ease-in-out infinite alternate}
+  .direction-product-nav__links a:is(:hover,:focus-visible) :global([data-direction-nav-icon="operations"]) :global(.motion-phone){animation:direction-phone .22s ease-in-out infinite alternate;transform-origin:center}
+  .direction-product-nav__links a:is(:hover,:focus-visible) :global([data-direction-nav-icon="operations"]) :global(.motion-signal){animation:direction-signal .8s steps(2,end) infinite}
+  .direction-product-nav__links a:is(:hover,:focus-visible) :global([data-direction-nav-icon="agreement"]) :global(.motion-doc-line){stroke-dasharray:12;animation:direction-draw 1.15s ease-in-out infinite}
+  .direction-product-nav__links a:is(:hover,:focus-visible) :global([data-direction-nav-icon="agreement"]) :global(.motion-doc-line-2){animation-delay:.12s}
+  .direction-product-nav__links a:is(:hover,:focus-visible) :global([data-direction-nav-icon="agreement"]) :global(.motion-doc-line-3){animation-delay:.24s}
+  .direction-product-nav__links a:is(:hover,:focus-visible) :global([data-direction-nav-icon="path"]) :global(.motion-arrow){stroke-dasharray:24;animation:direction-draw .85s ease-in-out infinite}
+  .direction-product-nav__links a:is(:hover,:focus-visible) :global([data-direction-nav-icon="catalog"]) :global(.motion-search){animation:direction-search 1s ease-in-out infinite;transform-origin:center}
   @keyframes direction-icon-bounce{50%{transform:translateY(-3px) scale(1.08)}}
   @keyframes direction-route{to{transform:translate(14px,-13px)}}
   @keyframes direction-wheel{to{transform:rotate(360deg)}}

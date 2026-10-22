@@ -12,7 +12,7 @@ test("canonical Load Board stays visible from Logistics and Technology direction
   const spotlight = await source("src/components/LoadBoardProductSpotlight.astro");
 
   expect(page).toContain('<SiteHeader contactHref="#contact" theme="light" />');
-  expect(header).toContain('<DirectionProductNav direction={section} theme="light"');
+  expect(header).toContain('<DirectionProductNav direction={section ?? "products"} theme="light"');
   expect(nav).toContain('logistics: {');
   expect(nav).toContain('technology: {');
   expect(nav.match(/label: "Load Board", href: "\/load-board\/"/g)?.length).toBeGreaterThanOrEqual(2);

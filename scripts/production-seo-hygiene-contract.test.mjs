@@ -77,7 +77,8 @@ const indexedChildSitemapFiles = [
 // 2026-10-07 restores Load Analyzer as a clearly bounded public reference owner because the
 // production compatibility route, historical manifest and carrier discovery path all assign it
 // a distinct search purpose without presenting the capability as a live paid integration.
-const nonInsightsExpectedPageUrlCount = 257;
+// +1 on 2026-10-22: /products/ (approved Claude Design Products page).
+const nonInsightsExpectedPageUrlCount = 258;
 const carrierGeoRoot = `https://${sitemapHost}/logistics/car-hauler-loads/`;
 const carrierLifecycleGuide = `https://${sitemapHost}/logistics/resources/car-hauler-jobs-owner-operator-guide/`;
 const expectedCarrierGeoCityCount = 25;

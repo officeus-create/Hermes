@@ -17,8 +17,8 @@ const { direction, part, faq, note } = Astro.props;
 const story = directionStories[direction];
 // Prefer the page's canonical FAQ (it also feeds FAQPage schema) over the design's short list.
 const faqItems = faq?.length ? faq : story.faq;
-const stories = insightsByDirection(direction).filter((post) => post.contentTier === "standalone").slice(0, 3);
-const accent = `var(--dir-${direction})`;
+const stories = insightsByDirection(direction === "products" ? "technology" : direction).filter((post) => post.contentTier === "standalone").slice(0, 3);
+const accent = direction === "products" ? "#0a164f" : `var(--dir-${direction})`;
 const statusClass = (status: string) => status.toLowerCase().replace(/\s+/g, "-");
 ---
 
@@ -57,10 +57,12 @@ const statusClass = (status: string) => status.toLowerCase().replace(/\s+/g, "-"
             </article>
           ))}
         </div>
-        <div class="ds-chips" role="list" aria-label={story.pillars.chipsLabel}>
-          <span class="ds-chips-label">{story.pillars.chipsLabel}</span>
-          {story.pillars.chips.map((chip) => <span role="listitem">{chip}</span>)}
-        </div>
+        {story.pillars.chips.length > 0 && (
+          <div class="ds-chips" role="list" aria-label={story.pillars.chipsLabel}>
+            <span class="ds-chips-label">{story.pillars.chipsLabel}</span>
+            {story.pillars.chips.map((chip) => <span role="listitem">{chip}</span>)}
+          </div>
+        )}
       </div>
     </section>
 
