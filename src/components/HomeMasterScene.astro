@@ -1,5 +1,6 @@
 ---
 import { publicPaths } from "../data/public-paths";
+import { site } from "../data/site";
 
 const routeMeta: Record<string, { accent: string; detail: string; searchDetail?: string; displayNumber: string; crop: number; goal: string; flow: readonly [string, string, string, string] }> = {
   logistics: {
@@ -202,6 +203,26 @@ const routeMeta: Record<string, { accent: string; detail: string; searchDetail?:
         );
       })}
     </nav>
+    <aside class="home-contact-strip" aria-labelledby="home-contact-strip-title">
+      <div class="home-contact-strip__lead">
+        <div>
+          <strong id="home-contact-strip-title">Not sure which direction fits?</strong>
+          <a href={site.logisticsEmail.href}>{site.logisticsEmail.value}</a>
+        </div>
+        <a class="home-contact-strip__cta" href={site.logisticsEmail.href}>Describe your request</a>
+      </div>
+      <nav class="home-contact-strip__routes" aria-label="Choose a Hermes direction">
+        {publicPaths.map((path) => {
+          const meta = routeMeta[path.id] ?? routeMeta.logistics;
+          return (
+            <a href={`/paths/${path.id}/`} style={`--contact-route-accent:${meta.accent}`}>
+              <span aria-hidden="true"></span>
+              {path.brandLabel.replace("Hermes ", "")}
+            </a>
+          );
+        })}
+      </nav>
+    </aside>
   </div>
 </section>
 <script>
@@ -585,5 +606,91 @@ animation:home-logistics-rain 1.45s linear infinite;opacity:.28;filter:blur(.18p
   .home-master-shell{width:calc(100% - 24px)}
   .home-master-stage{grid-template-columns:minmax(0,1fr);gap:10px;border:0;border-radius:26px;overflow:visible;box-shadow:none;background:transparent}
   .home-master-route{min-width:0;width:100%;aspect-ratio:4/5;border:1px solid rgba(17,19,24,.1);border-radius:24px}
+}
+
+.home-contact-strip{
+  display:grid;
+  gap:16px;
+  margin-top:16px;
+  padding:18px 20px;
+  border:1px solid rgba(17,19,24,.10);
+  border-radius:24px;
+  background:rgba(255,255,255,.72);
+  color:#111318;
+}
+.home-contact-strip__lead{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:24px;
+  min-width:0;
+}
+.home-contact-strip__lead>div{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:baseline;
+  gap:7px 14px;
+  min-width:0;
+}
+.home-contact-strip__lead strong{
+  font-family:var(--font-display);
+  font-size:clamp(1rem,1.4vw,1.2rem);
+  letter-spacing:-.015em;
+}
+.home-contact-strip__lead>div>a{
+  color:rgba(17,19,24,.66);
+  font-size:.84rem;
+  text-decoration-thickness:1px;
+  text-underline-offset:3px;
+}
+.home-contact-strip__cta{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  flex:0 0 auto;
+  min-height:42px;
+  padding:0 16px;
+  border:1px solid rgba(10,22,79,.16);
+  border-radius:999px;
+  background:#0a164f;
+  color:#fff;
+  font-size:.82rem;
+  font-weight:700;
+  text-decoration:none;
+}
+.home-contact-strip__cta:is(:hover,:focus-visible){background:#111318}
+.home-contact-strip__routes{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  border-top:1px solid rgba(17,19,24,.08);
+}
+.home-contact-strip__routes a{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  min-width:0;
+  min-height:42px;
+  padding:10px 12px 0 0;
+  color:rgba(17,19,24,.72);
+  font-size:.76rem;
+  font-weight:700;
+  text-decoration:none;
+}
+.home-contact-strip__routes a>span{
+  width:3px;
+  height:13px;
+  border-radius:999px;
+  background:var(--contact-route-accent);
+}
+.home-contact-strip__routes a:is(:hover,:focus-visible){color:#111318}
+@media(max-width:700px){
+  .home-contact-strip{padding:16px}
+  .home-contact-strip__lead{display:grid;gap:12px}
+  .home-contact-strip__lead>div{display:grid;gap:5px}
+  .home-contact-strip__cta{width:fit-content}
+  .home-contact-strip__routes{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:360px){
+  .home-contact-strip__routes{grid-template-columns:1fr}
 }
 </style>
