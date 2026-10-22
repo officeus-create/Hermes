@@ -490,8 +490,10 @@ const languageLinks = siteLocales.filter((language) => !isCatalogLocaleRoute || 
     .site-header[data-approved-visual-shell="true"]:has(> .direction-product-nav) .desktop-nav{justify-self:stretch}
     .site-header[data-approved-visual-shell="true"]> .direction-product-nav{width:calc(100% - 16px);margin-inline:8px;padding-inline:8px}
   }
-  .site-header[data-home-portal="true"] {
-    /* Owner review palette on Home only. Real product/Connect colors remain unchanged. */
+  .site-header[data-home-portal="true"],
+  .site-header[data-approved-visual-shell="true"] {
+    /* Approved Claude Design palette on Home and the four direction pages (their heroes and
+       submenus already use --dir-*). Real product/Connect colors remain unchanged. */
     --nav-logistics: var(--dir-logistics);
     --nav-technology: var(--dir-technology);
     --nav-academy: var(--dir-academy);

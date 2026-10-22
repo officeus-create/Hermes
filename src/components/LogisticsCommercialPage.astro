@@ -1,7 +1,7 @@
 ---
 import { ArrowRight, Check, Mail } from "@lucide/astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
-import logisticsHeroImage from "../assets/path-logistics-system.jpg";
+import logisticsHeroImage from "../assets/direction-logistics-real-2026.jpg";
 import SiteHeader from "./SiteHeader.astro";
 import SiteFooter from "./SiteFooter.astro";
 
@@ -25,7 +25,7 @@ export type CommercialPageContent = {
 interface Props { content: CommercialPageContent; }
 const { content } = Astro.props;
 // Bundled assets receive a content-hashed URL, avoiding stale long-lived public-file caches.
-const imageSrc = content.image === "/images/path-logistics-system.jpg" ? logisticsHeroImage.src : content.image;
+const imageSrc = content.image === "/images/direction-logistics-real-2026.jpg" ? logisticsHeroImage.src : content.image;
 const canonicalPath = Astro.url.pathname;
 const absoluteUrl = `https://hermeslogisticsus.com${canonicalPath}`;
 const email = "mailto:officeus@hermeslogisticsus.com";

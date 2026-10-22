@@ -191,6 +191,21 @@ const isActive = (href: string) => {
   const target = pathOnly(href);
   return target !== home && (currentPath === target || currentPath.startsWith(target.endsWith("/") ? target : `${target}/`));
 };
+// Approved Claude Design KIND map: the nine living Logistics icons are reused by meaning
+// in every direction; links without a semantic match keep the generic hover hop.
+const livingKinds: Record<string, string> = {
+  "load-board": "load-board",
+  catalog: "catalog",
+  seo: "catalog",
+  search: "catalog",
+  locations: "load-board",
+  owners: "owner-operators",
+  brief: "agreement",
+  apply: "agreement",
+  growth: "path",
+  ...(direction === "academy" ? { logistics: "carriers" } : {}),
+};
+const livingKind = (id: string) => (direction === "logistics" ? id : livingKinds[id]);
 ---
 
 <nav
@@ -210,7 +225,7 @@ const isActive = (href: string) => {
         const Icon = item.icon;
         return (
           <a href={item.href} aria-current={isActive(item.href) ? "page" : undefined} data-direction-product-link={item.id}>
-            {direction === "logistics" ? <DirectionNavIcon kind={item.id} /> : <span class="direction-product-nav__generic-icon" aria-hidden="true"><Icon size={15} /></span>}
+            {livingKind(item.id) ? <DirectionNavIcon kind={livingKind(item.id)!} /> : <span class="direction-product-nav__generic-icon" aria-hidden="true"><Icon size={15} /></span>}
             <span>{item.label}</span>
           </a>
         );

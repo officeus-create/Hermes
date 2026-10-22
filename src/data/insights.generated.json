@@ -1,5 +1,175 @@
 [
   {
+    "id": "hermes-technology-custom-ai-automation-project-brief-2026",
+    "direction": "technology",
+    "slug": "custom-ai-automation-business-systems-project-brief",
+    "title": "Custom AI, Automation and Business Systems: Start With a Project Brief | Hermes Insights",
+    "description": "How Hermes Technology turns one defined business process into custom software — websites, CRM, automation and AI assistants — and why every project starts with a structured project brief.",
+    "eyebrow": "Technology / Method · Project Brief · 22 October 2026",
+    "h1": "Custom AI, automation and business systems — starting with your project brief",
+    "conciseAnswer": "Hermes Technology turns a defined business process into custom software: a website or portal, a CRM module, workflow automation, a business assistant or an industry-specific product. Every project starts with a project brief that maps users, steps and the result the system must support, then grows through tested stages.",
+    "explanation": [
+      "Service businesses rarely need a large platform on day one. They need the one workflow that loses time or customers today to work reliably. Hermes Technology designs and integrates practical digital solutions for logistics, sales, recruiting, marketing and business operations, and starts with the smallest useful version of that workflow.",
+      "The work covers three groups. Digital presence and portals: custom websites, landing journeys, multilingual content systems, client portals and applications built around a specific audience and action. CRM and operations systems: software for intake, customer pipelines, responsibilities, status, documents, approvals, dashboards and management visibility. Automation and industry products: booking, payments, notifications, integrations, business assistants and logistics workspaces built in controlled stages.",
+      "The method is deliberately simple. Map the workflow — the users, steps, information and business result. Build the smallest useful version and review a focused prototype before expanding scope. Test in real work, correct what does not fit and only then extend the system. Where suitable, existing tools such as Google Workspace, CRM, booking, payment, communication and reporting can be connected through supported integrations.",
+      "The project brief on the Technology page turns an unstructured idea into an email-ready summary of goals, users and constraints. It is the fastest way to get a scoped first stage instead of a generic quote."
+    ],
+    "takeaways": [
+      "Start with the one workflow that matters most, not a full platform",
+      "Websites, CRM, automation and AI assistants are built as one connected flow",
+      "The project brief turns an idea into a scoped first stage"
+    ],
+    "faq": [
+      {
+        "question": "Who is Hermes Technology for?",
+        "answer": "Initial solutions are designed for service businesses such as fitness clubs, trainers, coaches, salons, cosmetologists, logistics teams and professional services."
+      },
+      {
+        "question": "Do we have to build a large platform first?",
+        "answer": "No. Work begins with the smallest useful version of the customer or internal workflow, followed by real testing."
+      },
+      {
+        "question": "Can existing tools be connected?",
+        "answer": "Where suitable, the system can connect Google Workspace, CRM, booking, payment, communication and reporting tools through supported integrations."
+      }
+    ],
+    "related": [
+      {
+        "title": "Hermes Technology",
+        "body": "Software shaped around how you actually work.",
+        "href": "/paths/technology/"
+      },
+      {
+        "title": "Website development",
+        "body": "Custom websites and landing journeys built around a specific audience and action.",
+        "href": "/services/website-development/"
+      },
+      {
+        "title": "Hermes Connect",
+        "body": "CRM and operations workspace for service businesses.",
+        "href": "/services/hermes-connect/"
+      }
+    ],
+    "primaryAction": {
+      "label": "Build your project brief",
+      "href": "/paths/technology/#project-brief"
+    },
+    "secondaryAction": {
+      "label": "Explore Hermes Technology",
+      "href": "/paths/technology/"
+    },
+    "sourceLabel": "Hermes Technology service and project brief pages, 22 October 2026",
+    "sourceUrl": "https://hermeslogisticsus.com/paths/technology/",
+    "authorName": "Hermes Technology",
+    "keywords": [
+      "custom AI automation",
+      "CRM development",
+      "business process automation",
+      "custom software for service businesses",
+      "AI assistant development",
+      "project brief"
+    ],
+    "sourcePublishedAt": "2026-10-22",
+    "datePublished": "2026-10-22",
+    "dateModified": "2026-10-22",
+    "contentTier": "standalone",
+    "currentMarketClaim": false,
+    "publicationScore": {
+      "score": 78,
+      "recommendation": "standalone",
+      "reasons": [
+        "Preserves removed direction positioning and CTA as crawlable evergreen content",
+        "Every claim taken from the current published service data",
+        "Links the removed CTA destination back to its owner page"
+      ]
+    }
+  },
+  {
+    "id": "hermes-logistics-find-your-path-clear-operations-2026",
+    "direction": "logistics",
+    "slug": "find-your-logistics-path-clear-freight-operations",
+    "title": "Find Your Logistics Path: Freight Operations Built Around Clear Roles | Hermes Insights",
+    "description": "How Hermes Logistics organises dispatch, carrier back office and car hauling around clear operations for carriers, shippers, dealers, fleets and owner-operators — and how the Find Your Path tool routes each visitor.",
+    "eyebrow": "Logistics / Operations Guide · Find Your Path · 22 October 2026",
+    "h1": "Move freight with a team built around clear operations: find your logistics path",
+    "conciseAnswer": "Hermes Logistics supports carriers, shippers, dealers, fleets and owner-operators in the U.S. market with dispatch, carrier back office and car hauling coordination. Because each of those visitors needs something different, the Find Your Path tool asks a few questions and routes you to the right next step instead of one generic contact form.",
+    "explanation": [
+      "Clear operations start with knowing who does what. For an owner-operator or small fleet, Hermes Logistics provides dispatch and back-office support: dedicated load search, broker communication, rate negotiation and operational follow-through, plus help with setup packets, insurance certificates, documents, invoicing and accounts receivable. For shippers and brokers, the team acts as a structured point of contact for freight requirements, carrier coordination and load updates.",
+      "Onboarding follows three steps. First, you request an agreement and describe your authority, equipment, preferred lanes and current operating needs. Second, the team reviews the signed agreement, W-9, authority, insurance and driver information required for setup. Third, you meet your dispatcher to confirm the working plan, the communication routine and the first loads the team should pursue.",
+      "The Find Your Path tool exists because a dealer moving vehicles, a broker looking for capacity and a carrier looking for loads should not have to read the same page. It asks about your role and goal and returns a recommendation with the next step that fits: dispatch and operating support for owner-operators and fleets, preparation for new authorities, vehicle transport qualification for shippers and dealers, verified carrier capacity for brokers, the right Load Board workspace for your role, or the careers and Academy path.",
+      "The work is Wisconsin first while supporting eligible carriers and freight partners across the United States. Carriers keep control of load decisions under an operating model built around carrier approval and clear communication; specific booking and approval rules, and final commercial terms, are confirmed in the current agreement."
+    ],
+    "takeaways": [
+      "Dispatch, back office and car hauling support are organised around the carrier's equipment and goals",
+      "Onboarding is three steps: request an agreement, send documents, meet your dispatcher",
+      "Find Your Path routes carriers, shippers, dealers and brokers to the right next step"
+    ],
+    "faq": [
+      {
+        "question": "What documents are usually needed to start?",
+        "answer": "Typical onboarding includes a signed dispatch agreement, W-9, MC authority, insurance information, and driver or equipment details relevant to the service."
+      },
+      {
+        "question": "Do carriers keep control of load decisions?",
+        "answer": "The operating model is built around carrier approval and clear communication. Specific booking and approval rules are confirmed during onboarding."
+      },
+      {
+        "question": "Can I choose only part of the service?",
+        "answer": "Yes. Requests can begin with dispatch, documents, invoicing or another defined need, and the scope is confirmed with the team."
+      }
+    ],
+    "related": [
+      {
+        "title": "Find Your Logistics Path",
+        "body": "Answer a few questions and get the right logistics next step.",
+        "href": "/paths/logistics/find-your-path/"
+      },
+      {
+        "title": "Hermes Logistics",
+        "body": "Dispatch and back-office support for owner-operators and small fleets.",
+        "href": "/paths/logistics/"
+      },
+      {
+        "title": "Car Hauling Load Board",
+        "body": "Open the Load Board workspace for car-hauling loads.",
+        "href": "/load-board/"
+      }
+    ],
+    "primaryAction": {
+      "label": "Find your logistics path",
+      "href": "/paths/logistics/find-your-path/"
+    },
+    "secondaryAction": {
+      "label": "Explore Hermes Logistics",
+      "href": "/paths/logistics/"
+    },
+    "sourceLabel": "Hermes Logistics service, onboarding and Find Your Path pages, 22 October 2026",
+    "sourceUrl": "https://hermeslogisticsus.com/paths/logistics/find-your-path/",
+    "authorName": "Hermes Logistics",
+    "keywords": [
+      "truck dispatch services",
+      "carrier back office",
+      "owner-operator dispatch",
+      "car hauling dispatch",
+      "find your logistics path",
+      "Wisconsin truck dispatch"
+    ],
+    "sourcePublishedAt": "2026-10-22",
+    "datePublished": "2026-10-22",
+    "dateModified": "2026-10-22",
+    "contentTier": "standalone",
+    "currentMarketClaim": false,
+    "publicationScore": {
+      "score": 78,
+      "recommendation": "standalone",
+      "reasons": [
+        "Preserves removed direction positioning and CTA as crawlable evergreen content",
+        "Every claim taken from the current published service data",
+        "Links the removed CTA destination back to its owner page"
+      ]
+    }
+  },
+  {
     "id": "hermes-home-redesign-four-live-windows-2026",
     "direction": "technology",
     "slug": "home-redesign-four-live-video-windows",
@@ -87,6 +257,91 @@
     }
   },
   {
+    "id": "hermes-academy-skills-real-business-work-2026",
+    "direction": "academy",
+    "slug": "learn-skills-real-business-work-academy-path",
+    "title": "Learn Skills That Connect to Real Business Work: The Hermes Academy Path | Hermes Insights",
+    "description": "How Hermes Business Academy structures practical learning in logistics operations, marketing and operational leadership — from awareness to understanding to application — and how to try a public exercise before you apply.",
+    "eyebrow": "Academy / Learning Method · Practical Tracks · 22 October 2026",
+    "h1": "Learn skills that connect to real business work: choosing your Academy path",
+    "conciseAnswer": "Hermes Business Academy is built around applied learning. Each path — Logistics Operations, Marketing Worldwide or COO / Operational Director — moves from awareness to understanding to application, with practical tasks and correction. You can choose a track and try a public exercise before deciding whether to apply.",
+    "explanation": [
+      "Generic courses teach concepts; work requires decisions, communication and routines inside an operating system. Hermes Business Academy connects each concept to the real workflows used in logistics, marketing and operational leadership, so learners practise the responsibilities they will actually hold.",
+      "There are three professional paths. Logistics Operations covers dispatch, communication, documents, equipment logic and operating routines. Marketing Worldwide covers positioning, content, campaigns, sales workflow and practical growth execution for international work. COO / Operational Director covers departments, KPI, processes, execution control, analytics, decision-making and scaling operations.",
+      "Each path follows the same method. Awareness: understand the role, the operating environment, terminology, responsibilities and the standard of professional work. Understanding: work through systems, examples, decisions, reviews and the connections between departments. Application: practise tasks, receive correction and learn to perform a defined responsibility inside an operating system.",
+      "The next step is low-risk by design: choose a learning track and try one public exercise on the Academy resources page before you decide whether to apply. Program dates, scope and prices are published before enrollment for each available program or cohort, and no employment promise is made."
+    ],
+    "takeaways": [
+      "Three practical paths: Logistics Operations, Marketing Worldwide, COO / Operational Director",
+      "Every path moves from awareness to understanding to application",
+      "Try a public exercise before deciding whether to apply"
+    ],
+    "faq": [
+      {
+        "question": "Is this a generic course marketplace?",
+        "answer": "No. The Academy is structured around three professional paths and the operating systems, responsibilities and practice behind them."
+      },
+      {
+        "question": "When are program prices confirmed?",
+        "answer": "Program dates, scope and prices are published before enrollment for each available program or cohort. The current website does not accept enrollment or payment."
+      },
+      {
+        "question": "Is employment guaranteed?",
+        "answer": "No. The goal is to build practical capability and evidence of readiness for the selected professional path."
+      }
+    ],
+    "related": [
+      {
+        "title": "Hermes Academy",
+        "body": "Practical tracks with precise human feedback.",
+        "href": "/paths/academy/"
+      },
+      {
+        "title": "Academy resources",
+        "body": "Try a public exercise before you apply.",
+        "href": "/academy/resources/"
+      },
+      {
+        "title": "U.S. logistics operations track",
+        "body": "Dispatch, documents and operating routines for logistics work.",
+        "href": "/academy/us-logistics-operations/"
+      }
+    ],
+    "primaryAction": {
+      "label": "Try a public exercise",
+      "href": "/academy/resources/"
+    },
+    "secondaryAction": {
+      "label": "Ask about the Academy path",
+      "href": "/paths/academy/#contact"
+    },
+    "sourceLabel": "Hermes Business Academy program and resources pages, 22 October 2026",
+    "sourceUrl": "https://hermeslogisticsus.com/paths/academy/",
+    "authorName": "Hermes Academy",
+    "keywords": [
+      "practical business training",
+      "logistics operations training",
+      "dispatch training",
+      "marketing training",
+      "COO training program",
+      "Hermes Academy"
+    ],
+    "sourcePublishedAt": "2026-10-22",
+    "datePublished": "2026-10-22",
+    "dateModified": "2026-10-22",
+    "contentTier": "standalone",
+    "currentMarketClaim": false,
+    "publicationScore": {
+      "score": 78,
+      "recommendation": "standalone",
+      "reasons": [
+        "Preserves removed direction positioning and CTA as crawlable evergreen content",
+        "Every claim taken from the current published service data",
+        "Links the removed CTA destination back to its owner page"
+      ]
+    }
+  },
+  {
     "id": "hermes-logistics-direction-page-refresh-2026",
     "direction": "logistics",
     "slug": "logistics-page-refresh-dispatch-load-board",
@@ -97,7 +352,7 @@
     "conciseAnswer": "We rebuilt the top of the Hermes Logistics page around the two actions carriers ask for most: starting car-hauling dispatch and opening the Load Board. The page states who it serves — owner-operators, small fleets, dealers and shippers — and the month-to-month model, with final terms confirmed in your agreement, before any form.",
     "explanation": [
       "Carriers rarely arrive on a logistics website to read a mission statement. They want to know whether the company works with their equipment and lanes, what the commitment looks like and how to start. The new page opens with a direct headline — \"Freight that moves. A team that answers.\" — followed by one sentence on what Hermes Logistics actually does: dispatch and back-office support for owner-operators and small fleets, and reviewed vehicle transport for dealers and shippers.",
-      "Two buttons sit under that sentence. The primary one starts car-hauling dispatch; the secondary one opens the Load Board. Directly beneath them the page says plainly that the model is month-to-month and that final terms are confirmed in your agreement. Putting the commercial model next to the call to action answers the first question an owner-operator asks before they decide to share any details.",
+      "Two buttons sit under that sentence. The primary one, Start carrier review, opens the car-hauling dispatch intake; the secondary one opens the Load Board. Directly beneath them the page says plainly that the model is month-to-month and that final terms are confirmed in your agreement. Putting the commercial model next to the call to action answers the first question an owner-operator asks before they decide to share any details.",
       "A live window beside the headline shows the work itself: a car hauler on the highway and freight moving through real lanes. The logistics navigation is now attached to the site header, with icons for the Load Board, carriers and fleets, owner-operators, brokers, shippers and dealers, dispatch and back office, the carrier agreement and Find Your Path, so drivers can move between them on a phone without scrolling back to the top.",
       "Nothing in the deeper content was removed. The frequently asked questions, the audience routes for carriers, brokers, shippers and dealers, and the direct department contacts remain on the page. Most forms on the site still prepare a summary you send yourself; the car-hauling dispatch intake on the live site submits your details to the logistics team for review."
     ],
@@ -109,7 +364,7 @@
     "faq": [
       {
         "question": "How do I start car-hauling dispatch with Hermes?",
-        "answer": "Open the Hermes Logistics page and choose Start car-hauling dispatch. The intake asks about your equipment, lanes and operating details so the team can review whether the fit is right before any agreement."
+        "answer": "Open the Hermes Logistics page and choose Start carrier review. The intake asks about your equipment, lanes and operating details so the team can review whether the fit is right before any agreement."
       },
       {
         "question": "Is there a long-term contract?",
@@ -168,6 +423,177 @@
         "First-party release that answers recurring carrier questions",
         "Links the commercial owner page, dispatch intake and Load Board",
         "Distinct update intent that does not compete with the Logistics owner page"
+      ]
+    }
+  },
+  {
+    "id": "hermes-real-footage-instead-of-ai-artwork-2026",
+    "direction": "marketing",
+    "slug": "real-work-footage-instead-of-abstract-ai-artwork",
+    "title": "Why We Replaced Abstract AI Artwork With Real Work Footage | Hermes Insights",
+    "description": "Hermes removed the abstract AI illustrations from its direction pages and service pages and replaced them with frames from real work footage. Here is why, what changed and what it means for a service business website.",
+    "eyebrow": "Marketing / Brand Decision · Website Imagery · 22 October 2026",
+    "h1": "Why we replaced abstract AI artwork with real work footage",
+    "conciseAnswer": "Hermes replaced four abstract AI illustrations — a violet light network, a glass ribbon, a dark interior with a staircase and a wall of glowing screens — with frames from the same real work footage that now plays in the live windows on the home page: trucks on the road, a team at a screen, a trainer at a flipchart and a planning session. An outdated screenshot of the old website was replaced with the current home page.",
+    "explanation": [
+      "Abstract imagery can look expensive, but it rarely answers the first question a visitor has: what does this company actually do, and for whom? A violet network of light lines says “technology” in general; it does not say “we dispatch car haulers” or “we build CRM systems for service businesses”. When every direction page opened with a similar dark, glowing illustration, the four businesses also started to look alike.",
+      "The new images are still frames cut from the licensed stock footage used in our direction films, so the page, the video window and the social preview now tell the same story. Logistics shows trucks moving on an interstate; Technology shows developers working together at a screen; Academy shows a trainer explaining a chart to a small group; Marketing shows a planning session at a flipchart. The people are illustrative stock talent, not Hermes staff or customers, and we say so in our media records.",
+      "We also replaced a screenshot of an earlier version of our own website that still appeared on the website development pages and in case-study previews. A web studio that shows an outdated version of its own site undermines the very claim it is making. The new image is a capture of the current home page with its four direction windows.",
+      "Every replaced file got a new name rather than new bytes under an old name, so browsers and social networks pick up the change instead of serving a cached copy. The originals stay archived with a record of where they were used and why they were retired, and each new image is registered with its exact source video and licence."
+    ],
+    "takeaways": [
+      "Imagery should show the real work, not a generic mood",
+      "Keep page images, video windows and social previews telling one story",
+      "Never present stock people as staff or customers",
+      "Ship changed images under new file names so caches cannot hide the update"
+    ],
+    "faq": [
+      {
+        "question": "Did Hermes stop using AI-generated images completely?",
+        "answer": "No. The car hauler that opens the Logistics film is an owner-requested AI scene and is labelled as such in our media records. We removed the abstract illustrations that did not show real work."
+      },
+      {
+        "question": "Are the people in the new images Hermes employees?",
+        "answer": "No. They come from licensed stock footage and are illustrative only. They do not show Hermes staff, clients or results."
+      },
+      {
+        "question": "Can Hermes do the same review for my website?",
+        "answer": "Yes. Hermes Marketing and Hermes Technology review imagery, page structure and calls to action together, starting with the pages that matter most for inquiries."
+      }
+    ],
+    "related": [
+      {
+        "title": "Hermes Marketing",
+        "body": "Websites, SEO/GEO, social media and sales follow-up connected into one growth system.",
+        "href": "/paths/marketing/"
+      },
+      {
+        "title": "Website development",
+        "body": "Custom, fast websites built for search, AI discovery and a clear path to contact.",
+        "href": "/services/website-development/"
+      },
+      {
+        "title": "How this website was built",
+        "body": "The case study of the Hermes website itself.",
+        "href": "/case/it-development/"
+      }
+    ],
+    "primaryAction": {
+      "label": "Request a growth review",
+      "href": "/paths/marketing/#contact"
+    },
+    "secondaryAction": {
+      "label": "See how this website was built",
+      "href": "/case/it-development/"
+    },
+    "sourceLabel": "Hermes website imagery change record and media provenance register, 22 October 2026",
+    "sourceUrl": "https://hermeslogisticsus.com/case/it-development/",
+    "sourcePublishedAt": "2026-10-22",
+    "datePublished": "2026-10-22",
+    "dateModified": "2026-10-22",
+    "authorName": "Hermes Marketing",
+    "keywords": [
+      "website imagery",
+      "real footage vs AI images",
+      "service business website design",
+      "brand consistency",
+      "stock footage disclosure",
+      "Hermes Marketing"
+    ],
+    "contentTier": "standalone",
+    "currentMarketClaim": false,
+    "publicationScore": {
+      "score": 80,
+      "recommendation": "standalone",
+      "reasons": [
+        "First-party design decision with a visible result on the site",
+        "Reusable guidance for service-business websites",
+        "Links Marketing, Technology and the website case study"
+      ]
+    }
+  },
+  {
+    "id": "hermes-marketing-repeatable-growth-system-brief-2026",
+    "direction": "marketing",
+    "slug": "repeatable-growth-system-marketing-brief",
+    "title": "Turn Attention Into a Repeatable Growth System: Prepare a Marketing Brief | Hermes Insights",
+    "description": "How Hermes Marketing (ProgressoPro) connects website, SEO, social media and sales follow-up into one measurable growth system — and what to include in a marketing brief before the first working cycle.",
+    "eyebrow": "Marketing / Growth Method · Marketing Brief · 22 October 2026",
+    "h1": "Turn attention into a repeatable growth system: how to prepare a marketing brief",
+    "conciseAnswer": "Hermes Marketing connects website strategy, SEO, social media, positioning, campaigns and sales workflow into one system. Work starts with a short marketing brief — the business goal, audience and current marketing reality — then focuses on the smallest useful set of priorities and improves from real results.",
+    "explanation": [
+      "Most growth problems are connection problems: a website that does not match the offer, content that does not lead anywhere, leads that are never followed up. ProgressoPro treats marketing as one workflow, from first attention to qualified lead to CRM handoff and follow-up, rather than a collection of disconnected tactics.",
+      "The work covers three areas. Website and SEO: shaping the offer, conversion path, technical search foundation, page optimisation and content priorities around real customer intent. Social media marketing: channel strategy, useful content, production rhythm, campaigns and community workflow around a measurable business goal. Growth and sales system: positioning, lead generation, qualification, CRM handoff, follow-up, analytics and improvement.",
+      "A good marketing brief answers three questions. What business outcome matters in the next cycle? Who is the audience and what do they need to believe to act? What is the current marketing reality — channels, assets, constraints and what has already been tried? From there the team chooses the smallest useful set of priorities, then reviews actual results to refine the message, workflow and next actions.",
+      "Honest limits are part of the method: no one can guarantee a Google position or a fixed number of leads. Search visibility and lead volume depend on the market, competition, offer, website, channels, investment and execution, so the baseline, scope and useful measurements are defined before making a plan."
+    ],
+    "takeaways": [
+      "Website, SEO, social media and sales follow-up work best as one system",
+      "A marketing brief starts with the outcome, audience and current reality",
+      "Baseline and measurements are agreed before the plan — no ranking or lead guarantees"
+    ],
+    "faq": [
+      {
+        "question": "Do we need a complete rebrand to begin?",
+        "answer": "No. Work can begin with one business goal, offer, campaign or sales bottleneck before a wider brand decision."
+      },
+      {
+        "question": "Is this only social media management?",
+        "answer": "No. ProgressoPro can connect website and landing-page strategy, SEO, social media, lead generation, sales workflow and measurement around the selected outcome."
+      },
+      {
+        "question": "Can you guarantee a Google position or a fixed number of leads?",
+        "answer": "No. Search visibility and lead volume depend on the market, competition, offer, website, channels, investment and execution. The baseline, scope and useful measurements are defined before making a plan."
+      }
+    ],
+    "related": [
+      {
+        "title": "Hermes Marketing",
+        "body": "Turn attention into customers — again and again.",
+        "href": "/paths/marketing/"
+      },
+      {
+        "title": "SEO & GEO",
+        "body": "Technical search foundation and content priorities around real intent.",
+        "href": "/services/seo/"
+      },
+      {
+        "title": "Business growth system",
+        "body": "Connect positioning, leads, CRM handoff and follow-up.",
+        "href": "/business-growth/"
+      }
+    ],
+    "primaryAction": {
+      "label": "Prepare a marketing brief",
+      "href": "/paths/marketing/#contact"
+    },
+    "secondaryAction": {
+      "label": "Explore Hermes Marketing",
+      "href": "/paths/marketing/"
+    },
+    "sourceLabel": "Hermes Marketing (ProgressoPro) service pages, 22 October 2026",
+    "sourceUrl": "https://hermeslogisticsus.com/paths/marketing/",
+    "authorName": "Hermes Marketing",
+    "keywords": [
+      "growth system marketing",
+      "marketing brief",
+      "website and SEO marketing",
+      "social media marketing strategy",
+      "lead follow-up system",
+      "ProgressoPro"
+    ],
+    "sourcePublishedAt": "2026-10-22",
+    "datePublished": "2026-10-22",
+    "dateModified": "2026-10-22",
+    "contentTier": "standalone",
+    "currentMarketClaim": false,
+    "publicationScore": {
+      "score": 78,
+      "recommendation": "standalone",
+      "reasons": [
+        "Preserves removed direction positioning and CTA as crawlable evergreen content",
+        "Every claim taken from the current published service data",
+        "Links the removed CTA destination back to its owner page"
       ]
     }
   },

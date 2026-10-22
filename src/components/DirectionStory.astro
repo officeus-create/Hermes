@@ -1,0 +1,250 @@
+---
+// Approved Claude Design direction page skeleton: "top" renders sections 2–6
+// (one question, pillars, steps, real-status proof, ecosystem); "bottom" renders
+// FAQ + real Insights stories and the final Ink call to action.
+import { ArrowRight } from "@lucide/astro";
+import { directionStories, type DirectionStoryId } from "../data/direction-story";
+import { getInsightPath, insightsByDirection } from "../data/insights";
+
+interface Props {
+  direction: DirectionStoryId;
+  part: "top" | "faq" | "final";
+  faq?: Array<{ question: string; answer: string }>;
+  note?: string;
+}
+
+const { direction, part, faq, note } = Astro.props;
+const story = directionStories[direction];
+// Prefer the page's canonical FAQ (it also feeds FAQPage schema) over the design's short list.
+const faqItems = faq?.length ? faq : story.faq;
+const stories = insightsByDirection(direction).filter((post) => post.contentTier === "standalone").slice(0, 3);
+const accent = `var(--dir-${direction})`;
+const statusClass = (status: string) => status.toLowerCase().replace(/\s+/g, "-");
+---
+
+{part === "top" ? (
+  <div class="direction-story" data-direction-story={direction} style={`--direction-accent:${accent}`}>
+    <section class="ds-section ds-question" aria-labelledby={`ds-question-${direction}`}>
+      <div class="ds-shell">
+        <p class="ds-kicker">{story.question.kicker}</p>
+        <h2 id={`ds-question-${direction}`}>{story.question.title}</h2>
+        <p class="ds-lead">{story.question.lead}</p>
+        <ol class="ds-answers">
+          {story.question.answers.map((answer, index) => (
+            <li>
+              <a href={answer.href}>
+                <span class="ds-num">{String(index + 1).padStart(2, "0")}</span>
+                <strong>{answer.title}</strong>
+                <span>{answer.body}</span>
+                <em>{answer.cta}<ArrowRight size={15} aria-hidden="true" /></em>
+              </a>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </section>
+
+    <section class="ds-section ds-pillars" aria-labelledby={`ds-pillars-${direction}`}>
+      <div class="ds-shell">
+        <p class="ds-kicker">{story.pillars.kicker}</p>
+        <h2 id={`ds-pillars-${direction}`}>{story.pillars.title}</h2>
+        <div class="ds-pillar-grid" style={`--ds-cols:${story.pillars.items.length}`}>
+          {story.pillars.items.map((item) => (
+            <article>
+              <h3>{item.title}</h3>
+              <p>{item.body}</p>
+              <ul>{item.points.map((point) => <li>{point}</li>)}</ul>
+            </article>
+          ))}
+        </div>
+        <div class="ds-chips" role="list" aria-label={story.pillars.chipsLabel}>
+          <span class="ds-chips-label">{story.pillars.chipsLabel}</span>
+          {story.pillars.chips.map((chip) => <span role="listitem">{chip}</span>)}
+        </div>
+      </div>
+    </section>
+
+    <section class="ds-section ds-steps" aria-labelledby={`ds-steps-${direction}`}>
+      <div class="ds-shell">
+        <p class="ds-kicker">{story.steps.kicker}</p>
+        <h2 id={`ds-steps-${direction}`}>{story.steps.title}</h2>
+        <ol class="ds-step-grid" style={`--ds-cols:${story.steps.items.length}`}>
+          {story.steps.items.map((step, index) => (
+            <li><span aria-hidden="true">{index + 1}</span><h3>{step.title}</h3><p>{step.body}</p></li>
+          ))}
+        </ol>
+      </div>
+    </section>
+
+    <section class="ds-section ds-proof" aria-labelledby={`ds-proof-${direction}`}>
+      <div class="ds-shell">
+        <p class="ds-kicker">{story.proof.kicker}</p>
+        <h2 id={`ds-proof-${direction}`}>{story.proof.title}</h2>
+        <p class="ds-lead">{story.proof.lead}</p>
+        <div class="ds-proof-grid">
+          {story.proof.items.map((item) => (
+            <a class="ds-proof-card" href={item.href}>
+              <span class={`ds-status ds-status-${statusClass(item.status)}`}>{item.status}</span>
+              <strong>{item.title}</strong>
+              <span>{item.body}</span>
+              <em>Open<ArrowRight size={15} aria-hidden="true" /></em>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="ds-section ds-ecosystem" aria-labelledby={`ds-eco-${direction}`}>
+      <div class="ds-shell">
+        <p class="ds-kicker">One ecosystem</p>
+        <h2 id={`ds-eco-${direction}`}>{story.ecosystem.title}</h2>
+        <p class="ds-lead">{story.ecosystem.lead}</p>
+        <div class="ds-eco-grid">
+          {story.ecosystem.items.map((item) => (
+            <a href={item.href} data-eco={item.direction}>
+              <span class="ds-eco-label"><i aria-hidden="true"></i>{item.label}</span>
+              <strong>{item.title}</strong>
+              <span>{item.body}</span>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+  </div>
+) : (
+  part === "faq" ? (
+  <div class="direction-story direction-story-bottom" data-direction-story-bottom={direction} style={`--direction-accent:${accent}`}>
+    <section class="ds-section ds-faq-stories" aria-labelledby="faq-title">
+      <div class="ds-shell ds-two-col">
+        <div>
+          <p class="ds-kicker">Questions before you start</p>
+          <h2 id="faq-title">Straight answers.</h2>
+          <div class="ds-faq">
+            {faqItems.map((item) => (
+              <details><summary>{item.question}<span aria-hidden="true">+</span></summary><p>{item.answer}</p></details>
+            ))}
+          </div>
+        </div>
+        {stories.length > 0 && (
+          <div>
+            <p class="ds-kicker">From Insights · Our journal</p>
+            <h2>How we built it.</h2>
+            <ul class="ds-stories">
+              {stories.map((post) => (
+                <li><a href={getInsightPath(post)}><small>Story · {post.datePublished}</small><strong>{post.h1}</strong></a></li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
+    </section>
+  </div>
+  ) : (
+  <div class="direction-story" data-direction-story-final={direction} style={`--direction-accent:${accent}`}>
+    <section class="ds-final" aria-label="Next step">
+      <div class="ds-shell ds-final-row">
+        <div>
+          <p class="ds-kicker"><i aria-hidden="true"></i>Next step</p>
+          <h2>{story.finalQuestion}</h2>
+          {note && <p class="ds-final-note detail-service-area">{note}</p>}
+        </div>
+        <div class="ds-final-actions">
+          <a class="ds-final-mail" href="mailto:officeus@hermeslogisticsus.com">officeus@hermeslogisticsus.com</a>
+          <a class="ds-final-cta" href={story.finalCta.href}>{story.finalCta.label}<ArrowRight size={17} aria-hidden="true" /></a>
+        </div>
+      </div>
+    </section>
+  </div>
+  )
+)}
+
+<style>
+  .direction-story { --ds-ink: #0a164f; --ds-paper: #f7f6f3; color: #12141a; }
+  .ds-shell { width: min(1352px, calc(100% - 48px)); margin: 0 auto; }
+  .ds-section { padding: clamp(64px, 9vw, 120px) 0 0; }
+  .ds-kicker { margin: 0 0 14px; font-family: var(--font-mono); font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: #5b606b; display: flex; align-items: center; gap: 10px; }
+  .direction-story h2 { margin: 0; max-width: 15ch; font-family: var(--font-display); font-weight: 800; font-size: clamp(2.3rem, 4.6vw, 3.6rem); line-height: 1.02; letter-spacing: -.045em; text-wrap: balance; }
+  .ds-lead { margin: 14px 0 0; max-width: 56ch; color: #4b505b; font-size: 1.04rem; line-height: 1.6; }
+  .direction-story h3 { margin: 0; font-family: var(--font-display); font-weight: 750; font-size: 1.32rem; letter-spacing: -.02em; }
+  .ds-answers { list-style: none; margin: 40px 0 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-top: 1px solid #e3e1db; border-bottom: 1px solid #e3e1db; }
+  .ds-answers a { display: grid; gap: 10px; align-content: start; height: 100%; padding: 26px 24px 30px 0; color: inherit; text-decoration: none; }
+  .ds-answers li + li a { padding-left: 24px; border-left: 1px solid #ecebe6; }
+  .ds-num { font-family: var(--font-mono); font-size: 12px; color: #6a6f79; }
+  .ds-answers strong { font-family: var(--font-display); font-size: 1.22rem; letter-spacing: -.02em; }
+  .ds-answers span:not(.ds-num), .ds-pillar-grid p, .ds-step-grid p, .ds-proof-card > span, .ds-eco-grid a > span:last-child { color: #4b505b; line-height: 1.55; }
+  .ds-answers em, .ds-proof-card em { display: inline-flex; align-items: center; gap: 6px; font-style: normal; font-weight: 700; color: var(--ds-ink); }
+  .ds-answers a:hover em :global(svg), .ds-proof-card:hover em :global(svg) { transform: translateX(4px); }
+  .ds-answers em :global(svg), .ds-proof-card em :global(svg) { transition: transform .2s ease; }
+  .ds-pillar-grid { margin-top: 40px; display: grid; grid-template-columns: repeat(var(--ds-cols, 3), minmax(0, 1fr)); gap: 44px; }
+  .ds-pillar-grid article { border-top: 2px solid #12141a; padding-top: 24px; }
+  .ds-pillar-grid p { margin: 12px 0 0; }
+  .ds-pillar-grid ul { margin: 18px 0 0; padding: 0; list-style: none; display: grid; gap: 9px; }
+  .ds-pillar-grid li { position: relative; padding-left: 16px; color: #2c3039; }
+  .ds-pillar-grid li::before { content: ""; position: absolute; left: 0; top: .62em; width: 6px; height: 6px; border-radius: 50%; background: var(--direction-accent, #2f6bf6); }
+  .ds-chips { margin-top: 40px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+  .ds-chips-label { margin-right: 8px; font-family: var(--font-mono); font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: #5b606b; }
+  .ds-chips span[role="listitem"] { padding: 9px 16px; border: 1px solid #e3e1db; border-radius: 999px; background: #fff; font-weight: 600; font-size: .95rem; }
+  .ds-step-grid { list-style: none; margin: 40px 0 0; padding: 26px 0 0; border-top: 1px solid #e3e1db; display: grid; grid-template-columns: repeat(var(--ds-cols, 3), minmax(0, 1fr)); gap: 32px; }
+  .ds-step-grid span { display: grid; place-items: center; width: 34px; height: 34px; margin-bottom: 16px; border-radius: 50%; background: var(--ds-ink); color: #fff; font-weight: 700; font-size: .9rem; }
+  .ds-step-grid p { margin: 10px 0 0; }
+  .ds-proof { margin-top: clamp(64px, 9vw, 120px); padding-bottom: clamp(64px, 9vw, 110px); background: #fff; border-block: 1px solid #ebe9e3; }
+  .ds-proof-grid { margin-top: 36px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+  .ds-proof-card { display: grid; gap: 12px; align-content: start; padding: 24px; border: 1px solid #e7e5df; border-radius: 22px; background: #f7f6f3; color: inherit; text-decoration: none; transition: transform .25s ease, box-shadow .25s ease; }
+  .ds-proof-card strong { font-family: var(--font-display); font-size: 1.28rem; letter-spacing: -.02em; }
+  .ds-status { justify-self: start; padding: 4px 10px; border-radius: 999px; font-family: var(--font-mono); font-size: 11px; font-weight: 600; letter-spacing: .08em; }
+  .ds-status-live { background: #e3f6ec; color: #0b6b40; }
+  .ds-status-live-pilot { background: #e3f6ec; color: #0b6b40; }
+  .ds-status-source-gated { background: #e6edff; color: #1d3fb3; }
+  .ds-status-preview { background: #fff1e6; color: #a2470f; }
+  .ds-status-private { background: #ececf1; color: #3c4050; }
+  .ds-eco-grid { margin-top: 36px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-block: 1px solid #e3e1db; }
+  .ds-eco-grid a { display: grid; gap: 10px; align-content: start; padding: 24px 24px 28px 0; color: inherit; text-decoration: none; }
+  .ds-eco-grid a + a { padding-left: 24px; }
+  .ds-eco-label { display: inline-flex; align-items: center; gap: 10px; font-family: var(--font-display); font-weight: 800; font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: var(--ds-ink); }
+  .ds-eco-label i { display: block; width: 3px; height: 15px; border-radius: 2px; background: var(--eco, var(--ds-ink)); }
+  .ds-eco-grid strong { font-family: var(--font-display); font-size: 1.18rem; letter-spacing: -.02em; }
+  [data-eco="logistics"] { --eco: var(--dir-logistics, #2f6bf6); }
+  [data-eco="technology"] { --eco: var(--dir-technology, #38b6f5); }
+  [data-eco="academy"] { --eco: var(--dir-academy, #12b886); }
+  [data-eco="marketing"] { --eco: var(--dir-marketing, #ff7a59); }
+  .ds-two-col { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(32px, 6vw, 96px); }
+  .ds-faq { margin-top: 28px; border-top: 1px solid #e3e1db; }
+  .ds-faq details { border-bottom: 1px solid #e3e1db; }
+  .ds-faq summary { display: flex; justify-content: space-between; gap: 16px; padding: 18px 0; cursor: pointer; list-style: none; font-weight: 700; font-size: 1.04rem; }
+  .ds-faq summary::-webkit-details-marker { display: none; }
+  .ds-faq summary span { font-size: 1.3rem; line-height: 1; transition: transform .25s ease; }
+  .ds-faq details[open] summary span { transform: rotate(45deg); }
+  .ds-faq p { margin: 0 0 18px; color: #4b505b; line-height: 1.6; }
+  .ds-stories { list-style: none; margin: 28px 0 0; padding: 0; border-top: 1px solid #e3e1db; }
+  .ds-stories a { display: grid; gap: 6px; padding: 18px 0; border-bottom: 1px solid #e3e1db; color: inherit; text-decoration: none; }
+  .ds-stories small { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: #6a6f79; }
+  .ds-stories strong { font-family: var(--font-display); font-size: 1.08rem; letter-spacing: -.01em; }
+  .ds-stories a:hover strong { text-decoration: underline; text-underline-offset: 4px; }
+  .ds-final { margin-top: clamp(72px, 10vw, 130px); padding: clamp(56px, 8vw, 96px) 0; background: #0a164f; color: #fff; }
+  .ds-final-row { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 28px; }
+  .ds-final .ds-kicker { color: rgba(255, 255, 255, .7); }
+  .ds-final .ds-kicker i { width: 3px; height: 13px; border-radius: 2px; background: var(--direction-accent, #2f6bf6); }
+  .ds-final h2 { color: #fff; max-width: 13ch; }
+  .ds-final-note { margin: 16px 0 0; color: rgba(255, 255, 255, .72); font-size: .95rem; }
+  .ds-final-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 22px; }
+  .ds-final-mail { color: #fff; font-weight: 600; }
+  .ds-final-cta { display: inline-flex; align-items: center; gap: 8px; padding: 14px 24px; border-radius: 999px; background: #fff; color: #0a164f; font-weight: 700; text-decoration: none; }
+  @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+    .ds-proof-card:hover { transform: translateY(-4px); box-shadow: 0 18px 40px rgba(17, 19, 24, .1); }
+    .ds-eco-grid a:hover .ds-eco-label i { animation: ds-eco-hop .75s ease; }
+  }
+  @keyframes ds-eco-hop { 0%, 100% { transform: none; } 35% { transform: translateY(-7px) scaleY(.8); } 65% { transform: translateY(0) scaleY(1.35); } }
+  @media (max-width: 1000px) {
+    .ds-answers, .ds-eco-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .ds-answers li:nth-child(3) a, .ds-eco-grid a:nth-child(3) { padding-left: 0; border-left: 0; }
+    .ds-pillar-grid, .ds-proof-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .ds-step-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .ds-two-col { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 640px) {
+    .ds-shell { width: calc(100% - 32px); }
+    .ds-answers, .ds-eco-grid, .ds-pillar-grid, .ds-proof-grid, .ds-step-grid { grid-template-columns: 1fr; }
+    .ds-answers li + li a, .ds-eco-grid a + a { padding-left: 0; border-left: 0; border-top: 1px solid #ecebe6; }
+    .ds-pillar-grid { gap: 32px; }
+  }
+</style>

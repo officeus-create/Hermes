@@ -55,7 +55,7 @@ test("website development keeps keyboard interaction, canonical ownership, index
   await expect(page.getByRole("link", { name: "Review the website case" })).toHaveAttribute("href", "/case/it-development/");
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", "https://hermeslogisticsus.com/services/website-development/");
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", /index,follow/);
-  await expect(page.locator('meta[property="og:image"]')).toHaveAttribute("content", "https://hermeslogisticsus.com/images/hermes-live-product.jpg");
+  await expect(page.locator('meta[property="og:image"]')).toHaveAttribute("content", "https://hermeslogisticsus.com/images/hermes-live-home-2026.jpg");
   await expect(page.locator('meta[property="og:image:width"]')).toHaveAttribute("content", "1800");
   await expect(page.locator('meta[property="og:image:height"]')).toHaveAttribute("content", "1125");
   await expect(page.locator('meta[property="og:image:alt"]')).toHaveAttribute("content", "The live Hermes website showing its four interactive business portals");
@@ -189,7 +189,7 @@ test("showroom uses native View Transition progressively and skips it for reduce
 
 test("verified website case publishes the owned live-product social image accurately", async ({ page }) => {
   await page.goto("/case/it-development/");
-  await expect(page.locator('meta[property="og:image"]')).toHaveAttribute("content", "https://hermeslogisticsus.com/images/hermes-live-product.jpg");
+  await expect(page.locator('meta[property="og:image"]')).toHaveAttribute("content", "https://hermeslogisticsus.com/images/hermes-live-home-2026.jpg");
   await expect(page.locator('meta[property="og:image:type"]')).toHaveAttribute("content", "image/jpeg");
   await expect(page.locator('meta[property="og:image:width"]')).toHaveAttribute("content", "1800");
   await expect(page.locator('meta[property="og:image:height"]')).toHaveAttribute("content", "1125");

@@ -38,7 +38,7 @@ test("website redesign explains controlled change without changing the canonical
   await expect(page.locator('a[href="/case/it-development/"]').filter({ hasText: "Review the Hermes website case" })).toBeVisible();
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", "https://hermeslogisticsus.com/services/website-redesign/");
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", /index,follow/);
-  await expect(page.locator('meta[property="og:image"]')).toHaveAttribute("content", "https://hermeslogisticsus.com/images/hermes-live-product.jpg");
+  await expect(page.locator('meta[property="og:image"]')).toHaveAttribute("content", "https://hermeslogisticsus.com/images/hermes-live-home-2026.jpg");
   await expect(page.locator('meta[property="og:image:width"]')).toHaveAttribute("content", "1800");
   await expect(page.locator('meta[property="og:image:height"]')).toHaveAttribute("content", "1125");
   await expect(page.locator('meta[property="og:image:alt"]')).toHaveAttribute("content", "The live Hermes website showing its four interactive business portals");

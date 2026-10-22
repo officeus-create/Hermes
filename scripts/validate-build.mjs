@@ -141,10 +141,10 @@ const emailOnlyRoutes = [
   "paths/technology/index.html",
 ];
 const assets = [
-  "images/path-logistics-system.jpg",
-  "images/path-marketing-system.jpg",
-  "images/path-academy-system.jpg",
-  "images/path-technology-portal.jpg",
+  "images/direction-logistics-real-2026.jpg",
+  "images/direction-marketing-real-2026.jpg",
+  "images/direction-academy-real-2026.jpg",
+  "images/direction-technology-real-2026.jpg",
 ];
 
 await access(indexPath);
