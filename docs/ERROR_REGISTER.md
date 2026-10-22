@@ -695,3 +695,21 @@ EVIDENCE: `src/pages/index.astro`, `src/pages/paths/[slug].astro`, `src/data/pub
 LESSON: Reuse the approved entity @id on Service providers across all existing canonical directions; never fragment the graph by repeating weaker differently named Organization objects.
 
 REUSE_RULE: Keep new entity references and structured facts grounded in approved public legal identity. A clean JSON-LD diff is only a CODE stage; GSC URL inspection, real indexing and qualified revenue measurements remain separate.
+
+## ERR-HOME-V3-SINGLE-SHOT-AND-SPACE-PATH-20261022 — RESOLVED_IN_PR / RELEASE_HOLD
+
+STATUS: Resolved on the review branch for PR #1997; no merge, deployment or production-success claim.
+
+PROBLEM: The approved Claude Home composition existed, but all four direction windows still contained one-shot media, so the visible result did not deliver the approved multi-shot films. Independently, `npm test` failed when the authorized checkout path contained a space (`WEB 2`).
+
+ROOT_CAUSE: Earlier implementation stopped after shell/CI work when the exact owner-approved stock masters were unavailable. The test harness also used `new URL(...).pathname` as a filesystem path without decoding `%20`, and the benchmark evidence scanner parsed an absolute repository path containing a space as an external read.
+
+FAILED_APPROACH: Treating posters, a hover-assisted playback assertion, green historical CI or repeated workflow polling as proof that the films were complete. Treating an encoded file URL pathname as a portable local path also made the required unit gate environment-dependent.
+
+WORKING_APPROACH: Recovered the ten exact Pexels source IDs embedded in the approved Claude Design, assembled four local 8–9 second multi-shot H.264 films with matching posters, kept the existing autonomous/reduced-motion/Save-Data runtime and route ownership unchanged, and created a ten-frame contact sheet. Decoded file-URL paths at the filesystem boundary and made repository-only evidence detection remove the exact repository root before absolute-path classification.
+
+EVIDENCE: `docs/evidence/home-v3-multishot-contact-sheet-2026-10-22.jpg`; updated source lock and media provenance; current-worktree `npm run build` PASS (411 pages, zero errors), `npm test` PASS, focused Home playback/route/responsive suites PASS 23/23. Full `npm run test:e2e` completed 2418 passed / 16 skipped / 2 unrelated timing flakes; both failures passed immediately when rerun together (Catalog CLS 0.0057–0.0817 and Repair Shop recovery PASS). Exact-head CI remains the release gate.
+
+LESSON: A cinematic acceptance criterion needs source provenance, actual multi-shot frames, autonomous normal-speed playback, reduced-motion fallback and current-head browser evidence. CI state and a static screenshot are necessary evidence, not the visible deliverable itself.
+
+REUSE_RULE: For approved film work, lock exact source IDs, self-host bounded outputs, verify first/middle/last frames plus `currentTime` without hover, preserve accessibility/network fallbacks, and test repository tooling from a path containing spaces. Never change unrelated product behavior to hide a one-run browser timing flake.
