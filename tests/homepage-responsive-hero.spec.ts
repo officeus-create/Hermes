@@ -119,15 +119,27 @@ test("Home navigation stays fixed while scrolling past the four directions to Co
 
 test("Home and Directions keep the same primary header position and width", async ({ page, isMobile }) => {
   await page.setViewportSize({ width: isMobile ? 390 : 1440, height: isMobile ? 844 : 900 });
-  const geometry: Array<{ path: string; top: number; left: number; width: number }> = [];
+  const geometry: Array<{ path: string; top: number; left: number; width: number; cssWidth: string; maxWidth: string; minWidth: string; transform: string; marginLeft: string; marginRight: string }> = [];
   for (const path of ["/", "/paths/logistics/"]) {
     await page.goto(path);
     const rect = await page.locator("header.site-header").evaluate((header) => {
       const box = header.getBoundingClientRect();
-      return { top: box.top, left: box.left, width: box.width };
+      const style = getComputedStyle(header);
+      return {
+        top: box.top,
+        left: box.left,
+        width: box.width,
+        cssWidth: style.width,
+        maxWidth: style.maxWidth,
+        minWidth: style.minWidth,
+        transform: style.transform,
+        marginLeft: style.marginLeft,
+        marginRight: style.marginRight,
+      };
     });
     geometry.push({ path, ...rect });
   }
+  console.log("APPROVED_HEADER_GEOMETRY", JSON.stringify(geometry));
   expect(Math.abs(geometry[0].top - geometry[1].top)).toBeLessThanOrEqual(1);
   expect(Math.abs(geometry[0].left - geometry[1].left)).toBeLessThanOrEqual(1);
   expect(Math.abs(geometry[0].width - geometry[1].width)).toBeLessThanOrEqual(1);
