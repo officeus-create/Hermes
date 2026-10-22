@@ -117,26 +117,136 @@ test("Home navigation stays fixed while scrolling past the four directions to Co
 });
 
 
-test("desktop Products unfolds to the RIGHT and keeps every existing product destination", async ({ page }) => {
+test("Home and Directions keep the same primary header position and width", async ({ page, isMobile }) => {
+  await page.setViewportSize({ width: isMobile ? 390 : 1440, height: isMobile ? 844 : 900 });
+  const geometry: Array<{ path: string; top: number; left: number; width: number; cssWidth: string; maxWidth: string; minWidth: string; transform: string; marginLeft: string; marginRight: string }> = [];
+  for (const path of ["/", "/paths/logistics/"]) {
+    await page.goto(path);
+    const rect = await page.locator("header.site-header").evaluate((header) => {
+      const box = header.getBoundingClientRect();
+      const style = getComputedStyle(header);
+      return {
+        top: box.top,
+        left: box.left,
+        width: box.width,
+        cssWidth: style.width,
+        maxWidth: style.maxWidth,
+        minWidth: style.minWidth,
+        transform: style.transform,
+        marginLeft: style.marginLeft,
+        marginRight: style.marginRight,
+      };
+    });
+    geometry.push({ path, ...rect });
+  }
+  console.log("APPROVED_HEADER_GEOMETRY", JSON.stringify(geometry));
+  expect(Math.abs(geometry[0].top - geometry[1].top)).toBeLessThanOrEqual(1);
+  expect(Math.abs(geometry[0].left - geometry[1].left)).toBeLessThanOrEqual(1);
+  expect(Math.abs(geometry[0].width - geometry[1].width)).toBeLessThanOrEqual(1);
+});
+
+test("desktop Products unfolds downward and stays visible on Home and Directions", async ({ page, isMobile }) => {
+  test.skip(isMobile, "Desktop Products geometry is covered in the desktop browser context.");
   await page.setViewportSize({ width: 1440, height: 900 });
+  for (const path of ["/", "/paths/logistics/"]) {
+    await page.goto(path);
+    const products = page.locator(".desktop-products-menu");
+    const summary = products.locator("summary");
+    await summary.click();
+    await expect(products).toHaveAttribute("open", "");
+    const relation = await products.evaluate((details) => {
+      const trigger = details.querySelector("summary")!.getBoundingClientRect();
+      const menu = details.querySelector(".desktop-products-grid")!.getBoundingClientRect();
+      return {
+        triggerBottom: trigger.bottom,
+        menuTop: menu.top,
+        menuLeft: menu.left,
+        menuRight: menu.right,
+        windowWidth: innerWidth,
+      };
+    });
+    expect(relation.menuTop).toBeGreaterThanOrEqual(relation.triggerBottom - 1);
+    expect(relation.menuLeft).toBeGreaterThanOrEqual(0);
+    expect(relation.menuRight).toBeLessThanOrEqual(relation.windowWidth + 1);
+    await page.keyboard.press("Escape");
+    await expect(products).not.toHaveAttribute("open", "");
+  }
   await page.goto("/");
   const products = page.locator(".desktop-products-menu");
-  const summary = products.locator("summary");
-  await summary.click();
-  await expect(products).toHaveAttribute("open", "");
-  const relation = await products.evaluate((details) => {
-    const trigger = details.querySelector("summary")!.getBoundingClientRect();
-    const menu = details.querySelector(".desktop-products-grid")!.getBoundingClientRect();
-    return { triggerRight: trigger.right, menuLeft: menu.left, menuRight: menu.right, windowWidth: innerWidth };
-  });
-  expect(relation.menuLeft).toBeGreaterThan(relation.triggerRight);
-  expect(relation.menuRight).toBeLessThanOrEqual(relation.windowWidth + 1);
+  await products.locator("summary").click();
   const links = products.locator(".desktop-products-grid a");
   expect(await links.evaluateAll(nodes => nodes.map(n => n.getAttribute("href")))).toEqual([
     "/services/hermes-connect/", "/businesses/", "/insights/", "/opportunities/",
   ]);
   await page.keyboard.press("Escape");
   await expect(products).not.toHaveAttribute("open", "");
+});
+
+test("approved header actions read as one control family on Home and Directions", async ({ page, isMobile }) => {
+  test.skip(isMobile, "Desktop action-family geometry is covered in the desktop browser context.");
+  await page.setViewportSize({ width: 1440, height: 900 });
+  for (const path of ["/", "/paths/logistics/"]) {
+    await page.goto(path);
+    const actions = page.locator(".site-header[data-approved-visual-shell='true'] .header-actions");
+    await expect(actions).toBeVisible();
+    await expect(actions.locator("[data-hermes-sign-in]")).toBeVisible();
+    await expect(actions.locator(".language-menu > summary")).toBeVisible();
+    await expect(actions.locator(".header-cta")).toBeVisible();
+    const geometry = await actions.evaluate((root) => {
+      const style = getComputedStyle(root);
+      const controls = [
+        root.querySelector<HTMLElement>("[data-hermes-sign-in]"),
+        root.querySelector<HTMLElement>(".language-menu > summary"),
+        root.querySelector<HTMLElement>(".header-cta"),
+      ].filter(Boolean) as HTMLElement[];
+      return {
+        display: style.display,
+        radius: parseFloat(style.borderRadius),
+        heights: controls.map((control) => control.getBoundingClientRect().height),
+      };
+    });
+    expect(geometry.display).toBe("flex");
+    expect(geometry.radius).toBeGreaterThan(20);
+    expect(geometry.heights.every((height) => height >= 39 && height <= 48)).toBe(true);
+  }
+});
+
+test("Direction header uses compact desktop at 1024 and the shared mobile menu at 768/430/390", async ({ browser }, testInfo) => {
+  for (const width of [1024, 768, 430, 390]) {
+    const mobileDevice = width <= 430;
+    const context = await browser.newContext({
+      baseURL: testInfo.project.use.baseURL,
+      viewport: { width, height: width <= 430 ? 844 : 900 },
+      isMobile: mobileDevice,
+      hasTouch: width <= 768,
+      deviceScaleFactor: 1,
+    });
+    try {
+      const page = await context.newPage();
+      await page.goto("/paths/logistics/");
+      const header = page.locator(".site-header[data-approved-visual-shell='true']");
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
+
+      if (width === 1024) {
+        await expect(header.locator(".desktop-nav")).toBeVisible();
+        await expect(header.locator(".header-actions")).toBeVisible();
+        await expect(header.locator(".header-cta")).toBeVisible();
+        await expect(header.locator(".menu-button")).toBeHidden();
+      } else {
+        await expect(header.locator(".desktop-nav")).toBeHidden();
+        await expect(header.locator(".header-actions")).toBeHidden();
+        await expect(header.locator(".menu-button")).toBeVisible();
+        await header.locator(".menu-button").click();
+        const mobileNav = header.locator(".mobile-nav");
+        await expect(mobileNav).toBeVisible();
+        await expect(mobileNav.locator('a[href="/contacts/"]')).toBeVisible();
+        await expect(mobileNav.locator(".mobile-language-switcher")).toBeVisible();
+        expect(await mobileNav.locator("[data-hermes-sign-in], [data-hc-account-switcher]").count()).toBeGreaterThan(0);
+      }
+    } finally {
+      await context.close();
+    }
+  }
 });
 
 test("visible desktop technology scene plays autonomously and pointer movement does not freeze it", async ({ browser }, testInfo) => {
