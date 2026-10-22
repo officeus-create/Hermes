@@ -1,5 +1,128 @@
 [
   {
+    "id": "us-service-search-discovery-checklist-2026",
+    "direction": "marketing",
+    "slug": "us-service-business-search-discovery-checklist",
+    "title": "How US Service Businesses Get Found in Search and Maps | Hermes Insights",
+    "description": "A source-checked practical SEO and GEO checklist for US service businesses: truthful service pages, Google Business Profile eligibility, internal links and qualified-lead measurement without promises of rankings.",
+    "eyebrow": "Marketing / Practical guide · 23 October 2026",
+    "h1": "How service businesses get found: an evidence-first SEO and GEO checklist",
+    "conciseAnswer": "A US service business improves its chances of relevant discovery by explaining each real service on an accessible page, maintaining accurate public identity, linking original evidence, and measuring how search visitors reach genuine inquiries. For eligible local companies, a complete verified Google Business Profile may help customers find them on Search and Maps. These actions do not guarantee rankings, AI citations or sales.",
+    "explanation": [
+      "Start with a customer decision. A buyer looking for car-hauling dispatch needs equipment fit, onboarding and carrier requirements; a repair shop considering CRM needs the actual service workflow and an understandable contact route. Give each distinct intent one clear canonical owner URL. Explain the offer, real service coverage, what the buyer should prepare and the next step. Educational Insights should answer a different question and point to the commercial page, not duplicate its service text.",
+      "Before adding pages, check whether the important ones can be discovered and understood. Use helpful navigation, descriptive links, accurate titles and canonical URLs. Ensure the main content is available to users and crawlers, keep internal links working, and submit a sitemap as a discovery aid. Search Console URL Inspection can show indexing status; a sitemap entry or successful deployment does not prove Google indexed a page. Keep existing case, company and resource pages linked when simplifying the homepage.",
+      "For truly local services, identify the place or service area honestly. Google's Business Profile guidance describes relevance, distance and prominence as the main local ranking factors. An eligible storefront or in-person service-area business should verify and maintain its category, hours, coverage, photos and genuine reviews. A remote-only agency or software provider should not invent a public shop address or pretend to have a customer-facing location. Location landing pages need distinct user value, not a city name swapped into a template.",
+      "Show proof that belongs to the business. Original case-study details, verified public service descriptions, actual training resources and clear legal identity can make decisions easier. A published screenshot or source document demonstrates only what that source establishes: it does not automatically prove a search ranking gain, booked appointment, revenue result, live software feature or a customer endorsement. For AI-assisted search and geographic discovery, readable and accurate text with clear ownership is more defensible than publishing mass-generated variations.",
+      "Use structured data to describe visible facts, not to manufacture them. Organization identity and other applicable schema should match the page and its canonical source. Google's structured-data policy says eligibility for rich appearance is not a guarantee. No schema field guarantees that an AI assistant will cite your brand. Improve page speed, usability and mobile contact paths for the people visiting the website before treating markup as a growth result.",
+      "Finally separate discovery from business outcomes. Review Search Console impressions, clicks, country, device and landing pages; then, with appropriate consent and CRM access, follow real CTA actions into qualified inquiries, opportunities and completed services. Compare similar periods and do not turn missing attribution into zero. A jump in impressions is not the same as a sale. Google's own SEO documentation notes that changes may take hours to months and cannot guarantee ranking improvement.",
+      "The 2026 Hermes Home redesign illustrates a practical content-retention rule: a concise four-direction entrance can become easier to navigate without destroying valuable company facts, public resources or case-study pages. Those sources stay at their original addresses and are discoverable from Insights. This article is a general implementation framework, not evidence that Hermes or a client achieved a particular traffic or revenue increase."
+    ],
+    "takeaways": [
+      "Give each real customer question one useful page and a clear next action.",
+      "Verify local Business Profile eligibility and only claim real operational coverage.",
+      "Preserve original evidence and canonical links when redesigning.",
+      "Measure search visibility separately from qualified inquiries and revenue.",
+      "No number of new articles, structured data tags or AI optimizations guarantees rankings."
+    ],
+    "faq": [
+      {
+        "question": "Should I make a landing page for every city and keyword?",
+        "answer": "Only when your business genuinely serves that audience and the page adds distinct truthful value. Near-duplicate city pages can compete with useful canonical service content."
+      },
+      {
+        "question": "Does Google Business Profile guarantee first place in Maps?",
+        "answer": "No. Google identifies relevance, distance and prominence as key local factors and does not provide a guaranteed paid shortcut."
+      },
+      {
+        "question": "Will schema markup make AI assistants recommend my business?",
+        "answer": "No. Markup should describe facts already visible on the page; it does not guarantee rich results or AI citations."
+      },
+      {
+        "question": "Which SEO numbers indicate business value?",
+        "answer": "Treat impressions and clicks as discovery metrics; inspect relevant inquiries, qualification and source-verified completed sales separately over consistent periods."
+      }
+    ],
+    "related": [
+      {
+        "title": "Hermes SEO Services",
+        "body": "The commercial service owner for SEO and GEO implementation.",
+        "href": "/services/seo/"
+      },
+      {
+        "title": "Website Development",
+        "body": "Build accessible mobile-first service and product pages.",
+        "href": "/services/website-development/"
+      },
+      {
+        "title": "Hermes Connect",
+        "body": "Connect verified inquiries to customer follow-up workflows.",
+        "href": "/services/hermes-connect/"
+      }
+    ],
+    "primaryAction": {
+      "label": "Explore Hermes SEO services",
+      "href": "/services/seo/"
+    },
+    "secondaryAction": {
+      "label": "Explore website development",
+      "href": "/services/website-development/"
+    },
+    "sourceLabel": "Google Search Central SEO guidance and Google Business Profile local-ranking guidance; reviewed 23 October 2026",
+    "sourceUrl": "https://developers.google.com/search/blog/2024/02/ssg-gets-a-makeover",
+    "sourcePublishedAt": "2024-02-02",
+    "datePublished": "2026-10-23",
+    "dateModified": "2026-10-23",
+    "authorName": "Hermes Marketing Editorial Team",
+    "keywords": [
+      "local SEO for service businesses",
+      "US service business Google search",
+      "GEO location SEO",
+      "Business Profile eligibility",
+      "qualified leads SEO"
+    ],
+    "contentTier": "standalone",
+    "currentMarketClaim": false,
+    "evidence": [
+      {
+        "sourceId": "PUBLIC-WEB-CURRENT",
+        "kind": "public_external",
+        "label": "Google Search Central SEO Starter Guide refresh",
+        "use": "primary",
+        "url": "https://developers.google.com/search/blog/2024/02/ssg-gets-a-makeover",
+        "observedAt": "2026-10-23",
+        "eventDate": "2024-02-02",
+        "notes": "Dated Google editorial source about keeping SEO advice focused on useful pages."
+      },
+      {
+        "sourceId": "PUBLIC-WEB-CURRENT",
+        "kind": "public_external",
+        "label": "Google Business Profile local ranking guidance",
+        "use": "context_only",
+        "url": "https://support.google.com/business/answer/7091",
+        "observedAt": "2026-10-23",
+        "notes": "Explains relevance, distance and prominence; no guarantee of Maps position."
+      },
+      {
+        "sourceId": "PUBLIC-WEB-CURRENT",
+        "kind": "public_external",
+        "label": "Google Search Central people-first content guidance",
+        "use": "context_only",
+        "url": "https://developers.google.com/search/docs/fundamentals/creating-helpful-content",
+        "observedAt": "2026-10-23",
+        "notes": "Original human value before search-first volume."
+      }
+    ],
+    "publicationScore": {
+      "score": 86,
+      "recommendation": "standalone",
+      "reasons": [
+        "Answers a distinct service-business search and local-discovery question without duplicating the commercial SEO owner",
+        "Uses current authoritative Google guidance and clear non-guarantee boundaries",
+        "Connects informational discovery to existing SEO, website development and Hermes Connect owner pages"
+      ]
+    }
+  },
+  {
     "id": "hermes-academy-international-roadmap-2026",
     "direction": "academy",
     "slug": "academy-international-roadmap-where-we-train",
