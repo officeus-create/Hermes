@@ -391,13 +391,11 @@ test('Marketing documentary scene plays only in viewport and stays still when sc
  const scene=page.locator('[data-home-marketing-cinematic]');
  const video=scene.locator('video');
  await scene.scrollIntoViewIfNeeded();
- await page.locator('[data-route-id="marketing"]').focus();
  await expect.poll(()=>scene.getAttribute('data-media-state')).toBe('ready');
  await page.locator('footer').scrollIntoViewIfNeeded();
  await expect.poll(()=>scene.getAttribute('data-media-state')).toBe('poster');
  expect(await video.evaluate(n=>(n as HTMLVideoElement).paused)).toBe(true);
  await scene.scrollIntoViewIfNeeded();
- await page.locator('[data-route-id="marketing"]').focus();
  await expect.poll(()=>scene.getAttribute('data-media-state')).toBe('ready');
 });
 
@@ -410,7 +408,6 @@ test('Marketing documentary scene honors live reduced-motion changes and never f
  await expect(scene.locator('source')).not.toHaveAttribute('src',/.+/);
  await expect(scene.locator('img')).toBeVisible();
  await page.emulateMedia({reducedMotion:'no-preference'});
- await page.locator('[data-route-id="marketing"]').focus();
  await expect.poll(()=>scene.getAttribute('data-media-state')).toBe('ready');
  await page.emulateMedia({reducedMotion:'reduce'});
  await expect.poll(()=>scene.getAttribute('data-media-state')).toBe('poster');

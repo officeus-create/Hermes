@@ -23,7 +23,7 @@ test("homepage presents one semantic four-direction system", async ({ page }) =>
 test("homepage does not expose a second competing routing layer", async ({ page }) => {
   await page.goto("/");
 
-  await expect(page.locator(".home-master-ink-note")).toContainText("One Hermes ecosystem.");
+  await expect(page.locator(".home-master-ink-note")).toContainText("one Hermes ecosystem.");
   await expect(page.locator(".home-role-router")).toHaveCount(0);
   await expect(page.locator(".path-pillars")).toHaveCount(0);
   await expect(page.locator(".product-showcase")).toHaveCount(0);

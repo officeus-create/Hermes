@@ -180,7 +180,7 @@ if (homeHeading !== "Four directions.") throw new Error("Homepage must retain th
 const required = [
   // The exact rendered h1 is checked above; its animated letter may have a nested span.
   "Choose yours.",
-  "One Hermes ecosystem.",
+  "one Hermes ecosystem.",
   "Move freight",
   "Grow demand",
   "Build systems",

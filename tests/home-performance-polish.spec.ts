@@ -30,14 +30,15 @@ test("homepage keeps V4 interaction polish lightweight without hidden media runt
     expect(scene).toContain('playsinline');
     expect(scene).toContain('preload="none"');
     expect(scene).toContain('poster="/images/logistics-living/car-hauler-512.webp"');
-    expect(scene).toContain('data-cinematic-src="/media/home/logistics-golden-v1.mp4"');
+    expect(scene).toContain('data-cinematic-src="/media/home/logistics-golden-v1-540.mp4"');
     expect(scene).toContain('.home-logistics-cinematic{display:none!important}');
     expect(scene).not.toMatch(/<video[\s\S]*?src=["']https?:\/\//);
-    const cinematic = path.join(root, "public/media/home/logistics-golden-v1.mp4");
+    const cinematic = path.join(root, "public/media/home/logistics-golden-v1-540.mp4");
     expect(fs.existsSync(cinematic)).toBe(true);
     const bytes = fs.statSync(cinematic).size;
     expect(bytes).toBeGreaterThan(200_000);
-    expect(bytes).toBeLessThan(8_000_000);
+    // Four windows share one viewport: keep each lane in the same ~1 MB class.
+    expect(bytes).toBeLessThan(1_500_000);
   }
   expect(scene).toContain('data-home-marketing-cinematic');
   expect(scene).toContain('data-home-marketing-video');

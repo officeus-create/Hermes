@@ -18,7 +18,6 @@ test("Marketing living window selects only Hermes-hosted media when visible", as
   await page.goto("/");
   const stage = page.locator("[data-home-marketing-cinematic]");
   await stage.scrollIntoViewIfNeeded();
-  await page.locator('[data-route-id="marketing"]').focus();
   await expect.poll(async () => stage.locator("source").getAttribute("src"), { timeout: 10000 })
     .toMatch(/^\/media\/home\/marketing-team-v1\.mp4$/);
 });
