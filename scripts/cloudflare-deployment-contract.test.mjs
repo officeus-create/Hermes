@@ -253,6 +253,9 @@ for (const marker of [
   assert.ok(productionWorkflow.includes(marker), `Production browser runtime verification is missing from the release workflow: ${marker}`);
 }
 for (const marker of [
+  'APPROVED_HOSTS = new Set(["hermeslogisticsus.com", "www.hermeslogisticsus.com"])',
+  'assert.equal(parsed.protocol, "https:"',
+  'assert.match(parsed.pathname, /^\\/media\\/home\\/[a-z0-9-]+\\\\.mp4$/',
   'id: "logistics"',
   'id: "technology"',
   'id: "academy"',
