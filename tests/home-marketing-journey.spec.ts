@@ -7,7 +7,7 @@ test("Marketing shows a real creative collaboration video without decorative HUD
   const scene = route.locator("[data-home-marketing-cinematic]");
   await expect(scene).toHaveCount(1);
   await expect(scene.locator("video")).toHaveCount(1);
-  await expect(route.locator("[data-home-marketing-journey]")).toBeHidden();
+  await expect(route.locator("[data-home-marketing-journey]")).toHaveCount(0);
   await expect(route.locator(".home-moving-leaves")).toHaveCount(0);
   await expect(route).toHaveAttribute("href", "/paths/marketing/");
   await expect(route).toHaveAttribute("aria-label", /Example flow: content \+ news, search \+ social, website action, crm evidence/i);
@@ -24,7 +24,7 @@ test("Marketing is usable without JavaScript, with the poster and native route",
   const scene = route.locator("[data-home-marketing-cinematic]");
   await expect(scene.locator("img")).toBeVisible();
   await expect(scene.locator("source")).not.toHaveAttribute("src",/.+/);
-  await expect(route.locator('[data-home-explainer="marketing"]')).toHaveCSS("display", "none");
+  await expect(route.locator('[data-home-explainer]')).toHaveCount(0);
   expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false);
   await route.click();
   await expect(page).toHaveURL(/\/paths\/marketing\/$/);
