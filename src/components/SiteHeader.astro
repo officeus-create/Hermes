@@ -22,6 +22,8 @@ interface Props {
 const { theme = "dark", activePath, locale = "en", contactHref = "/contacts/" } = Astro.props;
 const currentPath = Astro.url.pathname;
 const isApprovedHome = currentPath === "/";
+const isApprovedDirectionShell = /^\/paths\/(logistics|technology|academy|marketing)\/$/.test(currentPath);
+const isApprovedVisualShell = isApprovedHome || isApprovedDirectionShell;
 const homeUpdates = isApprovedHome ? {
   academy: latestHomeUpdate("academy"),
   insights: latestHomeUpdate("insights"),
@@ -86,7 +88,7 @@ const orderedPaths = [...site.paths].sort(
 const navigation = activeLocale === "en"
   ? orderedNavigation.map((item) => {
       const url = `/${item.href}`;
-      const label = item.href === "paths/technology/" ? (isApprovedHome ? "Technology" : "IT") : item.label;
+      const label = item.href === "paths/technology/" ? (isApprovedVisualShell ? "Technology" : "IT") : item.label;
       return { ...item, key: navDirectionId(item.href), label, url, active: (activePath ?? currentPath) === url };
     })
   : orderedPaths.map((path) => ({
@@ -98,7 +100,7 @@ const navigation = activeLocale === "en"
 const isCatalogRoute = currentPath === "/businesses/" || currentPath.startsWith("/businesses/");
 const isInsightsRoute = currentPath === "/insights/" || currentPath.startsWith("/insights/");
 const isOpportunitiesRoute = currentPath === "/opportunities/" || currentPath.startsWith("/opportunities/");
-const contactLabel = activeLocale === "en" ? (isApprovedHome ? "Contact" : "Start a conversation") : localizedLabels[activeLocale].contact;
+const contactLabel = activeLocale === "en" ? (isApprovedVisualShell ? "Contact" : "Start a conversation") : localizedLabels[activeLocale].contact;
 const signInLabel = activeLocale === "en" ? "Sign in" : localizedLabels[activeLocale].signIn;
 // The Home and localized overview Products navigation must preserve Hermes Connect's
 // supported ?lang= locale when crossing from a localized corporate page.
@@ -156,7 +158,7 @@ const languageLinks = siteLocales.filter((language) => !isCatalogLocaleRoute || 
 
 <header class={`site-header site-header-${theme}`} data-header data-home-portal={isApprovedHome ? "true" : undefined}>
   <a class="wordmark" href={activeLocale === "en" ? "/#top" : `${localeConfig[activeLocale].path}#top`} aria-label="Hermes home">
-    {isApprovedHome ? (
+    {isApprovedVisualShell ? (
       <span class="wordmark-mark wordmark-mark-corporate"><img src="/brand/hermes-mark.svg" alt="Hermes" width="36" height="36" decoding="async" /></span>
     ) : (
       <span class="wordmark-mark">H</span>
@@ -189,7 +191,7 @@ const languageLinks = siteLocales.filter((language) => !isCatalogLocaleRoute || 
   </nav>
 
   <div class="header-actions">
-    {!isApprovedHome && <HermesConnectLauncher
+    {!isApprovedVisualShell && <HermesConnectLauncher
       variant="header"
       href="/services/hermes-connect/repair-shops/"
       label="Hermes Connect"

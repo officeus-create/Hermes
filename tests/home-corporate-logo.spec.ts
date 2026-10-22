@@ -2,19 +2,31 @@ import { expect, test } from "@playwright/test";
 
 const logoSrc = "/brand/hermes-mark.svg";
 
-test("Home previews the selected Hermes H while preserving existing inner-page identities", async ({ page }) => {
+test("Home and approved Directions share Hermes H v1.1 while product surfaces keep their own identity", async ({ page }) => {
   await page.goto("/");
-  const mark = page.locator(".site-header[data-home-portal='true'] .wordmark-mark-corporate img");
-  await expect(mark).toHaveCount(1);
-  await expect(mark).toHaveAttribute("src", logoSrc);
+  const homeMark = page.locator(".site-header[data-home-portal='true'] .wordmark-mark-corporate img");
+  await expect(homeMark).toHaveCount(1);
+  await expect(homeMark).toHaveAttribute("src", logoSrc);
   await expect(page.locator(".site-header .wordmark")).toHaveAccessibleName("Hermes home");
   const response = await page.request.get(logoSrc);
   expect(response.ok()).toBe(true);
   expect(response.headers()["content-type"]).toContain("image/svg+xml");
 
-  await page.goto("/paths/logistics/");
-  await expect(page.locator(".site-header .wordmark-mark")).toHaveText("H");
+  for (const path of ["/paths/logistics/", "/paths/technology/", "/paths/academy/", "/paths/marketing/"]) {
+    await page.goto(path);
+    const directionMark = page.locator(".site-header .wordmark-mark-corporate img");
+    await expect(directionMark).toHaveCount(1);
+    await expect(directionMark).toHaveAttribute("src", logoSrc);
+    await expect(page.locator(".site-header .hermes-connect-header-launcher")).toHaveCount(0);
+    await expect(page.locator(".site-header [data-hermes-products]")).toHaveCount(1);
+  }
+
+  await page.goto("/paths/technology/");
+  await expect(page.locator('.desktop-nav a[href="/paths/technology/"]')).toHaveText("Technology");
+
+  await page.goto("/services/hermes-connect/");
   await expect(page.locator(".site-header .wordmark-mark-corporate")).toHaveCount(0);
+  await expect(page.locator(".site-header .hermes-connect-header-launcher")).toHaveCount(1);
 });
 
 test("Approved H v1.1 crossbar follows the left upright and remains in correct paint order", async ({ page }) => {
@@ -27,7 +39,6 @@ test("Approved H v1.1 crossbar follows the left upright and remains in correct p
   expect(blue).toBeGreaterThan(0);
   expect(green).toBeGreaterThan(blue);
   expect(coral).toBeGreaterThan(green);
-  // Owner approved shaped left crossbar edge, flush with the bowed blue upright.
   expect(svg).toContain('Q22.725,50 22.875,42');
 });
 
