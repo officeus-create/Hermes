@@ -117,8 +117,8 @@ test("Home navigation stays fixed while scrolling past the four directions to Co
 });
 
 
-test("Home and Directions keep the same primary header position and width", async ({ page }) => {
-  await page.setViewportSize({ width: 1440, height: 900 });
+test("Home and Directions keep the same primary header position and width", async ({ page, isMobile }) => {
+  await page.setViewportSize({ width: isMobile ? 390 : 1440, height: isMobile ? 844 : 900 });
   const geometry: Array<{ path: string; top: number; left: number; width: number }> = [];
   for (const path of ["/", "/paths/logistics/"]) {
     await page.goto(path);
@@ -133,7 +133,8 @@ test("Home and Directions keep the same primary header position and width", asyn
   expect(Math.abs(geometry[0].width - geometry[1].width)).toBeLessThanOrEqual(1);
 });
 
-test("desktop Products unfolds downward and stays visible on Home and Directions", async ({ page }) => {
+test("desktop Products unfolds downward and stays visible on Home and Directions", async ({ page, isMobile }) => {
+  test.skip(isMobile, "Desktop Products geometry is covered in the desktop browser context.");
   await page.setViewportSize({ width: 1440, height: 900 });
   for (const path of ["/", "/paths/logistics/"]) {
     await page.goto(path);
