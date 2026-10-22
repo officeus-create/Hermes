@@ -306,6 +306,7 @@ export const site = {
     { label: "Instagram", href: "https://www.instagram.com/hermes.logistics/" },
     { label: "Threads", href: "https://www.threads.com/@hermes.logistics" },
     { label: "Telegram", href: "https://t.me/+R-GepRJDbEQ1NjVi" },
+    { label: "Facebook", href: "https://www.facebook.com/profile.php?id=61558767681287" },
   ],
   claimRegister: [
     { claim: "Hermes operates as a multi-division business ecosystem", status: "VERIFIED_INTERNAL" as ClaimStatus },
