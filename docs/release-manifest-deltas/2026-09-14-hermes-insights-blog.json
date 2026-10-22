@@ -2,7 +2,7 @@
   "schema_version": 1,
   "base_manifest": "docs/release-manifest-2026-08-01.json",
   "release_delta": "2026-09-14-hermes-insights-blog",
-  "generated_at": "2026-09-23T12:00:00+00:00",
+  "generated_at": "2026-10-23T12:00:00+00:00",
   "status": "PENDING_PRODUCTION_DEPLOYMENT",
   "additions": [
     {
@@ -16,20 +16,378 @@
       "status": "COMPLETE",
       "blocker": null,
       "response_status": 200,
-      "comparison": {"production": "pending_deployment", "immutable_release": "missing"}
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
     },
     {
-      "route": "/insights/logistics/diesel-price-route-planning-september-2026/",
+      "route": "/insights/marketing/us-service-business-search-discovery-checklist/",
       "source_state": "current_main",
       "indexability": "indexable",
       "robots": "index,follow,max-image-preview:large",
-      "canonical": "https://hermeslogisticsus.com/insights/logistics/diesel-price-route-planning-september-2026/",
+      "canonical": "https://hermeslogisticsus.com/insights/marketing/us-service-business-search-discovery-checklist/",
       "sitemap_owner": "public/sitemap-insights.xml",
       "source_file": "src/pages/insights/[direction]/[slug].astro",
       "status": "COMPLETE",
       "blocker": null,
       "response_status": 200,
-      "comparison": {"production": "pending_deployment", "immutable_release": "missing"}
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/insights/academy/academy-international-roadmap-where-we-train/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/insights/academy/academy-international-roadmap-where-we-train/",
+      "sitemap_owner": "public/sitemap-insights.xml",
+      "source_file": "src/pages/insights/[direction]/[slug].astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/insights/academy/building-an-ai-assistant-as-a-learning-lab/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/insights/academy/building-an-ai-assistant-as-a-learning-lab/",
+      "sitemap_owner": "public/sitemap-insights.xml",
+      "source_file": "src/pages/insights/[direction]/[slug].astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/insights/technology/custom-ai-automation-business-systems-project-brief/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/insights/technology/custom-ai-automation-business-systems-project-brief/",
+      "sitemap_owner": "public/sitemap-insights.xml",
+      "source_file": "src/pages/insights/[direction]/[slug].astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/insights/logistics/find-your-logistics-path-clear-freight-operations/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/insights/logistics/find-your-logistics-path-clear-freight-operations/",
+      "sitemap_owner": "public/sitemap-insights.xml",
+      "source_file": "src/pages/insights/[direction]/[slug].astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/insights/technology/five-ways-custom-system-makes-work-visible/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/insights/technology/five-ways-custom-system-makes-work-visible/",
+      "sitemap_owner": "public/sitemap-insights.xml",
+      "source_file": "src/pages/insights/[direction]/[slug].astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/insights/technology/home-redesign-four-live-video-windows/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/insights/technology/home-redesign-four-live-video-windows/",
+      "sitemap_owner": "public/sitemap-insights.xml",
+      "source_file": "src/pages/insights/[direction]/[slug].astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/insights/technology/how-the-hermes-website-was-built/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/insights/technology/how-the-hermes-website-was-built/",
+      "sitemap_owner": "public/sitemap-insights.xml",
+      "source_file": "src/pages/insights/[direction]/[slug].astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/insights/academy/inside-the-correction-loop-attempt-feedback-retry/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/insights/academy/inside-the-correction-loop-attempt-feedback-retry/",
+      "sitemap_owner": "public/sitemap-insights.xml",
+      "source_file": "src/pages/insights/[direction]/[slug].astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/insights/academy/learn-skills-real-business-work-academy-path/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/insights/academy/learn-skills-real-business-work-academy-path/",
+      "sitemap_owner": "public/sitemap-insights.xml",
+      "source_file": "src/pages/insights/[direction]/[slug].astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/insights/logistics/load-board-live-freight-vs-previews/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/insights/logistics/load-board-live-freight-vs-previews/",
+      "sitemap_owner": "public/sitemap-insights.xml",
+      "source_file": "src/pages/insights/[direction]/[slug].astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/insights/logistics/logistics-page-refresh-dispatch-load-board/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/insights/logistics/logistics-page-refresh-dispatch-load-board/",
+      "sitemap_owner": "public/sitemap-insights.xml",
+      "source_file": "src/pages/insights/[direction]/[slug].astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/insights/logistics/logistics-review-request-to-handoff/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/insights/logistics/logistics-review-request-to-handoff/",
+      "sitemap_owner": "public/sitemap-insights.xml",
+      "source_file": "src/pages/insights/[direction]/[slug].astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/insights/marketing/logistics-seo-what-shippers-and-dealers-look-for/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/insights/marketing/logistics-seo-what-shippers-and-dealers-look-for/",
+      "sitemap_owner": "public/sitemap-insights.xml",
+      "source_file": "src/pages/insights/[direction]/[slug].astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/insights/marketing/one-signal-carried-to-learning-growth-path/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/insights/marketing/one-signal-carried-to-learning-growth-path/",
+      "sitemap_owner": "public/sitemap-insights.xml",
+      "source_file": "src/pages/insights/[direction]/[slug].astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/insights/marketing/real-work-footage-instead-of-abstract-ai-artwork/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/insights/marketing/real-work-footage-instead-of-abstract-ai-artwork/",
+      "sitemap_owner": "public/sitemap-insights.xml",
+      "source_file": "src/pages/insights/[direction]/[slug].astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/insights/technology/repair-shops-first-hermes-connect-pilot/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/insights/technology/repair-shops-first-hermes-connect-pilot/",
+      "sitemap_owner": "public/sitemap-insights.xml",
+      "source_file": "src/pages/insights/[direction]/[slug].astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/insights/marketing/repeatable-growth-system-marketing-brief/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/insights/marketing/repeatable-growth-system-marketing-brief/",
+      "sitemap_owner": "public/sitemap-insights.xml",
+      "source_file": "src/pages/insights/[direction]/[slug].astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/insights/logistics/why-hermes-logistics-started-wisconsin-first/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/insights/logistics/why-hermes-logistics-started-wisconsin-first/",
+      "sitemap_owner": "public/sitemap-insights.xml",
+      "source_file": "src/pages/insights/[direction]/[slug].astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/insights/marketing/why-we-built-the-website-before-the-campaign/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/insights/marketing/why-we-built-the-website-before-the-campaign/",
+      "sitemap_owner": "public/sitemap-insights.xml",
+      "source_file": "src/pages/insights/[direction]/[slug].astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/insights/technology/i-am-vision/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/insights/technology/i-am-vision/",
+      "sitemap_owner": "public/sitemap-insights.xml",
+      "source_file": "src/pages/insights/[direction]/[slug].astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/insights/marketing/mzm-junk-removal-real-job-evidence-local-seo/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/insights/marketing/mzm-junk-removal-real-job-evidence-local-seo/",
+      "sitemap_owner": "public/sitemap-insights.xml",
+      "source_file": "src/pages/insights/[direction]/[slug].astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/insights/marketing/organic-social-before-paid-ads-meta-learning/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/insights/marketing/organic-social-before-paid-ads-meta-learning/",
+      "sitemap_owner": "public/sitemap-insights.xml",
+      "source_file": "src/pages/insights/[direction]/[slug].astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
     },
     {
       "route": "/insights/marketing/cloudflare-disallow-ai-training-search-visibility-september-2026/",
@@ -42,20 +400,10 @@
       "status": "COMPLETE",
       "blocker": null,
       "response_status": 200,
-      "comparison": {"production": "pending_deployment", "immutable_release": "missing"}
-    },
-    {
-      "route": "/insights/logistics/dry-van-spot-rates-september-2026/",
-      "source_state": "current_main",
-      "indexability": "indexable",
-      "robots": "index,follow,max-image-preview:large",
-      "canonical": "https://hermeslogisticsus.com/insights/logistics/dry-van-spot-rates-september-2026/",
-      "sitemap_owner": "public/sitemap-insights.xml",
-      "source_file": "src/pages/insights/[direction]/[slug].astro",
-      "status": "COMPLETE",
-      "blocker": null,
-      "response_status": 200,
-      "comparison": {"production": "pending_deployment", "immutable_release": "missing"}
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
     },
     {
       "route": "/insights/logistics/fmcsa-fuel-hours-of-service-waiver-september-2026/",
@@ -68,7 +416,10 @@
       "status": "COMPLETE",
       "blocker": null,
       "response_status": 200,
-      "comparison": {"production": "pending_deployment", "immutable_release": "missing"}
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
     },
     {
       "route": "/insights/marketing/meta-one-business-creator-tools-september-2026/",
@@ -81,12 +432,47 @@
       "status": "COMPLETE",
       "blocker": null,
       "response_status": 200,
-      "comparison": {"production": "pending_deployment", "immutable_release": "missing"}
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/insights/logistics/diesel-price-route-planning-september-2026/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/insights/logistics/diesel-price-route-planning-september-2026/",
+      "sitemap_owner": "public/sitemap-insights.xml",
+      "source_file": "src/pages/insights/[direction]/[slug].astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/insights/logistics/dry-van-spot-rates-september-2026/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/insights/logistics/dry-van-spot-rates-september-2026/",
+      "sitemap_owner": "public/sitemap-insights.xml",
+      "source_file": "src/pages/insights/[direction]/[slug].astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
     }
   ],
   "acceptance": {
-    "route_count_added": 6,
-    "indexable_route_count_added": 6,
+    "route_count_added": 29,
+    "indexable_route_count_added": 29,
     "requires_green_current_head_ci": true,
     "requires_production_snapshot_reconciliation_after_deploy": true
   }
