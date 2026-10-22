@@ -42,22 +42,100 @@ const directContactTitle = {
   academy: "Ask about the right Academy path.",
   technology: "Discuss the system you want to build.",
 }[path.id] ?? "Reach the relevant team.";
+
+const directionHero = {
+  logistics: {
+    accent: "var(--dir-logistics)",
+    tone: "#132a47",
+    detail: "Car hauling · dealers · shippers · carriers",
+    video: "/media/home/logistics-golden-v1-540.mp4",
+    poster: "/images/logistics-living/car-hauler-512.webp",
+  },
+  technology: {
+    accent: "var(--dir-technology)",
+    tone: "#0a2a3e",
+    detail: "CRM systems · websites · IT development",
+    video: "/media/home/technology-claude-v3.mp4",
+    poster: "/media/home/technology-claude-v3-poster.jpg",
+  },
+  academy: {
+    accent: "var(--dir-academy)",
+    tone: "#0a3328",
+    detail: "U.S. logistics · sales · marketing · operations",
+    video: "/media/home/academy-claude-v3.mp4",
+    poster: "/media/home/academy-claude-v3-poster.jpg",
+  },
+  marketing: {
+    accent: "var(--dir-marketing)",
+    tone: "#3b1e16",
+    detail: "Websites · SMM · SEO/GEO · customer acquisition",
+    video: "/media/home/marketing-team-v1.mp4",
+    poster: "/media/home/marketing-team-poster.jpg",
+  },
+}[path.id] ?? {
+  accent: "var(--dir-logistics)",
+  tone: "#132a47",
+  detail: path.category,
+  video: "/media/home/logistics-golden-v1-540.mp4",
+  poster: path.image,
+};
+
+const directionSectionLinks = [
+  { label: "Overview", href: "#direction-overview" },
+  { label: "Work", href: "#direction-work" },
+  { label: "Contact", href: "#direction-contact" },
+];
 ---
 
 <main id="main-content" class={`detail-page detail-page-${path.id}`}>
-  <section class="detail-hero" id="top" data-motion-hero>
-    <img class="detail-hero-media" src={path.image} alt={path.imageAlt} width="1400" height="1050" decoding="async" fetchpriority="high" loading="eager" />
-    <div class="detail-hero-shade"></div>
-    <div class="shell detail-hero-content">
-      <a class="detail-back" href="/#paths"><ArrowLeft size={18} aria-hidden="true" />All directions</a>
-      <p class="eyebrow hero-eyebrow">{path.number} · {path.category}</p>
-      <h1>{path.title}</h1>
-      <p>{path.audience}</p>
-      <a class="button button-primary" href={primaryCtaHref}>{primaryCtaLabel}<ArrowRight size={18} aria-hidden="true" /></a>
-      {isAcademy && <p class="detail-hero-next">Next: choose a learning track and try one public exercise before you decide whether to apply.</p>}
+  <section
+    class="detail-hero detail-hero-approved"
+    id="top"
+    data-motion-hero
+    data-direction-video-stage
+    data-media-state="poster"
+    style={`--direction-accent:${directionHero.accent};--direction-tone:${directionHero.tone}`}
+  >
+    <div class="shell detail-direction-subnav" aria-label={`${path.category} page sections`}>
+      <a class="detail-back" href="/#paths"><ArrowLeft size={17} aria-hidden="true" />All directions</a>
+      <span aria-current="page">{path.category}</span>
+      <nav aria-label={`${path.category} sections`}>
+        {directionSectionLinks.map((item) => <a href={item.href}>{item.label}</a>)}
+      </nav>
+    </div>
+    <div class="shell detail-hero-approved-grid">
+      <div class="detail-hero-approved-copy">
+        <p class="eyebrow hero-eyebrow">{path.number} · {path.category}</p>
+        <h1>{path.title}</h1>
+        <p>{path.audience}</p>
+        <a class="button button-primary" href={primaryCtaHref}>{primaryCtaLabel}<ArrowRight size={18} aria-hidden="true" /></a>
+        {isAcademy && <p class="detail-hero-next">Next: choose a learning track and try one public exercise before you decide whether to apply.</p>}
+      </div>
+      <figure class="detail-hero-window">
+        <span class="detail-hero-window-media">
+          <img src={directionHero.poster} alt={path.imageAlt} width="540" height="960" decoding="async" fetchpriority="high" loading="eager" />
+          <video
+            data-direction-video
+            muted
+            loop
+            playsinline
+            preload="none"
+            poster={directionHero.poster}
+            aria-hidden="true"
+            tabindex="-1"
+          >
+            <source data-direction-video-source data-src={directionHero.video} type="video/mp4" />
+          </video>
+        </span>
+        <figcaption>
+          <small><i aria-hidden="true"></i>{path.category}</small>
+          <strong>{directionHero.detail}</strong>
+        </figcaption>
+      </figure>
     </div>
   </section>
 
+  <span id="direction-work" class="detail-anchor" aria-hidden="true"></span>
   {isLogistics && <LogisticsSpatialOperations />}
   {path.id === "marketing" && <MarketingGrowthFlow />}
   {path.id === "technology" && <TechnologyBuildPulse />}
@@ -66,7 +144,7 @@ const directContactTitle = {
   {isLogistics && <LogisticsAudienceHub />}
   {isLogistics && <HermesPathEngine />}
 
-  <section class="section detail-overview">
+  <section class="section detail-overview" id="direction-overview">
     <div class="shell detail-intro" data-reveal>
       <p class="eyebrow">The direction</p>
       <h2>A practical starting point.</h2>
@@ -217,7 +295,7 @@ const directContactTitle = {
   }
 
   {path.directContacts && (
-    <section class="section logistics-contacts" aria-labelledby="direct-contact-title">
+    <section class="section logistics-contacts" id="direction-contact" aria-labelledby="direct-contact-title">
       <div class="shell">
         <div class="section-heading" data-reveal><p class="eyebrow">Direct contacts</p><h2 id="direct-contact-title">{directContactTitle}</h2></div>
         <div class="direct-contact-grid" data-reveal>
@@ -249,3 +327,194 @@ const directContactTitle = {
     </section>
   )}
 </main>
+
+<script>
+  const directionStage = document.querySelector<HTMLElement>("[data-direction-video-stage]");
+  const directionVideo = directionStage?.querySelector<HTMLVideoElement>("[data-direction-video]");
+  const directionSource = directionVideo?.querySelector<HTMLSourceElement>("[data-direction-video-source]");
+  if (directionStage && directionVideo && directionSource) {
+    const reduced = matchMedia("(prefers-reduced-motion: reduce)");
+    const connection = (navigator as Navigator & {
+      connection?: { saveData?: boolean; addEventListener?: (type: string, callback: () => void) => void }
+    }).connection;
+    let visible = false;
+    let attached = false;
+    const sync = () => {
+      const posterOnly = reduced.matches || Boolean(connection?.saveData);
+      if (posterOnly || !visible || document.hidden) {
+        directionVideo.pause();
+        directionStage.dataset.mediaState = "poster";
+        return;
+      }
+      if (!attached) {
+        const src = directionSource.dataset.src;
+        if (!src || !/^\/media\/home\/[a-z0-9-]+\.mp4$/.test(src)) return;
+        directionSource.src = src;
+        attached = true;
+        directionVideo.load();
+      }
+      void directionVideo.play().catch(() => {
+        directionStage.dataset.mediaState = "poster";
+      });
+    };
+    directionVideo.addEventListener("playing", () => { directionStage.dataset.mediaState = "ready"; });
+    directionVideo.addEventListener("error", () => {
+      directionStage.dataset.mediaState = "poster";
+      directionVideo.pause();
+    });
+    document.addEventListener("visibilitychange", sync);
+    reduced.addEventListener?.("change", sync);
+    connection?.addEventListener?.("change", sync);
+    if ("IntersectionObserver" in window) {
+      new IntersectionObserver((entries) => {
+        visible = entries.some((entry) => entry.isIntersecting && entry.intersectionRatio >= .12);
+        sync();
+      }, { threshold: [0, .12, .45] }).observe(directionStage);
+    } else {
+      visible = true;
+      sync();
+    }
+  }
+</script>
+
+<style>
+  .detail-anchor{display:block;scroll-margin-top:9rem}
+  .detail-hero-approved{
+    min-height:auto;
+    display:block;
+    padding:7.6rem 0 clamp(4rem,7vw,6.8rem);
+    background:#f7f6f3;
+    color:#111318;
+    overflow:clip;
+  }
+  .detail-direction-subnav{
+    display:flex;
+    align-items:center;
+    gap:1rem;
+    min-height:48px;
+    padding:.4rem .6rem .85rem;
+    border-bottom:1px solid #dfe2e7;
+  }
+  .detail-direction-subnav .detail-back{
+    margin:0 auto 0 0;
+    color:#495162;
+    font-size:.78rem;
+  }
+  .detail-direction-subnav>span{
+    display:inline-flex;
+    align-items:center;
+    gap:.55rem;
+    color:#111318;
+    font:750 .76rem/1.2 var(--font-body);
+  }
+  .detail-direction-subnav>span::before{
+    content:"";
+    width:5px;
+    height:16px;
+    border-radius:3px;
+    background:var(--direction-accent);
+  }
+  .detail-direction-subnav nav{display:flex;gap:.25rem;align-items:center}
+  .detail-direction-subnav nav a{
+    min-height:40px;
+    display:inline-flex;
+    align-items:center;
+    padding:0 .8rem;
+    border-radius:999px;
+    color:#59606b;
+    text-decoration:none;
+    font:700 .72rem/1 var(--font-body);
+  }
+  .detail-direction-subnav nav a:is(:hover,:focus-visible){background:#fff;color:#0a164f;outline:none;box-shadow:0 0 0 1px #dfe2e7}
+  .detail-hero-approved-grid{
+    display:grid;
+    grid-template-columns:minmax(0,1.12fr) minmax(300px,.72fr);
+    gap:clamp(2rem,6vw,6rem);
+    align-items:center;
+    padding-top:clamp(2.2rem,4vw,4rem);
+  }
+  .detail-hero-approved-copy{display:grid;justify-items:start;align-content:center}
+  .detail-hero-approved .hero-eyebrow{color:#59606b}
+  .detail-hero-approved h1{
+    max-width:13ch;
+    margin:.45rem 0 1.25rem;
+    color:#111318;
+    font-size:clamp(3.2rem,6.2vw,6.6rem);
+    line-height:.94;
+    letter-spacing:-.065em;
+  }
+  .detail-hero-approved-copy>p:not(.eyebrow):not(.detail-hero-next){
+    max-width:58ch;
+    margin:0 0 1.8rem;
+    color:#59606b;
+    font-size:clamp(1rem,1.25vw,1.18rem);
+    line-height:1.62;
+  }
+  .detail-hero-approved .button-primary{background:#0a164f;color:#fff;box-shadow:none}
+  .detail-hero-approved .button-primary:is(:hover,:focus-visible){background:#173271}
+  .detail-hero-next{max-width:58ch;margin:1rem 0 0;color:#667080;font-size:.82rem;line-height:1.5}
+  .detail-hero-window{
+    position:relative;
+    justify-self:end;
+    width:min(100%,430px);
+    aspect-ratio:267/568;
+    margin:0;
+    overflow:hidden;
+    border:1px solid rgba(17,19,24,.12);
+    border-radius:34px;
+    background:var(--direction-tone);
+    box-shadow:0 24px 70px rgba(17,19,24,.14);
+  }
+  .detail-hero-window-media{position:absolute;inset:0 0 34%;overflow:hidden;background:var(--direction-tone)}
+  .detail-hero-window-media img,.detail-hero-window-media video{
+    position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;
+  }
+  .detail-hero-window-media img{z-index:0}
+  .detail-hero-window-media video{z-index:1;opacity:0;transition:opacity .45s ease}
+  [data-direction-video-stage][data-media-state="ready"] .detail-hero-window-media video{opacity:1}
+  .detail-hero-window::after{
+    content:"";
+    position:absolute;
+    inset:56% 0 0;
+    background:linear-gradient(180deg,transparent,var(--direction-tone) 32%,var(--direction-tone));
+    pointer-events:none;
+  }
+  .detail-hero-window figcaption{
+    position:absolute;
+    z-index:3;
+    right:clamp(1.25rem,3vw,2rem);
+    bottom:clamp(1.25rem,3vw,2rem);
+    left:clamp(1.25rem,3vw,2rem);
+    display:grid;
+    gap:.55rem;
+    color:#fff;
+  }
+  .detail-hero-window figcaption small{
+    display:flex;align-items:center;gap:.65rem;
+    font:800 .7rem/1.2 var(--font-body);
+    letter-spacing:.13em;text-transform:uppercase;
+  }
+  .detail-hero-window figcaption small i{width:5px;height:18px;border-radius:3px;background:var(--direction-accent)}
+  .detail-hero-window figcaption strong{max-width:26ch;font:650 .96rem/1.42 var(--font-body)}
+  @media(max-width:900px){
+    .detail-hero-approved{padding-top:6.6rem}
+    .detail-direction-subnav{overflow-x:auto;scrollbar-width:none}
+    .detail-direction-subnav::-webkit-scrollbar{display:none}
+    .detail-direction-subnav>span{white-space:nowrap}
+    .detail-direction-subnav nav{white-space:nowrap}
+    .detail-hero-approved-grid{grid-template-columns:1fr;gap:2rem}
+    .detail-hero-window{justify-self:start;width:min(100%,520px);aspect-ratio:4/5}
+  }
+  @media(max-width:430px){
+    .detail-hero-approved{padding-top:6rem}
+    .detail-direction-subnav{width:calc(100% - 24px);gap:.6rem;padding-inline:0}
+    .detail-direction-subnav .detail-back{font-size:.7rem}
+    .detail-direction-subnav nav a{padding:0 .6rem;font-size:.68rem}
+    .detail-hero-approved-grid{width:calc(100% - 24px);padding-top:2rem}
+    .detail-hero-approved h1{font-size:clamp(2.7rem,13vw,4.2rem)}
+    .detail-hero-window{width:100%;border-radius:26px}
+  }
+  @media(prefers-reduced-motion:reduce){
+    .detail-hero-window-media video{display:none!important;transition:none!important}
+  }
+</style>
