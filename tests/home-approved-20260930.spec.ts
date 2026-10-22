@@ -114,21 +114,22 @@ test('approved portals stay usable without JavaScript and honor reduced motion',
  const page=await context.newPage();
  await page.goto('/');
  await expect(page.getByRole('navigation',{name:'Hermes operating directions'})).toBeVisible();
- const explainers=page.locator('[data-home-explainer]');
- await expect(explainers).toHaveCount(4);
+ await expect(page.locator('[data-home-explainer]')).toHaveCount(0);
+ await expect(page.locator('[data-home-marketing-journey]')).toHaveCount(0);
+ await expect(page.locator('[data-home-pillar-proof]')).toHaveCount(0);
  for (const [direction, labels] of Object.entries(homeFlows)) {
-  const explainer=page.locator(`[data-home-explainer="${direction}"]`);
-  for (const label of labels) await expect(explainer).toContainText(label);
+  const route=page.locator(`[data-route-id="${direction}"]`);
+  await expect(route).toBeVisible();
+  const accessibleName=(await route.getAttribute('aria-label')||'').toLowerCase();
+  expect(accessibleName).toContain('example flow:');
+  for(const label of labels) expect(accessibleName).toContain(label.toLowerCase());
   if(direction==='marketing') {
-   await expect(page.locator('[data-home-marketing-journey]')).toBeHidden();
-   await expect(page.locator('[data-home-marketing-cinematic] img')).toBeVisible();
-   await expect(page.locator('[data-home-marketing-video] source')).not.toHaveAttribute('src',/.+/);
-   await expect(explainer).toHaveCSS('display','none'); // pure scene, no overlaid workflow
+   await expect(route.locator('[data-home-marketing-cinematic] img')).toBeVisible();
+   await expect(route.locator('[data-home-marketing-video] source')).not.toHaveAttribute('src',/.+/);
   } else if(direction==='logistics') {
-   await expect(page.locator('[data-home-logistics-scene-image]')).toBeVisible();
-   await expect(explainer).toHaveCSS('display','none'); // cinematic field stays free of HUD
+   await expect(route.locator('[data-home-logistics-scene-image]')).toBeVisible();
   } else {
-   await expect(explainer).toHaveCSS('opacity','1');
+   await expect(route.locator('.home-portal-art img')).toBeVisible();
   }
  }
  expect(await page.locator('.home-portal-art img').first().evaluate(n=>getComputedStyle(n).transitionDuration)).toBe('0s');
@@ -201,31 +202,22 @@ test('Home Logistics displays one integrated truck scene without a duplicate flo
  await expect(route.locator('[data-home-logistics-scene-image]')).toBeVisible();
 });
 
-test('all four Home directions keep accessible workflows behind quiet visual portals on touch',async({browser,page},testInfo)=>{
+test('all four Home directions keep accessible workflow meaning without legacy overlay DOM',async({browser,page},testInfo)=>{
  await page.emulateMedia({reducedMotion:'no-preference'});
  await page.setViewportSize({width:1440,height:1000});
  await page.goto('/');
- const hoverCapable=await page.evaluate(()=>matchMedia('(hover:hover) and (pointer:fine)').matches);
+ await expect(page.locator('[data-home-explainer]')).toHaveCount(0);
+ await expect(page.locator('[data-home-marketing-journey]')).toHaveCount(0);
+ await expect(page.locator('[data-home-pillar-proof]')).toHaveCount(0);
  for (const [direction, labels] of Object.entries(homeFlows)) {
   const route=page.locator(`[data-route-id="${direction}"]`);
-  const explainer=route.locator(`[data-home-explainer="${direction}"]`);
-  if(hoverCapable) {
-   await expect(explainer).toHaveCSS('opacity','0');
-   await route.hover();
-  }
   if(direction==='marketing') {
-   await expect(explainer).toHaveCSS('display','none');
    await expect(route.locator('[data-home-marketing-cinematic]')).toBeVisible();
-   await expect(route.locator('[data-home-marketing-journey]')).toBeHidden();
   } else if(direction==='logistics') {
-   await expect(explainer).toHaveCSS('display','none');
    await expect(route.locator('[data-home-logistics-scene-image]')).toBeVisible();
    await expect(route.locator('.home-road-flow')).toHaveCount(0);
   } else {
-   // Claude Home v3 uses real art, not tiny demo dashboards over the portal.
-   await expect(explainer).toHaveCSS('display','none');
    await expect(route.locator('.home-portal-art img')).toBeVisible();
-   await expect(route.locator('[data-home-pillar-proof]')).toBeHidden();
   }
   const accessibleName=(await route.getAttribute('aria-label')||'').toLowerCase();
   expect(accessibleName).toContain('example flow:');
@@ -235,30 +227,18 @@ test('all four Home directions keep accessible workflows behind quiet visual por
  const touch=await browser.newContext({baseURL:testInfo.project.use.baseURL,viewport:{width:390,height:844},hasTouch:true,isMobile:true,reducedMotion:'no-preference'});
  const mobile=await touch.newPage();
  await mobile.goto('/');
+ await expect(mobile.locator('[data-home-explainer], [data-home-marketing-journey], [data-home-pillar-proof]')).toHaveCount(0);
  for (const [direction, labels] of Object.entries(homeFlows)) {
-  const mobileExplainer=mobile.locator(`[data-home-explainer="${direction}"]`);
-  if(direction==='marketing') {
-   await expect(mobileExplainer).toHaveCSS('display','none');
-   await expect(mobile.locator('[data-home-marketing-cinematic]')).toBeVisible();
-   await expect(mobile.locator('[data-home-marketing-journey]')).toBeHidden();
-  } else if(direction==='logistics') {
-   await expect(mobileExplainer).toHaveCSS('display','none');
-   await expect(mobile.locator('[data-home-logistics-scene-image]')).toBeVisible();
-  } else {
-   await expect(mobileExplainer).toHaveCSS('display','none');
-   const route=mobile.locator(`[data-route-id="${direction}"]`);
-   await expect(route.locator('.home-portal-art img')).toBeVisible();
-   await expect(route.locator('[data-home-pillar-proof]')).toBeHidden();
-   await expect(route.locator('.home-master-route-copy strong')).toBeVisible();
-  }
-  for (const label of labels) await expect(mobileExplainer).toContainText(label);
+  const route=mobile.locator(`[data-route-id="${direction}"]`);
+  await expect(route.locator('.home-master-route-copy strong')).toBeVisible();
+  const accessibleName=(await route.getAttribute('aria-label')||'').toLowerCase();
+  for(const label of labels) expect(accessibleName).toContain(label.toLowerCase());
  }
  const visibleTitleSizes=await mobile.locator('.home-master-route-copy strong').evaluateAll(nodes=>nodes.map(node=>parseFloat(getComputedStyle(node).fontSize)));
  expect(Math.min(...visibleTitleSizes)).toBeGreaterThanOrEqual(20);
  expect(await mobile.evaluate(()=>document.documentElement.scrollWidth>innerWidth)).toBe(false);
  await touch.close();
 });
-
 
 test('Home Logistics keeps a camera-locked mobile environment across weather states',async({page})=>{
  await page.emulateMedia({reducedMotion:'no-preference'});
@@ -336,40 +316,21 @@ test('Home Logistics carries six owned equipment and weather states without chan
  await reduced.close();
 });
 
-test('Home uses a quiet corporate shell and purposeful direction scenes',async({browser,page},testInfo)=>{
+test('Home uses a quiet corporate shell with cinematic direction scenes and no retired mock HUDs',async({browser,page},testInfo)=>{
  await page.setViewportSize({width:1440,height:1000});
  await page.goto('/');
  await expect(page.locator('.home-master')).toHaveCSS('background-color','rgb(247, 246, 243)');
- await expect(page.locator('[data-home-pillar-proof="attention"]')).toHaveCount(1);
- await expect(page.locator('[data-home-explainer="marketing"]')).toContainText('Content + news');
- await expect(page.locator('[data-home-explainer="marketing"]')).toContainText('Search + social');
- await expect(page.locator('[data-home-explainer="marketing"]')).toContainText('CRM evidence');
- await expect(page.locator('.home-marketing-channels')).toContainText('Threads');
- await expect(page.locator('.home-marketing-channels')).toContainText('IG');
- await expect(page.locator('.home-marketing-channels')).toContainText('FB');
- await expect(page.locator('.home-marketing-channels')).toContainText('TG');
- const technologyProof=page.locator('[data-home-pillar-proof="systems"]');
- await expect(technologyProof).toHaveCount(1);
- await expect(technologyProof).toContainText('REAL PRODUCT UI');
- await expect(technologyProof).toContainText('HERMES CONNECT');
- await expect(technologyProof).toContainText('SHOP OWNER WORKSPACE');
- await expect(technologyProof).toContainText('WEBSITE DELIVERY');
- await expect(technologyProof).toContainText('SEMANTIC BUILD');
- await expect(technologyProof).toContainText('SOCIAL STUDIO');
- await expect(technologyProof).toContainText('OWNER AUTHORIZATION');
- await expect(technologyProof).toContainText('QA + READBACK');
- await expect(technologyProof).toContainText('RELEASE EVIDENCE');
- await expect(page.locator('[data-home-explainer="technology"]')).toContainText('QA readback');
- const academyProof=page.locator('[data-home-pillar-proof="progress"]');
- await expect(academyProof).toContainText('TASK');
- await expect(academyProof).toContainText('PRACTICE');
- await expect(academyProof).toContainText('FEEDBACK');
- await expect(academyProof).toContainText('NEXT STEP');
- await expect(page.locator('.home-academy-book-page')).toHaveCount(0);
- await expect(page.locator('.home-academy-leaf-shadow')).toHaveCount(1);
- await expect(page.locator('.home-academy-sunlight')).toHaveCount(1);
- await expect(technologyProof).toHaveAttribute('data-home-living-motion','');
- await expect(academyProof).toHaveAttribute('data-home-living-motion','');
+ await expect(page.locator('[data-home-explainer]')).toHaveCount(0);
+ await expect(page.locator('[data-home-marketing-journey]')).toHaveCount(0);
+ await expect(page.locator('[data-home-pillar-proof]')).toHaveCount(0);
+ await expect(page.locator('.home-marketing-channels,.home-system-display,.home-academy-living')).toHaveCount(0);
+ for(const id of ['logistics','technology','academy','marketing']) {
+  const route=page.locator(`[data-route-id="${id}"]`);
+  await expect(route).toBeVisible();
+  if(id==='logistics') await expect(route.locator('[data-home-cinematic-slot="logistics"]')).toHaveCount(1);
+  else if(id==='marketing') await expect(route.locator('[data-home-marketing-cinematic]')).toHaveCount(1);
+  else await expect(route.locator('[data-home-progressive-cinematic]')).toHaveCount(1);
+ }
 
  const mobileContext=await browser.newContext({baseURL:testInfo.project.use.baseURL,viewport:{width:390,height:844},reducedMotion:'reduce'});
  const mobile=await mobileContext.newPage();
