@@ -1953,3 +1953,10 @@ ai_name: Codex; role: delegated Academy owner; contribution_type: Implementation
 - News: 5 standalone Insights (4 built from the removed direction headlines/CTAs + 1 on replacing AI artwork); fixed the CTA label in the Logistics refresh article ("Start carrier review").
 - Not done by design: Products direction page (no `/paths/products/` route; Products lives at `/services/hermes-connect/`); header ≤640px keeps the mobile menu button so Sign in/language stay reachable.
 - Tests: build PASS; npm test PASS; 70 affected Playwright specs 723 passed, 10 failed = 5 real-playback tests × 2 projects (container Chromium has no H.264; CI decides).
+
+## 2026-10-22 — Claude Code — Footer Facebook link
+
+- Task: owner supplied the Hermes Facebook page (share link resolves to `https://www.facebook.com/profile.php?id=61558767681287`, page title "hermeslogisticsus.com"); added it to `site.social` with a footer brand icon.
+- Branch: `claude/beautiful-mendel-lknlyq` (restarted from main after #2016 merged).
+- Tests: `npm run build` 0, `npm test` 0; focused Playwright footer/entity/a11y specs pass (only known local H.264 playback specs fail in the container).
+- Next: Organization `sameAs` / `public-entity-registry.ts` not changed — adding Facebook there needs the entity registry + its contract tests updated together.
