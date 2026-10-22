@@ -18,7 +18,7 @@ test("Logistics Golden Scene uses one coherent local visual owner", async ({ pag
   await expect(route.locator("[data-home-logistics-road-plate]")).toHaveCount(0);
   await expect(route.locator("[data-home-logistics-truck-layer]")).toHaveCount(0);
   await expect(route.locator(".home-road-flow")).toHaveCount(0);
-  await expect(route.locator('[data-home-explainer="logistics"]')).toHaveCSS("display", "none");
+  await expect(route.locator('[data-home-explainer]')).toHaveCount(0);
 
   const currentSrc = await scene.evaluate(node => (node as HTMLImageElement).currentSrc);
   expect(currentSrc).toMatch(/^http:\/\/127\.0\.0\.1:\d+\/images\/logistics-living\/[a-z-]+-(512|768|887)\.webp$/);
@@ -90,7 +90,7 @@ test("Logistics keeps the integrated local fallback without JavaScript", async (
     await scene.evaluate(node => (node as HTMLImageElement).decode());
     await expect(scene).toBeVisible();
     await expect(route.locator("[data-home-logistics-road-plate], [data-home-logistics-truck-layer]")).toHaveCount(0);
-    await expect(route.locator('[data-home-explainer="logistics"]')).toHaveCSS("display", "none");
+    await expect(route.locator('[data-home-explainer]')).toHaveCount(0);
     expect(externalRequests).toEqual([]);
   } finally {
     await context.close();
