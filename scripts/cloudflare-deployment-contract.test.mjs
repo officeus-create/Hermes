@@ -207,7 +207,7 @@ assert.match(
   "Production parity must read the public Academy owner back from the real domain.",
 );
 for (const marker of [
-  "Build practical skills across five Hermes Academy tracks.",
+  "What do you want to become?",
   "U.S. Logistics Operations",
   "IT & AI",
   "Sales",
