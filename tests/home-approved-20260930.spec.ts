@@ -42,12 +42,12 @@ for (const width of [390, 430, 768, 1024, 1440]) {
   await expect(page.getByRole('heading',{name:'Four directions.'})).toBeVisible();
   const routes=page.locator('[data-home-route]');
   await expect(routes).toHaveCount(4);
+  await expect(page.locator('.home-master-route-arrow')).toHaveCount(0);
   for(const route of await routes.all()) {
    await expect(route).toBeVisible();
-   expect(await route.evaluate(n=>{
-    const title=n.querySelector('strong')!.getBoundingClientRect();const arrow=n.querySelector('.home-master-route-arrow')!.getBoundingClientRect();
-    return title.left<arrow.right&&title.right>arrow.left&&title.top<arrow.bottom&&title.bottom>arrow.top;
-   })).toBe(false);
+   const title=route.locator('.home-master-route-copy strong');
+   await expect(title).toBeVisible();
+   expect((await title.textContent())?.trim().length).toBeGreaterThan(0);
    const routeId=await route.getAttribute('data-route-id');
    // Logistics owns one coherent local scene. The Golden Scene source-lock
    // test owns cinematic/fallback provenance and prevents split truck layers.
