@@ -117,6 +117,22 @@ test("Home navigation stays fixed while scrolling past the four directions to Co
 });
 
 
+test("Home and Directions keep the same primary header position and width", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  const geometry: Array<{ path: string; top: number; left: number; width: number }> = [];
+  for (const path of ["/", "/paths/logistics/"]) {
+    await page.goto(path);
+    const rect = await page.locator("header.site-header").evaluate((header) => {
+      const box = header.getBoundingClientRect();
+      return { top: box.top, left: box.left, width: box.width };
+    });
+    geometry.push({ path, ...rect });
+  }
+  expect(Math.abs(geometry[0].top - geometry[1].top)).toBeLessThanOrEqual(1);
+  expect(Math.abs(geometry[0].left - geometry[1].left)).toBeLessThanOrEqual(1);
+  expect(Math.abs(geometry[0].width - geometry[1].width)).toBeLessThanOrEqual(1);
+});
+
 test("desktop Products unfolds downward and stays visible on Home and Directions", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   for (const path of ["/", "/paths/logistics/"]) {
