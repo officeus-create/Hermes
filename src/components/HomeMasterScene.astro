@@ -367,7 +367,15 @@ const routeMeta: Record<string, { accent: string; detail: string; searchDetail?:
         void bar.offsetWidth;
         bar.classList.add("home-route-bar-impact");
       }
+      // The same-colour stripe in the header answers too (Claude Design spec).
+      const navStripe = document.querySelector<HTMLElement>(`.desktop-nav [data-nav-tone="${steps[index].route}"]`);
+      navStripe?.classList.remove("is-dot-landing");
+      if (navStripe) {
+        void navStripe.offsetWidth;
+        navStripe.classList.add("is-dot-landing");
+      }
       window.setTimeout(() => {
+        navStripe?.classList.remove("is-dot-landing");
         target.classList.remove("home-dot-impact");
         bar?.classList.remove("home-route-bar-impact");
       }, 620);
@@ -651,18 +659,20 @@ const routeMeta: Record<string, { accent: string; detail: string; searchDetail?:
 .home-legacy-anchor{display:block;scroll-margin-top:6rem}
 .home-master-stage{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;border:1px solid #dfe2e7;border-radius:34px;overflow:hidden;box-shadow:0 20px 54px rgba(17,19,24,.08);scroll-margin-top:6rem;background:#dfe2e7}
 .home-master-route{position:relative;isolation:isolate;aspect-ratio:267/568;min-width:0;display:flex;align-items:end;padding:clamp(18px,2.6vw,40px);text-decoration:none;color:#fff;overflow:hidden;background:#18273d;transition:transform .8s cubic-bezier(.22,1,.36,1),box-shadow .8s cubic-bezier(.22,1,.36,1)}
+@media(prefers-reduced-motion:reduce){.home-master-route{transition:none}.home-master-route::before{transition:none}}
 .home-master-route-logistics{background:#132a47}
 .home-master-route-technology{background:#0a2a3e}
 .home-master-route-academy{background:#0a3328}
 .home-master-route-marketing{background:#3b1e16}
-.home-master-route:is(:hover,:focus-visible){z-index:3;transform:translateY(-8px) scale(1.015);box-shadow:0 26px 58px rgba(10,22,79,.18)}
+@media(hover:hover) and (pointer:fine) and (prefers-reduced-motion:no-preference){.home-master-route:is(:hover,:focus-visible){z-index:3;transform:translateY(-8px) scale(1.015);box-shadow:0 26px 58px rgba(10,22,79,.18)}}
 .home-master-route::before{content:"";position:absolute;z-index:4;left:0;right:0;bottom:0;height:6px;background:var(--route-accent);transform:scaleX(0);transform-origin:center;transition:transform .8s cubic-bezier(.22,1,.36,1);pointer-events:none}
 .home-master-route:is(:hover,:focus-visible)::before{transform:scaleX(1)}
 .home-master-route-logistics{--flow-panel:#0b2139;--flow-kicker:#0b2139;--flow-border:#dff3ff99;--flow-dot:#a9e4ff;--flow-light:#9ed8ff;--flow-line:#d8f4ff;--flow-glow:#51bfff}
 .home-master-route-marketing{--flow-panel:#102c25;--flow-kicker:#102c25;--flow-border:#dfffe999;--flow-dot:#9de7b7;--flow-light:#a9edbf;--flow-line:#dcffe7;--flow-glow:#45ce78}
 .home-master-route-technology{--flow-panel:#3a281e;--flow-kicker:#3a281e;--flow-border:#ffe8c799;--flow-dot:#ffc274;--flow-light:#ffd096;--flow-line:#ffe4b5;--flow-glow:#ff9f4b}
 .home-master-route-academy{--flow-panel:#2d2044;--flow-kicker:#2d2044;--flow-border:#eee0ff99;--flow-dot:#c7a6ff;--flow-light:#d5bdff;--flow-line:#efe3ff;--flow-glow:#a979ff}
-.home-portal-art{position:absolute;z-index:-2;inset:0 0 34%;overflow:hidden}
+.home-portal-art{position:absolute;z-index:-2;inset:0;overflow:hidden}
+@media(min-width:1001px){.home-portal-art{inset:0 0 34%}.home-master-stage{gap:14px;border:0;overflow:visible;box-shadow:none;background:transparent}.home-master-route{border-radius:34px;box-shadow:0 20px 54px rgba(17,19,24,.1)}}
 .home-portal-art picture{display:block;width:100%;height:92%}
 .home-portal-art img{display:block;width:100%;height:100%;object-fit:cover;object-position:center;transition:filter 180ms ease}
 /* Golden-scene contract: one coherent local scene only. No independent road/truck overlays. */

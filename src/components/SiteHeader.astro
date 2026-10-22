@@ -461,19 +461,40 @@ const languageLinks = siteLocales.filter((language) => !isCatalogLocaleRoute || 
     position: absolute;
     left: 0;
     width: 3px;
-    height: 18px;
+    height: 13px;
     border-radius: 999px;
     background: var(--nav-marker, currentColor);
     content: "";
     opacity: .9;
-    transition: height 180ms ease, width 180ms ease, opacity 180ms ease;
+    transform-origin: 50% 100%;
+    transition: opacity 180ms ease;
   }
+  /* Claude Design Home v3: the direction stripe hops on hover (squash → stretch → land). */
   .desktop-nav > a[data-nav-tone]:hover::before,
-  .desktop-nav > a[data-nav-tone]:focus-visible::before,
-  .desktop-nav > a[data-nav-tone][aria-current="page"]::before {
-    width: 5px;
-    height: 26px;
+  .desktop-nav > a[data-nav-tone]:focus-visible::before {
     opacity: 1;
+    animation: hermes-nav-stripe-hop 750ms cubic-bezier(.34,1.56,.64,1);
+  }
+  .desktop-nav > a[data-nav-tone][aria-current="page"]::before { opacity: 1; height: 18px; }
+  /* Home H1 dot landing nudges the same-colour stripe (class toggled by HomeMasterScene). */
+  .desktop-nav > a[data-nav-tone].is-dot-landing::before { animation: hermes-nav-dot-landing 500ms cubic-bezier(.34,1.56,.64,1); }
+  @keyframes hermes-nav-dot-landing {
+    0% { transform: scale(1, 1); }
+    35% { transform: scale(1.5, .65); }
+    70% { transform: scale(.85, 1.25); }
+    100% { transform: scale(1, 1); }
+  }
+  @keyframes hermes-nav-stripe-hop {
+    0% { transform: translateY(0) scale(1, 1); }
+    18% { transform: translateY(0) scale(1.35, .7); }
+    50% { transform: translateY(-7px) scale(.8, 1.45); }
+    82% { transform: translateY(0) scale(1.35, .7); }
+    100% { transform: translateY(0) scale(1, 1); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .desktop-nav > a[data-nav-tone]:hover::before,
+    .desktop-nav > a[data-nav-tone]:focus-visible::before,
+    .desktop-nav > a[data-nav-tone].is-dot-landing::before { animation: none; }
   }
   .desktop-nav [data-nav-tone="logistics"] { --nav-marker: var(--nav-logistics); }
   .desktop-nav [data-nav-tone="marketing"] { --nav-marker: var(--nav-marketing); }
