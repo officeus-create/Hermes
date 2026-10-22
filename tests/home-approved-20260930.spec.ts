@@ -60,7 +60,7 @@ for (const width of [390, 430, 768, 1024, 1440]) {
     await expect(image).toBeVisible();
     await expect(route.locator('[data-home-marketing-cinematic]')).toHaveCount(1);
     await expect(route.locator('[data-home-marketing-video]')).toHaveCount(1);
-    await expect(route.locator('[data-home-marketing-journey]')).toBeHidden();
+    await expect(route.locator('[data-home-marketing-journey]')).toHaveCount(0);
     await expect(image).toHaveAttribute('src','/media/home/marketing-film-v2-poster.jpg');
     await expect.poll(()=>image.evaluate(n=>(n as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
     continue;
