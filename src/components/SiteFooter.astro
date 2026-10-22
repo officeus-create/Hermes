@@ -1,5 +1,5 @@
 ---
-import { ArrowUp, AtSign, Instagram, Mail, Send } from "@lucide/astro";
+import { ArrowUp, AtSign, Mail, Send } from "@lucide/astro";
 import { site } from "../data/site";
 import { localeConfig, type SiteLocale } from "../data/locales";
 import { directionOwnerRoutes } from "../data/localized-direction-owners";
@@ -108,7 +108,7 @@ const localePath = localeConfig[locale].path;
 const privacyHref = locale === "ru" ? "/ru/privacy/" : "/privacy/";
 const footerSocial = site.social.map((item) => ({
   ...item,
-  icon: item.label === "Instagram" ? Instagram : item.label === "Threads" ? AtSign : Send,
+  icon: item.label === "Threads" ? AtSign : item.label === "Telegram" ? Send : null,
 }));
 
 const homeFooterGroups = [
@@ -253,7 +253,9 @@ const homeFooterGroups = [
             data-footer-social={item.label.toLowerCase()}
             title={item.label}
           >
-            <Icon size={18} stroke-width={1.8} aria-hidden="true" />
+            {item.label === "Instagram"
+              ? <span class="footer-instagram-glyph" aria-hidden="true"><i></i></span>
+              : Icon && <Icon size={18} stroke-width={1.8} aria-hidden="true" />}
             <span class="footer-social-label">{item.label}</span>
           </a>
         );
@@ -299,6 +301,37 @@ const homeFooterGroups = [
     background: rgba(255,255,255,.11);
     color: #fff;
   }
+  .footer-instagram-glyph {
+    position: relative;
+    width: 17px;
+    height: 17px;
+    border: 1.8px solid currentColor;
+    border-radius: 5px;
+    box-sizing: border-box;
+  }
+  .footer-instagram-glyph::before {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 6px;
+    height: 6px;
+    border: 1.6px solid currentColor;
+    border-radius: 999px;
+    content: "";
+    transform: translate(-50%,-50%);
+  }
+  .footer-instagram-glyph::after {
+    position: absolute;
+    top: 3px;
+    right: 3px;
+    width: 2px;
+    height: 2px;
+    border-radius: 999px;
+    background: currentColor;
+    content: "";
+  }
+  .footer-instagram-glyph i { display:none; }
+
   .footer-social-label {
     position: absolute;
     width: 1px;
