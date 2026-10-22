@@ -1,7 +1,11 @@
 import assert from "node:assert/strict";
 import { chromium } from "@playwright/test";
 
+const APPROVED_HOSTS = new Set(["hermeslogisticsus.com", "www.hermeslogisticsus.com"]);
 const BASE = (process.env.HERMES_PRODUCTION_URL ?? "https://hermeslogisticsus.com").replace(/\/$/, "");
+const baseUrl = new URL(BASE);
+assert.equal(baseUrl.protocol, "https:", `Home video proof requires HTTPS, got ${baseUrl.protocol}`);
+assert.ok(APPROVED_HOSTS.has(baseUrl.hostname), `Unapproved Home video proof host: ${baseUrl.hostname}`);
 const HOME = `${BASE}/?video-proof=${Date.now()}`;
 const LANES = [
   {
@@ -33,6 +37,10 @@ const LANES = [
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 async function rangeProbe(url) {
+  const parsed = new URL(url);
+  assert.equal(parsed.protocol, "https:", `Video source must use HTTPS: ${url}`);
+  assert.ok(APPROVED_HOSTS.has(parsed.hostname), `Video source left approved Hermes hosts: ${url}`);
+  assert.match(parsed.pathname, /^\/media\/home\/[a-z0-9-]+\.mp4$/, `Unexpected Home video source path: ${parsed.pathname}`);
   const response = await fetch(url, {
     headers: {
       Range: "bytes=0-1023",
