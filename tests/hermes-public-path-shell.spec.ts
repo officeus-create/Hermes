@@ -1,10 +1,10 @@
 import { expect, test } from "@playwright/test";
 
 const directions = [
-  { slug: "logistics", hex: "#1e88ff" },
-  { slug: "marketing", hex: "#00c853" },
-  { slug: "academy", hex: "#7c5cff" },
-  { slug: "technology", hex: "#ff7a00" },
+  { slug: "logistics", accent: "rgb(47, 107, 246)", tone: "rgb(19, 42, 71)" },
+  { slug: "technology", accent: "rgb(56, 182, 245)", tone: "rgb(10, 42, 62)" },
+  { slug: "academy", accent: "rgb(18, 184, 134)", tone: "rgb(10, 51, 40)" },
+  { slug: "marketing", accent: "rgb(255, 122, 89)", tone: "rgb(59, 30, 22)" },
 ] as const;
 
 test.beforeEach(async ({ page }) => {
@@ -14,93 +14,89 @@ test.beforeEach(async ({ page }) => {
 });
 
 for (const direction of directions) {
-  test(`${direction.slug} direction uses the approved Hermes color identity`, async ({ page }) => {
+  test(`${direction.slug} direction uses the approved Claude Directions hero without changing route ownership`, async ({ page }) => {
     await page.goto(`/paths/${direction.slug}/`);
 
     const root = page.locator(`.detail-page-${direction.slug}`);
-    const hero = root.locator(".detail-hero");
+    const hero = root.locator(".detail-hero-approved");
     const heading = hero.locator("h1");
     const primary = hero.locator(".button-primary");
-    const media = root.locator(".detail-hero-media");
+    const window = hero.locator(".detail-hero-window");
 
     await expect(root).toBeVisible();
     await expect(hero).toBeVisible();
     await expect(heading).toBeVisible();
     await expect(primary).toBeVisible();
-    await expect(media).toBeVisible();
+    await expect(window).toBeVisible();
+    await expect(window.locator("[data-direction-video]")).toHaveCount(1);
 
     const visual = await page.evaluate(({ slug }) => {
       const root = document.querySelector<HTMLElement>(`.detail-page-${slug}`);
-      const hero = root?.querySelector<HTMLElement>(".detail-hero");
+      const hero = root?.querySelector<HTMLElement>(".detail-hero-approved");
       const heading = hero?.querySelector<HTMLElement>("h1");
       const primary = hero?.querySelector<HTMLElement>(".button-primary");
-      const media = root?.querySelector<HTMLElement>(".detail-hero-media");
-      const header = document.querySelector<HTMLElement>(".site-header");
-      if (!root || !hero || !heading || !primary || !media || !header) return null;
+      const window = hero?.querySelector<HTMLElement>(".detail-hero-window");
+      const accent = window?.querySelector<HTMLElement>("figcaption small i");
+      if (!root || !hero || !heading || !primary || !window || !accent) return null;
 
-      const rootStyle = getComputedStyle(root);
-      const heroStyle = getComputedStyle(hero);
       const headingRect = heading.getBoundingClientRect();
       const heroRect = hero.getBoundingClientRect();
-      const mediaRect = media.getBoundingClientRect();
+      const windowRect = window.getBoundingClientRect();
 
       return {
-        pathSignal: rootStyle.getPropertyValue("--path-signal").trim().toLowerCase(),
-        heroColor: heroStyle.color,
-        heroBackgroundImage: heroStyle.backgroundImage,
-        primaryBackgroundImage: getComputedStyle(primary).backgroundImage,
+        heroColor: getComputedStyle(hero).color,
+        heroBackground: getComputedStyle(hero).backgroundColor,
+        primaryBackground: getComputedStyle(primary).backgroundColor,
         primaryColor: getComputedStyle(primary).color,
         primaryRadius: getComputedStyle(primary).borderRadius,
-        mediaRadius: getComputedStyle(media).borderRadius,
-        headerColor: getComputedStyle(header).color,
+        windowRadius: getComputedStyle(window).borderRadius,
+        windowBackground: getComputedStyle(window).backgroundColor,
+        accentBackground: getComputedStyle(accent).backgroundColor,
         overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
         headingInsideHero:
           headingRect.left >= heroRect.left - 1 &&
           headingRect.right <= heroRect.right + 1 &&
           headingRect.top >= heroRect.top - 1 &&
           headingRect.bottom <= heroRect.bottom + 1,
-        mediaHasArea: mediaRect.width > 0 && mediaRect.height > 0,
+        windowHasArea: windowRect.width > 0 && windowRect.height > 0,
       };
     }, { slug: direction.slug });
 
-    const viewportWidth = page.viewportSize()?.width ?? 1440;
-    const expectedMediaRadius = viewportWidth <= 1040 ? "22px" : "30px";
-
     expect(visual).not.toBeNull();
-    expect(visual!.pathSignal).toBe(direction.hex);
-    expect(visual!.heroColor).toBe("rgb(11, 13, 18)");
-    expect(visual!.heroBackgroundImage).not.toBe("none");
-    expect(visual!.primaryBackgroundImage).toBe("none");
+    expect(visual!.heroColor).toBe("rgb(17, 19, 24)");
+    expect(visual!.heroBackground).toBe("rgb(247, 246, 243)");
+    expect(visual!.primaryBackground).toBe("rgb(10, 22, 79)");
     expect(visual!.primaryColor).toBe("rgb(255, 255, 255)");
     expect(visual!.primaryRadius).toBe("12px");
-    expect(visual!.mediaRadius).toBe(expectedMediaRadius);
-    expect(visual!.headerColor).toBe("rgb(11, 13, 18)");
+    expect(visual!.windowRadius).toBe("34px");
+    expect(visual!.windowBackground).toBe(direction.tone);
+    expect(visual!.accentBackground).toBe(direction.accent);
     expect(visual!.overflow).toBe(false);
     expect(visual!.headingInsideHero).toBe(true);
-    expect(visual!.mediaHasArea).toBe(true);
+    expect(visual!.windowHasArea).toBe(true);
   });
 }
 
-test("shared direction shell remains usable on a 390px mobile viewport", async ({ page }) => {
+test("shared Claude Directions shell remains usable on a 390px mobile viewport", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/paths/logistics/");
 
-  await expect(page.locator(".detail-page-logistics .detail-hero h1")).toBeVisible();
-  await expect(page.locator(".detail-page-logistics .detail-hero .button-primary")).toBeVisible();
-  await expect(page.locator(".detail-page-logistics .detail-hero-media")).toBeVisible();
+  await expect(page.locator(".detail-page-logistics .detail-hero-approved h1")).toBeVisible();
+  await expect(page.locator(".detail-page-logistics .detail-hero-approved .button-primary")).toBeVisible();
+  await expect(page.locator(".detail-page-logistics .detail-hero-window")).toBeVisible();
 
   const mobile = await page.evaluate(() => {
-    const media = document.querySelector<HTMLElement>(".detail-page-logistics .detail-hero-media");
-    const hero = document.querySelector<HTMLElement>(".detail-page-logistics .detail-hero");
-    const heading = document.querySelector<HTMLElement>(".detail-page-logistics .detail-hero h1");
-    if (!media || !hero || !heading) return null;
-    const mediaRect = media.getBoundingClientRect();
+    const window = document.querySelector<HTMLElement>(".detail-page-logistics .detail-hero-window");
+    const hero = document.querySelector<HTMLElement>(".detail-page-logistics .detail-hero-approved");
+    const heading = document.querySelector<HTMLElement>(".detail-page-logistics .detail-hero-approved h1");
+    if (!window || !hero || !heading) return null;
+    const windowRect = window.getBoundingClientRect();
     const heroRect = hero.getBoundingClientRect();
     const headingRect = heading.getBoundingClientRect();
     return {
       overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
-      mediaRadius: getComputedStyle(media).borderRadius,
-      mediaWidth: mediaRect.width,
+      windowRadius: getComputedStyle(window).borderRadius,
+      windowWidth: windowRect.width,
       heroWidth: heroRect.width,
       headingInsideViewport: headingRect.left >= 0 && headingRect.right <= document.documentElement.clientWidth,
     };
@@ -108,8 +104,8 @@ test("shared direction shell remains usable on a 390px mobile viewport", async (
 
   expect(mobile).not.toBeNull();
   expect(mobile!.overflow).toBe(false);
-  expect(mobile!.mediaRadius).toBe("22px");
-  expect(mobile!.mediaWidth).toBeLessThanOrEqual(mobile!.heroWidth);
+  expect(mobile!.windowRadius).toBe("26px");
+  expect(mobile!.windowWidth).toBeLessThanOrEqual(mobile!.heroWidth);
   expect(mobile!.headingInsideViewport).toBe(true);
 });
 
@@ -118,8 +114,8 @@ test("Logistics hero title remains contained on a 1440px viewport", async ({ pag
   await page.goto("/paths/logistics/");
 
   const geometry = await page.evaluate(() => {
-    const heading = document.querySelector<HTMLElement>(".detail-page-logistics .detail-hero h1");
-    const hero = document.querySelector<HTMLElement>(".detail-page-logistics .detail-hero");
+    const heading = document.querySelector<HTMLElement>(".detail-page-logistics .detail-hero-approved h1");
+    const hero = document.querySelector<HTMLElement>(".detail-page-logistics .detail-hero-approved");
     if (!heading || !hero) return null;
     const headingRect = heading.getBoundingClientRect();
     const heroRect = hero.getBoundingClientRect();

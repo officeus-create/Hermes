@@ -7,7 +7,7 @@ const routeMeta: Record<string, { accent: string; detail: string; searchDetail?:
   logistics: {
     accent: "var(--hermes-logistics)",
     detail: "Dealers · shippers · carriers · dispatch service",
-    searchDetail: "Car hauling for dealers, shippers and carriers",
+    searchDetail: "Car hauling · dealers · shippers · carriers",
     flow: ["Request", "Route fit", "Human review", "Handoff"],
     flowPath: "M10 14 C26 8 31 39 47 34 S67 12 88 20",
     displayNumber: "01", crop: 20, goal: "Move freight",
@@ -863,7 +863,7 @@ animation:home-logistics-rain 1.45s linear infinite;opacity:.28;filter:blur(.18p
 }
 @media(hover:none){.home-live-explainer,.home-live-step{opacity:1;transform:none}.home-live-path path{stroke-dashoffset:0}}
 @media(max-width:700px) and (hover:none){.home-master-route-arrow{display:grid;width:44px;height:44px}.home-master-route-copy strong{padding-right:52px}}
-@media(prefers-reduced-motion:reduce){.home-logistics-cinematic{display:none!important}.home-master-route-logistics .home-portal-art img{animation:none!important;transform:none!important}.home-logistics-weather{animation:none!important;transition:none!important}.home-portal-art img{transition:none!important}.home-display-i,.home-display-i::after,.home-master-script::after,.home-scene-detail,.home-scene-detail *{animation:none!important;transition:none!important}.home-live-explainer,.home-live-step{opacity:1!important;transform:none!important;transition:none!important}.home-live-path path{stroke-dashoffset:0!important;animation:none!important}}
+@media(prefers-reduced-motion:reduce){.home-master-route:is(:hover,:focus-visible){transform:none!important;box-shadow:none!important;transition:none!important}.home-master-route:is(:hover,:focus-visible)::before{transition:none!important}.home-logistics-cinematic{display:none!important}.home-master-route-logistics .home-portal-art img{animation:none!important;transform:none!important}.home-logistics-weather{animation:none!important;transition:none!important}.home-portal-art img{transition:none!important}.home-display-i,.home-display-i::after,.home-master-script::after,.home-scene-detail,.home-scene-detail *{animation:none!important;transition:none!important}.home-live-explainer,.home-live-step{opacity:1!important;transform:none!important;transition:none!important}.home-live-path path{stroke-dashoffset:0!important;animation:none!important}}
 /* Phase 1: the real creative process is the visual proof, without decorative mock dashboards. */
 :is(.home-marketing-layer-stack,.home-cinematic-layer-stack){position:absolute;inset:0;display:block;overflow:hidden;background:#cdc8c5}
 :is(.home-marketing-layer-stack,.home-cinematic-layer-stack)>img,

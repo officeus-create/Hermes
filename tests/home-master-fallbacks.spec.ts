@@ -20,8 +20,12 @@ test("Home exposes goal-based navigation and direct routes without JavaScript", 
     await expect(link).toHaveAttribute("href", `/paths/${id}/`);
     await expect(link).toContainText(goal);
   }
-  await navigation.getByRole("link", { name: /Move freight: Hermes Logistics/ }).click();
-  await expect(page).toHaveURL(/\/paths\/logistics\/$/);
+  const logisticsLink = navigation.getByRole("link", { name: /Move freight: Hermes Logistics/ });
+  await logisticsLink.focus();
+  await Promise.all([
+    page.waitForURL(/\/paths\/logistics\/$/),
+    page.keyboard.press("Enter"),
+  ]);
   await context.close();
 });
 

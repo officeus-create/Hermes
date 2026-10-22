@@ -19,21 +19,24 @@ test("Home keeps native routes and shows living details without layout overflow"
   await expect(page.locator(".home-master-route")).toHaveCount(4);
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
   await page.emulateMedia({ reducedMotion: "no-preference" });
-  // Claude 21 Oct approval: one decorative dot travels d → r → c → i
-  // over 5.2 s and cycles through Logistics, Technology, Academy and Marketing.
+  // Owner-approved Claude Home v3: one decorative dot lands
+  // F → first i → e → second i → final period over 5.6 s in a 9 s cycle.
   const homeI = page.locator(".home-display-i");
   const travelDot = page.locator("[data-home-travel-dot]");
-  await expect(homeI).toHaveText("i");
+  await expect(homeI).toHaveCount(2);
+  for (const letter of await homeI.all()) {
+    await expect(letter).toHaveText("i");
+    await expect(letter).toHaveCSS("animation-name", "none");
+  }
   await expect(page.locator("#home-master-title")).toHaveText("Four directions.");
-  await expect(homeI).toHaveCSS("animation-name", "none");
-  await expect(page.locator("[data-home-dot-target]")).toHaveCount(4);
+  await expect(page.locator("[data-home-dot-target]")).toHaveCount(5);
   await expect(travelDot).toHaveClass(/is-ready/);
-  await expect(travelDot).toHaveAttribute("data-home-dot-position", /^(d|r|c|i)$/);
+  await expect(travelDot).toHaveAttribute("data-home-dot-position", /^(f|i1|e|i2|end)$/);
   const startPosition = await travelDot.getAttribute("data-home-dot-position");
   await expect.poll(() => travelDot.getAttribute("data-home-dot-position"), { timeout: 3400 }).not.toBe(startPosition);
   await page.emulateMedia({ reducedMotion: "reduce" });
   await expect(travelDot).toHaveCSS("display", "none");
-  await expect(homeI).toHaveCSS("animation-name", "none");
+  for (const letter of await homeI.all()) await expect(letter).toHaveCSS("animation-name", "none");
   const livingProofs = page.locator("[data-home-living-motion]");
   await expect(livingProofs).toHaveCount(2);
   for (const proof of await livingProofs.all()) {
