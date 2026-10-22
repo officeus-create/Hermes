@@ -18,6 +18,14 @@ test("website redesign explains controlled change without changing the canonical
 
   for (const [label, heading] of expected) {
     const step = showroom.getByRole("button", { name: label, exact: false });
+    // On narrow viewports the fixed header and mobile inquiry bar reserve
+    // the upper/lower edges; exercise a real pointer click in the safe center.
+    await step.evaluate((element) => element.scrollIntoView({ block: "center", inline: "nearest", behavior: "instant" }));
+    await expect.poll(() => step.evaluate((element) => {
+      const rect = element.getBoundingClientRect();
+      const hit = document.elementFromPoint(rect.left + rect.width / 2, rect.top + rect.height / 2);
+      return hit === element || (hit !== null && element.contains(hit));
+    })).toBe(true);
     await step.click();
     await expect(step).toHaveAttribute("aria-pressed", "true");
     await expect(showroom.getByRole("heading", { name: heading })).toBeVisible();
@@ -30,6 +38,11 @@ test("website redesign explains controlled change without changing the canonical
   await expect(page.locator('a[href="/case/it-development/"]').filter({ hasText: "Review the Hermes website case" })).toBeVisible();
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", "https://hermeslogisticsus.com/services/website-redesign/");
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", /index,follow/);
+  await expect(page.locator('meta[property="og:image"]')).toHaveAttribute("content", "https://hermeslogisticsus.com/images/hermes-live-home-2026.jpg");
+  await expect(page.locator('meta[property="og:image:width"]')).toHaveAttribute("content", "1800");
+  await expect(page.locator('meta[property="og:image:height"]')).toHaveAttribute("content", "1125");
+  await expect(page.locator('meta[property="og:image:alt"]')).toHaveAttribute("content", "The live Hermes website showing its four interactive business portals");
+  await expect(page.locator('meta[name="twitter:image:alt"]')).toHaveAttribute("content", "The live Hermes website showing its four interactive business portals");
   await expect(page.getByRole("heading", { name: "Website Redesign Built Around Business Priorities" })).toBeVisible();
 });
 
@@ -57,4 +70,41 @@ test.describe("website redesign showroom mobile contract", () => {
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
     expect(overflow).toBeLessThanOrEqual(1);
   });
+});
+
+
+test("redesign showroom uses native View Transition only when motion is allowed", async ({ page }) => {
+  await page.addInitScript(() => {
+    (window as unknown as { __redesignTransitions?: number }).__redesignTransitions = 0;
+    Object.defineProperty(document, "startViewTransition", {
+      configurable: true,
+      value: (update: () => void) => {
+        (window as unknown as { __redesignTransitions: number }).__redesignTransitions += 1;
+        update();
+        return { finished: Promise.resolve() };
+      },
+    });
+  });
+  await page.goto("/services/website-redesign/");
+  const showroom = page.locator("[data-redesign-showroom]");
+  await expect(page.locator("html")).toHaveCSS("view-transition-name", "none");
+  await expect(showroom.locator(".redesign-showroom-browser")).toHaveCSS("view-transition-name", "website-redesign-stage");
+
+  await showroom.getByRole("button", { name: "Diagnose", exact: false }).click();
+  const compact = await page.evaluate(() => matchMedia("(max-width: 640px)").matches);
+  if (compact) {
+    expect(await page.evaluate(() => (window as unknown as { __redesignTransitions?: number }).__redesignTransitions ?? 0)).toBe(0);
+    await expect(showroom).not.toHaveAttribute("data-native-transition", /running|ready/);
+  } else {
+    await expect(showroom).toHaveAttribute("data-native-transition", /running|ready/);
+    await expect.poll(() => page.evaluate(() => (window as unknown as { __redesignTransitions?: number }).__redesignTransitions ?? 0)).toBeGreaterThan(0);
+  }
+
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  const before = await page.evaluate(() => (window as unknown as { __redesignTransitions?: number }).__redesignTransitions ?? 0);
+  await showroom.getByRole("button", { name: "IA + design system", exact: false }).click();
+  const after = await page.evaluate(() => (window as unknown as { __redesignTransitions?: number }).__redesignTransitions ?? 0);
+
+  expect(after).toBe(before);
+  await expect(showroom.getByRole("heading", { name: "Plan the new structure without losing useful ownership." })).toBeVisible();
 });

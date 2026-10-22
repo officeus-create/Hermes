@@ -48,17 +48,28 @@ for (const width of [390, 430, 768, 1024, 1440]) {
     const title=n.querySelector('strong')!.getBoundingClientRect();const arrow=n.querySelector('.home-master-route-arrow')!.getBoundingClientRect();
     return title.left<arrow.right&&title.right>arrow.left&&title.top<arrow.bottom&&title.bottom>arrow.top;
    })).toBe(false);
-   const image=route.locator('.home-portal-art img');
-   if(await route.getAttribute('data-route-id')==='marketing') {
-    // V4 Marketing replaces the legacy poster with server-rendered, animated CSS/SVG stages.
-    await expect(image).toHaveCount(0);
-    await expect(route.locator('.home-marketing-card')).toHaveCount(4);
+   const routeId=await route.getAttribute('data-route-id');
+   // Logistics owns one coherent local scene. The Golden Scene source-lock
+   // test owns cinematic/fallback provenance and prevents split truck layers.
+   const image=routeId==='logistics'
+    ? route.locator('[data-home-logistics-scene-image]')
+    : route.locator('.home-portal-art img');
+   if(routeId==='marketing') {
+    // Living Marketing replaces the hidden legacy CSS cards with a real local documentary clip.
+    await expect(image).toHaveCount(1);
+    await expect(image).toBeVisible();
+    await expect(route.locator('[data-home-marketing-cinematic]')).toHaveCount(1);
+    await expect(route.locator('[data-home-marketing-video]')).toHaveCount(1);
+    await expect(route.locator('[data-home-marketing-journey]')).toBeHidden();
+    await expect(image).toHaveAttribute('src','/media/home/marketing-film-v2-poster.jpg');
+    await expect.poll(()=>image.evaluate(n=>(n as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
     continue;
    }
+   await expect(image).toHaveCount(1);
    await expect(image).toBeVisible();
    await image.evaluate(node=>(node as HTMLImageElement).decode());
    await expect.poll(()=>image.evaluate(node=>(node as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
-   expect(await image.evaluate(node=>(node as HTMLImageElement).currentSrc)).toMatch(/\/images\/(?:home-20261001\/\w+-(512|887)\.(avif|webp)|logistics-living\/[a-z-]+-(512|887)\.webp)$/);
+   expect(await image.evaluate(node=>(node as HTMLImageElement).currentSrc)).toMatch(/(?:\/images\/logistics-living\/[a-z-]+-(?:512|768|887)\.webp|\/media\/home\/(?:technology|academy)-film-v2-poster\.jpg)$/);
   }
   expect(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth)).toBe(false);
   if(width<1181){
@@ -75,8 +86,13 @@ for (const width of [390, 430, 768, 1024, 1440]) {
    await expect(page.locator('.header-actions .hc-account-menu')).toHaveCount(1);
   }
   const nav=width<1181?page.locator('#mobile-menu'):page.locator('.desktop-nav');
-  expect(await nav.locator('a').evaluateAll(nodes=>nodes.findIndex(n=>n.textContent?.trim()==='Connect')<nodes.findIndex(n=>n.textContent?.trim()==='Catalog'))).toBe(true);
-  await expect(nav.getByRole('link',{name:'Connect',exact:true,includeHidden:true})).toHaveAttribute('href','/services/hermes-connect/');
+  const products=nav.locator('[data-hermes-products]');
+  await expect(products).toHaveCount(1);
+  await expect(products.locator('a[data-product]')).toHaveCount(4);
+  await expect(products.locator('a[data-product="connect"]')).toHaveAttribute('href','/services/hermes-connect/');
+  await expect(products.locator('a[data-product="catalog"]')).toHaveAttribute('href','/businesses/');
+  await expect(products.locator('a[data-product="insights"]')).toHaveAttribute('href','/insights/');
+  await expect(products.locator('a[data-product="opportunities"]')).toHaveAttribute('href','/opportunities/');
  });
 }
 
@@ -104,8 +120,13 @@ test('approved portals stay usable without JavaScript and honor reduced motion',
   const explainer=page.locator(`[data-home-explainer="${direction}"]`);
   for (const label of labels) await expect(explainer).toContainText(label);
   if(direction==='marketing') {
-   await expect(page.locator('[data-home-marketing-journey]')).toBeVisible();
-   await expect(explainer).toHaveCSS('display','none'); // original duplicated workflow is superseded
+   await expect(page.locator('[data-home-marketing-journey]')).toBeHidden();
+   await expect(page.locator('[data-home-marketing-cinematic] img')).toBeVisible();
+   await expect(page.locator('[data-home-marketing-video] source')).not.toHaveAttribute('src',/.+/);
+   await expect(explainer).toHaveCSS('display','none'); // pure scene, no overlaid workflow
+  } else if(direction==='logistics') {
+   await expect(page.locator('[data-home-logistics-scene-image]')).toBeVisible();
+   await expect(explainer).toHaveCSS('display','none'); // cinematic field stays free of HUD
   } else {
    await expect(explainer).toHaveCSS('opacity','1');
   }
@@ -120,7 +141,8 @@ test('Home opens the existing Connect and sign-in flows, then returns with brows
  await page.setViewportSize({width:390,height:844});
  await page.goto('/');
  await page.getByRole('button',{name:'Open navigation'}).click();
- await page.locator('#mobile-menu').getByRole('link',{name:'Connect',exact:true}).click();
+ await page.locator('#mobile-menu [data-hermes-products] > summary').click();
+ await page.locator('#mobile-menu a[data-product="connect"]').click();
  await expect(page).toHaveURL(/\/services\/hermes-connect\/$/);
  await expect(page.locator('#hc-title')).toBeVisible();
  await page.waitForLoadState('load');
@@ -149,41 +171,37 @@ test('Home opens the existing Connect and sign-in flows, then returns with brows
 
 test('compact Home CTA reaches native contact actions and approved artwork loads once',async({page})=>{
  const artwork:string[]=[];
- page.on('request',r=>{if(r.url().includes('/images/home-20261001/'))artwork.push(r.url())});
+ page.on('request',r=>{if(/\/media\/home\/(?:technology|academy)-film-v2-poster\.jpg/.test(r.url()))artwork.push(r.url())});
  await page.setViewportSize({width:1440,height:1000});
  await page.goto('/');
  await page.locator('.header-cta').click();
  await expect(page).toHaveURL(/\/#contact$/);
- await expect(page.getByRole('heading',{name:'Let’s build your next step.'})).toBeInViewport();
- await expect(page.getByRole('group',{name:'Hermes contact options'})).toBeVisible();
+ await expect(page.getByRole('heading',{name:'Not sure which direction fits?'})).toBeInViewport();
+ await expect(page.getByRole('navigation',{name:'Contact Hermes by direction'})).toBeVisible();
  await expect(page.locator('[data-home-primary-contact]')).toHaveAttribute('href','/contacts/');
  await expect(page.locator('[data-home-contact-fallback]')).toHaveAttribute('href','mailto:officeus@hermeslogisticsus.com');
  await page.getByRole('link',{name:'Explore Hermes Connect',exact:true}).click();
  await expect(page).toHaveURL(/\/services\/hermes-connect\/$/);
- // Marketing now uses entirely native CSS/SVG artwork, with no hidden downloadable poster.
+ // Only the two new local film posters are requested, without redundant image sources.
  expect(artwork.length).toBeGreaterThanOrEqual(2);
- expect(artwork.some(url=>/\/marketing-(512|887)\./.test(url))).toBe(false);
+ expect(artwork.every(url=>/film-v2-poster\.jpg/.test(url))).toBe(true);
  expect(new Set(artwork).size).toBe(artwork.length);
 });
 
-test('Home Logistics restores independent moving subject with reduced-motion fallback',async({page})=>{
+test('Home Logistics displays one integrated truck scene without a duplicate floating subject',async({page})=>{
  await page.emulateMedia({reducedMotion:'no-preference'});
  await page.setViewportSize({width:1440,height:1000});
  await page.goto('/');
- const subject=page.locator('[data-home-motion="truck"]');
- await expect(subject).toHaveCount(1);
- await expect(subject.locator('img')).toHaveAttribute('src','/images/home-20261001/truck.webp');
- await expect(subject).toHaveAttribute('data-motion-state','running');
- const normal=await subject.evaluate(node=>({animations:node.getAnimations().length,position:getComputedStyle(node).position,width:getComputedStyle(node).width}));
- expect(normal.animations).toBeGreaterThan(0);
- expect(normal.position).toBe('absolute');
- expect(parseFloat(normal.width)).toBeGreaterThan(20);
+ const route=page.locator('[data-route-id="logistics"]');
+ await expect(route.locator('[data-home-logistics-scene-image]')).toBeVisible();
+ await expect(route.locator('[data-home-motion="truck"]')).toHaveCount(0);
+ await expect(route.locator('.home-moving-truck')).toHaveCount(0);
+ await expect(route.locator('img[src="/images/home-20261001/truck.webp"]')).toHaveCount(0);
  await page.emulateMedia({reducedMotion:'reduce'});
- await expect(subject).toHaveAttribute('data-motion-state','reduced');
- await expect.poll(async()=>subject.evaluate(node=>node.getAnimations().length)).toBe(0);
+ await expect(route.locator('[data-home-logistics-scene-image]')).toBeVisible();
 });
 
-test('all four Home directions explain a causal workflow and remain static on touch',async({browser,page},testInfo)=>{
+test('all four Home directions keep accessible workflows behind quiet visual portals on touch',async({browser,page},testInfo)=>{
  await page.emulateMedia({reducedMotion:'no-preference'});
  await page.setViewportSize({width:1440,height:1000});
  await page.goto('/');
@@ -197,13 +215,17 @@ test('all four Home directions explain a causal workflow and remain static on to
   }
   if(direction==='marketing') {
    await expect(explainer).toHaveCSS('display','none');
-   await expect(route.locator('[data-home-marketing-journey]')).toHaveCSS('opacity','1');
-   await expect(route.locator('.home-marketing-card')).toHaveCount(4);
+   await expect(route.locator('[data-home-marketing-cinematic]')).toBeVisible();
+   await expect(route.locator('[data-home-marketing-journey]')).toBeHidden();
+  } else if(direction==='logistics') {
+   await expect(explainer).toHaveCSS('display','none');
+   await expect(route.locator('[data-home-logistics-scene-image]')).toBeVisible();
+   await expect(route.locator('.home-road-flow')).toHaveCount(0);
   } else {
-   await expect(explainer).toHaveCSS('opacity','1');
-   for(const id of ['event','system','human','outcome']) {
-    await expect(explainer.locator(`[data-live-step="${id}"]`)).toHaveCSS('opacity','1');
-   }
+   // Claude Home v3 uses real art, not tiny demo dashboards over the portal.
+   await expect(explainer).toHaveCSS('display','none');
+   await expect(route.locator('.home-portal-art img')).toBeVisible();
+   await expect(route.locator('[data-home-pillar-proof]')).toBeHidden();
   }
   const accessibleName=(await route.getAttribute('aria-label')||'').toLowerCase();
   expect(accessibleName).toContain('example flow:');
@@ -217,49 +239,53 @@ test('all four Home directions explain a causal workflow and remain static on to
   const mobileExplainer=mobile.locator(`[data-home-explainer="${direction}"]`);
   if(direction==='marketing') {
    await expect(mobileExplainer).toHaveCSS('display','none');
-   await expect(mobile.locator('[data-home-marketing-journey]')).toHaveCSS('opacity','1');
-  } else if(direction==='technology') {
+   await expect(mobile.locator('[data-home-marketing-cinematic]')).toBeVisible();
+   await expect(mobile.locator('[data-home-marketing-journey]')).toBeHidden();
+  } else if(direction==='logistics') {
    await expect(mobileExplainer).toHaveCSS('display','none');
-   await expect(mobile.locator('[data-home-pillar-proof="systems"]')).toBeVisible();
-  } else if(direction==='academy') {
-   await expect(mobileExplainer).toHaveCSS('display','none');
-   await expect(mobile.locator('[data-home-pillar-proof="progress"]')).toBeVisible();
+   await expect(mobile.locator('[data-home-logistics-scene-image]')).toBeVisible();
   } else {
-   await expect(mobileExplainer).toHaveCSS('opacity','1');
-   const labelSizes=await mobileExplainer.locator('[data-live-step] em').evaluateAll(nodes=>nodes.map(node=>parseFloat(getComputedStyle(node).fontSize)));
-   expect(Math.min(...labelSizes)).toBeGreaterThanOrEqual(10);
+   await expect(mobileExplainer).toHaveCSS('display','none');
+   const route=mobile.locator(`[data-route-id="${direction}"]`);
+   await expect(route.locator('.home-portal-art img')).toBeVisible();
+   await expect(route.locator('[data-home-pillar-proof]')).toBeHidden();
+   await expect(route.locator('.home-master-route-copy strong')).toBeVisible();
   }
   for (const label of labels) await expect(mobileExplainer).toContainText(label);
  }
- const academyProofSizes=await mobile.locator('[data-home-pillar-proof="progress"] small').evaluateAll(nodes=>nodes.map(node=>parseFloat(getComputedStyle(node).fontSize)));
- expect(Math.min(...academyProofSizes)).toBeGreaterThanOrEqual(9.5);
+ const visibleTitleSizes=await mobile.locator('.home-master-route-copy strong').evaluateAll(nodes=>nodes.map(node=>parseFloat(getComputedStyle(node).fontSize)));
+ expect(Math.min(...visibleTitleSizes)).toBeGreaterThanOrEqual(20);
  expect(await mobile.evaluate(()=>document.documentElement.scrollWidth>innerWidth)).toBe(false);
  await touch.close();
 });
 
 
-test('Home Logistics keeps a camera-locked mobile environment across scene changes',async({page})=>{
+test('Home Logistics keeps a camera-locked mobile environment across weather states',async({page})=>{
  await page.emulateMedia({reducedMotion:'no-preference'});
  await page.setViewportSize({width:390,height:844});
  await page.goto('/');
  const route=page.locator('[data-route-id="logistics"]');
  const scene=page.locator('[data-home-logistics-scene-image]');
  const echo=page.locator('[data-home-logistics-echo]');
- const truck=page.locator('[data-home-motion="truck"]');
  await route.scrollIntoViewIfNeeded();
  await expect(scene).toHaveCSS('animation-name','none');
  await expect(scene).toHaveCSS('transform','none');
  await expect(echo).toHaveAttribute('data-logistics-echo-motion','running');
- await expect(truck).toHaveAttribute('data-motion-state','running');
- await echo.evaluate(node=>node.setAttribute('data-logistics-echo-scene','dry-van'));
- const rain=route.locator('.home-logistics-weather');
- await expect(rain).toHaveCSS('animation-name','home-logistics-rain');
- await expect(rain).toHaveCSS('transform','none');
- await echo.evaluate(node=>node.setAttribute('data-logistics-echo-scene','car-hauler'));
+ await expect(route.locator('[data-home-motion="truck"]')).toHaveCount(0);
+ // Sample the weather style synchronously: the 5.2s scene timer can otherwise
+ // switch equipment during a multi-second Playwright style poll.
+ const rainStyle=await echo.evaluate(node=>{
+   node.setAttribute('data-logistics-weather-state','rain');
+   const weather=node.querySelector('.home-logistics-weather')!;
+   return {animation:getComputedStyle(weather).animationName,transform:getComputedStyle(weather).transform};
+ });
+ expect(rainStyle.animation).toBe('home-logistics-rain');
+ expect(rainStyle.transform).toBe('none');
+ await echo.evaluate(node=>node.setAttribute('data-logistics-weather-state','sun'));
  await page.evaluate(()=>document.fonts.ready);
  const before=await route.boundingBox();
  expect(before).not.toBeNull();
- await expect.poll(async()=>scene.getAttribute('data-logistics-scene-ready'),{timeout:7000}).not.toBe('car-hauler');
+ await expect(scene).toHaveAttribute('data-logistics-scene-ready','car-hauler');
  const after=await route.boundingBox();
  expect(after).not.toBeNull();
  expect(Math.abs(after!.width-before!.width)).toBeLessThanOrEqual(1);
@@ -293,8 +319,10 @@ test('Home Logistics carries six owned equipment and weather states without chan
  await expect(page.locator('[data-route-id="logistics"]')).toHaveAttribute('href','/paths/logistics/');
  await page.locator('#paths').scrollIntoViewIfNeeded();
  await expect(echo).toHaveAttribute('data-logistics-echo-motion','running');
- await expect.poll(async()=>scene.getAttribute('data-logistics-scene-ready'),{timeout:7000}).not.toBe('car-hauler');
+ await expect(echo).toHaveAttribute('data-logistics-equipment-cycle-ms','15600');
+ await expect(echo).toHaveAttribute('data-logistics-weather-cycle-ms','5200');
  const settledScene=await scene.getAttribute('data-logistics-scene-ready');
+ expect(['car-hauler','dry-van','reefer','flatbed','step-deck','hotshot']).toContain(settledScene);
  expect(settledScene).toBe(await echo.getAttribute('data-logistics-echo-scene'));
  expect(await scene.evaluate(node=>{const image=node as HTMLImageElement;return image.complete&&image.naturalWidth>0&&getComputedStyle(image).visibility!=='hidden';})).toBe(true);
 
@@ -322,21 +350,22 @@ test('Home uses a quiet corporate shell and purposeful direction scenes',async({
  await expect(page.locator('.home-marketing-channels')).toContainText('TG');
  const technologyProof=page.locator('[data-home-pillar-proof="systems"]');
  await expect(technologyProof).toHaveCount(1);
+ await expect(technologyProof).toContainText('REAL PRODUCT UI');
  await expect(technologyProof).toContainText('HERMES CONNECT');
- await expect(technologyProof).toContainText('LIVE PILOT');
- await expect(technologyProof).toContainText('WEBSITE FACTORY');
- await expect(technologyProof).toContainText('PRIVATE BUILD');
- await expect(technologyProof).toContainText('SOCIAL CONNECTORS');
- await expect(technologyProof).toContainText('BUILDING');
- await expect(technologyProof).toContainText('QA READBACK');
- await expect(technologyProof).toContainText('VERIFIED PROCESS');
+ await expect(technologyProof).toContainText('SHOP OWNER WORKSPACE');
+ await expect(technologyProof).toContainText('WEBSITE DELIVERY');
+ await expect(technologyProof).toContainText('SEMANTIC BUILD');
+ await expect(technologyProof).toContainText('SOCIAL STUDIO');
+ await expect(technologyProof).toContainText('OWNER AUTHORIZATION');
+ await expect(technologyProof).toContainText('QA + READBACK');
+ await expect(technologyProof).toContainText('RELEASE EVIDENCE');
  await expect(page.locator('[data-home-explainer="technology"]')).toContainText('QA readback');
  const academyProof=page.locator('[data-home-pillar-proof="progress"]');
  await expect(academyProof).toContainText('TASK');
  await expect(academyProof).toContainText('PRACTICE');
  await expect(academyProof).toContainText('FEEDBACK');
- await expect(academyProof).toContainText('NEXT LEVEL');
- await expect(page.locator('.home-academy-book-page')).toHaveCount(1);
+ await expect(academyProof).toContainText('NEXT STEP');
+ await expect(page.locator('.home-academy-book-page')).toHaveCount(0);
  await expect(page.locator('.home-academy-leaf-shadow')).toHaveCount(1);
  await expect(page.locator('.home-academy-sunlight')).toHaveCount(1);
  await expect(technologyProof).toHaveAttribute('data-home-living-motion','');
@@ -354,42 +383,34 @@ test('Home uses a quiet corporate shell and purposeful direction scenes',async({
  await mobileContext.close();
 });
 
-// Superseded finite-leaves motion contract: CEO selected an always-live Marketing journey
-// whose CSS animations run only when visible and honor reduced motion.
-test('Home Marketing journey animates only in view and keeps a static readable fallback',async({page})=>{
+// Owner-led Marketing transition from decorative cards to one actual working-team movie.
+test('Marketing documentary scene plays only in viewport and stays still when scrolled away',async({page})=>{
  await page.emulateMedia({reducedMotion:'no-preference'});
- await page.setViewportSize({width:1440,height:1200});
+ await page.setViewportSize({width:1440,height:1000});
  await page.goto('/');
- const scene=page.locator('[data-home-marketing-journey]');
- const pulse=scene.locator('.home-marketing-pulse');
- await expect(scene).toHaveCount(1);
- await expect(scene).toHaveAttribute('aria-hidden','true');
+ const scene=page.locator('[data-home-marketing-cinematic]');
+ const video=scene.locator('video');
  await scene.scrollIntoViewIfNeeded();
- await expect(scene).toHaveAttribute('data-journey-motion','running');
- await expect(pulse).toHaveCSS('animation-name','home-marketing-current');
- await expect(pulse).toHaveCSS('animation-iteration-count','infinite');
+ await expect.poll(()=>scene.getAttribute('data-media-state')).toBe('ready');
  await page.locator('footer').scrollIntoViewIfNeeded();
- await expect(scene).toHaveAttribute('data-journey-motion','paused');
- await expect(pulse).toHaveCSS('animation-name','none');
+ await expect.poll(()=>scene.getAttribute('data-media-state')).toBe('poster');
+ expect(await video.evaluate(n=>(n as HTMLVideoElement).paused)).toBe(true);
  await scene.scrollIntoViewIfNeeded();
- await expect(scene).toHaveAttribute('data-journey-motion','running');
- await expect(pulse).toHaveCSS('animation-name','home-marketing-current');
+ await expect.poll(()=>scene.getAttribute('data-media-state')).toBe('ready');
 });
 
-test('Home Marketing animation respects live reduced-motion preference and remains decorative',async({page})=>{
+test('Marketing documentary scene honors live reduced-motion changes and never fakes motion',async({page})=>{
  await page.emulateMedia({reducedMotion:'reduce'});
  await page.goto('/');
- const scene=page.locator('[data-home-marketing-journey]');
- const pulse=scene.locator('.home-marketing-pulse');
- await expect(scene).toHaveAttribute('aria-hidden','true');
- await expect(scene.locator('.home-marketing-beacon')).toHaveAttribute('aria-hidden','true');
- await expect(scene).toHaveAttribute('data-journey-motion','reduced');
- await expect(pulse).toHaveCSS('animation-name','none');
- await page.emulateMedia({reducedMotion:'no-preference'});
+ const scene=page.locator('[data-home-marketing-cinematic]');
+ const video=scene.locator('video');
  await scene.scrollIntoViewIfNeeded();
- await expect(scene).toHaveAttribute('data-journey-motion','running');
- await expect(pulse).toHaveCSS('animation-name','home-marketing-current');
+ await expect(scene.locator('source')).not.toHaveAttribute('src',/.+/);
+ await expect(scene.locator('img')).toBeVisible();
+ await page.emulateMedia({reducedMotion:'no-preference'});
+ await expect.poll(()=>scene.getAttribute('data-media-state')).toBe('ready');
  await page.emulateMedia({reducedMotion:'reduce'});
- await expect(scene).toHaveAttribute('data-journey-motion','reduced');
- await expect(pulse).toHaveCSS('animation-name','none');
+ await expect.poll(()=>scene.getAttribute('data-media-state')).toBe('poster');
+ await expect(video).toBeHidden();
+ expect(await video.evaluate(n=>(n as HTMLVideoElement).paused)).toBe(true);
 });

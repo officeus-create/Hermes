@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 
-const root = new URL("../", import.meta.url).pathname;
+const root = decodeURIComponent(new URL("../", import.meta.url).pathname);
 const loadBoardHtml = await readFile(join(root, "dist", "load-board", "index.html"), "utf8");
 const homeHtml = await readFile(join(root, "dist", "index.html"), "utf8");
 const componentSource = await readFile(join(root, "src", "components", "RouteEstimateEnhancer.astro"), "utf8");

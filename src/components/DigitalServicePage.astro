@@ -1,6 +1,8 @@
 ---
 import { ArrowRight, Check, ShieldCheck } from "@lucide/astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
+import AutoRepairWebsiteShowroom from "./AutoRepairWebsiteShowroom.astro";
+import SeoEvidenceShowroom from "./SeoEvidenceShowroom.astro";
 import ContactCTA from "./ContactCTA.astro";
 import HermesConnectLauncher from "./HermesConnectLauncher.astro";
 import WebsiteDevelopmentShowroom from "./WebsiteDevelopmentShowroom.astro";
@@ -22,6 +24,8 @@ type WebsiteFunnelContext = {
   heading: string;
   body: string;
 };
+
+type SeoProofVariant = "general" | "local" | "logistics" | "repair" | "dealer";
 
 type SeoFunnelContext = {
   service: "seo" | "local_seo" | "logistics_seo" | "auto_dealer_seo";
@@ -107,6 +111,13 @@ const seoFunnels: Record<string, SeoFunnelContext> = {
 };
 const websiteContext = websiteFunnels[content.slug];
 const seoContext = seoFunnels[content.slug];
+const seoProofVariant: SeoProofVariant | undefined = ({
+  "/services/seo/": "general",
+  "/services/local-seo/": "local",
+  "/services/seo-for-logistics-companies/": "logistics",
+  "/services/seo-for-auto-repair-shops/": "repair",
+  "/services/seo-for-independent-auto-dealers/": "dealer",
+} as const)[content.slug];
 const repairContext = content.slug === "/services/auto-repair-website-design/" || content.slug === "/services/seo-for-auto-repair-shops/"
   ? `&vertical=auto_repair&source_path=${encodeURIComponent(content.slug)}`
   : "";
@@ -129,6 +140,14 @@ const proofLabel = websiteContext
   : isLogisticsSeoProof
     ? "View the logistics SEO case"
     : "Review verified case studies";
+const websiteSocialProof = content.slug === "/services/website-development/" || content.slug === "/services/website-redesign/"
+  ? {
+      image: "/images/hermes-live-home-2026.jpg",
+      alt: "The live Hermes website showing its four interactive business portals",
+      width: 1800,
+      height: 1125,
+    }
+  : undefined;
 const serviceSchema = {
   "@context": "https://schema.org",
   "@type": "Service",
@@ -158,7 +177,15 @@ const faqSchema = {
 };
 ---
 
-<BaseLayout title={content.title} description={content.description} schema={[serviceSchema, breadcrumbSchema, faqSchema]}>
+<BaseLayout
+  title={content.title}
+  description={content.description}
+  image={websiteSocialProof?.image}
+  imageAlt={websiteSocialProof?.alt}
+  imageWidth={websiteSocialProof?.width}
+  imageHeight={websiteSocialProof?.height}
+  schema={[serviceSchema, breadcrumbSchema, faqSchema]}
+>
   <SiteHeader contactHref="#contact" activePath={parentHref} theme={websiteContext ? "light" : "dark"} />
   <main id="main-content" class="digital-service-page">
     <section class="digital-service-hero" id="top">
@@ -204,6 +231,8 @@ const faqSchema = {
     </section>
 
     {content.slug === "/services/website-development/" && <WebsiteDevelopmentShowroom />}
+    {content.slug === "/services/auto-repair-website-design/" && <AutoRepairWebsiteShowroom />}
+    {seoProofVariant && <SeoEvidenceShowroom variant={seoProofVariant} />}
     {content.slug === "/services/website-redesign/" && <WebsiteRedesignShowroom />}
 
     <section class="section" aria-labelledby="digital-audience-title">

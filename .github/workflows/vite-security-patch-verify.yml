@@ -1,0 +1,31 @@
+name: Hermes Vite security patch verification
+on:
+  pull_request:
+    paths:
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/vite-security-patch-verify.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  vite-advisory:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Inspect exact upstream Vite patch metadata
+        run: |
+          npm view vite@8.1.6 dist --json
+          npm view vite@8.1.6 dependencies --json
+      - name: CI lockfile and dependency-audit fail-closed
+        run: |
+          npm ci --ignore-scripts --no-audit --no-fund
+          node scripts/dependency-audit-report.mjs
+      - name: Confirm locked Vite is patched
+        run: |
+          node -e 'const v=require("./package-lock.json").packages["node_modules/vite"].version; if(v!=="8.1.6") process.exit(1); console.log("Locked patched Vite",v)'
+# No main merge, deployment, secret or permission change. Remove if redundant after review.

@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { extname, join } from "node:path";
 
-const root = new URL("../", import.meta.url).pathname;
+const root = decodeURIComponent(new URL("../", import.meta.url).pathname);
 const publicDir = join(root, "public");
 const downloadPage = readFileSync(join(root, "src/pages/download.astro"), "utf8");
 const releaseTracker = readFileSync(join(root, "docs/ISSUE_511_MOBILE_RELEASE.md"), "utf8");

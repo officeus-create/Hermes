@@ -20,9 +20,10 @@ test("car-hauler GEO hub exposes exactly 25 indexable market links with one comm
 
   const marketLinks = page.locator('a[href^="/logistics/car-hauler-loads/"][data-carrier-geo-cta="market_select"]');
   await expect(marketLinks).toHaveCount(25);
-  await expect(page.getByRole("heading", { name: "Western / Upstate New York → Southeast." })).toBeVisible();
-  await expect(page.getByText(/Rochester · Buffalo · Le Roy · Akron/)).toBeVisible();
-  await expect(page.getByText(/Georgia · Atlanta \/ North Georgia · North Carolina · South Carolina/)).toBeVisible();
+  const currentPriority = page.locator('[data-carrier-geo-section="current_priority"]');
+  await expect(currentPriority.getByRole("heading", { name: "Western / Upstate New York → Southeast." })).toBeVisible();
+  await expect(currentPriority.getByText(/Rochester · Buffalo · Le Roy · Akron/)).toBeVisible();
+  await expect(currentPriority.getByText(/Georgia · Atlanta \/ North Georgia · North Carolina · South Carolina/)).toBeVisible();
   await expect(page.getByText(/Published market library/)).toBeVisible();
   await expect(page.getByRole("link", { name: /Colorado Springs, CO/i })).toHaveAttribute("href", "/logistics/car-hauler-loads/colorado-springs-co/");
   await expect(page.getByRole("link", { name: /Puyallup, WA/i })).toHaveAttribute("href", "/logistics/car-hauler-loads/puyallup-wa/");

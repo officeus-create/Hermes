@@ -3,6 +3,7 @@ import { ArrowRight, FileSignature, MapPin, Search, ShieldCheck } from "@lucide/
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 import SiteHeader from "../../../components/SiteHeader.astro";
 import SiteFooter from "../../../components/SiteFooter.astro";
+import CarHaulerRouteFitProof from "../../../components/CarHaulerRouteFitProof.astro";
 import { carHaulerGeoMarkets, carHaulerPlatformExamples } from "../../../data/car-hauler-geo-markets";
 
 const title = "Car Hauler Operating Markets & Route-Fit Research | Hermes Logistics";
@@ -81,7 +82,7 @@ const schema = [
 ];
 ---
 
-<BaseLayout title={title} description={description} image="/images/path-logistics-system.jpg" schema={schema}>
+<BaseLayout title={title} description={description} image="/images/direction-logistics-real-2026.jpg" schema={schema}>
   <SiteHeader />
   <main id="main-content" class="carrier-market-hub" data-carrier-geo-page>
     <section class="hub-hero" data-carrier-geo-section="hero">
@@ -111,6 +112,8 @@ const schema = [
         </aside>
       </div>
     </section>
+
+    <CarHaulerRouteFitProof />
 
     <section class="section hub-soft" data-carrier-geo-section="current_priority">
       <div class="shell">

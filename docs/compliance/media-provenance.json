@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-04",
+  "updatedAt": "2026-10-22",
   "scope": {
     "description": "Material site visuals and first-party Hermes brand icons shipped by the public build.",
     "roots": [
@@ -184,12 +184,12 @@
     },
     {
       "path": "public/favicon.svg",
-      "sha256": "25153e5815a3d26fac5a8de1ec53a88458f1e6ffa9c368d734f0ba8d745874da",
+      "sha256": "065961a65050d966dbe13881cf26c4d0bd0a5a5afdf69754a2eeb85d0371572a",
       "firstTrackedCommit": "522df18c75a2bc924999431fdc5db3d2a647bd99",
       "classification": "FIRST_PARTY_BRAND_ARTIFACT",
       "provenanceStatus": "REPOSITORY_SOURCE_VERIFIED",
-      "source": "owner-controlled repository source",
-      "rightsEvidence": "owner-controlled repository history",
+      "source": "Google Drive owner-approved hermes-mark-flat v1.1.svg (2026-10-21), approved specifically for <=32px, favicon and print",
+      "rightsEvidence": "owner-controlled Drive source plus explicit owner approval of Hermes Mark H v1.1",
       "publicationDecision": "CURRENT_USE_ALLOWED"
     },
     {
@@ -395,16 +395,6 @@
     {
       "path": "public/images/home-20261001/technology-887.webp",
       "sha256": "c95344eb7e1970d9e6a75471a5310fbe8e3fc86181154e30446b26b9c9a3b0d2",
-      "firstTrackedCommit": "55392021431201038fdd06cef59a78bc3f673c1a",
-      "classification": "OWNER_REQUESTED_AI_REFERENCE_DERIVATIVE_HOME_CANDIDATE",
-      "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
-      "source": "Native image_gen reference reconstruction on2026-10-01 from approved Library libfile_ae6e471fd5d0819183e0e32c45af5854; new887x1774 per-portal originals, transparent subject sheet; downsampled AVIF/WebP only, no upscale.",
-      "rightsEvidence": "Owner requested improved Home artwork and living subjects on2026-10-01. This is authoring/preview scope; independent rendered QA required before production. Original generated reference owner-approved Sept30. No third-party stock/licensing claim.",
-      "publicationDecision": "CURRENT_USE_ALLOWED"
-    },
-    {
-      "path": "public/images/home-20261001/truck.webp",
-      "sha256": "23abc399dd1b108242d80787f15942337f16f3ab17a5293154c0565dc70445ae",
       "firstTrackedCommit": "55392021431201038fdd06cef59a78bc3f673c1a",
       "classification": "OWNER_REQUESTED_AI_REFERENCE_DERIVATIVE_HOME_CANDIDATE",
       "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
@@ -661,6 +651,66 @@
       "source": null,
       "rightsEvidence": null,
       "publicationDecision": "PRESERVE_EXISTING_USE_NO_EXPANDED_REUSE"
+    },
+    {
+      "path": "public/images/direction-logistics-real-2026.jpg",
+      "sha256": "aa855e147601733246ac5af06f5feb7e488a5a5ca32d2d08741a0e06fb3b45bb",
+      "firstTrackedCommit": "28aed4a5f335319ac4f9d07f36d030bbcc6ae976",
+      "classification": "OWNER_APPROVED_STOCK_VIDEO_DERIVATIVE",
+      "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
+      "source": "Still frame cut on 2026-10-22 from Pexels video 18749847 (trucks on an interstate) frame at 31.5 s, one of the shots in the owner-approved Claude Design direction films; 1400x1050 crop, self-hosted. Replaces the abstract AI artwork that no longer matched the approved design.",
+      "rightsEvidence": "Pexels licence (commercial use and modification allowed, https://www.pexels.com/license/); exact source video ID recorded. People are illustrative stock talent, not Hermes staff or customers.",
+      "publicationDecision": "CURRENT_USE_ALLOWED"
+    },
+    {
+      "path": "public/images/direction-technology-real-2026.jpg",
+      "sha256": "9eb94bc921c4c2aae3d99074407dccf4578948ac8fd12fbaeeb5b32a2e722c2e",
+      "firstTrackedCommit": "28aed4a5f335319ac4f9d07f36d030bbcc6ae976",
+      "classification": "OWNER_APPROVED_STOCK_VIDEO_DERIVATIVE",
+      "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
+      "source": "Still frame cut on 2026-10-22 from Pexels video 6804109 (developers at a screen) frame at 1.0 s, one of the shots in the owner-approved Claude Design direction films; 1400x1050 crop, self-hosted. Replaces the abstract AI artwork that no longer matched the approved design.",
+      "rightsEvidence": "Pexels licence (commercial use and modification allowed, https://www.pexels.com/license/); exact source video ID recorded. People are illustrative stock talent, not Hermes staff or customers.",
+      "publicationDecision": "CURRENT_USE_ALLOWED"
+    },
+    {
+      "path": "public/images/direction-academy-real-2026.jpg",
+      "sha256": "fb9661c90921f5f0ccce265bb72970ad905568f7a63df277573e6cf3b36b78d6",
+      "firstTrackedCommit": "28aed4a5f335319ac4f9d07f36d030bbcc6ae976",
+      "classification": "OWNER_APPROVED_STOCK_VIDEO_DERIVATIVE",
+      "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
+      "source": "Still frame cut on 2026-10-22 from Pexels video 9034497 (trainer at a flipchart) frame at 2.0 s, one of the shots in the owner-approved Claude Design direction films; 1400x1050 crop, self-hosted. Replaces the abstract AI artwork that no longer matched the approved design.",
+      "rightsEvidence": "Pexels licence (commercial use and modification allowed, https://www.pexels.com/license/); exact source video ID recorded. People are illustrative stock talent, not Hermes staff or customers.",
+      "publicationDecision": "CURRENT_USE_ALLOWED"
+    },
+    {
+      "path": "public/images/direction-marketing-real-2026.jpg",
+      "sha256": "b29a9a6665ac24da72130173db2c0fa5035a1487b4aa2357f57f9aac25e36da7",
+      "firstTrackedCommit": "28aed4a5f335319ac4f9d07f36d030bbcc6ae976",
+      "classification": "OWNER_APPROVED_STOCK_VIDEO_DERIVATIVE",
+      "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
+      "source": "Still frame cut on 2026-10-22 from Pexels video 6774593 (\"Planning wall\") frame at 3.0 s, one of the shots in the owner-approved Claude Design direction films; 1400x1050 crop, self-hosted. Replaces the abstract AI artwork that no longer matched the approved design.",
+      "rightsEvidence": "Pexels licence (commercial use and modification allowed, https://www.pexels.com/license/); exact source video ID recorded. People are illustrative stock talent, not Hermes staff or customers.",
+      "publicationDecision": "CURRENT_USE_ALLOWED"
+    },
+    {
+      "path": "src/assets/direction-logistics-real-2026.jpg",
+      "sha256": "aa855e147601733246ac5af06f5feb7e488a5a5ca32d2d08741a0e06fb3b45bb",
+      "firstTrackedCommit": "28aed4a5f335319ac4f9d07f36d030bbcc6ae976",
+      "classification": "OWNER_APPROVED_STOCK_VIDEO_DERIVATIVE",
+      "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
+      "source": "Still frame cut on 2026-10-22 from Pexels video 18749847 (trucks on an interstate) frame at 31.5 s, one of the shots in the owner-approved Claude Design direction films; 1400x1050 crop, self-hosted. Replaces the abstract AI artwork that no longer matched the approved design.",
+      "rightsEvidence": "Pexels licence (commercial use and modification allowed, https://www.pexels.com/license/); exact source video ID recorded. People are illustrative stock talent, not Hermes staff or customers.",
+      "publicationDecision": "CURRENT_USE_ALLOWED"
+    },
+    {
+      "path": "public/images/hermes-live-home-2026.jpg",
+      "sha256": "98bbfeb361a287a2821c7fdeb472b3198e6bafdfa79ac33dc016d49be3c4d8af",
+      "firstTrackedCommit": "28aed4a5f335319ac4f9d07f36d030bbcc6ae976",
+      "classification": "FIRST_PARTY_PRODUCT_SCREENSHOT",
+      "provenanceStatus": "REPOSITORY_SOURCE_VERIFIED",
+      "source": "Screenshot of the Hermes home page rendered from this repository on 2026-10-22 (1440x900 viewport, poster frames shown, consent banner hidden). Film posters inside it are covered by the media/home source lock.",
+      "rightsEvidence": "owner-controlled repository build; embedded stock frames follow the Pexels licence recorded in docs/design/HOME_CLAUDE_V3_MEDIA_SOURCE_LOCK_2026-10-20.md",
+      "publicationDecision": "CURRENT_USE_ALLOWED"
     }
   ]
 }

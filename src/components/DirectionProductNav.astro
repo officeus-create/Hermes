@@ -15,6 +15,7 @@ import {
   UsersRound,
   Workflow,
 } from "@lucide/astro";
+import DirectionNavIcon from "./DirectionNavIcon.astro";
 
 export type DirectionId = "logistics" | "marketing" | "technology" | "academy" | "catalog";
 
@@ -32,15 +33,15 @@ const configs = {
     brand: "Hermes Logistics",
     subtitle: "Freight · operations · technology",
     home: "/paths/logistics/",
-    accent: "#1E88FF",
+    accent: "#2f6bf6",
     items: [
       { id: "load-board", label: "Load Board", href: "/load-board/", icon: Route },
       { id: "carriers", label: "Carriers & Fleets", href: "/paths/logistics/carriers/fleet-owners/", icon: Truck },
-      { id: "agreement", label: "Agreement", href: "/carrier/", icon: FileSignature },
       { id: "owner-operators", label: "Owner-Operators", href: "/paths/logistics/carriers/owner-operators/", icon: UsersRound },
       { id: "brokers", label: "Brokers", href: "/paths/logistics/brokers/carrier-capacity/", icon: BriefcaseBusiness },
       { id: "shippers-dealers", label: "Shippers & Dealers", href: "/paths/logistics/customers/vehicle-transport/", icon: Building2 },
       { id: "operations", label: "Dispatch & Back Office", href: "/logistics/car-hauling-dispatch/", icon: Workflow },
+      { id: "agreement", label: "Agreement", href: "/carrier/", icon: FileSignature },
       { id: "path", label: "Find Your Path", href: "/paths/logistics/find-your-path/", icon: ArrowUpRight },
       { id: "catalog", label: "Catalog", href: "/businesses/", icon: Search },
     ],
@@ -49,7 +50,7 @@ const configs = {
     brand: "Hermes Marketing",
     subtitle: "Websites · SEO/GEO · social · demand",
     home: "/paths/marketing/",
-    accent: "#00C853",
+    accent: "#ff7a59",
     items: [
       { id: "growth", label: "Growth System", href: "/business-growth/", icon: Sparkles },
       { id: "websites", label: "Websites", href: "/services/website-development/", icon: Code2 },
@@ -62,10 +63,10 @@ const configs = {
     ],
   },
   technology: {
-    brand: "Hermes IT",
+    brand: "Hermes Technology",
     subtitle: "Products · systems · AI · automation",
     home: "/paths/technology/",
-    accent: "#FF7A00",
+    accent: "#38b6f5",
     items: [
       { id: "connect", label: "Hermes Connect", href: "/services/hermes-connect/", icon: Sparkles },
       { id: "load-board", label: "Load Board", href: "/load-board/", icon: Route },
@@ -81,7 +82,7 @@ const configs = {
     brand: "Hermes Academy",
     subtitle: "Logistics · marketing · IT · sales · operations",
     home: "/paths/academy/",
-    accent: "#7C5CFF",
+    accent: "#12b886",
     items: [
       { id: "logistics", label: "Logistics", href: "/academy/us-logistics-operations/", icon: Truck },
       { id: "marketing", label: "Marketing", href: "/academy/marketing/", icon: Megaphone },
@@ -190,6 +191,21 @@ const isActive = (href: string) => {
   const target = pathOnly(href);
   return target !== home && (currentPath === target || currentPath.startsWith(target.endsWith("/") ? target : `${target}/`));
 };
+// Approved Claude Design KIND map: the nine living Logistics icons are reused by meaning
+// in every direction; links without a semantic match keep the generic hover hop.
+const livingKinds: Record<string, string> = {
+  "load-board": "load-board",
+  catalog: "catalog",
+  seo: "catalog",
+  search: "catalog",
+  locations: "load-board",
+  owners: "owner-operators",
+  brief: "agreement",
+  apply: "agreement",
+  growth: "path",
+  ...(direction === "academy" ? { logistics: "carriers" } : {}),
+};
+const livingKind = (id: string) => (direction === "logistics" ? id : livingKinds[id]);
 ---
 
 <nav
@@ -209,7 +225,7 @@ const isActive = (href: string) => {
         const Icon = item.icon;
         return (
           <a href={item.href} aria-current={isActive(item.href) ? "page" : undefined} data-direction-product-link={item.id}>
-            <Icon size={15} aria-hidden="true" />
+            {livingKind(item.id) ? <DirectionNavIcon kind={livingKind(item.id)!} /> : <span class="direction-product-nav__generic-icon" aria-hidden="true"><Icon size={15} /></span>}
             <span>{item.label}</span>
           </a>
         );
@@ -233,7 +249,37 @@ const isActive = (href: string) => {
   .direction-product-nav__links a::before{position:absolute;left:.28rem;top:50%;width:2px;height:13px;border-radius:999px;background:var(--direction-nav-accent);content:"";opacity:.46;transform:translateY(-50%);transition:height .18s ease,width .18s ease,opacity .18s ease}
   .direction-product-nav__links a:hover,.direction-product-nav__links a:focus-visible,.direction-product-nav__links a[aria-current="page"]{opacity:1;background:color-mix(in srgb,var(--direction-nav-accent) 7%,transparent)}
   .direction-product-nav__links a:hover::before,.direction-product-nav__links a:focus-visible::before,.direction-product-nav__links a[aria-current="page"]::before{width:3px;height:22px;opacity:1}
+  .direction-product-nav__generic-icon{display:grid;place-items:center;color:var(--direction-nav-accent);transform-origin:50% 100%}
+  .direction-product-nav__links a:is(:hover,:focus-visible) .direction-product-nav__generic-icon{animation:direction-icon-bounce .62s cubic-bezier(.34,1.56,.64,1)}
+  .direction-product-nav__links a:is(:hover,:focus-visible) [data-direction-nav-icon="load-board"] :global(.motion-route){animation:direction-route 1.05s ease-in-out infinite alternate}
+  .direction-product-nav__links a:is(:hover,:focus-visible) [data-direction-nav-icon="carriers"] :global(.motion-wheel){animation:direction-wheel .72s linear infinite;transform-origin:center}
+  .direction-product-nav__links a:is(:hover,:focus-visible) [data-direction-nav-icon="carriers"] :global(.motion-truck){animation:direction-truck .5s ease-in-out infinite alternate}
+  .direction-product-nav__links a:is(:hover,:focus-visible) [data-direction-nav-icon="owner-operators"] :global(.motion-person-left){animation:direction-person-left .7s ease-in-out infinite alternate}
+  .direction-product-nav__links a:is(:hover,:focus-visible) [data-direction-nav-icon="owner-operators"] :global(.motion-person-right){animation:direction-person-right .7s ease-in-out infinite alternate}
+  .direction-product-nav__links a:is(:hover,:focus-visible) [data-direction-nav-icon="brokers"] :global(.motion-case){animation:direction-case .7s ease-in-out infinite alternate;transform-origin:center}
+  .direction-product-nav__links a:is(:hover,:focus-visible) [data-direction-nav-icon="brokers"] :global(.motion-case-handle){animation:direction-case-handle .7s ease-in-out infinite alternate}
+  .direction-product-nav__links a:is(:hover,:focus-visible) [data-direction-nav-icon="shippers-dealers"] :global(.motion-car){animation:direction-car .85s ease-in-out infinite alternate}
+  .direction-product-nav__links a:is(:hover,:focus-visible) [data-direction-nav-icon="operations"] :global(.motion-phone){animation:direction-phone .22s ease-in-out infinite alternate;transform-origin:center}
+  .direction-product-nav__links a:is(:hover,:focus-visible) [data-direction-nav-icon="operations"] :global(.motion-signal){animation:direction-signal .8s steps(2,end) infinite}
+  .direction-product-nav__links a:is(:hover,:focus-visible) [data-direction-nav-icon="agreement"] :global(.motion-doc-line){stroke-dasharray:12;animation:direction-draw 1.15s ease-in-out infinite}
+  .direction-product-nav__links a:is(:hover,:focus-visible) [data-direction-nav-icon="agreement"] :global(.motion-doc-line-2){animation-delay:.12s}
+  .direction-product-nav__links a:is(:hover,:focus-visible) [data-direction-nav-icon="agreement"] :global(.motion-doc-line-3){animation-delay:.24s}
+  .direction-product-nav__links a:is(:hover,:focus-visible) [data-direction-nav-icon="path"] :global(.motion-arrow){stroke-dasharray:24;animation:direction-draw .85s ease-in-out infinite}
+  .direction-product-nav__links a:is(:hover,:focus-visible) [data-direction-nav-icon="catalog"] :global(.motion-search){animation:direction-search 1s ease-in-out infinite;transform-origin:center}
+  @keyframes direction-icon-bounce{50%{transform:translateY(-3px) scale(1.08)}}
+  @keyframes direction-route{to{transform:translate(14px,-13px)}}
+  @keyframes direction-wheel{to{transform:rotate(360deg)}}
+  @keyframes direction-truck{to{transform:translateY(-1px) rotate(-.7deg)}}
+  @keyframes direction-person-left{to{transform:translateX(1.2px)}}
+  @keyframes direction-person-right{to{transform:translateX(-1.2px)}}
+  @keyframes direction-case{to{transform:rotate(-2deg)}}
+  @keyframes direction-case-handle{to{transform:translateY(-1.5px)}}
+  @keyframes direction-car{to{transform:translateX(4px)}}
+  @keyframes direction-phone{to{transform:rotate(2deg)}}
+  @keyframes direction-signal{50%{opacity:.2}}
+  @keyframes direction-draw{0%{stroke-dashoffset:24}55%,100%{stroke-dashoffset:0}}
+  @keyframes direction-search{50%{transform:translate(1px,-1px) rotate(12deg)}}
   .direction-product-nav--dark .direction-product-nav__links a:hover,.direction-product-nav--dark .direction-product-nav__links a:focus-visible,.direction-product-nav--dark .direction-product-nav__links a[aria-current="page"]{background:color-mix(in srgb,var(--direction-nav-accent) 16%,transparent)}
-  @media(max-width:980px){.direction-product-nav{top:72px}.direction-product-nav__inner{display:grid;grid-template-columns:1fr;gap:0;padding:.35rem 0}.direction-product-nav__brand{display:none}.direction-product-nav__links{width:100%;padding:.35rem 0}.direction-product-nav__links a{min-height:36px}}
-  @media(prefers-reduced-motion:reduce){.direction-product-nav__links a,.direction-product-nav__links a::before{transition:none}}
+  @media(max-width:980px){.direction-product-nav{top:72px}.direction-product-nav__inner{display:flex;gap:.75rem;padding:.35rem 0;overflow-x:auto;scrollbar-width:none}.direction-product-nav__inner::-webkit-scrollbar{display:none}.direction-product-nav__brand{display:grid}.direction-product-nav__links{flex:0 0 auto;width:max-content;overflow:visible;padding:.35rem 0}.direction-product-nav__links a{min-height:36px}}
+  @media(prefers-reduced-motion:reduce){.direction-product-nav__links a,.direction-product-nav__links a::before{transition:none}.direction-product-nav__links a *{animation:none!important}}
 </style>

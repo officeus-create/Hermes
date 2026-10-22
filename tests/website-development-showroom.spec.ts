@@ -1,12 +1,12 @@
 import { expect, test } from "@playwright/test";
 
 const stages = [
-  ["context", "Business context", "Start with what the company actually needs."],
-  ["brief", "Brief + architecture", "Turn discovery into a controlled build plan."],
-  ["build", "Design + build", "Build the responsive product around the approved plan."],
-  ["qa", "QA + human review", "Check the system before it becomes a release."],
-  ["search", "Search + release", "Protect discoverability while moving toward production."],
-  ["evidence", "Evidence + next step", "Use real readback to decide what changes next."],
+  ["context", "Sources + business context", "Start with the real business signals, not an empty template."],
+  ["brief", "Factory brief + architecture", "Turn source evidence into a controlled Website Factory build plan."],
+  ["build", "Semantic responsive build", "Build the approved design as a real responsive product."],
+  ["qa", "QA + accessibility + security", "Prove the build before it becomes a release."],
+  ["search", "SEO/GEO + deploy gate", "Protect discovery before deployment becomes production."],
+  ["evidence", "Readback + distribution + CRM", "Turn a verified release into measurable business evidence."],
 ] as const;
 
 test("website development keeps keyboard interaction, canonical ownership, indexability, and CTA destinations", async ({ page }) => {
@@ -14,7 +14,18 @@ test("website development keeps keyboard interaction, canonical ownership, index
 
   const showroom = page.locator("[data-website-showroom]");
   await expect(showroom).toBeVisible();
+  const designLab = page.locator("[data-website-design-lab]");
+  await expect(designLab).toBeVisible();
+  await expect(designLab.locator("[data-design-stage]")).toHaveCount(6);
+  for (const label of ["Business DNA / sources", "Visual direction", "Tokens + components", "Responsive behavior", "Accessibility + visual QA", "Approved design system"]) {
+    await expect(designLab).toContainText(label);
+  }
   await expect(page.getByRole("heading", { name: "See how a website moves from business context to verified release." })).toBeVisible();
+  const factoryFlow = showroom.locator("[data-website-factory-flow]");
+  await expect(factoryFlow).toBeVisible();
+  for (const label of ["SOURCES", "BRIEF", "BUILD", "QA", "SEARCH", "DISTRIBUTE"]) {
+    await expect(factoryFlow).toContainText(label);
+  }
 
   for (const [key, label, heading] of stages) {
     const step = showroom.getByRole("button", { name: label, exact: false });
@@ -44,6 +55,11 @@ test("website development keeps keyboard interaction, canonical ownership, index
   await expect(page.getByRole("link", { name: "Review the website case" })).toHaveAttribute("href", "/case/it-development/");
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", "https://hermeslogisticsus.com/services/website-development/");
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", /index,follow/);
+  await expect(page.locator('meta[property="og:image"]')).toHaveAttribute("content", "https://hermeslogisticsus.com/images/hermes-live-home-2026.jpg");
+  await expect(page.locator('meta[property="og:image:width"]')).toHaveAttribute("content", "1800");
+  await expect(page.locator('meta[property="og:image:height"]')).toHaveAttribute("content", "1125");
+  await expect(page.locator('meta[property="og:image:alt"]')).toHaveAttribute("content", "The live Hermes website showing its four interactive business portals");
+  await expect(page.locator('meta[name="twitter:image:alt"]')).toHaveAttribute("content", "The live Hermes website showing its four interactive business portals");
 });
 
 test("all six showroom states stay contained with readable active text at 320, 390, and 430px", async ({ page }) => {
@@ -77,11 +93,14 @@ test("all six showroom states stay contained with readable active text at 320, 3
           miniUi: rect(`[data-showroom-panel="${activeKey}"] .website-showroom-mini-ui`),
           liveProof: rect(`[data-showroom-live-proof="${activeKey}"]`),
           humanReview: rect(".website-showroom-human"),
+          designLab: rect("[data-website-design-lab]"),
         };
       }, key);
 
       expect(geometry.documentWidth, `${width}px ${key}: document horizontal fit`).toBeLessThanOrEqual(geometry.viewportWidth + 1);
       expect(geometry.bodyWidth, `${width}px ${key}: body horizontal fit`).toBeLessThanOrEqual(geometry.viewportWidth + 1);
+      expect(geometry.designLab.left, `${width}px ${key}: design lab left containment`).toBeGreaterThanOrEqual(-1);
+      expect(geometry.designLab.right, `${width}px ${key}: design lab right containment`).toBeLessThanOrEqual(geometry.viewportWidth + 1);
       expect(geometry.browserBar.left, `${width}px ${key}: browser bar left containment`).toBeGreaterThanOrEqual(geometry.browser.left - 1);
       expect(geometry.browserBar.right, `${width}px ${key}: browser bar right containment`).toBeLessThanOrEqual(geometry.browser.right + 1);
       expect(geometry.panel.left, `${width}px ${key}: panel left containment`).toBeGreaterThanOrEqual(geometry.canvas.left - 1);
@@ -123,15 +142,57 @@ test("showroom remains operable and removes transitions when reduced motion is r
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/services/website-development/");
   const showroom = page.locator("[data-website-showroom]");
-  const target = showroom.getByRole("button", { name: "Evidence + next step", exact: false });
+  const target = showroom.getByRole("button", { name: "Readback + distribution + CRM", exact: false });
 
   await target.focus();
   await page.keyboard.press("Space");
   await expect(target).toHaveAttribute("aria-pressed", "true");
-  await expect(showroom.getByRole("heading", { name: "Use real readback to decide what changes next." })).toBeVisible();
+  await expect(showroom.getByRole("heading", { name: "Turn a verified release into measurable business evidence." })).toBeVisible();
 
-  const transitionDurations = await showroom.locator(".website-showroom-step, .website-showroom-route span, .website-showroom-panel").evaluateAll((elements) =>
+  const transitionDurations = await page.locator(".website-design-lab-flow article, .website-showroom-step, .website-showroom-route span, .website-showroom-panel").evaluateAll((elements) =>
     elements.map((element) => getComputedStyle(element).transitionDuration),
   );
   expect(transitionDurations.every((duration) => duration.split(",").every((value) => Number.parseFloat(value) === 0))).toBeTruthy();
+});
+
+
+test("showroom uses native View Transition progressively and skips it for reduced motion", async ({ page }) => {
+  await page.addInitScript(() => {
+    (window as unknown as { __showroomTransitions?: number }).__showroomTransitions = 0;
+    Object.defineProperty(document, "startViewTransition", {
+      configurable: true,
+      value: (update: () => void) => {
+        (window as unknown as { __showroomTransitions: number }).__showroomTransitions += 1;
+        update();
+        return { finished: Promise.resolve() };
+      },
+    });
+  });
+  await page.goto("/services/website-development/");
+  const showroom = page.locator("[data-website-showroom]");
+  await expect(page.locator("html")).toHaveCSS("view-transition-name", "none");
+  await expect(showroom.locator(".website-showroom-browser")).toHaveCSS("view-transition-name", "website-development-stage");
+
+  await showroom.getByRole("button", { name: "Factory brief + architecture", exact: false }).click();
+  await expect(showroom).toHaveAttribute("data-native-transition", /running|ready/);
+  await expect.poll(() => page.evaluate(() => (window as unknown as { __showroomTransitions?: number }).__showroomTransitions ?? 0)).toBeGreaterThan(0);
+
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  const before = await page.evaluate(() => (window as unknown as { __showroomTransitions?: number }).__showroomTransitions ?? 0);
+  await showroom.getByRole("button", { name: "Semantic responsive build", exact: false }).click();
+  const after = await page.evaluate(() => (window as unknown as { __showroomTransitions?: number }).__showroomTransitions ?? 0);
+
+  expect(after).toBe(before);
+  await expect(showroom.getByRole("heading", { name: "Build the approved design as a real responsive product." })).toBeVisible();
+});
+
+
+test("verified website case publishes the owned live-product social image accurately", async ({ page }) => {
+  await page.goto("/case/it-development/");
+  await expect(page.locator('meta[property="og:image"]')).toHaveAttribute("content", "https://hermeslogisticsus.com/images/hermes-live-home-2026.jpg");
+  await expect(page.locator('meta[property="og:image:type"]')).toHaveAttribute("content", "image/jpeg");
+  await expect(page.locator('meta[property="og:image:width"]')).toHaveAttribute("content", "1800");
+  await expect(page.locator('meta[property="og:image:height"]')).toHaveAttribute("content", "1125");
+  await expect(page.locator('meta[property="og:image:alt"]')).toHaveAttribute("content", "The live Hermes website showing its four interactive business portals");
+  await expect(page.locator('meta[name="twitter:image:alt"]')).toHaveAttribute("content", "The live Hermes website showing its four interactive business portals");
 });

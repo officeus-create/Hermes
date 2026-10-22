@@ -1,0 +1,98 @@
+name: FreeLLMAPI local pilot checks (no provider calls)
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/hermes-free-llm-pilot.yml"
+      - "scripts/hermes-free-llm-pilot*"
+      - "infra/freellmapi/**"
+      - "docs/HERMES_FREELLMAPI_INTERNAL_PILOT.md"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  offline-pilot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - name: Check out exact PR commit
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: Install supported Node
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+      - name: Validate offline adapter and local TCP mock (no credentials)
+        run: node --test scripts/hermes-free-llm-pilot.test.mjs scripts/hermes-free-llm-pilot.http.test.mjs
+      - name: Validate Compose schema with fake offline keys; do not pull or start image
+        env:
+          FREELLMAPI_IMAGE_DIGEST: sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+          ENCRYPTION_KEY: ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+        run: |
+          docker compose -f infra/freellmapi/docker-compose.yml config --quiet
+          node --input-type=module <<'JS'
+          import {readFileSync} from "node:fs";
+          import {strict as assert} from "node:assert";
+          const yaml = readFileSync("infra/freellmapi/docker-compose.yml", "utf8");
+          assert.match(yaml, /127\.0\.0\.1:3001:3001/);
+          assert.match(yaml, /FREELLMAPI_IMAGE_DIGEST:\?/);
+          assert.match(yaml, /ENCRYPTION_KEY:\?/);
+          assert.doesNotMatch(yaml, /0\.0\.0\.0:3001|HOST_BIND|watchtower|docker\.sock/);
+          console.log("Offline-only Compose invariants passed.");
+          JS
+
+  upstream-node-compat:
+    # Independent ephemeral runner; do not run the third-party server on the user's Mac.
+    # No Hermes or provider secrets are passed into this job.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - name: Check out exact Hermes pilot commit
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: Install supported Node for isolated third-party compatibility smoke
+        uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+      - name: Fetch pinned public upstream commit (no credentials)
+        run: |
+          git init upstream
+          git -C upstream remote add origin https://github.com/tashfeenahmed/freellmapi.git
+          git -C upstream fetch --depth 1 origin 369c47128edf92d30abb59d7b7c0e46c43e1ce57
+          git -C upstream checkout --detach FETCH_HEAD
+          test "$(git -C upstream rev-parse HEAD)" = 369c47128edf92d30abb59d7b7c0e46c43e1ce57
+      - name: Build upstream Node server without company keys
+        working-directory: upstream
+        run: |
+          npm ci --no-audit --no-fund
+          npm run build -w server
+      - name: Local-only upstream health (no external models or requests)
+        working-directory: upstream
+        env:
+          NODE_ENV: production
+          PORT: "3001"
+          HOST: "127.0.0.1"
+          ENCRYPTION_KEY: "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+        shell: bash
+        run: |
+          node server/dist/index.js > /tmp/hermes-upstream-pilot.log 2>&1 &
+          pid=$!
+          trap 'kill "$pid" 2>/dev/null || true' EXIT
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent --max-time 2 http://127.0.0.1:3001/api/ping > /tmp/hermes-upstream-ping.json; then
+              echo "Real upstream Node server responded to local /api/ping"
+              exit 0
+            fi
+            sleep 1
+          done
+          tail -40 /tmp/hermes-upstream-pilot.log
+          exit 1
+
+      - name: Exercise true Hermes→FreeLLMAPI→synthetic local provider (no real keys)
+        env:
+          HERMES_TEST_UPSTREAM_DIR: ${{ github.workspace }}/upstream
+        run: node --experimental-sqlite scripts/hermes-free-llm-upstream-e2e.mjs

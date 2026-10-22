@@ -3,88 +3,196 @@ import { ArrowUpRight } from "@lucide/astro";
 import { publicPaths } from "../data/public-paths";
 
 const flowStages = ["event", "system", "human", "outcome"] as const;
-const routeMeta: Record<string, { accent: string; detail: string; displayNumber: string; crop: number; goal: string; flow: readonly [string, string, string, string]; flowPath: string }> = {
+const routeMeta: Record<string, { accent: string; detail: string; searchDetail?: string; displayNumber: string; crop: number; goal: string; flow: readonly [string, string, string, string]; flowPath: string }> = {
   logistics: {
     accent: "var(--hermes-logistics)",
-    detail: "Car hauling · dealers · shippers · carriers",
+    detail: "Dealers · shippers · carriers · dispatch service",
+    searchDetail: "Car hauling · dealers · shippers · carriers",
     flow: ["Request", "Route fit", "Human review", "Handoff"],
     flowPath: "M10 14 C26 8 31 39 47 34 S67 12 88 20",
     displayNumber: "01", crop: 20, goal: "Move freight",
   },
   marketing: {
     accent: "var(--hermes-marketing)",
-    detail: "Website · SEO/GEO · customer acquisition",
+    detail: "Websites · SMM · SEO/GEO · customer acquisition",
+    searchDetail: "Website · SEO/GEO · customer acquisition",
     flow: ["Content + news", "Search + social", "Website action", "CRM evidence"],
     flowPath: "M9 37 C25 13 39 49 54 31 S75 15 91 19",
-    displayNumber: "02", crop: 296, goal: "Grow demand",
+    displayNumber: "04", crop: 296, goal: "Grow demand",
   },
   technology: {
     accent: "var(--hermes-technology)",
-    detail: "CRM · automation · custom software",
+    detail: "CRM systems · websites · IT development",
+    searchDetail: "CRM · automation · custom software",
     flow: ["Hermes Connect", "Website Factory", "Social connectors", "QA readback"],
     flowPath: "M9 18 H31 V41 H56 V25 H77 V40 H91",
-    displayNumber: "03", crop: 556, goal: "Build systems",
+    displayNumber: "02", crop: 556, goal: "Build systems",
   },
   academy: {
     accent: "var(--hermes-academy)",
-    detail: "Logistics · marketing · IT/AI · sales · operations",
+    detail: "U.S. logistics · sales · marketing · operations",
+    searchDetail: "Logistics · marketing · IT/AI · sales · operations",
     flow: ["Task", "Practice", "Feedback", "Next level"],
     flowPath: "M9 48 H30 V38 H51 V28 H71 V18 H91",
-    displayNumber: "04", crop: 818, goal: "Develop people",
+    displayNumber: "03", crop: 818, goal: "Develop people",
   },
 };
 ---
 <section class="home-master" id="top" aria-labelledby="home-master-title">
   <div class="home-master-shell">
     <header class="home-master-intro" id="about">
-      <h1 id="home-master-title" class="home-master-display" aria-label="Four directions.">Four <span>direct<span class="home-display-i">i</span>ons.</span></h1>
+      <h1 id="home-master-title" class="home-master-display" aria-label="Four directions."><span data-home-dot-target="f">F</span>our <span class="home-display-word">d<span class="home-display-i" data-home-dot-target="i1">i</span>r<span data-home-dot-target="e">e</span>ct<span class="home-display-i" data-home-dot-target="i2">i</span>ons<span data-home-dot-target="end">.</span></span><span class="home-display-travel-dot" data-home-travel-dot aria-hidden="true"></span></h1>
       <p class="home-master-script">Choose yours.</p>
-      <p class="home-master-ink-note">Logistics, marketing, technology and learning for your business. One Hermes ecosystem.</p>
+      <p class="home-master-ink-note">Logistics, technology, learning and marketing for your business — one Hermes ecosystem.</p>
     </header>
     <span id="journey" class="home-legacy-anchor" aria-hidden="true"></span>
     <nav class="home-master-stage" id="paths" aria-label="Hermes operating directions">
       {publicPaths.map((path) => {
         const meta = routeMeta[path.id] ?? routeMeta.logistics;
+        // Retain the accessible workflow summary even when visual workflow HUDs are hidden.
         const flowLabel = meta.flow.join(", ").toLowerCase();
         return (
           <a class={`home-master-route home-master-route-${path.id}`} href={`/paths/${path.id}/`}
             style={`--route-accent:${meta.accent}`}
-            aria-label={`${meta.goal}: ${path.brandLabel} — ${meta.detail}. Example flow: ${flowLabel}.`} data-home-route data-route-id={path.id}>
+            aria-label={`${meta.goal}: ${path.brandLabel} — ${meta.searchDetail ? `${meta.searchDetail}. ` : ""}${meta.detail}. Example flow: ${flowLabel}.`} data-home-route data-route-id={path.id}>
             <span class="home-portal-art" aria-hidden="true">
               {path.id === "logistics" ? (
-                <img
-                  data-home-logistics-scene-image
-                  data-logistics-scene-ready="car-hauler"
-                  src="/images/logistics-living/car-hauler-512.webp"
-                  srcset="/images/logistics-living/car-hauler-512.webp 512w, /images/logistics-living/car-hauler-768.webp 768w, /images/logistics-living/car-hauler-887.webp 887w"
-                  sizes="(max-width:700px) calc(100vw - 24px), (min-width:701px) and (max-width:1000px) calc((100vw - 40px) / 2), (min-width:1520px) 368px, calc((100vw - 50px) / 4)"
-                  width="887"
-                  height="1590"
-                  aria-hidden="true"
-                  alt="Illustrative aerial U.S. logistics route with changing freight equipment and weather"
-                  loading="eager"
-                  decoding="async"
-                  fetchpriority="high"
-                />
-              ) : path.id === "marketing" ? null : (
-                <picture>
-                  <source type="image/avif" srcset={`/images/home-20261001/${path.id}-512.avif 512w, /images/home-20261001/${path.id}-887.avif 887w`} sizes="(max-width:700px) calc(100vw - 24px), (min-width:701px) and (max-width:1000px) calc((100vw - 40px) / 2), (min-width:1520px) 368px, calc((100vw - 50px) / 4)" />
-                  <img src={`/images/home-20261001/${path.id}-512.webp`} srcset={`/images/home-20261001/${path.id}-512.webp 512w, /images/home-20261001/${path.id}-887.webp 887w`} sizes="(max-width:700px) calc(100vw - 24px), (min-width:701px) and (max-width:1000px) calc((100vw - 40px) / 2), (min-width:1520px) 368px, calc((100vw - 50px) / 4)" width="887" height="1774" aria-hidden="true" alt={`${path.brandLabel} architectural scene`} loading="lazy" decoding="async" fetchpriority="auto" />
-                </picture>
-              )}
+                <span class="home-logistics-layer-stack" data-home-cinematic-slot="logistics" data-cinematic-source-policy="local-only">
+                  <video
+                    class="home-logistics-cinematic"
+                    data-home-cinematic-video="logistics"
+                    data-home-cinematic-version="v2"
+                    muted
+                    loop
+                    playsinline
+                    preload="none"
+                    poster="/images/logistics-living/car-hauler-512.webp"
+                    aria-hidden="true"
+                    tabindex="-1"
+                  >
+                    <source data-cinematic-src="/media/home/logistics-film-v2-540.mp4" type="video/mp4" />
+                  </video>
+                  <img
+                    data-home-logistics-scene-image
+                    data-logistics-scene-ready="car-hauler"
+                    src="/images/logistics-living/car-hauler-512.webp"
+                    srcset="/images/logistics-living/car-hauler-512.webp 512w, /images/logistics-living/car-hauler-768.webp 768w, /images/logistics-living/car-hauler-887.webp 887w"
+                    sizes="(max-width:700px) calc(100vw - 24px), (hover: none) and (pointer: coarse) and (min-width:701px) and (max-width:820px) calc(100vw - 24px), (min-width:701px) and (max-width:1000px) calc((100vw - 40px) / 2), (min-width:1520px) 368px, calc((100vw - 50px) / 4)"
+                    width="887"
+                    height="1590"
+                    aria-hidden="true"
+                    alt="Illustrative aerial U.S. logistics route with changing freight equipment and weather"
+                    loading="eager"
+                    decoding="async"
+                    fetchpriority="high"
+                  />
+                </span>
+              ) : path.id === "marketing" ? (
+                <span class="home-marketing-layer-stack" data-home-marketing-cinematic data-home-progressive-cinematic data-media-state="poster">
+                  <img
+                    src="/media/home/marketing-film-v2-poster.jpg"
+                    width="281"
+                    height="500"
+                    alt="Illustrative stock footage of a business team discussing plans"
+                    aria-hidden="true"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                  <video
+                    data-home-marketing-video
+                    data-home-progressive-video
+                    muted
+                    loop
+                    playsinline
+                    preload="none"
+                    poster="/media/home/marketing-film-v2-poster.jpg"
+                    aria-hidden="true"
+                    tabindex="-1"
+                  >
+                    <source
+                      data-home-marketing-source
+                      data-home-progressive-source
+                      data-desktop-src="/media/home/marketing-film-v2-540.mp4"
+                      data-hd-src="/media/home/marketing-film-v2-720.mp4"
+                      data-mobile-src="/media/home/marketing-film-v2-540.mp4"
+                      type="video/mp4"
+                    />
+                  </video>
+                </span>
+              ) : path.id === "technology" ? (
+                <span class="home-cinematic-layer-stack" data-home-progressive-cinematic data-home-technology-cinematic data-media-state="poster">
+                  <img
+                    src="/media/home/technology-film-v2-poster.jpg"
+                    width="540"
+                    height="960"
+                    sizes="(max-width:700px) calc(100vw - 24px), (hover: none) and (pointer: coarse) and (min-width:701px) and (max-width:820px) calc(100vw - 24px), (min-width:701px) and (max-width:1000px) calc((100vw - 40px) / 2), (min-width:1520px) 368px, calc((100vw - 50px) / 4)"
+                    alt="Illustrative footage of developers collaborating at a computer"
+                    aria-hidden="true"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                  <video
+                    data-home-progressive-video
+                    muted
+                    loop
+                    playsinline
+                    preload="none"
+                    poster="/media/home/technology-film-v2-poster.jpg"
+                    aria-hidden="true"
+                    tabindex="-1"
+                  >
+                    <source
+                      data-home-progressive-source
+                      data-desktop-src="/media/home/technology-film-v2-540.mp4"
+                      data-hd-src="/media/home/technology-film-v2-720.mp4"
+                      data-mobile-src="/media/home/technology-film-v2-540.mp4"
+                      type="video/mp4"
+                    />
+                  </video>
+                </span>
+              ) : path.id === "academy" ? (
+                <span class="home-cinematic-layer-stack" data-home-progressive-cinematic data-home-academy-cinematic data-media-state="poster">
+                  <img
+                    src="/media/home/academy-film-v2-poster.jpg"
+                    width="540"
+                    height="960"
+                    sizes="(max-width:700px) calc(100vw - 24px), (hover: none) and (pointer: coarse) and (min-width:701px) and (max-width:820px) calc(100vw - 24px), (min-width:701px) and (max-width:1000px) calc((100vw - 40px) / 2), (min-width:1520px) 368px, calc((100vw - 50px) / 4)"
+                    alt="Illustrative footage of a business training presentation"
+                    aria-hidden="true"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                  <video
+                    data-home-progressive-video
+                    muted
+                    loop
+                    playsinline
+                    preload="none"
+                    poster="/media/home/academy-film-v2-poster.jpg"
+                    aria-hidden="true"
+                    tabindex="-1"
+                  >
+                    <source
+                      data-home-progressive-source
+                      data-desktop-src="/media/home/academy-film-v2-540.mp4"
+                      data-hd-src="/media/home/academy-film-v2-720.mp4"
+                      data-mobile-src="/media/home/academy-film-v2-540.mp4"
+                      type="video/mp4"
+                    />
+                  </video>
+                </span>
+              ) : null}
             </span>
-            {path.id === "logistics" && (
-              <span class="home-portal-motion home-moving-truck" aria-hidden="true" data-home-motion="truck" data-motion-state="idle">
-                <img src="/images/home-20261001/truck.webp" width="192" height="207" aria-hidden="true" alt="Illustrative logistics truck" loading="eager" decoding="async" />
-              </span>
-            )}
             {path.id === "logistics" && (
               <span
                 class="home-logistics-living"
                 aria-hidden="true"
                 data-home-logistics-echo
                 data-logistics-echo-scene="car-hauler"
+                data-logistics-weather-state="sun"
                 data-logistics-echo-count="6"
+                data-logistics-equipment-cycle-ms="15600"
+                data-logistics-weather-cycle-ms="5200"
                 data-logistics-echo-scenes="car-hauler,dry-van,reefer,flatbed,step-deck,hotshot"
                 data-logistics-echo-motion="idle"
               >
@@ -92,7 +200,6 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
               </span>
             )}
             
-            {path.id === "logistics" && <span class="home-scene-detail home-road-flow" aria-hidden="true"><i></i><i></i><i></i></span>}
             <span class={`home-live-explainer home-live-explainer-${path.id}`} data-home-explainer={path.id} aria-hidden="true">
               <span class="home-live-kicker">Example workflow</span>
               <svg class="home-live-path" viewBox="0 0 100 58" preserveAspectRatio="none" aria-hidden="true">
@@ -134,31 +241,68 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
             )}
             {path.id === "technology" && (
               <span class="home-scene-detail home-system-display home-product-choreography" aria-hidden="true" data-home-pillar-proof="systems" data-home-living-motion data-motion-state="idle">
-                <span class="home-system-caption">PUBLIC <i></i> VERIFIED PROCESS</span>
-                <span class="home-system-card home-system-connect"><small>01 / HERMES CONNECT</small><strong>LIVE PILOT</strong><em>CRM · business context</em></span>
+                <span class="home-system-caption">REAL PRODUCT UI <i></i> TRUTHFUL STATES</span>
+                <span class="home-system-card home-system-connect" data-tech-source="/services/hermes-connect/repair-shops/dashboard/">
+                  <small>01 / HERMES CONNECT</small>
+                  <strong>SHOP OWNER WORKSPACE</strong>
+                  <span class="home-tech-mini home-tech-connect-ui"><i>Services</i><i>Booking inbox</i><i>Catalog inquiries</i></span>
+                  <em>private CRM surface</em>
+                </span>
                 <span class="home-system-wire home-system-wire-a"><i></i></span>
-                <span class="home-system-card home-system-factory"><small>02 / WEBSITE FACTORY</small><strong>PRIVATE BUILD</strong><em>site + SEO workflow</em></span>
+                <span class="home-system-card home-system-factory" data-tech-source="/services/website-development/">
+                  <small>02 / WEBSITE DELIVERY</small>
+                  <strong>SEMANTIC BUILD</strong>
+                  <span class="home-tech-mini home-tech-factory-ui"><i>Responsive</i><i>Canonical</i><i>Schema</i></span>
+                  <em>business context → release evidence</em>
+                </span>
                 <span class="home-system-wire home-system-wire-b"><i></i></span>
-                <span class="home-system-card home-system-social"><small>03 / SOCIAL CONNECTORS</small><strong>BUILDING</strong><em>Threads · Meta</em></span>
+                <span class="home-system-card home-system-social" data-tech-source="/services/hermes-connect/repair-shops/social/">
+                  <small>03 / SOCIAL STUDIO</small>
+                  <strong>OWNER AUTHORIZATION</strong>
+                  <span class="home-tech-mini home-tech-social-ui"><i>IG</i><i>f</i><i>@</i><b>provider readback</b></span>
+                  <em>connect ≠ writable until verified</em>
+                </span>
                 <span class="home-system-wire home-system-wire-c"><i></i></span>
-                <span class="home-system-card home-system-readback"><small>04 / QA READBACK</small><strong><i></i> VERIFIED PROCESS</strong><em>deploy ≠ live until readback</em></span>
+                <span class="home-system-card home-system-readback" data-tech-source="/services/website-development/">
+                  <small>04 / QA + READBACK</small>
+                  <strong><i></i> RELEASE EVIDENCE</strong>
+                  <span class="home-tech-mini home-tech-readback-ui"><i>Build</i><i>Browser</i><i>390 / 1440</i><i>Readback</i></span>
+                  <em>deploy ≠ live until readback</em>
+                </span>
               </span>
             )}
             {path.id === "academy" && (
-              <span class="home-scene-detail home-learning-detail home-academy-living" aria-hidden="true" data-home-pillar-proof="progress" data-home-living-motion data-motion-state="idle">
-                <span class="home-academy-caption">TASK <i></i> NEXT LEVEL</span>
+              <span class="home-scene-detail home-learning-detail home-academy-living" aria-hidden="true" data-home-pillar-proof="progress" data-home-living-motion data-motion-state="idle" data-academy-source="/services/hermes-connect/academy/">
+                <span class="home-academy-caption">HUMAN PROGRESS <i></i> REVIEWED EVIDENCE</span>
                 <span class="home-academy-sunlight"></span>
                 <span class="home-academy-leaf-shadow"><i></i><i></i><i></i></span>
-                <span class="home-academy-book">
-                  <span class="home-academy-book-left"><i></i><i></i><i></i></span>
-                  <span class="home-academy-book-right"><small>PRACTICE</small><i></i><i></i><i></i></span>
-                  <span class="home-academy-book-page"><small>FEEDBACK</small><i></i><i></i></span>
+                <span class="home-academy-workflow">
+                  <span class="home-academy-state home-academy-attempt">
+                    <small>01 / TASK + PRACTICE</small>
+                    <strong>Practice before consequence</strong>
+                    <em>attempt becomes evidence</em>
+                  </span>
+                  <span class="home-academy-state home-academy-feedback">
+                    <small>02 / HUMAN FEEDBACK</small>
+                    <strong>One precise correction</strong>
+                    <em>reviewer feedback</em>
+                  </span>
+                  <span class="home-academy-state home-academy-retry">
+                    <small>03 / RETRY</small>
+                    <strong>Show the change</strong>
+                    <em>reviewed second attempt</em>
+                  </span>
+                  <span class="home-academy-state home-academy-gate">
+                    <small>04 / PROGRESSION</small>
+                    <strong>Human decision</strong>
+                    <em>not automatic</em>
+                  </span>
                 </span>
-                <span class="home-academy-progress"><small>TASK</small><i></i><small>PRACTICE</small><i></i><small>FEEDBACK</small><i></i><small>NEXT LEVEL</small></span>
+                <span class="home-academy-progress"><small>TASK</small><i></i><small>PRACTICE</small><i></i><small>FEEDBACK</small><i></i><small>NEXT STEP</small></span>
               </span>
             )}
             <span class="home-master-route-copy">
-              <small><i aria-hidden="true"></i>{meta.goal}</small>
+              <small><i aria-hidden="true" data-home-route-bar></i>{meta.goal}</small>
               <strong>Hermes<br />{path.brandLabel.replace("Hermes ", "")}</strong>
               <span class="home-route-detail">{meta.detail}</span>
             </span>
@@ -170,19 +314,118 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
   </div>
 </section>
 <script>
-  import { initializeHomePortalMotion } from "../lib/home-portal-motion";
   import { trackCtaClicked, trackEvent, trackTrackSelected } from "../lib/analytics.ts";
 
-  initializeHomePortalMotion();
+  // Owner-approved Claude Home v3: five-step 5.6 s flight inside a 9 s cycle.
+  // The dot lands F → first i → e → second i → final period. Each landing
+  // briefly answers in the matching direction bar. Hidden tabs cancel the cycle.
+  const dotHeading = document.querySelector<HTMLElement>(".home-master-display");
+  const travelDot = dotHeading?.querySelector<HTMLElement>("[data-home-travel-dot]");
+  const dotTargets = Array.from(dotHeading?.querySelectorAll<HTMLElement>("[data-home-dot-target]") ?? []);
+  if (dotHeading && travelDot && dotTargets.length === 5) {
+    const dotReducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
+    const steps = [
+      { color: "--dir-logistics", route: "logistics", at: 0 },
+      { color: "--dir-technology", route: "technology", at: 1400 },
+      { color: "--dir-academy", route: "academy", at: 2800 },
+      { color: "--dir-marketing", route: "marketing", at: 4200 },
+      { color: "--dir-marketing", route: "marketing", at: 5600 },
+    ] as const;
+    let cycleTimer: number | undefined;
+    let stepTimers: number[] = [];
+    const clearDotTimers = () => {
+      if (cycleTimer !== undefined) window.clearTimeout(cycleTimer);
+      cycleTimer = undefined;
+      stepTimers.forEach((timer) => window.clearTimeout(timer));
+      stepTimers = [];
+    };
+    const land = (index: number, fromAbove = false) => {
+      if (document.hidden || dotReducedMotion.matches) return;
+      const target = dotTargets[index];
+      const headingRect = dotHeading.getBoundingClientRect();
+      const targetRect = target.getBoundingClientRect();
+      if (!targetRect.width) return;
+      travelDot.style.transition = fromAbove ? "none" : "";
+      travelDot.style.left = `${targetRect.left - headingRect.left + targetRect.width / 2}px`;
+      travelDot.style.top = `${targetRect.top - headingRect.top + targetRect.height * 0.08}px`;
+      travelDot.style.backgroundColor = `var(${steps[index].color})`;
+      travelDot.dataset.homeDotPosition = target.dataset.homeDotTarget ?? String(index);
+      if (fromAbove) {
+        travelDot.style.transform = "translate(-50%,-320%)";
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+          travelDot.style.transition = "";
+          travelDot.style.transform = "translate(-50%,-40%)";
+        }));
+      }
+      travelDot.classList.add("is-ready");
+      target.classList.remove("home-dot-impact");
+      void target.offsetWidth;
+      target.classList.add("home-dot-impact");
+      const bar = document.querySelector<HTMLElement>(`[data-home-route][data-route-id="${steps[index].route}"] [data-home-route-bar]`);
+      bar?.classList.remove("home-route-bar-impact");
+      if (bar) {
+        void bar.offsetWidth;
+        bar.classList.add("home-route-bar-impact");
+      }
+      // The same-colour stripe in the header answers too (Claude Design spec).
+      const navStripe = document.querySelector<HTMLElement>(`.desktop-nav [data-nav-tone="${steps[index].route}"]`);
+      navStripe?.classList.remove("is-dot-landing");
+      if (navStripe) {
+        void navStripe.offsetWidth;
+        navStripe.classList.add("is-dot-landing");
+      }
+      window.setTimeout(() => {
+        navStripe?.classList.remove("is-dot-landing");
+        target.classList.remove("home-dot-impact");
+        bar?.classList.remove("home-route-bar-impact");
+      }, 620);
+    };
+    const runCycle = () => {
+      clearDotTimers();
+      if (document.hidden || dotReducedMotion.matches) {
+        travelDot.classList.remove("is-ready");
+        return;
+      }
+      steps.forEach((step, index) => {
+        stepTimers.push(window.setTimeout(() => land(index, index === 0), step.at));
+      });
+      cycleTimer = window.setTimeout(runCycle, 9000);
+    };
+    runCycle();
+    document.addEventListener("visibilitychange", runCycle);
+    dotReducedMotion.addEventListener?.("change", runCycle);
+    window.addEventListener("resize", () => {
+      const current = dotTargets.findIndex((target) => target.dataset.homeDotTarget === travelDot.dataset.homeDotPosition);
+      if (current >= 0 && !document.hidden && !dotReducedMotion.matches) land(current);
+    }, { passive: true });
+    void document.fonts?.ready.then(runCycle);
+    window.addEventListener("pagehide", clearDotTimers, { once: true });
+  }
 
   const logisticsEcho = document.querySelector<HTMLElement>("[data-home-logistics-echo]");
   if (logisticsEcho && window.IntersectionObserver) {
     const scenes = ["car-hauler", "dry-van", "reefer", "flatbed", "step-deck", "hotshot"] as const;
+    const weatherStates = ["sun", "fog", "dusk", "rain"] as const;
     const sceneImage = document.querySelector<HTMLImageElement>("[data-home-logistics-scene-image]");
+    const cinematicVideo = document.querySelector<HTMLVideoElement>('[data-home-cinematic-video="logistics"]');
+    const cinematicSource = cinematicVideo?.querySelector<HTMLSourceElement>("[data-cinematic-src]");
+    const logisticsRoute = logisticsEcho.closest<HTMLElement>("[data-home-route]");
     const reduced = matchMedia("(prefers-reduced-motion: reduce)");
+    const connection = (navigator as Navigator & {
+      connection?: { saveData?: boolean; addEventListener?: (type: string, callback: () => void) => void }
+    }).connection;
+    let cinematicSourceAttached = false;
+    let cinematicAvailable = Boolean(cinematicVideo);
     let sceneIndex = 0;
+    let weatherIndex = 0;
     let sceneTimer: number | undefined;
+    let weatherTimer: number | undefined;
     let visible = false;
+
+    const setMotionState = (state: "running" | "paused" | "reduced") => {
+      logisticsEcho.dataset.logisticsEchoMotion = state;
+      logisticsRoute?.setAttribute("data-logistics-motion", state);
+    };
 
     let sceneRequest = 0;
     const preloadScene = (scene: (typeof scenes)[number]) => {
@@ -213,14 +456,47 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
       }
       logisticsEcho.dataset.logisticsEchoScene = scene;
     };
+    const applyWeather = () => {
+      logisticsEcho.dataset.logisticsWeatherState = weatherStates[weatherIndex];
+    };
     const stop = () => {
       if (sceneTimer) window.clearInterval(sceneTimer);
+      if (weatherTimer) window.clearInterval(weatherTimer);
       sceneTimer = undefined;
+      weatherTimer = undefined;
+    };
+    const syncCinematic = () => {
+      if (!cinematicVideo) return;
+      // A hidden, reduced-motion or Save-Data visit must not download the movie.
+      const shouldPause = reduced.matches || Boolean(connection?.saveData) || !visible || document.hidden || !cinematicAvailable;
+      if (shouldPause) {
+        cinematicVideo.pause();
+        return;
+      }
+      if (!cinematicSourceAttached) {
+        const src = cinematicSource?.dataset.cinematicSrc;
+        if (!src?.startsWith("/media/home/") || !cinematicSource) {
+          cinematicAvailable = false;
+          cinematicVideo.hidden = true;
+          logisticsRoute?.setAttribute("data-logistics-cinematic", "fallback");
+          return;
+        }
+        cinematicSource.src = src;
+        cinematicSourceAttached = true;
+        cinematicVideo.load();
+      }
+      if (cinematicVideo.paused) {
+        void cinematicVideo.play().catch(() => {
+          // Autoplay can still be blocked: keep the image/poster fallback visible.
+        });
+      }
     };
     const update = () => {
       if (reduced.matches) {
         stop();
         sceneIndex = 0;
+        weatherIndex = 0;
+        applyWeather();
         sceneRequest += 1;
         if (sceneImage && sceneImage.dataset.logisticsSceneReady !== scenes[0]) {
           sceneImage.src = `/images/logistics-living/${scenes[0]}-512.webp`;
@@ -228,20 +504,33 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
           sceneImage.dataset.logisticsSceneReady = scenes[0];
           logisticsEcho.dataset.logisticsEchoScene = scenes[0];
         }
-        logisticsEcho.dataset.logisticsEchoMotion = "reduced";
+        setMotionState("reduced");
+        syncCinematic();
         return;
       }
       if (!visible || document.hidden) {
         stop();
-        logisticsEcho.dataset.logisticsEchoMotion = "paused";
+        setMotionState("paused");
+        syncCinematic();
         return;
       }
-      logisticsEcho.dataset.logisticsEchoMotion = "running";
-      if (sceneTimer) return;
-      sceneTimer = window.setInterval(() => {
-        sceneIndex = (sceneIndex + 1) % scenes.length;
-        applyScene();
-      }, 5200);
+      setMotionState("running");
+      syncCinematic();
+      if (!cinematicAvailable && !sceneTimer) {
+        sceneTimer = window.setInterval(() => {
+          sceneIndex = (sceneIndex + 1) % scenes.length;
+          applyScene();
+        }, 15600);
+      } else if (cinematicAvailable && sceneTimer) {
+        window.clearInterval(sceneTimer);
+        sceneTimer = undefined;
+      }
+      if (!weatherTimer) {
+        weatherTimer = window.setInterval(() => {
+          weatherIndex = (weatherIndex + 1) % weatherStates.length;
+          applyWeather();
+        }, 5200);
+      }
     };
 
     const observer = new IntersectionObserver((entries) => {
@@ -249,7 +538,33 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
       update();
     }, { threshold: .2 });
     observer.observe(logisticsEcho);
+    const nudgeWeather = () => {
+      if (reduced.matches) return;
+      weatherIndex = (weatherIndex + 1) % weatherStates.length;
+      applyWeather();
+      if (weatherTimer) {
+        window.clearInterval(weatherTimer);
+        weatherTimer = undefined;
+      }
+      update();
+    };
+    cinematicVideo?.addEventListener("canplay", () => {
+      cinematicAvailable = true;
+      cinematicVideo.dataset.cinematicReady = "true";
+      logisticsRoute?.setAttribute("data-logistics-cinematic", "ready");
+      update();
+    }, { once: true });
+    cinematicVideo?.addEventListener("error", () => {
+      cinematicAvailable = false;
+      cinematicVideo.dataset.cinematicFailed = "true";
+      cinematicVideo.hidden = true;
+      logisticsRoute?.setAttribute("data-logistics-cinematic", "fallback");
+      update();
+    });
+    logisticsRoute?.addEventListener("pointerenter", nudgeWeather);
+    logisticsRoute?.addEventListener("focusin", nudgeWeather);
     reduced.addEventListener("change", update);
+    connection?.addEventListener?.("change", update);
     document.addEventListener("visibilitychange", update);
     update();
   }
@@ -317,62 +632,79 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
     });
   });
 </script>
+<script is:inline src="/scripts/home-marketing-video.js"></script>
 <style>
-.home-master{position:relative;overflow:hidden;padding:8.5rem 0 1.5rem;background:#f7f6f3;color:#111318}
+.home-master{--hermes-logistics:var(--dir-logistics);--hermes-technology:var(--dir-technology);--hermes-academy:var(--dir-academy);--hermes-marketing:var(--dir-marketing);position:relative;overflow:hidden;padding:8.5rem 0 1.5rem;background:#f7f6f3;color:#111318;
+  /* Home-only preview; do not change Hermes Connect or division pages. */
+  /* Four directions use approved shared brand tokens; avoid overriding them locally. */
+}
 .home-master::before{content:"";display:none}
 .home-master-shell{position:relative;width:min(1480px,calc(100% - 40px));margin:auto}
 .home-master-intro{padding:0 24px 26px;scroll-margin-top:6rem}
 .home-master-display{margin:0;font:800 clamp(3.8rem,7.6vw,7.8rem)/1.02 var(--font-display);letter-spacing:-.075em}
 .home-master-display span{color:inherit}
-.home-display-i{display:inline-block;transform-origin:50% 90%;animation:home-letter-hop 5.8s ease-in-out 1s infinite}
+.home-master-display{position:relative}
+.home-master-display .home-display-word{color:inherit}
+.home-master-display [data-home-dot-target]{color:inherit}
+.home-master-display .home-display-travel-dot{position:absolute;z-index:2;left:0;top:0;width:.13em;height:.13em;border-radius:50%;pointer-events:none;opacity:0;transform:translate(-50%,-40%);background:var(--dir-logistics);transition:left 1.08s cubic-bezier(.22,1,.36,1),top 1.08s cubic-bezier(.22,1,.36,1),transform .42s cubic-bezier(.22,1,.36,1),background-color .38s ease,opacity .18s ease}
+.home-master-display .home-display-travel-dot.is-ready{opacity:1}
+.home-master-display [data-home-dot-target].home-dot-impact{animation:home-dot-letter-impact .62s cubic-bezier(.2,.8,.2,1)}
+.home-master-route-copy [data-home-route-bar].home-route-bar-impact{animation:home-route-bar-impact .62s cubic-bezier(.2,.8,.2,1)}
+@keyframes home-dot-letter-impact{0%,100%{transform:translateY(0)}42%{transform:translateY(.055em)}68%{transform:translateY(-.018em)}}
+@keyframes home-route-bar-impact{0%,100%{transform:translateY(0) scale(1,1)}42%{transform:translateY(-7px) scale(.8,1.45)}72%{transform:translateY(-2px) scale(1.35,.7)}}
+@media(prefers-reduced-motion:reduce){.home-master-display .home-display-travel-dot{display:none!important;transition:none!important}.home-master-display [data-home-dot-target],.home-master-route-copy [data-home-route-bar]{animation:none!important}}
 .home-master-script{position:relative;width:max-content;max-width:100%;margin:.55rem 0 1rem;color:#59606b;font:650 clamp(.98rem,1.35vw,1.15rem)/1.35 var(--font-body);letter-spacing:.08em;text-transform:uppercase;transform:none}
 .home-master-script::after{content:none}
-.home-master-ink-note{max-width:60ch;margin:0;color:#666c79;font-size:clamp(.96rem,1.22vw,1.16rem);line-height:1.6}
+.home-master-ink-note{max-width:92ch;text-wrap:balance;margin:0;color:#666c79;font-size:clamp(.96rem,1.22vw,1.16rem);line-height:1.6}
 .home-legacy-anchor{display:block;scroll-margin-top:6rem}
 .home-master-stage{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;border:1px solid #dfe2e7;border-radius:34px;overflow:hidden;box-shadow:0 20px 54px rgba(17,19,24,.08);scroll-margin-top:6rem;background:#dfe2e7}
-.home-master-route{position:relative;isolation:isolate;aspect-ratio:267/568;min-width:0;display:flex;align-items:end;padding:clamp(18px,2.6vw,40px);text-decoration:none;color:#fff;overflow:hidden;background:#18273d}
-.home-master-route-logistics{--flow-panel:#0b2139d9;--flow-kicker:#0b2139c7;--flow-border:#dff3ff99;--flow-dot:#a9e4ff;--flow-light:#9ed8ff;--flow-line:#d8f4ff;--flow-glow:#51bfff}
-.home-master-route-marketing{--flow-panel:#102c25dc;--flow-kicker:#102c25c9;--flow-border:#dfffe999;--flow-dot:#9de7b7;--flow-light:#a9edbf;--flow-line:#dcffe7;--flow-glow:#45ce78}
-.home-master-route-technology{--flow-panel:#3a281edc;--flow-kicker:#3a281ec9;--flow-border:#ffe8c799;--flow-dot:#ffc274;--flow-light:#ffd096;--flow-line:#ffe4b5;--flow-glow:#ff9f4b}
-.home-master-route-academy{--flow-panel:#2d2044dc;--flow-kicker:#2d2044c9;--flow-border:#eee0ff99;--flow-dot:#c7a6ff;--flow-light:#d5bdff;--flow-line:#efe3ff;--flow-glow:#a979ff}
+.home-master-route{position:relative;isolation:isolate;aspect-ratio:267/568;min-width:0;display:flex;align-items:end;padding:clamp(18px,2.6vw,40px);text-decoration:none;color:#fff;overflow:hidden;background:#18273d;transition:transform .8s cubic-bezier(.22,1,.36,1),box-shadow .8s cubic-bezier(.22,1,.36,1)}
+@media(prefers-reduced-motion:reduce){.home-master-route{transition:none}.home-master-route::before{transition:none}}
+.home-master-route-logistics{background:#132a47}
+.home-master-route-technology{background:#0a2a3e}
+.home-master-route-academy{background:#0a3328}
+.home-master-route-marketing{background:#3b1e16}
+@media(hover:hover) and (pointer:fine) and (prefers-reduced-motion:no-preference){.home-master-route:is(:hover,:focus-visible){z-index:3;transform:translateY(-8px) scale(1.015);box-shadow:0 26px 58px rgba(10,22,79,.18)}}
+.home-master-route::before{content:"";position:absolute;z-index:4;left:0;right:0;bottom:0;height:6px;background:var(--route-accent);transform:scaleX(0);transform-origin:center;transition:transform .8s cubic-bezier(.22,1,.36,1);pointer-events:none}
+.home-master-route:is(:hover,:focus-visible)::before{transform:scaleX(1)}
+.home-master-route-logistics{--flow-panel:#0b2139;--flow-kicker:#0b2139;--flow-border:#dff3ff99;--flow-dot:#a9e4ff;--flow-light:#9ed8ff;--flow-line:#d8f4ff;--flow-glow:#51bfff}
+.home-master-route-marketing{--flow-panel:#102c25;--flow-kicker:#102c25;--flow-border:#dfffe999;--flow-dot:#9de7b7;--flow-light:#a9edbf;--flow-line:#dcffe7;--flow-glow:#45ce78}
+.home-master-route-technology{--flow-panel:#3a281e;--flow-kicker:#3a281e;--flow-border:#ffe8c799;--flow-dot:#ffc274;--flow-light:#ffd096;--flow-line:#ffe4b5;--flow-glow:#ff9f4b}
+.home-master-route-academy{--flow-panel:#2d2044;--flow-kicker:#2d2044;--flow-border:#eee0ff99;--flow-dot:#c7a6ff;--flow-light:#d5bdff;--flow-line:#efe3ff;--flow-glow:#a979ff}
 .home-portal-art{position:absolute;z-index:-2;inset:0;overflow:hidden}
+@media(min-width:1001px){.home-portal-art{inset:0 0 34%}.home-master-stage{gap:14px;border:0;overflow:visible;box-shadow:none;background:transparent}.home-master-route{border-radius:34px;box-shadow:0 20px 54px rgba(17,19,24,.1)}}
 .home-portal-art picture{display:block;width:100%;height:92%}
 .home-portal-art img{display:block;width:100%;height:100%;object-fit:cover;object-position:center;transition:filter 180ms ease}
-/* Camera-locked environment: real subject/weather layers move; the background itself never breathes/zooms. */
+/* Golden-scene contract: one coherent local scene only. No independent road/truck overlays. */
+.home-logistics-layer-stack{position:absolute;inset:0;display:block;overflow:hidden;background:#203140}
 .home-master-route-logistics .home-portal-art img{object-position:center center;transition:opacity .45s ease,filter .45s ease}
-.home-portal-motion{position:absolute;z-index:-2;pointer-events:none;display:block}
-.home-portal-motion img{display:block;width:100%;height:auto}
-.home-moving-truck{left:60%;top:47%;width:10.5%;min-width:30px;transform:rotate(-18deg);transform-origin:center;filter:drop-shadow(0 8px 8px rgba(4,18,31,.28));will-change:transform,opacity}
+.home-logistics-layer-stack>img,.home-logistics-layer-stack>video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.home-logistics-layer-stack>img{z-index:0}
+.home-logistics-cinematic{z-index:1;object-position:center 61%;background:#203140}
+.home-logistics-cinematic[hidden]{display:none}
 .home-logistics-living{position:absolute;z-index:-1;inset:0;display:block;overflow:hidden;pointer-events:none}
 .home-logistics-weather{position:absolute;z-index:1;inset:0;display:block;opacity:.28;transition:background .9s ease,opacity .9s ease,filter .9s ease}
 .home-logistics-living::before{content:"";position:absolute;z-index:1;inset:0;background:linear-gradient(180deg,rgba(5,22,38,.04),rgba(5,22,38,.18));opacity:.45;transition:background .9s ease,opacity .9s ease}
-[data-logistics-echo-scene="car-hauler"] .home-logistics-weather{background:radial-gradient(circle at 20% 13%,rgba(255,229,165,.75),transparent 28%),linear-gradient(132deg,transparent 54%,rgba(255,255,255,.12));opacity:.46}
-[data-logistics-echo-scene="dry-van"] .home-logistics-weather{background:
+[data-logistics-weather-state="sun"] .home-logistics-weather{background:radial-gradient(circle at 20% 13%,rgba(255,229,165,.75),transparent 28%),linear-gradient(132deg,transparent 54%,rgba(255,255,255,.12));opacity:.46}
+[data-logistics-weather-state="fog"] .home-logistics-weather{background:radial-gradient(ellipse at 22% 25%,rgba(245,250,250,.42),transparent 28%),radial-gradient(ellipse at 72% 19%,rgba(235,243,245,.46),transparent 35%),linear-gradient(180deg,rgba(232,242,245,.12),rgba(111,139,151,.16));animation:home-logistics-cloud 6.8s ease-in-out infinite alternate;opacity:.72;filter:blur(.25px)}
+[data-logistics-weather-state="fog"]::before{background:linear-gradient(180deg,rgba(224,237,241,.05),rgba(75,105,119,.18));opacity:.58}
+[data-logistics-weather-state="dusk"] .home-logistics-weather{background:radial-gradient(circle at 80% 19%,rgba(251,174,126,.38),transparent 26%),linear-gradient(180deg,rgba(31,43,68,.05),rgba(7,16,28,.46));opacity:.8}
+[data-logistics-weather-state="dusk"]::before{background:linear-gradient(180deg,rgba(8,25,45,.10),rgba(5,12,26,.5));opacity:.82}
+[data-logistics-weather-state="rain"] .home-logistics-weather{background:
 linear-gradient(180deg,rgba(180,207,219,.16),rgba(33,61,74,.06)),
 radial-gradient(ellipse,rgba(229,244,250,.52) 0 .7px,transparent 1px) 0 0/23px 38px,
 radial-gradient(ellipse,rgba(211,235,245,.34) 0 .65px,transparent 1px) 11px 13px/31px 48px;
 animation:home-logistics-rain 1.45s linear infinite;opacity:.28;filter:blur(.18px)}
-[data-logistics-echo-scene="dry-van"]::before{background:linear-gradient(180deg,rgba(13,36,52,.16),rgba(3,18,29,.35));opacity:.58}
-[data-logistics-echo-scene="reefer"] .home-logistics-weather{background:radial-gradient(circle,#fff 0 1px,transparent 1.6px) 0 0/20px 25px,radial-gradient(circle,#edf8ff 0 1px,transparent 1.6px) 10px 8px/27px 30px;animation:home-logistics-snow 4.4s linear infinite;opacity:.72}
-[data-logistics-echo-scene="reefer"]::before{background:linear-gradient(180deg,rgba(226,242,248,.08),rgba(93,130,148,.3));opacity:.72}
-[data-logistics-echo-scene="flatbed"] .home-logistics-weather{background:radial-gradient(ellipse at 72% 23%,rgba(255,221,146,.38),transparent 30%),linear-gradient(180deg,rgba(191,126,72,.05),rgba(131,78,42,.18));animation:home-logistics-heat 3.2s ease-in-out infinite alternate;opacity:.64}
-[data-logistics-echo-scene="step-deck"] .home-logistics-weather{background:radial-gradient(ellipse at 22% 25%,rgba(245,250,250,.35),transparent 24%),radial-gradient(ellipse at 72% 19%,rgba(235,243,245,.38),transparent 31%);animation:home-logistics-cloud 6.8s ease-in-out infinite alternate;opacity:.65}
-[data-logistics-echo-scene="hotshot"] .home-logistics-weather{background:radial-gradient(circle at 80% 19%,rgba(251,174,126,.34),transparent 25%),linear-gradient(180deg,rgba(14,29,51,.08),rgba(7,16,28,.44));opacity:.78}
-[data-logistics-echo-scene="hotshot"]::before{background:linear-gradient(180deg,rgba(8,25,45,.12),rgba(5,12,26,.48));opacity:.82}
+[data-logistics-weather-state="rain"]::before{background:linear-gradient(180deg,rgba(13,36,52,.16),rgba(3,18,29,.35));opacity:.58}
 
 .home-scene-detail{position:absolute;z-index:-2;display:block;pointer-events:none}
-.home-road-flow{inset:23% 8% auto 26%;height:38%}
-.home-road-flow i{position:absolute;display:block;width:10%;height:2px;border-radius:3px;background:#d0f4ff;box-shadow:0 0 8px 2px #63c7ffb0;opacity:0;transform:rotate(-51deg)}
-.home-road-flow i:nth-child(1){left:12%;top:14%}.home-road-flow i:nth-child(2){left:44%;top:37%}.home-road-flow i:nth-child(3){left:74%;top:13%}
-.home-master-route-logistics:is(:hover,:focus-visible) .home-road-flow i{animation:home-road-streak 1.9s ease-in-out 2}
-.home-master-route-logistics:is(:hover,:focus-visible) .home-road-flow i:nth-child(2){animation-delay:.28s}.home-master-route-logistics:is(:hover,:focus-visible) .home-road-flow i:nth-child(3){animation-delay:.56s}
 .home-live-explainer{position:absolute;z-index:1;inset:9% 5% 37%;pointer-events:none;opacity:0;transform:translateY(7px);transition:opacity .28s ease .08s,transform .38s cubic-bezier(.16,1,.3,1) .08s}
 .home-live-kicker{position:absolute;left:1%;top:0;padding:5px 8px;border:1px solid var(--flow-border);border-radius:999px;background:var(--flow-kicker);box-shadow:0 7px 18px #0715272e;backdrop-filter:blur(7px);color:#fff;font:700 .5rem/1 var(--font-body);letter-spacing:.12em;text-transform:uppercase}
 .home-live-path{position:absolute;inset:9% 0 0;width:100%;height:82%;overflow:visible}
 .home-live-path path{fill:none;stroke:var(--flow-line);stroke-width:.75;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:180;stroke-dashoffset:180;filter:drop-shadow(0 0 4px var(--flow-glow));opacity:.88}
 .home-live-step{position:absolute;display:flex;align-items:center;gap:5px;min-width:0;padding:6px 8px;border:1px solid var(--flow-border);border-radius:999px;background:var(--flow-panel);box-shadow:0 8px 20px #0715273b;backdrop-filter:blur(7px);opacity:0;transform:translateY(6px) scale(.96);transition:opacity .3s ease,transform .42s cubic-bezier(.16,1,.3,1)}
 .home-live-step::before{content:"";flex:none;width:5px;height:5px;border-radius:50%;background:var(--flow-dot);box-shadow:0 0 0 3px color-mix(in srgb,var(--flow-dot) 22%,transparent),0 0 9px var(--flow-glow)}
-.home-live-step b{color:var(--flow-light);font:700 .48rem/1 var(--font-mono);letter-spacing:.04em}
+.home-live-step b{color:#fff;font:700 .48rem/1 var(--font-mono);letter-spacing:.04em}
 .home-live-step em{overflow:hidden;color:#fff;font:700 clamp(.48rem,.62vw,.64rem)/1.1 var(--font-body);font-style:normal;white-space:nowrap;text-overflow:ellipsis}
 .home-live-step[data-live-step="event"]{left:2%;top:21%}
 .home-live-step[data-live-step="system"]{left:29%;top:48%}
@@ -400,7 +732,9 @@ animation:home-logistics-rain 1.45s linear infinite;opacity:.28;filter:blur(.18p
 /* Marketing: one connected demand journey, not botanical decoration or generic social-logo confetti. */
 .home-master-route-marketing{background:radial-gradient(ellipse at 57% 36%,#d9f7e8 0%,#b9dccd 37%,#234638 94%);color:#fff}
 .home-master-route-marketing .home-live-explainer{display:none}/* Replaced by the four readable stages of the living Marketing scene; avoid duplicate competing overlays. */
-/* Marketing scene is fully CSS/SVG, without hidden downloaded background photography. */
+/* Marketing retires the old botanical AI background; causal demand stages remain the current proof until a rights-safe human clip is owner-approved. */
+.home-master-route-marketing .home-portal-art{background:linear-gradient(180deg,#dff5ea,#89b9a4 58%,#24483a)}
+.home-master-route-marketing .home-portal-art::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(239,252,246,.12) 0%,rgba(29,82,61,.06) 44%,rgba(18,48,37,.68) 91%)}
 .home-marketing-journey{position:absolute;z-index:0;inset:6% 5% 31%;display:block;pointer-events:none;overflow:visible;transform:translateZ(0)}
 .home-marketing-caption{position:absolute;top:0;left:5%;display:flex;align-items:center;gap:8px;color:#184734;font:800 .58rem/1.2 var(--font-mono);letter-spacing:.13em}
 .home-marketing-caption i{height:1px;width:25px;background:#489876;opacity:.65}
@@ -410,6 +744,7 @@ animation:home-logistics-rain 1.45s linear infinite;opacity:.28;filter:blur(.18p
 .home-marketing-pulse{opacity:.8;stroke:#2bbf83;stroke-width:2;stroke-dasharray:2 14;stroke-dashoffset:0;filter:drop-shadow(0 0 4px #74d4a2)}
 .home-marketing-card{position:absolute;display:block;box-sizing:border-box;border:1px solid #ffffffd9;border-radius:13px;background:linear-gradient(150deg,#ffffffed,#ecfaf4ea);box-shadow:0 12px 26px #0a412d2b,0 2px 6px #0a412d18;backdrop-filter:blur(8px);padding:10px;overflow:hidden;color:#204536;transform:translate3d(0,0,0)}
 .home-marketing-card small{display:flex;align-items:center;gap:5px;font:800 clamp(.625rem,.68vw,.74rem)/1.2 var(--font-mono);letter-spacing:.045em;white-space:nowrap}
+.home-marketing-discovery small,.home-marketing-inquiry small{font-size:clamp(.52rem,.56vw,.64rem);letter-spacing:.012em}
 .home-marketing-card small i{display:block;height:5px;width:5px;flex:none;border-radius:50%;background:#16a572}
 .home-marketing-content{top:12%;left:4%;width:55%;height:22%}
 .home-marketing-discovery{top:31%;right:3%;width:57%;height:20%}
@@ -445,63 +780,80 @@ animation:home-logistics-rain 1.45s linear infinite;opacity:.28;filter:blur(.18p
 .home-master-route-marketing:is(:hover,:focus-visible) .home-marketing-journey{opacity:1;transition:opacity .25s ease}
 @keyframes home-marketing-current{to{stroke-dashoffset:-192}}
 @keyframes home-marketing-hover{0%,100%{transform:translate3d(0,0,0)}50%{transform:translate3d(0,-4px,0)}}
-@media(max-width:700px){.home-marketing-journey{inset:6% 8% 38%;opacity:1}.home-marketing-card{padding:7px;border-radius:10px}.home-marketing-card small{font-size:.625rem}.home-marketing-caption{font-size:.625rem}.home-marketing-media{margin:5px 0 3px}.home-marketing-search{margin-top:5px;padding:4px}.home-marketing-result{margin-top:3px}.home-marketing-browser{margin-top:4px}.home-marketing-person{margin-top:5px}.home-master-route-marketing .home-live-explainer{z-index:2}}
+@media(max-width:700px){.home-marketing-journey{inset:6% 8% 38%;opacity:1}.home-marketing-card{padding:7px;border-radius:10px}.home-marketing-card small{font-size:.625rem}.home-marketing-discovery small,.home-marketing-inquiry small{font-size:.53rem;letter-spacing:.008em}.home-marketing-caption{font-size:.625rem}.home-marketing-media{margin:5px 0 3px}.home-marketing-search{margin-top:5px;padding:4px}.home-marketing-result{margin-top:3px}.home-marketing-browser{margin-top:4px}.home-marketing-person{margin-top:5px}.home-master-route-marketing .home-live-explainer{z-index:2}}
 @media(prefers-reduced-motion:reduce){.home-marketing-journey,.home-marketing-card,.home-marketing-pulse,.home-marketing-beacon{animation:none!important;transform:none!important;transition:none!important}}
-.home-master-route-technology .home-live-explainer,.home-master-route-academy .home-live-explainer{display:none}
+.home-master-route-logistics .home-live-explainer,.home-master-route-technology .home-live-explainer,.home-master-route-academy .home-live-explainer{display:none}
 .home-system-display{inset:8% 7% 39%;z-index:0}
 .home-system-caption,.home-academy-caption{position:absolute;left:0;top:0;display:flex;align-items:center;gap:5px;font:800 .48rem/1 var(--font-body);letter-spacing:.14em;color:#fff7e6;opacity:.82}
 .home-system-caption i,.home-academy-caption i{display:inline-block;width:22px;height:1px;background:#ffc274;box-shadow:0 0 8px #ff9f4b}
 .home-system-card{position:absolute;width:43%;min-height:56px;padding:7px 8px;border:1px solid #ffe8c777;border-radius:10px;background:linear-gradient(145deg,#3a281ed8,#251a14e8);box-shadow:0 8px 20px #1a0f0a55,inset 0 1px #fff2d633}
 .home-system-card small{display:block;color:#ffd8a5;font:800 .44rem/1.1 var(--font-body);letter-spacing:.08em}
 .home-system-card strong{display:block;margin-top:6px;color:#fff7e8;font:850 .56rem/1 var(--font-body);letter-spacing:.08em}
-.home-system-card em{display:block;margin-top:4px;color:#e7c9a3;font:700 .43rem/1 var(--font-body);font-style:normal;letter-spacing:.035em}
-.home-system-connect{left:0;top:14%}.home-system-factory{right:0;top:24%}.home-system-social{left:4%;bottom:3%}.home-system-readback{right:0;bottom:2%}
+.home-system-card em{display:block;margin-top:4px;color:#e7c9a3;font:700 .43rem/1.2 var(--font-body);font-style:normal;letter-spacing:.025em}
+.home-tech-mini{display:flex;align-items:center;gap:3px;min-width:0;margin-top:6px;overflow:hidden}
+.home-tech-mini i,.home-tech-mini b{display:block;min-width:0;padding:3px 4px;border:1px solid #ffe8c744;border-radius:4px;background:#fff6e80f;color:#fff2d9;font:750 .36rem/1 var(--font-body);font-style:normal;white-space:nowrap;text-overflow:ellipsis;overflow:hidden}
+.home-tech-connect-ui{display:grid;grid-template-columns:1fr 1fr}.home-tech-connect-ui i:last-child{grid-column:1/-1}
+.home-tech-factory-ui{display:grid;grid-template-columns:1fr 1fr}
+.home-tech-factory-ui i{width:auto;padding-inline:3px;font-size:.34rem;text-align:center}
+.home-tech-factory-ui i:last-child{grid-column:1/-1}
+.home-tech-social-ui i{display:grid;place-items:center;width:17px;height:17px;padding:0;border-radius:50%;flex:none}.home-tech-social-ui b{margin-left:auto;color:#ffd39d}
+.home-tech-readback-ui{display:grid;grid-template-columns:1fr 1fr}.home-tech-readback-ui i{text-align:center}
+.home-system-connect{left:0;top:14%;width:46%}.home-system-factory{right:0;top:22%;width:46%}.home-system-social{left:2%;bottom:1%;width:47%}.home-system-readback{right:0;bottom:0;width:47%}
 .home-system-readback strong{display:flex;align-items:center;gap:5px}.home-system-readback strong i{width:7px;height:7px;border-radius:50%;background:#ffb25d;box-shadow:0 0 10px #ff9f4b}
 .home-system-wire{position:absolute;height:1px;background:linear-gradient(90deg,transparent,#ffc274,#fff0cf,transparent);transform-origin:left center;opacity:.58}
 .home-system-wire i{position:absolute;right:15%;top:-2px;width:5px;height:5px;border-radius:50%;background:#fff3d6;box-shadow:0 0 8px #ff9f4b}
 .home-product-choreography[data-motion-state="running"] .home-system-wire i{animation:home-system-packet 5.6s ease-in-out infinite}
 .home-system-wire-a{left:36%;top:37%;width:34%;transform:rotate(18deg)}.home-system-wire-b{left:38%;top:64%;width:33%;transform:rotate(-13deg)}.home-system-wire-c{left:42%;top:76%;width:31%;transform:rotate(13deg)}
 .home-product-choreography[data-motion-state="running"] .home-system-readback strong i{animation:home-system-verified 5.6s ease-in-out infinite}
+.home-product-choreography[data-motion-state="running"] .home-system-card{animation:home-system-surface 7.2s ease-in-out infinite}
+.home-product-choreography[data-motion-state="running"] .home-system-factory{animation-delay:-1.8s}
+.home-product-choreography[data-motion-state="running"] .home-system-social{animation-delay:-3.6s}
+.home-product-choreography[data-motion-state="running"] .home-system-readback{animation-delay:-5.4s}
 .home-learning-detail{inset:7% 7% 39%;z-index:0;overflow:hidden}
+.home-master-route-academy .home-portal-art{background:radial-gradient(circle at 28% 18%,#fff1d2 0%,#e6d7ef 35%,#8d6fa8 72%,#49365c 100%)}
+.home-master-route-academy .home-portal-art::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(40,29,57,.05),rgba(40,29,57,.20) 48%,rgba(40,29,57,.52));pointer-events:none}
 .home-academy-caption{color:#f0e3ff}.home-academy-caption i{background:#cfb4ff;box-shadow:0 0 8px #a979ff}
 .home-academy-sunlight{position:absolute;inset:-5% -12% 20% 8%;background:linear-gradient(122deg,rgba(255,238,190,.34),rgba(255,245,222,.06) 48%,transparent 72%);clip-path:polygon(0 0,60% 0,100% 100%,28% 100%)}
 .home-academy-leaf-shadow{position:absolute;right:2%;top:8%;width:46%;height:48%;opacity:.18;filter:blur(.25px);transform-origin:85% 5%}
 .home-academy-leaf-shadow i{position:absolute;width:32%;height:18%;border-radius:70% 20% 70% 20%;background:#2b2440}.home-academy-leaf-shadow i:nth-child(1){right:8%;top:5%;rotate:22deg}.home-academy-leaf-shadow i:nth-child(2){right:33%;top:24%;rotate:-18deg}.home-academy-leaf-shadow i:nth-child(3){right:2%;top:45%;rotate:48deg}
-.home-academy-book{position:absolute;inset:16% 5% 26%;filter:drop-shadow(0 10px 13px rgba(27,16,41,.34));perspective:500px}
-.home-academy-book-left,.home-academy-book-right,.home-academy-book-page{position:absolute;top:13%;bottom:5%;width:49%;border:1px solid #eadff1;border-radius:8px 3px 3px 10px;background:linear-gradient(145deg,#fffdf7,#f4eadc);box-shadow:inset 0 0 0 1px #fff8}
-.home-academy-book-left{left:0;transform:rotate(-3deg);transform-origin:right center}.home-academy-book-right{right:0;border-radius:3px 8px 10px 3px;transform:rotate(3deg);transform-origin:left center}
-.home-academy-book-left i,.home-academy-book-right>i,.home-academy-book-page>i{display:block;height:2px;margin:9px 11px 0;border-radius:2px;background:#b6a3c3;opacity:.58}.home-academy-book-left i:nth-child(2),.home-academy-book-right>i:nth-of-type(2){width:68%}.home-academy-book-left i:nth-child(3),.home-academy-book-right>i:nth-of-type(3){width:46%}
-.home-academy-book small{display:block;margin:10px 10px 0;color:#795a97;font:850 .45rem/1 var(--font-body);letter-spacing:.1em}
-.home-academy-book-page{right:1%;width:48%;transform-origin:left center;backface-visibility:hidden}
+.home-academy-workflow{position:absolute;inset:16% 0 24% 48%;display:grid;grid-template-columns:1fr 1fr;gap:5px;align-content:center;z-index:3}
+.home-academy-state{display:block;min-width:0;padding:7px;border:1px solid #eee1ffb8;border-radius:9px;background:linear-gradient(145deg,#fffdf3e8,#f6effde0);box-shadow:0 8px 18px rgba(35,20,55,.18);backdrop-filter:blur(7px);color:#3b2d4f}
+.home-academy-state small{display:block;color:#765798;font:850 .38rem/1.1 var(--font-body);letter-spacing:.065em}
+.home-academy-state strong{display:block;margin-top:5px;color:#30213f;font:850 .5rem/1.08 var(--font-body)}
+.home-academy-state em{display:block;margin-top:4px;color:#6e617a;font:700 .39rem/1.15 var(--font-body);font-style:normal}
+.home-academy-feedback{border-color:#d9c1ff}.home-academy-gate{background:linear-gradient(145deg,#3a2b4fdf,#271d37e8);border-color:#dcc9ff8f;color:#fff}
+.home-academy-gate small,.home-academy-gate strong,.home-academy-gate em{color:#f5edff}
 .home-academy-progress{position:absolute;left:0;right:0;bottom:2%;display:flex;align-items:center;justify-content:space-between;gap:4px}
 .home-academy-progress small{padding:4px 5px;border:1px solid #eadcff7d;border-radius:999px;background:#2f2342d9;color:#f4ecff;font:800 .42rem/1 var(--font-body);letter-spacing:.05em;white-space:nowrap}
 .home-academy-progress>i{height:1px;min-width:5px;flex:1;background:linear-gradient(90deg,#9f78de,#eadcff);opacity:.68}
 .home-academy-living[data-motion-state="running"] .home-academy-sunlight{animation:home-academy-sun 12s ease-in-out infinite alternate}
 .home-academy-living[data-motion-state="running"] .home-academy-leaf-shadow{animation:home-academy-breeze 9s ease-in-out infinite alternate}
-.home-academy-living[data-motion-state="running"] .home-academy-book-page{animation:home-academy-page 9s cubic-bezier(.45,.05,.3,1) infinite}
+.home-academy-living[data-motion-state="running"] .home-academy-state{animation:home-academy-focus 8s ease-in-out infinite}
+.home-academy-living[data-motion-state="running"] .home-academy-feedback{animation-delay:-2s}
+.home-academy-living[data-motion-state="running"] .home-academy-retry{animation-delay:-4s}
+.home-academy-living[data-motion-state="running"] .home-academy-gate{animation-delay:-6s}
 .home-academy-living[data-motion-state="running"] .home-academy-progress>i{animation:home-academy-progress-pulse 6s ease-in-out infinite}
 @keyframes home-live-route{to{stroke-dashoffset:0}}
 @keyframes home-logistics-rain{from{background-position:0 0,0 0,11px 13px}to{background-position:0 0,-5px 38px,5px 61px}}
 @keyframes home-logistics-snow{to{background-position:0 46px,10px 58px}}
 @keyframes home-logistics-heat{from{transform:translateY(0) scaleY(1);filter:blur(0)}to{transform:translateY(-3px) scaleY(1.03);filter:blur(.35px)}}
 @keyframes home-logistics-cloud{from{transform:translateX(-2%)}to{transform:translateX(2.5%)}}
-@keyframes home-letter-hop{0%,8%,100%{transform:translateY(0) rotate(0)}2.8%{transform:translateY(-.14em) rotate(-7deg)}5.2%{transform:translateY(.015em) rotate(2deg)}}
 @keyframes home-underline-draw{from{transform:rotate(-2deg) scaleX(0)}to{transform:rotate(-2deg) scaleX(1)}}
 @keyframes home-road-streak{0%,100%{opacity:0;translate:0 0}22%,65%{opacity:.8}75%{opacity:0;translate:-25px 42px}}
 
 @keyframes home-system-packet{0%,20%{translate:-24px 0;opacity:0}36%,68%{opacity:1}82%,100%{translate:8px 0;opacity:0}}
 @keyframes home-system-verified{0%,56%,100%{scale:1;opacity:.62}68%,78%{scale:1.3;opacity:1}}
-@keyframes home-academy-page{0%,62%,100%{transform:rotate(3deg) rotateY(0);opacity:.98}72%{transform:rotate(2deg) rotateY(-18deg);opacity:.92}82%{transform:rotate(3deg) rotateY(-4deg);opacity:.98}}
+@keyframes home-system-surface{0%,100%{box-shadow:0 8px 20px #1a0f0a55,inset 0 1px #fff2d633;translate:0 0}50%{box-shadow:0 11px 25px #1a0f0a70,inset 0 1px #fff2d644;translate:0 -2px}}
+@keyframes home-academy-focus{0%,100%{translate:0 0;box-shadow:0 8px 18px rgba(35,20,55,.18)}50%{translate:0 -2px;box-shadow:0 12px 24px rgba(35,20,55,.28)}}
 @keyframes home-academy-breeze{from{transform:rotate(-2deg) translate3d(0,0,0)}to{transform:rotate(3deg) translate3d(-3px,4px,0)}}
 @keyframes home-academy-sun{from{opacity:.68;transform:translateX(-2%)}to{opacity:.92;transform:translateX(2%)}}
 @keyframes home-academy-progress-pulse{0%,100%{opacity:.45}50%{opacity:.95}}
-@keyframes home-page-turn{0%,100%{transform:skewY(-8deg) rotate(-8deg);opacity:0}42%,60%{transform:skewY(-8deg) rotate(-8deg) rotateY(-55deg);opacity:.75}}
 @keyframes home-ink-write{0%,15%{stroke-dashoffset:90}60%,100%{stroke-dashoffset:0}}
-@keyframes home-book-choose{0%,100%{translate:0 0;rotate:0deg;opacity:0}48%{translate:-4px -2px;rotate:-5deg;opacity:.6}}
-.home-master-route::after{content:"";position:absolute;z-index:-1;inset:65% 0 0;background:linear-gradient(180deg,transparent 0%,#122940 27%,#122940 100%)}
-.home-master-route-marketing::after{background:linear-gradient(180deg,transparent,#172a23 27%,#172a23)}
-.home-master-route-technology::after{background:linear-gradient(180deg,transparent,#44362e 27%,#44362e)}
-.home-master-route-academy::after{background:linear-gradient(180deg,transparent,#382b50 27%,#382b50)}
+.home-master-route::after{content:"";position:absolute;z-index:-1;inset:58% 0 0;background:linear-gradient(180deg,transparent 0%,color-mix(in srgb,currentColor 0%,transparent) 1%,#132a47 36%,#132a47 100%);pointer-events:none}
+.home-master-route-logistics::after{background:linear-gradient(180deg,transparent 0%,#132a47e8 28%,#132a47 45%)}
+.home-master-route-technology::after{background:linear-gradient(180deg,transparent 0%,#0a2a3ee8 28%,#0a2a3e 45%)}
+.home-master-route-academy::after{background:linear-gradient(180deg,transparent 0%,#0a3328e8 28%,#0a3328 45%)}
+.home-master-route-marketing::after{background:linear-gradient(180deg,transparent 0%,#3b1e16e8 28%,#3b1e16 45%)}
 .home-master-route-copy{display:grid;gap:12px;min-width:0;width:100%}
 .home-master-route-copy small{display:flex;align-items:center;gap:10px;font:700 clamp(.58rem,.85vw,.85rem)/1.3 var(--font-body);letter-spacing:.12em;text-transform:uppercase}
 .home-master-route-copy i{display:block;width:5px;height:18px;border-radius:5px;background:var(--route-accent)}
@@ -511,7 +863,7 @@ animation:home-logistics-rain 1.45s linear infinite;opacity:.28;filter:blur(.18p
 .home-master-route:hover .home-portal-art img{filter:brightness(1.07)}
 .home-master-route:focus-visible{outline:4px solid #fff;outline-offset:-7px;box-shadow:inset 0 0 0 10px #131b52}
 @media(max-width:1000px){.home-master{padding-top:7rem}.home-master-route{padding:18px}.home-master-route-arrow{width:36px;height:36px;right:12px;top:60%}.home-master-route-copy strong{font-size:1.5rem}.home-route-detail{font-size:.73rem}.home-master-route-copy small{font-size:.6rem}}
-@media(max-width:700px){.home-master{padding-top:6rem}.home-master-shell{width:calc(100% - 24px)}.home-master-intro{padding:0 8px 24px}.home-master-display{font-size:clamp(2.5rem,10.2vw,4.4rem);letter-spacing:-.065em}.home-master-script{font-size:.82rem}.home-master-stage{grid-template-columns:1fr;gap:10px;border:0;border-radius:26px;overflow:visible;box-shadow:none;background:transparent}.home-master-route{padding:20px 16px;aspect-ratio:4/5;border:1px solid rgba(17,19,24,.1);border-radius:24px}.home-master-route-copy{gap:8px}.home-master-route-copy strong{font-size:clamp(1.35rem,5vw,2rem);padding:0 52px 0 0}.home-master-route-copy small{font-size:.56rem;gap:6px;letter-spacing:.08em}.home-route-detail{font-size:.7rem}.home-master-route-arrow{right:12px;top:52%;width:36px;height:36px}.home-master-route-technology .home-master-route-arrow{top:46%}.home-master-route::after{inset:56% 0 0}.home-live-explainer{inset:7% 5px 57%;}.home-live-kicker{left:0;padding:4px 6px;font-size:.58rem}.home-live-path{display:none}.home-live-step{max-width:49%;padding:5px 7px;gap:4px;border-radius:10px}.home-live-step::before{width:4px;height:4px}.home-live-step b{font-size:.48rem}.home-live-step em{font-size:.625rem;line-height:1.14;white-space:normal}.home-live-step[data-live-step="event"]{left:0;top:34%}.home-live-step[data-live-step="system"]{left:51%;top:34%}.home-live-step[data-live-step="human"]{left:0;top:69%}.home-live-step[data-live-step="outcome"]{right:0;top:69%}.home-system-display,.home-learning-detail{inset:6% 5% 38%}.home-system-card{padding:7px;min-height:58px}.home-system-card small,.home-system-caption,.home-academy-caption,.home-academy-progress small,.home-academy-book small{font-size:.625rem}.home-system-card strong,.home-system-readback strong{font-size:.66rem}.home-system-card em{font-size:.58rem}.home-academy-book{inset:15% 4% 25%}.home-academy-progress{gap:4px}.home-academy-progress small{padding:4px 5px}}
+@media(max-width:700px){.home-master-route:is(:hover,:focus-visible){transform:none}.home-logistics-cinematic{object-position:center 66%}.home-master{padding-top:6rem}.home-master-shell{width:calc(100% - 24px)}.home-master-intro{padding:0 8px 24px}.home-master-display{font-size:clamp(2.5rem,10.2vw,4.4rem);letter-spacing:-.065em}.home-master-script{font-size:.82rem}.home-master-stage{grid-template-columns:1fr;gap:10px;border:0;border-radius:26px;overflow:visible;box-shadow:none;background:transparent}.home-master-route{padding:20px 16px;aspect-ratio:4/5;border:1px solid rgba(17,19,24,.1);border-radius:24px}.home-master-route-copy{gap:8px}.home-master-route-copy strong{font-size:clamp(1.35rem,5vw,2rem);padding:0 52px 0 0}.home-master-route-copy small{font-size:.56rem;gap:6px;letter-spacing:.08em}.home-route-detail{font-size:.7rem}.home-master-route-arrow{right:12px;top:52%;width:36px;height:36px}.home-master-route-technology .home-master-route-arrow{top:46%}.home-master-route::after{inset:56% 0 0}.home-live-explainer{inset:7% 5px 57%;}.home-live-kicker{left:0;padding:4px 6px;font-size:.58rem}.home-live-path{display:none}.home-live-step{max-width:49%;padding:5px 7px;gap:4px;border-radius:10px}.home-live-step::before{width:4px;height:4px}.home-live-step b{font-size:.48rem}.home-live-step em{font-size:.625rem;line-height:1.14;white-space:normal}.home-live-step[data-live-step="event"]{left:0;top:34%}.home-live-step[data-live-step="system"]{left:51%;top:34%}.home-live-step[data-live-step="human"]{left:0;top:69%}.home-live-step[data-live-step="outcome"]{right:0;top:69%}.home-system-display,.home-learning-detail{inset:6% 5% 38%}.home-system-card{padding:7px;min-height:66px}.home-tech-mini i,.home-tech-mini b{font-size:.5rem;padding:3px}.home-system-card small,.home-system-caption,.home-academy-caption,.home-academy-progress small,.home-academy-state small{font-size:.625rem}.home-system-card strong,.home-system-readback strong{font-size:.66rem}.home-system-card em{font-size:.58rem}.home-academy-workflow{inset:14% 0 25% 49%;grid-template-columns:1fr;gap:3px}.home-academy-state{padding:5px}.home-academy-state strong{font-size:.68rem}.home-academy-state em{font-size:.58rem}.home-academy-progress{gap:4px}.home-academy-progress small{padding:4px 5px}}
 @media(min-width:701px) and (max-width:1000px){
   /* Tablet: four 180px-wide pillars are illegible. Give each living scene real space. */
   .home-master-stage{grid-template-columns:repeat(2,minmax(0,1fr))}
@@ -520,5 +872,27 @@ animation:home-logistics-rain 1.45s linear infinite;opacity:.28;filter:blur(.18p
   .home-marketing-journey{inset:6% 7% 31%}
 }
 @media(hover:none){.home-live-explainer,.home-live-step{opacity:1;transform:none}.home-live-path path{stroke-dashoffset:0}}
-@media(prefers-reduced-motion:reduce){.home-master-route-logistics .home-portal-art img{animation:none!important;transform:none!important}.home-logistics-weather{animation:none!important;transition:none!important}.home-portal-art img{transition:none!important}.home-portal-motion,.home-display-i,.home-master-script::after,.home-scene-detail,.home-scene-detail *{animation:none!important;transition:none!important}.home-live-explainer,.home-live-step{opacity:1!important;transform:none!important;transition:none!important}.home-live-path path{stroke-dashoffset:0!important;animation:none!important}}
+@media(max-width:700px) and (hover:none){.home-master-route-arrow{display:grid;width:44px;height:44px}.home-master-route-copy strong{padding-right:52px}}
+@media(prefers-reduced-motion:reduce){.home-master-route:is(:hover,:focus-visible){transform:none!important;box-shadow:none!important;transition:none!important}.home-master-route:is(:hover,:focus-visible)::before{transition:none!important}.home-logistics-cinematic{display:none!important}.home-master-route-logistics .home-portal-art img{animation:none!important;transform:none!important}.home-logistics-weather{animation:none!important;transition:none!important}.home-portal-art img{transition:none!important}.home-display-i,.home-display-i::after,.home-master-script::after,.home-scene-detail,.home-scene-detail *{animation:none!important;transition:none!important}.home-live-explainer,.home-live-step{opacity:1!important;transform:none!important;transition:none!important}.home-live-path path{stroke-dashoffset:0!important;animation:none!important}}
+/* Phase 1: the real creative process is the visual proof, without decorative mock dashboards. */
+:is(.home-marketing-layer-stack,.home-cinematic-layer-stack){position:absolute;inset:0;display:block;overflow:hidden;background:#cdc8c5}
+:is(.home-marketing-layer-stack,.home-cinematic-layer-stack)>img,
+:is(.home-marketing-layer-stack,.home-cinematic-layer-stack)>video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 50%}
+:is(.home-marketing-layer-stack,.home-cinematic-layer-stack)>img{z-index:0}
+:is(.home-marketing-layer-stack,.home-cinematic-layer-stack)>video{z-index:1;opacity:0;transition:opacity .45s ease}
+:is(.home-marketing-layer-stack,.home-cinematic-layer-stack)[data-media-state="ready"]>video{opacity:1}
+.home-master-route-marketing .home-marketing-journey,.home-master-route-marketing .home-live-explainer{display:none!important}
+/* Phase 2: match Claude's quiet four-window chooser. Keep real Tech/Academy routes and
+   source-labelled explainer markup for future product-specific pages, but do not
+   superimpose miniature faux dashboards or progress cards onto cinematic Home art. */
+.home-master-route-technology .home-system-display,
+.home-master-route-academy .home-academy-living{display:none!important}
+@media(prefers-reduced-motion:reduce){:is(.home-marketing-layer-stack,.home-cinematic-layer-stack)>video{display:none!important;transition:none!important}}
+/* Touch Safari/iPad split view: keep four clear full-width actions at 701–820px.
+   Desktop/tablet mouse remains a responsive two-column layout. */
+@media (hover:none) and (pointer:coarse) and (min-width:701px) and (max-width:820px){
+  .home-master-shell{width:calc(100% - 24px)}
+  .home-master-stage{grid-template-columns:minmax(0,1fr);gap:10px;border:0;border-radius:26px;overflow:visible;box-shadow:none;background:transparent}
+  .home-master-route{min-width:0;width:100%;aspect-ratio:4/5;border:1px solid rgba(17,19,24,.1);border-radius:24px}
+}
 </style>

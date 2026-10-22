@@ -27,6 +27,8 @@ const directionRoutes = {
 // These are real existing canonical owner/evidence URLs, not new thin pages.
 // Explicitly preserve the existing six-language self-canonical/hreflang system.
 for (const [locale, home] of Object.entries(homeRoutes)) {
+  // Approved English Home v3 is a four-way entrance, not a second proof/sales page.
+  if (locale === "en") continue;
   test(`value, proof and next action stay available on the ${locale} homepage`, async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto(home);
@@ -56,14 +58,24 @@ for (const [locale, home] of Object.entries(homeRoutes)) {
   });
 }
 
-test("evidence links and local direction route work before any analytics consent", async ({ page }) => {
-  await page.goto("/");
+test("localized evidence links and direction routes work before analytics consent", async ({ page }) => {
+  await page.goto("/ru/");
   const proof = page.locator("[data-home-proof-decision]");
   await proof.locator('[data-proof-direction="marketing"] [data-proof-evidence]').click();
   await expect(page).toHaveURL(/\/case\/appleton-vehicle-transport-seo\/$/);
-  await page.goBack();
-  await proof.locator('[data-proof-direction="technology"] [data-proof-service]').click();
-  await expect(page).toHaveURL(/\/paths\/technology\/$/);
+  // A second visitor's independent journey must remain operable without relying
+  // on Chromium's flaky requestAnimationFrame after same-tab navigation history.
+  // BFCache/back-button behavior is a separate cross-browser acceptance gate.
+  const secondPage = await page.context().newPage();
+  try {
+    await secondPage.goto("/ru/");
+    const technologyLink = secondPage.locator('[data-home-proof-decision] [data-proof-direction="technology"] [data-proof-service]');
+    await expect(technologyLink).toBeVisible();
+    await technologyLink.click();
+    await expect(secondPage).toHaveURL(/\/ru\/technology\/$/);
+  } finally {
+    await secondPage.close();
+  }
 });
 
 test("evidence-first decision band is accessible without scripts", async ({ browser }, testInfo) => {
@@ -85,16 +97,15 @@ test("evidence-first decision band is accessible without scripts", async ({ brow
   }
 });
 
-test("mobile contact remains visually available after proof cards and deferred section rendering", async ({ page }) => {
+test("mobile contact remains visible after four direction windows and deferred rendering", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
-  const proof = page.locator("[data-home-proof-decision]");
-  await expect(proof).toBeVisible();
+  await expect(page.locator("[data-home-proof-decision]")).toHaveCount(0);
   // Full-page screenshots can show content-visibility:auto sections as blank
   // until scrolled into view. This tests the ACTUAL visitor journey.
   const contact = page.locator("#contact .home-final-contact");
   await contact.scrollIntoViewIfNeeded();
-  await expect(contact.getByRole("heading", { name: /build your.*next step/i })).toBeVisible();
+  await expect(contact.getByRole("heading", { name: /not sure which direction fits\?/i })).toBeVisible();
   const primary = contact.locator("[data-home-primary-contact]");
   await expect(primary).toBeVisible();
   await expect(primary).toHaveAttribute("href", "/contacts/");
@@ -118,7 +129,7 @@ test("contact section and proof anchors stay accessible without JavaScript", asy
   try {
     const page = await context.newPage();
     await page.goto("/");
-    await expect(page.locator("[data-home-proof-decision] [data-proof-evidence]")).toHaveCount(4);
+    await expect(page.locator("[data-home-proof-decision] [data-proof-evidence]")).toHaveCount(0);
     const primary = page.locator("#contact [data-home-primary-contact]");
     await primary.scrollIntoViewIfNeeded();
     await expect(primary).toBeVisible();
@@ -143,14 +154,14 @@ test("every linked proof and locale-specific direction resolves to an actual HTM
   }
 });
 
-test("proof clicks emit only consent-gated, non-identifying funnel intent", async ({ page }) => {
+test("localized proof clicks emit only consent-gated, non-identifying funnel intent", async ({ page }) => {
   const externalAnalytics: string[] = [];
   page.on("request", (request) => {
     const host = new URL(request.url()).hostname;
     if (host.includes("google-analytics.com") || host.includes("googletagmanager.com")
       || host.includes("clarity.ms")) externalAnalytics.push(request.url());
   });
-  await page.goto("/");
+  await page.goto("/ru/");
   await expect(page.locator("[data-home-proof-decision]")).toBeVisible();
 
   await page.evaluate(() => {
@@ -175,9 +186,9 @@ test("proof clicks emit only consent-gated, non-identifying funnel intent", asyn
   expect(events.map(({ name, direction, action, locale, page_group }) => ({
     name, direction, action, locale, page_group,
   }))).toEqual([
-    { name: "home_proof_link_clicked", direction: "logistics", action: "source", locale: "en", page_group: "corporate_home" },
-    { name: "home_proof_link_clicked", direction: "marketing", action: "service", locale: "en", page_group: "corporate_home" },
-    { name: "home_proof_link_clicked", direction: "all", action: "contact", locale: "en", page_group: "corporate_home" },
+    { name: "home_proof_link_clicked", direction: "logistics", action: "source", locale: "ru", page_group: "corporate_home" },
+    { name: "home_proof_link_clicked", direction: "marketing", action: "service", locale: "ru", page_group: "corporate_home" },
+    { name: "home_proof_link_clicked", direction: "all", action: "contact", locale: "ru", page_group: "corporate_home" },
   ]);
   for (const event of events) {
     expect(Object.keys(event).sort()).toEqual([

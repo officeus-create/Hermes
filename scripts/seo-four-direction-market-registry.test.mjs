@@ -1,7 +1,7 @@
 import { access, readFile } from "node:fs/promises";
 import { join } from "node:path";
 
-const root = new URL("../", import.meta.url).pathname;
+const root = decodeURIComponent(new URL("../", import.meta.url).pathname);
 const registryPath = join(root, "data", "marketing", "seo-four-direction-market-registry.json");
 const registry = JSON.parse(await readFile(registryPath, "utf8"));
 const errors = [];

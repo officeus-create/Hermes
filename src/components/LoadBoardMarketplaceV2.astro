@@ -37,7 +37,7 @@ const isLoadBoard = Astro.url.pathname === "/load-board/";
       </form>
 
       <div class="lbv2-quick-row">
-        <div class="lbv2-quick-filters" aria-label="Quick equipment filters">
+        <div class="lbv2-quick-filters" role="group" aria-label="Quick equipment filters">
           <button type="button" data-lbv2-equipment="car hauler">Car Hauler</button>
           <button type="button" data-lbv2-equipment="hotshot">Hotshot</button>
           <button type="button" data-lbv2-equipment="dry van">Dry Van</button>
@@ -237,6 +237,22 @@ const isLoadBoard = Astro.url.pathname === "/load-board/";
         }
       }
     } catch {}
+
+    if (searchForm) {
+      const requestedEquipment = (new URLSearchParams(window.location.search).get("equipment") || "")
+        .trim()
+        .toLowerCase()
+        .replaceAll("_", " ")
+        .replaceAll("-", " ");
+      const equipmentControl = searchForm.elements.namedItem("equipment");
+      if (
+        requestedEquipment
+        && equipmentControl instanceof HTMLSelectElement
+        && [...equipmentControl.options].some((option) => option.value === requestedEquipment)
+      ) {
+        equipmentControl.value = requestedEquipment;
+      }
+    }
 
     const makeNode = (tag: string, className = "", text?: unknown) => {
       const node = document.createElement(tag);

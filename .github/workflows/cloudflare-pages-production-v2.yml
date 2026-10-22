@@ -140,7 +140,7 @@ jobs:
             {
               url: "https://hermeslogisticsus.com/paths/academy/",
               markers: [
-                "Build practical skills across five Hermes Academy tracks.",
+                "What do you want to become?",
                 "U.S. Logistics Operations",
                 "Marketing",
                 "IT & AI",
@@ -234,6 +234,11 @@ jobs:
       - name: Install Chromium for production runtime verification
         run: npx playwright install --with-deps chromium
 
+      - name: Verify Home cinematic video runtime
+        env:
+          HERMES_PRODUCTION_URL: https://hermeslogisticsus.com
+        run: node scripts/check-home-video-production.mjs
+
       - name: Verify approved production contact runtime without submitting
         env:
           CONTACT_RUNTIME_URL: https://hermeslogisticsus.com/paths/logistics/
@@ -267,6 +272,7 @@ jobs:
             echo "- Release owner: Cloudflare Git integration exact-SHA deploy"
             echo "- Deployment evidence: ${NATIVE_DEPLOYMENT_DETAILS:-not returned}"
             echo "- Logistics contact verification: preview-safe Logistics contact shell and matching hydrated preview gate"
+            echo "- Home cinematic verification: four lanes require byte-range delivery, autonomous visible playback, visible frame change, reduced-motion fallback and Save-Data fallback"
             echo "- WEB10 Academy production contract: five public learning tracks required; retired two-program copy forbidden"
             echo
             echo "> No token, account ID, binding ID, recipient, or secret value is written to this summary."

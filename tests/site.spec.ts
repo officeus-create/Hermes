@@ -172,9 +172,10 @@ test("homepage final contact keeps one primary route and one direct fallback", a
   const fallback = block.locator("[data-home-contact-fallback]");
 
   await expect(primary).toHaveAttribute("href", "/contacts/");
-  await expect(primary).toContainText("Talk to Hermes");
+  await expect(primary).toContainText("Describe your request");
   await expect(fallback).toHaveAttribute("href", /^mailto:/);
-  await expect(block.locator("a.home-final-contact-action")).toHaveCount(2);
+  await expect(block.locator("a.home-final-contact-action")).toHaveCount(1);
+  await expect(block.getByRole("navigation", { name: "Contact Hermes by direction" }).getByRole("link")).toHaveCount(4);
   await expect(block.locator('a[href^="tel:"]')).toHaveCount(0);
 });
 
@@ -834,7 +835,7 @@ test("marketing presents website, SEO, social media, and growth as connected ser
 test("business directions expose the approved service areas and service schema", async ({ page }) => {
   await page.goto("/paths/logistics/");
   await expect(page).toHaveTitle(/Wisconsin/);
-  await expect(page.getByText(/Wisconsin first/)).toBeVisible();
+  await expect(page.locator(".detail-service-area")).toContainText("Wisconsin first");
   await expect(page.locator('script[type="application/ld+json"]')).toHaveCount(1);
 
   for (const slug of ["marketing", "academy", "technology"]) {

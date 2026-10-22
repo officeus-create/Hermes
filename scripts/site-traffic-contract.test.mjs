@@ -70,10 +70,12 @@ assert.doesNotMatch(publicCounter, />Live site traffic</i);
 assert.match(layout, /<SiteTrafficCollector \/>/);
 assert.doesNotMatch(layout, /<PublicTrafficCounter\s*\/>/, "Shared layout must not display site-wide totals as a public overlay");
 assert.doesNotMatch(layout, /showPublicTrafficCounter/);
-assert.match(homepage, /import PublicTrafficCounter from "\.\.\/components\/PublicTrafficCounter\.astro"/);
-assert.match(homepage, /<PublicTrafficCounter \/>/);
-assert.match(homepage, /home-traffic-inline-section/);
-assert.match(homepage, /Sessions are not unique visitors or customers/);
+// Claude-approved Home v3 routes visitors to one of four divisions. Traffic
+// collection and the internal owner dashboard remain functional, but a public
+// promotional counter is not rendered before its source data is verified.
+assert.doesNotMatch(homepage, /import PublicTrafficCounter/);
+assert.doesNotMatch(homepage, /<PublicTrafficCounter\s*\/>/);
+assert.doesNotMatch(homepage, /home-traffic-inline-section/);
 assert.doesNotMatch(homepage, /\bunique users today\b/i);
 
 console.log("Owner site traffic counter contract OK");

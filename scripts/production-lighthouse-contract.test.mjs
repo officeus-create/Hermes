@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { spawnSync } from "node:child_process";
 
-const root = new URL("../", import.meta.url).pathname;
+const root = decodeURIComponent(new URL("../", import.meta.url).pathname);
 const summarizer = "scripts/summarize-production-lighthouse.mjs";
 const syntax = spawnSync(process.execPath, ["--check", summarizer], { cwd: root, encoding: "utf8" });
 assert.equal(syntax.status, 0, `${summarizer} must pass node --check: ${syntax.stderr || syntax.stdout}`);

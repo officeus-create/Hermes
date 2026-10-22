@@ -8,8 +8,8 @@ test("WEB 10 keeps the approved header order without rewriting localized or foot
   const header = await source("src/components/SiteHeader.astro");
   const localized = await source("src/components/LocalizedOverviewPage.astro");
   const footer = await source("src/components/SiteFooter.astro");
-  const headerOrder = /logistics:\s*0[\s\S]*marketing:\s*1[\s\S]*technology:\s*2[\s\S]*academy:\s*3/;
-  const existingSurfaceOrder = /logistics:\s*0[\s\S]*marketing:\s*1[\s\S]*technology:\s*2[\s\S]*academy:\s*3/;
+  const headerOrder = /logistics:\s*0[\s\S]*technology:\s*1[\s\S]*academy:\s*2[\s\S]*marketing:\s*3/;
+  const existingSurfaceOrder = /logistics:\s*0[\s\S]*technology:\s*1[\s\S]*academy:\s*2[\s\S]*marketing:\s*3/;
 
   expect(header).toMatch(headerOrder);
   for (const file of [localized, footer]) expect(file).toMatch(existingSurfaceOrder);

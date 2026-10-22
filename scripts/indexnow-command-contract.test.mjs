@@ -3,7 +3,7 @@ import { existsSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 import { spawnSync } from "node:child_process";
 
-const root = new URL("../", import.meta.url).pathname;
+const root = decodeURIComponent(new URL("../", import.meta.url).pathname);
 const manualWorkflow = await readFile(new URL("../.github/workflows/indexnow-submit.yml", import.meta.url), "utf8");
 const moneyWorkflow = await readFile(new URL("../.github/workflows/indexnow-money-pages.yml", import.meta.url), "utf8");
 const retiredIssueCommentWorkflow = new URL("../.github/workflows/indexnow-seo-command.yml", import.meta.url);

@@ -1,0 +1,244 @@
+---
+import { ArrowRight, BarChart3, CheckCircle2, Globe2, Link2, Search, ShieldCheck, Sparkles } from "@lucide/astro";
+
+type Variant = "general" | "local" | "logistics" | "repair" | "dealer";
+
+interface Props {
+  variant: Variant;
+}
+
+const { variant } = Astro.props;
+
+const variantCopy: Record<Variant, {
+  label: string;
+  demand: string;
+  owner: string;
+  distribution: string;
+  action: string;
+  note: string;
+}> = {
+  general: {
+    label: "SEO / GEO",
+    demand: "Query × page evidence",
+    owner: "Commercial page owner",
+    distribution: "Search / AI discovery surfaces",
+    action: "Qualified inquiry path",
+    note: "Use finalized search evidence, technical ownership, production readback, and privacy-safe actions to decide what changes next.",
+  },
+  local: {
+    label: "Local SEO / Entity",
+    demand: "Service + location eligibility",
+    owner: "Page + business entity owner",
+    distribution: "Local / search discovery",
+    action: "Call · directions · approved inquiry",
+    note: "Use real locations or eligible service areas, consistent business facts, owned pages, and approved customer actions. No virtual-office tactics.",
+  },
+  logistics: {
+    label: "Logistics SEO / GEO",
+    demand: "Buyer intent × service page",
+    owner: "Logistics canonical owner",
+    distribution: "Search / AI / internal discovery",
+    action: "Qualified logistics inquiry",
+    note: "Map equipment, service, market, carrier/customer and buyer-intent families to one preferred owner before changing copy or adding pages.",
+  },
+  repair: {
+    label: "Auto Repair SEO / Local",
+    demand: "Repair service × eligible area",
+    owner: "Service page + shop entity",
+    distribution: "Search / local discovery",
+    action: "Call · directions · booking path",
+    note: "Connect real repair services, real shop facts, local eligibility and the approved customer action without fabricated locations, reviews or demand.",
+  },
+  dealer: {
+    label: "Auto Dealer SEO / Local",
+    demand: "Market × inventory/service intent",
+    owner: "Dealer page + entity owner",
+    distribution: "Search / local / inventory discovery",
+    action: "Qualified dealer inquiry",
+    note: "Keep local, inventory, service and dealership intent attached to real business facts and one preferred owner per decision.",
+  },
+};
+
+const copy = variantCopy[variant];
+
+const stages = [
+  {
+    key: "evidence",
+    label: "Demand evidence",
+    title: copy.demand,
+    body: "Start with finalized query/page, business, service-area, or other approved evidence. Absence from a report is not proof of zero demand.",
+    icon: Search,
+  },
+  {
+    key: "owner",
+    label: "Ownership",
+    title: copy.owner,
+    body: "Choose one preferred canonical owner for the decision and support it with internal links, entity context, and only the structured data the page really supports.",
+    icon: Link2,
+  },
+  {
+    key: "distribution",
+    label: "Indexability + distribution",
+    title: copy.distribution,
+    body: "Validate crawlability, canonical/indexability rules, sitemap or eligible entity surfaces, and the distribution path without treating submission as indexing.",
+    icon: Globe2,
+  },
+  {
+    key: "readback",
+    label: "Production readback",
+    title: "Deploy → exact owner → live readback",
+    body: "A merged or deployed change is not automatically a live outcome. Read back the intended production owner and release state before measuring impact.",
+    icon: CheckCircle2,
+  },
+  {
+    key: "action",
+    label: "Qualified action",
+    title: copy.action,
+    body: "Connect discovery to a useful next step, while keeping accepted delivery, human receipt, qualification, sale, and revenue as separate states.",
+    icon: Sparkles,
+  },
+  {
+    key: "iterate",
+    label: "Next bounded change",
+    title: "Evidence decides the next release",
+    body: "Use the next finalized measurement window, owner readback, inquiry quality, and technical evidence to choose one bounded improvement instead of rewriting everything.",
+    icon: BarChart3,
+  },
+];
+---
+
+<section class="seo-proof section" aria-labelledby="seo-proof-title" data-seo-proof data-seo-proof-variant={variant}>
+  <div class="shell">
+    <div class="seo-proof-heading">
+      <div>
+        <p class="eyebrow">{copy.label} · Evidence proof replay</p>
+        <h2 id="seo-proof-title">See how search evidence becomes a controlled release — and then a measurable business path.</h2>
+      </div>
+      <p>{copy.note}</p>
+    </div>
+
+    <div class="seo-proof-theatre">
+      <div class="seo-proof-status">
+        <Search size={15} aria-hidden="true" />
+        <span>EVIDENCE REPLAY</span>
+        <strong>NO RANKING GUARANTEE</strong>
+      </div>
+
+      <div class="seo-proof-track" aria-hidden="true">
+        <span class="seo-proof-track-base"></span>
+        <span class="seo-proof-track-current"></span>
+        <i class="seo-proof-packet"></i>
+      </div>
+
+      <div class="seo-proof-panels" aria-hidden="true">
+        <article>
+          <small>DEMAND INPUT</small>
+          <strong>{copy.demand}</strong>
+          <div class="seo-proof-query-lines"><i></i><i></i><i></i></div>
+          <span>Finalized evidence, not invented volume</span>
+        </article>
+        <article>
+          <small>OWNER</small>
+          <strong>{copy.owner}</strong>
+          <div class="seo-proof-owner-chip"><Link2 size={14} /> CANONICAL</div>
+          <span>One preferred owner per decision</span>
+        </article>
+        <article>
+          <small>DISCOVERY</small>
+          <strong>{copy.distribution}</strong>
+          <div class="seo-proof-discovery-chips"><b>INDEXABILITY</b><b>SITEMAP</b><b>ENTITY</b></div>
+          <span>Submission ≠ indexing ≠ ranking</span>
+        </article>
+        <article>
+          <small>READBACK</small>
+          <strong>Production owner verified</strong>
+          <div class="seo-proof-readback"><CheckCircle2 size={15} /> EXACT OWNER</div>
+          <span>Merge/deploy and live readback stay separate</span>
+        </article>
+        <article>
+          <small>ACTION PATH</small>
+          <strong>{copy.action}</strong>
+          <div class="seo-proof-action"><ArrowRight size={14} /> NEXT STEP</div>
+          <span>Action ≠ qualification ≠ revenue</span>
+        </article>
+      </div>
+
+      <p class="seo-proof-visual-boundary">
+        Sanitized proof model only. Search engines, local platforms, AI systems, customers and markets remain outside Hermes control.
+      </p>
+    </div>
+
+    <ol class="seo-proof-stages" aria-label="SEO and GEO evidence workflow">
+      {stages.map((stage, index) => {
+        const Icon = stage.icon;
+        return (
+          <li data-seo-proof-stage={stage.key}>
+            <span>0{index + 1}</span>
+            <Icon size={20} aria-hidden="true" />
+            <div>
+              <small>{stage.label}</small>
+              <strong>{stage.title}</strong>
+              <p>{stage.body}</p>
+            </div>
+          </li>
+        );
+      })}
+    </ol>
+
+    <div class="seo-proof-boundary">
+      <ShieldCheck size={19} aria-hidden="true" />
+      <div>
+        <strong>Visibility, indexing, ranking, clicks, inquiries, sales and revenue are different outcomes.</strong>
+        <p>
+          Hermes can research, implement, test, submit where appropriate, measure available evidence, and improve the approved system. No search engine, AI answer surface, business profile, customer action, ranking, traffic, lead volume, revenue, or timing is guaranteed.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .seo-proof{background:#f7f6f3;color:#172033}
+  .seo-proof-heading{display:grid;grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr);gap:clamp(2rem,6vw,6rem);align-items:end;margin-bottom:1.4rem}
+  .seo-proof-heading h2{max-width:790px;margin:.45rem 0 0}
+  .seo-proof-heading>p{max-width:720px;margin:0;color:#666c79;line-height:1.7}
+  .seo-proof-theatre{position:relative;overflow:hidden;padding:4rem 1rem 1rem;border:1px solid rgba(23,32,51,.1);border-radius:28px;background:radial-gradient(circle at 14% 30%,rgba(0,200,83,.09),transparent 27%),linear-gradient(145deg,#fff,#eef3f7 66%,#e4edf5);box-shadow:0 26px 70px rgba(23,32,51,.06)}
+  .seo-proof-status{position:absolute;top:1rem;left:1rem;right:1rem;display:flex;gap:.5rem;align-items:center;color:#52606f;font:750 .56rem/1 var(--font-mono);letter-spacing:.08em}
+  .seo-proof-status svg{color:#00a844}
+  .seo-proof-status strong{margin-left:auto;padding:.4rem .55rem;border:1px solid rgba(23,32,51,.12);border-radius:999px;background:#fff;color:#172033;font-size:.52rem;white-space:nowrap}
+  .seo-proof-track{position:absolute;z-index:0;left:6%;right:6%;top:51%;height:2px}
+  .seo-proof-track-base,.seo-proof-track-current{position:absolute;inset:0;border-radius:999px}
+  .seo-proof-track-base{background:rgba(23,32,51,.11)}
+  .seo-proof-track-current{background:linear-gradient(90deg,rgba(0,200,83,.12),rgba(0,200,83,.62),rgba(0,200,83,.12))}
+  .seo-proof-packet{position:absolute;top:50%;left:0;width:9px;height:9px;border-radius:50%;background:#00a844;box-shadow:0 0 0 7px rgba(0,200,83,.08);transform:translate(-50%,-50%);animation:seo-proof-packet 7.2s ease-in-out infinite}
+  .seo-proof-panels{position:relative;z-index:2;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:.6rem}
+  .seo-proof-panels article{display:grid;align-content:start;gap:.45rem;min-height:210px;padding:.9rem;border:1px solid rgba(23,32,51,.09);border-radius:16px;background:rgba(255,255,255,.9);box-shadow:0 10px 24px rgba(23,32,51,.04)}
+  .seo-proof-panels small{color:#008f3b;font:750 .48rem/1.2 var(--font-mono);letter-spacing:.08em}
+  .seo-proof-panels strong{font-size:.78rem;line-height:1.3}
+  .seo-proof-panels>article>span{margin-top:auto;color:#666c79;font-size:.57rem;line-height:1.4}
+  .seo-proof-query-lines{display:grid;gap:.28rem;margin-top:.15rem}
+  .seo-proof-query-lines i{display:block;height:8px;border-radius:999px;background:#e4edf5}
+  .seo-proof-query-lines i:nth-child(2){width:72%}.seo-proof-query-lines i:nth-child(3){width:48%}
+  .seo-proof-owner-chip,.seo-proof-readback,.seo-proof-action{display:inline-flex;width:max-content;max-width:100%;gap:.32rem;align-items:center;padding:.42rem .5rem;border:1px solid rgba(23,32,51,.1);border-radius:9px;background:#f7f9fb;color:#4f5d6f;font:750 .52rem/1 var(--font-mono)}
+  .seo-proof-readback{border-color:rgba(47,119,84,.18);background:#eef8f2;color:#2f7754}
+  .seo-proof-action{border-color:rgba(0,168,68,.18);background:#f0fbf4;color:#007d35}
+  .seo-proof-discovery-chips{display:flex;flex-wrap:wrap;gap:.3rem}
+  .seo-proof-discovery-chips b{padding:.36rem .42rem;border-radius:8px;background:#eef3f7;color:#52606f;font:750 .47rem/1 var(--font-mono)}
+  .seo-proof-visual-boundary{margin:.75rem .15rem 0;color:#6c7582;font-size:.6rem;line-height:1.5}
+  .seo-proof-stages{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.65rem;list-style:none;margin:1rem 0 0;padding:0}
+  .seo-proof-stages li{display:grid;grid-template-columns:28px 22px 1fr;gap:.58rem;align-items:start;padding:.9rem;border:1px solid rgba(23,32,51,.09);border-radius:16px;background:#fff}
+  .seo-proof-stages li>span{color:#008f3b;font:750 .55rem/1.2 var(--font-mono)}
+  .seo-proof-stages svg{color:#00a844}
+  .seo-proof-stages small{display:block;color:#7a8390;font:750 .48rem/1.2 var(--font-mono);letter-spacing:.06em}
+  .seo-proof-stages strong{display:block;margin-top:.22rem;font-size:.72rem;line-height:1.3}
+  .seo-proof-stages p{margin:.3rem 0 0;color:#666c79;font-size:.6rem;line-height:1.45}
+  .seo-proof-boundary{display:grid;grid-template-columns:auto 1fr;gap:.7rem;align-items:start;margin-top:1rem;padding:1rem 1.1rem;border:1px solid rgba(23,32,51,.09);border-radius:16px;background:#fff}
+  .seo-proof-boundary>svg{color:#2f7754}
+  .seo-proof-boundary strong{font-size:.8rem}
+  .seo-proof-boundary p{max-width:980px;margin:.28rem 0 0;color:#666c79;font-size:.68rem;line-height:1.55}
+  @keyframes seo-proof-packet{0%,8%{left:0}24%{left:25%}43%{left:50%}63%{left:75%}90%,100%{left:100%}}
+  @media(max-width:1000px){.seo-proof-panels{grid-template-columns:repeat(3,minmax(0,1fr))}.seo-proof-track{display:none}}
+  @media(max-width:760px){.seo-proof-heading{grid-template-columns:1fr}.seo-proof-panels{grid-template-columns:1fr}.seo-proof-panels article{min-height:0}.seo-proof-stages{grid-template-columns:1fr}}
+  @media(max-width:430px){.seo-proof-theatre{padding:3.8rem .7rem .75rem;border-radius:22px}.seo-proof-status{left:.75rem;right:.75rem}.seo-proof-status strong{font-size:.46rem;padding:.34rem .42rem}}
+  @media(prefers-reduced-motion:reduce){.seo-proof-packet{animation:none!important;left:50%}}
+</style>

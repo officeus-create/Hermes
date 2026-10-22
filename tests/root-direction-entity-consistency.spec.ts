@@ -8,19 +8,19 @@ const read = (relativePath: string) => readFile(path.join(root, relativePath), "
 const rootDirections = [
   {
     route: "marketing",
-    eyebrow: "02 · Hermes Marketing",
+    eyebrow: "Hermes Marketing · ProgressoPro",
     titleBrand: "Hermes Marketing",
     subordinate: "ProgressoPro",
   },
   {
     route: "academy",
-    eyebrow: "03 · Hermes Academy",
+    eyebrow: "Hermes Business Academy · Five tracks",
     titleBrand: "Hermes Academy",
     subordinate: "Hermes Business Academy",
   },
   {
     route: "technology",
-    eyebrow: "04 · Hermes Technology",
+    eyebrow: "Hermes Technology · Human-led, AI-assisted",
     titleBrand: "Hermes Technology",
     subordinate: "IT Development",
   },

@@ -1,0 +1,95 @@
+{
+  "schema_version": 1,
+  "base_manifest": "docs/release-manifest-2026-08-01.json",
+  "release_delta": "2026-10-22-design-continuation-insights",
+  "generated_at": "2026-10-22T15:20:00Z",
+  "status": "CURRENT_HEAD_PENDING_PRODUCTION",
+  "additions": [
+    {
+      "route": "/insights/logistics/find-your-logistics-path-clear-freight-operations/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/insights/logistics/find-your-logistics-path-clear-freight-operations/",
+      "sitemap_owner": "public/sitemap-insights.xml",
+      "source_file": "src/pages/insights/[direction]/[slug].astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/insights/technology/custom-ai-automation-business-systems-project-brief/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/insights/technology/custom-ai-automation-business-systems-project-brief/",
+      "sitemap_owner": "public/sitemap-insights.xml",
+      "source_file": "src/pages/insights/[direction]/[slug].astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/insights/academy/learn-skills-real-business-work-academy-path/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/insights/academy/learn-skills-real-business-work-academy-path/",
+      "sitemap_owner": "public/sitemap-insights.xml",
+      "source_file": "src/pages/insights/[direction]/[slug].astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/insights/marketing/repeatable-growth-system-marketing-brief/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/insights/marketing/repeatable-growth-system-marketing-brief/",
+      "sitemap_owner": "public/sitemap-insights.xml",
+      "source_file": "src/pages/insights/[direction]/[slug].astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/insights/marketing/real-work-footage-instead-of-abstract-ai-artwork/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/insights/marketing/real-work-footage-instead-of-abstract-ai-artwork/",
+      "sitemap_owner": "public/sitemap-insights.xml",
+      "source_file": "src/pages/insights/[direction]/[slug].astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    }
+  ],
+  "acceptance": {
+    "route_count_added": 5,
+    "indexable_route_count_added": 5,
+    "requires_green_current_head_ci": true,
+    "requires_production_snapshot_reconciliation_after_deploy": true
+  }
+}

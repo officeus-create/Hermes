@@ -125,12 +125,31 @@ const stages = [
       review: "VERIFY",
       release: "RELEASE",
     };
-    const activate = (key: string) => {
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    // Native View Transitions can overlay fixed mobile controls and intercept taps.
+    const compactViewport = window.matchMedia("(max-width: 640px)");
+    const commit = (key: string) => {
       steps.forEach((step) => step.setAttribute("aria-pressed", String(step.getAttribute("data-redesign-step") === key)));
       panels.forEach((panel) => panel.classList.toggle("active", panel.getAttribute("data-redesign-panel") === key));
       ledgers.forEach((ledger) => ledger.classList.toggle("active", ledger.getAttribute("data-redesign-ledger") === key));
       if (state) state.textContent = stateLabels[key] || "REVIEW";
       showroom.setAttribute("data-active-redesign-stage", key);
+    };
+    const activate = (key: string) => {
+      if (showroom.querySelector('[data-redesign-step][aria-pressed="true"]')?.getAttribute("data-redesign-step") === key) {
+        commit(key);
+        return;
+      }
+      const nativeTransition = (document as Document & {
+        startViewTransition?: (update: () => void) => { finished?: Promise<unknown> };
+      }).startViewTransition;
+      if (!nativeTransition || reducedMotion.matches || compactViewport.matches) {
+        commit(key);
+        return;
+      }
+      showroom.setAttribute("data-native-transition", "running");
+      const transition = nativeTransition.call(document, () => commit(key));
+      transition?.finished?.finally(() => showroom.setAttribute("data-native-transition", "ready"));
     };
     steps.forEach((step) => {
       const key = step.getAttribute("data-redesign-step");
@@ -149,7 +168,7 @@ const stages = [
   .redesign-showroom-heading > p { max-width:720px; margin:0; color:#526181; line-height:1.7; }
   .redesign-showroom-frame { display:grid; grid-template-columns:minmax(240px,.72fr) minmax(0,1.55fr); gap:1rem; padding:1rem; border:1px solid rgba(28,62,141,.13); border-radius:28px; background:rgba(255,255,255,.86); box-shadow:0 28px 80px rgba(17,43,103,.08); }
   .redesign-showroom-steps { display:grid; gap:.55rem; list-style:none; margin:0; padding:0; align-content:start; }
-  .redesign-showroom-step { width:100%; display:grid; grid-template-columns:34px 22px 1fr; gap:.7rem; align-items:center; padding:.9rem; border:1px solid transparent; border-radius:17px; background:transparent; color:#10204e; text-align:left; cursor:pointer; transition:background .35s ease,border-color .35s ease,transform .35s ease; }
+  .redesign-showroom-step { scroll-margin-block:7rem; width:100%; display:grid; grid-template-columns:34px 22px 1fr; gap:.7rem; align-items:center; padding:.9rem; border:1px solid transparent; border-radius:17px; background:transparent; color:#10204e; text-align:left; cursor:pointer; transition:background .35s ease,border-color .35s ease,transform .35s ease; }
   .redesign-showroom-step:hover,.redesign-showroom-step:focus-visible,.redesign-showroom-step[aria-pressed="true"] { border-color:rgba(31,139,155,.22); background:#edf8fa; transform:translateX(4px); outline:none; }
   .redesign-showroom-step-number { font-size:.72rem; letter-spacing:.12em; color:#197d8b; }
   .redesign-showroom-step svg { color:#197d8b; }
@@ -158,6 +177,12 @@ const stages = [
   .redesign-showroom-step small { margin-top:.2rem; color:#6a7590; font-size:.72rem; line-height:1.35; }
   .redesign-showroom-stage { min-width:0; }
   .redesign-showroom-browser { overflow:hidden; border:1px solid rgba(16,32,78,.14); border-radius:23px; background:#f4f8fb; }
+  @supports (view-transition-name: website-redesign-stage) {
+    :global(:root) { view-transition-name: none; }
+    :global(::view-transition) { pointer-events:none; }
+    .redesign-showroom-browser { view-transition-name: website-redesign-stage; }
+    :global(::view-transition-group(website-redesign-stage)) { animation-duration:260ms; animation-timing-function:ease; }
+  }
   .redesign-showroom-browser-bar { display:flex; gap:.38rem; align-items:center; min-height:46px; padding:0 1rem; border-bottom:1px solid rgba(16,32,78,.1); color:#6a7590; font-size:.67rem; letter-spacing:.12em; background:#fff; }
   .redesign-showroom-browser-bar i { width:8px; height:8px; border-radius:50%; background:#c8d0df; }
   .redesign-showroom-browser-bar span { margin-left:.45rem; }
@@ -253,7 +278,7 @@ const stages = [
   @media (max-width:640px) {
     .redesign-showroom-frame { padding:.7rem; border-radius:22px; }
     .redesign-showroom-steps { grid-template-columns:1fr; gap:.45rem; }
-    .redesign-showroom-step { min-height:48px; grid-template-columns:32px 22px 1fr; transform:none !important; }
+    .redesign-showroom-step { min-height:48px; grid-template-columns:32px 22px 1fr; transform:none !important; transition:none; }
     .redesign-showroom-step small { display:block; font-size:.68rem; }
     .redesign-showroom-browser-bar span { font-size:.55rem; }
     .redesign-showroom-canvas { grid-template-columns:1fr; min-height:520px; padding:2.6rem 1rem 3.8rem; }
@@ -275,5 +300,6 @@ const stages = [
   }
   @media (prefers-reduced-motion:reduce) {
     .redesign-showroom-step,.redesign-showroom-bridge span { transition:none !important; }
+    :global(::view-transition-group(website-redesign-stage)) { animation-duration:0s !important; }
   }
 </style>
