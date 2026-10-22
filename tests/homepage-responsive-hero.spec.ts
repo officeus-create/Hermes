@@ -46,7 +46,7 @@ test("homepage keeps four Claude v3 cinematic routes and the canonical social pr
   // Owner-directed living Marketing has a real local scene instead of a visible mock dashboard.
   await expect(page.locator('[data-home-marketing-cinematic]')).toHaveCount(1);
   await expect(page.locator('[data-home-marketing-cinematic] img')).toHaveAttribute('src','/media/home/marketing-film-v2-poster.jpg');
-  await expect(page.locator('[data-home-marketing-journey]')).toBeHidden();
+  await expect(page.locator('[data-home-marketing-journey]')).toHaveCount(0);
   await expect(page.locator('.home-moving-leaves')).toHaveCount(0);
   await expect(page.locator('.home-master-stage [data-home-cinematic-video="logistics"]')).toHaveCount(1);
   await expect(page.locator('.home-master-stage [data-home-cinematic-video="logistics"] source')).toHaveAttribute(
