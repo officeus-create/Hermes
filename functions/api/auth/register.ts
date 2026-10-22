@@ -1,6 +1,7 @@
 import { hashPassword, isValidEmail, isValidPassword, createSessionToken, sessionExpiry, sessionCookieHeader } from "../../../src/legacy-prototype/auth.mjs";
 import { REPAIR_SHOP_SETUP_ACCESS_ENABLED } from "../../../src/data/hermes-connect-repair-shop-launch.ts";
 import { jsonResponse } from "../_lib/session.mjs";
+import { emailMagicEnabled } from "../_lib/email-identity.mjs";
 import {
   parseRepairShopReferralCookie,
   persistRepairShopSalesAttribution,
@@ -16,6 +17,13 @@ import {
 type Env = {
   DB?: any;
   REPAIR_SHOP_REFERRAL_MAP_JSON?: string;
+  HERMES_NEW_SIGNUP_EMAIL_VERIFICATION_REQUIRED?: string;
+  HERMES_EMAIL_MAGIC_ENABLED?: string;
+  HERMES_AUTH_TRANSACTIONAL_EMAIL_APPROVED?: string;
+  HERMES_AUTH_EMAIL_DELIVERY_READY?: string;
+  HERMES_EMAIL_RATE_SALT?: string;
+  LEAD_EMAIL_SERVICE?: { fetch(input: RequestInfo | URL, init?: RequestInit): Promise<Response> };
+  LEAD_SERVICE_TOKEN?: string;
   HERMES_CONNECT_TELEGRAM_BOT_TOKEN?: string;
   HERMES_CONNECT_TELEGRAM_OWNER_CHAT_ID?: string;
   HERMES_SYNTHETIC_ACCOUNT_EMAILS?: string;
@@ -76,6 +84,21 @@ export async function onRequestPost({ request, env, waitUntil }: RequestContext)
   if (location.length < 2) errors.push("location_required");
   if (bio.length < 20) errors.push("bio_too_short");
   if (errors.length) return jsonResponse(400, { success: false, errors });
+
+  // This opt-in migration gate prevents old password registration from
+  // silently bypassing verified-email onboarding once the owner enables it.
+  // Existing accounts and password login remain unchanged; do not turn this on
+  // before an explicitly approved transactional-email delivery proof exists.
+  if (env.HERMES_NEW_SIGNUP_EMAIL_VERIFICATION_REQUIRED === "true") {
+    if (!emailMagicEnabled(env)) {
+      return jsonResponse(503, { success: false, error: "verified_signup_unavailable" });
+    }
+    return jsonResponse(409, {
+      success: false,
+      error: "email_verification_required",
+      next_url: "/services/hermes-connect/email-access/",
+    });
+  }
 
   const existing = await env.DB.prepare("SELECT id FROM specialists WHERE email = ?").bind(email).first();
   if (existing) return jsonResponse(409, { success: false, error: "email_already_registered" });

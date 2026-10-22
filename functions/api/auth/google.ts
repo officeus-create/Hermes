@@ -5,7 +5,7 @@ import {
   sessionCookieHeader,
   sessionExpiry,
 } from "../../../src/legacy-prototype/auth.mjs";
-import { jsonResponse } from "../_lib/session.mjs";
+import { getAuthenticatedSpecialist, jsonResponse } from "../_lib/session.mjs";
 import {
   deliverTelegramRegistrationAlert,
   enqueueRegistrationAlert,
@@ -123,9 +123,19 @@ export async function onRequestPost({ request, env, waitUntil }: { request: Requ
   let createdAt = new Date().toISOString();
 
   if (!specialist) {
-    specialist = await env.DB.prepare(
+    const existingByEmail = await env.DB.prepare(
       "SELECT id,email,name,role,location,bio FROM specialists WHERE lower(email) = ? LIMIT 1",
     ).bind(email).first();
+    if (existingByEmail) {
+      // A verified provider email is not proof that the caller owns an existing
+      // password, Telegram, or privileged account. Explicit current-session
+      // proof is required before linking any new provider subject.
+      const currentOwner = await getAuthenticatedSpecialist(request, env.DB);
+      if (!currentOwner || currentOwner.id !== existingByEmail.id) {
+        return jsonResponse(409, { success: false, error: "existing_account_signin_required" }, privateHeaders);
+      }
+      specialist = existingByEmail;
+    }
   }
 
   if (!specialist) {
@@ -152,12 +162,24 @@ export async function onRequestPost({ request, env, waitUntil }: { request: Requ
     else await opsPromise;
   }
 
-  await env.DB.prepare(`
-    INSERT INTO hermes_auth_identities (provider,provider_subject,specialist_id,email,created_at,updated_at)
-    VALUES ('google',?,?,?,?,?)
-    ON CONFLICT(provider,provider_subject) DO UPDATE SET
-      specialist_id=excluded.specialist_id,email=excluded.email,updated_at=excluded.updated_at
-  `).bind(String(identity.sub), specialist.id, email, createdAt, createdAt).run();
+  // Never reassign a provider subject to a different Hermes user in a race.
+  // The additional UNIQUE(provider, specialist_id) also prevents a silent
+  // subject replacement for an existing linked account.
+  try {
+    await env.DB.prepare(`
+      INSERT INTO hermes_auth_identities (provider,provider_subject,specialist_id,email,created_at,updated_at)
+      VALUES ('google',?,?,?,?,?)
+      ON CONFLICT(provider,provider_subject) DO NOTHING
+    `).bind(String(identity.sub), specialist.id, email, createdAt, createdAt).run();
+  } catch {
+    return jsonResponse(409, { success: false, error: "provider_identity_conflict" }, privateHeaders);
+  }
+  const persisted = await env.DB.prepare(
+    "SELECT specialist_id FROM hermes_auth_identities WHERE provider = 'google' AND provider_subject = ? LIMIT 1",
+  ).bind(String(identity.sub)).first();
+  if (!persisted || persisted.specialist_id !== specialist.id) {
+    return jsonResponse(409, { success: false, error: "provider_identity_conflict" }, privateHeaders);
+  }
 
   const token = createSessionToken();
   const expiresAt = sessionExpiry();
