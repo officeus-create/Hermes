@@ -13,7 +13,7 @@ test("Home keeps native routes and shows living details without layout overflow"
   await expect(page.locator('.home-master-stage [data-home-cinematic-video="logistics"]')).toHaveCount(1);
   await expect(page.locator('.home-master-stage [data-home-cinematic-video="logistics"] source')).toHaveAttribute(
     "data-cinematic-src",
-    "/media/home/logistics-golden-v1-540.mp4",
+    "/media/home/logistics-film-v2-540.mp4",
   );
   await expect(page.locator(".home-master-stage canvas")).toHaveCount(0);
   await expect(page.locator(".home-master-route")).toHaveCount(4);

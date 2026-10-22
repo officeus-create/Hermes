@@ -38,20 +38,20 @@ test("homepage keeps four Claude v3 cinematic routes and the canonical social pr
   for (const id of ["technology", "academy"]) {
     const stage = page.locator(`[data-home-${id}-cinematic]`);
     await expect(stage).toHaveCount(1);
-    await expect(stage.locator("img")).toHaveAttribute("src", `/media/home/${id}-claude-v3-poster.jpg`);
-    await expect(stage.locator("source")).toHaveAttribute("data-mobile-src", `/media/home/${id}-claude-v3.mp4`);
+    await expect(stage.locator("img")).toHaveAttribute("src", `/media/home/${id}-film-v2-poster.jpg`);
+    await expect(stage.locator("source")).toHaveAttribute("data-mobile-src", `/media/home/${id}-film-v2-540.mp4`);
   }
   await expect(page.locator("[data-home-logistics-scene-image]")).toHaveCount(1);
   await expect(page.locator("[data-home-logistics-scene-image]")).toHaveAttribute("src", "/images/logistics-living/car-hauler-512.webp");
   // Owner-directed living Marketing has a real local scene instead of a visible mock dashboard.
   await expect(page.locator('[data-home-marketing-cinematic]')).toHaveCount(1);
-  await expect(page.locator('[data-home-marketing-cinematic] img')).toHaveAttribute('src','/media/home/marketing-team-poster.jpg');
+  await expect(page.locator('[data-home-marketing-cinematic] img')).toHaveAttribute('src','/media/home/marketing-film-v2-poster.jpg');
   await expect(page.locator('[data-home-marketing-journey]')).toBeHidden();
   await expect(page.locator('.home-moving-leaves')).toHaveCount(0);
   await expect(page.locator('.home-master-stage [data-home-cinematic-video="logistics"]')).toHaveCount(1);
   await expect(page.locator('.home-master-stage [data-home-cinematic-video="logistics"] source')).toHaveAttribute(
     "data-cinematic-src",
-    "/media/home/logistics-golden-v1-540.mp4",
+    "/media/home/logistics-film-v2-540.mp4",
   );
   await expect(page.locator(".home-master-stage canvas")).toHaveCount(0);
 });
@@ -153,7 +153,7 @@ test("visible desktop technology scene plays autonomously and pointer movement d
     await stage.scrollIntoViewIfNeeded();
     await expect.poll(() => video.evaluate((el: HTMLVideoElement) => el.paused), { timeout: 10000 }).toBe(false);
     await expect(stage).toHaveAttribute("data-media-state", "ready");
-    expect(await stage.locator("source").getAttribute("src")).toBe("/media/home/technology-claude-v3.mp4");
+    expect(await stage.locator("source").getAttribute("src")).toBe("/media/home/technology-film-v2-540.mp4");
     const t0 = await video.evaluate((el: HTMLVideoElement) => el.currentTime);
     await page.mouse.move(0, 0);
     await expect.poll(() => video.evaluate((el: HTMLVideoElement) => el.currentTime), { timeout: 5000 }).toBeGreaterThan(t0 + 0.05);
@@ -177,7 +177,7 @@ test("four-window desktop entrance avoids DPR-only HD escalation while Save-Data
     const stage = page.locator("[data-home-academy-cinematic]");
     await stage.scrollIntoViewIfNeeded();
     await expect(stage).toHaveAttribute("data-video-quality", "standard");
-    await expect(stage.locator("source")).toHaveAttribute("src", "/media/home/academy-claude-v3.mp4");
+    await expect(stage.locator("source")).toHaveAttribute("src", "/media/home/academy-film-v2-540.mp4");
   } finally {
     await context.close();
   }

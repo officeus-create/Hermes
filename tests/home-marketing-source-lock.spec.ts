@@ -6,12 +6,12 @@ test("Marketing source lock requires authentic local media and no false UI claim
   await page.goto("/");
   const route=page.locator('[data-route-id="marketing"]');
   await expect(route.locator("[data-home-marketing-cinematic]")).toHaveCount(1);
-  await expect(route.locator('[data-home-marketing-cinematic] img')).toHaveAttribute("src","/media/home/marketing-team-poster.jpg");
+  await expect(route.locator('[data-home-marketing-cinematic] img')).toHaveAttribute("src","/media/home/marketing-film-v2-poster.jpg");
   await expect(route.locator("[data-home-marketing-journey]")).toBeHidden();
   await expect(route.locator('[data-home-explainer="marketing"]')).toBeHidden();
   await expect(route.locator(".home-moving-leaves")).toHaveCount(0);
   await route.scrollIntoViewIfNeeded();
-  await expect.poll(async () => route.locator("[data-home-marketing-cinematic] source").getAttribute("src")).toBe("/media/home/marketing-team-v1.mp4");
+  await expect.poll(async () => route.locator("[data-home-marketing-cinematic] source").getAttribute("src")).toBe("/media/home/marketing-film-v2-540.mp4");
   expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false);
 });
 

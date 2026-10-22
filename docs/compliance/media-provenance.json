@@ -414,12 +414,12 @@
     },
     {
       "path": "public/images/logistics-living/car-hauler-512.webp",
-      "sha256": "b0dc5c560ff0601ceab51c7e36a9ed4061cb3f82c79d926dd837ccd7af1b2ba3",
+      "sha256": "d44893387531237bbdf66584b883d121ff9b14cd6a1d2adac46bd21c1a06fba5",
       "firstTrackedCommit": "0cc525d44c75bb9b2a2146978c8223a84f47c0d8",
-      "classification": "OWNER_APPROVED_STOCK_VIDEO_DERIVATIVE",
+      "classification": "OWNER_REQUESTED_AI_AUTHORED_LOGISTICS_SCENE",
       "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
-      "source": "Poster frame derived on 2026-10-22 from Pexels video 9339061, one of the Logistics sources embedded in the owner-approved Claude Design project; locally self-hosted without a runtime CDN dependency.",
-      "rightsEvidence": "Pexels licensed stock source recorded by exact video ID; owner explicitly approved Claude Design project 274c09e1-8ea3-4bed-8932-b4a8b34cb1e1 on 2026-10-22.",
+      "source": "Owner-requested Hermes Logistics aerial scene generated in the connected Runway workspace on 2026-10-03, then downloaded, resized and converted to owned local WebP assets through GitHub Actions. No third-party stock source or production CDN dependency.",
+      "rightsEvidence": "Owner explicitly requested completion of the Hermes website visual system using available free connectors and authorized generated visual assets. The generated scenes contain no customer data, real load/rate claims, third-party logos or stock-license claim.",
       "publicationDecision": "CURRENT_USE_ALLOWED"
     },
     {

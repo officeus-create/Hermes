@@ -1,9 +1,9 @@
 import { expect, test } from "@playwright/test";
 
 const films = [
-  { id: "marketing", video: "marketing-team-v1.mp4", poster: "marketing-team-poster.jpg" },
-  { id: "technology", video: "technology-claude-v3.mp4", poster: "technology-claude-v3-poster.jpg" },
-  { id: "academy", video: "academy-claude-v3.mp4", poster: "academy-claude-v3-poster.jpg" },
+  { id: "marketing", video: "marketing-film-v2-540.mp4", poster: "marketing-film-v2-poster.jpg" },
+  { id: "technology", video: "technology-film-v2-540.mp4", poster: "technology-film-v2-poster.jpg" },
+  { id: "academy", video: "academy-film-v2-540.mp4", poster: "academy-film-v2-poster.jpg" },
 ] as const;
 
 test("all three Claude v3 people scenes play locally and preserve native routes", async ({ page }) => {

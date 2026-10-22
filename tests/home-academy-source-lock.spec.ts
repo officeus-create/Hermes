@@ -10,9 +10,9 @@ test("Academy uses the Claude v3 human training film without new decorative book
   const proof = route.locator('[data-home-pillar-proof="progress"]');
   await route.scrollIntoViewIfNeeded();
   await expect(scene).toBeVisible();
-  await expect(scene.locator("img")).toHaveAttribute("src", "/media/home/academy-claude-v3-poster.jpg");
-  await expect(scene.locator("video")).toHaveAttribute("poster", "/media/home/academy-claude-v3-poster.jpg");
-  await expect(scene.locator("source")).toHaveAttribute("data-desktop-src", "/media/home/academy-claude-v3.mp4");
+  await expect(scene.locator("img")).toHaveAttribute("src", "/media/home/academy-film-v2-poster.jpg");
+  await expect(scene.locator("video")).toHaveAttribute("poster", "/media/home/academy-film-v2-poster.jpg");
+  await expect(scene.locator("source")).toHaveAttribute("data-desktop-src", "/media/home/academy-film-v2-540.mp4");
   await expect(route).toHaveAttribute("href", "/paths/academy/");
 
   await expect(route.locator("[data-home-academy-human]")).toHaveCount(0);

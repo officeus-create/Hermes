@@ -729,3 +729,13 @@ EVIDENCE: Current worktree `npm run build` PASS (411 pages, zero errors); focuse
 LESSON: A named design project is a moving source until the owner freezes or approves a specific latest state. Before release, compare the current live design at the component/copy/interaction level rather than relying on an earlier implementation handoff.
 
 REUSE_RULE: For Claude-owned visual releases, perform a final live-design diff immediately before release, preserve existing business/search contracts, encode approved copy and interaction details in browser tests, and never promote an older green visual head when the approved project has advanced.
+
+## ERR-HOME-FILMS-IMMUTABLE-REUSE-AND-UNAPPROVED-SHOTS-20261022 — RESOLVED_IN_BRANCH / EXACT_HEAD_CI_PENDING
+
+PROBLEM: The multi-shot Home films on PR #1997 (`a56fb525`) re-encoded ten existing `/media/home/*` files and `car-hauler-512.webp` in place; Logistics dropped the approved golden car-hauler opening shot; Marketing used Pexels 7963107/7947516/3253113, which are not in the approved Claude Design, while the source lock claimed they were; the Technology 6804117 in-point showed a Cyrillic Windows batch-file prompt.
+
+ROOT_CAUSE: `/media/*` is served `immutable` for a year, so in-place byte changes never reach returning visitors. The source lock was written from the implementer's selection rather than re-read from the approved design's Video Sources list. Frames were not inspected at the crop actually shipped.
+
+WORKING_APPROACH: Restored every previously shipped file to its `main` bytes; built new `*-film-v2-*` films (new names) from the exact approved sequence: Logistics golden → 18749847 → 9339073 → 9339061; Technology 6804117 @19.4 s (after the Cyrillic line scrolls away) → 6804109; Academy 7413799 → 9034497; Marketing approved 6774593 "Planning wall" + owner-listed alternative 7652729. One shared grade, 0.6 s crossfades, H.264 High@3.1, every runtime file < 1.5 MB. Source lock rewritten; new contact sheet `docs/evidence/home-film-v2-contact-sheet-2026-10-22.jpg`.
+
+REUSE_RULE: Never change bytes behind an existing `/media/*` URL — always ship a new filename. Re-read the approved design's source list before writing provenance, and review the shipped crop frame by frame (text, logos, language) before committing.
