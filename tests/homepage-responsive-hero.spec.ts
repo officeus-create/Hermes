@@ -117,20 +117,34 @@ test("Home navigation stays fixed while scrolling past the four directions to Co
 });
 
 
-test("desktop Products unfolds to the RIGHT and keeps every existing product destination", async ({ page }) => {
+test("desktop Products unfolds downward and stays visible on Home and Directions", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
+  for (const path of ["/", "/paths/logistics/"]) {
+    await page.goto(path);
+    const products = page.locator(".desktop-products-menu");
+    const summary = products.locator("summary");
+    await summary.click();
+    await expect(products).toHaveAttribute("open", "");
+    const relation = await products.evaluate((details) => {
+      const trigger = details.querySelector("summary")!.getBoundingClientRect();
+      const menu = details.querySelector(".desktop-products-grid")!.getBoundingClientRect();
+      return {
+        triggerBottom: trigger.bottom,
+        menuTop: menu.top,
+        menuLeft: menu.left,
+        menuRight: menu.right,
+        windowWidth: innerWidth,
+      };
+    });
+    expect(relation.menuTop).toBeGreaterThanOrEqual(relation.triggerBottom - 1);
+    expect(relation.menuLeft).toBeGreaterThanOrEqual(0);
+    expect(relation.menuRight).toBeLessThanOrEqual(relation.windowWidth + 1);
+    await page.keyboard.press("Escape");
+    await expect(products).not.toHaveAttribute("open", "");
+  }
   await page.goto("/");
   const products = page.locator(".desktop-products-menu");
-  const summary = products.locator("summary");
-  await summary.click();
-  await expect(products).toHaveAttribute("open", "");
-  const relation = await products.evaluate((details) => {
-    const trigger = details.querySelector("summary")!.getBoundingClientRect();
-    const menu = details.querySelector(".desktop-products-grid")!.getBoundingClientRect();
-    return { triggerRight: trigger.right, menuLeft: menu.left, menuRight: menu.right, windowWidth: innerWidth };
-  });
-  expect(relation.menuLeft).toBeGreaterThan(relation.triggerRight);
-  expect(relation.menuRight).toBeLessThanOrEqual(relation.windowWidth + 1);
+  await products.locator("summary").click();
   const links = products.locator(".desktop-products-grid a");
   expect(await links.evaluateAll(nodes => nodes.map(n => n.getAttribute("href")))).toEqual([
     "/services/hermes-connect/", "/businesses/", "/insights/", "/opportunities/",
