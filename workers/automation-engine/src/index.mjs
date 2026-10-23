@@ -1418,6 +1418,11 @@ async function health(env) {
     (genericJobEventRows?.results || []).map((row) => [String(row.event_type || "UNKNOWN"), metricNumberOrNull(row.count)])
   );
   const sourceShaRaw = String(env?.HERMES_AUTOMATION_SOURCE_SHA || "").trim();
+  const normalizedLastHeartbeat = lastHeartbeat ? {
+    ...lastHeartbeat,
+    eligible: Number(lastHeartbeat.eligible) === 1,
+    publication_enabled: Number(lastHeartbeat.publication_enabled) === 1,
+  } : null;
   return {
     database: "ok",
     source_sha: /^[0-9a-f]{40}$/.test(sourceShaRaw) ? sourceShaRaw : null,
@@ -1435,7 +1440,7 @@ async function health(env) {
     generic_job_events_by_type: genericJobEventsByType,
     queue: await queueHealth(env?.AUTOMATION_QUEUE),
     dlq: await queueHealth(env?.AUTOMATION_DLQ),
-    last_cron_wake: lastHeartbeat || null,
+    last_cron_wake: normalizedLastHeartbeat,
     last_success: lastSuccess || null,
     last_failure: lastFailure || null,
     last_run: last || null,
