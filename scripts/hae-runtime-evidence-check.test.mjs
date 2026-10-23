@@ -63,6 +63,7 @@ const good = {
     idempotency_key: "hae:test:read-only:1",
     permission_class: "READ_ONLY",
     state: "SUCCEEDED",
+    attempt_count: 1,
     external_write: false,
   },
   replay: {
@@ -71,6 +72,7 @@ const good = {
     same_idempotency_key: true,
     reused_existing_job: true,
     duplicate_execution_count: 0,
+    duplicate_suppressed_receipt_count: 1,
     second_external_side_effect: false,
   },
   independent_qa: {
@@ -135,6 +137,8 @@ for (const mutate of [
   (x) => { delete x.replay.idempotency_key; },
   (x) => { x.replay.same_idempotency_key = false; },
   (x) => { x.replay.duplicate_execution_count = 1; },
+  (x) => { x.read_only_job.attempt_count = 2; },
+  (x) => { x.replay.duplicate_suppressed_receipt_count = 0; },
   (x) => { delete x.replay.second_external_side_effect; },
   (x) => { x.replay.second_external_side_effect = true; },
   (x) => { x.independent_qa.independent_from_executor = false; },
