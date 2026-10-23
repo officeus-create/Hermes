@@ -27,15 +27,15 @@ const { compact = false } = Astro.props;
           {
             site.publicPhones.map((phone) => (
               <li>
-                <a href={phone.href}>{phone.value}</a>
-                <strong>{phone.label}</strong>
+                <a href={phone.href}>{phone.value}</a>{" "}
+                <strong>{phone.label}</strong>{" "}
                 <span>{phone.note}</span>
               </li>
             ))
           }
           <li>
-            <a href={site.logisticsEmail.href}>{site.logisticsEmail.value}</a>
-            <strong>{site.logisticsEmail.label}</strong>
+            <a href={site.logisticsEmail.href}>{site.logisticsEmail.value}</a>{" "}
+            <strong>{site.logisticsEmail.label}</strong>{" "}
             <span>{site.logisticsEmail.note}</span>
           </li>
         </ul>
