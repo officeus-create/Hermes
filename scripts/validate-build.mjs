@@ -199,11 +199,11 @@ for (const text of required) {
   if (!html.includes(text)) throw new Error(`Missing required homepage direction content: ${text}`);
 }
 
-const socialImageMatch = html.match(/property="og:image" content="(https:\/\/hermeslogisticsus\.com\/_astro\/hermes-ecosystem-hero\.[^"]+\.jpg)"/);
+const socialImageMatch = html.match(/property="og:image" content="(https:\/\/hermeslogisticsus\.com\/_astro\/hermes-social-card\.[^"]+\.jpg)"/);
 if (!socialImageMatch) throw new Error("Canonical Astro social preview image missing");
 await access(join(dist, new URL(socialImageMatch[1]).pathname.slice(1)));
-if (!html.includes('property="og:image:width" content="2200"')) throw new Error("Social image width metadata missing");
-if (!html.includes('property="og:image:height" content="1238"')) throw new Error("Social image height metadata missing");
+if (!html.includes('property="og:image:width" content="1200"')) throw new Error("Social image width metadata missing");
+if (!html.includes('property="og:image:height" content="630"')) throw new Error("Social image height metadata missing");
 
 for (const route of routes) {
   const routeHtml = await readFile(join(dist, route.path), "utf8");

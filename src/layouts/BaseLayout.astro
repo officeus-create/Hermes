@@ -4,7 +4,7 @@ import "../styles/hermes-brand-system.css";
 import "../styles/hermes-connect-workspace.css";
 import "../styles/shared-resource.css";
 import "../styles/repair-company-schedule-polish.css";
-import heroImage from "../assets/hermes-ecosystem-hero.jpg";
+import socialCardImage from "../assets/hermes-social-card.jpg";
 import CarrierContractJourney from "../components/CarrierContractJourney.astro";
 import CarrierContractSafetyEnhancer from "../components/CarrierContractSafetyEnhancer.astro";
 import CarrierQualificationEnhancer from "../components/CarrierQualificationEnhancer.astro";
@@ -92,11 +92,11 @@ const defaultSocialImage = useHermesConnectSocialCard
       height: HERMES_CONNECT_SOCIAL_CARD.height,
     }
   : {
-      path: heroImage.src,
+      path: socialCardImage.src,
       type: "image/jpeg",
-      alt: "Hermes ecosystem with four illuminated business portals",
-      width: heroImage.width,
-      height: heroImage.height,
+      alt: "Hermes — U.S. Logistics, Marketing, Academy & AI Systems",
+      width: socialCardImage.width,
+      height: socialCardImage.height,
     };
 const socialImagePath = image ?? defaultSocialImage.path;
 const socialImageType = image

@@ -643,6 +643,16 @@
       "publicationDecision": "PRESERVE_EXISTING_USE_NO_EXPANDED_REUSE"
     },
     {
+      "path": "src/assets/hermes-social-card.jpg",
+      "sha256": "947c2772a6cef59142e068640ecfa738a96e110e0cae41b002ee402b74bce588",
+      "firstTrackedCommit": "f2d340311cb8d8361a414694155717ffb0395bc2",
+      "classification": "FIRST_PARTY_BRAND_ARTIFACT",
+      "provenanceStatus": "REPOSITORY_SOURCE_VERIFIED",
+      "source": "Rendered from public/brand/hermes-mark.svg, Manrope (public/fonts) and brand direction colours",
+      "rightsEvidence": "owner-controlled repository history",
+      "publicationDecision": "CURRENT_USE_ALLOWED"
+    },
+    {
       "path": "src/assets/path-logistics-system.jpg",
       "sha256": "9d965fe79dadec6075549ce07538056c60ec7952275e6a2a482a9e2061b4cb6c",
       "firstTrackedCommit": "c926f46083745441c19363b0c40468277b3c9e0c",
