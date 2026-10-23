@@ -1,0 +1,66 @@
+{
+  "target_sha": "REPLACE_WITH_EXACT_40_CHAR_GIT_SHA",
+  "deployment": {
+    "evidence_ref": "REPLACE_WITH_AUTHENTICATED_DEPLOYMENT_READBACK_REFERENCE",
+    "source_sha": "REPLACE_WITH_EXACT_40_CHAR_GIT_SHA"
+  },
+  "runtime": {
+    "automation_mode": "dry_run",
+    "publication_enabled": false
+  },
+  "health": {
+    "evidence_ref": "REPLACE_WITH_PRIVATE_HEALTH_RECEIPT_REFERENCE",
+    "database": "ok",
+    "source_sha": "REPLACE_WITH_EXACT_40_CHAR_GIT_SHA",
+    "automation_mode": "dry_run",
+    "publication_enabled": false,
+    "last_cron_wake": {
+      "scheduled_at": "REPLACE_WITH_ISO_8601_TIMESTAMP",
+      "source_sha": "REPLACE_WITH_EXACT_40_CHAR_GIT_SHA",
+      "automation_mode": "dry_run",
+      "publication_enabled": false
+    }
+  },
+  "transport": {
+    "queue": {
+      "evidence_ref": "REPLACE_WITH_AUTHENTICATED_QUEUE_READBACK_REFERENCE",
+      "exists": true,
+      "backlog_count": 0
+    },
+    "dlq": {
+      "evidence_ref": "REPLACE_WITH_AUTHENTICATED_DLQ_READBACK_REFERENCE",
+      "exists": true,
+      "backlog_count": 0,
+      "classification_evidence_ref": null,
+      "classified_count": 0,
+      "unclassified_count": 0,
+      "current_canary_count": 0,
+      "blocking_count": 0
+    }
+  },
+  "read_only_job": {
+    "evidence_ref": "REPLACE_WITH_DURABLE_D1_JOB_RECEIPT_REFERENCE",
+    "job_id": "REPLACE_WITH_JOB_ID",
+    "job_type": "system.health.snapshot",
+    "idempotency_key": "REPLACE_WITH_EXACT_IDEMPOTENCY_KEY",
+    "permission_class": "READ_ONLY",
+    "state": "SUCCEEDED",
+    "attempt_count": 1,
+    "external_write": false
+  },
+  "replay": {
+    "evidence_ref": "REPLACE_WITH_DURABLE_REPLAY_RECEIPT_REFERENCE",
+    "idempotency_key": "REPLACE_WITH_SAME_IDEMPOTENCY_KEY",
+    "same_idempotency_key": true,
+    "reused_existing_job": true,
+    "duplicate_execution_count": 0,
+    "duplicate_suppressed_receipt_count": 1,
+    "second_external_side_effect": false
+  },
+  "independent_qa": {
+    "evidence_ref": "REPLACE_WITH_QA_COMMENT_OR_RECEIPT_REFERENCE",
+    "status": "PASS",
+    "independent_from_executor": true,
+    "reviewer": "REPLACE_WITH_REVIEWER_IDENTITY_OR_ROLE"
+  }
+}
