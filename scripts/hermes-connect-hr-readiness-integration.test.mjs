@@ -3,6 +3,7 @@ import { DatabaseSync } from "node:sqlite";
 import { ensureAcademySchema } from "../functions/api/_lib/academy.mjs";
 import { ensureAcademyProgressionSchema } from "../functions/api/_lib/academy-progression.mjs";
 import {
+  appendHrBridgeEvent,
   completeHrTeamHandoff,
   decideHrReadiness,
   ensureHrReadinessSchema,
@@ -40,6 +41,38 @@ const candidate={id:"hr_candidate_p0c_000000000000000001",specialist_id:"special
 const academyLink={program_slug:"us-logistics-operations",enrollment_id:"academy-enrollment-p0c-001"};
 const reviewer="reviewer-p0c-001";
 const now="2026-09-22T10:00:00.000Z";
+
+// The bridge event producer must acknowledge ONLY the stored row, never a
+// generated ID that SQLite ignored on a repeated idempotency key.
+const bridgeParams={
+  candidateId:candidate.id,
+  type:"academy_evidence_submitted",
+  idempotencyKey:"bridge-event-replay-p0c",
+  payload:{fixture:"synthetic"},
+  occurredAt:now,
+  actorSpecialistId:reviewer,
+};
+const bridgeFirst=await appendHrBridgeEvent(db,bridgeParams);
+const bridgeReplay=await appendHrBridgeEvent(db,bridgeParams);
+assert.equal(bridgeFirst.duplicate,false);
+assert.equal(bridgeReplay.duplicate,true);
+assert.equal(bridgeReplay.id,bridgeFirst.id);
+const persistedBridge=await db.prepare(
+  "SELECT id,candidate_id,type FROM hr_bridge_events WHERE idempotency_key=?"
+).bind(bridgeParams.idempotencyKey).first();
+assert.equal(persistedBridge.id,bridgeFirst.id);
+await assert.rejects(
+  appendHrBridgeEvent(db,{
+    ...bridgeParams,candidateId:"hr_candidate_p0c_000000000000000002",
+  }),
+  /hr_bridge_event_idempotency_conflict/,
+);
+await assert.rejects(
+  appendHrBridgeEvent(db,{
+    ...bridgeParams,payload:{fixture:"different"},
+  }),
+  /hr_bridge_event_idempotency_conflict/,
+);
 
 await db.prepare(`
   INSERT INTO hr_score_snapshots
@@ -124,6 +157,52 @@ const replay=await completeHrTeamHandoff(db,{
 });
 assert.equal(replay.duplicate,true);
 
+// Reject reuse of a successful handoff receipt for another destination.
+await assert.rejects(
+  completeHrTeamHandoff(db,{
+    candidateId:candidate.id,
+    readinessDecisionId:decision.id,
+    idempotencyKey:"handoff-p0c-001",
+    channel:"telegram",
+    destinationRef:"different-private-team",
+    boundedScope:decision.bounded_scope,
+    actorSpecialistId:reviewer,
+  }),
+  /handoff_idempotency_conflict/,
+);
+
+// A different approved synthetic candidate must never inherit the first one's
+// idempotency receipt. The fixture is deliberately not an actual candidate.
+const secondCandidateId="hr_candidate_p0c_000000000000000002";
+const secondDecisionId="hr-readiness-decision-p0c-other";
+await db.prepare(`
+  INSERT INTO hr_readiness_decisions
+    (id,packet_id,candidate_id,reviewer_specialist_id,decision,bounded_scope,reason,created_at)
+  VALUES (?,?,?,?,'READY_FOR_TEAM',?,?,?)
+`).bind(
+  secondDecisionId,"hr-readiness-p0c-other",secondCandidateId,reviewer,
+  decision.bounded_scope,"Synthetic independent human decision for idempotency isolation test.",now,
+).run();
+
+const secondHandoffFields={
+  candidateId:secondCandidateId,
+  readinessDecisionId:secondDecisionId,
+  channel:"telegram",
+  destinationRef:"private-team-receipt-p0c-other",
+  boundedScope:decision.bounded_scope,
+  actorSpecialistId:reviewer,
+};
+await assert.rejects(
+  completeHrTeamHandoff(db,{
+    ...secondHandoffFields,idempotencyKey:"handoff-p0c-001",
+  }),
+  /handoff_idempotency_conflict/,
+);
+const secondHandoff=await completeHrTeamHandoff(db,{
+  ...secondHandoffFields,idempotencyKey:"handoff-p0c-other",
+});
+assert.equal(secondHandoff.duplicate,false);
+
 for (const [marker,occurredAt] of [
   ["FIRST_LIVE_TASK","2026-09-22T12:00:00.000Z"],
   ["RETAINED_7D","2026-09-29T12:00:00.000Z"],
@@ -136,6 +215,30 @@ for (const [marker,occurredAt] of [
   });
   assert.equal(outcome.marker,marker);
 }
+
+// Replays of the same outcome are allowed; changing the outcome or actor
+// candidate/handoff under its key must fail instead of returning a false receipt.
+const exactOutcomeReplay=await recordHrPerformanceOutcome(db,{
+  candidateId:candidate.id,handoffId:handoff.id,idempotencyKey:"outcome-FIRST_LIVE_TASK",
+  marker:"FIRST_LIVE_TASK",resultClass:"observed",qualityFlags:[],
+  occurredAt:"2026-09-22T12:00:00.000Z",actorSpecialistId:reviewer,
+});
+assert.equal(exactOutcomeReplay.duplicate,true);
+await assert.rejects(
+  recordHrPerformanceOutcome(db,{
+    candidateId:candidate.id,handoffId:handoff.id,idempotencyKey:"outcome-FIRST_LIVE_TASK",
+    marker:"RETAINED_7D",resultClass:"observed",actorSpecialistId:reviewer,
+  }),
+  /outcome_idempotency_conflict/,
+);
+await assert.rejects(
+  recordHrPerformanceOutcome(db,{
+    candidateId:secondCandidateId,handoffId:secondHandoff.id,
+    idempotencyKey:"outcome-FIRST_LIVE_TASK",
+    marker:"FIRST_LIVE_TASK",resultClass:"observed",actorSpecialistId:reviewer,
+  }),
+  /outcome_idempotency_conflict/,
+);
 
 const snapshot=await getHrReadinessSnapshot(db,candidate.id);
 assert.equal(snapshot.capability_gaps.filter((gap)=>gap.state==="resolved").length,1);
