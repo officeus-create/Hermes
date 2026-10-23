@@ -26,7 +26,7 @@ const visibleRoutes = selectedContactInterest
         <p>Direct contact available now</p>
         {visibleRoutes.map((route) => (
           <a href={route.href}>
-            <span>{route.label}</span>
+            <span>{route.label}</span>{" "}
             <strong>{route.detail}</strong>
             <ArrowRight size={17} aria-hidden="true" />
           </a>

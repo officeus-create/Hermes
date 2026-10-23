@@ -30,7 +30,10 @@ const isApprovedDirectionShell = isApprovedProductsShell || /^\/paths\/(logistic
 // Hermes Connect product surfaces and demos keep their product header with the Connect launcher.
 // Sign-in, registration and password pages are the public front door, so they share the approved header too.
 const isConnectAuthEntry = /^\/(?:[a-z]{2}\/)?services\/hermes-connect\/(?:[a-z-]+\/)*(?:access|auth|forgot-password|reset-password)\/$/.test(currentPath);
-const isConnectProductSurface = (/^\/(?:[a-z]{2}\/)?services\/hermes-connect\//.test(currentPath) && !isConnectAuthEntry) || currentPath.startsWith("/demos/");
+// Indexable public Connect pages (product hub, Repair Shops landing/plan, support, load analyzer) are
+// marketing surfaces, so they share the approved header; private workspaces keep the product header.
+const isConnectPublicEntry = /^\/(?:[a-z]{2}\/)?services\/hermes-connect\/(?:load-analyzer\/|repair-shops\/|repair-shops\/plan\/|support\/)$/.test(currentPath);
+const isConnectProductSurface = (/^\/(?:[a-z]{2}\/)?services\/hermes-connect\//.test(currentPath) && !isConnectAuthEntry && !isConnectPublicEntry) || currentPath.startsWith("/demos/");
 const isApprovedVisualShell = isApprovedHome || isApprovedDirectionShell || !isConnectProductSurface;
 const homeUpdates = isApprovedHome ? {
   academy: latestHomeUpdate("academy"),
@@ -456,6 +459,12 @@ const languageLinks = siteLocales.filter((language) => !isCatalogLocaleRoute || 
       box-shadow: 0 10px 30px rgba(10,22,79,.07);
       backdrop-filter: blur(18px);
     }
+  }
+  /* Product (Connect) header on small laptops/tablets landscape: keep every nav label on one
+     line and drop the duplicate conversation CTA instead of letting it run off-screen. */
+  @media (min-width: 901px) and (max-width: 1180px) {
+    .site-header:not([data-approved-visual-shell]) .desktop-nav > a { white-space: nowrap; }
+    .site-header:not([data-approved-visual-shell]) .header-cta { display: none; }
   }
   /* Claude Directions: one fixed, inspectable header panel with the active
      direction submenu attached underneath. Canonical links and account entry

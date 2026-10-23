@@ -1,5 +1,105 @@
 [
   {
+    "id": "hermes-automatic-engineer-2026",
+    "direction": "technology",
+    "slug": "hermes-automatic-engineer-business-automation",
+    "title": "Hermes Automatic Engineer: AI Sales and Operations Assistant | Hermes Insights",
+    "description": "Hermes Automatic Engineer is a product in development at Hermes: an AI assistant that follows up every lead, asks the right discovery questions and keeps routine business work moving for small teams.",
+    "eyebrow": "Technology / Hermes Products · In development · 23 October 2026",
+    "h1": "Hermes Automatic Engineer: an AI assistant that keeps sales and routine work moving",
+    "conciseAnswer": "Hermes Automatic Engineer is a Hermes product in development. It is an AI assistant for small and growing businesses that answers and follows up every lead, guides the conversation with structured discovery questions, prepares the next step for the team and takes repetitive operations work off people. Hermes uses it in its own work first and plans to offer it to clients.",
+    "explanation": [
+      "Small businesses rarely lose deals because the offer is wrong. They lose them because a request waits until tomorrow, nobody asks what the customer actually needs, a promised follow-up never happens, or the owner is too busy running the business to sell it. Hermes saw the same pattern in logistics, marketing, education and service businesses, so we started building one assistant that closes those gaps.",
+      "In sales, the Hermes Automatic Engineer is designed to work like a disciplined sales coordinator. It responds to a new request quickly, then uses a structured discovery approach in the spirit of SPIN selling: questions about the customer's current situation, the problem behind the request, what that problem costs them and what a good result would look like. The answers become a short brief, so the person who takes the call starts with context instead of a blank page.",
+      "It also keeps the pipeline honest: reminders when a lead goes quiet, a suggested next message, a summary of objections heard and a clear next step after every conversation. Beyond sales, it takes over routine work that eats a team's day — collecting information, preparing documents and updates, and making sure nothing that was promised is forgotten. People stay in charge: important messages, prices and commitments are approved by the team, not sent on the assistant's own decision.",
+      "Why now: customers expect an answer in minutes, teams are smaller and AI has become good enough to handle the routine part of a conversation without sounding like a script. The assistant is aimed at owners, sales teams and dispatchers in service businesses, logistics and car hauling, repair shops, agencies and training providers. Today it is in development and runs inside Hermes' own work; when it is ready for clients it will be offered through Hermes Technology and Hermes Connect."
+    ],
+    "takeaways": [
+      "Answer every new lead quickly instead of letting requests wait",
+      "Ask structured discovery questions: situation, problem, impact and desired result",
+      "Hand the team a short brief and a clear next step after every conversation",
+      "Never lose a follow-up: reminders and suggested messages when a lead goes quiet",
+      "Take routine operations work off people while the team keeps final approval"
+    ],
+    "faq": [
+      {
+        "question": "What is Hermes Automatic Engineer?",
+        "answer": "It is a Hermes product in development: an AI assistant that helps small and growing businesses follow up leads, run discovery conversations, prepare the next step and handle routine operations work."
+      },
+      {
+        "question": "How does it help sell?",
+        "answer": "It responds to new requests quickly, asks structured discovery questions in the spirit of SPIN selling, summarises needs and objections, and reminds the team when a lead needs a follow-up."
+      },
+      {
+        "question": "Who is it for?",
+        "answer": "Owners, sales teams and dispatchers in service businesses, logistics and car hauling, repair shops, agencies and training providers that lose deals because nobody has time to follow up."
+      },
+      {
+        "question": "Does it replace my sales team?",
+        "answer": "No. It takes over the routine part of the work and prepares context; prices, commitments and important messages stay with your team."
+      },
+      {
+        "question": "Can I use it today?",
+        "answer": "Not yet as a standalone product. It runs inside Hermes' own work first. If you want this kind of assistant for your business, start with a project brief and Hermes Technology will tell you what is possible now."
+      }
+    ],
+    "related": [
+      {
+        "title": "Hermes Products",
+        "body": "Everything Hermes builds, runs and uses itself, with real status.",
+        "href": "/products/"
+      },
+      {
+        "title": "Hermes Connect",
+        "body": "The CRM and AI operating system for service businesses.",
+        "href": "/services/hermes-connect/"
+      },
+      {
+        "title": "Plan custom AI automation",
+        "body": "How to brief an automation or business-system project.",
+        "href": "/insights/technology/custom-ai-automation-business-systems-project-brief/"
+      },
+      {
+        "title": "Hermes Technology",
+        "body": "Websites, CRM, AI assistants and automation as one flow.",
+        "href": "/paths/technology/"
+      }
+    ],
+    "primaryAction": {
+      "label": "See all Hermes products",
+      "href": "/products/"
+    },
+    "secondaryAction": {
+      "label": "Brief your sales assistant",
+      "href": "/paths/technology/#project-brief"
+    },
+    "sourceLabel": "Hermes Automatic Engineer product description, 23 October 2026",
+    "sourceUrl": "https://hermeslogisticsus.com/insights/technology/hermes-automatic-engineer-business-automation/",
+    "sourcePublishedAt": "2026-10-23",
+    "datePublished": "2026-10-23",
+    "dateModified": "2026-10-23",
+    "authorName": "Hermes Technology",
+    "contentTier": "standalone",
+    "currentMarketClaim": false,
+    "keywords": [
+      "AI sales assistant",
+      "SPIN selling questions",
+      "lead follow-up automation",
+      "sales automation for small business",
+      "AI assistant for service businesses",
+      "Hermes Automatic Engineer"
+    ],
+    "publicationScore": {
+      "score": 80,
+      "recommendation": "standalone",
+      "reasons": [
+        "First-party product announcement with in-development status",
+        "Targets AI sales assistant and lead follow-up intent",
+        "Links Products, Hermes Connect, AI automation brief and Technology owners"
+      ]
+    }
+  },
+  {
     "id": "us-service-search-discovery-checklist-2026",
     "direction": "marketing",
     "slug": "us-service-business-search-discovery-checklist",

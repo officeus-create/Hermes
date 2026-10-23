@@ -1984,3 +1984,14 @@ ai_name: Codex; role: delegated Academy owner; contribution_type: Implementation
 - Hermes Connect mark: new `HermesConnectMark.astro` (Option 02 loop, draw-in + hover flow, reduced-motion static) used in header Products menu (desktop + mobile), direction submenus, launcher variants (footer/mobile/banner/inline) and DirectionStory cards.
 - Owner action required to enable Google: create a Google OAuth Web client (origins `https://hermeslogisticsus.com`, `https://www.hermeslogisticsus.com`, `https://connect.hermeslogisticsus.com`), then set `GOOGLE_OAUTH_CLIENT_ID` in Cloudflare Pages Production and redeploy. The client ID is public (not a secret).
 - Open: consulting offer for carriers/owner-operators opening a company — source email (sent to Carlos from officeus@) not readable from this session (office Gmail connector not authorized); needs owner input before publishing any service claim.
+
+## 2026-10-23 — Claude Code — Responsive audit, registration hub, HAE content, SEO baseline
+
+- Branch `claude/beautiful-mendel-lknlyq`, PR #2024.
+- Hermes Automatic Engineer: standalone Technology insight rewritten per owner (functions, audience, why now, SPIN-style discovery; no implementation details), PRIVATE card on /products/.
+- Responsive audit of every public page at 320/390/768/1024/1440/2560: 320px overflow 105 → 0 pages, 390px 11 → 0. Small-phone `overflow-wrap` safety net in global.css, Catalog summary grids, repair launch-offer CTA wrap, consent banner wraps on tablets and sits above Connect sidebars (z-index 1300), product header drops duplicate CTA at 901–1180px, repair services form stacks below 1180px, contract review tables scroll on phones.
+- Registration hub `/services/hermes-connect/access/` now lists Load Board (carriers/brokers/dealers) next to Repair Shop, Home Services and Academy.
+- Contacts: label and email no longer glue into one word in extracted text ("Logisticsofficeus@…" seen in Google snippet).
+- Connect hub `/services/hermes-connect/` keeps the product header (home-corporate-logo contract); the other four public Connect pages use the approved header.
+- SEO baseline (OpenRush, 2026-10-23): 8 indexed keywords, no top-30 for core car-hauling dispatch terms, 0 Google AI Overview citations; ~2,370 spam referring domains (anchor "Premium Link Building Experts…") appeared this week — negative-SEO noise, usually ignored by Google.
+- Owner-side next steps: verify GSC and submit sitemap; Google Business Profile; align Facebook "About" (says 2018 / telecommunication services) and retire the old phone in social posts; honest directory listings and reviews.

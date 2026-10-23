@@ -339,7 +339,7 @@ const isRepairShopRoute = Astro.url.pathname.startsWith("/services/hermes-connec
 <style>
   .tracking-consent-banner {
     position: fixed;
-    z-index: 120;
+    z-index: 1300;
     right: 1rem;
     bottom: 1rem;
     width: min(720px, calc(100vw - 2rem));
@@ -475,6 +475,12 @@ const isRepairShopRoute = Astro.url.pathname.startsWith("/services/hermes-connec
       font-size: .7rem;
       white-space: nowrap;
     }
+  }
+
+  /* Tablets: long localized button labels (RU/UA) must wrap instead of running off-screen. */
+  @media (min-width: 701px) and (max-width: 1100px) {
+    .tracking-consent-banner { grid-template-columns: minmax(0, 1fr); }
+    .tracking-consent-actions { flex-wrap: wrap; justify-content: flex-start; }
   }
 
   @media (max-width: 700px) {
