@@ -45,7 +45,7 @@
   --color-navy-950: #071038;
   --color-navy-900: #0a164f;
   --color-navy-700: #27336e;
-  --color-violet-600: #6a20d9;
+  --color-violet-600: #6446e6;
   --color-magenta-500: #e61a8d;
   --color-lavender-50: #f7f4ff;
   --color-lavender-100: #eee9fb;
@@ -57,7 +57,7 @@
   --font-body: "Source Sans 3", "Segoe UI", sans-serif;
   --font-display: "Manrope", "Avenir Next", "Segoe UI", sans-serif;
   --font-mono: "IBM Plex Mono", "SFMono-Regular", Consolas, ui-monospace, monospace;
-  --gradient-hermes-primary: linear-gradient(115deg, #e61a8d 0%, #6a20d9 100%);
+  --gradient-hermes-primary: var(--hermes-intelligence-gradient);
   --shadow-card-soft: 0 22px 60px rgba(31, 18, 83, 0.09);
   --radius-card: 8px;
   --content-max-width: 1240px;
@@ -184,6 +184,10 @@ img { display: block; max-width: 100%; }
 }
 h1, h2, h3, p { margin-top: 0; }
 h1, h2, h3 { font-family: var(--font-display); font-weight: 700; line-height: 1.08; letter-spacing: 0; }
+/* Claude Design display rhythm on every template: tight display tracking for page and section titles. */
+h1 { line-height: 1.02; letter-spacing: -0.04em; }
+h2 { line-height: 1.06; letter-spacing: -0.03em; }
+h1 + p { margin-top: 1.1rem; }
 h1 { font-size: 4.25rem; }
 h2 { font-size: 3rem; }
 h3 { font-size: 1.75rem; }
@@ -351,7 +355,7 @@ h3 { font-size: 1.75rem; }
 .ecosystem-link-gold { --rail-accent: #a56b00; }
 .ecosystem-link-teal { --rail-accent: #2563eb; }
 .ecosystem-link:hover, .ecosystem-link:focus-visible { background: #f5f5f9; }
-.button { display: inline-flex; align-items: center; justify-content: center; gap: .55rem; min-height: 50px; padding: .8rem 1.2rem; border: 1px solid transparent; border-radius: 4px; font-family: var(--font-display); font-weight: 700; cursor: pointer; transition: transform 160ms ease, background-color 160ms ease; }
+.button { display: inline-flex; align-items: center; justify-content: center; gap: .55rem; min-height: 50px; padding: .8rem 1.2rem; border: 1px solid transparent; border-radius: var(--hermes-radius-pill, 999px); font-family: var(--font-display); font-weight: 700; cursor: pointer; transition: transform 160ms ease, background-color 160ms ease; }
 .button:hover { transform: translateY(-2px); }
 .button-primary { background: var(--hermes-action-ink); color: white; }
 .button-primary:hover { background: #172a7a; }
@@ -1121,7 +1125,7 @@ h3 { font-size: 1.75rem; }
 .contact-form label { display: grid; gap: .45rem; color: var(--color-navy-900); font-size: .82rem; font-weight: 760; }
 .contact-form input, .contact-form select, .contact-form textarea { width: 100%; border: 1px solid #c9c8d7; border-radius: 4px; background: white; color: var(--color-ink); padding: .75rem .8rem; outline: none; }
 .contact-form input, .contact-form select { min-height: 48px; }
-.contact-form input:focus, .contact-form select:focus, .contact-form textarea:focus { border-color: var(--color-violet-600); box-shadow: 0 0 0 3px rgba(106,32,217,.14); }
+.contact-form input:focus, .contact-form select:focus, .contact-form textarea:focus { border-color: var(--color-violet-600); box-shadow: 0 0 0 3px rgba(100,70,230,.14); }
 .contact-form .button { justify-self: start; border: 0; }
 .contact-form .button:disabled { cursor: wait; opacity: .7; transform: none; }
 .contact-direction-group { display: grid; gap: 1rem; }

@@ -45,7 +45,20 @@ in this pass; everything else is a proposal.
 The tight display tracking and the pill buttons are most of why the approved pages "look more
 aesthetic". The token already exists (`--hermes-display-tracking: -0.05em`), but most templates don't use it.
 
-**Proposal (phase 2):** apply to the shared templates (`LogisticsCommercialPage`, `DigitalServicePage`,
+**Done in this pass (site-wide):**
+- base h1 tracking is −0.04em and h2 tracking −0.03em, with tighter leading;
+- `.button` is a pill;
+- `h1 + p` gets breathing space;
+- commercial template:
+  - 28px live-window media;
+  - rounded cards and final card;
+  - balanced h1 (17ch);
+  - legacy purple `#6A20D9` replaced by `--hermes-violet-text`;
+  - lavender section replaced by pearl.
+
+Approved pages keep their own explicit values. 142 design specs pass.
+
+**Remaining proposal (phase 2):** apply to the shared templates (`LogisticsCommercialPage`, `DigitalServicePage`,
 `ResourcePage`, contacts, catalog, insights hero):
 1. display tracking on h1/h2;
 2. pill primary buttons;
