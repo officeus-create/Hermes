@@ -1,0 +1,56 @@
+---
+// The one approved Hermes Connect mark (Option 02 continuous loop) for every place the
+// product name carries an icon: menus, submenus, launchers, footer, product cards.
+// "Living" behaviour: a single draw-in on first paint and a light flow travelling the
+// loop while the surrounding link is hovered or focused. Reduced motion keeps it static.
+interface Props {
+  size?: number;
+  class?: string;
+  label?: string;
+}
+const { size = 18, class: className = "", label } = Astro.props;
+const uid = `hcm-${Math.random().toString(36).slice(2, 9)}`;
+const loop = "M35 18C15 18 15 62 35 62C55 62 65 18 85 18C105 18 105 62 85 62C65 62 55 18 35 18Z";
+---
+
+<svg
+  class={`hermes-connect-mark ${className}`}
+  data-hc-mark
+  viewBox="0 0 120 80"
+  width={Math.round(size * 1.5)}
+  height={size}
+  role={label ? "img" : undefined}
+  aria-label={label}
+  aria-hidden={label ? undefined : "true"}
+  focusable="false"
+>
+  <defs>
+    <linearGradient id={`${uid}-g`} x1="14" y1="16" x2="106" y2="64" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#5AC8FA" />
+      <stop offset=".30" stop-color="#2E9BFF" />
+      <stop offset=".56" stop-color="#2563EB" />
+      <stop offset=".78" stop-color="#6657F2" />
+      <stop offset="1" stop-color="#7C5CFF" />
+    </linearGradient>
+  </defs>
+  <path class="hermes-connect-mark__loop" d={loop} fill="none" stroke={`url(#${uid}-g)`} stroke-width="10" stroke-linecap="round" stroke-linejoin="round" pathLength="100" />
+  <path class="hermes-connect-mark__flow" d={loop} fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" pathLength="100" />
+</svg>
+
+<style is:global>
+  .hermes-connect-mark { display: inline-block; flex: none; overflow: visible; vertical-align: middle; }
+  .hermes-connect-mark__loop { stroke-dasharray: 100; stroke-dashoffset: 0; animation: hermes-connect-mark-draw .9s cubic-bezier(.2,.8,.2,1) both; }
+  .hermes-connect-mark__flow { stroke-dasharray: 12 88; stroke-dashoffset: 100; opacity: 0; transition: opacity .2s ease; }
+  :is(a, summary, button, [data-hc-mark-host]):is(:hover, :focus-visible) .hermes-connect-mark__flow {
+    opacity: .85;
+    animation: hermes-connect-mark-flow 1.15s linear infinite;
+  }
+  :is(a, summary, button, [data-hc-mark-host]):is(:hover, :focus-visible) .hermes-connect-mark { animation: hermes-connect-mark-breathe 1.15s ease-in-out infinite; }
+  @keyframes hermes-connect-mark-draw { from { stroke-dashoffset: 100; } to { stroke-dashoffset: 0; } }
+  @keyframes hermes-connect-mark-flow { from { stroke-dashoffset: 100; } to { stroke-dashoffset: 0; } }
+  @keyframes hermes-connect-mark-breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.08); } }
+  @media (prefers-reduced-motion: reduce) {
+    .hermes-connect-mark, .hermes-connect-mark__loop, .hermes-connect-mark__flow { animation: none !important; }
+    .hermes-connect-mark__flow { opacity: 0 !important; }
+  }
+</style>

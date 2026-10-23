@@ -3,6 +3,7 @@
 // (one question, pillars, steps, real-status proof, ecosystem); "bottom" renders
 // FAQ + real Insights stories and the final Ink call to action.
 import { ArrowRight } from "@lucide/astro";
+import HermesConnectMark from "./HermesConnectMark.astro";
 import { directionStories, type DirectionStoryId } from "../data/direction-story";
 import { getInsightPath, insightsByDirection } from "../data/insights";
 
@@ -87,7 +88,7 @@ const statusClass = (status: string) => status.toLowerCase().replace(/\s+/g, "-"
           {story.proof.items.map((item) => (
             <a class="ds-proof-card" href={item.href}>
               <span class={`ds-status ds-status-${statusClass(item.status)}`}>{item.status}</span>
-              <strong>{item.title}</strong>
+              <strong>{item.title.startsWith("Hermes Connect") && <HermesConnectMark size={12} class="ds-connect-mark" />}{item.title}</strong>
               <span>{item.body}</span>
               <em>Open<ArrowRight size={15} aria-hidden="true" /></em>
             </a>
@@ -104,8 +105,8 @@ const statusClass = (status: string) => status.toLowerCase().replace(/\s+/g, "-"
         <div class="ds-eco-grid">
           {story.ecosystem.items.map((item) => (
             <a href={item.href} data-eco={item.direction}>
-              <span class="ds-eco-label"><i aria-hidden="true"></i>{item.label}</span>
-              <strong>{item.title}</strong>
+              <span class="ds-eco-label">{item.href.startsWith("/services/hermes-connect/") ? <HermesConnectMark size={10} /> : <i aria-hidden="true"></i>}{item.label}</span>
+              <strong>{item.title.startsWith("Hermes Connect") && <HermesConnectMark size={12} class="ds-connect-mark" />}{item.title}</strong>
               <span>{item.body}</span>
             </a>
           ))}
@@ -199,6 +200,7 @@ const statusClass = (status: string) => status.toLowerCase().replace(/\s+/g, "-"
   .ds-status-source-gated { background: #e6edff; color: #1d3fb3; }
   .ds-status-preview { background: #fff1e6; color: #a2470f; }
   .ds-status-private { background: #ececf1; color: #3c4050; }
+  :global(.ds-connect-mark) { margin-right: .45rem; }
   .ds-eco-grid { margin-top: 36px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-block: 1px solid #e3e1db; }
   .ds-eco-grid a { display: grid; gap: 10px; align-content: start; padding: 24px 24px 28px 0; color: inherit; text-decoration: none; }
   .ds-eco-grid a + a { padding-left: 24px; }

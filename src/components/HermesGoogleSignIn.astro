@@ -1,0 +1,125 @@
+---
+// "Continue with Google" for every Hermes sign-in / registration surface.
+// Stays hidden until /api/auth/providers reports a configured Google client, so a
+// missing Cloudflare GOOGLE_OAUTH_CLIENT_ID never shows a broken button. On success the
+// page reloads and its own session check routes the visitor (dashboard, setup, etc.).
+interface Props {
+  dividerLabel?: string;
+}
+const { dividerLabel = "or continue with email" } = Astro.props;
+---
+
+<div class="hermes-google-signin" data-hermes-google-signin hidden>
+  <div class="hermes-google-signin__button" data-hermes-google-button></div>
+  <p class="hermes-google-signin__status" data-hermes-google-status role="status" aria-live="polite"></p>
+  <div class="hermes-google-signin__divider" aria-hidden="true"><span>{dividerLabel}</span></div>
+</div>
+
+<script>
+  type Providers = { google?: { enabled?: boolean; client_id?: string | null } };
+  type GoogleId = {
+    initialize: (options: Record<string, unknown>) => void;
+    renderButton: (element: HTMLElement, options: Record<string, unknown>) => void;
+  };
+  const googleId = () => (globalThis as unknown as { google?: { accounts?: { id?: GoogleId } } }).google?.accounts?.id;
+
+  const loadScript = () => new Promise<void>((resolve, reject) => {
+    if (googleId()) return resolve();
+    const existing = document.querySelector<HTMLScriptElement>("script[data-hermes-google-identity]");
+    const script = existing ?? document.createElement("script");
+    script.addEventListener("load", () => resolve(), { once: true });
+    script.addEventListener("error", () => reject(new Error("google_script_unavailable")), { once: true });
+    if (!existing) {
+      script.src = "https://accounts.google.com/gsi/client";
+      script.async = true;
+      script.defer = true;
+      script.dataset.hermesGoogleIdentity = "";
+      document.head.append(script);
+    }
+  });
+
+  const errorCopy: Record<string, string> = {
+    google_identity_invalid: "Google could not confirm this account. Use a Google account with a verified email.",
+    google_login_not_configured: "Google sign-in is temporarily unavailable. Use your email below.",
+    rate_limited: "Too many attempts. Wait a minute and try again.",
+  };
+
+  async function setup() {
+    const roots = [...document.querySelectorAll<HTMLElement>("[data-hermes-google-signin]")];
+    if (!roots.length) return;
+    let providers: Providers | null = null;
+    try {
+      const response = await fetch("/api/auth/providers", { credentials: "same-origin", headers: { Accept: "application/json" } });
+      providers = response.ok ? await response.json() as Providers : null;
+    } catch { providers = null; }
+    const clientId = providers?.google?.enabled ? providers.google.client_id : null;
+    if (!clientId) return; // Email/password stays the only route; nothing broken is shown.
+
+    try { await loadScript(); } catch { return; }
+    const id = googleId();
+    if (!id) return;
+
+    const status = (root: HTMLElement, text: string, isError = false) => {
+      const node = root.querySelector<HTMLElement>("[data-hermes-google-status]");
+      if (!node) return;
+      node.textContent = text;
+      node.dataset.state = isError ? "error" : "info";
+    };
+
+    id.initialize({
+      client_id: clientId,
+      ux_mode: "popup",
+      auto_select: false,
+      cancel_on_tap_outside: true,
+      callback: async ({ credential }: { credential?: string }) => {
+        roots.forEach((root) => status(root, "Signing in securely with Google…"));
+        try {
+          const response = await fetch("/api/auth/google", {
+            method: "POST",
+            credentials: "same-origin",
+            headers: { "Content-Type": "application/json", Accept: "application/json" },
+            body: JSON.stringify({ credential }),
+          });
+          const payload = await response.json().catch(() => ({})) as { success?: boolean; error?: string };
+          if (!response.ok || !payload.success) throw new Error(payload.error || "google_sign_in_failed");
+          roots.forEach((root) => status(root, "Signed in. Opening your workspace…"));
+          window.location.reload();
+        } catch (error) {
+          const code = error instanceof Error ? error.message : "";
+          roots.forEach((root) => status(root, errorCopy[code] || "Google sign-in could not be completed. Try again or use your email below.", true));
+        }
+      },
+    });
+
+    const locale = (document.documentElement.lang || "en").slice(0, 2);
+    roots.forEach((root) => {
+      const target = root.querySelector<HTMLElement>("[data-hermes-google-button]");
+      if (!target) return;
+      root.hidden = false;
+      id.renderButton(target, {
+        type: "standard",
+        theme: "outline",
+        size: "large",
+        text: "continue_with",
+        shape: "pill",
+        logo_alignment: "left",
+        locale,
+        width: Math.max(220, Math.min(400, Math.round(root.getBoundingClientRect().width || 320))),
+      });
+    });
+  }
+
+  setup();
+</script>
+
+<style>
+  .hermes-google-signin { display: grid; gap: .65rem; width: 100%; margin: .25rem 0 .9rem; }
+  .hermes-google-signin[hidden] { display: none; }
+  .hermes-google-signin__button { display: flex; justify-content: center; min-height: 44px; }
+  .hermes-google-signin__status { margin: 0; font-size: .86rem; color: #4b5262; text-align: center; }
+  .hermes-google-signin__status:empty { display: none; }
+  .hermes-google-signin__status[data-state="error"] { color: #b42318; }
+  .hermes-google-signin__divider { display: flex; align-items: center; gap: .75rem; color: #5f6573; font-size: .8rem; }
+  .hermes-google-signin__divider::before,
+  .hermes-google-signin__divider::after { flex: 1; height: 1px; background: rgba(17, 19, 36, .12); content: ""; }
+</style>

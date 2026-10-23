@@ -1,6 +1,7 @@
 ---
 import BaseLayout from "../../../../../../layouts/BaseLayout.astro";
 import SiteHeader from "../../../../../../components/SiteHeader.astro";
+import HermesGoogleSignIn from "../../../../../../components/HermesGoogleSignIn.astro";
 import SiteFooter from "../../../../../../components/SiteFooter.astro";
 import "../../../../../../styles/hermes-academy-app.css";
 ---
@@ -50,7 +51,8 @@ import "../../../../../../styles/hermes-academy-app.css";
               <button class="academy-app-tab" type="button" data-auth-tab="login" data-i18n="login">Увійти</button>
             </div>
             <div class="academy-app-alert" data-auth-alert role="status"></div>
-            <form class="academy-app-form academy-auth-section active" data-auth-form="register">
+            <HermesGoogleSignIn />
+<form class="academy-app-form academy-auth-section active" data-auth-form="register">
               <div class="academy-app-field"><label data-i18n="fullName">Ім’я та прізвище</label><input name="name" autocomplete="name" minlength="2" maxlength="100" required /></div>
               <div class="academy-app-field"><label>Email</label><input name="email" type="email" autocomplete="email" required /></div>
               <div class="academy-app-field"><label data-i18n="ownerLocation">Країна / місто</label><input name="location" autocomplete="address-level2" minlength="2" maxlength="120" required placeholder="Kyiv, Ukraine" /></div>
