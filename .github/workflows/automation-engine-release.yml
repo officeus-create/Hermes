@@ -235,7 +235,9 @@ jobs:
         run: |
           set -euo pipefail
           CANARY_STARTED_AT="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-          CANARY_SLOT="$(TZ=America/Chicago date +%Y-%m-%d)T03"
+          CANARY_OFFSET_HOURS="$((10#${GITHUB_RUN_NUMBER} * 10 + 10#${GITHUB_RUN_ATTEMPT}))"
+          CANARY_SLOT="$(date -u -d "2030-01-01 UTC + ${CANARY_OFFSET_HOURS} hours" +%Y-%m-%dT%H)"
+          echo "synthetic_canary_slot=$CANARY_SLOT run_number=$GITHUB_RUN_NUMBER attempt=$GITHUB_RUN_ATTEMPT"
           QUEUES_JSON="${RUNNER_TEMP}/hae-queues.json"
           curl -fsS             "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/queues"             -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}"             -H 'Content-Type: application/json' > "$QUEUES_JSON"
           QUEUE_ID="$(jq -r '.result[] | select(.queue_name == "hermes-automation") | .queue_id' "$QUEUES_JSON" | head -n1)"
