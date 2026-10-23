@@ -8,7 +8,7 @@ const description="Send one structured Hermes Catalog request. Business identity
 ---
 <BaseLayout title="Hermes Catalog request | Hermes Catalog" description={description} robots="noindex,follow">
  <SiteHeader theme="light" activePath="/businesses/"/><DirectionProductNav direction="catalog" theme="light"/>
- <main class="request-page"><div class="shell"><a class="back" href="/businesses/">← Hermes Catalog</a><header><p class="eyebrow">Hermes Catalog · structured handoff</p><h1 data-request-title>Hermes Catalog request</h1><p>{description}</p></header>
+ <main id="main-content" class="request-page"><div class="shell"><a class="back" href="/businesses/">← Hermes Catalog</a><header><p class="eyebrow">Hermes Catalog · structured handoff</p><h1 data-request-title>Hermes Catalog request</h1><p>{description}</p></header>
   <section class="context"><strong>Request context</strong><dl><div><dt>Type</dt><dd data-context-type>Catalog growth</dd></div><div data-context-roadmap hidden><dt>Roadmap</dt><dd data-context-months></dd></div><div data-context-business hidden><dt>Business</dt><dd data-context-business-value></dd></div><div data-context-profile hidden><dt>Catalog profile</dt><dd><a data-context-profile-link></a></dd></div><div data-context-evidence hidden><dt>Evidence reference</dt><dd data-context-evidence-value></dd></div></dl></section>
   <form data-catalog-request data-concept-mode={conceptMode} data-request-type="catalog-growth" data-business-slug="" data-profile="" data-months="">
    <div class="two"><label>Your name<input name="name" required minlength="2" maxlength="100" autocomplete="name"/></label><label>Email<input name="email" type="email" required maxlength="160" autocomplete="email"/></label></div>

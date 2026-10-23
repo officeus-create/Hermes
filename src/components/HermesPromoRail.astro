@@ -52,9 +52,9 @@ const items = contextual[context];
     <span class="promo-question" aria-hidden="true">?</span>
     <div class="promo-stage" data-promo-stage aria-live="off" aria-atomic="true">
       {items.map((item, index) => (
-        <article class="promo-slide" data-promo-slide role="group" aria-roledescription="slide" aria-label={`${index + 1} of ${items.length}`}>
+        <div class="promo-slide" data-promo-slide role="group" aria-roledescription="slide" aria-label={`${index + 1} of ${items.length}`}>
           <p>{item.q}</p><h2>{item.title}</h2><span>{item.body}</span><a href={item.href}>{item.cta} →</a>
-        </article>
+        </div>
       ))}
     </div>
     <div class="promo-dots" role="group" aria-label="Choose promotion" data-promo-picker hidden>{items.map((_, index) => <button type="button" data-promo-dot={index} aria-label={`Show promotion ${index + 1}`} aria-current={index === 0 ? "true" : undefined}><span aria-hidden="true"></span></button>)}</div>

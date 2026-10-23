@@ -173,6 +173,8 @@ const safeSchema = schema
     <meta name="msvalidate.01" content="6C08FCA62443E761BAB1CCF747A4A7A7" />
     <link rel="canonical" href={canonical} />
     {alternates.map((alternate) => <link rel="alternate" hreflang={alternate.lang} href={new URL(alternate.href, Astro.site)} />)}
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/manrope-latin.woff2" crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/source-sans-3-latin.woff2" crossorigin />
     {preloadImage && <link rel="preload" as="image" href={preloadImage} fetchpriority="high" />}
     {feedUrl && <link rel="alternate" type="application/rss+xml" title="Hermes Insights RSS" href={new URL(feedUrl, Astro.site)} />}
     <meta property="og:type" content={ogType} />

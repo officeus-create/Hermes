@@ -1960,3 +1960,19 @@ ai_name: Codex; role: delegated Academy owner; contribution_type: Implementation
 - Branch: `claude/beautiful-mendel-lknlyq` (restarted from main after #2016 merged).
 - Tests: `npm run build` 0, `npm test` 0; focused Playwright footer/entity/a11y specs pass (only known local H.264 playback specs fail in the container).
 - Next: Organization `sameAs` / `public-entity-registry.ts` not changed — adding Facebook there needs the entity registry + its contract tests updated together.
+
+## 2026-10-23 — Claude Code — Site-wide brand/SEO/accessibility clean-up
+
+- Task (owner): audit the whole public site against the brand book (logo, colours) and SEO/GEO guidance; fix what is broken without metadata churn.
+- Branch: `claude/beautiful-mendel-lknlyq` (from `main` after #2017).
+- Evidence before: static crawl of 454 generated pages (0 duplicate titles/descriptions, 0 missing alt/dimensions, 0 JSON-LD parse errors, 0 real broken internal links); Lighthouse mobile on 10 money pages (perf 82–99, SEO 85–92); axe WCAG 2 AA on all 287 indexable pages: 3,070 contrast failures on 284 pages.
+- Changes:
+  - Unified approved header (brand mark, "Technology" label, light glass pill, Ink CTA) on every public page; Hermes Connect product surfaces and demos keep their product header. Mobile/tablet pill added for non-home pages.
+  - Legacy magenta `#e61a8d` accent (not in Brand System V4) retired from shared consumers: eyebrows → `--hermes-violet-text` (#6446e6, AA on Pearl/Paper), `.button-primary` → Focus Ink `#0a164f`, four-direction rails/gradients → canonical direction colours; Marketing accent pink → accessible Marketing green.
+  - New tokens in `hermes-brand-system.css`: `--hermes-violet-text`, `--hermes-violet-on-dark`, `--hermes-action-ink`; dark-section eyebrow list in `global.css`.
+  - Fixed invisible headings (navy on navy) on Carrier GEO pages and localized owner process sections; invisible white buttons on resource pages; DirectionStory final note colour; Italian process heading.
+  - Low-contrast greys/teals/greens moved to AA variants of the same hue.
+  - Direction hero mobile padding clears header + submenu; font preloads (Manrope, Source Sans 3) for CLS; catalog pages get `#main-content`; promo slide role fix.
+  - GEO/entity: `/products/` added to `llms.txt`; owner-supplied Facebook page added to root Organization `sameAs` (registry + contract tests).
+- Result after: axe contrast 3,070 → ~160 nodes (284 → ~15 pages); remaining are image-backed header estimates and a few product-UI widgets.
+- Not changed (deliberate): `Content-Signal` robots directive (repository policy; Lighthouse flags it); anonymous 401 on `/api/hermes-connect/account` (fix touches auth contract — needs owner decision); long titles/descriptions (no metadata churn without a proven defect, per SEO router).

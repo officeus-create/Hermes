@@ -54,6 +54,12 @@ export const publicEntityRegistry: Record<PublicEntityId, PublicEntityRecord> = 
         status: "approved_same_entity",
         evidence: "Existing owner-controlled homepage schema and public website link.",
       },
+      {
+        platform: "facebook",
+        url: "https://www.facebook.com/profile.php?id=61558767681287",
+        status: "approved_same_entity",
+        evidence: "Owner-supplied 2026-10-22 as the official Hermes Facebook page (page name hermeslogisticsus.com) and linked from the public website footer.",
+      },
     ],
     notes:
       "The root Organization represents the Hermes website ecosystem. Only profiles approved as the same public entity may appear in its sameAs array.",

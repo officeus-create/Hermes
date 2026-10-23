@@ -32,7 +32,7 @@
 .connect-prototype-flow span { padding: .45rem .6rem; border: 1px solid rgba(255,255,255,.22); border-radius: 999px; color: #d8fff5; font-family: var(--font-mono); font-size: .65rem; }
 .connect-profile { display: grid; grid-template-columns: 68px 1fr; gap: 1rem; padding: 1.4rem; background: #fff; }
 .connect-avatar { display: grid; width: 68px; height: 68px; place-items: center; border-radius: 18px; background: #dff7f1; color: #087462; }
-.connect-profile small { color: #718078; font-size: .66rem; }
+.connect-profile small { color: #56606e; font-size: .66rem; }
 .connect-profile h4 { margin: .25rem 0; font-size: 1.35rem; }
 .connect-profile p { margin: 0; color: #5e6965; font-size: .8rem; }
 .connect-choice-group { padding: 1rem 1.4rem 0; }
@@ -46,7 +46,7 @@
 .connect-booking-result div { display: grid; }
 .connect-booking-result strong { font-size: .78rem; }
 .connect-booking-result span { font-size: .68rem; }
-.connect-preview-note { margin: 0; padding: .7rem 1.4rem 1.1rem; color: #718078; font-size: .64rem; }
+.connect-preview-note { margin: 0; padding: .7rem 1.4rem 1.1rem; color: #56606e; font-size: .64rem; }
 @media (max-width: 620px) {
 .connect-profile { grid-template-columns: 52px 1fr; padding: 1rem; }
 .connect-avatar { width: 52px; height: 52px; border-radius: 14px; }

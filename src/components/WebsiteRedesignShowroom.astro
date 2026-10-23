@@ -170,11 +170,11 @@ const stages = [
   .redesign-showroom-steps { display:grid; gap:.55rem; list-style:none; margin:0; padding:0; align-content:start; }
   .redesign-showroom-step { scroll-margin-block:7rem; width:100%; display:grid; grid-template-columns:34px 22px 1fr; gap:.7rem; align-items:center; padding:.9rem; border:1px solid transparent; border-radius:17px; background:transparent; color:#10204e; text-align:left; cursor:pointer; transition:background .35s ease,border-color .35s ease,transform .35s ease; }
   .redesign-showroom-step:hover,.redesign-showroom-step:focus-visible,.redesign-showroom-step[aria-pressed="true"] { border-color:rgba(31,139,155,.22); background:#edf8fa; transform:translateX(4px); outline:none; }
-  .redesign-showroom-step-number { font-size:.72rem; letter-spacing:.12em; color:#197d8b; }
-  .redesign-showroom-step svg { color:#197d8b; }
+  .redesign-showroom-step-number { font-size:.72rem; letter-spacing:.12em; color:#0f6f76; }
+  .redesign-showroom-step svg { color:#0f6f76; }
   .redesign-showroom-step strong,.redesign-showroom-step small { display:block; }
   .redesign-showroom-step strong { font-size:.92rem; }
-  .redesign-showroom-step small { margin-top:.2rem; color:#6a7590; font-size:.72rem; line-height:1.35; }
+  .redesign-showroom-step small { margin-top:.2rem; color:#56606e; font-size:.72rem; line-height:1.35; }
   .redesign-showroom-stage { min-width:0; }
   .redesign-showroom-browser { overflow:hidden; border:1px solid rgba(16,32,78,.14); border-radius:23px; background:#f4f8fb; }
   @supports (view-transition-name: website-redesign-stage) {
@@ -183,12 +183,12 @@ const stages = [
     .redesign-showroom-browser { view-transition-name: website-redesign-stage; }
     :global(::view-transition-group(website-redesign-stage)) { animation-duration:260ms; animation-timing-function:ease; }
   }
-  .redesign-showroom-browser-bar { display:flex; gap:.38rem; align-items:center; min-height:46px; padding:0 1rem; border-bottom:1px solid rgba(16,32,78,.1); color:#6a7590; font-size:.67rem; letter-spacing:.12em; background:#fff; }
+  .redesign-showroom-browser-bar { display:flex; gap:.38rem; align-items:center; min-height:46px; padding:0 1rem; border-bottom:1px solid rgba(16,32,78,.1); color:#56606e; font-size:.67rem; letter-spacing:.12em; background:#fff; }
   .redesign-showroom-browser-bar i { width:8px; height:8px; border-radius:50%; background:#c8d0df; }
   .redesign-showroom-browser-bar span { margin-left:.45rem; }
   .redesign-showroom-canvas { position:relative; display:grid; grid-template-columns:minmax(0,1fr) auto minmax(0,1fr); gap:1rem; align-items:center; min-height:360px; padding:clamp(1.2rem,4vw,2.5rem); background:radial-gradient(circle at 50% 5%,rgba(52,172,190,.14),transparent 35%),linear-gradient(145deg,#f7fbfc,#eaf2f8); color:#10204e; }
   .redesign-showroom-before,.redesign-showroom-after { padding:1rem; border:1px solid rgba(16,32,78,.12); border-radius:18px; background:#fff; box-shadow:0 14px 35px rgba(17,43,103,.07); }
-  .redesign-showroom-kicker { display:block; margin-bottom:.9rem; color:#6a7590; font-size:.64rem; letter-spacing:.13em; }
+  .redesign-showroom-kicker { display:block; margin-bottom:.9rem; color:#56606e; font-size:.64rem; letter-spacing:.13em; }
   .redesign-wire { border-radius:8px; background:#e4e9f2; }
   .redesign-wire.hero { height:74px; }
   .redesign-wire.row { display:grid; grid-template-columns:repeat(3,1fr); gap:.45rem; margin-top:.6rem; background:transparent; }
@@ -196,7 +196,7 @@ const stages = [
   .redesign-wire.text { height:9px; margin-top:.8rem; }
   .redesign-wire.text.short { width:64%; margin-top:.45rem; }
   .redesign-wire.active { background:linear-gradient(90deg,#9fdce3,#4fb6c4); }
-  .redesign-showroom-bridge { display:grid; justify-items:center; gap:.55rem; color:#197d8b; }
+  .redesign-showroom-bridge { display:grid; justify-items:center; gap:.55rem; color:#0f6f76; }
   .redesign-showroom-bridge span { min-width:82px; padding:.42rem .65rem; border:1px solid rgba(25,125,139,.2); border-radius:999px; background:#fff; text-align:center; font-size:.68rem; font-weight:800; letter-spacing:.09em; transition:background .35s ease,color .35s ease; }
   [data-active-redesign-stage="diagnose"] .redesign-showroom-bridge span { background:#fff4df; color:#9a6415; }
   [data-active-redesign-stage="system"] .redesign-showroom-bridge span,[data-active-redesign-stage="prototype"] .redesign-showroom-bridge span { background:#eaf3ff; color:#315fd7; }
@@ -235,7 +235,7 @@ const stages = [
     background:#f6f8fb;
   }
   .redesign-proof-ledger-state small {
-    color:#75819a;
+    color:#5f6573;
     font:800 .5rem/1.2 var(--font-mono);
     letter-spacing:.08em;
   }
@@ -251,7 +251,7 @@ const stages = [
     padding:.5rem .65rem;
     border:1px solid rgba(25,125,139,.18);
     border-radius:10px;
-    color:#197d8b;
+    color:#0f6f76;
     background:#eef9fa;
     font:800 .55rem/1.15 var(--font-mono);
     letter-spacing:.06em;

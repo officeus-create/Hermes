@@ -5,6 +5,7 @@ const progressoproProfile = "https://www.instagram.com/progressopro/";
 const expectedHermesProfiles = [
   "https://www.instagram.com/hermes.logistics/",
   "https://www.threads.com/@hermes.logistics",
+  "https://www.facebook.com/profile.php?id=61558767681287",
 ];
 
 const forbiddenEntitySignals = [

@@ -10,6 +10,7 @@ const progressoproProfile = "https://www.instagram.com/progressopro/";
 const expectedSameAs = new Set([
   "https://www.instagram.com/hermes.logistics/",
   "https://www.threads.com/@hermes.logistics",
+  "https://www.facebook.com/profile.php?id=61558767681287",
 ]);
 const parseEntities = (html) => [...html.matchAll(/<script[^>]+type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi)]
   .map((match) => JSON.parse(match[1]))
