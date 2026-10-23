@@ -481,10 +481,11 @@
   background: rgba(124,92,255,.065) !important;
 }
 
+/* The shared owner polish paints the active pill light violet, so the label must stay ink. */
 .hc-experience .hc-family-nav a[aria-current="page"] {
-  color: #fff !important;
-  border-color: var(--hermes-obsidian) !important;
-  background: var(--hermes-obsidian) !important;
+  color: var(--hermes-ink) !important;
+  border-color: rgba(124,92,255,.32) !important;
+  background: rgba(124,92,255,.12) !important;
 }
 
 /* Repair public pricing remains a public decision surface, not a second dark dashboard. */
