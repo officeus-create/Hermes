@@ -118,6 +118,8 @@ assert.match(worker, /publication_config TEXT/, "Heartbeat evidence must preserv
 assert.match(worker, /publication_enabled INTEGER NOT NULL/, "Heartbeat evidence must preserve effective publication gate for per-wake continuity");
 assert.match(worker, /recordCronHeartbeat\(env, scheduledAt, observedAt, eligible, controller\?\.cron\)/, "Scheduled heartbeat must capture runtime env configuration, not only timing");
 assert.match(worker, /eligible,source_sha,automation_mode,publication_config,publication_enabled/, "Private health heartbeat readback must include per-wake runtime continuity fields");
+assert.match(worker, /normalizedLastHeartbeat/, "Private health must normalize persisted heartbeat evidence before returning it");
+assert.match(worker, /publication_enabled: Number\(lastHeartbeat\.publication_enabled\) === 1/, "Heartbeat publication evidence must be returned as an explicit boolean");
 assert.match(worker, /controller\?\.cron/, "Scheduled handler must pass Cloudflare controller.cron into durable heartbeat evidence");
 assert.match(worker, /cron\.heartbeat_write_failed/, "Heartbeat telemetry failure must be observable without blocking the current slot");
 assert.match(worker, /last_cron_wake/, "Private health must distinguish last cron wake from last updated run");
