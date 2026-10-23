@@ -5,9 +5,19 @@ import { site } from "../data/site";
 
 interface Props {
   selectedPath?: string;
+  locale?: "en" | "uk" | "ru";
 }
 
-const { selectedPath = "" } = Astro.props;
+const { selectedPath = "", locale: requestedLocale } = Astro.props;
+// Visible copy follows the page language; field names, values and data-contact-* hooks stay frozen.
+const pathLocale = Astro.url.pathname.startsWith("/ua/") ? "uk" : Astro.url.pathname.startsWith("/ru/") ? "ru" : "en";
+const locale = requestedLocale ?? pathLocale;
+const copy = {
+  en: { eyebrow: site.contact.eyebrow, title: site.contact.title, body: site.contact.body, direct: "Direct contact available now", name: "Your name", interest: "I am interested in", choose: "Choose a path", notSure: "I am not sure yet", message: "What are you trying to build?", honeypot: "Leave this field empty", consent: "I agree that Hermes may use these details to respond to this request.", privacy: "Privacy notice", send: "Send request", preview: "Preview request", handoffTitle: site.contact.handoffTitle, handoffBody: site.contact.handoffBody, summary: "Request summary", copyRequest: site.contact.copyRequestLabel, route: "Approved contact route", unsure: site.contact.unsureRoute, routeLabel: {} as Record<string, string> },
+  uk: { eyebrow: "Не знаєте, з чого почати?", title: "Розкажіть, що ви будуєте.", body: "Надішліть запит команді Hermes. Оберіть напрям, додайте важливі деталі — ми відповімо через затверджений канал зв'язку.", direct: "Прямий контакт", name: "Ваше ім'я", interest: "Мене цікавить", choose: "Оберіть напрям", notSure: "Поки не знаю", message: "Що ви хочете побудувати?", honeypot: "Залиште це поле порожнім", consent: "Я погоджуюся, що Hermes може використати ці дані, щоб відповісти на запит.", privacy: "Політика конфіденційності", send: "Надіслати заявку", preview: "Переглянути заявку", handoffTitle: "Наступний крок: скопіюйте й надішліть", handoffBody: "Скопіюйте підсумок запиту й відкрийте затверджений канал зв'язку для вашого напряму.", summary: "Підсумок запиту", copyRequest: "Скопіювати запит", route: "Затверджений канал зв'язку", unsure: "Оберіть напрям вище, щоб побачити відповідний контакт.", routeLabel: { "Hermes Logistics": "Написати в Логістику", ProgressoPro: "Написати в Маркетинг", "Hermes Business Academy": "Написати в Академію", "IT Development": "Написати в IT-розробку" } as Record<string, string> },
+  ru: { eyebrow: "Не знаете, с чего начать?", title: "Расскажите, что вы строите.", body: "Отправьте запрос команде Hermes. Выберите направление, добавьте важные детали — мы ответим через утверждённый канал связи.", direct: "Прямой контакт", name: "Ваше имя", interest: "Меня интересует", choose: "Выберите направление", notSure: "Пока не знаю", message: "Что вы хотите построить?", honeypot: "Оставьте это поле пустым", consent: "Я согласен, что Hermes может использовать эти данные, чтобы ответить на запрос.", privacy: "Политика конфиденциальности", send: "Отправить запрос", preview: "Просмотреть запрос", handoffTitle: "Следующий шаг: скопируйте и отправьте", handoffBody: "Скопируйте итог запроса и откройте утверждённый канал связи для вашего направления.", summary: "Итог запроса", copyRequest: "Скопировать запрос", route: "Утверждённый канал связи", unsure: "Выберите направление выше, чтобы увидеть нужный контакт.", routeLabel: { "Hermes Logistics": "Написать в Логистику", ProgressoPro: "Написать в Маркетинг", "Hermes Business Academy": "Написать в Академию", "IT Development": "Написать в IT-разработку" } as Record<string, string> },
+}[locale];
+const privacyHref = locale === "ru" ? "/ru/privacy/" : "/privacy/";
 const contactMode = import.meta.env.PUBLIC_CONTACT_MODE === "live" ? "live" : "preview";
 const contactEndpoint = import.meta.env.PUBLIC_CONTACT_ENDPOINT ?? "";
 const selectedContactInterest = normalizeContactInterest(selectedPath) ?? selectedPath;
@@ -19,14 +29,14 @@ const visibleRoutes = selectedContactInterest
 <section class="section contact-section" id="contact">
   <div class="shell contact-layout">
     <div class="contact-copy">
-      <p class="eyebrow">{site.contact.eyebrow}</p>
-      <h2>{site.contact.title}</h2>
-      <p>{site.contact.body}</p>
+      <p class="eyebrow">{copy.eyebrow}</p>
+      <h2>{copy.title}</h2>
+      <p>{copy.body}</p>
       <div class="contact-direct-routes" aria-label="Direct contact options">
-        <p>Direct contact available now</p>
+        <p>{copy.direct}</p>
         {visibleRoutes.map((route) => (
           <a href={route.href}>
-            <span>{route.label}</span>{" "}
+            <span>{copy.routeLabel[route.category] ?? route.label}</span>{" "}
             <strong>{route.detail}</strong>
             <ArrowRight size={17} aria-hidden="true" />
           </a>
@@ -39,12 +49,14 @@ const visibleRoutes = selectedContactInterest
       data-contact-mode={contactMode}
       data-contact-endpoint={contactEndpoint}
       data-preview-status={site.contact.previewStatus}
+      data-send-label={copy.send}
+      data-preview-label={copy.preview}
       novalidate
     >
       <div class="form-alert" role="alert" data-form-alert hidden></div>
       <div class="field-row">
         <label>
-          Your name
+          {copy.name}
           <input type="text" name="name" autocomplete="name" minlength="2" maxlength="100" required />
         </label>
         <label>
@@ -53,51 +65,51 @@ const visibleRoutes = selectedContactInterest
         </label>
       </div>
       <label>
-        I am interested in
+        {copy.interest}
         <select name="path" required>
-          <option value="">Choose a path</option>
+          <option value="">{copy.choose}</option>
           {site.paths.map((path) => {
             const contactInterest = getContactInterestForPathId(path.id) ?? path.category;
             return <option value={contactInterest} selected={selectedContactInterest === contactInterest}>{path.category}</option>;
           })}
-          <option>I am not sure yet</option>
+          <option value="I am not sure yet">{copy.notSure}</option>
         </select>
       </label>
       <div data-direction-fields hidden></div>
       <label>
-        What are you trying to build?
+        {copy.message}
         <textarea name="message" rows="4" minlength="10" maxlength="2000" required></textarea>
       </label>
       <label class="honeypot" aria-hidden="true">
-        Leave this field empty
+        {copy.honeypot}
         <input type="text" name="website" tabindex="-1" autocomplete="off" />
       </label>
       <label class="consent-field">
         <input type="checkbox" name="consent" required />
-        <span>I agree that Hermes may use these details to respond to this request. <a href="/privacy/">Privacy notice</a>.</span>
+        <span>{copy.consent} <a href={privacyHref}>{copy.privacy}</a>.</span>
       </label>
       <button class="button button-primary" type="submit">
-        <span data-submit-label>{contactMode === "live" ? "Send request" : "Preview request"}</span>
+        <span data-submit-label>{contactMode === "live" ? copy.send : copy.preview}</span>
         <ArrowRight size={18} aria-hidden="true" />
       </button>
       <p class="form-status" role="status" data-form-status></p>
       <div class="contact-handoff" data-contact-handoff hidden>
-        <p class="contact-handoff-eyebrow">{site.contact.handoffTitle}</p>
-        <p class="contact-handoff-copy">{site.contact.handoffBody}</p>
-        <pre class="contact-handoff-summary" data-handoff-summary tabindex="0" aria-label="Request summary"></pre>
+        <p class="contact-handoff-eyebrow">{copy.handoffTitle}</p>
+        <p class="contact-handoff-copy">{copy.handoffBody}</p>
+        <pre class="contact-handoff-summary" data-handoff-summary tabindex="0" aria-label={copy.summary}></pre>
         <div class="contact-handoff-actions">
-          <button class="button" type="button" data-copy-request>{site.contact.copyRequestLabel}</button>
+          <button class="button" type="button" data-copy-request>{copy.copyRequest}</button>
           <p class="contact-handoff-copy-status" role="status" aria-live="polite" data-copy-status></p>
         </div>
         <div class="contact-handoff-route" data-handoff-route hidden>
-          <p class="contact-handoff-route-label">Approved contact route</p>
+          <p class="contact-handoff-route-label">{copy.route}</p>
           <a data-handoff-route-link href="#">
             <span data-handoff-route-label></span>
             <strong data-handoff-route-detail></strong>
             <ArrowRight size={17} aria-hidden="true" />
           </a>
         </div>
-        <p class="contact-handoff-unsure" data-handoff-unsure hidden>{site.contact.unsureRoute}</p>
+        <p class="contact-handoff-unsure" data-handoff-unsure hidden>{copy.unsure}</p>
       </div>
     </form>
   </div>
@@ -168,7 +180,7 @@ const visibleRoutes = selectedContactInterest
     if (!submitButton || !submitLabel) return;
     submitButton.disabled = submitting;
     submitButton.setAttribute("aria-busy", String(submitting));
-    submitLabel.textContent = submitting ? "Sending..." : form?.dataset.contactMode === "live" ? "Send request" : "Preview request";
+    submitLabel.textContent = submitting ? "…" : form?.dataset.contactMode === "live" ? (form?.dataset.sendLabel || "Send request") : (form?.dataset.previewLabel || "Preview request");
   };
 
   const clearDirectionFields = () => {
