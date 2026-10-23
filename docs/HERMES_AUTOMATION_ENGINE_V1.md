@@ -169,7 +169,9 @@ Readback sequence:
 
 If the provider write has an ambiguous network/5xx outcome, HAE records `unknown_outcome_readback_pending`, schedules readback without a second publish call, and either recovers the real provider ID/permalink or stops at `unknown_outcome_unresolved` after bounded attempts.
 
-Readback recovery is also durable. The next readback time and attempt count live in D1. Lost delayed-queue messages are recovered by the hourly cron. A stale `publishing` state is converted to readback-only recovery, never to a second provider write. After four bounded readback attempts the state becomes `readback_unverified` for operator review.
+Readback recovery is also durable. The recovery deadline and attempt count live in D1. The delayed Queue message is the primary readback path; the D1 recovery deadline intentionally trails that delivery by 15 minutes so cron does not race the expected delayed message. Lost delayed-queue messages are then recovered by the hourly cron. A stale `publishing` state is converted to readback-only recovery, never to a second provider write. After four bounded readback attempts the state becomes `readback_unverified` for operator review.
+
+Every provider lifecycle transition that changes `hermes_automation_publications`, `hermes_automation_content`, and `hermes_automation_runs` must commit in one D1 batch. A partial write must never leave one table at `published_verified` or terminal failure while the other canonical state tables remain stale.
 
 ## Health
 
@@ -181,15 +183,32 @@ Readback recovery is also durable. The next readback time and attempt count live
 - explicit confirmation that normal runtime does not require a ChatGPT Scheduled Task.
 
 `GET /v1/health` — **private bearer token required**
+- exact deployed source SHA when release metadata is configured;
+- current automation mode, raw publication configuration, and effective publication gate;
 - ready-content count;
 - unknown provider outcomes;
 - failed publications;
 - pending provider readbacks;
 - unverified readbacks;
 - failed plan enqueues;
-- primary queue backlog;
+- primary queue backlog with missing provider metrics preserved as UNKNOWN/null and health status partial_unknown rather than fabricated zero/false OK;
 - dead-letter queue backlog;
+- last cron wake, including quiet-window heartbeat evidence;
+- per-wake source SHA, automation mode, raw publication configuration, and effective publication gate for deployment/config continuity evidence;
+- exact cron expression that invoked the Worker;
+- cron scheduled time versus observed execution time / lag;
+- last successful run and last failed run separately;
+- generic-job transition event counts for retry/stale-recovery evidence;
+- sanitized runtime-event counts for Queue/recovery failures;
 - last run state.
+
+Post-observation hardening rule:
+- use Cloudflare `ScheduledController.scheduledTime` as the logical cron time rather than wall-clock handler start, so delayed execution does not silently shift the logical slot;
+- unknown Queue message types fail closed toward retry/DLQ instead of being silently acknowledged;
+- telemetry failure must not suppress the current eligible business slot;
+- once Queue.send() resolves, treat the message as durably accepted by Cloudflare; a later D1 status-write failure is an evidence/state-write defect, not a Queue send failure, and must not trigger an immediate blind re-enqueue;
+- generic read-only jobs must persist their initial dispatch-recovery lease before Queue.send(), so a successful Queue write never depends on a second D1 write merely to suppress duplicate recovery;
+- runtime error receipts must never persist arbitrary exception text that could contain URLs or credentials.
 
 `POST /v1/tick`
 - authenticated manual canary;
