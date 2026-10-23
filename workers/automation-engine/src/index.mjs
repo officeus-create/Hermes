@@ -775,7 +775,26 @@ async function processGenericJob(env, message) {
     "SELECT job_id,job_type,business_lane,account_key,project_key,priority,state,current_step,available_at,attempt_count,max_attempts,idempotency_key,policy_version,payload_json,result_json,last_error_class,created_at,updated_at,completed_at FROM hermes_automation_jobs WHERE job_id=? LIMIT 1"
   ).bind(jobId).first();
   if (!before) return { status: "job_missing" };
-  if (String(before.state) === "SUCCEEDED") return { status: "SUCCEEDED", duplicate: true, job_id: jobId };
+  if (String(before.state) === "SUCCEEDED") {
+    try {
+      await appendGenericJobEvent(env.DB, {
+        jobId,
+        eventType: "job.duplicate_suppressed",
+        fromState: "SUCCEEDED",
+        toState: "SUCCEEDED",
+        step: "execute",
+        createdAt: new Date().toISOString(),
+      });
+    } catch {
+      await recordRuntimeEvent(env, {
+        eventType: "job.duplicate_receipt_write_failed",
+        messageType: "job.execute",
+        jobId,
+        errorClass: "duplicate_receipt_write_failed",
+      });
+    }
+    return { status: "SUCCEEDED", duplicate: true, job_id: jobId };
+  }
   const now = new Date().toISOString();
   const currentAttempt = Number(before.attempt_count || 0) + 1;
   const claimed = await transitionGenericJobWithEvent(env.DB, {
