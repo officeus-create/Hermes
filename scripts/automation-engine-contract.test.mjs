@@ -255,6 +255,8 @@ assert.match(worker, /HISTORICAL_READ_ONLY_JOB_TYPES\.includes\(jobType\)[\s\S]*
 assert.match(worker, /HISTORICAL_READ_ONLY_JOB_TYPES\.includes\(job\.job_type\)[\s\S]*runHistoricalLearningPrimitive\(job\.job_type, payload\)/, "Historical jobs must execute inside the same runReadOnlyGenericCapability path");
 assert.doesNotMatch(worker, /READ_ONLY_GENERIC_JOB_TYPES[\s\S]{0,240}"social\.publish"/, "Live social writes must not be allowed through the first generic read-only executor");
 assert.match(worker, /type: "job\.execute"/, "Generic jobs must execute through the existing canonical automation queue");
+assert.match(worker, /job\.duplicate_suppressed/, "Same-job replay after SUCCEEDED must leave a durable duplicate-suppression receipt");
+assert.match(worker, /String\(before\.state\) === "SUCCEEDED"[\s\S]*appendGenericJobEvent[\s\S]*job\.duplicate_suppressed/, "Terminal replay must be suppressed before any second capability execution");
 assert.match(worker, /processGenericJob/, "Queue consumer must execute generic durable jobs");
 assert.match(worker, /url\.pathname === "\/v1\/jobs"/, "Private API must accept owner-controlled generic jobs");
 assert.match(worker, /url\.pathname\.startsWith\("\/v1\/jobs\/"\)/, "Private API must expose durable job readback");
