@@ -644,7 +644,7 @@
     },
     {
       "path": "src/assets/hermes-social-card.jpg",
-      "sha256": "947c2772a6cef59142e068640ecfa738a96e110e0cae41b002ee402b74bce588",
+      "sha256": "3bbc8ebe97ee2692f3a7eceac0aa0be4da6153819167d6d216a160512e7643ac",
       "firstTrackedCommit": "f2d340311cb8d8361a414694155717ffb0395bc2",
       "classification": "FIRST_PARTY_BRAND_ARTIFACT",
       "provenanceStatus": "REPOSITORY_SOURCE_VERIFIED",
