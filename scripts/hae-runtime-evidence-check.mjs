@@ -163,7 +163,7 @@ export function evaluateHaeRuntimeEvidence(snapshot = {}) {
     add(findings, "CANARY_NOT_READ_ONLY", "Acceptance canary must be classified READ_ONLY.");
   }
   if (String(job.state || "").toUpperCase() !== "SUCCEEDED") {
-    add(findings, "READ_ONLY_JOB_NOT_COMPLETED", "Read-only canary must have the canonical terminal SUCCEEDED receipt.");
+    add(findings, "READ_ONLY_JOB_NOT_SUCCEEDED", "Read-only canary must have the canonical terminal SUCCEEDED receipt.");
   }
   const jobAttemptCount = numberOrNull(job.attempt_count);
   if (jobAttemptCount !== 1) {
