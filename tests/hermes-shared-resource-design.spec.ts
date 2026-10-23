@@ -64,7 +64,7 @@ for (const route of routes) {
     expect(visual!.safetyRadius).toBe("22px");
     expect(visual!.relatedBackground).toBe("rgb(255, 255, 255)");
     expect(visual!.relatedRadius).toBe("22px");
-    expect(visual!.accentColor).toBe("rgb(124, 92, 255)");
+    expect(visual!.accentColor).toBe("rgb(100, 70, 230)");
     expect(visual!.darkSectionBackground).toBe("rgb(11, 13, 18)");
     expect(visual!.darkRowRadius).toBe("12px");
     expect(visual!.finalBackground).toBe("rgb(11, 13, 18)");

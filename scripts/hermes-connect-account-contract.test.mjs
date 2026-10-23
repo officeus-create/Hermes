@@ -57,3 +57,14 @@ test('private account portfolio responses are never browser-cacheable', async ()
   assert.match(source, /Cache-Control["']?:\s*["']no-store["']/);
   assert.match(source, /jsonResponse\(200,[\s\S]*privateHeaders\)/);
 });
+
+test('anonymous session probe answers 200 without account data while the default stays 401', async () => {
+  const source = await loadApi();
+  const block = source.slice(source.indexOf('if (!specialist) {'), source.indexOf('await ensureAcademySchema'));
+  assert.match(block, /X-Hermes-Session-Probe/);
+  assert.match(block, /isSessionProbe \? 200 : 401/);
+  assert.match(block, /success:\s*false,\s*authenticated:\s*false/);
+  assert.doesNotMatch(block, /identity|email|businesses/);
+  const switcher = await readFile(new URL('../src/components/HermesConnectAccountSwitcher.astro', import.meta.url), 'utf8');
+  assert.match(switcher, /"X-Hermes-Session-Probe": "1"/);
+});
