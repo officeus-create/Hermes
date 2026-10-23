@@ -24,7 +24,10 @@ export function classifyDlqDisposition(input = {}) {
   if (!hasKey) return { disposition: "QUARANTINE", reason: "idempotency_key_missing" };
 
   if (externalEffect) {
-    if (["UNKNOWN", "ACCEPTED_PENDING", "READBACK_PENDING"].includes(providerOutcome)) {
+    if (
+      ["UNKNOWN", "ACCEPTED_PENDING", "READBACK_PENDING"].includes(providerOutcome)
+      || ["publishing", "provider_accepted_readback_pending", "unknown_outcome_readback_pending"].includes(state)
+    ) {
       return { disposition: "READBACK_ONLY", reason: "external_outcome_not_proven" };
     }
     if (TERMINAL_STATES.has(state)) {
