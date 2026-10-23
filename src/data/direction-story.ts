@@ -302,7 +302,7 @@ export const directionStories: Record<DirectionStoryId, DirectionStory> = {
         { status: "LIVE PILOT", title: "Hermes Connect · Repair Shops", body: "Shop profile, services, availability, booking and customers.", href: "/services/hermes-connect/repair-shops/" },
         { status: "SOURCE-GATED", title: "Hermes Load Board", body: "Approved active records; previews stay non-bookable.", href: "/load-board/" },
         { status: "LIVE", title: "Hermes Catalog", body: "Business directory with search-ready profiles.", href: "/businesses/" },
-        { status: "PRIVATE", title: "Hermes Automatic Engineer", body: "Our cloud automation engine: scheduled jobs, retries, receipts and live readback.", href: "/insights/technology/hermes-automatic-engineer-business-automation/" },
+        { status: "PRIVATE", title: "Hermes Automatic Engineer", body: "In development: an AI assistant that follows up every lead and keeps routine work moving.", href: "/insights/technology/hermes-automatic-engineer-business-automation/" },
       ],
     },
     ecosystem: {
