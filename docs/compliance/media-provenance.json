@@ -104,7 +104,7 @@
     },
     {
       "path": "public/demos/hermes-connect/mark-academy.svg",
-      "sha256": "1e581c0103a47c25acea8e5d775bab45d2679dfdf7857727a9d7eddf62def2e2",
+      "sha256": "3382ec93bf71991e39359502db8d9371860bf3b56a11518f75b68a659eb8ea9c",
       "firstTrackedCommit": "0307c395dadd05097c43cbfb237e5acf161ca699",
       "classification": "FIRST_PARTY_BRAND_ARTIFACT",
       "provenanceStatus": "REPOSITORY_SOURCE_VERIFIED",
@@ -114,7 +114,7 @@
     },
     {
       "path": "public/demos/hermes-connect/mark-logistics.svg",
-      "sha256": "1fccb07cf65f2018f0e6af4c385341ae85b8c5757f132a7a98609a36bfd4cb64",
+      "sha256": "8a58f69d378805fe26513e1baa19b93b4a2c50ed872ff86c9dc8de9235c6c7b2",
       "firstTrackedCommit": "d72ff96f5ab2805cd9db110455e2a43e375d0812",
       "classification": "FIRST_PARTY_BRAND_ARTIFACT",
       "provenanceStatus": "REPOSITORY_SOURCE_VERIFIED",
@@ -124,7 +124,7 @@
     },
     {
       "path": "public/demos/hermes-connect/mark-marketing.svg",
-      "sha256": "182320a9d9033d09de0b33f0235a61dac349936b0e3d0406b4a46a94f3b249bb",
+      "sha256": "8cbe495c9929c2c91f163713ee596f5a743737e0ba1272c9845d3b2b4f1149e9",
       "firstTrackedCommit": "e2c5892bed73f606628fb958c07e96aecaa5e785",
       "classification": "FIRST_PARTY_BRAND_ARTIFACT",
       "provenanceStatus": "REPOSITORY_SOURCE_VERIFIED",
@@ -164,7 +164,7 @@
     },
     {
       "path": "public/demos/hermes-connect/mark-technology.svg",
-      "sha256": "e27cf406e1d65f4e1fc028e05fa3faaa2e9780fc5254646cdf94a12a53dfc2e2",
+      "sha256": "df57e12a48cac36c61b4be6942f084d5d62aa73f54454554e6851715923252d6",
       "firstTrackedCommit": "c2cdf383a6a45e53ed3371d001f8601b8ddcea28",
       "classification": "FIRST_PARTY_BRAND_ARTIFACT",
       "provenanceStatus": "REPOSITORY_SOURCE_VERIFIED",

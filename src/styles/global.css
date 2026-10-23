@@ -771,7 +771,7 @@ h3 { font-size: 1.75rem; }
 
 
 .system-flow { position: relative; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); margin: 0; padding: 0; list-style: none; border: 1px solid rgba(255,255,255,.15); }
-.system-flow::before { position: absolute; top: 4.15rem; left: 10%; right: 10%; height: 1px; background: linear-gradient(90deg, #1e88ff, #00c853, #ff7a00, #7c5cff); content: ""; }
+.system-flow::before { position: absolute; top: 4.15rem; left: 10%; right: 10%; height: 1px; background: linear-gradient(90deg, var(--hermes-logistics), var(--hermes-technology), var(--hermes-academy), var(--hermes-marketing)); content: ""; }
 .system-flow li { position: relative; min-width: 0; min-height: 260px; padding: 1.4rem; border-right: 1px solid rgba(255,255,255,.15); outline: none; transition: background-color 200ms ease, transform 200ms ease; }
 .system-flow li:last-child { border-right: 0; }
 .system-flow li:hover, .system-flow li:focus-visible { z-index: 1; background: rgba(255,255,255,.07); transform: translateY(-5px); }
@@ -794,9 +794,9 @@ h3 { font-size: 1.75rem; }
 .partnership-rails { display: flex; min-height: 560px; border: 1px solid rgba(255,255,255,.2); }
 .partnership-rail { --rail-color: #2563eb; position: relative; display: flex; flex: 1 1 0; flex-direction: column; justify-content: space-between; min-width: 0; padding: 1.4rem; overflow: hidden; background: color-mix(in srgb, var(--rail-color) 35%, #0b0d18); border-right: 1px solid rgba(255,255,255,.22); outline: none; transition: flex 500ms cubic-bezier(.22,.75,.2,1), background-color 240ms ease, opacity 240ms ease; }
 .partnership-rail:last-child { border-right: 0; }
-.partnership-rail-1 { --rail-color: #1e88ff; }
-.partnership-rail-2 { --rail-color: #00a844; }
-.partnership-rail-3 { --rail-color: #ff7a00; }
+.partnership-rail-1 { --rail-color: var(--hermes-logistics); }
+.partnership-rail-2 { --rail-color: var(--hermes-academy); }
+.partnership-rail-3 { --rail-color: var(--hermes-marketing); }
 .partnership-rail-4 { --rail-color: #7c5cff; }
 .partnership-rail:hover, .partnership-rail:focus-visible { flex: 1.45 1 0; background: color-mix(in srgb, var(--rail-color) 55%, #0b0d18); }
 .partnership-rail:focus-visible { box-shadow: inset 0 0 0 2px white; }

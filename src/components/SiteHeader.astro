@@ -99,7 +99,7 @@ const orderedPaths = [...site.paths].sort(
 const navigation = activeLocale === "en"
   ? orderedNavigation.map((item) => {
       const url = `/${item.href}`;
-      const label = item.href === "paths/technology/" ? (isApprovedVisualShell ? "Technology" : "IT") : item.label;
+      const label = item.href === "paths/technology/" ? "Technology" : item.label;
       return { ...item, key: navDirectionId(item.href), label, url, active: (activePath ?? currentPath) === url };
     })
   : orderedPaths.map((path) => ({
@@ -532,10 +532,10 @@ const languageLinks = siteLocales.filter((language) => !isCatalogLocaleRoute || 
     --nav-marketing: var(--dir-marketing, var(--hermes-marketing));
   }
   .site-header {
-    --nav-logistics: #1E88FF;
-    --nav-marketing: #00C853;
-    --nav-technology: #FF7A00;
-    --nav-academy: #7C5CFF;
+    --nav-logistics: var(--hermes-logistics);
+    --nav-marketing: var(--hermes-marketing);
+    --nav-technology: var(--hermes-technology);
+    --nav-academy: var(--hermes-academy);
     --nav-connect: #9D88FF;
     --nav-catalog: #22A39F;
     --nav-insights: #7C8799;

@@ -160,9 +160,9 @@
 }
 
 .hc-brand-page .hc-vertical-grid article:nth-child(1),
-.hc-brand-page .hc-vertical-grid article:nth-child(2) { --hc-business-accent: var(--hermes-logistics,#1e88ff); }
-.hc-brand-page .hc-vertical-grid article:nth-child(3) { --hc-business-accent: var(--hermes-marketing,#00c853); }
-.hc-brand-page .hc-vertical-grid article:nth-child(4) { --hc-business-accent: var(--hermes-academy,#7c5cff); }
+.hc-brand-page .hc-vertical-grid article:nth-child(2) { --hc-business-accent: var(--hermes-logistics,#2f6bf6); }
+.hc-brand-page .hc-vertical-grid article:nth-child(3) { --hc-business-accent: var(--hermes-marketing,#ff7a59); }
+.hc-brand-page .hc-vertical-grid article:nth-child(4) { --hc-business-accent: var(--hermes-academy,#12b886); }
 /* Beauty has no owner-approved standalone identity yet: use the Connect family cue, not a new canonical Beauty color. */
 .hc-brand-page .hc-vertical-grid article:nth-child(5) { --hc-business-accent: var(--hc-cyan); }
 .hc-brand-page .hc-vertical-grid article:nth-child(6) { --hc-business-accent: var(--hc-violet); }

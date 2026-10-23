@@ -132,10 +132,23 @@ Normal target on a public page: one bounded focus scene, commonly 5–15% of vis
 
 Direction colors are orientation signals, not four independent themes:
 
-- Logistics: `#1E88FF`
-- Marketing: `#00C853`
-- Technology: `#FF7A00`
-- Academy: `#7C5CFF`
+Owner decision 2026-10-23: one palette everywhere, taken from the H mark v1.1
+(`src/styles/hermes-direction-colors.css` `--dir-*` = `--hermes-*` direction tokens):
+
+- Logistics: `#2F6BF6` (tile of the mark)
+- Technology: `#38B6F5` (left upright)
+- Academy: `#12B886` (crossbar)
+- Marketing: `#FF7A59` (right upright)
+
+Text on Pearl uses the readable same-hue mix from `hermes-public-division-colors.css` (AA ≥ 5.6:1).
+Violet `#7C5CFF` is Hermes Intelligence / Hermes Connect, not a direction colour.
+
+Product accents (used only inside their product surfaces):
+
+- Hermes Connect: Intelligence gradient `#7C5CFF → #5AC8FA`, deep field `#0A0F1C`, cyan `#22D3EE`
+- Load Board: mint `#67E8C5` on night `#0B1018`
+- Insights: indigo field `#071034 → #1D2357` with violet glow
+- Catalog: teal `#22A39F`
 
 They may identify current direction, active navigation, small chart/detail accents or a bounded local cue.
 

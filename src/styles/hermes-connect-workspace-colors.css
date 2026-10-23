@@ -11,9 +11,9 @@
   overflow: hidden;
 }
 
-.hc-account-workspace.repair { --hc-workspace-brand: var(--hermes-logistics,#1e88ff); }
-.hc-account-workspace.academy { --hc-workspace-brand: var(--hermes-academy,#7c5cff); }
-.hc-account-workspace.ai { --hc-workspace-brand: var(--hermes-technology,#ff7a00); }
+.hc-account-workspace.repair { --hc-workspace-brand: var(--hermes-logistics,#2f6bf6); }
+.hc-account-workspace.academy { --hc-workspace-brand: var(--hermes-academy,#12b886); }
+.hc-account-workspace.ai { --hc-workspace-brand: var(--hermes-technology,#38b6f5); }
 .hc-account-workspace.beauty { --hc-workspace-brand: var(--hc-cyan,#22d3ee); }
 
 .hc-account-workspace .hc-workspace-dot {
@@ -59,11 +59,11 @@
 
 /* The currently open business adds a recognizable ambient cue to the switcher shell. */
 .hc-account-switcher[data-current="repair"],
-.hc-account-menu[data-current="repair"] { --hc-current-business: var(--hermes-logistics,#1e88ff); }
+.hc-account-menu[data-current="repair"] { --hc-current-business: var(--hermes-logistics,#2f6bf6); }
 .hc-account-switcher[data-current="academy"],
-.hc-account-menu[data-current="academy"] { --hc-current-business: var(--hermes-academy,#7c5cff); }
+.hc-account-menu[data-current="academy"] { --hc-current-business: var(--hermes-academy,#12b886); }
 .hc-account-switcher[data-current="ai"],
-.hc-account-menu[data-current="ai"] { --hc-current-business: var(--hermes-technology,#ff7a00); }
+.hc-account-menu[data-current="ai"] { --hc-current-business: var(--hermes-technology,#38b6f5); }
 .hc-account-switcher[data-current="beauty"],
 .hc-account-menu[data-current="beauty"] { --hc-current-business: var(--hc-cyan,#22d3ee); }
 

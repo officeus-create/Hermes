@@ -10,16 +10,16 @@ const divisions = await text("src/styles/hermes-connect-division-context.css");
 const connect = await text("src/styles/hermes-connect-brand-visuals.css");
 const workspaces = await text("src/styles/hermes-connect-workspace-colors.css");
 
-assert(brand.includes("--hermes-logistics: #1e88ff"), "Logistics must keep owner-approved #1E88FF.");
-assert(brand.includes("--hermes-marketing: #00c853"), "Marketing must keep owner-approved #00C853.");
-assert(brand.includes("--hermes-academy: #7c5cff"), "Academy must keep owner-approved #7C5CFF.");
-assert(brand.includes("--hermes-technology: #ff7a00"), "IT & Product must keep owner-approved #FF7A00.");
+assert(brand.includes("--hermes-logistics: #2f6bf6"), "Logistics must use the H-mark palette #2F6BF6 (owner decision 2026-10-23).");
+assert(brand.includes("--hermes-marketing: #ff7a59"), "Marketing must use the H-mark palette #FF7A59 (owner decision 2026-10-23).");
+assert(brand.includes("--hermes-academy: #12b886"), "Academy must use the H-mark palette #12B886 (owner decision 2026-10-23).");
+assert(brand.includes("--hermes-technology: #38b6f5"), "Technology must use the H-mark palette #38B6F5 (owner decision 2026-10-23).");
 
 for (const [name, token] of [
-  ["Logistics", "var(--hermes-logistics,#1e88ff)"],
-  ["Marketing", "var(--hermes-marketing,#00c853)"],
-  ["Academy", "var(--hermes-academy,#7c5cff)"],
-  ["Technology", "var(--hermes-technology,#ff7a00)"],
+  ["Logistics", "var(--hermes-logistics,#2f6bf6)"],
+  ["Marketing", "var(--hermes-marketing,#ff7a59)"],
+  ["Academy", "var(--hermes-academy,#12b886)"],
+  ["Technology", "var(--hermes-technology,#38b6f5)"],
 ]) {
   assert(divisions.includes(token), `${name}: approved division token must drive the public path.`);
 }
@@ -38,8 +38,8 @@ assert(connect.includes(".hc-brand-page .hc-primary"), "Connect primary CTA must
 assert(connect.includes(".hc-brand-page .hc-vertical-grid article"), "Connect business cards must expose context color.");
 
 assert(workspaces.includes(".hc-account-workspace.repair") && workspaces.includes("--hermes-logistics"), "Repair workspace cue must be blue.");
-assert(workspaces.includes(".hc-account-workspace.academy") && workspaces.includes("--hermes-academy"), "Academy workspace cue must be violet.");
-assert(workspaces.includes(".hc-account-workspace.ai") && workspaces.includes("--hermes-technology"), "AI/IT workspace cue must be orange.");
+assert(workspaces.includes(".hc-account-workspace.academy") && workspaces.includes("--hermes-academy"), "Academy workspace cue must be green.");
+assert(workspaces.includes(".hc-account-workspace.ai") && workspaces.includes("--hermes-technology"), "AI/IT workspace cue must be sky.");
 assert(workspaces.includes(".hc-account-workspace.beauty") && workspaces.includes("--hc-cyan"), "Beauty may use a Connect-family cyan UI cue but no invented canonical Beauty token.");
 assert(!brand.includes("--hermes-beauty:"), "Do not invent a canonical Beauty brand color without owner approval.");
 
