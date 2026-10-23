@@ -27,8 +27,8 @@ The input JSON must include:
 - separate authenticated Cloudflare Queue evidence with existence + known backlog count;
 - separate authenticated Cloudflare DLQ evidence with existence + known backlog count;
 - if DLQ backlog is nonzero: durable classification evidence proving every item is classified, zero unclassified items, zero current-canary items, and zero blocking items;
-- one succeeded generic job whose `job_type` exactly matches the current HAE read-only executor allowlist, with durable receipt reference, explicit idempotency key, READ_ONLY permission class and explicit `external_write=false`;
-- replay evidence with the explicit same idempotency key, reused existing logical job, `duplicate_execution_count=0`, and explicit `second_external_side_effect=false`;
+- one succeeded generic job whose `job_type` exactly matches the current HAE read-only executor allowlist, with durable receipt reference, explicit idempotency key, `attempt_count=1`, READ_ONLY permission class and explicit `external_write=false`;
+- replay evidence with the explicit same idempotency key, reused existing logical job, `duplicate_execution_count=0`, at least one durable `job.duplicate_suppressed` receipt, and explicit `second_external_side_effect=false`;
 - independent QA PASS with reviewer/evidence reference.
 
 The contract test derives the current executor allowlist from `workers/automation-engine/src/index.mjs` plus `HISTORICAL_READ_ONLY_JOB_TYPES` and fails if the checker allowlist drifts.
