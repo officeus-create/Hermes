@@ -21,6 +21,11 @@ const { dividerLabel = "or continue with email" } = Astro.props;
     initialize: (options: Record<string, unknown>) => void;
     renderButton: (element: HTMLElement, options: Record<string, unknown>) => void;
   };
+  // Google renders its button and account chooser in the site's language, not the browser's.
+  const siteLanguage = () => {
+    const lang = (document.documentElement.lang || "en").toLowerCase().slice(0, 2);
+    return lang === "ua" ? "uk" : lang;
+  };
   const googleId = () => (globalThis as unknown as { google?: { accounts?: { id?: GoogleId } } }).google?.accounts?.id;
 
   const loadScript = () => new Promise<void>((resolve, reject) => {
@@ -30,7 +35,7 @@ const { dividerLabel = "or continue with email" } = Astro.props;
     script.addEventListener("load", () => resolve(), { once: true });
     script.addEventListener("error", () => reject(new Error("google_script_unavailable")), { once: true });
     if (!existing) {
-      script.src = "https://accounts.google.com/gsi/client";
+      script.src = `https://accounts.google.com/gsi/client?hl=${siteLanguage()}`;
       script.async = true;
       script.defer = true;
       script.dataset.hermesGoogleIdentity = "";
@@ -91,7 +96,7 @@ const { dividerLabel = "or continue with email" } = Astro.props;
       },
     });
 
-    const locale = (document.documentElement.lang || "en").slice(0, 2);
+    const locale = siteLanguage();
     roots.forEach((root) => {
       const target = root.querySelector<HTMLElement>("[data-hermes-google-button]");
       if (!target) return;
