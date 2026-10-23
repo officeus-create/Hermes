@@ -279,6 +279,7 @@ const languageLinks = siteLocales.filter((language) => !isCatalogLocaleRoute || 
     </div>
   </nav>
   {isApprovedDirectionShell && (section || isApprovedProductsShell) && <DirectionProductNav direction={section ?? "products"} theme="light" locale={activeLocale === "ru" ? "ru" : "en"} />}
+  {isApprovedVisualShell && currentPath.startsWith("/businesses/") && !/^\/businesses\/(?:concepts|italy|marketing-growth-audit-example)\//.test(currentPath) && <DirectionProductNav direction="catalog" theme="light" locale={activeLocale === "ru" ? "ru" : "en"} />}
   {isApprovedHome && <span class="home-update-descriptions"><span id="home-academy-update" hidden>New Academy update within the last seven days.</span><span id="home-insights-update" hidden>New Insight within the last seven days.</span><span id="home-connect-update" hidden>New Connect update within the last seven days.</span><span id="home-catalog-update" hidden>New Catalog update within the last seven days.</span></span>}
 </header>
 
@@ -988,8 +989,10 @@ const languageLinks = siteLocales.filter((language) => !isCatalogLocaleRoute || 
   /* Narrow laptops (1101–1360px): keep the larger 1440+ nav size from pushing the CTA off-screen. */
   @media (min-width: 1101px) and (max-width: 1360px) {
     :root body .site-header[data-approved-visual-shell="true"] { column-gap: 10px; padding-left: 16px; }
-    :root body .site-header[data-approved-visual-shell="true"] .desktop-nav > a[data-nav-tone],
+    :root body .site-header[data-approved-visual-shell="true"] .desktop-nav > a[data-nav-tone] { padding: 10px 10px 10px 21px; font-size: .86rem; }
+    :root body .site-header[data-approved-visual-shell="true"] .desktop-nav > a[data-nav-tone]::before { left: 10px; }
     :root body .site-header[data-approved-visual-shell="true"] .desktop-products-menu > summary { padding-inline: 10px; font-size: .86rem; }
     :root body .site-header[data-approved-visual-shell="true"] .header-login-link { padding-inline: 8px; font-size: .86rem; }
+    :root body .site-header[data-approved-visual-shell="true"]:not(:has(> .direction-product-nav)) .header-cta { display: inline-flex; padding-inline: 16px; font-size: .86rem; }
   }
 </style>
