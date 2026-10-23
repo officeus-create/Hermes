@@ -230,6 +230,14 @@ assert.match(releaseWorkflow, /invalid_HAE_release_target_sha/, "Release config 
 assert.match(releaseWorkflow, /HAE_release_source_sha_placeholder_not_replaced/, "Release config render must fail closed if exact source SHA metadata was not injected");
 assert.match(releaseWorkflow, /github\.event\.issue\.number == 1018/, "Release command must stay attached to canonical Growth Bridge #1018");
 assert.match(releaseWorkflow, /HAE_PROVISION_DRY_RUN/, "Dry-run provisioning must require an explicit owner command");
+assert.match(releaseWorkflow, /HAE_RUNTIME_READONLY_PROOF/, "Read-only runtime proof must require an explicit owner command");
+assert.match(releaseWorkflow, /runtime_readonly_proof/, "Release workflow must expose a bounded read-only proof operation");
+assert.match(releaseWorkflow, /system\.health\.snapshot/, "Runtime proof must execute the allowlisted system health snapshot capability");
+assert.match(releaseWorkflow, /job\.duplicate_suppressed/, "Runtime proof must require a durable duplicate-suppression replay receipt");
+assert.match(releaseWorkflow, /queues\/\$\{qid\}\/metrics/, "Runtime proof must read authoritative Queue and DLQ backlog metrics from Cloudflare");
+assert.match(releaseWorkflow, /hae-runtime-evidence-accepted/, "Runtime proof must pass through an independently validated sanitized evidence artifact");
+assert.match(releaseWorkflow, /HAE runtime evidence independent QA/, "Runtime proof must separate executor and evidence QA jobs");
+assert.doesNotMatch(releaseWorkflow, /runtime_readonly_proof[\s\S]{0,6000}create_text_post/, "Read-only runtime proof must not invoke provider publishing");
 assert.match(releaseWorkflow, /environment: production/, "Production Worker release must pass through the production environment");
 assert.match(releaseWorkflow, /CLOUDFLARE_HAE_RELEASE_TOKEN/, "HAE should prefer one dedicated least-privilege Cloudflare release token");
 assert.match(releaseWorkflow, /workers\/lead-email\/wrangler\.production\.jsonc/, "HAE must derive the canonical Cloudflare account id from existing production config");
