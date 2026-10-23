@@ -165,6 +165,10 @@ export function evaluateHaeRuntimeEvidence(snapshot = {}) {
   if (String(job.state || "").toUpperCase() !== "SUCCEEDED") {
     add(findings, "READ_ONLY_JOB_NOT_COMPLETED", "Read-only canary must have the canonical terminal SUCCEEDED receipt.");
   }
+  const jobAttemptCount = numberOrNull(job.attempt_count);
+  if (jobAttemptCount !== 1) {
+    add(findings, "READ_ONLY_JOB_ATTEMPT_COUNT_INVALID", "Read-only canary must execute exactly once.", { attempt_count: jobAttemptCount });
+  }
   if (job.external_write !== false) {
     add(findings, "READ_ONLY_JOB_EXTERNAL_WRITE_UNPROVEN", "Read-only canary must explicitly prove external_write=false.");
   }
@@ -183,6 +187,10 @@ export function evaluateHaeRuntimeEvidence(snapshot = {}) {
   const duplicateExecutions = numberOrNull(replay.duplicate_execution_count);
   if (duplicateExecutions !== 0) {
     add(findings, "DUPLICATE_EXECUTION_DETECTED", "Replay must prove duplicate_execution_count=0.", { duplicate_execution_count: duplicateExecutions });
+  }
+  const duplicateSuppressedReceipts = numberOrNull(replay.duplicate_suppressed_receipt_count);
+  if (duplicateSuppressedReceipts === null || duplicateSuppressedReceipts < 1) {
+    add(findings, "DUPLICATE_SUPPRESSION_RECEIPT_MISSING", "Replay must leave at least one durable job.duplicate_suppressed receipt.", { duplicate_suppressed_receipt_count: duplicateSuppressedReceipts });
   }
   if (replay.second_external_side_effect !== false) {
     add(findings, "SECOND_EXTERNAL_SIDE_EFFECT_UNPROVEN", "Replay must explicitly prove second_external_side_effect=false.");
