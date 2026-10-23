@@ -356,10 +356,7 @@ jobs:
 
           proof_dir="${RUNNER_TEMP}/hae-runtime-proof"
           mkdir -p "$proof_dir"
-          started_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-          job_id="job:runtime-proof:${GITHUB_RUN_ID}:${GITHUB_RUN_ATTEMPT}"
           idempotency_key="hae:runtime-proof:${TARGET_SHA}:${GITHUB_RUN_ID}:${GITHUB_RUN_ATTEMPT}"
-          event_id="evt:runtime-proof:${GITHUB_RUN_ID}:${GITHUB_RUN_ATTEMPT}:created"
 
           queues_json="$proof_dir/queues.json"
           curl -fsS \
@@ -375,42 +372,33 @@ jobs:
           echo "::add-mask::$queue_id"
           echo "::add-mask::$dlq_id"
 
-          insert_job_sql="INSERT INTO hermes_automation_jobs (job_id,job_type,business_lane,account_key,project_key,priority,state,current_step,available_at,attempt_count,max_attempts,idempotency_key,policy_version,payload_json,result_json,last_error_class,created_at,updated_at,completed_at) VALUES (?,?,?,?,?,?, 'QUEUED','dispatch',NULL,0,1,?,?,?,NULL,NULL,?,?,NULL)"
-          insert_job_params="$(jq -nc \
-            --arg job_id "$job_id" \
-            --arg lane "automation" \
-            --arg account "hermes_logistics" \
-            --arg project "hae-runtime-proof" \
-            --arg key "$idempotency_key" \
-            --arg policy "hae-readonly-v1" \
-            --arg payload "{}" \
-            --arg now "$started_at" \
-            '[$job_id,"system.health.snapshot",$lane,$account,$project,50,$key,$policy,$payload,$now,$now]')"
-          d1_query "$insert_job_sql" "$insert_job_params" "$proof_dir/insert-job.json"
-
-          insert_event_sql="INSERT INTO hermes_automation_job_events (event_id,job_id,event_type,from_state,to_state,step,evidence_ref,provider_ref,error_class,created_at) VALUES (?,?, 'job.created',NULL,'QUEUED','dispatch',NULL,NULL,NULL,?)"
-          insert_event_params="$(jq -nc --arg event_id "$event_id" --arg job_id "$job_id" --arg now "$started_at" '[$event_id,$job_id,$now]')"
-          d1_query "$insert_event_sql" "$insert_event_params" "$proof_dir/insert-event.json"
-
-          queue_body="$(jq -nc --arg job_id "$job_id" '{body:{type:"job.execute",job_id:$job_id}}')"
+          submit_body="$(jq -nc --arg key "$idempotency_key" '{
+            body: {
+              type: "job.submit.runtime_proof",
+              job_type: "system.health.snapshot",
+              idempotency_key: $key
+            }
+          }')"
           http="$(curl -sS -o "$proof_dir/queue-first.json" -w '%{http_code}' \
             -X POST \
             "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/queues/${queue_id}/messages" \
             -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
             -H 'Content-Type: application/json' \
-            --data "$queue_body")"
+            --data "$submit_body")"
           if [[ "$http" != "200" ]] || [[ "$(jq -r '.success // false' "$proof_dir/queue-first.json")" != "true" ]]; then
-            echo "hae_runtime_proof_first_queue_push_failed http=$http"
+            echo "hae_runtime_proof_submit_queue_push_failed http=$http"
             cat "$proof_dir/queue-first.json"
             exit 1
           fi
 
-          job_sql="SELECT job_id,job_type,business_lane,state,attempt_count,idempotency_key,result_json,last_error_class,completed_at FROM hermes_automation_jobs WHERE job_id=? LIMIT 1"
-          job_params="$(jq -nc --arg job_id "$job_id" '[$job_id]')"
+          lookup_sql="SELECT job_id,job_type,business_lane,state,attempt_count,idempotency_key,result_json,last_error_class,completed_at FROM hermes_automation_jobs WHERE idempotency_key=? LIMIT 1"
+          lookup_params="$(jq -nc --arg key "$idempotency_key" '[$key]')"
+          job_id=""
           for attempt in $(seq 1 24); do
-            d1_query "$job_sql" "$job_params" "$proof_dir/job.json"
+            d1_query "$lookup_sql" "$lookup_params" "$proof_dir/job.json"
+            job_id="$(jq -r '.result[0].results[0].job_id // empty' "$proof_dir/job.json")"
             state="$(jq -r '.result[0].results[0].state // empty' "$proof_dir/job.json")"
-            if [[ "$state" == "SUCCEEDED" ]]; then
+            if [[ "$state" == "SUCCEEDED" && -n "$job_id" ]]; then
               break
             fi
             if [[ "$state" == "FAILED" || "$state" == "BLOCKED" ]]; then
@@ -419,12 +407,21 @@ jobs:
               exit 1
             fi
             if [[ "$attempt" -eq 24 ]]; then
-              echo "hae_runtime_proof_job_timeout state=$state"
+              echo "hae_runtime_proof_job_timeout state=$state job=$job_id"
               cat "$proof_dir/job.json"
               exit 1
             fi
             sleep 5
           done
+          if [[ -z "$job_id" ]]; then
+            echo "hae_runtime_proof_job_id_missing"
+            exit 1
+          fi
+
+          job_sql="SELECT job_id,job_type,business_lane,state,attempt_count,idempotency_key,result_json,last_error_class,completed_at FROM hermes_automation_jobs WHERE job_id=? LIMIT 1"
+          job_params="$(jq -nc --arg job_id "$job_id" '[$job_id]')"
+          d1_query "$job_sql" "$job_params" "$proof_dir/job.json"
+          queue_body="$(jq -nc --arg job_id "$job_id" '{body:{type:"job.execute",job_id:$job_id}}')"
 
           result_json="$(jq -r '.result[0].results[0].result_json // empty' "$proof_dir/job.json")"
           if [[ -z "$result_json" ]]; then

@@ -235,6 +235,14 @@ assert.match(releaseWorkflow, /HAE_PROVISION_DRY_RUN/, "Dry-run provisioning mus
 assert.match(releaseWorkflow, /HAE_RUNTIME_READONLY_PROOF/, "Read-only runtime proof must require an explicit owner command");
 assert.match(releaseWorkflow, /runtime_readonly_proof/, "Release workflow must expose a bounded read-only proof operation");
 assert.match(releaseWorkflow, /system\.health\.snapshot/, "Runtime proof must execute the allowlisted system health snapshot capability");
+assert.match(worker, /job\.submit\.runtime_proof/, "Runtime proof submission must enter through the existing HAE Queue consumer");
+assert.match(worker, /submitRuntimeProofJob/, "Worker must own bounded runtime-proof job creation through its canonical D1 binding");
+assert.match(worker, /runtime_proof_requires_dry_run/, "Runtime proof queue submission must fail closed unless dry_run and publication disabled");
+assert.match(worker, /runtime_proof_job_type_not_allowed/, "Runtime proof queue submission must allow only the system health snapshot job");
+assert.match(releaseWorkflow, /job\.submit\.runtime_proof/, "Release proof must ask the deployed Worker to create the bounded read-only job");
+assert.match(releaseWorkflow, /WHERE idempotency_key=\? LIMIT 1/, "Release proof must discover the durable job through D1 readback by idempotency key");
+assert.doesNotMatch(releaseWorkflow, /INSERT INTO hermes_automation_jobs/, "Least-privilege release proof must never require CI-side D1 job writes");
+assert.doesNotMatch(releaseWorkflow, /INSERT INTO hermes_automation_job_events/, "Least-privilege release proof must never require CI-side D1 event writes");
 assert.match(releaseWorkflow, /job\.duplicate_suppressed/, "Runtime proof must require a durable duplicate-suppression replay receipt");
 assert.match(releaseWorkflow, /queues\/\$\{qid\}\/metrics/, "Runtime proof must read authoritative Queue and DLQ backlog metrics from Cloudflare");
 assert.match(releaseWorkflow, /hae-runtime-evidence-accepted/, "Runtime proof must pass through an independently validated sanitized evidence artifact");

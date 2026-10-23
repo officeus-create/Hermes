@@ -55,6 +55,22 @@ The checker validates structure and internal consistency of supplied evidence. I
 
 Runtime truth still comes from the authorized Cloudflare/D1/Queue/DLQ/readback path and independent QA.
 
+## Least-privilege runtime proof path
+
+The release runner must not require D1 write permission. It submits one bounded
+`job.submit.runtime_proof` message through the existing authenticated HAE Queue.
+The deployed Worker accepts that message only while `HERMES_AUTOMATION_MODE=dry_run`,
+raw publication is `disabled`, and the requested job type is exactly
+`system.health.snapshot`. The Worker then creates the durable job through its
+canonical D1 binding and enqueues the normal `job.execute` message.
+
+GitHub Actions uses the Cloudflare D1 API only for SELECT/readback during this proof.
+It discovers the created job by the explicit idempotency key, waits for SUCCEEDED,
+replays the exact job id through the Queue, and verifies the durable
+`job.duplicate_suppressed` receipt. This preserves the dedicated release token's
+D1 read-only boundary rather than broadening it merely to manufacture test state.
+
+
 The promotion ladder therefore remains:
 
 `CODED -> EXACT_HEAD_CI_GREEN -> MERGED -> DEPLOYED -> LIVE_VERIFIED -> BUSINESS_VERIFIED`
