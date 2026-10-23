@@ -45,6 +45,7 @@
     "idempotency_key": "REPLACE_WITH_EXACT_IDEMPOTENCY_KEY",
     "permission_class": "READ_ONLY",
     "state": "SUCCEEDED",
+    "attempt_count": 1,
     "external_write": false
   },
   "replay": {
@@ -53,6 +54,7 @@
     "same_idempotency_key": true,
     "reused_existing_job": true,
     "duplicate_execution_count": 0,
+    "duplicate_suppressed_receipt_count": 1,
     "second_external_side_effect": false
   },
   "independent_qa": {
