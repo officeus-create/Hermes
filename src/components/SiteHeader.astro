@@ -907,7 +907,7 @@ const languageLinks = siteLocales.filter((language) => !isCatalogLocaleRoute || 
   @media (min-width: 1101px) {
     :root body .site-header[data-approved-visual-shell="true"] {
       position: fixed; top: 12px; left: 50%; right: auto; transform: translateX(-50%);
-      width: min(1348px, calc(100% - 48px)); max-width: none; min-height: 64px; margin: 0;
+      width: min(1488px, calc(100% - 48px)); max-width: none; min-height: 64px; margin: 0;
       padding: 0 10px 0 22px; border: 0; border-radius: 999px; background: transparent;
       box-shadow: none; backdrop-filter: none; isolation: isolate;
       display: grid; grid-template-columns: auto minmax(0, 1fr) auto; grid-template-rows: 64px auto;
@@ -924,7 +924,7 @@ const languageLinks = siteLocales.filter((language) => !isCatalogLocaleRoute || 
     }
     :root body .site-header[data-approved-visual-shell="true"] .desktop-nav > a[data-nav-tone] {
       min-height: 40px; padding: 10px 14px 10px 24px; border-radius: 999px;
-      color: #4a505c; font-size: .9rem; font-weight: 600; background-position: 14px center;
+      color: #4a505c; font-size: .95rem; font-weight: 600; background-position: 14px center;
     }
     :root body .site-header[data-approved-visual-shell="true"] .desktop-nav > a[data-nav-tone]::before { left: 12px; }
     :root body .site-header[data-approved-visual-shell="true"] .desktop-nav > a[data-nav-tone]:is(:hover, :focus-visible) { color: #111318; }
@@ -932,7 +932,7 @@ const languageLinks = siteLocales.filter((language) => !isCatalogLocaleRoute || 
     :root body .site-header[data-approved-visual-shell="true"] .desktop-nav > a[aria-current="page"]::after { display: none; }
     :root body .site-header[data-approved-visual-shell="true"] .desktop-products-menu > summary {
       min-height: 40px; padding: 10px 14px; border: 0; border-radius: 999px; background: transparent;
-      color: #111318; font-size: .9rem; font-weight: 700;
+      color: #111318; font-size: .95rem; font-weight: 700;
     }
     :root body .site-header[data-approved-visual-shell="true"] .desktop-products-menu[open] > summary { background: rgba(10, 22, 79, .07); }
     /* Products drops DOWN, centred under its trigger — never up and off-screen. */
@@ -962,5 +962,12 @@ const languageLinks = siteLocales.filter((language) => !isCatalogLocaleRoute || 
     :root body .site-header[data-approved-visual-shell="true"] > .direction-product-nav {
       grid-column: 1 / -1; width: calc(100% - 56px); margin: -1px 28px 0;
     }
+  }
+  /* Narrow laptops (1101–1360px): keep the larger 1440+ nav size from pushing the CTA off-screen. */
+  @media (min-width: 1101px) and (max-width: 1360px) {
+    :root body .site-header[data-approved-visual-shell="true"] { column-gap: 10px; padding-left: 16px; }
+    :root body .site-header[data-approved-visual-shell="true"] .desktop-nav > a[data-nav-tone],
+    :root body .site-header[data-approved-visual-shell="true"] .desktop-products-menu > summary { padding-inline: 10px; font-size: .86rem; }
+    :root body .site-header[data-approved-visual-shell="true"] .header-login-link { padding-inline: 8px; font-size: .86rem; }
   }
 </style>
