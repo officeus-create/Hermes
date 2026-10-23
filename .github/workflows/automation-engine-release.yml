@@ -431,7 +431,8 @@ jobs:
             echo "hae_runtime_proof_result_missing"
             exit 1
           fi
-          printf '%s' "$result_json" | jq -e '.health.database == "ok"' > "$proof_dir/result.json"
+          printf '%s' "$result_json" | jq -e '.health.database == "ok"' >/dev/null
+          printf '%s' "$result_json" | jq '.' > "$proof_dir/result.json"
           jq '.health' "$proof_dir/result.json" > "$proof_dir/health.json"
 
           health_sha="$(jq -r '.source_sha // empty' "$proof_dir/health.json")"
