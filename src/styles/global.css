@@ -2221,7 +2221,7 @@ h3 { font-size: 1.75rem; }
    16-17" displays do not show empty side bands, and page headlines capped near 68px. */
 @media (min-width: 1101px) {
   :root { --content-max-width: 1440px; }
-  html body :is(.detail-page .detail-hero, .load-board-page .load-board-hero, .commercial-hero, .digital-service-hero, .insights-hero, .resource-hero, .case-hub-hero, .case-study-hero, .seo-case-hero, .trust-hero, .catalog-hero, .logistics-audience-hero, .logistics-recommendation-hero) h1 {
+  html body :is(.detail-page .detail-hero, .load-board-page .load-board-hero, .commercial-hero, .digital-service-hero, .insights-hero, .resource-hero, .case-hub-hero, .case-study-hero, .seo-case-hero, .trust-hero, .catalog-hero, .logistics-audience-hero, .logistics-recommendation-hero, .hc-copy, .repair-live-hero, .hc-capability-hero, main > section.hero:first-child) h1 {
     font-size: clamp(2.75rem, 4.4vw, 4.25rem) !important;
   }
   html body :is(.direction-story, .hlb-live-head) h2 { font-size: clamp(2.2rem, 3.2vw, 3rem) !important; }

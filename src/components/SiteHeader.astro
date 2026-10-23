@@ -30,7 +30,10 @@ const isApprovedDirectionShell = isApprovedProductsShell || /^\/paths\/(logistic
 // Hermes Connect product surfaces and demos keep their product header with the Connect launcher.
 // Sign-in, registration and password pages are the public front door, so they share the approved header too.
 const isConnectAuthEntry = /^\/(?:[a-z]{2}\/)?services\/hermes-connect\/(?:[a-z-]+\/)*(?:access|auth|forgot-password|reset-password)\/$/.test(currentPath);
-const isConnectProductSurface = (/^\/(?:[a-z]{2}\/)?services\/hermes-connect\//.test(currentPath) && !isConnectAuthEntry) || currentPath.startsWith("/demos/");
+// Indexable public Connect pages (product hub, Repair Shops landing/plan, support, load analyzer) are
+// marketing surfaces, so they share the approved header; private workspaces keep the product header.
+const isConnectPublicEntry = /^\/(?:[a-z]{2}\/)?services\/hermes-connect\/(?:|load-analyzer\/|repair-shops\/|repair-shops\/plan\/|support\/)$/.test(currentPath);
+const isConnectProductSurface = (/^\/(?:[a-z]{2}\/)?services\/hermes-connect\//.test(currentPath) && !isConnectAuthEntry && !isConnectPublicEntry) || currentPath.startsWith("/demos/");
 const isApprovedVisualShell = isApprovedHome || isApprovedDirectionShell || !isConnectProductSurface;
 const homeUpdates = isApprovedHome ? {
   academy: latestHomeUpdate("academy"),
