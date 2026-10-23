@@ -8,11 +8,13 @@ test.describe("Russian route integrity", () => {
     await expect(page.locator("[data-language-menu] summary span")).toHaveText("Русский");
     await expect(page.locator(".site-header .wordmark")).toHaveAttribute("href", "/ru/#top");
 
-    // Click the launcher a real user can see: desktop header or the opened mobile menu.
-    const headerConnect = page.locator('[data-hermes-connect-launcher="header"]');
-    let connect = headerConnect;
+    // Hermes Connect lives in Products: the desktop dropdown or the opened mobile menu.
+    const desktopProducts = page.locator(".desktop-nav .desktop-products-menu");
+    let connect = desktopProducts.locator('a[data-product="connect"]');
 
-    if (!(await headerConnect.isVisible())) {
+    if (await desktopProducts.locator("summary").isVisible()) {
+      await desktopProducts.locator("summary").click();
+    } else {
       await page.locator("[data-menu-button]").click();
       await expect(page.locator("[data-mobile-menu]")).toBeVisible();
       // Products is the canonical mobile secondary navigation; keep the selected language.
@@ -67,7 +69,7 @@ test.describe("Russian route integrity", () => {
       await expect(page.locator("html")).toHaveAttribute("lang", "ru");
       await expect(page.locator("[data-language-menu] summary span")).toHaveText("Русский");
       await expect(page.locator(".site-header .wordmark")).toHaveAttribute("href", "/ru/#top");
-      await expect(page.locator('[data-hermes-connect-launcher="header"]')).toHaveAttribute("href", /\?lang=ru$/);
+      await expect(page.locator('.desktop-products-menu a[data-product="connect"]')).toHaveAttribute("href", /\?lang=ru$/);
       await expect(page.getByRole("link", { name: "Политика конфиденциальности" })).toHaveAttribute("href", "/ru/privacy/");
     }
   });

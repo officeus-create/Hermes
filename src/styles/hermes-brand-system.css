@@ -33,6 +33,12 @@
 
   /* Intelligence */
   --hermes-violet: #7c5cff;
+  /* Violet as small text: same hue, darkened to clear WCAG AA (4.5:1) on Pearl/Paper/Cloud. */
+  --hermes-violet-text: #6446e6;
+  /* Violet as small text on Ink/Obsidian sections. */
+  --hermes-violet-on-dark: #c8bdff;
+  /* Focus Ink action surface used by the approved header CTA. */
+  --hermes-action-ink: #0a164f;
   --hermes-ocean: #5ac8fa;
   --hermes-intelligence-gradient: linear-gradient(135deg, #7c5cff 0%, #5ac8fa 100%);
 

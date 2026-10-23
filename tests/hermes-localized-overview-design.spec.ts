@@ -55,7 +55,7 @@ for (const route of routes) {
     expect(visual!.heroPrimaryRadius).toBe("12px");
     expect(visual!.directionBackground).toBe("rgb(255, 255, 255)");
     expect(visual!.mediaRadius).toBe("22px");
-    expect(visual!.eyebrowColor).toBe("rgb(124, 92, 255)");
+    expect(visual!.eyebrowColor).toBe("rgb(100, 70, 230)");
     expect(visual!.partnershipBackground).toBe("rgb(11, 13, 18)");
     expect(visual!.partnershipRadius).toBe("22px");
     expect(visual!.capabilityBackground).toBe("rgb(255, 255, 255)");

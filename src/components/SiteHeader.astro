@@ -25,7 +25,10 @@ const currentPath = Astro.url.pathname;
 const isApprovedHome = currentPath === "/";
 const isApprovedProductsShell = currentPath === "/products/";
 const isApprovedDirectionShell = isApprovedProductsShell || /^\/paths\/(logistics|technology|academy|marketing)\/$/.test(currentPath);
-const isApprovedVisualShell = isApprovedHome || isApprovedDirectionShell;
+// One approved header across the public site (brand mark, Technology label, light glass pill);
+// Hermes Connect product surfaces and demos keep their product header with the Connect launcher.
+const isConnectProductSurface = /^\/(?:[a-z]{2}\/)?services\/hermes-connect\//.test(currentPath) || currentPath.startsWith("/demos/");
+const isApprovedVisualShell = isApprovedHome || isApprovedDirectionShell || !isConnectProductSurface;
 const homeUpdates = isApprovedHome ? {
   academy: latestHomeUpdate("academy"),
   insights: latestHomeUpdate("insights"),
@@ -158,10 +161,10 @@ const languageLinks = siteLocales.filter((language) => !isCatalogLocaleRoute || 
 {isHermesConnectExperienceRoute && <link rel="stylesheet" href={hermesConnectSafePolishUrl} />}
 {isHermesConnectRoute && <link rel="stylesheet" href={hermesRepairPublicShellUrl} />}
 
-<header class={`site-header site-header-${theme}`} data-header data-home-portal={isApprovedHome ? "true" : undefined} data-approved-visual-shell={isApprovedVisualShell ? "true" : undefined}>
+<header class={`site-header site-header-${isApprovedVisualShell ? "light" : theme}`} data-header data-home-portal={isApprovedHome ? "true" : undefined} data-approved-visual-shell={isApprovedVisualShell ? "true" : undefined}>
   <a class="wordmark" href={activeLocale === "en" ? "/#top" : `${localeConfig[activeLocale].path}#top`} aria-label="Hermes home">
     {isApprovedVisualShell ? (
-      <span class="wordmark-mark wordmark-mark-corporate"><img src="/brand/hermes-mark.svg" alt="Hermes" width="36" height="36" decoding="async" /></span>
+      <span class="wordmark-mark wordmark-mark-corporate"><img src="/brand/hermes-mark.svg" alt="Hermes logo" width="36" height="36" decoding="async" /></span>
     ) : (
       <span class="wordmark-mark">H</span>
     )}
@@ -440,6 +443,17 @@ const languageLinks = siteLocales.filter((language) => !isCatalogLocaleRoute || 
   .site-header[data-approved-visual-shell="true"] .wordmark-mark-corporate { width:36px; height:36px; border:0; border-radius:9px; overflow:hidden; flex:none; }
   .site-header[data-approved-visual-shell="true"] .wordmark-mark-corporate img { display:block; width:100%; height:100%; }
   .site-header[data-approved-visual-shell="true"] .wordmark > span:last-child { font-weight:700; font-size:.94rem; letter-spacing:.32em; text-transform:uppercase; }
+  /* Approved shell on the rest of the public site: the same light glass pill below the desktop
+     breakpoint, so the brand mark and menu stay readable over dark and light heroes alike. */
+  @media (max-width: 1100px) {
+    .site-header[data-approved-visual-shell="true"]:not([data-home-portal]) {
+      border: 1px solid rgba(17,19,24,.07);
+      border-radius: 999px;
+      background: rgba(255,255,255,.92);
+      box-shadow: 0 10px 30px rgba(10,22,79,.07);
+      backdrop-filter: blur(18px);
+    }
+  }
   /* Claude Directions: one fixed, inspectable header panel with the active
      direction submenu attached underneath. Canonical links and account entry
      stay intact while the approved narrow layout scrolls horizontally. */
@@ -499,10 +513,10 @@ const languageLinks = siteLocales.filter((language) => !isCatalogLocaleRoute || 
   .site-header[data-approved-visual-shell="true"] {
     /* Approved Claude Design palette on Home and the four direction pages (their heroes and
        submenus already use --dir-*). Real product/Connect colors remain unchanged. */
-    --nav-logistics: var(--dir-logistics);
-    --nav-technology: var(--dir-technology);
-    --nav-academy: var(--dir-academy);
-    --nav-marketing: var(--dir-marketing);
+    --nav-logistics: var(--dir-logistics, var(--hermes-logistics));
+    --nav-technology: var(--dir-technology, var(--hermes-technology));
+    --nav-academy: var(--dir-academy, var(--hermes-academy));
+    --nav-marketing: var(--dir-marketing, var(--hermes-marketing));
   }
   .site-header {
     --nav-logistics: #1E88FF;

@@ -227,7 +227,8 @@ const statusClass = (status: string) => status.toLowerCase().replace(/\s+/g, "-"
   .ds-final .ds-kicker { color: rgba(255, 255, 255, .7); }
   .ds-final .ds-kicker i { width: 3px; height: 13px; border-radius: 2px; background: var(--direction-accent, #2f6bf6); }
   .ds-final h2 { color: #fff; max-width: 13ch; }
-  .ds-final-note { margin: 16px 0 0; color: rgba(255, 255, 255, .72); font-size: .95rem; }
+  /* Out-specifies the shared .detail-page .detail-service-area ink colour so the note stays readable on Ink. */
+  .ds-final .ds-final-note.detail-service-area { grid-column: auto; margin: 16px 0 0; border-top-color: rgba(255, 255, 255, .16); color: rgba(255, 255, 255, .72) !important; font-size: .95rem; }
   .ds-final-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 22px; }
   .ds-final-mail { color: #fff; font-weight: 600; }
   .ds-final-cta { display: inline-flex; align-items: center; gap: 8px; padding: 14px 24px; border-radius: 999px; background: #fff; color: #0a164f; font-weight: 700; text-decoration: none; }

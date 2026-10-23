@@ -95,7 +95,7 @@
 .detail-page-technology .it-brief-progress span,
 .detail-page-technology .it-brief-panel legend span,
 .detail-page-technology .it-brief-projects label > span,
-.detail-page-technology .it-brief-reference-list label > span { color: var(--hermes-violet); }
+.detail-page-technology .it-brief-reference-list label > span { color: var(--hermes-violet-text); }
 
 .detail-page-technology .technology-solution-grid h3,
 .detail-page-technology .technology-industries h3,
@@ -160,6 +160,7 @@
 .detail-page-technology .technology-proof-item-1 > a { color: #fff; }
 .detail-page-technology .technology-proof-item-1 > p,
 .detail-page-technology .technology-proof-item-1 .technology-proof-category { color: var(--hermes-muted-dark); }
+.detail-page-technology .technology-proof-item-1 .technology-proof-meta span { color: var(--hermes-violet-on-dark); }
 
 .detail-page-technology .it-screen { min-height: 0; padding: clamp(42px, 6vw, 72px) 0; }
 .detail-page-technology .it-screen > .shell {

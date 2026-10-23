@@ -122,7 +122,7 @@ const t = copy[accountLocale];
     const accountRequest = (async () => {
       const response = await fetch("/api/hermes-connect/account", {
         credentials: "same-origin",
-        headers: { Accept: "application/json" },
+        headers: { Accept: "application/json", "X-Hermes-Session-Probe": "1" },
       });
       const payload = await readJson(response);
       if (!response.ok || !payload?.success || !payload.identity) throw new Error("account_unavailable");

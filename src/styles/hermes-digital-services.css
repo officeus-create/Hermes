@@ -20,12 +20,12 @@ body:has(.digital-service-page) .language-menu nav a:focus-visible,
 body:has(.digital-service-page) .language-menu nav a[aria-current="page"]{color:#fff;background:var(--hermes-obsidian)}
 body:has(.digital-service-page) .mobile-nav{color:var(--hermes-ink);background:var(--hermes-paper)}
 body:has(.digital-service-page) .digital-service-page{overflow-x:clip;background:var(--hermes-pearl);color:var(--hermes-ink)}
-body:has(.digital-service-page) .digital-service-page .eyebrow{color:var(--hermes-violet)}
+body:has(.digital-service-page) .digital-service-page .eyebrow{color:var(--hermes-violet-text)}
 body:has(.digital-service-page) .digital-service-hero{padding:9.5rem 0 5.5rem;border-bottom:1px solid var(--hermes-line-light);background:var(--hermes-pearl);color:var(--hermes-ink)}
 body:has(.digital-service-page) .digital-breadcrumb{display:flex;flex-wrap:wrap;gap:.55rem;align-items:center;margin-bottom:2rem;font-size:.9rem;color:var(--hermes-muted)}
 body:has(.digital-service-page) .digital-breadcrumb a{color:var(--hermes-ink)}
 body:has(.digital-service-page) .digital-breadcrumb a:hover,
-body:has(.digital-service-page) .digital-breadcrumb a:focus-visible{color:var(--hermes-violet)}
+body:has(.digital-service-page) .digital-breadcrumb a:focus-visible{color:var(--hermes-violet-text)}
 body:has(.digital-service-page) .digital-service-hero h1{max-width:900px;margin:.65rem 0 1.25rem;color:var(--hermes-ink);font-size:clamp(2.6rem,6vw,5rem);line-height:var(--hermes-display-leading);letter-spacing:var(--hermes-display-tracking)}
 body:has(.digital-service-page) .digital-service-intro{max-width:820px;font-size:clamp(1.08rem,2vw,1.3rem);line-height:var(--hermes-copy-leading);color:var(--hermes-muted)}
 body:has(.digital-service-page) .digital-service-actions{display:flex;flex-wrap:wrap;gap:.8rem;margin-top:2rem}
@@ -45,11 +45,11 @@ body:has(.digital-service-page) .digital-faq-layout{display:grid;grid-template-c
 body:has(.digital-service-page) .digital-check-list,
 body:has(.digital-service-page) .digital-boundary-layout ul{display:grid;gap:.9rem;list-style:none;margin:0;padding:0}
 body:has(.digital-service-page) .digital-check-list li{display:flex;gap:.8rem;align-items:flex-start;padding:1rem 1.1rem;border:1px solid var(--hermes-line-light);border-radius:var(--hermes-radius-card);background:var(--hermes-paper);box-shadow:var(--hermes-shadow-card);line-height:1.55}
-body:has(.digital-service-page) .digital-check-list svg{flex:none;margin-top:.15rem;color:var(--hermes-violet)}
+body:has(.digital-service-page) .digital-check-list svg{flex:none;margin-top:.15rem;color:var(--hermes-violet-text)}
 body:has(.digital-service-page) .digital-muted-section{background:var(--hermes-paper)}
 body:has(.digital-service-page) .digital-card-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem;margin-top:2rem}
 body:has(.digital-service-page) .digital-card-grid article{min-width:0;padding:1.5rem;border:1px solid var(--hermes-line-light);border-radius:22px!important;background:var(--hermes-paper);box-shadow:var(--hermes-shadow-card)}
-body:has(.digital-service-page) .digital-card-grid article>span{display:inline-flex;margin-bottom:1.5rem;font-size:.78rem;letter-spacing:.1em;color:var(--hermes-violet)}
+body:has(.digital-service-page) .digital-card-grid article>span{display:inline-flex;margin-bottom:1.5rem;font-size:.78rem;letter-spacing:.1em;color:var(--hermes-violet-text)}
 body:has(.digital-service-page) .digital-card-grid h3{margin:0 0 .7rem;color:var(--hermes-ink)}
 body:has(.digital-service-page) .digital-card-grid p,
 body:has(.digital-service-page) .digital-process-list p,

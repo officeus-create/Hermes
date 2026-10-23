@@ -79,7 +79,7 @@ for (const config of routes) {
     expect(visual!.primaryRadius).toBe("12px");
     expect(visual!.surfaceBackground).toBe("rgb(255, 255, 255)");
     expect(visual!.radiusValue).toBe("22px");
-    expect(visual!.accentColor).toBe("rgb(124, 92, 255)");
+    expect(visual!.accentColor).toBe("rgb(100, 70, 230)");
     expect(visual!.darkBackground).toBe("rgb(11, 13, 18)");
     expect(visual!.overflow).toBe(false);
     expect(visual!.rootRight).toBeLessThanOrEqual(visual!.viewportWidth);

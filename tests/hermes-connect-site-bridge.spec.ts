@@ -38,7 +38,7 @@ test("Hermes Connect has one indexed adaptive product-family overview and one cu
 test("the shared site shell routes desktop and mobile Hermes Connect discovery through Product Hub first", async ({ page }) => {
   await page.goto("/logistics/car-hauling-dispatch/");
 
-  const desktopEntry = page.locator(`.header-actions a[href="${productRoute}"]`);
+  const desktopEntry = page.locator(`.desktop-products-menu a[href="${productRoute}"]`);
   await expect(desktopEntry).toHaveCount(1);
   await expect(desktopEntry).toContainText("Hermes Connect");
   await expect(desktopEntry).not.toContainText(/Realtime/i);

@@ -37,7 +37,7 @@
 
 .logistics-resource-page.logistics-resource-carrier :is(.rpm-tool-section, .factoring-tool-section) :is(.rpm-panel-heading, .factoring-panel-heading) > svg {
   flex: 0 0 auto;
-  color: var(--hermes-violet);
+  color: var(--hermes-violet-text);
 }
 
 .logistics-resource-page.logistics-resource-carrier :is(.rpm-tool-section, .factoring-tool-section) :is(.rpm-panel-heading, .factoring-panel-heading) :is(h2, p) {

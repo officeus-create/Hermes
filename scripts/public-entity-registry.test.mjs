@@ -11,6 +11,7 @@ const progressoproUrl = "https://www.instagram.com/progressopro/";
 const expectedHermesSameAs = [
   "https://www.instagram.com/hermes.logistics/",
   "https://www.threads.com/@hermes.logistics",
+  "https://www.facebook.com/profile.php?id=61558767681287",
 ];
 
 assert.deepEqual(approvedHermesSameAs, expectedHermesSameAs);

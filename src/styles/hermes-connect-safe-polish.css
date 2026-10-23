@@ -523,7 +523,7 @@
 
 .hc-experience .auth-page .back-link:hover,
 .hc-experience .auth-page .text-iris {
-  color: var(--hermes-violet) !important;
+  color: var(--hermes-violet-text) !important;
 }
 
 .hc-experience .auth-page .glass-panel {
@@ -601,7 +601,7 @@
 
 .hc-experience .booking-page .eyebrow,
 .hc-experience .booking-page .trust-panel svg {
-  color: var(--hermes-violet) !important;
+  color: var(--hermes-violet-text) !important;
 }
 
 .hc-experience .booking-page .panel,

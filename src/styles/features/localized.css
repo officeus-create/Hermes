@@ -7,7 +7,7 @@
 .localized-overview{overflow-x:clip;background:var(--hermes-pearl);color:var(--hermes-ink)}
 .localized-overview :is(h1,h2,h3,p,li,a){overflow-wrap:anywhere}
 .localized-overview :is(a,button,summary):focus-visible{outline:3px solid var(--hermes-violet);outline-offset:3px}
-.localized-overview .eyebrow{color:var(--hermes-violet)}
+.localized-overview .eyebrow{color:var(--hermes-violet-text)}
 .localized-hero{position:relative;display:flex;align-items:flex-end;min-height:min(760px,82svh);overflow:hidden;background:var(--hermes-obsidian);color:#fff}
 .localized-hero>picture{position:absolute;inset:0;width:100%;height:100%}
 .localized-hero>picture img{width:100%;height:100%;object-fit:cover}
@@ -33,13 +33,13 @@
 .localized-direction-media{position:relative;min-width:0;min-height:520px;overflow:hidden;border:1px solid var(--hermes-line-light);border-radius:var(--hermes-radius-card);background:var(--hermes-pearl);box-shadow:var(--hermes-shadow-card)}
 .localized-direction-media img{width:100%;height:100%;min-height:520px;object-fit:cover}
 .localized-direction-media span{position:absolute;top:1.2rem;left:1.2rem;display:grid;place-items:center;width:46px;height:46px;border:1px solid var(--hermes-line-light);border-radius:var(--hermes-radius-control);background:var(--hermes-paper);color:var(--hermes-ink);font-family:var(--font-mono);font-size:.7rem;box-shadow:var(--hermes-shadow-card)}
-.localized-direction-copy .eyebrow,.localized-direction-marketing .localized-direction-copy .eyebrow,.localized-direction-academy .localized-direction-copy .eyebrow,.localized-direction-logistics .localized-direction-copy .eyebrow{color:var(--hermes-violet)}
+.localized-direction-copy .eyebrow,.localized-direction-marketing .localized-direction-copy .eyebrow,.localized-direction-academy .localized-direction-copy .eyebrow,.localized-direction-logistics .localized-direction-copy .eyebrow{color:var(--hermes-violet-text)}
 .localized-direction-copy h2{max-width:680px;color:var(--hermes-ink)}
 .localized-direction-copy>p:not(.eyebrow){max-width:650px;color:var(--hermes-muted);font-size:1.02rem;line-height:var(--hermes-copy-leading)}
 .localized-direction-copy ul{display:grid;gap:.7rem;margin:2rem 0;padding:0;list-style:none}
 .localized-direction-copy li{display:flex;gap:.65rem;align-items:center;color:var(--hermes-ink);font-weight:700}
-.localized-direction-copy li svg{flex:0 0 auto;color:var(--hermes-violet)}
-.localized-direction-copy>a{display:inline-flex;gap:.55rem;align-items:center;min-height:44px;color:var(--hermes-violet);font-family:var(--font-mono);font-size:.76rem;font-weight:800}
+.localized-direction-copy li svg{flex:0 0 auto;color:var(--hermes-violet-text)}
+.localized-direction-copy>a{display:inline-flex;gap:.55rem;align-items:center;min-height:44px;color:var(--hermes-violet-text);font-family:var(--font-mono);font-size:.76rem;font-weight:800}
 .localized-direction-copy>a:hover,.localized-direction-copy>a:focus-visible{color:var(--hermes-ink)}
 .localized-partnership{background:var(--hermes-obsidian);color:#fff}
 .localized-partnership .section-heading h2{color:#fff}
@@ -58,8 +58,8 @@
 .localized-capabilities .section-heading>p:last-child{color:var(--hermes-muted);line-height:var(--hermes-copy-leading)}
 .localized-capability-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}
 .localized-capability-list article{display:grid;grid-template-columns:42px minmax(0,1fr);gap:0 1rem;min-width:0;min-height:270px;padding:1.6rem;border:1px solid var(--hermes-line-light);border-radius:var(--hermes-radius-card);background:var(--hermes-paper);box-shadow:var(--hermes-shadow-card)}
-.localized-capability-list article>span{color:var(--hermes-violet);font-family:var(--font-mono);font-size:.68rem}
-.localized-capability-list article>strong{justify-self:end;color:var(--hermes-violet);font-family:var(--font-mono);font-size:.68rem}
+.localized-capability-list article>span{color:var(--hermes-violet-text);font-family:var(--font-mono);font-size:.68rem}
+.localized-capability-list article>strong{justify-self:end;color:var(--hermes-violet-text);font-family:var(--font-mono);font-size:.68rem}
 .localized-capability-list h3,.localized-capability-list p{grid-column:1/-1}
 .localized-capability-list h3{margin:3rem 0 .7rem;color:var(--hermes-ink)}
 .localized-capability-list p{max-width:650px;margin:0;color:var(--hermes-muted);line-height:var(--hermes-copy-leading)}

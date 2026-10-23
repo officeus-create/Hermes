@@ -198,12 +198,13 @@ const { hero: directionHero, alt } = Astro.props;
   .detail-hero-window figcaption>a{display:inline-flex;align-items:center;gap:.5rem;min-height:48px;padding:0 1.25rem;border-radius:999px;background:#fff;color:#0a164f;font-weight:700}
   .detail-hero-window figcaption>a:is(:hover,:focus-visible){transform:translateY(-2px)}
   @media(max-width:900px){
-    .detail-hero-approved{padding-top:11.5rem}
+    /* Out-specifies the shared .detail-page .detail-hero mobile padding so the copy clears header + submenu. */
+    :global(.detail-page) .detail-hero.detail-hero-approved{padding-top:9.75rem}
     .detail-hero-approved-grid{grid-template-columns:1fr;gap:2rem}
     .detail-hero-window{justify-self:start;width:min(100%,520px);aspect-ratio:4/5}
   }
   @media(max-width:430px){
-    .detail-hero-approved{padding-top:10.75rem}
+    :global(.detail-page) .detail-hero.detail-hero-approved{padding-top:9.5rem}
     .detail-hero-approved-grid{width:calc(100% - 24px)}
     .detail-hero-approved-copy{padding-inline:0}
     .detail-hero-approved h1{font-size:clamp(2.7rem,13vw,4.2rem)}

@@ -47,18 +47,18 @@
 .crm-preview-metrics strong { display: block; margin-top: .15rem; font-size: 1.65rem; }
 .crm-preview-table { padding: .7rem 1rem 1rem; }
 .crm-preview-table-head, .crm-preview-row { display: grid; grid-template-columns: 1.3fr .7fr; gap: 1rem; }
-.crm-preview-table-head { padding: .45rem .7rem; color: #7c8497; font-family: var(--font-mono); font-size: .62rem; text-transform: uppercase; }
+.crm-preview-table-head { padding: .45rem .7rem; color: #5f6573; font-family: var(--font-mono); font-size: .62rem; text-transform: uppercase; }
 .crm-preview-row { align-items: center; padding: .9rem .7rem; border-top: 1px solid #dfe3eb; }
 .crm-preview-row > div:first-child { display: grid; }
-.crm-preview-row small { color: #7a8498; font-family: var(--font-mono); font-size: .61rem; }
+.crm-preview-row small { color: #5f6573; font-family: var(--font-mono); font-size: .61rem; }
 .crm-preview-row strong { font-size: .88rem; }
-.crm-preview-row span { color: #6c7588; font-size: .72rem; }
+.crm-preview-row span { color: #5f6573; font-size: .72rem; }
 .crm-preview-result { display: flex; gap: .45rem; align-items: center; justify-self: start; padding: .4rem .55rem; border-radius: 999px; background: #e7eaf1; }
 .crm-preview-result[data-state="ready"] { background: #d9f4e8; color: #0b684a; }
 .crm-preview-result[data-state="review"] { background: #fff0d8; color: #8a5100; }
 .crm-preview-result strong { font-size: .7rem; }
 .crm-result-icon { display: inline-flex; color: inherit; }
-.crm-preview-footer { display: flex; gap: .45rem; align-items: center; padding: .8rem 1rem; border-top: 1px solid #dde2eb; color: #6b7488; font-size: .68rem; }
+.crm-preview-footer { display: flex; gap: .45rem; align-items: center; padding: .8rem 1rem; border-top: 1px solid #dde2eb; color: #5f6573; font-size: .68rem; }
 @media (max-width: 620px) {
 .crm-preview-table-head { display: none; }
 .crm-preview-row { grid-template-columns: 1fr; gap: .55rem; }
