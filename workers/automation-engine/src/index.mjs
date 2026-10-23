@@ -719,6 +719,30 @@ async function createGenericJob(env, input) {
   return { created: true, duplicate: false, job };
 }
 
+async function submitRuntimeProofJob(env, message) {
+  if (!env.DB || !env.AUTOMATION_QUEUE) throw new Error("runtime_not_configured");
+  const automationMode = clean(env.HERMES_AUTOMATION_MODE, 40) || "UNKNOWN";
+  const publicationConfig = clean(env.HERMES_AUTOMATION_PUBLISH, 40) || "UNKNOWN";
+  if (automationMode !== "dry_run" || publicationConfig !== "disabled" || publicationEnabled(env)) {
+    throw new Error("runtime_proof_requires_dry_run");
+  }
+  const jobType = clean(message?.job_type, 120);
+  if (jobType !== "system.health.snapshot") throw new Error("runtime_proof_job_type_not_allowed");
+  const idempotencyKey = clean(message?.idempotency_key, 240);
+  if (!idempotencyKey) throw new Error("idempotency_key_required");
+  return createGenericJob(env, {
+    job_type: jobType,
+    business_lane: "automation",
+    account_key: ACCOUNT_KEY,
+    project_key: "hae-runtime-proof",
+    priority: 50,
+    max_attempts: 1,
+    idempotency_key: idempotencyKey,
+    policy_version: "hae-readonly-v1",
+    payload: {},
+  });
+}
+
 async function runReadOnlyGenericCapability(env, job) {
   if (HISTORICAL_READ_ONLY_JOB_TYPES.includes(job.job_type)) {
     let payload = {};
@@ -1513,6 +1537,11 @@ export default {
       const payload = item.body || {};
       const messageType = clean(payload?.type, 80) || "UNKNOWN";
       try {
+        if (messageType === "job.submit.runtime_proof") {
+          await submitRuntimeProofJob(env, payload);
+          item.ack();
+          continue;
+        }
         if (messageType === "job.execute") {
           await processGenericJob(env, payload);
           item.ack();
