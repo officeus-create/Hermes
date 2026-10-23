@@ -210,6 +210,9 @@ assert.ok(wrangler.includes('"preview_urls": false'), "Preview URLs must remain 
 assert.match(releaseWorkflow, /queues\/\$\{QUEUE_ID\}\/messages/, "Dry-run proof must inject a canary through the Cloudflare Queue API");
 assert.match(releaseWorkflow, /d1\/database\/\$\{DB_ID\}\/query/, "Dry-run proof must read execution state back from canonical D1");
 assert.match(releaseWorkflow, /dry_run_canary=PASS/, "Release must require Queue→Worker→D1 evidence");
+assert.match(releaseWorkflow, /GITHUB_RUN_NUMBER/, "Dry-run canary must derive a synthetic slot from the workflow run number");
+assert.match(releaseWorkflow, /GITHUB_RUN_ATTEMPT/, "Dry-run canary retries must use a distinct synthetic slot");
+assert.doesNotMatch(releaseWorkflow, /CANARY_SLOT=.*T03/, "Dry-run canary must not reuse one fixed hourly slot across releases");
 assert.match(releaseWorkflow, /Provider writes: disabled/, "Dry-run evidence must state provider writes remain disabled");
 assert.doesNotMatch(releaseWorkflow, /WINDSOR_API_KEY/, "Dry-run release workflow must not inject the provider credential");
 for (const table of ["hermes_automation_runs", "hermes_automation_content", "hermes_automation_publications", "hermes_automation_jobs", "hermes_automation_job_events"]) {
