@@ -20,6 +20,17 @@ assert.equal(
 assert.equal(
   classifyDlqDisposition({
     message_type: "publication.write",
+    d1_state: "publishing",
+    idempotency_key: "k2b",
+    external_effect: true,
+    provider_outcome: "NONE",
+  }).disposition,
+  "READBACK_ONLY"
+);
+
+assert.equal(
+  classifyDlqDisposition({
+    message_type: "publication.write",
     d1_state: "reserved",
     idempotency_key: "k3",
     external_effect: true,
