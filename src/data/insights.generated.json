@@ -1,5 +1,101 @@
 [
   {
+    "id": "hermes-automatic-engineer-2026",
+    "direction": "technology",
+    "slug": "hermes-automatic-engineer-business-automation",
+    "title": "Hermes Automatic Engineer: Business Automation That Runs Without a Laptop | Hermes Insights",
+    "description": "How Hermes runs its own business automation: a Cloudflare-native engine with scheduled jobs, queues and retries, durable receipts, readback checks and a watchdog — with AI as a helper, never the scheduler.",
+    "eyebrow": "Technology / Hermes Products · Automation · 23 October 2026",
+    "h1": "Hermes Automatic Engineer: business automation that runs without a laptop",
+    "conciseAnswer": "Hermes Automatic Engineer is the internal engine Hermes uses to run its own business automation. Jobs are scheduled and queued in the cloud, retried safely, recorded with receipts and checked against the real system after every write, so work continues when nobody's computer is on and AI never decides on its own when something runs.",
+    "explanation": [
+      "Most small-business automation starts on someone's laptop: a script, a spreadsheet macro or a chat assistant that only works while that person is online. Hermes hit the same wall across Logistics, Marketing, Academy and Hermes Connect, so we built one shared engine instead of another script per task.",
+      "The Hermes Automatic Engineer runs on Cloudflare. A thin scheduled tick decides what is due, a queue carries each job and retries it when a provider is slow, and an operational database keeps the job, its events and a receipt of what actually happened. After any write to an outside system, the engine reads the result back, so a job is only marked done when the real system confirms it.",
+      "AI is useful inside this flow — drafting, classifying, summarising — but it is never the scheduler or the source of truth. Deterministic rules decide when work runs; AI suggestions pass through the same receipts, checks and owner approvals as everything else. Sending email or changing an account stays off unless an owner approves that specific action.",
+      "Every change to the engine follows the same release ladder we use for client work: coded, tested in CI, merged, deployed, verified live and only then counted as done. A health watchdog flags stuck or failing jobs instead of letting them fail silently. Today the engine is private and runs Hermes' own operations; it is also how we design the automation we build for clients in Hermes Technology and Hermes Connect."
+    ],
+    "takeaways": [
+      "Run business automation in the cloud, not on one person's laptop",
+      "Retry safely and keep a receipt for every job",
+      "Read the result back from the real system before calling a job done",
+      "Use AI as a helper inside the flow, never as the scheduler",
+      "Ship automation changes through the same tested release ladder as product code"
+    ],
+    "faq": [
+      {
+        "question": "What is Hermes Automatic Engineer?",
+        "answer": "It is Hermes' internal, Cloudflare-native automation engine: scheduled jobs, queues with safe retries, durable receipts, readback checks and a health watchdog for Hermes' own operations."
+      },
+      {
+        "question": "Can I buy Hermes Automatic Engineer?",
+        "answer": "Not as a standalone product today; it is private and runs Hermes' own work. Hermes Technology uses the same approach to design automation for clients — start with a project brief."
+      },
+      {
+        "question": "Does AI run the automation?",
+        "answer": "No. Deterministic rules decide when work runs. AI can draft or classify inside a job, but its output passes through the same receipts, checks and owner approvals."
+      },
+      {
+        "question": "What happens if an outside service fails?",
+        "answer": "The queue retries the job, the receipt records what happened, and the watchdog flags anything stuck so a person can step in instead of the failure going unnoticed."
+      }
+    ],
+    "related": [
+      {
+        "title": "Hermes Products",
+        "body": "Everything Hermes builds, runs and uses itself, with real status.",
+        "href": "/products/"
+      },
+      {
+        "title": "Plan custom AI automation",
+        "body": "How to brief an automation or business-system project.",
+        "href": "/insights/technology/custom-ai-automation-business-systems-project-brief/"
+      },
+      {
+        "title": "Hermes Connect",
+        "body": "The CRM and AI operating system for service businesses.",
+        "href": "/services/hermes-connect/"
+      },
+      {
+        "title": "Hermes Technology",
+        "body": "Websites, CRM, AI assistants and automation as one flow.",
+        "href": "/paths/technology/"
+      }
+    ],
+    "primaryAction": {
+      "label": "See all Hermes products",
+      "href": "/products/"
+    },
+    "secondaryAction": {
+      "label": "Plan your automation",
+      "href": "/paths/technology/#project-brief"
+    },
+    "sourceLabel": "Hermes Automatic Engineer architecture and release contract, 23 October 2026",
+    "sourceUrl": "https://hermeslogisticsus.com/insights/technology/hermes-automatic-engineer-business-automation/",
+    "sourcePublishedAt": "2026-10-23",
+    "datePublished": "2026-10-23",
+    "dateModified": "2026-10-23",
+    "authorName": "Hermes Technology",
+    "contentTier": "standalone",
+    "currentMarketClaim": false,
+    "keywords": [
+      "business automation",
+      "Cloudflare automation engine",
+      "workflow automation without a laptop",
+      "AI automation for small business",
+      "automation reliability",
+      "Hermes Automatic Engineer"
+    ],
+    "publicationScore": {
+      "score": 80,
+      "recommendation": "standalone",
+      "reasons": [
+        "First-party product truth from the engine's own architecture contract",
+        "Explains a distinct automation-reliability intent",
+        "Links Products, AI automation service, Hermes Connect and Technology owners"
+      ]
+    }
+  },
+  {
     "id": "us-service-search-discovery-checklist-2026",
     "direction": "marketing",
     "slug": "us-service-business-search-discovery-checklist",
