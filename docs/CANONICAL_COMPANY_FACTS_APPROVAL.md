@@ -67,7 +67,9 @@ This file is a public-safe approval template. It must not contain credentials, p
 | Brokerage relationship/authority |  | `EVIDENCE_REQUIRED` |  |  |  |  | State exact legal/operating relationship only. |
 | MC/USDOT identifiers |  | `OWNER_APPROVAL_REQUIRED` | Official source |  |  |  | Publish only identifiers that belong to the stated entity and role. |
 | Fleet ownership |  | `EVIDENCE_REQUIRED` |  |  |  |  | Default is no public ownership claim. |
-| Equipment coverage |  | `OWNER_APPROVAL_REQUIRED` |  |  |  |  | Describe review/support capability, not guaranteed capacity. |
+| Equipment coverage | `Dispatch review and support for car hauling, dry freight, oversize and power only.` | `VERIFIED_PUBLIC` | Owner chat directive 2026-10-23 (carrier consultation reply) | Owner | 2026-10-23 | 2026-12-22 | Describe review/support capability, not guaranteed capacity. |
+| New-authority guidance | `Business guidance on the DOT/MC document package, load-board and broker registrations, and help finding insurance agents; the carrier files its own authority.` | `VERIFIED_PUBLIC` | Owner chat directive 2026-10-23; `/logistics/start-trucking-company/` | Owner | 2026-10-23 | 2026-12-22 | Not legal, tax or insurance advice; no approval or pricing guarantee. |
+| Dispatch pricing model | `Percentage of each load; higher percentage plans can add a trained caller for shipper/dealer outreach around the carrier's locations.` | `VERIFIED_PUBLIC` | Owner chat directive 2026-10-23 | Owner | 2026-10-23 | 2026-12-22 | No specific percentage published; no load or revenue guarantee. |
 | Carrier/customer network size |  | `EVIDENCE_REQUIRED` |  |  |  |  | Define methodology and current date. |
 | Agencies/offices/countries |  | `EVIDENCE_REQUIRED` |  |  |  |  | Distinguish partners, trainees, remote staff, agencies, legal offices, and service markets. |
 | Loads/shipments/customer volume |  | `EVIDENCE_REQUIRED` |  |  |  |  | Requires date range, definition, source, and permission. |
