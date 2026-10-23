@@ -62,7 +62,7 @@ A public logistics page does not prove live capacity, a load, rate, lane, pickup
 
 The Italian Marketing owner is a country-level commercial page for Italian businesses. It covers website conversion, SEO, GEO/AEO and AI search, social media, advertising, CRM handoff and measurement. It does not assert a Padova office, local reviews, local customer outcomes, or guaranteed rankings.
 
-ProgressoPro may appear as a historical or operating marketing label. Do not infer from that label alone that it is the approved root public provider entity, a separate Hermes Organization node, or an approved `sameAs` identity.
+ProgressoPro is the current public-facing marketing services identity within the Hermes Marketing direction. It is not a separate root Hermes direction. This label alone does not establish which legal entity contracts for a project, a separate Organization node, or an approved `sameAs` relationship; use the written proposal or agreement and current approved entity evidence.
 
 The Hermes Marketing direction on hermeslogisticsus.com must not be merged with an unrelated third-party business, website, profile, or legal entity that also uses the words Hermes Marketing. No affiliation, ownership, partnership, `sameAs` relationship, office, review profile, or local presence should be inferred unless a current canonical Hermes source explicitly verifies it.
 
