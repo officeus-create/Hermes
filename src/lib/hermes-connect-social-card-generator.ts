@@ -10,10 +10,10 @@ const COLORS = {
   graphite: [32, 35, 44] as Rgb,
   muted: [102, 108, 121] as Rgb,
   line: [222, 221, 218] as Rgb,
-  logistics: [30, 136, 255] as Rgb,
-  marketing: [0, 200, 83] as Rgb,
-  academy: [124, 92, 255] as Rgb,
-  technology: [255, 122, 0] as Rgb,
+  logistics: [47, 107, 246] as Rgb,
+  marketing: [255, 122, 89] as Rgb,
+  academy: [18, 184, 134] as Rgb,
+  technology: [56, 182, 245] as Rgb,
 } as const;
 
 const FONT: Record<string, readonly string[]> = {

@@ -36,10 +36,10 @@ assert.match(monoDark, /stroke="#11161F"/, "dark mono export must use canonical 
 assert.match(monoLight, /stroke="#FFFFFF"/, "light mono export must use white inverse ink");
 
 const contextual = [
-  ["logistics", logistics, "#1E88FF"],
-  ["marketing", marketing, "#00C853"],
-  ["academy", academy, "#7C5CFF"],
-  ["technology", technology, "#FF7A00"],
+  ["logistics", logistics, "#2F6BF6"],
+  ["marketing", marketing, "#FF7A59"],
+  ["academy", academy, "#12B886"],
+  ["technology", technology, "#38B6F5"],
 ];
 for (const [name, source, color] of contextual) {
   assert.match(source, new RegExp(`stroke="${color}"`), `${name} contextual export must use its canonical semantic color`);

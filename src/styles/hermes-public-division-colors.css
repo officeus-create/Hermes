@@ -8,19 +8,19 @@
  */
 
 .detail-page-logistics {
-  --path-signal-text: color-mix(in srgb, var(--hermes-logistics, #1e88ff) 80%, var(--hermes-ink));
+  --path-signal-text: color-mix(in srgb, var(--hermes-logistics, #2f6bf6) 82%, var(--hermes-ink));
 }
 
 .detail-page-marketing {
-  --path-signal-text: color-mix(in srgb, var(--hermes-marketing, #00c853) 60%, var(--hermes-ink));
+  --path-signal-text: color-mix(in srgb, var(--hermes-marketing, #ff7a59) 58%, var(--hermes-ink));
 }
 
 .detail-page-academy {
-  --path-signal-text: color-mix(in srgb, var(--hermes-academy, #7c5cff) 80%, var(--hermes-ink));
+  --path-signal-text: color-mix(in srgb, var(--hermes-academy, #12b886) 55%, var(--hermes-ink));
 }
 
 .detail-page-technology {
-  --path-signal-text: color-mix(in srgb, var(--hermes-technology, #ff7a00) 65%, var(--hermes-ink));
+  --path-signal-text: color-mix(in srgb, var(--hermes-technology, #38b6f5) 52%, var(--hermes-ink));
 }
 
 /* Raw semantic tokens are intentionally too light for some normal-size text on
@@ -41,7 +41,7 @@
    audience/resource cues to the canonical Logistics family. */
 .detail-page-logistics .logistics-audience-grid > a:hover,
 .detail-page-logistics .logistics-audience-grid > a:focus-visible {
-  border-color: color-mix(in srgb, var(--hermes-logistics, #1e88ff) 38%, var(--hermes-line-light));
+  border-color: color-mix(in srgb, var(--hermes-logistics, #2f6bf6) 38%, var(--hermes-line-light));
 }
 
 .detail-page-logistics .logistics-audience-grid span,
@@ -51,7 +51,7 @@
 
 .detail-page-logistics .logistics-resource-library a:hover,
 .detail-page-logistics .logistics-resource-library a:focus-visible {
-  border-color: color-mix(in srgb, var(--hermes-logistics, #1e88ff) 42%, var(--hermes-line-light));
+  border-color: color-mix(in srgb, var(--hermes-logistics, #2f6bf6) 42%, var(--hermes-line-light));
 }
 
 @media (forced-colors: active) {

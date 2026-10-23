@@ -43,14 +43,15 @@
   --hermes-intelligence-gradient: linear-gradient(135deg, #7c5cff 0%, #5ac8fa 100%);
 
   /* Canonical direction accents.
-   * These values preserve the approved Hermes Connect division system:
-   * Logistics blue, Marketing green, Academy violet, IT & Product orange.
+   * Owner decision 2026-10-23: one palette everywhere, taken from the H mark v1.1
+   * (same values as --dir-* in hermes-direction-colors.css): Logistics blue,
+   * Technology sky, Academy green, Marketing coral. Violet stays Hermes Intelligence.
    * Product workspaces inherit these semantically instead of hardcoding page colors.
    */
-  --hermes-logistics: #1e88ff;
-  --hermes-marketing: #00c853;
-  --hermes-academy: #7c5cff;
-  --hermes-technology: #ff7a00;
+  --hermes-logistics: #2f6bf6;
+  --hermes-marketing: #ff7a59;
+  --hermes-academy: #12b886;
+  --hermes-technology: #38b6f5;
 
   /* Current product aliases. Beauty intentionally has no canonical token yet. */
   --hermes-repair: var(--hermes-logistics);

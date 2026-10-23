@@ -1,6 +1,6 @@
 /*
  * HERMES PUBLIC DIRECTION CONTEXT — V4
- * Logistics blue #1E88FF · Marketing green #00C853 · Academy violet #7C5CFF · IT & Product orange #FF7A00.
+ * H-mark palette (owner decision 2026-10-23): Logistics #2F6BF6 · Technology #38B6F5 · Academy #12B886 · Marketing #FF7A59.
  *
  * V4 rule: QUIET CORPORATION → PRODUCT THEATRE → OPERATIONAL CLARITY.
  * The public shell stays Pearl/Ink. Direction color is a semantic signal, not a full-page paint job.
@@ -10,32 +10,32 @@
 
 body:has(.detail-page-logistics),
 .detail-page-logistics {
-  --hc-public-route-accent: var(--hermes-logistics,#1e88ff);
-  --path-signal: var(--hermes-logistics,#1e88ff);
-  --path-signal-soft: color-mix(in srgb,var(--hermes-logistics,#1e88ff) 10%,transparent);
+  --hc-public-route-accent: var(--hermes-logistics,#2f6bf6);
+  --path-signal: var(--hermes-logistics,#2f6bf6);
+  --path-signal-soft: color-mix(in srgb,var(--hermes-logistics,#2f6bf6) 10%,transparent);
 }
 
 body:has(.detail-page-marketing),
 .detail-page-marketing {
-  --hc-public-route-accent: var(--hermes-marketing,#00c853);
-  --path-signal: var(--hermes-marketing,#00c853);
+  --hc-public-route-accent: var(--hermes-marketing,#ff7a59);
+  --path-signal: var(--hermes-marketing,#ff7a59);
   --path-signal-text: #08733f;
-  --path-signal-soft: color-mix(in srgb,var(--hermes-marketing,#00c853) 9%,transparent);
+  --path-signal-soft: color-mix(in srgb,var(--hermes-marketing,#ff7a59) 9%,transparent);
 }
 
 body:has(.detail-page-academy),
 .detail-page-academy {
-  --hc-public-route-accent: var(--hermes-academy,#7c5cff);
-  --path-signal: var(--hermes-academy,#7c5cff);
+  --hc-public-route-accent: var(--hermes-academy,#12b886);
+  --path-signal: var(--hermes-academy,#12b886);
   --path-signal-text: #5b3ec2;
-  --path-signal-soft: color-mix(in srgb,var(--hermes-academy,#7c5cff) 10%,transparent);
+  --path-signal-soft: color-mix(in srgb,var(--hermes-academy,#12b886) 10%,transparent);
 }
 
 body:has(.detail-page-technology),
 .detail-page-technology {
-  --hc-public-route-accent: var(--hermes-technology,#ff7a00);
-  --path-signal: var(--hermes-technology,#ff7a00);
-  --path-signal-soft: color-mix(in srgb,var(--hermes-technology,#ff7a00) 9%,transparent);
+  --hc-public-route-accent: var(--hermes-technology,#38b6f5);
+  --path-signal: var(--hermes-technology,#38b6f5);
+  --path-signal-soft: color-mix(in srgb,var(--hermes-technology,#38b6f5) 9%,transparent);
 }
 
 /* Quiet corporate entrance. Product theatre starts after the visitor understands the direction. */

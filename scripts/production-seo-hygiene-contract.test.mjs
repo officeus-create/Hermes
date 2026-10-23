@@ -10,7 +10,7 @@ const verifierFiles = [
   "scripts/check-production-seo-hygiene.mjs",
 ];
 
-const canonicalSocialImage = new URL("../src/assets/hermes-ecosystem-hero.jpg", import.meta.url);
+const canonicalSocialImage = new URL("../src/assets/hermes-social-card.jpg", import.meta.url);
 const retiredPublicHeroImage = new URL("../public/images/hermes-ecosystem-hero.jpg", import.meta.url);
 const retiredSocialImage = new URL("../public/images/hermes-social-share-2026.jpg", import.meta.url);
 const [layout, homepage] = await Promise.all([
@@ -21,7 +21,7 @@ const [layout, homepage] = await Promise.all([
 
 await assert.rejects(access(retiredSocialImage), undefined, "The redundant social-share JPEG must stay removed.");
 await assert.rejects(access(retiredPublicHeroImage), undefined, "The redundant public hero JPEG must stay removed.");
-assert.ok(layout.includes('import heroImage from "../assets/hermes-ecosystem-hero.jpg"'), "BaseLayout must import the canonical hero source.");
+assert.ok(layout.includes('import socialCardImage from "../assets/hermes-social-card.jpg"'), "BaseLayout must import the canonical branded social card.");
 assert.ok(layout.includes('const useHermesConnectSocialCard = isHermesConnectProductHub && !image;'), "BaseLayout must scope the dedicated Connect social card to the exact hub when no explicit image is supplied.");
 assert.ok(layout.includes('const defaultSocialImage = useHermesConnectSocialCard'), "BaseLayout must preserve the exact Hermes Connect hub override while keeping one canonical default social-image contract.");
 assert.ok(layout.includes('const socialImagePath = image ?? defaultSocialImage.path;'), "BaseLayout must preserve explicit social images and the canonical default fallback outside the exact Hermes Connect hub.");

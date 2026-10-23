@@ -5,7 +5,7 @@ test("homepage keeps four Claude v3 cinematic routes and the canonical social pr
   expect(response?.status()).toBe(200);
   await expect(page.locator('meta[property="og:image"]')).toHaveAttribute(
     "content",
-    /https:\/\/hermeslogisticsus\.com\/_astro\/hermes-ecosystem-hero\.[^/]+\.jpg/,
+    /https:\/\/hermeslogisticsus\.com\/_astro\/hermes-social-card\.[^/]+\.jpg/,
   );
 
   const routes = page.locator(".home-master-route");

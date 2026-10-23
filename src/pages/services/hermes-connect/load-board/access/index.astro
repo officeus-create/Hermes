@@ -184,7 +184,7 @@ import SiteHeader from "../../../../../components/SiteHeader.astro";
           return;
         }
         const script = document.createElement('script');
-        script.src = 'https://accounts.google.com/gsi/client';
+        script.src = `https://accounts.google.com/gsi/client?hl=${(document.documentElement.lang || 'en').slice(0, 2)}`;
         script.async = true;
         script.defer = true;
         script.dataset.hermesGoogleIdentity = '';
@@ -217,7 +217,7 @@ import SiteHeader from "../../../../../components/SiteHeader.astro";
             },
           });
           globalThis.google.accounts.id.renderButton(googleButton, {
-            type: 'standard', theme: 'outline', size: 'large', text: 'continue_with', shape: 'rectangular', logo_alignment: 'left', width: 320,
+            type: 'standard', theme: 'outline', size: 'large', text: 'continue_with', shape: 'rectangular', logo_alignment: 'left', width: 320, locale: (document.documentElement.lang || 'en').slice(0, 2),
           });
         } catch {
           // Social providers are optional. Email/password stays available if provider discovery or Google is unavailable.
