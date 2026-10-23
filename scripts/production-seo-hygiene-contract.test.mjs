@@ -78,7 +78,7 @@ const indexedChildSitemapFiles = [
 // production compatibility route, historical manifest and carrier discovery path all assign it
 // a distinct search purpose without presenting the capability as a live paid integration.
 // +1 on 2026-10-22: /products/ (approved Claude Design Products page).
-const nonInsightsExpectedPageUrlCount = 258;
+const nonInsightsExpectedPageUrlCount = 259;
 const carrierGeoRoot = `https://${sitemapHost}/logistics/car-hauler-loads/`;
 const carrierLifecycleGuide = `https://${sitemapHost}/logistics/resources/car-hauler-jobs-owner-operator-guide/`;
 const expectedCarrierGeoCityCount = 25;

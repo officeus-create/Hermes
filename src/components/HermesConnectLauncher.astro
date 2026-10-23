@@ -2,6 +2,7 @@
 import { ArrowUpRight } from "@lucide/astro";
 import "../styles/hermes-connect-knot-core.css";
 import AcademyLocaleRuntime from "./AcademyLocaleRuntime.astro";
+import HermesConnectMark from "./HermesConnectMark.astro";
 
 type LauncherLocale = "en" | "ru" | "uk" | "es" | "it" | "fr";
 
@@ -180,7 +181,6 @@ const localizeConnectHref = (value: string) => {
 };
 const localizedHref = localizeConnectHref(effectiveHref);
 const localizedRepairHref = localizeConnectHref("/services/hermes-connect/repair-shops/");
-const connectMark = "/demos/hermes-connect/icon-192.svg";
 ---
 
 {isHermesConnectRoute && variant === "header" && <span hidden data-hc-server-route="connect"></span>}
@@ -198,7 +198,7 @@ const connectMark = "/demos/hermes-connect/icon-192.svg";
 
 {variant === "mobile" && (
   <a href={localizedHref} class={`hc-launcher-mobile ${className}`} data-hermes-connect-launcher="mobile">
-    <img class="hc-brand-mark hc-brand-mark-mobile hermes-knot-mark" src={connectMark} width="30" height="30" loading="eager" alt="Hermes Connect mark" />
+    <HermesConnectMark size={21} class="hermes-knot-mark hc-brand-mark hc-brand-mark-mobile" />
     <div><strong>{displayTitle}</strong><small>{displaySubtitle}</small></div>
     <span>{localeCopy.openProduct} <ArrowUpRight size={16} aria-hidden="true" /></span>
   </a>
@@ -207,7 +207,7 @@ const connectMark = "/demos/hermes-connect/icon-192.svg";
 {variant === "footer" && (
   <div class={`hc-launcher-panel ${className}`} data-hermes-connect-launcher="footer">
     <div class="hc-launcher-panel-head">
-      <span class="hc-launcher-panel-brand"><img class="hc-brand-mark hermes-knot-mark" src={connectMark} width="24" height="24" loading="lazy" alt="Hermes Connect mark" /><strong>Hermes Connect</strong></span>
+      <span class="hc-launcher-panel-brand"><HermesConnectMark size={16} class="hermes-knot-mark hc-brand-mark" /><strong>Hermes Connect</strong></span>
       <span>{localeCopy.currentProduct}</span>
     </div>
     <p>{localeCopy.footerBody}</p>
@@ -221,23 +221,23 @@ const connectMark = "/demos/hermes-connect/icon-192.svg";
 {variant === "banner" && (
   <section class={`hc-launcher-banner ${className}`} data-hermes-connect-launcher="banner">
     <div>
-      <span class="hc-launcher-badge"><img class="hc-brand-mark hermes-knot-mark" src={connectMark} width="20" height="20" loading="lazy" alt="Hermes Connect mark" /> {localeCopy.currentFamily}</span>
+      <span class="hc-launcher-badge"><HermesConnectMark size={14} class="hermes-knot-mark hc-brand-mark" /> {localeCopy.currentFamily}</span>
       <h3>{displayTitle}</h3>
       <p>{displaySubtitle}. {localeCopy.bannerSuffix}</p>
     </div>
-    <a href={localizedHref}><img class="hc-brand-mark hc-brand-mark-link hermes-knot-mark" src={connectMark} width="20" height="20" loading="lazy" alt="Hermes Connect mark" />{localeCopy.explore} <ArrowUpRight size={17} aria-hidden="true" /></a>
+    <a href={localizedHref}><HermesConnectMark size={14} class="hermes-knot-mark hc-brand-mark hc-brand-mark-link" />{localeCopy.explore} <ArrowUpRight size={17} aria-hidden="true" /></a>
   </section>
 )}
 
 {variant === "inline" && (
   <a href={localizedHref} class={`hc-launcher-inline ${className}`} data-hermes-connect-launcher="inline">
-    <img class="hc-brand-mark hc-brand-mark-inline hermes-knot-mark" src={connectMark} width="18" height="18" loading="lazy" alt="Hermes Connect mark" /><span>{displayTitle}</span><ArrowUpRight size={14} aria-hidden="true" />
+    <HermesConnectMark size={14} class="hermes-knot-mark hc-brand-mark hc-brand-mark-inline" /><span>{displayTitle}</span><ArrowUpRight size={14} aria-hidden="true" />
   </a>
 )}
 
 <style>
-  .hc-brand-mark{display:block;flex:0 0 auto;border-radius:6px;box-shadow:0 6px 18px rgba(92,78,255,.18)}
-  .hc-brand-mark-mobile{grid-row:1 / span 2}.hc-brand-mark-link{margin-right:.05rem}.hc-brand-mark-inline{border-radius:5px}
+  :global(.hc-brand-mark){display:block;flex:0 0 auto}
+  :global(.hc-brand-mark-mobile){grid-row:1 / span 2}:global(.hc-brand-mark-link){margin-right:.05rem}
   .hc-launcher{display:inline-flex;align-items:center;gap:.42rem;text-decoration:none}
   .hc-launcher-header{position:relative;isolation:isolate;overflow:hidden;gap:.48rem;padding:.31rem .5rem .3rem .56rem;border:1px solid rgba(157,136,255,.2);border-radius:9px;background:linear-gradient(120deg,rgba(109,40,217,.08),rgba(157,136,255,.035));color:#f8fafc;font-size:.82rem;font-weight:700;transition:background .2s ease,border-color .2s ease,transform .2s ease}
   .hc-launcher-header::before{content:"";position:absolute;z-index:-1;inset:-70% -30%;background:linear-gradient(110deg,transparent 36%,rgba(196,181,253,.18) 49%,rgba(255,255,255,.28) 52%,rgba(196,181,253,.13) 56%,transparent 68%);transform:translateX(-72%);animation:hc-connect-shimmer 5.5s ease-in-out infinite;pointer-events:none}

@@ -1,0 +1,64 @@
+---
+import LogisticsCommercialPage from "../../../components/LogisticsCommercialPage.astro";
+
+// Owner-approved service description (2026-10-23). Authority/agency/network/fleet claims stay
+// out until docs/CANONICAL_COMPANY_FACTS_APPROVAL.md records evidence for them.
+const content = {
+  title: "Start a Trucking Company: DOT/MC Guidance and Dispatch | Hermes",
+  description: "Opening your own trucking authority? Hermes guides the DOT/MC document package, load-board registrations and insurance-agent search, then dispatches and grows the carrier on a percentage of each load.",
+  eyebrow: "Hermes Logistics · Start or grow your own authority",
+  h1: "Start Your Own Trucking Company With a Dispatch Partner",
+  intro: "Owner-operators and drivers who want their own company get one partner from the first document to steady freight. Hermes explains the DOT and MC package, which load boards and registrations you need on day one, helps you find an insurance agent with a competitive price, and then dispatches your truck for a percentage of each load — not a flat monthly fee.",
+  image: "/images/direction-logistics-real-2026.jpg",
+  imageAlt: "Owner-operator truck on a U.S. highway preparing to run under a new authority",
+  primaryAction: {
+    label: "Start a carrier partnership review",
+    href: "/logistics/start-car-hauling-dispatch/",
+  },
+  handoffNote: "Share your driving record, insurance history, previous carriers and why you left, equipment and experience. Logistics Sales uses it to recommend the right path. Hermes provides business guidance and dispatch coordination, not legal, tax or insurance advice; the carrier files its own authority and approves every load. Nothing here guarantees approval, insurance pricing, loads, rates or revenue.",
+  audience: [
+    "Owner-operators ready to open their own DOT and MC",
+    "Company drivers planning their first truck and authority",
+    "New authorities that need loads, setups and a rating built from zero",
+    "Carriers running car hauling, dry freight, oversize or power only",
+  ],
+  benefits: [
+    { title: "Authority package guidance", body: "Plain-language consultation on the DOT and MC document package, the order of the steps and what must be ready before the first load." },
+    { title: "Load boards and registrations", body: "Which load boards and broker registrations to open, what they cost and what each one requires so the truck can work from the first day." },
+    { title: "Insurance agent search", body: "Hermes helps carriers find insurance agents with competitive prices for their equipment and lanes; the policy decision stays with the carrier and the agent." },
+    { title: "Dispatch for a percentage", body: "A dispatcher searches loads, negotiates, handles broker setups and paperwork and builds your rating — paid as a percentage of each load." },
+    { title: "Your own shipper and dealer caller", body: "On higher-percentage plans Hermes adds a second person, trained for you within about a month, who calls shippers and dealers around your locations." },
+    { title: "Website and growth", body: "When the company is ready, Hermes Technology and Hermes Marketing can build the carrier website and local search presence on the same ecosystem." },
+  ],
+  process: [
+    { title: "Introduce yourself", body: "Driving record, insurance history, where you worked before and why you left, equipment, experience and the lanes you want." },
+    { title: "Choose the path", body: "Open your own DOT and MC with Hermes guidance, or — after a safety and experience review — discuss other placement options. The exact carrier relationship is confirmed in writing before any work starts." },
+    { title: "Prepare the company", body: "Document package, insurance agent options, load-board and broker registrations, setup packet and invoicing routine." },
+    { title: "Start dispatch", body: "A dispatcher finds and negotiates loads that fit your equipment and home base; you approve every load before booking." },
+    { title: "Grow the carrier", body: "Rating, repeat brokers, and on the right plan a trained caller who builds direct shipper and dealer relationships for your locations." },
+  ],
+  faq: [
+    { question: "Can Hermes open the DOT and MC for me?", answer: "Hermes guides you through the package and the order of steps and prepares you for operations. The authority is filed in the carrier's own name, and Hermes does not provide legal advice." },
+    { question: "How does Hermes get paid?", answer: "Dispatch works as a percentage of each load. A higher percentage adds more people — for example a trained caller who contacts shippers and dealers for your locations." },
+    { question: "Do you help with insurance?", answer: "Yes. Once the path is chosen, Hermes helps you find insurance agents with competitive prices. Coverage and price are decided between you and the insurance agent." },
+    { question: "Which equipment types do you work with?", answer: "Car hauling, dry freight, oversize and power only. Each truck is reviewed for equipment, home base and lanes before dispatch starts." },
+    { question: "What if I am not ready for my own authority?", answer: "Tell us. After a safety and experience review Hermes explains the options that exist at that time. Any arrangement is confirmed in writing before work begins." },
+    { question: "Are loads or income guaranteed?", answer: "No. Loads, rates, approvals, insurance pricing and revenue depend on the market, your equipment, authority age, safety record and broker requirements." },
+    { question: "What is the first step?", answer: "Start a carrier partnership review and share your driving record, insurance history, previous carriers, equipment and preferred lanes." },
+  ],
+  related: [
+    { label: "New Authority Car Hauler Support", href: "/logistics/new-authority-car-hauler-support/" },
+    { label: "New Authority Readiness Checklist", href: "/logistics/resources/new-authority-car-hauler-readiness-checklist/" },
+    { label: "Owner-Operator Dispatch Support", href: "/logistics/owner-operator-dispatch-support/" },
+    { label: "Car Hauling Dispatch Services", href: "/logistics/car-hauling-dispatch/" },
+    { label: "Broker Setup Packet Checklist", href: "/logistics/resources/broker-setup-packet-checklist/" },
+    { label: "Hermes Load Board", href: "/load-board/" },
+    { label: "Free Carrier RPM Calculator", href: "/logistics/resources/rpm-calculator/" },
+    { label: "Hermes Academy: U.S. Logistics Operations", href: "/academy/us-logistics-operations/" },
+    { label: "Carrier Website Development", href: "/services/website-development/" },
+    { label: "Contact Hermes", href: "/contacts/" },
+  ],
+};
+---
+
+<LogisticsCommercialPage content={content} />

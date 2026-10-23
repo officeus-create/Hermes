@@ -16,6 +16,7 @@ import {
   Workflow,
 } from "@lucide/astro";
 import DirectionNavIcon from "./DirectionNavIcon.astro";
+import HermesConnectMark from "./HermesConnectMark.astro";
 
 export type DirectionId = "logistics" | "marketing" | "technology" | "academy" | "catalog" | "products";
 
@@ -239,7 +240,7 @@ const livingKind = (id: string) => (direction === "logistics" ? id : livingKinds
         const Icon = item.icon;
         return (
           <a href={item.href} aria-current={isActive(item.href) ? "page" : undefined} data-direction-product-link={item.id}>
-            {livingKind(item.id) ? <DirectionNavIcon kind={livingKind(item.id)!} /> : <span class="direction-product-nav__generic-icon" aria-hidden="true"><Icon size={15} /></span>}
+            {item.id === "connect" ? <HermesConnectMark size={13} class="direction-product-nav__connect-mark" /> : livingKind(item.id) ? <DirectionNavIcon kind={livingKind(item.id)!} /> : <span class="direction-product-nav__generic-icon" aria-hidden="true"><Icon size={15} /></span>}
             <span>{item.label}</span>
           </a>
         );

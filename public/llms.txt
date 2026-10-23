@@ -28,6 +28,7 @@ Known search ambiguity: Bing has surfaced the query `hermes logistics | address:
 - [Car hauler jobs and owner-operator path guide](https://hermeslogisticsus.com/logistics/resources/car-hauler-jobs-owner-operator-guide/)
 - [Owner-operator dispatch support](https://hermeslogisticsus.com/logistics/owner-operator-dispatch-support/)
 - [New-authority car-hauler support](https://hermeslogisticsus.com/logistics/new-authority-car-hauler-support/)
+- [Start your own trucking company: DOT/MC guidance and dispatch](https://hermeslogisticsus.com/logistics/start-trucking-company/)
 - [Load Board](https://hermeslogisticsus.com/load-board/)
 - [Dealer vehicle transportation](https://hermeslogisticsus.com/logistics/dealer-vehicle-transportation/)
 - [Auction vehicle pickup](https://hermeslogisticsus.com/logistics/auction-vehicle-pickup/)

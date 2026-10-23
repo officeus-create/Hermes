@@ -1,6 +1,7 @@
 ---
 import BaseLayout from "../../../../../layouts/BaseLayout.astro";
 import SiteHeader from "../../../../../components/SiteHeader.astro";
+import HermesGoogleSignIn from "../../../../../components/HermesGoogleSignIn.astro";
 import SiteFooter from "../../../../../components/SiteFooter.astro";
 import "../../../../../styles/hermes-academy-app.css";
 ---
@@ -56,7 +57,8 @@ import "../../../../../styles/hermes-academy-app.css";
             </div>
             <div class="academy-app-alert" data-auth-alert role="status"></div>
 
-            <form class="academy-app-form academy-auth-section active" data-auth-form="login">
+            <HermesGoogleSignIn />
+<form class="academy-app-form academy-auth-section active" data-auth-form="login">
               <div class="academy-app-field"><label for="academy-login-email">Email</label><input id="academy-login-email" name="email" type="email" autocomplete="email" required /></div>
               <div class="academy-app-field"><label for="academy-login-password" data-i18n="password">Пароль</label><input id="academy-login-password" name="password" type="password" autocomplete="current-password" minlength="8" required /></div>
               <button class="academy-app-button intelligence" type="submit" data-i18n="secureLogin">Безпечний вхід</button>

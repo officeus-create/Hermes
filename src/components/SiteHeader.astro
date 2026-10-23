@@ -12,6 +12,7 @@ import HermesConnectDomReady from "./HermesConnectDomReady.astro";
 import HermesConnectExperience from "./HermesConnectExperience.astro";
 import HermesConnectLauncher from "./HermesConnectLauncher.astro";
 import DirectionProductNav from "./DirectionProductNav.astro";
+import HermesConnectMark from "./HermesConnectMark.astro";
 
 interface Props {
   theme?: "dark" | "light";
@@ -27,7 +28,9 @@ const isApprovedProductsShell = currentPath === "/products/";
 const isApprovedDirectionShell = isApprovedProductsShell || /^\/paths\/(logistics|technology|academy|marketing)\/$/.test(currentPath);
 // One approved header across the public site (brand mark, Technology label, light glass pill);
 // Hermes Connect product surfaces and demos keep their product header with the Connect launcher.
-const isConnectProductSurface = /^\/(?:[a-z]{2}\/)?services\/hermes-connect\//.test(currentPath) || currentPath.startsWith("/demos/");
+// Sign-in, registration and password pages are the public front door, so they share the approved header too.
+const isConnectAuthEntry = /^\/(?:[a-z]{2}\/)?services\/hermes-connect\/(?:[a-z-]+\/)*(?:access|auth|forgot-password|reset-password)\/$/.test(currentPath);
+const isConnectProductSurface = (/^\/(?:[a-z]{2}\/)?services\/hermes-connect\//.test(currentPath) && !isConnectAuthEntry) || currentPath.startsWith("/demos/");
 const isApprovedVisualShell = isApprovedHome || isApprovedDirectionShell || !isConnectProductSurface;
 const homeUpdates = isApprovedHome ? {
   academy: latestHomeUpdate("academy"),
@@ -180,7 +183,7 @@ const languageLinks = siteLocales.filter((language) => !isCatalogLocaleRoute || 
           <strong>All products</strong><span>Built and run by Hermes</span>
         </a>
         <a href={connectProductHref} data-product="connect" aria-current={isHermesConnectRoute ? "page" : undefined}>
-          <strong>Hermes Connect</strong><span>AI operating system · live pilot</span>
+          <strong><HermesConnectMark size={13} class="header-connect-mark" />Hermes Connect</strong><span>AI operating system · live pilot</span>
           {homeUpdates?.connect && <span class="home-update-sheen" data-home-update={homeUpdates.connect.publishedAt} data-update-description="home-connect-update" hidden aria-hidden="true"></span>}
         </a>
         <a href="/businesses/" data-product="catalog" aria-current={isCatalogRoute ? "page" : undefined}>
@@ -240,7 +243,7 @@ const languageLinks = siteLocales.filter((language) => !isCatalogLocaleRoute || 
       <summary class="mobile-nav-pillar mobile-secondary-start">Products <ChevronDown size={17} aria-hidden="true" /></summary>
       <div class="mobile-products-grid" role="group" aria-label="Products">
         <a href="/products/" data-product="all-products" aria-current={isApprovedProductsShell ? "page" : undefined}>All products</a>
-        <a href={connectProductHref} data-product="connect" aria-current={isHermesConnectRoute ? "page" : undefined}>Hermes Connect</a>
+        <a href={connectProductHref} data-product="connect" aria-current={isHermesConnectRoute ? "page" : undefined}><HermesConnectMark size={14} class="header-connect-mark" />Hermes Connect</a>
         <a href="/businesses/" data-product="catalog" aria-current={isCatalogRoute ? "page" : undefined}>Catalog</a>
         <a href="/insights/" data-product="insights" aria-current={isInsightsRoute ? "page" : undefined}>Insights</a>
         <a href="/opportunities/" data-product="opportunities" aria-current={isOpportunitiesRoute ? "page" : undefined}>Opportunities</a>
@@ -510,6 +513,7 @@ const languageLinks = siteLocales.filter((language) => !isCatalogLocaleRoute || 
     .site-header[data-approved-visual-shell="true"]> .direction-product-nav{width:calc(100% - 16px);margin-inline:8px;padding-inline:8px}
   }
   .site-header[data-home-portal="true"],
+  .header-connect-mark { margin-right: .4rem; }
   .site-header[data-approved-visual-shell="true"] {
     /* Approved Claude Design palette on Home and the four direction pages (their heroes and
        submenus already use --dir-*). Real product/Connect colors remain unchanged. */

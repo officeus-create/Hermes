@@ -1,6 +1,7 @@
 ---
 import BaseLayout from "../../../../layouts/BaseLayout.astro";
 import SiteHeader from "../../../../components/SiteHeader.astro";
+import HermesGoogleSignIn from "../../../../components/HermesGoogleSignIn.astro";
 import SiteFooter from "../../../../components/SiteFooter.astro";
 ---
 
@@ -54,6 +55,7 @@ import SiteFooter from "../../../../components/SiteFooter.astro";
             <h2 data-i18n="signIn">Sign in</h2>
             <p class="muted" data-i18n="signInCopy">Use the email and password attached to your shared Hermes identity.</p>
             <p class="alert" data-access-alert role="status"></p>
+            <HermesGoogleSignIn />
             <label>Email<input name="email" type="email" autocomplete="username" required /></label>
             <label><span data-i18n="password">Password</span><input name="password" type="password" autocomplete="current-password" minlength="8" required /></label>
             <button class="primary" type="submit" data-i18n="secureLogin">Secure login</button>

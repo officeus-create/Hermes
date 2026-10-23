@@ -216,5 +216,9 @@ const { compact = false, showCta = true } = Astro.props;
   .launch-plan-cta{min-height:44px;font-size:.74rem}
   .repair-free-launch.is-compact{grid-template-columns:auto 1fr;margin:.8rem 0;padding:.85rem}
   .repair-free-launch.is-compact .launch-catalog{display:none}
+  /* Compact cards sit in narrow auth columns: keep the icon small and give the actions their own full row. */
+  .repair-free-launch.is-compact{align-items:start}
+  .repair-free-launch.is-compact .launch-actions{grid-column:1/-1;flex-direction:row;flex-wrap:wrap;min-width:0}
+  .repair-free-launch.is-compact .launch-actions>a{flex:1 1 160px}
   @media(max-width:820px){.repair-free-launch{grid-template-columns:auto 1fr}.launch-actions{grid-column:1/-1;flex-direction:row;min-width:0}.launch-actions>a{flex:1}}
 </style>

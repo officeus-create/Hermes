@@ -4,7 +4,7 @@ import { directionOwnerRoutes, type DirectionId } from '../data/localized-direct
 export function syncConnectAuthChrome(language: 'en' | 'uk') {
   const labels = language === 'uk'
     ? { logistics: 'Логістика', marketing: 'Маркетинг', technology: 'IT-розробка', academy: 'Академія', signIn: 'Увійти', contact: 'Почати розмову', content: 'Мова контенту: українська' }
-    : { logistics: 'Logistics', marketing: 'Marketing', technology: 'IT', academy: 'Academy', signIn: 'Sign in', contact: 'Start a conversation', content: 'Content language: English' };
+    : { logistics: 'Logistics', marketing: 'Marketing', technology: 'Technology', academy: 'Academy', signIn: 'Sign in', contact: 'Start a conversation', content: 'Content language: English' };
   const header = document.querySelector<HTMLElement>('.site-header');
   if (!header) return;
   for (const direction of ['logistics', 'marketing', 'technology', 'academy'] as DirectionId[]) {

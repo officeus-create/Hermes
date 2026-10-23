@@ -1,6 +1,7 @@
 ---
 import BaseLayout from "../../../../../layouts/BaseLayout.astro";
 import SiteHeader from "../../../../../components/SiteHeader.astro";
+import HermesGoogleSignIn from "../../../../../components/HermesGoogleSignIn.astro";
 import SiteFooter from "../../../../../components/SiteFooter.astro";
 ---
 <BaseLayout
@@ -30,7 +31,8 @@ import SiteFooter from "../../../../../components/SiteFooter.astro";
             <button type="button" data-auth-mode="login" aria-pressed="false">Sign in</button>
           </div>
           <p class="feedback" data-auth-message role="status" aria-live="polite" hidden></p>
-          <form data-register-form>
+          <HermesGoogleSignIn />
+<form data-register-form>
             <label>Your name<input name="name" autocomplete="name" minlength="2" required /></label>
             <label>Work email<input type="email" name="email" autocomplete="email" required /></label>
             <label>Password<input type="password" name="password" autocomplete="new-password" minlength="8" required /></label>
