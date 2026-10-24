@@ -82,6 +82,7 @@ assert.match(sourceConnections, /direct_dealer_relationship/);
 assert.match(sourceConnections, /source_trust_verification_required/);
 assert.match(sourceConnections, /trust_evidence_required/);
 assert.match(sourceConnections, /broker_authority_identifier_required/);
+assert.match(sourceConnections, /USDOT/);
 assert.match(sourceConnections, /trust_decision_invalid/);
 assert.match(sourceConnections, /trust_status = \?, trust_tier = \?, verification_kind = \?/);
 assert.match(sourceConnections, /trustDecision === "blocked" \? "trust_blocked" : "connection_pending"/);
