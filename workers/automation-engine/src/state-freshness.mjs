@@ -103,7 +103,7 @@ export function auditHaeState(snapshot = {}) {
     blockers,
     unknowns,
     findings,
-    live_proof_complete: missingLiveProof.length === 0,
-    missing_live_proof: missingLiveProof,
+    live_proof_complete: PROOF_REQUIRED_STATES.has(claimedState) && missingLiveProof.length === 0,
+    missing_live_proof: PROOF_REQUIRED_STATES.has(claimedState) ? missingLiveProof : null,
   };
 }
