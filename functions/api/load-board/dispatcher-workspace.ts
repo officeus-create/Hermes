@@ -28,9 +28,14 @@ export async function onRequestGet(context:Context){
   const loads=await db.prepare(`
     SELECT r.id,r.origin_city,r.origin_state,r.destination_city,r.destination_state,
       r.equipment,r.vehicle_count,r.pickup_window,r.rate_amount,r.rate_currency,
-      r.distance_miles,r.observed_at,r.expires_at,r.visibility
+      r.distance_miles,r.observed_at,r.expires_at,r.visibility,
+      s.redistribution_permission AS source_redistribution_permission,
+      s.authorized_carrier_company_id,
+      source_scope_company.company_name AS authorized_carrier_name
     FROM hermes_load_records r
     JOIN hermes_load_sources s ON s.id=r.source_id
+    LEFT JOIN hermes_company_profiles source_scope_company
+      ON source_scope_company.id=s.authorized_carrier_company_id
     WHERE r.status='active' AND r.record_type='load' AND r.expires_at>?
       AND r.visibility IN ('public','carrier_only')
       AND s.status='active' AND s.read_enabled=1
@@ -110,7 +115,15 @@ export async function onRequestGet(context:Context){
     success:true,
     accessScope:internalOwner?"internal_owner":"assigned_dispatcher",
     assignments:assignmentRows,
-    loads:(loads.results||[]).map(carrierSafeLoad),
+    loads:(loads.results||[]).map((row:any)=>({
+      ...carrierSafeLoad(row),
+      carrierScope:row.source_redistribution_permission==="carrier_scoped"
+        ? {
+            companyId:row.authorized_carrier_company_id,
+            companyName:row.authorized_carrier_name||"Assigned carrier",
+          }
+        : null,
+    })),
     requests:requestRows,
     summary,
     sourceContactsExposed:false,
