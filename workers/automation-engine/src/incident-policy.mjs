@@ -56,8 +56,11 @@ export function evaluateHaeIncidents(health = {}, options = {}) {
   if (dlqBacklog === null) unknowns.push({ code: "DLQ_BACKLOG_UNKNOWN" });
   else if (dlqBacklog > 0) warnings.push({ code: "DLQ_NONZERO", count: dlqBacklog });
 
+  const queueBacklog = numberOrNull(health?.queue?.backlog_count);
   const oldest = timestampMs(health?.queue?.oldest_message_at);
-  if (health?.queue?.backlog_count != null && numberOrNull(health.queue.backlog_count) > 0) {
+  if (queueBacklog === null) {
+    unknowns.push({ code: "QUEUE_BACKLOG_UNKNOWN" });
+  } else if (queueBacklog > 0) {
     if (oldest === null) unknowns.push({ code: "QUEUE_OLDEST_AGE_UNKNOWN" });
     else if (nowMs - oldest > recoveryWindowMinutes * 60_000) {
       incidents.push({ code: "QUEUE_RECOVERY_WINDOW_EXCEEDED", age_minutes: Math.floor((nowMs - oldest) / 60_000) });
