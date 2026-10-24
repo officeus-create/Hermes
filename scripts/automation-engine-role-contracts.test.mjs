@@ -2,17 +2,19 @@ import assert from "node:assert/strict";
 import {
   ROLE_CONTRACTS,
   ROLE_CONTRACT_JOB_TYPES,
+  buildRoleContractSemanticRequest,
   roleContractForJobType,
   roleContractSha256,
   runRoleContractPrimitive,
   stableRoleContractJson,
   validateRoleContractInput,
+  validateRoleContractSemanticResult,
 } from "../workers/automation-engine/src/role-contracts.mjs";
 
-assert.equal(ROLE_CONTRACTS.length, 3, "First free-first slice must expose exactly three plugin-owned domain contracts");
+assert.equal(ROLE_CONTRACTS.length, 4, "Runtime must expose three deterministic contracts plus one free-only semantic contract");
 assert.deepEqual(
   [...ROLE_CONTRACT_JOB_TYPES].sort(),
-  ["logistics.source.freshness.audit", "marketing.content.dedupe.audit", "search.snapshot.evaluate"].sort(),
+  ["logistics.source.freshness.audit", "marketing.content.dedupe.audit", "search.snapshot.evaluate", "search.defect.prioritize"].sort(),
 );
 
 for (const contract of ROLE_CONTRACTS) {
@@ -24,9 +26,14 @@ for (const contract of ROLE_CONTRACTS) {
     assert.notEqual(contract[field], undefined, `${contract.job_type} missing ${field}`);
   }
   assert.equal(contract.permission_class, "READ_ONLY");
-  assert.equal(contract.semantic_required, false, `${contract.job_type} must not need AI in the first acceptance slice`);
-  assert.equal(contract.free_ai_policy, "not_required");
-  assert.equal(contract.runtime_config.cadence_hours, 6, `${contract.job_type} first-slice cadence must be bounded at six hours`);
+  if (contract.semantic_required) {
+    assert.equal(contract.job_type, "search.defect.prioritize");
+    assert.equal(contract.free_ai_policy, "free_only_wait_if_unavailable");
+    assert.equal(contract.runtime_config.retry_seconds, 900);
+  } else {
+    assert.equal(contract.free_ai_policy, "not_required");
+    assert.equal(contract.runtime_config.cadence_hours, 6, `${contract.job_type} deterministic cadence must be bounded at six hours`);
+  }
   const sha = await roleContractSha256(contract);
   assert.match(sha, /^[0-9a-f]{64}$/);
   assert.equal(sha, await roleContractSha256(JSON.parse(stableRoleContractJson(contract))), "Contract digest must be canonical/deterministic");
@@ -37,6 +44,8 @@ assert.ok(searchContract.runtime_config.target_urls.length >= 3);
 assert.ok(searchContract.runtime_config.target_urls.every((url) => url.startsWith("https://hermeslogisticsus.com/")));
 assert.ok(roleContractForJobType("marketing.content.dedupe.audit").runtime_config.lookback_limit <= 500);
 assert.equal(roleContractForJobType("logistics.source.freshness.audit").runtime_config.max_age_minutes, 1440);
+assert.equal(ROLE_CONTRACTS.filter((contract) => !contract.semantic_required).length, 3);
+assert.equal(ROLE_CONTRACTS.filter((contract) => contract.semantic_required).length, 1);
 
 const searchInput = {
   pages: [
@@ -86,4 +95,44 @@ assert.throws(() => validateRoleContractInput("search.snapshot.evaluate", { page
 assert.throws(() => validateRoleContractInput("marketing.content.dedupe.audit", { items: [{ content_id: "x", slot_key: "s", body_fingerprint: "bad" }] }), /marketing_body_fingerprint_required/);
 assert.throws(() => validateRoleContractInput("logistics.source.freshness.audit", { sources: [], max_age_minutes: 0 }), /max_age_minutes_invalid/);
 
-console.log("HAE plugin role contracts PASS: 3 zero-model domain contracts");
+const semanticPayload = {
+  parent_job_id: "job:parent",
+  defects: [
+    { defect_type: "http_error", url: "https://hermeslogisticsus.com/load-board/" },
+    { defect_type: "canonical_mismatch", url: "https://hermeslogisticsus.com/services/seo/" },
+  ],
+};
+validateRoleContractInput("search.defect.prioritize", semanticPayload);
+const semanticRequest = buildRoleContractSemanticRequest("search.defect.prioritize", semanticPayload);
+assert.match(semanticRequest.system_prompt, /Return JSON only/);
+assert.ok(semanticRequest.user_prompt.includes("canonical_mismatch"));
+assert.ok(semanticRequest.max_output_tokens <= 600);
+const semanticResult = validateRoleContractSemanticResult("search.defect.prioritize", semanticPayload, {
+  priorities: [
+    {
+      url: "https://hermeslogisticsus.com/load-board/",
+      defect_type: "http_error",
+      priority: 95,
+      reason: "The page is unavailable.",
+      next_action: "Verify the current production response and repair only the confirmed defect.",
+    },
+    {
+      url: "https://hermeslogisticsus.com/services/seo/",
+      defect_type: "canonical_mismatch",
+      priority: 70,
+      reason: "The canonical points away from the inspected owner.",
+      next_action: "Reconcile the canonical against the current search owner before changing it.",
+    },
+  ],
+});
+assert.equal(semanticResult.prioritized_defect_count, 2);
+assert.equal(semanticResult.priorities[0].priority, 95);
+assert.throws(() => validateRoleContractInput("search.defect.prioritize", {
+  defects: [{ defect_type: "http_error", url: "https://example.com/" }],
+}), /search_defect_url_invalid/);
+assert.throws(() => validateRoleContractSemanticResult("search.defect.prioritize", semanticPayload, {
+  priorities: [{ url: "https://hermeslogisticsus.com/not-in-input/", defect_type: "http_error", priority: 90, reason: "x", next_action: "y" }],
+}), /semantic_result_item_not_in_input/);
+assert.throws(() => runRoleContractPrimitive("search.defect.prioritize", semanticPayload), /semantic_job_requires_free_ai/);
+
+console.log("HAE plugin role contracts PASS: 3 zero-model + 1 free-only semantic contract");
