@@ -35,6 +35,8 @@ assert.match(schema, /CREATE TABLE IF NOT EXISTS hermes_load_quarantine/);
 assert.match(schema, /UNIQUE\(source_id, source_message_id, fingerprint\)/);
 assert.match(schema, /credential_ref TEXT/);
 assert.match(schema, /car_hauling_ingest_allowed INTEGER NOT NULL DEFAULT 0/);
+assert.match(schema, /authorized_carrier_company_id: "TEXT"/);
+assert.match(schema, /idx_load_sources_carrier_scope/);
 assert.match(schema, /pending_review/);
 for (const column of [
   "provider_record_id", "origin_city", "origin_state", "origin_zip", "destination_city", "destination_state",
@@ -70,6 +72,12 @@ assert.match(sourceConnections, /source_request_must_be_approved/);
 assert.match(sourceConnections, /manual_source_uses_marketplace_post_contract/);
 assert.match(sourceConnections, /approved_redistribution_exceeds_request/);
 assert.match(sourceConnections, /approved_contact_mode_exceeds_request/);
+assert.match(sourceConnections, /carrier_scoped/);
+assert.match(sourceConnections, /authorized_carrier_company_id/);
+assert.match(sourceConnections, /authorized_carrier_company_required/);
+assert.match(sourceConnections, /verified_carrier_company_scope_required/);
+assert.match(sourceConnections, /carrier_scope_requires_carrier_scoped_redistribution/);
+assert.match(sourceConnections, /CARRIER_TYPES/);
 assert.match(sourceConnections, /runtime_verification_required/);
 assert.match(sourceConnections, /connection_and_rights_evidence_required/);
 assert.match(sourceConnections, /current_source_record_required/);
@@ -92,6 +100,7 @@ assert.match(helpers, /deadhead_25_or_less/);
 assert.match(helpers, /fresh_30m/);
 assert.match(helpers, /equipment_exact/);
 
+assert.match(companyAccess, /function getSpecialistLoadBoardCompany/);
 assert.match(companyAccess, /function specialistHasLoadBoardAccess/);
 assert.match(companyAccess, /carrier\|owner\[- \]\?operator\|dispatcher\|operations/i);
 assert.match(companyAccess, /hermes_company_profiles/);
@@ -150,6 +159,9 @@ assert.match(active, /cluster_rank = 1/);
 assert.match(active, /duplicateCount/);
 assert.match(active, /reviewFlags/);
 assert.match(summary, /COUNT\(DISTINCT CASE/);
+assert.match(summary, /getSpecialistLoadBoardCompany/);
+assert.match(summary, /redistribution_permission='carrier_scoped'/);
+assert.match(summary, /authorized_carrier_company_id=\?/);
 assert.match(summary, /r\.record_type \|\| '\|' \|\| r\.dedupe_key/);
 assert.match(intake, /send_enabled = 0/);
 assert.match(intake, /car_hauling_ingest_allowed = 1/);
@@ -168,6 +180,8 @@ assert.match(intake, /INSERT INTO hermes_load_quarantine/);
 assert.match(intake, /quarantined/);
 assert.match(intake, /items_required/);
 assert.match(intake, /clampVisibility/);
+assert.match(intake, /permission === "carrier_scoped"/);
+assert.match(intake, /"internal_only", "carrier_scoped", "carrier_only", "public"/);
 assert.match(intake, /record\.covered === true/);
 assert.match(intake, /\["covered", "booked", "unavailable", "cancelled", "canceled"\]/);
 assert.match(intake, /sourceCovered \? "covered"/);
@@ -187,7 +201,7 @@ assert.ok(
 );
 
 assert.match(active, /getAuthenticatedSpecialist/);
-assert.match(active, /specialistHasLoadBoardAccess/);
+assert.match(active, /getSpecialistLoadBoardCompany/);
 assert.match(active, /visibility IN \('public', 'carrier_only'\)/);
 assert.match(active, /visibility = 'public'/);
 assert.match(active, /company_registration_unlocks_access: false/);
@@ -206,7 +220,13 @@ assert.match(active, /X-Robots-Tag/);
 assert.doesNotMatch(active, forbiddenContactFields);
 assert.doesNotMatch(active, /hermes_load_quarantine/);
 
-assert.match(opportunities, /specialistHasLoadBoardAccess/);
+for (const [name, source] of Object.entries({ active, opportunities, dispatchPlan })) {
+  assert.match(source, /redistribution_permission='carrier_scoped'/, name+" must support carrier-scoped sources");
+  assert.match(source, /authorized_carrier_company_id=\?/, name+" must bind carrier-scoped sources to the verified carrier company");
+  assert.match(source, /getSpecialistLoadBoardCompany/, name+" must resolve the verified carrier company, not only a boolean role");
+}
+
+assert.match(opportunities, /getSpecialistLoadBoardCompany/);
 assert.match(opportunities, /deduplicated: true/);
 assert.match(opportunities, /score_version: "hermes_opportunity_v1"/);
 assert.match(opportunities, /company_registration_unlocks_access: false/);
@@ -221,20 +241,23 @@ assert.match(opportunities, /X-Robots-Tag/);
 assert.doesNotMatch(opportunities, forbiddenContactFields);
 assert.match(opportunities, /"email"/);
 
-assert.match(dispatchPlan, /specialistHasLoadBoardAccess/);
+assert.match(dispatchPlan, /getSpecialistLoadBoardCompany/);
 assert.match(dispatchPlan, /planner_version: "hermes_chain_v1"/);
 assert.match(dispatchPlan, /planning_only: true/);
 assert.match(dispatchPlan, /booking_performed: false/);
 assert.match(dispatchPlan, /company_registration_unlocks_access: false/);
 assert.match(dispatchPlan, /max_legs/);
 assert.match(dispatchPlan, /projectedLoadedRpm/);
-assert.match(dispatchPlan, /dispatcher_or_carrier_role_required/);
+assert.match(dispatchPlan, /verified_carrier_access_required/);
 assert.match(dispatchPlan, /dedupeKey/);
 assert.match(dispatchPlan, /X-Robots-Tag/);
 assert.doesNotMatch(dispatchPlan, forbiddenContactFields);
 
 assert.match(agentContext, /HERMES_AI_LOGISTICS_TOKEN/);
 assert.match(agentContext, /"opportunities", "lanes", "providers"/);
+assert.match(agentContext, /"internal_only", "carrier_scoped", "carrier_only", "public"/);
+assert.match(agentContext, /s\.redistribution_permission IN \('public','carrier_only'\)/,
+  "generic AI freight context must exclude carrier-scoped records until a tenant-aware contract is supplied");
 assert.match(agentContext, /data_classification: "internal-logistics-context"/);
 assert.match(agentContext, /contact_details_exposed: false/);
 assert.match(agentContext, /raw_evidence_exposed: false/);

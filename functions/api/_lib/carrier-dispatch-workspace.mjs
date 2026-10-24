@@ -108,7 +108,7 @@ export async function isApprovedDispatcher(db, specialist) {
 export async function isVerifiedCarrierSpecialist(db, specialist) {
   return Boolean(await authorizedCarrier(db, specialist));
 }
-export async function eligibleLoad(db, loadId, now = new Date().toISOString()) {
+export async function eligibleLoad(db, loadId, carrierCompanyId, now = new Date().toISOString()) {
   return db.prepare(`
     SELECT r.id,r.origin_city,r.origin_state,r.destination_city,r.destination_state,
       r.equipment,r.vehicle_count,r.pickup_window,r.rate_amount,r.rate_currency,
@@ -119,9 +119,13 @@ export async function eligibleLoad(db, loadId, now = new Date().toISOString()) {
       AND r.status='active' AND r.expires_at > ?
       AND r.visibility IN ('public','carrier_only')
       AND s.status='active' AND s.read_enabled=1
-      AND s.redistribution_permission IN ('public','carrier_only')
+      AND (
+        (r.visibility='public' AND s.redistribution_permission='public')
+        OR (r.visibility='carrier_only' AND s.redistribution_permission IN ('public','carrier_only'))
+        OR (r.visibility='carrier_only' AND s.redistribution_permission='carrier_scoped' AND s.authorized_carrier_company_id=?)
+      )
     LIMIT 1
-  `).bind(loadId, now).first();
+  `).bind(loadId, now, String(carrierCompanyId || "__no_verified_carrier__")).first();
 }
 export function carrierSafeLoad(row) {
   return {

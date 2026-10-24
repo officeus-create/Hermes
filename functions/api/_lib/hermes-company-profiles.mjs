@@ -83,8 +83,8 @@ export function roleCanUseLoadBoard(role) {
   return /carrier|owner[- ]?operator|dispatcher|operations/i.test(String(role ?? ""));
 }
 
-export async function specialistHasLoadBoardAccess(db, specialist) {
-  if (!specialist) return false;
+export async function getSpecialistLoadBoardCompany(db, specialist) {
+  if (!specialist) return null;
   await ensureHermesCompanyProfilesSchema(db);
   // A self-selected company type or load_board_access registration flag is not carrier verification.
   await db.prepare(`
@@ -97,12 +97,16 @@ export async function specialistHasLoadBoardAccess(db, specialist) {
     )
   `).run();
   const company = await db.prepare(`
-    SELECT c.load_board_access,c.company_type,e.status AS entitlement
+    SELECT c.id,c.company_name,c.load_board_access,c.company_type,e.status AS entitlement
     FROM hermes_company_profiles c
     LEFT JOIN hermes_carrier_board_entitlements e ON e.company_id=c.id
     WHERE c.owner_specialist_id=? LIMIT 1
   `).bind(specialist.id).first();
   return Number(company?.load_board_access)===1 &&
     ['carrier','owner_operator','fleet'].includes(String(company?.company_type||'')) &&
-    company?.entitlement==='active';
+    company?.entitlement==='active' ? company : null;
+}
+
+export async function specialistHasLoadBoardAccess(db, specialist) {
+  return Boolean(await getSpecialistLoadBoardCompany(db, specialist));
 }

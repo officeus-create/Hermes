@@ -1,6 +1,7 @@
 import {getAuthenticatedSpecialist,jsonResponse} from "../_lib/session.mjs";
+import {specialistHasInternalOwnerCapability} from "../_lib/load-board-market-posts.mjs";
 import {
-  cleanWorkspaceId,ensureCarrierDispatchWorkspaceSchema,isApprovedDispatcher,
+  carrierSafeLoad,cleanWorkspaceId,ensureCarrierDispatchWorkspaceSchema,isApprovedDispatcher,
   privateWorkspaceHeaders,safeWorkspaceText,workspaceSameOrigin,
 } from "../_lib/carrier-dispatch-workspace.mjs";
 type Context={request:Request;env:{DB?:any}};
@@ -15,6 +16,7 @@ async function identify(context:Context){
 export async function onRequestGet(context:Context){
   const auth=await identify(context);if(auth.error)return auth.error;
   const db=context.env.DB;
+  const internalOwner=await specialistHasInternalOwnerCapability(db,auth.user.id);
   const assignments=await db.prepare(`
     SELECT a.carrier_company_id,c.company_name,c.state,c.city
     FROM hermes_carrier_dispatch_assignments a
@@ -23,6 +25,48 @@ export async function onRequestGet(context:Context){
     WHERE a.dispatcher_specialist_id=? AND a.status='active'
     ORDER BY c.company_name LIMIT 200
   `).bind(auth.user.id).all();
+  const loads=await db.prepare(`
+    SELECT r.id,r.origin_city,r.origin_state,r.destination_city,r.destination_state,
+      r.equipment,r.vehicle_count,r.pickup_window,r.rate_amount,r.rate_currency,
+      r.distance_miles,r.observed_at,r.expires_at,r.visibility,
+      s.redistribution_permission AS source_redistribution_permission,
+      s.authorized_carrier_company_id,
+      source_scope_company.company_name AS authorized_carrier_name
+    FROM hermes_load_records r
+    JOIN hermes_load_sources s ON s.id=r.source_id
+    LEFT JOIN hermes_company_profiles source_scope_company
+      ON source_scope_company.id=s.authorized_carrier_company_id
+    WHERE r.status='active' AND r.record_type='load' AND r.expires_at>?
+      AND r.visibility IN ('public','carrier_only')
+      AND s.status='active' AND s.read_enabled=1
+      AND (
+        (r.visibility='public' AND s.redistribution_permission='public')
+        OR (r.visibility='carrier_only' AND s.redistribution_permission IN ('public','carrier_only'))
+        OR (
+          r.visibility='carrier_only'
+          AND s.redistribution_permission='carrier_scoped'
+          AND EXISTS (
+            SELECT 1
+            FROM hermes_company_profiles scoped_company
+            JOIN hermes_carrier_board_entitlements scoped_entitlement
+              ON scoped_entitlement.company_id=scoped_company.id AND scoped_entitlement.status='active'
+            WHERE scoped_company.id=s.authorized_carrier_company_id
+              AND scoped_company.load_board_access=1
+              AND (
+                ?=1
+                OR EXISTS (
+                  SELECT 1 FROM hermes_carrier_dispatch_assignments scoped_assignment
+                  WHERE scoped_assignment.carrier_company_id=scoped_company.id
+                    AND scoped_assignment.dispatcher_specialist_id=?
+                    AND scoped_assignment.status='active'
+                )
+              )
+          )
+        )
+      )
+    ORDER BY COALESCE(r.source_quality_score,0) DESC,r.observed_at DESC
+    LIMIT 200
+  `).bind(new Date().toISOString(),internalOwner?1:0,auth.user.id).all();
   const requests=await db.prepare(`
     SELECT i.id,i.load_record_id,i.carrier_company_id,c.company_name,i.carrier_message,
       i.status,i.status_note,i.created_at,i.updated_at,
@@ -65,9 +109,26 @@ export async function onRequestGet(context:Context){
     unavailable:count("unavailable"),declined:count("declined"),
     staleOpen:open.filter((r:any)=>!r.loadStillActive).length,
     activeOpen:open.filter((r:any)=>r.loadStillActive).length,
+    availableLoads:(loads.results||[]).length,
   };
-  return reply(200,{success:true,assignments:assignmentRows,requests:requestRows,summary,
-    automaticallyContactedSource:false,bookingCreated:false,
+  return reply(200,{
+    success:true,
+    accessScope:internalOwner?"internal_owner":"assigned_dispatcher",
+    assignments:assignmentRows,
+    loads:(loads.results||[]).map((row:any)=>({
+      ...carrierSafeLoad(row),
+      carrierScope:row.source_redistribution_permission==="carrier_scoped"
+        ? {
+            companyId:row.authorized_carrier_company_id,
+            companyName:row.authorized_carrier_name||"Assigned carrier",
+          }
+        : null,
+    })),
+    requests:requestRows,
+    summary,
+    sourceContactsExposed:false,
+    automaticallyContactedSource:false,
+    bookingCreated:false,
   });
 }
 export async function onRequestPost(context:Context){
