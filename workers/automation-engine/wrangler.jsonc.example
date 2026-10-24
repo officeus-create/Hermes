@@ -18,6 +18,15 @@
       "database_id": "DISCOVER_FROM_HERMES_PAGES_PRODUCTION_DB_BINDING"
     }
   ],
+  "send_email": [
+    {
+      "name": "OWNER_ALERT_EMAIL",
+      "destination_address": "officeus@hermeslogisticsus.com",
+      "allowed_sender_addresses": [
+        "website@hermeslogisticsus.com"
+      ]
+    }
+  ],
   "queues": {
     "producers": [
       {
@@ -36,6 +45,12 @@
         "max_batch_timeout": 5,
         "max_retries": 3,
         "dead_letter_queue": "hermes-automation-dlq"
+      },
+      {
+        "queue": "hermes-automation-dlq",
+        "max_batch_size": 5,
+        "max_batch_timeout": 5,
+        "max_retries": 3
       }
     ]
   },
@@ -43,6 +58,8 @@
     "HERMES_AUTOMATION_MODE": "dry_run",
     "HERMES_AUTOMATION_PUBLISH": "disabled",
     "HERMES_AUTOMATION_SOURCE_SHA": "INJECT_EXACT_MAIN_SHA_AT_RELEASE",
+    "HERMES_HAE_OWNER_ALERT_RECIPIENT": "officeus@hermeslogisticsus.com",
+    "HERMES_HAE_OWNER_ALERT_SENDER": "website@hermeslogisticsus.com",
     "HERMES_FREE_AI_CLOUDFLARE_ENABLED": "enabled",
     "HERMES_FREE_AI_CLOUDFLARE_MODEL": "@cf/zai-org/glm-4.7-flash",
     "HERMES_FREE_AI_CLOUDFLARE_FREE_ASSERTION_EXPIRES_AT": "2026-11-01T00:00:00Z",
@@ -55,6 +72,10 @@
 // existing `hermes` Pages project. Never create a second HAE database.
 // Production deployment must discover that binding ID from authenticated
 // Cloudflare Pages project state; the ID is intentionally not versioned here.
+//
+// OWNER_ACTION / QUARANTINE alerts use a bounded Cloudflare send_email binding
+// restricted to officeus@hermeslogisticsus.com. No alert API secret is required.
+// Telegram remains an optional fallback only when separately configured.
 //
 // Required secrets before any live canary:
 //   HERMES_AUTOMATION_TOKEN
