@@ -8,6 +8,13 @@
       "automated_purge_enabled": false,
       "retention_days": null,
       "deletion_path": "OWNER_POLICY_REQUIRED_BEFORE_AUTOMATION"
+    },
+    "business_runtime_evidence": {
+      "pii_allowed": false,
+      "secret_allowed": false,
+      "automated_purge_enabled": false,
+      "retention_days": null,
+      "deletion_path": "OWNER_POLICY_REQUIRED_BEFORE_AUTOMATION"
     }
   },
   "future_activation_rules": [

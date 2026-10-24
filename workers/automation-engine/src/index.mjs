@@ -7,6 +7,14 @@ import {
   HISTORICAL_READ_ONLY_JOB_TYPES,
   runHistoricalLearningPrimitive,
 } from "./historical-learning.mjs";
+import {
+  ROLE_CONTRACTS,
+  ROLE_CONTRACT_JOB_TYPES,
+  roleContractForJobType,
+  roleContractSha256,
+  runRoleContractPrimitive,
+  validateRoleContractInput,
+} from "./role-contracts.mjs";
 
 const ACCOUNT_KEY = "hermes_logistics";
 const PLATFORM = "threads";
@@ -200,6 +208,12 @@ export function isEligibleChicagoSlot(date = new Date()) {
 export function chicagoSlotKey(date = new Date()) {
   const parts = chicagoParts(date);
   return `${parts.year}-${parts.month}-${parts.day}T${String(parts.hour).padStart(2, "0")}`;
+}
+
+async function sha256HexText(value) {
+  const bytes = new TextEncoder().encode(String(value ?? ""));
+  const digest = await crypto.subtle.digest("SHA-256", bytes);
+  return [...new Uint8Array(digest)].map((item) => item.toString(16).padStart(2, "0")).join("");
 }
 
 function fnv1a(value) {
@@ -489,6 +503,7 @@ const READ_ONLY_GENERIC_JOB_TYPES = new Set([
   "system.health.snapshot",
   "history.coverage.audit",
   ...HISTORICAL_READ_ONLY_JOB_TYPES,
+  ...ROLE_CONTRACT_JOB_TYPES,
 ]);
 
 function genericJobEventId(jobId, eventType) {
@@ -617,7 +632,9 @@ async function createGenericJob(env, input) {
   if (!env.DB || !env.AUTOMATION_QUEUE) throw new Error("runtime_not_configured");
   await ensureSchema(env.DB);
   const jobType = clean(input?.job_type, 120);
-  const businessLane = clean(input?.business_lane, 120);
+  const roleContract = roleContractForJobType(jobType);
+  const requestedBusinessLane = clean(input?.business_lane, 120);
+  const businessLane = requestedBusinessLane || clean(roleContract?.business_lane, 120);
   const idempotencyKey = clean(input?.idempotency_key, 240);
   const accountKey = clean(input?.account_key, 120) || null;
   const projectKey = clean(input?.project_key, 120) || null;
@@ -628,10 +645,26 @@ async function createGenericJob(env, input) {
   const maxAttempts = rawMaxAttempts === null ? 3 : Math.max(1, Math.min(5, Math.trunc(rawMaxAttempts)));
   if (!READ_ONLY_GENERIC_JOB_TYPES.has(jobType)) throw new Error("job_type_not_allowed");
   if (!businessLane) throw new Error("business_lane_required");
+  if (roleContract && businessLane !== roleContract.business_lane) throw new Error("role_contract_business_lane_mismatch");
   if (!idempotencyKey) throw new Error("idempotency_key_required");
-  const payload = input?.payload ?? {};
+  let payload = input?.payload ?? {};
   if (HISTORICAL_READ_ONLY_JOB_TYPES.includes(jobType)) {
     runHistoricalLearningPrimitive(jobType, payload);
+  }
+  if (ROLE_CONTRACT_JOB_TYPES.includes(jobType)) {
+    validateRoleContractInput(jobType, payload);
+    const contract = roleContract;
+    if (!contract) throw new Error("role_contract_missing");
+    const roleContractSha = await roleContractSha256(contract);
+    payload = {
+      ...payload,
+      _role_contract: {
+        role_id: contract.role_id,
+        plugin_version: contract.plugin_version,
+        contract_version: contract.contract_version,
+        sha256: roleContractSha,
+      },
+    };
   }
   let payloadJson = "{}";
   try {
@@ -744,6 +777,43 @@ async function submitRuntimeProofJob(env, message) {
 }
 
 async function runReadOnlyGenericCapability(env, job) {
+  if (ROLE_CONTRACT_JOB_TYPES.includes(job.job_type)) {
+    let payload = {};
+    try {
+      payload = JSON.parse(String(job.payload_json || "{}"));
+    } catch {
+      throw new Error("generic_job_payload_invalid");
+    }
+    const contract = roleContractForJobType(job.job_type);
+    if (!contract) throw new Error("role_contract_missing");
+    const currentRoleContractSha = await roleContractSha256(contract);
+    const bound = payload?._role_contract;
+    if (
+      !bound ||
+      bound.role_id !== contract.role_id ||
+      bound.plugin_version !== contract.plugin_version ||
+      bound.contract_version !== contract.contract_version ||
+      bound.sha256 !== currentRoleContractSha
+    ) {
+      throw new Error("role_contract_stale");
+    }
+    const observedAt = new Date().toISOString();
+    const result = runRoleContractPrimitive(job.job_type, payload, observedAt);
+    return {
+      capability: job.job_type,
+      observed_at: observedAt,
+      external_write: false,
+      role_contract: {
+        role_id: contract.role_id,
+        plugin_version: contract.plugin_version,
+        contract_version: contract.contract_version,
+        sha256: currentRoleContractSha,
+        semantic_required: contract.semantic_required,
+        free_ai_policy: contract.free_ai_policy,
+      },
+      result,
+    };
+  }
   if (HISTORICAL_READ_ONLY_JOB_TYPES.includes(job.job_type)) {
     let payload = {};
     try {
@@ -1493,6 +1563,179 @@ async function enqueueScheduledHealthSnapshot(env, scheduledAt) {
   });
 }
 
+function roleContractScheduleEligible(contract, scheduledAt) {
+  const cadence = Number(contract?.runtime_config?.cadence_hours || 0);
+  if (!Number.isInteger(cadence) || cadence < 1 || cadence > 24) return false;
+  return chicagoParts(scheduledAt).hour % cadence === 0;
+}
+
+function extractCanonicalFromHtml(html, pageUrl) {
+  for (const tag of String(html || "").match(/<link\b[^>]*>/gi) || []) {
+    if (!/\brel\s*=\s*["'][^"']*\bcanonical\b[^"']*["']/i.test(tag)) continue;
+    const href = tag.match(/\bhref\s*=\s*["']([^"']+)["']/i)?.[1] || "";
+    if (!href) continue;
+    try {
+      return new URL(href, pageUrl).toString();
+    } catch {
+      return "";
+    }
+  }
+  return "";
+}
+
+function htmlNoindex(html) {
+  for (const tag of String(html || "").match(/<meta\b[^>]*>/gi) || []) {
+    const name = tag.match(/\bname\s*=\s*["']([^"']+)["']/i)?.[1]?.toLowerCase() || "";
+    if (name !== "robots") continue;
+    const content = tag.match(/\bcontent\s*=\s*["']([^"']+)["']/i)?.[1]?.toLowerCase() || "";
+    if (/(^|[,\s])noindex([,\s]|$)/.test(content)) return true;
+  }
+  return false;
+}
+
+async function buildScheduledSearchPayload(contract) {
+  const targets = Array.isArray(contract?.runtime_config?.target_urls)
+    ? contract.runtime_config.target_urls.slice(0, 20)
+    : [];
+  if (!targets.length) throw new Error("search_contract_targets_missing");
+  const pages = await Promise.all(targets.map(async (url) => {
+    try {
+      const response = await fetch(url, {
+        method: "GET",
+        redirect: "follow",
+        headers: { "user-agent": "HermesAutomationEngine/1.0 search-readonly" },
+      });
+      const contentType = response.headers.get("content-type") || "";
+      const html = contentType.toLowerCase().includes("text/html") ? await response.text() : "";
+      const xRobots = String(response.headers.get("x-robots-tag") || "").toLowerCase();
+      const canonical = extractCanonicalFromHtml(html, url);
+      const indexable = response.status >= 200
+        && response.status < 400
+        && !/(^|[,\s])noindex([,\s]|$)/.test(xRobots)
+        && !htmlNoindex(html);
+      return {
+        url,
+        status: response.status,
+        canonical,
+        indexable,
+        in_sitemap: null,
+      };
+    } catch {
+      return {
+        url,
+        status: 599,
+        canonical: "",
+        indexable: false,
+        in_sitemap: null,
+      };
+    }
+  }));
+  return { pages };
+}
+
+async function buildScheduledMarketingPayload(env, contract) {
+  const requestedLimit = Number(contract?.runtime_config?.lookback_limit || 200);
+  const limit = Math.max(1, Math.min(500, Number.isInteger(requestedLimit) ? requestedLimit : 200));
+  const rows = await env.DB.prepare(
+    "SELECT content_id,slot_key,body FROM hermes_automation_content ORDER BY updated_at DESC LIMIT ?"
+  ).bind(limit).all();
+  const items = [];
+  for (const row of rows?.results || []) {
+    const contentId = clean(row?.content_id, 200);
+    const slotKey = clean(row?.slot_key, 200);
+    if (!contentId || !slotKey || typeof row?.body !== "string" || !row.body.trim()) continue;
+    items.push({
+      content_id: contentId,
+      slot_key: slotKey,
+      body_fingerprint: await sha256HexText(row.body.replace(/\s+/g, " ").trim().toLowerCase()),
+    });
+  }
+  return { items };
+}
+
+async function requiredTablesPresent(db, tableNames) {
+  const names = tableNames.map((name) => clean(name, 120)).filter(Boolean);
+  if (!names.length) return true;
+  const placeholders = names.map(() => "?").join(",");
+  const rows = await db.prepare(
+    `SELECT name FROM sqlite_master WHERE type='table' AND name IN (${placeholders})`
+  ).bind(...names).all();
+  const present = new Set((rows?.results || []).map((row) => String(row.name || "")));
+  return names.every((name) => present.has(name));
+}
+
+async function buildScheduledLogisticsPayload(env, contract) {
+  if (!await requiredTablesPresent(env.DB, ["hermes_load_sources", "hermes_load_records"])) {
+    throw new Error("logistics_source_tables_missing");
+  }
+  const rows = await env.DB.prepare(`
+    SELECT
+      s.id AS source_id,
+      COALESCE(MAX(r.last_seen_at), s.last_successful_sync) AS last_seen_at,
+      MAX(r.expires_at) AS expires_at
+    FROM hermes_load_sources s
+    LEFT JOIN hermes_load_records r
+      ON r.source_id = s.id AND r.status = 'active'
+    WHERE s.read_enabled = 1
+      AND s.ingest_enabled = 1
+      AND s.status != 'revoked'
+    GROUP BY s.id, s.last_successful_sync
+    ORDER BY MAX(s.updated_at) DESC
+    LIMIT 500
+  `).all();
+  return {
+    sources: (rows?.results || []).map((row) => ({
+      source_id: clean(row?.source_id, 200),
+      last_seen_at: row?.last_seen_at || null,
+      expires_at: row?.expires_at || null,
+    })),
+    max_age_minutes: Number(contract?.runtime_config?.max_age_minutes || 1440),
+  };
+}
+
+async function buildScheduledRoleContractPayload(env, contract) {
+  if (contract.job_type === "search.snapshot.evaluate") return buildScheduledSearchPayload(contract);
+  if (contract.job_type === "marketing.content.dedupe.audit") return buildScheduledMarketingPayload(env, contract);
+  if (contract.job_type === "logistics.source.freshness.audit") return buildScheduledLogisticsPayload(env, contract);
+  throw new Error("scheduled_role_contract_not_supported");
+}
+
+async function enqueueScheduledRoleContracts(env, scheduledAt) {
+  const slotKey = chicagoSlotKey(scheduledAt);
+  const eligibleContracts = ROLE_CONTRACTS.filter(
+    (contract) => !contract.semantic_required && roleContractScheduleEligible(contract, scheduledAt),
+  );
+  const outcomes = await Promise.all(eligibleContracts.map(async (contract) => {
+    try {
+      const payload = await buildScheduledRoleContractPayload(env, contract);
+      await createGenericJob(env, {
+        job_type: contract.job_type,
+        account_key: ACCOUNT_KEY,
+        project_key: "hae-plugin-role-runtime",
+        priority: 45,
+        max_attempts: 3,
+        idempotency_key: `hae:role:${contract.job_type}:${slotKey}`,
+        policy_version: "hae-role-contract-v1",
+        payload: {
+          ...payload,
+          trigger_type: "cron",
+          scheduled_at: scheduledAt.toISOString(),
+        },
+      });
+      return 1;
+    } catch (error) {
+      await recordRuntimeEvent(env, {
+        eventType: "cron.role_contract_submit_failed",
+        messageType: `role:${contract.job_type}`,
+        slotKey,
+        errorClass: safeRuntimeErrorClass(error, "role_contract_submit_failed"),
+      });
+      return 0;
+    }
+  }));
+  return outcomes.reduce((sum, value) => sum + value, 0);
+}
+
 export default {
   async scheduled(controller, env, ctx) {
     if (!env.DB || !env.AUTOMATION_QUEUE) return;
@@ -1521,6 +1764,16 @@ export default {
         messageType: "job.execute",
         slotKey: chicagoSlotKey(scheduledAt),
         errorClass: safeRuntimeErrorClass(error, "scheduled_health_snapshot_failed"),
+      });
+    }
+
+    try {
+      await enqueueScheduledRoleContracts(env, scheduledAt);
+    } catch (error) {
+      await recordRuntimeEvent(env, {
+        eventType: "cron.role_contract_batch_failed",
+        slotKey: chicagoSlotKey(scheduledAt),
+        errorClass: safeRuntimeErrorClass(error, "scheduled_role_contract_batch_failed"),
       });
     }
 
@@ -1633,9 +1886,33 @@ export default {
         generation_mode: "deterministic_templates",
         generic_job_executor: true,
         read_only_job_types: Array.from(READ_ONLY_GENERIC_JOB_TYPES),
+        role_contract_job_types: Array.from(ROLE_CONTRACT_JOB_TYPES),
+        normal_loop_requires_paid_ai: false,
+        scheduled_role_contracts: true,
+        role_contract_cadence: "per-contract; current first slice every 6 hours",
         provider_transport: "windsor_connectors_api",
         provider_configured: Boolean(windsorThreadsConfig(env)),
         publication_enabled: publicationEnabled(env),
+      });
+    }
+    if (request.method === "GET" && url.pathname === "/v1/role-contracts") {
+      if (!authorized(request, env)) return json(401, { success: false, error: "unauthorized" });
+      const contracts = await Promise.all(ROLE_CONTRACTS.map(async (contract) => ({
+        role_id: contract.role_id,
+        plugin_version: contract.plugin_version,
+        contract_version: contract.contract_version,
+        job_type: contract.job_type,
+        business_lane: contract.business_lane,
+        permission_class: contract.permission_class,
+        semantic_required: contract.semantic_required,
+        free_ai_policy: contract.free_ai_policy,
+        sha256: await roleContractSha256(contract),
+      })));
+      return json(200, {
+        success: true,
+        engine: "hermes-automation-engine",
+        paid_fallback_enabled: false,
+        contracts,
       });
     }
     if (request.method === "GET" && url.pathname === "/v1/health") {
@@ -1653,7 +1930,7 @@ export default {
         const code = safeRuntimeErrorClass(error, "job_create_failed");
         const status = code === "idempotency_key_conflict"
           ? 409
-          : code.startsWith("historical_") || ["job_type_not_allowed", "business_lane_required", "idempotency_key_required", "payload_not_serializable", "payload_too_large"].includes(code) ? 400 : 500;
+          : code.startsWith("historical_") || code.startsWith("search_") || code.startsWith("marketing_") || code.startsWith("source_") || ["job_type_not_allowed", "business_lane_required", "role_contract_business_lane_mismatch", "idempotency_key_required", "payload_not_serializable", "payload_too_large", "max_age_minutes_invalid"].includes(code) ? 400 : 500;
         return json(status, { success: false, error: code });
       }
     }
