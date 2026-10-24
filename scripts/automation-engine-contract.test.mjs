@@ -262,6 +262,74 @@ assert.match(wrangler, /"HERMES_AUTOMATION_PUBLISH": "disabled"/, "Composed rele
 assert.doesNotMatch(releaseWorkflow, /HERMES_AUTOMATION_MODE=live|HERMES_AUTOMATION_PUBLISH=enabled/, "Owner-gated dry-run workflow must never promote live publishing");
 assert.doesNotMatch(releaseWorkflow, /WINDSOR_API_KEY:\s*\$\{\{\s*secrets\./, "Dry-run release must not require or inject a provider write secret");
 
+assert.match(releaseWorkflow, /schema_snapshot/, "Release workflow must expose the authenticated read-only D1 schema snapshot operation");
+assert.match(releaseWorkflow, /github\.event\.issue\.number == 2033[\s\S]{0,300}HAE_SCHEMA_SNAPSHOT /, "Schema snapshot owner command must be scoped to canonical HAE issue #2033");
+{
+  const conditionStart = releaseWorkflow.indexOf("    if: >-");
+  const conditionEnd = releaseWorkflow.indexOf("    runs-on:", conditionStart);
+  assert.ok(conditionStart >= 0 && conditionEnd > conditionStart, "HAE release owner-routing condition must remain inspectable");
+  const ownerCondition = releaseWorkflow.slice(conditionStart, conditionEnd);
+  const legacyStart = ownerCondition.indexOf("github.event.issue.number == 1018");
+  const canonicalStart = ownerCondition.indexOf("github.event.issue.number == 2033");
+  assert.ok(legacyStart >= 0 && canonicalStart > legacyStart, "Legacy #1018 and canonical #2033 command lanes must remain explicit");
+  const legacyLane = ownerCondition.slice(legacyStart, canonicalStart);
+  const canonicalLane = ownerCondition.slice(canonicalStart);
+  assert.doesNotMatch(legacyLane, /HAE_SCHEMA_SNAPSHOT/, "Legacy social issue #1018 must not gain schema-snapshot authority");
+  assert.doesNotMatch(canonicalLane, /HAE_VERIFY|HAE_PROVISION_DRY_RUN|HAE_RUNTIME_READONLY_PROOF/, "#2033 must not silently absorb legacy HAE command authority during the snapshot change");
+}
+assert.match(releaseWorkflow, /name: Inspect or provision canonical HAE queues[\s\S]{0,160}operation != 'schema_snapshot'/, "Schema snapshot must bypass Queue inspection/provisioning");
+assert.match(releaseWorkflow, /name: Render non-versioned production config[\s\S]{0,160}operation != 'schema_snapshot'/, "Schema snapshot must bypass Worker config composition");
+assert.match(releaseWorkflow, /name: Validate composed Worker package[\s\S]{0,160}operation != 'schema_snapshot'/, "Schema snapshot must bypass Worker package/deploy preparation");
+assert.match(releaseWorkflow, /name: HAE D1 schema snapshot independent QA/, "Schema snapshot must have a separate independent QA job");
+assert.match(releaseWorkflow, /CLOUDFLARE_HAE_RELEASE_TOKEN:\s*\$\{\{\s*secrets\.CLOUDFLARE_HAE_RELEASE_TOKEN\s*\}\}/, "Release workflow must expose the dedicated HAE Cloudflare token separately from supported legacy aliases");
+
+{
+  const credentialStart = releaseWorkflow.indexOf("- name: Validate Cloudflare release credentials");
+  const discoveryStart = releaseWorkflow.indexOf("- name: Discover canonical Hermes Connect production D1", credentialStart);
+  const captureStart = releaseWorkflow.indexOf("- name: Capture authenticated read-only D1 schema snapshot", discoveryStart);
+  assert.ok(credentialStart >= 0 && discoveryStart > credentialStart && captureStart > discoveryStart, "Credential and D1 discovery sections must remain ordered before schema capture");
+  const credentialSection = releaseWorkflow.slice(credentialStart, discoveryStart);
+  const discoverySection = releaseWorkflow.slice(discoveryStart, captureStart);
+  assert.match(credentialSection, /OPERATION[\s\S]*schema_snapshot[\s\S]*CLOUDFLARE_HAE_RELEASE_TOKEN/, "Schema snapshot credential selection must explicitly choose the dedicated HAE token");
+  assert.match(credentialSection, /HAE_CLOUDFLARE_ACTIVE_TOKEN/, "Validated Cloudflare credential must be passed to downstream read-only discovery through a masked active-token boundary");
+  assert.match(discoverySection, /Authorization: Bearer \$\{HAE_CLOUDFLARE_ACTIVE_TOKEN\}/, "Canonical D1 discovery must use the validated active token");
+  assert.doesNotMatch(discoverySection, /Authorization: Bearer \$\{CLOUDFLARE_API_TOKEN\}/, "Schema-capable D1 discovery must not directly consume a broader alias token");
+  assert.match(discoverySection, /production_db_name_missing_for_schema_snapshot/, "Schema snapshot must fail closed when the canonical production binding does not expose its real database name");
+}
+
+{
+  const start = releaseWorkflow.indexOf("- name: Capture authenticated read-only D1 schema snapshot");
+  const end = releaseWorkflow.indexOf("- name: Upload sanitized D1 schema snapshot evidence", start);
+  assert.ok(start >= 0 && end > start, "Schema snapshot capture step must exist as a bounded workflow section");
+  const schemaSnapshotStep = releaseWorkflow.slice(start, end);
+  assert.match(schemaSnapshotStep, /SCHEMA_SNAPSHOT_TOKEN:\s*\$\{\{\s*secrets\.CLOUDFLARE_HAE_RELEASE_TOKEN\s*\}\}/, "Schema snapshot must require the dedicated least-privilege HAE Cloudflare token");
+  assert.match(schemaSnapshotStep, /missing_CLOUDFLARE_HAE_RELEASE_TOKEN_for_schema_snapshot/, "Schema snapshot must fail closed when the dedicated token is absent");
+  assert.match(schemaSnapshotStep, /stale_main_before_schema_snapshot/, "Schema snapshot must re-check exact current main immediately before the production schema read");
+  assert.doesNotMatch(schemaSnapshotStep, /secrets\.(?:CLOUDFLARE_API_TOKEN|CF_API_TOKEN|CLOUDFLARE_TOKEN)/, "Schema snapshot must not fall back to broader Cloudflare token aliases");
+  assert.match(schemaSnapshotStep, /FROM sqlite_master/, "Schema snapshot must read only sqlite_master metadata");
+  assert.match(schemaSnapshotStep, /name NOT LIKE 'sqlite_%'/, "Schema snapshot must exclude internal SQLite objects");
+  assert.match(schemaSnapshotStep, /type IN \('table','index','trigger','view'\)/, "Schema snapshot must allow only schema object types");
+  assert.equal(
+    [...schemaSnapshotStep.matchAll(/d1\/database\/\$\{DB_ID\}\/query/g)].length,
+    1,
+    "Schema snapshot must issue exactly one bounded D1 query",
+  );
+  assert.doesNotMatch(schemaSnapshotStep, /\b(?:INSERT|UPDATE|DELETE|REPLACE|UPSERT|CREATE|ALTER|DROP)\b/i, "Schema snapshot step must not contain D1 write/DDL SQL");
+  assert.doesNotMatch(schemaSnapshotStep, /queues create|wrangler@4 deploy|create_text_post|WINDSOR_API_KEY/, "Schema snapshot step must not provision queues, deploy Workers or invoke provider writes");
+  assert.match(schemaSnapshotStep, /trap cleanup EXIT/, "Raw Cloudflare schema response must be removed even on failure");
+  assert.match(schemaSnapshotStep, /rm -f "\$raw"/, "Raw Cloudflare response must be deleted before workflow completion");
+}
+
+{
+  const start = releaseWorkflow.indexOf("schema-snapshot-qa:");
+  assert.ok(start >= 0, "Schema snapshot independent QA job must exist");
+  const qaSection = releaseWorkflow.slice(start);
+  assert.match(qaSection, /hae-d1-schema-snapshot\.mjs verify/, "Independent QA must recompute and verify the snapshot fingerprint");
+  assert.match(qaSection, /migration-manifest workers\/automation-engine\/migrations\/manifest\.json/, "Independent QA must verify the migration baseline remains pending");
+  assert.match(qaSection, /stale_main_during_schema_snapshot_qa/, "Independent QA must reject evidence if main moved after capture");
+  assert.doesNotMatch(qaSection, /CLOUDFLARE_API_TOKEN|Authorization: Bearer|database_id/, "Independent snapshot QA must not require Cloudflare production credentials");
+}
+
 
 assert.match(worker, /READ_ONLY_GENERIC_JOB_TYPES/, "Generic executor must expose a bounded read-only capability registry");
 assert.match(worker, /"system\.health\.snapshot"/, "Generic executor must support a safe system health snapshot job");

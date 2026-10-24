@@ -739,3 +739,13 @@ ROOT_CAUSE: `/media/*` is served `immutable` for a year, so in-place byte change
 WORKING_APPROACH: Restored every previously shipped file to its `main` bytes; built new `*-film-v2-*` films (new names) from the exact approved sequence: Logistics golden → 18749847 → 9339073 → 9339061; Technology 6804117 @19.4 s (after the Cyrillic line scrolls away) → 6804109; Academy 7413799 → 9034497; Marketing approved 6774593 "Planning wall" + owner-listed alternative 7652729. One shared grade, 0.6 s crossfades, H.264 High@3.1, every runtime file < 1.5 MB. Source lock rewritten; new contact sheet `docs/evidence/home-film-v2-contact-sheet-2026-10-22.jpg`.
 
 REUSE_RULE: Never change bytes behind an existing `/media/*` URL — always ship a new filename. Re-read the approved design's source list before writing provenance, and review the shipped crop frame by frame (text, logos, language) before committing.
+
+### ERR-HAE-SCHEMA-SNAPSHOT-PLAYWRIGHT-SAME-ROOT-LOCK-20261024
+
+- **Project:** Hermes Automation Engine / #2033 authenticated D1 schema snapshot
+- **Observed:** A parallel three-shard Playwright rerun used different `HERMES_E2E_PORT` values and different output directories, but shard 2/3 still failed to start while shard 1 owned the Astro preview process.
+- **Root cause class:** `TEST_ORCHESTRATION / SAME_WORKTREE_PREVIEW_LOCK`, not a schema-snapshot product defect. Astro preview serializes preview ownership for the same project/root; changing TCP ports alone does not create independent preview state.
+- **Safe rule:** In one worktree, run Playwright shards sequentially. If true parallel execution is needed, use separate worktrees/project roots as well as separate ports/output directories.
+- **False-fix guard:** Do not edit unrelated UI/product code merely because a long browser shard times out. Reproduce the exact failing test on clean current `main` first; if it fails identically, classify it as baseline/test-environment evidence rather than a candidate-branch regression.
+- **#2033 evidence:** KNB locale navigation, Hermes Connect locale selector, Load Board mobile journey, and both repair-public-entry interaction timeouts were independently compared against clean `main`; where compared, the same failure reproduced outside the schema-snapshot branch. One Home touch timeout did not reproduce on clean `main` and requires an isolated branch rerun before final classification.
+- **Safety:** No production, D1, secret, provider-write, or migration change is authorized by this error record.

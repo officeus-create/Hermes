@@ -16,4 +16,23 @@ Rules:
 6. Destructive migrations require explicit owner confirmation and a separate restore/rollback plan.
 7. D1 Time Travel/restore is a production action; never invoke it from CI or a normal migration test.
 
+## Authenticated read-only schema snapshot
+
+After the snapshot source change is independently reviewed, merged, and separately owner-authorized for execution, use the existing HAE release workflow operation:
+
+`schema_snapshot <exact-current-main-sha>`
+
+The issue-command form is:
+
+`HAE_SCHEMA_SNAPSHOT <exact-current-main-sha>`
+
+The snapshot operation is evidence-only. It must:
+- target the exact current `main` SHA;
+- discover the existing canonical production D1 binding;
+- issue only the bounded read-only `sqlite_master` schema query;
+- upload only the sanitized normalized schema artifact and deterministic `sha256:` fingerprint;
+- keep Queue provisioning, Worker composition/deployment, provider writes, D1 writes, and migration mutation disabled.
+
+An accepted snapshot artifact does **not** edit `manifest.json`. Promotion from `PENDING_RUNTIME_SNAPSHOT` to `VERIFIED` remains a separate bounded source change after artifact readback and independent QA.
+
 The repository contract test fails if SQL migration files appear while the baseline is still pending.
