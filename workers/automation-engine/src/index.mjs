@@ -26,6 +26,10 @@ import {
   dlqRuntimeSnapshot,
   processDlqMessage,
 } from "./dlq-runtime.mjs";
+import {
+  aiUsageLedgerSnapshot,
+  recordAiUsage,
+} from "./ai-usage-ledger.mjs";
 
 const ACCOUNT_KEY = "hermes_logistics";
 const PLATFORM = "threads";
@@ -814,13 +818,36 @@ async function runReadOnlyGenericCapability(env, job) {
     let semanticExecution = null;
     if (contract.semantic_required) {
       const semanticRequest = buildRoleContractSemanticRequest(job.job_type, payload);
+      const budgetUsd = Number(contract?.runtime_config?.max_cost_usd);
+      if (!Number.isFinite(budgetUsd) || budgetUsd < 0) throw new Error("semantic_budget_invalid");
       const freeResult = await runFreeSemanticJson(env, semanticRequest);
-      if (Number(freeResult.cost_usd || 0) !== 0) throw new Error("paid_inference_forbidden");
+      const actualCostUsd = Number(freeResult.cost_usd || 0);
+      if (!Number.isFinite(actualCostUsd) || actualCostUsd < 0) throw new Error("ai_usage_cost_invalid");
+      if (actualCostUsd > budgetUsd + 1e-9) throw new Error("ai_budget_exceeded");
+      const usageReceipt = await recordAiUsage(env, {
+        job_id: job.job_id,
+        role_id: contract.role_id,
+        contract_version: contract.contract_version,
+        contract_sha256: currentRoleContractSha,
+        provider_id: freeResult.provider_id,
+        model: freeResult.model,
+        budget_usd: budgetUsd,
+        cost_usd: actualCostUsd,
+        usage: freeResult.usage,
+        status: "PROVIDER_RETURNED",
+      });
+      if (actualCostUsd !== 0) throw new Error("paid_inference_forbidden");
       result = validateRoleContractSemanticResult(job.job_type, payload, freeResult.result);
       semanticExecution = {
         provider_id: clean(freeResult.provider_id, 120),
         model: clean(freeResult.model, 200),
-        cost_usd: 0,
+        budget_usd: budgetUsd,
+        cost_usd: actualCostUsd,
+        usage_id: usageReceipt.usage_id,
+        input_tokens: usageReceipt.input_tokens,
+        output_tokens: usageReceipt.output_tokens,
+        input_chars: usageReceipt.input_chars,
+        output_chars: usageReceipt.output_chars,
       };
     } else {
       result = runRoleContractPrimitive(job.job_type, payload, observedAt);
@@ -2023,6 +2050,8 @@ export default {
         paid_ai_fallback_enabled: false,
         dlq_runtime_consumer: true,
         dlq_external_alert_delivery_verified: false,
+        ai_cost_ledger: true,
+        default_semantic_budget_usd: 0,
         free_ai_providers: freeAiProviderSnapshot(env).map(({ id, available, configured, model, reason }) => ({
           id, available, configured, model, reason,
         })),
@@ -2050,6 +2079,12 @@ export default {
         paid_fallback_enabled: false,
         contracts,
       });
+    }
+    if (request.method === "GET" && url.pathname === "/v1/ai-usage") {
+      if (!authorized(request, env)) return json(401, { success: false, error: "unauthorized" });
+      if (!env.DB) return json(503, { success: false, error: "runtime_not_configured" });
+      const limit = Math.max(1, Math.min(100, Number(url.searchParams.get("limit") || 50) || 50));
+      return json(200, { success: true, ...(await aiUsageLedgerSnapshot(env, limit)) });
     }
     if (request.method === "GET" && url.pathname === "/v1/dlq-runtime") {
       if (!authorized(request, env)) return json(401, { success: false, error: "unauthorized" });
