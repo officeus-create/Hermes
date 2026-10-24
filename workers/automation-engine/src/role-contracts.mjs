@@ -99,6 +99,43 @@ export const ROLE_CONTRACTS = Object.freeze([
     failure: "fail_closed_on_invalid_payload",
     retention: "business_runtime_evidence",
   }),
+  Object.freeze({
+    role_id: "hermes-search-growth",
+    plugin_version: "0.1.6",
+    contract_version: "search-defect-prioritize-v1",
+    job_type: "search.defect.prioritize",
+    business_lane: "search",
+    permission_class: "READ_ONLY",
+    semantic_required: true,
+    free_ai_policy: "free_only_wait_if_unavailable",
+    trigger: "downstream_from_search_snapshot",
+    input_schema: {
+      defects: "array<{defect_type,url}> max 20",
+      parent_job_id: "string",
+    },
+    runtime_config: {
+      max_items: 20,
+      max_output_tokens: 600,
+      retry_seconds: 900,
+    },
+    preconditions: [
+      "defects come only from the deterministic Search snapshot contract",
+      "URLs are public hermeslogisticsus.com URLs",
+      "no customer, credential or private payload is allowed",
+    ],
+    deterministic_steps: [
+      "bound and validate public defect metadata",
+      "route only to explicitly zero-cost eligible semantic provider",
+      "require structured JSON result",
+      "validate every recommendation against the original defect set",
+    ],
+    output_schema: "priorities: array<{url,defect_type,priority,reason,next_action}>",
+    kpi: ["prioritized_defect_count", "free_ai_wait_count", "paid_inference_cost_usd"],
+    owner_gate: "none_read_only_advisory",
+    readback: "structured result_json receipt with provider id and cost_usd=0",
+    failure: "WAITING_FREE_AI when free capacity unavailable; fail closed on invalid model output",
+    retention: "business_runtime_evidence",
+  }),
 ]);
 
 export const ROLE_CONTRACT_JOB_TYPES = Object.freeze(ROLE_CONTRACTS.map((contract) => contract.job_type));
@@ -188,10 +225,97 @@ function validateLogisticsPayload(payload) {
   return { sources, maxAgeMinutes: requestedAge };
 }
 
+const SEARCH_DEFECT_TYPES = new Set([
+  "http_error",
+  "missing_canonical",
+  "canonical_mismatch",
+  "sitemap_indexability_conflict",
+]);
+
+function validateSearchDefectPayload(payload) {
+  const defects = boundedArray(payload?.defects, "defects");
+  const contract = roleContractForJobType("search.defect.prioritize");
+  const maxItems = Number(contract?.runtime_config?.max_items || 20);
+  if (defects.length < 1) throw new Error("search_defects_required");
+  if (defects.length > maxItems) throw new Error("search_defects_too_large");
+  const normalized = [];
+  const seen = new Set();
+  for (const defect of defects) {
+    if (!defect || typeof defect !== "object") throw new Error("search_defect_invalid");
+    const defectType = cleanText(defect.defect_type, 80);
+    const url = normalizedUrl(defect.url);
+    if (!SEARCH_DEFECT_TYPES.has(defectType)) throw new Error("search_defect_type_invalid");
+    if (!url || new URL(url).hostname !== "hermeslogisticsus.com") throw new Error("search_defect_url_invalid");
+    const key = `${defectType}|${url}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    normalized.push({ defect_type: defectType, url });
+  }
+  if (!normalized.length) throw new Error("search_defects_required");
+  const parentJobId = cleanText(payload?.parent_job_id, 160);
+  return { defects: normalized, parentJobId: parentJobId || null };
+}
+
+export function buildRoleContractSemanticRequest(jobType, payload) {
+  if (jobType !== "search.defect.prioritize") throw new Error("semantic_role_contract_not_supported");
+  const { defects } = validateSearchDefectPayload(payload);
+  return {
+    system_prompt: [
+      "You are the Hermes Search Growth specialist.",
+      "Prioritize only the supplied verified technical defects.",
+      "Do not invent traffic, rankings, causes, facts, fixes already performed, or external evidence.",
+      "Return JSON only with key priorities.",
+      "Each item must use an input url and defect_type, integer priority 1-100, concise reason, and next_action.",
+      "Higher priority means larger immediate risk to crawlability/indexability or a money-page owner.",
+      "This is read-only advisory output; do not claim that any fix was applied.",
+    ].join(" "),
+    user_prompt: JSON.stringify({ defects }),
+    max_output_tokens: Number(roleContractForJobType(jobType)?.runtime_config?.max_output_tokens || 600),
+  };
+}
+
+export function validateRoleContractSemanticResult(jobType, payload, value) {
+  if (jobType !== "search.defect.prioritize") throw new Error("semantic_role_contract_not_supported");
+  const { defects } = validateSearchDefectPayload(payload);
+  if (!value || typeof value !== "object" || !Array.isArray(value.priorities)) {
+    throw new Error("semantic_result_priorities_required");
+  }
+  if (value.priorities.length > defects.length) throw new Error("semantic_result_too_many_items");
+  const allowed = new Set(defects.map((item) => `${item.defect_type}|${item.url}`));
+  const priorities = [];
+  const seen = new Set();
+  for (const item of value.priorities) {
+    if (!item || typeof item !== "object") throw new Error("semantic_result_item_invalid");
+    const defectType = cleanText(item.defect_type, 80);
+    const url = normalizedUrl(item.url);
+    const key = `${defectType}|${url || ""}`;
+    if (!allowed.has(key) || seen.has(key)) throw new Error("semantic_result_item_not_in_input");
+    const priority = Number(item.priority);
+    if (!Number.isInteger(priority) || priority < 1 || priority > 100) throw new Error("semantic_result_priority_invalid");
+    const reason = cleanText(item.reason, 500);
+    const nextAction = cleanText(item.next_action, 500);
+    if (!reason || !nextAction) throw new Error("semantic_result_text_required");
+    seen.add(key);
+    priorities.push({
+      url,
+      defect_type: defectType,
+      priority,
+      reason,
+      next_action: nextAction,
+    });
+  }
+  priorities.sort((left, right) => right.priority - left.priority || left.url.localeCompare(right.url));
+  return {
+    prioritized_defect_count: priorities.length,
+    priorities,
+  };
+}
+
 export function validateRoleContractInput(jobType, payload) {
   if (jobType === "search.snapshot.evaluate") return validateSearchPayload(payload);
   if (jobType === "marketing.content.dedupe.audit") return validateMarketingPayload(payload);
   if (jobType === "logistics.source.freshness.audit") return validateLogisticsPayload(payload);
+  if (jobType === "search.defect.prioritize") return validateSearchDefectPayload(payload);
   throw new Error("role_contract_job_type_not_allowed");
 }
 
@@ -300,5 +424,6 @@ export function runRoleContractPrimitive(jobType, payload, observedAt = new Date
   if (jobType === "search.snapshot.evaluate") return evaluateSearch(payload);
   if (jobType === "marketing.content.dedupe.audit") return evaluateMarketing(payload);
   if (jobType === "logistics.source.freshness.audit") return evaluateLogistics(payload, observedAt);
+  if (jobType === "search.defect.prioritize") throw new Error("semantic_job_requires_free_ai");
   throw new Error("role_contract_job_type_not_allowed");
 }

@@ -150,6 +150,23 @@
       "contract_version": "logistics-source-freshness-v1",
       "semantic_required": false,
       "free_ai_policy": "not_required"
+    },
+    {
+      "job_type": "search.defect.prioritize",
+      "permission_class": "READ_ONLY",
+      "execution_runtime": "canonical_hae_queue",
+      "external_provider_write": false,
+      "allowed_side_effects": [
+        "d1_job_state",
+        "d1_job_events"
+      ],
+      "submission_auth": "HERMES_AUTOMATION_TOKEN",
+      "retention_class": "business_runtime_evidence",
+      "role_id": "hermes-search-growth",
+      "plugin_version": "0.1.6",
+      "contract_version": "search-defect-prioritize-v1",
+      "semantic_required": true,
+      "free_ai_policy": "free_only_wait_if_unavailable"
     }
   ],
   "future_capability_gate": {
@@ -170,7 +187,9 @@
       "DESTRUCTIVE capabilities require an explicit per-action owner gate and are never autonomous by default.",
       "A capability that can carry PII must define an approved retention and minimization contract before activation.",
       "Plugin-derived jobs must bind role_id, plugin_version, contract_version and SHA-256 at enqueue time and verify the same contract before execution.",
-      "ZERO-COST-FIRST: deterministic and free/local execution precede any paid inference; no automatic paid fallback is permitted."
+      "ZERO-COST-FIRST: deterministic and free/local execution precede any paid inference; no automatic paid fallback is permitted.",
+      "Semantic READ_ONLY jobs may enter WAITING_FREE_AI without consuming a retry when no explicitly zero-cost provider is available.",
+      "Official paid provider endpoints must never be admitted to the free-AI router solely because their model weights are open source."
     ]
   }
 }
