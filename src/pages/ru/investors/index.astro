@@ -2,14 +2,8 @@
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 import SiteHeader from "../../../components/SiteHeader.astro";
 import SiteFooter from "../../../components/SiteFooter.astro";
-const areas = [
-  {title:"Логистика США и развитие автопарка",stage:"Действующее операционное направление",detail:"Работа с перевозчиками, автовозами и партнерами. Расширение парка рассматривается отдельно от технологических инвестиций; историческая экономика и условия финансирования проходят проверку.",href:"/paths/logistics/"},
-  {title:"Load Board и аналитика логистики",stage:"Разработка продукта",detail:"Поиск грузов из разрешенных источников, анализ маршрутов, проверка актуальности предложений и инструменты для перевозчиков. Полный коммерческий запуск пока не подтвержден.",href:"/load-board/"},
-  {title:"Hermes Connect и CRM",stage:"Пилоты и разработка",detail:"Инструменты для автосервисов и других компаний: клиентские процессы, сервисные операции и управление взаимодействиями. Готовность отдельных модулей различается.",href:"/services/hermes-connect/"},
-  {title:"ProgressoPro",stage:"Услуги и технологии",detail:"Создание сайтов, SEO/GEO, цифровой маркетинг и повторяемые процессы привлечения клиентов.",href:"/paths/marketing/"},
-  {title:"Hermes Business Academy",stage:"Образовательная инфраструктура",detail:"Подготовка специалистов и будущих руководителей. В долгосрочной перспективе — кадровая основа для запуска подразделений на новых рынках.",href:"/paths/academy/"},
-  {title:"Системы автоматизации бизнеса",stage:"Архитектура и разработка",detail:"Развитие системы координации специализированных инструментов, проверок и рабочих процессов. Круглосуточная автономность и цифровые сотрудники — направление разработки, а не подтвержденный масштаб.",href:"/paths/technology/"}
-];
+import { investorPublicProjects, investorPortfolioReviewedAt } from "../../../data/investor-public-portfolio";
+const areas = investorPublicProjects.map((project) => ({ ...project.ru, href: project.href, id: project.id }));
 ---
 <BaseLayout title="Инвесторам | Hermes" description="Инвестиционная концепция Hermes: логистика США, технологии, маркетинг, обучение и развитие экосистемы." robots="noindex,nofollow" alternates={[{ lang: "en", href: "/investors/" }, { lang: "ru", href: "/ru/investors/" }, { lang: "x-default", href: "/investors/" }]} locale="ru" htmlLang="ru">
   <SiteHeader />
@@ -33,8 +27,8 @@ const areas = [
     </section>
     <section class="investor-shell investor-section" aria-labelledby="portfolio-title">
       <p class="investor-eyebrow">ПРОДУКТЫ И НАПРАВЛЕНИЯ</p><h2 id="portfolio-title">Карта развития Hermes</h2>
-      <p>Статусы отражают направления работы, а не означают, что каждый продукт уже продается. Подтвержденные показатели и документы будут доступны одобренным инвесторам после проверки.</p>
-      <div class="investor-grid">{areas.map(area => <article class="investor-card"><span>{area.stage}</span><h3>{area.title}</h3><p>{area.detail}</p><a class="investor-explore" href={area.href}>Подробнее о направлении →</a></article>)}</div>
+      <p>Статусы — редакционная оценка, а не утверждение о полном коммерческом запуске каждого продукта. Последняя проверка описаний: {investorPortfolioReviewedAt}. Для более сильных утверждений нужны независимые технические и финансовые доказательства.</p>
+      <div class="investor-grid">{areas.map(area => <article class="investor-card" data-investor-project={area.id}><span>{area.stage}</span><h3>{area.title}</h3><p>{area.detail}</p><a class="investor-explore" href={area.href}>Подробнее о направлении →</a></article>)}</div>
     </section>
 
     <section class="investor-shell investor-section" aria-labelledby="capital-title">
