@@ -136,7 +136,27 @@ export async function onRequestPut({ request, env }: Context) {
   await ensureHrCommunicationSchema(env.DB);
   const replay = await getHrCommunicationEventByIdempotency(env.DB, idempotencyKey);
   if (replay) {
-    if (replay.candidate_id !== candidateId) {
+    // A globally unique key can only acknowledge the *same* transition.
+    // Candidate matching alone allowed an altered stage/owner/provider ref to
+    // be incorrectly reported as successful even after the real state moved on.
+    const requestedStage = cleanHrText(body.current_stage || body.to_stage, 40);
+    const requestedChannel = cleanHrText(body.current_channel, 20);
+    const requestedAction = cleanHrText(body.next_action, 40);
+    const requestedOwner = cleanHrText(body.next_action_owner, 40);
+    const requestedOccurredAt = isoTime(body.occurred_at);
+    const suppliedGmail = opaqueRef(body.gmail_message_ref);
+    const suppliedTelegram = opaqueRef(body.telegram_handoff_ref);
+    const requestedProviderRef = providerRefForStage(
+      requestedStage, suppliedGmail.value, suppliedTelegram.value
+    );
+    if (replay.candidate_id !== candidateId
+      || replay.to_stage !== requestedStage
+      || replay.to_channel !== requestedChannel
+      || replay.next_action !== requestedAction
+      || replay.next_action_owner !== requestedOwner
+      || suppliedGmail.invalid || suppliedTelegram.invalid
+      || (requestedProviderRef && replay.provider_ref !== requestedProviderRef)
+      || (requestedOccurredAt && replay.occurred_at !== requestedOccurredAt)) {
       return jsonResponse(409, { success: false, error: "idempotency_key_conflict" }, privateHeaders);
     }
     return jsonResponse(200, {
@@ -144,6 +164,13 @@ export async function onRequestPut({ request, env }: Context) {
       duplicate: true,
       candidate_id: candidateId,
       communication_state: await getHrCommunicationState(env.DB, candidateId),
+      transition: {
+        event_id: replay.id,
+        from_stage: replay.from_stage,
+        to_stage: replay.to_stage,
+        automated: false,
+        replayed: true,
+      },
     }, privateHeaders);
   }
 
