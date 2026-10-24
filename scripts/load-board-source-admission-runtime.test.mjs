@@ -33,7 +33,7 @@ const basePayload = () => ({
   }],
 });
 
-function stubDb(source) {
+function stubDb(source, { sourceUpdateChanges = 1 } = {}) {
   const dataWrites = [];
   const db = {
     prepare(sql) {
@@ -48,7 +48,7 @@ function stubDb(source) {
           if (/\b(UPDATE|INSERT INTO|DELETE FROM) hermes_load_(sources|records|quarantine)\b/i.test(sql)) {
             dataWrites.push({ sql: sql.trim().split("\n")[0].trim(), args: this.args || [] });
           }
-          return { success: true, meta: { changes: 1 } };
+          return { success: true, meta: { changes: /UPDATE hermes_load_sources/i.test(sql) ? sourceUpdateChanges : 1 } };
         },
       };
     },
@@ -56,8 +56,8 @@ function stubDb(source) {
   return { db, dataWrites };
 }
 
-async function attempt(source, payload = basePayload(), token = "fixture-token") {
-  const { db, dataWrites } = stubDb(source);
+async function attempt(source, payload = basePayload(), token = "fixture-token", options = {}) {
+  const { db, dataWrites } = stubDb(source, options);
   const request = new Request("https://hermes.example/api/load-board/intake", {
     method: "POST",
     headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
@@ -101,6 +101,37 @@ assert.equal(granted.dataWrites.filter(x => x.sql.includes("hermes_load_quaranti
 assert.equal(granted.dataWrites.filter(x => x.sql.includes("hermes_load_sources")).length, 1);
 assert.ok(!granted.dataWrites.some(x => x.sql.includes("INSERT INTO hermes_load_sources")));
 
+// Simulated mid-request revocation: the guarded UPDATE finds zero eligible rows.
+const raced = await attempt(valid, basePayload(), "fixture-token", { sourceUpdateChanges: 0 });
+assert.equal(raced.status, 409);
+assert.equal(raced.body.error, "source_ingest_state_changed");
+assert.equal(raced.dataWrites.length, 1, "only the attempted guarded UPDATE is allowed");
+
+const livePayload = basePayload();
+livePayload.quarantine = [];
+livePayload.records = [{
+  source_message_id: "approved-load-0001",
+  fingerprint: "f-car-haul-0001",
+  record_type: "load",
+  origin: "Chicago, IL",
+  destination: "Milwaukee, WI",
+  equipment: "car_hauler",
+  vehicle_count: 2,
+  rate_amount: 800,
+  visibility: "public", // Caller requests public, approved source permits carrier_only.
+  status: "available",
+  received_at: "2026-10-24T12:00:00.000Z",
+  observed_at: "2026-10-24T12:00:00.000Z",
+  expires_at: "2090-10-25T12:00:00.000Z",
+}];
+const live = await attempt(valid, livePayload);
+assert.equal(live.status, 202, "authorized LOAD must be accepted");
+assert.equal(live.body.accepted, 1, "authorized LOAD count");
+const recordWrites = live.dataWrites.filter(x => x.sql.includes("INSERT INTO hermes_load_records"));
+assert.equal(recordWrites.length, 1, "exactly one LOAD record insert");
+assert.ok(recordWrites[0].args.includes("carrier_only"), "approved source rights must cap caller's public request");
+assert.ok(!recordWrites[0].args.includes("public"), "no public visibility escalation");
+
 const spoofed = basePayload();
 spoofed.source.source_type = "webhook";
 const mismatch = await attempt(valid, spoofed);
@@ -108,4 +139,4 @@ assert.equal(mismatch.status, 409);
 assert.equal(mismatch.body.error, "source_type_mismatch");
 assert.deepEqual(mismatch.dataWrites, []);
 
-console.log("load-board-source-admission-runtime: unknown/pending/revoked/disabled/missing/forged sources fail closed; approved source quarantines, no provider writes");
+console.log("load-board-source-admission-runtime: unknown/pending/revoked/disabled/missing/forged sources fail closed; approved source quarantines and imports private LOAD; revoked D1 update denies writes; no provider writes");
