@@ -228,6 +228,14 @@ assert.match(worker, /batch\?\.queue === "hermes-automation-dlq"/, "Queue handle
 assert.match(worker, /processDlqMessage/, "DLQ batches must execute the durable classification/redrive runtime");
 assert.match(worker, /url\.pathname === "\/v1\/dlq-runtime"/, "Private control surface must expose DLQ runtime receipts");
 assert.match(worker, /dlq_external_alert_delivery_verified: false/, "Capabilities must not falsely claim that owner alert delivery is verified");
+assert.match(worker, /recordAiUsage/, "Semantic execution must persist an AI usage receipt");
+assert.match(worker, /ai_budget_exceeded/, "Semantic execution must fail closed when actual cost exceeds the contract budget");
+assert.match(worker, /default_semantic_budget_usd: 0/, "Capabilities must expose the zero-dollar default semantic budget");
+assert.match(worker, /url\.pathname === "\/v1\/ai-usage"/, "Private control surface must expose the AI usage/cost ledger");
+const aiLedger = readFileSync(new URL("../workers/automation-engine/src/ai-usage-ledger.mjs", import.meta.url), "utf8");
+assert.match(aiLedger, /hermes_automation_ai_usage/, "AI usage receipts must persist in canonical D1");
+assert.match(aiLedger, /cost > budget/, "AI usage ledger must reject over-budget calls before insertion");
+assert.doesNotMatch(aiLedger, /prompt|response_body|message_content/i, "AI cost ledger must not store prompt or response content");
 assert.ok(wrangler.includes('"workers_dev": false'), "Worker must not expose workers.dev by default");
 assert.ok(wrangler.includes('"preview_urls": false'), "Preview URLs must remain disabled by default");
 assert.match(releaseWorkflow, /queues\/\$\{QUEUE_ID\}\/messages/, "Dry-run proof must inject a canary through the Cloudflare Queue API");
