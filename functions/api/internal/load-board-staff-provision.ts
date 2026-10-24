@@ -117,6 +117,20 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     "SELECT status,completed_at FROM hermes_load_board_staff_provisioning_receipts WHERE operation_id=? LIMIT 1"
   ).bind(RECEIPT_ID).first();
   if (receipt?.status === "completed") {
+    const owner = await env.DB.prepare(
+      "SELECT s.id,a.active,a.capability FROM specialists s JOIN hermes_internal_owner_access a ON a.specialist_id=s.id WHERE lower(s.email)=lower(?) LIMIT 1"
+    ).bind(STAFF[0].email).first();
+    const reviewer = await env.DB.prepare(
+      "SELECT s.id,r.status,r.mailbox_ownership_verified FROM specialists s JOIN hermes_load_board_reviewers r ON r.specialist_id=s.id WHERE lower(s.email)=lower(?) LIMIT 1"
+    ).bind(STAFF[1].email).first();
+    if (!owner || Number(owner.active || 0) !== 1 || String(owner.capability || "") !== "HERMES_INTERNAL_OWNER"
+      || !reviewer || String(reviewer.status || "") !== "active" || Number(reviewer.mailbox_ownership_verified || 0) !== 1) {
+      return jsonResponse(409, {
+        success: false,
+        error: "completed_receipt_access_readback_mismatch",
+        credentials_rotated: false,
+      }, PRIVATE_HEADERS);
+    }
     return jsonResponse(200, {
       success: true,
       provisioning_state: "already_completed",
