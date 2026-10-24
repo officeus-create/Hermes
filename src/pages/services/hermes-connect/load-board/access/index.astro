@@ -14,8 +14,8 @@ import SiteHeader from "../../../../../components/SiteHeader.astro";
       <div class="lb-access-shell">
         <a class="lb-back" href="/load-board/">← Back to Load Board preview</a>
         <p class="lb-kicker">Hermes Connect · Load Board access</p>
-        <h1>One Hermes account. One company. Access matched to your role.</h1>
-        <p class="lb-lead">The public Load Board is the curtain view. Create or sign in to your Hermes account, add the company you operate with, and follow the correct workspace. Carrier-only freight access requires separate Hermes approval.</p>
+        <h1>One Hermes account. Access matched to your role.</h1>
+        <p class="lb-lead">The public Load Board is the curtain view. External operators add the company they operate with; verified Hermes internal owner/dispatcher access goes directly to the restricted board. Carrier-only freight access still requires separate Hermes approval.</p>
         <div class="lb-flow" aria-label="Load Board access steps">
           <div><strong>1</strong><span>Hermes account</span><small>Create one or sign in</small></div>
           <div><strong>2</strong><span>Company</span><small>Add operating company facts</small></div>
@@ -151,6 +151,17 @@ import SiteHeader from "../../../../../components/SiteHeader.astro";
           window.location.assign("/services/hermes-connect/load-board/role-preview/");
           return;
         }
+        try {
+          const account = await json('/api/hermes-connect/account');
+          const internalBoard = Array.isArray(account?.workspaces)
+            ? account.workspaces.find((workspace) => workspace?.key === 'load_board' && workspace?.state?.company_required === false)
+            : null;
+          if (internalBoard?.href) {
+            message(authMessage, 'Internal Load Board access verified. Opening the restricted board…');
+            window.location.assign(String(internalBoard.href));
+            return;
+          }
+        } catch {}
         if (authState) authState.textContent = `Signed in as ${specialist?.name || specialist?.email || 'Hermes user'}.`;
         if (authCard instanceof HTMLElement) authCard.classList.add('is-complete');
         if (authTabs instanceof HTMLElement) authTabs.hidden = true;
@@ -244,7 +255,7 @@ import SiteHeader from "../../../../../components/SiteHeader.astro";
             name: data.get('name'), email: data.get('email'), password: data.get('password'), role: data.get('role'), location: data.get('location'),
             bio: 'Hermes Connect Load Board access account for carrier operations and company registration.',
           }) });
-          message(authMessage, 'Account created. Add your company for role-specific review.');
+          message(authMessage, 'Account created. Checking your Load Board access…');
           await showCompany(payload.specialist);
         } catch (error) {
           const text = error?.payload?.error === 'email_already_registered' ? 'This email already has a Hermes account. Use Sign in.' : `Could not create account: ${error.message}`;
@@ -262,7 +273,7 @@ import SiteHeader from "../../../../../components/SiteHeader.astro";
         try {
           await json('/api/auth/login', { method: 'POST', body: JSON.stringify({ email: data.get('email'), password: data.get('password') }) });
           const me = await json('/api/auth/me');
-          message(authMessage, 'Signed in. Add or confirm your company.');
+          message(authMessage, 'Signed in. Checking your Load Board access…');
           await showCompany(me.specialist);
         } catch (error) { message(authMessage, `Could not sign in: ${error.message}`, true); }
         finally { if (button instanceof HTMLButtonElement) button.disabled = false; }
