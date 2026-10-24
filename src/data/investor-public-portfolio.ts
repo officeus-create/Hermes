@@ -50,3 +50,36 @@ export const investorPublicProjects = [
     ru: { title: "Hermes Business Catalog", stage: "Публичный каталог / проверка использования", detail: "Каталог компаний и инструментов поиска помогает клиентам знакомиться с бизнесами и связывает направления CRM и маркетинга. Коммерческие результаты требуют отдельного подтверждения." },
   },
 ] as const;
+
+
+/**
+ * Editorial sequencing hypothesis, not a funding offer, timetable, or reported financial result.
+ * Publish only source-backed milestones after Finance/Compliance/CEO review.
+ */
+export const investorCapitalLadder = [
+  {
+    id: "proof",
+    en: { stage: "01 · Measure", title: "Establish operating economics", detail: "Reconcile completed logistics activity, service fees and verified cash receipts. Separate actual Hermes earnings from transport value handled by independent carriers." },
+    ru: { stage: "01 · Измеряем", title: "Доказываем экономику бизнеса", detail: "Сверяем перевозки, комиссии за услуги и реальные поступления. Отдельно учитываем доход Hermes и оборот независимых перевозчиков." },
+  },
+  {
+    id: "commercial",
+    en: { stage: "02 · Sell", title: "Grow proven services", detail: "Use the existing logistics, website, SEO/GEO and marketing capabilities to test repeatable customer demand and profitable delivery before scaling fixed costs." },
+    ru: { stage: "02 · Продаём", title: "Увеличиваем продажи услуг", detail: "Используем существующие возможности логистики, сайтов, SEO/GEO и маркетинга, чтобы подтвердить повторяемый спрос и прибыльность до роста постоянных расходов." },
+  },
+  {
+    id: "asset",
+    en: { stage: "03 · Finance assets", title: "Pilot fleet expansion", detail: "Consider a bounded car-hauling equipment pilot only after equipment quotes, authority, insurance, driver readiness, truck-level economics and repayment capacity are independently verified." },
+    ru: { stage: "03 · Финансируем активы", title: "Пилотное расширение автопарка", detail: "Рассматриваем один контролируемый проект с автовозом только после проверки стоимости техники, разрешений, страховки, готовности водителей, экономики трака и обслуживания финансирования." },
+  },
+  {
+    id: "technology",
+    en: { stage: "04 · Reinvest", title: "Productize repeatable workflows", detail: "Improve Load Board, CRM and Automation with real customer and operating data. Separate proven reliability from commercial value before expanding the product footprint." },
+    ru: { stage: "04 · Реинвестируем", title: "Масштабируем проверенные технологии", detail: "Развиваем Load Board, CRM и автоматизацию на основе реального опыта и спроса. Техническую готовность и коммерческую ценность проверяем отдельно." },
+  },
+  {
+    id: "academy",
+    en: { stage: "05 · Replicate", title: "Train teams for new markets", detail: "Use Academy-enabled team preparation to evaluate regional operating partnerships one market at a time, subject to local compliance and measured demand." },
+    ru: { stage: "05 · Повторяем", title: "Готовим команды для новых рынков", detail: "Академия помогает готовить команды для новых подразделений. Каждый рынок проходит отдельную проверку спроса, местных требований и экономики." },
+  },
+] as const;
