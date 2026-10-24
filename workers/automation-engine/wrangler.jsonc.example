@@ -5,6 +5,9 @@
   "compatibility_date": "2026-10-13",
   "workers_dev": false,
   "preview_urls": false,
+  "ai": {
+    "binding": "AI"
+  },
   "triggers": {
     "crons": ["17 * * * *"]
   },
@@ -40,6 +43,9 @@
     "HERMES_AUTOMATION_MODE": "dry_run",
     "HERMES_AUTOMATION_PUBLISH": "disabled",
     "HERMES_AUTOMATION_SOURCE_SHA": "INJECT_EXACT_MAIN_SHA_AT_RELEASE",
+    "HERMES_FREE_AI_CLOUDFLARE_ENABLED": "enabled",
+    "HERMES_FREE_AI_CLOUDFLARE_MODEL": "@cf/zai-org/glm-4.7-flash",
+    "HERMES_FREE_AI_CLOUDFLARE_FREE_ASSERTION_EXPIRES_AT": "2026-11-01T00:00:00Z",
     "WINDSOR_THREADS_ACCOUNT_ID": "28419597014385166"
   }
 }
@@ -64,3 +70,7 @@
 // delayed readback against the connected Threads account before marking VERIFIED.
 //
 // Do not place provider tokens, account secrets, D1 IDs or queue credentials in Git.
+
+// Workers AI free eligibility was re-verified from current official Cloudflare docs on 2026-10-24.
+// The free assertion intentionally expires. After expiry the semantic lane must enter WAITING_FREE_AI
+// until current official eligibility/pricing is re-verified and this date is explicitly renewed.
