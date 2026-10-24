@@ -17,6 +17,137 @@ const canonicalPath = english ? englishPath : localPath;
 const alternates=[{lang:profile.primaryLocale,href:localPath},{lang:"en",href:englishPath},{lang:"x-default",href:englishPath}];
 const programFor:Record<AcademyLaunchTrack,string>={logistics:"us-logistics-operations",marketing:"marketing",sales:"sales",operations:"operations"};
 const applyHref=(track:AcademyLaunchTrack)=>`/academy/apply/?${new URLSearchParams({program:programFor[track],country:profile.country,language:pageLang,source:"academy_country"})}`;
+
+type FrameworkCopy = {
+  registryLabel: string;
+  publicEntry: string;
+  localLanguage: string;
+  commercialTerms: string;
+  noLocalOffice: string;
+  process: string;
+  futurePathway: string;
+  countryGate: string;
+  fineprint: string;
+  nextTitle: (country: string) => string;
+  nextBody: string;
+  pipeline: { label: string; detail: string }[];
+};
+
+const frameworkByLocale: Record<string, FrameworkCopy> = {
+  ro: {
+    registryLabel: "Registru pentru 110 țări",
+    publicEntry: "Intrare publică în Hermes Academy",
+    localLanguage: "Limba locală",
+    commercialTerms: "Condiții comerciale: confirmate după analiza aplicației",
+    noLocalOffice: "Fără afirmație privind un birou local",
+    process: "Proces",
+    futurePathway: "Parcurs ulterior posibil",
+    countryGate: "Condiții pentru țară",
+    fineprint: "Această pagină este o intrare informativă/de recrutare, nu o dovadă a unui birou Hermes, a unei francize, a unei entități juridice locale, a unei cohorte garantate, a unui furnizor de plăți garantat, a angajării sau a venitului.",
+    nextTitle: (country) => `Un singur adevăr Hermes Academy, localizat pentru ${country}.`,
+    nextBody: "Localizarea pe țară schimbă limba și exemplele, nu regulile de bază privind dovezile. Prețurile, datele, capacitatea, condițiile de plată/rambursare și orice acces real la clienți sunt confirmate separat înainte de înscriere.",
+    pipeline: [
+      { label: "Sursă aprobată", detail: "Folosește numai instruire Hermes aprobată, dovezi publice sau materiale interne igienizate aprobate pentru reutilizare." },
+      { label: "Confidențialitate și drepturi", detail: "Elimină datele personale/private și confirmă că materialul poate fi reutilizat în conținut public de instruire." },
+      { label: "Revizuirea faptelor curente", detail: "Separă exemplele istorice de politica, prețurile, angajarea, produsul și afirmațiile de conformitate actuale." },
+      { label: "Localizare", detail: "Adaptează lecția la limba și intenția de căutare țintă fără a schimba adevărul programului." },
+      { label: "QA în limba locală", detail: "Verifică sensul, terminologia, lizibilitatea și formulările cultural înșelătoare înainte de publicare." },
+      { label: "Aprobare pentru publicare", detail: "Un reviewer uman aprobă pagina publică exactă înainte ca aceasta să devină indexabilă." },
+    ],
+  },
+  vi: {
+    registryLabel: "Danh mục 110 quốc gia",
+    publicEntry: "Lối vào công khai của Hermes Academy",
+    localLanguage: "Ngôn ngữ địa phương",
+    commercialTerms: "Điều khoản thương mại: xác nhận sau khi xem xét đơn đăng ký",
+    noLocalOffice: "Không tuyên bố có văn phòng địa phương",
+    process: "Quy trình",
+    futurePathway: "Lộ trình có thể tiếp theo",
+    countryGate: "Điều kiện theo quốc gia",
+    fineprint: "Trang này là điểm vào cung cấp thông tin/tuyển chọn, không phải bằng chứng về văn phòng Hermes, nhượng quyền, pháp nhân địa phương, cohort được bảo đảm, nhà cung cấp thanh toán được bảo đảm, việc làm hoặc thu nhập.",
+    nextTitle: (country) => `Một nguồn sự thật Hermes Academy, được bản địa hoá cho ${country}.`,
+    nextBody: "Bản địa hoá theo quốc gia thay đổi ngôn ngữ và ví dụ, không thay đổi các quy tắc bằng chứng nền tảng. Giá, ngày, sức chứa, điều khoản thanh toán/hoàn tiền và mọi quyền truy cập khách hàng thực tế được xác nhận riêng trước khi ghi danh.",
+    pipeline: [
+      { label: "Nguồn đã được phê duyệt", detail: "Chỉ dùng nội dung đào tạo Hermes đã được phê duyệt, bằng chứng công khai hoặc tài liệu nội bộ đã được làm sạch và cho phép tái sử dụng." },
+      { label: "Quyền riêng tư và quyền sử dụng", detail: "Loại bỏ dữ liệu cá nhân/riêng tư và xác nhận tài liệu có thể được tái sử dụng cho nội dung đào tạo công khai." },
+      { label: "Rà soát thông tin hiện tại", detail: "Tách ví dụ lịch sử khỏi chính sách, giá, việc làm, sản phẩm và tuyên bố tuân thủ hiện tại." },
+      { label: "Bản địa hoá", detail: "Điều chỉnh bài học theo ngôn ngữ và ý định tìm kiếm mục tiêu mà không thay đổi sự thật nền tảng của chương trình." },
+      { label: "QA ngôn ngữ bản địa", detail: "Rà soát ý nghĩa, thuật ngữ, độ dễ đọc và cách diễn đạt có thể gây hiểu nhầm về văn hoá trước khi phát hành." },
+      { label: "Phê duyệt xuất bản", detail: "Người duyệt xác nhận đúng phiên bản trang công khai trước khi trang được phép lập chỉ mục." },
+    ],
+  },
+  fil: {
+    registryLabel: "Registry ng 110 bansa",
+    publicEntry: "Pampublikong entry sa Hermes Academy",
+    localLanguage: "Lokal na wika",
+    commercialTerms: "Mga komersyal na kondisyon: kinukumpirma pagkatapos ng application review",
+    noLocalOffice: "Walang pahayag na may lokal na opisina",
+    process: "Proseso",
+    futurePathway: "Posibleng susunod na landas",
+    countryGate: "Mga kondisyon para sa bansa",
+    fineprint: "Ang page na ito ay para sa impormasyon at recruitment entry lamang; hindi ito patunay ng Hermes office, franchise, lokal na legal entity, garantisadong cohort, garantisadong payment provider, trabaho o kita.",
+    nextTitle: (country) => `Iisang Hermes Academy truth, naka-localize para sa ${country}.`,
+    nextBody: "Binabago ng country localization ang wika at mga halimbawa, hindi ang underlying evidence rules. Ang kasalukuyang presyo, petsa, capacity, payment/refund terms at anumang tunay na client access ay hiwalay na kinukumpirma bago ang enrollment.",
+    pipeline: [
+      { label: "Aprubadong source", detail: "Gumamit lamang ng aprubadong Hermes training, public evidence o sanitized internal material na pinahihintulutang gamitin muli." },
+      { label: "Privacy at karapatan", detail: "Alisin ang personal/private data at kumpirmahing maaaring gamitin muli ang material para sa public training content." },
+      { label: "Review ng kasalukuyang facts", detail: "Ihiwalay ang historical examples sa kasalukuyang policy, pricing, employment, product at compliance claims." },
+      { label: "Localization", detail: "Iangkop ang lesson sa target na wika at search intent nang hindi binabago ang underlying program truth." },
+      { label: "QA sa lokal na wika", detail: "Suriin ang kahulugan, terminology, readability at posibleng culturally misleading na phrasing bago i-release." },
+      { label: "Approval sa publication", detail: "Human reviewer ang nag-aapruba sa eksaktong public page bago ito maging indexable." },
+    ],
+  },
+  tg: {
+    registryLabel: "Феҳристи 110 кишвар",
+    publicEntry: "Вуруди оммавии Hermes Academy",
+    localLanguage: "Забони маҳаллӣ",
+    commercialTerms: "Шартҳои тиҷоратӣ: пас аз баррасии ариза тасдиқ мешаванд",
+    noLocalOffice: "Даъвои дафтари маҳаллӣ вуҷуд надорад",
+    process: "Раванд",
+    futurePathway: "Роҳи эҳтимолии минбаъда",
+    countryGate: "Шартҳои кишвар",
+    fineprint: "Ин саҳифа вуруди иттилоотӣ/ҷалбкунӣ аст ва далели дафтари Hermes, франшиза, шахси ҳуқуқии маҳаллӣ, гурӯҳи кафолатнок, провайдери пардохти кафолатнок, шуғл ё даромад нест.",
+    nextTitle: (country) => `Як ҳақиқати Hermes Academy, барои ${country} маҳаллӣ шудааст.`,
+    nextBody: "Маҳаллисозӣ забон ва мисолҳоро тағйир медиҳад, на қоидаҳои асосии далелҳоро. Нарх, санаҳо, ҷойҳо, шартҳои пардохт/баргардонӣ ва ҳар гуна дастрасӣ ба муштарии воқеӣ пеш аз қабул алоҳида тасдиқ мешаванд.",
+    pipeline: [
+      { label: "Манбаи тасдиқшуда", detail: "Танҳо омӯзиши тасдиқшудаи Hermes, далелҳои оммавӣ ё маводи дохилии тозашуда ва иҷозатдодашударо истифода баред." },
+      { label: "Махфият ва ҳуқуқҳо", detail: "Маълумоти шахсӣ/махфиро хориҷ кунед ва иҷозати истифодаи дубораи маводро барои омӯзиши оммавӣ тасдиқ кунед." },
+      { label: "Баррасии далелҳои ҷорӣ", detail: "Мисолҳои таърихиро аз сиёсат, нарх, шуғл, маҳсулот ва изҳороти мутобиқати ҷорӣ ҷудо кунед." },
+      { label: "Маҳаллисозӣ", detail: "Дарсро ба забон ва нияти ҷустуҷӯи ҳадаф мутобиқ кунед, бе тағйири ҳақиқати асосии барнома." },
+      { label: "QA бо забони маҳаллӣ", detail: "Маъно, истилоҳот, хонданбобӣ ва ибораҳои эҳтимолан гумроҳкунандаи фарҳангиро пеш аз нашр баррасӣ кунед." },
+      { label: "Тасдиқи нашр", detail: "Баррасигари инсонӣ нусхаи дақиқи саҳифаи оммавиро пеш аз индексшавӣ тасдиқ мекунад." },
+    ],
+  },
+  ar: {
+    registryLabel: "سجل 110 دول",
+    publicEntry: "مدخل عام إلى Hermes Academy",
+    localLanguage: "اللغة المحلية",
+    commercialTerms: "الشروط التجارية: تُؤكَّد بعد مراجعة الطلب",
+    noLocalOffice: "لا يوجد ادعاء بوجود مكتب محلي",
+    process: "العملية",
+    futurePathway: "المسار المحتمل بعد ذلك",
+    countryGate: "بوابة البلد",
+    fineprint: "هذه الصفحة مدخل معلوماتي/للتقديم وليست دليلاً على وجود مكتب Hermes أو امتياز أو كيان قانوني محلي أو دفعة مضمونة أو مزود دفع مضمون أو وظيفة أو دخل.",
+    nextTitle: (country) => `حقيقة واحدة لـ Hermes Academy، موطّنة لـ ${country}.`,
+    nextBody: "يغيّر التوطين حسب البلد اللغة والأمثلة ولا يغيّر قواعد الأدلة الأساسية. يتم تأكيد الأسعار والتواريخ والسعة وشروط الدفع/الاسترداد وأي وصول فعلي إلى العملاء بشكل منفصل قبل التسجيل.",
+    pipeline: [
+      { label: "مصدر معتمد", detail: "استخدم فقط تدريب Hermes المعتمد أو الأدلة العامة أو المواد الداخلية المنقحة والمصرح بإعادة استخدامها." },
+      { label: "الخصوصية والحقوق", detail: "أزل البيانات الشخصية/الخاصة وتأكد من السماح بإعادة استخدام المادة في محتوى تدريبي عام." },
+      { label: "مراجعة الحقائق الحالية", detail: "افصل الأمثلة التاريخية عن السياسات والأسعار والتوظيف والمنتج وادعاءات الامتثال الحالية." },
+      { label: "التوطين", detail: "كيّف الدرس مع اللغة وهدف البحث المستهدف من دون تغيير حقيقة البرنامج الأساسية." },
+      { label: "ضمان الجودة باللغة المحلية", detail: "راجع المعنى والمصطلحات وسهولة القراءة والصياغة التي قد تكون مضللة ثقافياً قبل النشر." },
+      { label: "الموافقة على النشر", detail: "يوافق مراجع بشري على الصفحة العامة نفسها قبل أن تصبح قابلة للفهرسة." },
+    ],
+  },
+};
+const localFramework = frameworkByLocale[profile.primaryLocale];
+const localizedCountryName = copy.eyebrow.split("·")[0].trim();
+const localizedPipeline = english || !localFramework
+  ? academyLocalizationPipeline
+  : academyLocalizationPipeline.map((stage, index) => ({
+      ...stage,
+      ...(localFramework.pipeline[index] ?? {}),
+    }));
 const schema=[
  {"@context":"https://schema.org","@type":"Course","name":copy.title,"description":copy.description,"url":new URL(canonicalPath,Astro.site).toString(),"provider":{"@id":"https://hermeslogisticsus.com/#organization"},"inLanguage":pageLang},
  {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Hermes Academy","item":"https://hermeslogisticsus.com/paths/academy/"},{"@type":"ListItem","position":2,"name":profile.country,"item":new URL(canonicalPath,Astro.site).toString()}]},
@@ -27,16 +158,16 @@ const schema=[
  <DirectionProductNav direction="academy" theme="light" />
  <main class="country-page" data-academy-country={profile.slug} data-country-language={pageLang}>
   <div class="shell">
-   <nav class="crumb"><a href="/paths/academy/">Hermes Academy</a><span>→</span><a href="/businesses/#global-markets">110-country registry</a><span>→</span><strong>{profile.country}</strong></nav>
+   <nav class="crumb"><a href="/paths/academy/">Hermes Academy</a><span>→</span><a href="/businesses/#global-markets">{english || !localFramework ? "110-country registry" : localFramework.registryLabel}</a><span>→</span><strong>{english ? profile.country : localizedCountryName}</strong></nav>
    <header class="country-hero">
     <div><p class="eyebrow">{copy.eyebrow}</p><h1>{copy.title.split("|")[0].trim()}</h1><p>{copy.lead}</p><div class="hero-actions"><a class="primary" href={applyHref("logistics")} data-country-cta="apply">{copy.apply}</a><a href={english ? localPath : englishPath}>{english ? profile.primaryLanguage : "English"}</a></div></div>
-    <aside><strong>Public Academy entry</strong><span>Local language: {profile.primaryLanguage}</span><span>Commercial terms: confirmed after application review</span><span>No local-office claim</span></aside>
+    <aside><strong>{english || !localFramework ? "Public Academy entry" : localFramework.publicEntry}</strong><span>{english || !localFramework ? "Local language" : localFramework.localLanguage}: {profile.primaryLanguage}</span><span>{english || !localFramework ? "Commercial terms: confirmed after application review" : localFramework.commercialTerms}</span><span>{english || !localFramework ? "No local-office claim" : localFramework.noLocalOffice}</span></aside>
    </header>
    <HermesPromoRail context="academy" />
    <section class="tracks"><p class="eyebrow">Hermes Academy</p><h2>{copy.tracksTitle}</h2><div>{profile.tracks.map((track)=><article><span>{track}</span><h3>{copy.tracks[track].title}</h3><p>{copy.tracks[track].body}</p><a href={applyHref(track)} data-country-track={track}>{copy.apply} →</a></article>)}</div></section>
-   <section class="journey"><article><p class="eyebrow">Process</p><h2>{copy.processTitle}</h2><p>{copy.process}</p></article><article><p class="eyebrow">Future pathway</p><h2>{copy.futureTitle}</h2><p>{copy.futureBody}</p></article></section>
-   <section class="gate"><div><p class="eyebrow">Country gate</p><h2>{copy.gateTitle}</h2><p>{copy.gateBody}</p><p class="fine">This page is an informational/recruitment entry, not evidence of a Hermes office, franchise, local legal entity, guaranteed cohort, guaranteed payment provider, employment or income.</p></div><ol>{academyLocalizationPipeline.map((stage)=><li><strong>{stage.label}</strong><span>{stage.detail}</span></li>)}</ol></section>
-   <section class="next"><h2>One Academy truth, localized for {profile.country}.</h2><p>Country localization changes language and examples, not the underlying evidence rules. Current pricing, dates, capacity, payment/refund terms and any real client access are confirmed separately before enrollment.</p><a href={applyHref("marketing")} data-country-cta="final">{copy.apply} →</a></section>
+   <section class="journey"><article><p class="eyebrow">{english || !localFramework ? "Process" : localFramework.process}</p><h2>{copy.processTitle}</h2><p>{copy.process}</p></article><article><p class="eyebrow">{english || !localFramework ? "Future pathway" : localFramework.futurePathway}</p><h2>{copy.futureTitle}</h2><p>{copy.futureBody}</p></article></section>
+   <section class="gate"><div><p class="eyebrow">{english || !localFramework ? "Country gate" : localFramework.countryGate}</p><h2>{copy.gateTitle}</h2><p>{copy.gateBody}</p><p class="fine">{english || !localFramework ? "This page is an informational/recruitment entry, not evidence of a Hermes office, franchise, local legal entity, guaranteed cohort, guaranteed payment provider, employment or income." : localFramework.fineprint}</p></div><ol>{localizedPipeline.map((stage)=><li><strong>{stage.label}</strong><span>{stage.detail}</span></li>)}</ol></section>
+   <section class="next"><h2>{english || !localFramework ? `One Academy truth, localized for ${profile.country}.` : localFramework.nextTitle(localizedCountryName)}</h2><p>{english || !localFramework ? "Country localization changes language and examples, not the underlying evidence rules. Current pricing, dates, capacity, payment/refund terms and any real client access are confirmed separately before enrollment." : localFramework.nextBody}</p><a href={applyHref("marketing")} data-country-cta="final">{copy.apply} →</a></section>
   </div>
  </main>
  <SiteFooter />
