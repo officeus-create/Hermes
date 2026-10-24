@@ -152,12 +152,12 @@ assert.match(active, /reviewFlags/);
 assert.match(summary, /COUNT\(DISTINCT CASE/);
 assert.match(summary, /r\.record_type \|\| '\|' \|\| r\.dedupe_key/);
 assert.match(intake, /send_enabled = 0/);
-assert.match(intake, /car_hauling_ingest_allowed = 1/);
+assert.doesNotMatch(intake, /INSERT INTO hermes_load_sources/, "intake may not create unapproved sources");
 assert.match(intake, /car_hauling_outreach_hold = 1/);
 assert.doesNotMatch(intake, /reason: "car_hauling_hold"/);
-assert.match(intake, /const carHaulingIngestAllowed = managedSource/);
+assert.match(intake, /const carHaulingIngestAllowed = Number\(managedSource\.car_hauling_ingest_allowed/);
 assert.match(intake, /Number\(managedSource\.car_hauling_ingest_allowed \|\| 0\) === 1/);
-assert.match(intake, /: true;/);
+assert.match(intake, /source_approval_required/);
 assert.match(intake, /car_hauling_ingest_allowed: carHaulingIngestAllowed/);
 assert.match(intake, /car_hauling_broker_outreach_hold: true/);
 assert.match(intake, /ON CONFLICT DO UPDATE SET/);
@@ -178,11 +178,14 @@ assert.match(intake, /source_type_mismatch/);
 assert.match(intake, /managed_source_lifecycle/);
 assert.match(intake, /car_hauling_not_approved_for_source/);
 assert.match(intake, /LEFT JOIN hermes_load_sources/);
+assert.match(intake, /source_ingest_not_enabled/);
+assert.match(intake, /registered_ingest_enabled/);
+assert.match(intake, /registered_source_status/);
 assert.match(intake, /requestedRedistributionPermission/);
 assert.match(intake, /approved_redistribution_permission/);
 assert.match(intake, /approved_contact_reveal_permission/);
 assert.ok(
-  intake.indexOf("source_connection_not_ingest_enabled") < intake.indexOf("INSERT INTO hermes_load_sources"),
+  intake.indexOf("source_connection_not_ingest_enabled") < intake.indexOf("UPDATE hermes_load_sources"),
   "managed source intake must not bypass lifecycle before source upsert",
 );
 
