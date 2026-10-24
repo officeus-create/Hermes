@@ -1,4 +1,5 @@
 const TERMINAL_STATES = new Set([
+  "SUCCEEDED",
   "COMPLETED",
   "FAILED",
   "published_verified",

@@ -6,6 +6,11 @@ assert.deepEqual(
   { disposition: "SAFE_REDRIVE", reason: "read_only_retryable" }
 );
 
+assert.deepEqual(
+  classifyDlqDisposition({ message_type: "job.execute", d1_state: "SUCCEEDED", idempotency_key: "k-success", external_effect: false }),
+  { disposition: "QUARANTINE", reason: "terminal_state_no_replay" }
+);
+
 assert.equal(
   classifyDlqDisposition({
     message_type: "publication.write",
