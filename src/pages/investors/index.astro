@@ -1,0 +1,55 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import SiteFooter from "../../components/SiteFooter.astro";
+
+const areas = [
+  { title: "U.S. Logistics & Fleet", stage: "Operating foundation", detail: "Carrier relationships, car-hauling operations and a proposed equipment expansion program. Historical unit economics and financing terms are under review." },
+  { title: "Load Board & Logistics Intelligence", stage: "Product development", detail: "Load discovery, permitted data integrations, route economics, freshness checks and carrier workflows. Live coverage and access are not represented as fully launched." },
+  { title: "Hermes Connect & Business CRM", stage: "Pilot and development", detail: "Customer, service and business workflow tools for repair shops and other operators. Commercial readiness varies by module." },
+  { title: "ProgressoPro", stage: "Services and technology", detail: "Website delivery, SEO/GEO, marketing operations and repeatable digital growth workflows." },
+  { title: "Hermes Business Academy", stage: "Training infrastructure", detail: "Role-based education and practical training intended to support future operators and regional teams." },
+  { title: "Hermes Automation Engineer", stage: "Architecture and development", detail: "A proposed orchestration layer connecting specialist tools, evidence checks and business workflows. Autonomous 24/7 scale remains a target, not a verified capability." },
+];
+---
+<BaseLayout title="Investor Relations | Hermes" description="Explore the Hermes business ecosystem, U.S. logistics foundation, technology roadmap and strategic partnership inquiry process." robots="noindex,nofollow">
+  <SiteHeader />
+  <main id="main-content" class="investor-page">
+    <section class="investor-hero">
+      <div class="investor-shell">
+        <p class="investor-eyebrow">HERMES / INVESTOR RELATIONS</p>
+        <h1>Real operations. Connected technology. A scalable vision.</h1>
+        <p class="investor-lead">Hermes is developing an integrated business ecosystem grounded in U.S. logistics, with technology, marketing and training capabilities designed to reinforce one another.</p>
+        <div class="investor-actions"><a class="investor-primary" href="mailto:officeus@hermeslogisticsus.com?subject=Hermes%20Investor%20Relations%20Inquiry">Request an introduction</a><a class="investor-secondary" href="/opportunities/">Explore partnership paths →</a></div>
+        <p class="investor-note">Private investor accounts and verified financial updates are being prepared. No public account registration or financial document access is available on this page.</p>
+      </div>
+    </section>
+    <section class="investor-shell investor-section" aria-labelledby="strategy-title">
+      <p class="investor-eyebrow">COMPOUNDING STRATEGY</p>
+      <h2 id="strategy-title">One ecosystem, multiple reinforcing businesses</h2>
+      <div class="investor-steps">
+        <div><span>01</span><strong>Operate</strong><p>Learn from real logistics workflows and commercial relationships.</p></div>
+        <div><span>02</span><strong>Productize</strong><p>Turn repeatable work into software, automation and business services.</p></div>
+        <div><span>03</span><strong>Train</strong><p>Develop people and operating playbooks through the Academy.</p></div>
+        <div><span>04</span><strong>Scale</strong><p>Expand proven products and regional operations only when unit economics support it.</p></div>
+      </div>
+    </section>
+    <section class="investor-shell investor-section" aria-labelledby="portfolio-title">
+      <p class="investor-eyebrow">PORTFOLIO</p>
+      <h2 id="portfolio-title">Product and operating roadmap</h2>
+      <p>Stages describe direction, not a claim that every product is commercially launched. Detailed evidence and milestone reporting will be made available to approved parties after verification.</p>
+      <div class="investor-grid">{areas.map(area => <article class="investor-card"><span>{area.stage}</span><h3>{area.title}</h3><p>{area.detail}</p></article>)}</div>
+    </section>
+    <section class="investor-shell investor-section investor-bottom" aria-labelledby="investment-title">
+      <p class="investor-eyebrow">PARTNERSHIP PATHS</p>
+      <h2 id="investment-title">Discuss the right structure</h2>
+      <p>Potential conversations include fleet and equipment financing, technology venture funding, and strategic regional partnerships. Each path requires its own verified financial model, legal review and appropriate documentation.</p>
+      <a class="investor-primary" href="mailto:officeus@hermeslogisticsus.com?subject=Private%20Hermes%20Investor%20Introduction">Contact Investor Relations</a>
+      <p class="investor-note">This page is for informational and introductory purposes only. It is not an offer to sell securities, a solicitation to buy securities, or a promise of investment returns. No financing terms are offered here.</p>
+    </section>
+  </main>
+  <SiteFooter />
+</BaseLayout>
+<style>
+  .investor-page{background:#f8fafc;color:#172b45}.investor-shell{width:min(1120px,calc(100% - 40px));margin-inline:auto}.investor-hero{padding:clamp(85px,11vw,150px) 0 80px;background:linear-gradient(125deg,#f7faff,#eaf1fa 68%,#f9fbfe)}.investor-eyebrow{font-size:.76rem;font-weight:750;letter-spacing:.16em;color:#416da4}.investor-hero h1{max-width:900px;font-size:clamp(2.6rem,6vw,5.4rem);line-height:1.07;letter-spacing:-.045em;margin:20px 0 24px}.investor-lead{font-size:clamp(1.1rem,2vw,1.4rem);max-width:780px;line-height:1.6;color:#43546c}.investor-actions{display:flex;gap:20px;align-items:center;flex-wrap:wrap;margin:32px 0}.investor-primary{display:inline-flex;padding:15px 24px;background:#174d8c;color:#fff;border-radius:10px;text-decoration:none;font-weight:700}.investor-primary:hover{background:#0e3767}.investor-secondary{color:#174d8c;font-weight:700;text-decoration:none}.investor-note{font-size:.85rem;color:#607086;line-height:1.65;max-width:760px}.investor-section{padding-block:76px}.investor-section h2{font-size:clamp(1.9rem,3.5vw,3rem);letter-spacing:-.03em;margin:12px 0 24px}.investor-section>p:not(.investor-eyebrow){max-width:820px;line-height:1.7;color:#50627a}.investor-steps,.investor-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:28px}.investor-steps>div,.investor-card{border:1px solid #dce5ef;background:white;border-radius:18px;padding:27px}.investor-steps span,.investor-card span{display:block;color:#4775ab;font-size:.78rem;font-weight:700;margin-bottom:14px}.investor-steps strong{font-size:1.3rem}.investor-steps p,.investor-card p{line-height:1.65;color:#56677d}.investor-card h3{font-size:1.2rem;margin:0 0 10px}.investor-bottom{border-top:1px solid #dce5ef;padding-bottom:100px}.investor-bottom .investor-primary{margin:15px 0 20px}@media(max-width:650px){.investor-shell{width:min(100% - 30px,1120px)}.investor-steps,.investor-grid{grid-template-columns:1fr}.investor-section{padding-block:50px}}
+</style>
