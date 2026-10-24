@@ -178,7 +178,7 @@ assert.match(creativeGenerate, /story_first/);
 assert.doesNotMatch(creativeGenerate, /api\.openai\.com/);
 assert.match(mediaAssets, /getAuthenticatedSpecialist/);
 assert.match(mediaAssets, /sameOriginMutation/);
-assert.match(mediaAssets, /image\\/jpeg/);
+assert.match(mediaAssets, /image\/jpeg/);
 assert.match(mediaAssets, /MAX_JPEG_BYTES=1_250_000/);
 assert.match(mediaAssets, /ASSET_TTL_MS=72\*60\*60\*1000/);
 assert.match(mediaAssets, /ready_public/);
