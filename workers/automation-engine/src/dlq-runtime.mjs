@@ -628,11 +628,16 @@ export async function dlqRuntimeSnapshot(env, limit = 50) {
     LIMIT ?
   `).bind(Math.max(1, Math.min(100, Number(limit) || 50))).all();
   const normalizedCounts = counts?.results || [];
+  const transportAccepted = normalizedCounts.some(
+    (row) => row?.alert_status === "DELIVERED" && Number(row?.count || 0) > 0,
+  );
   return {
     counts: normalizedCounts,
     items: items?.results || [],
-    external_alert_delivery_verified: normalizedCounts.some(
-      (row) => row?.alert_status === "DELIVERED" && Number(row?.count || 0) > 0,
-    ),
+    external_alert_transport_accepted: transportAccepted,
+    // Provider acceptance/message IDs prove transport handoff only. T4 remains
+    // unverified until an independent owner-channel/inbox readback is correlated
+    // to the exact DLQ item/job receipt without a duplicate send.
+    external_alert_delivery_verified: false,
   };
 }
