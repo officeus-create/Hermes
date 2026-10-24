@@ -155,6 +155,8 @@ The current read-only reliability gate does not require a live provider reconcil
 
 ## Retention and privacy gate
 
+`workers/automation-engine/data-policy.json` is currently a **declarative pre-activation policy**, not runtime payload sanitization. The existence of this file or a green contract test must never be reported as proof that arbitrary submitted payloads are already PII/secret-safe. Current generic job storage persists `payload_json`; any PII-bearing or secret-bearing ingestion requires a separate enforced minimization/redaction gate before activation.
+
 Current generic jobs are technical/read-only. Future email, CRM, candidate, carrier or customer capabilities may introduce PII.
 
 Before enabling any capability that can persist PII, its policy must define:
