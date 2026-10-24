@@ -32,6 +32,12 @@ function safeRequest(row: any) {
     created_at: row.created_at,
     updated_at: row.updated_at,
     connection_state: row.connection_state || "not_started",
+    trust_status: row.trust_status || "review_required",
+    trust_tier: Number(row.trust_tier || 3),
+    verification_kind: row.verification_kind || null,
+    authority_identifier_recorded: Boolean(row.authority_identifier),
+    trust_evidence_recorded: Boolean(row.authority_evidence_ref),
+    trust_verified_at: row.trust_verified_at || null,
     activates_ingestion: ["ingest_enabled", "active"].includes(row.connection_state),
     source_active: row.connection_state === "active",
   };
