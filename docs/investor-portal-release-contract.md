@@ -110,5 +110,30 @@ From the first 220 source rows of `Loads` and `JAN26_Report` in the historical O
 
 **Next C002 source chain:** independently date and review July/Aug 2026 One Brain/early GitHub history; follow each issue through its most recent status, especially company identity #204→#515, analytics #1→event proof, Load Board early product boundaries→current source-rights/runtime. Latest source and proof supersede historical text, but do not delete originals.
 
+
+## C003 — historical issue outcome split (2026-10-24; source-grounded, no public claims promotion)
+
+This batch reconciles earlier August–September execution history with independently reread current GitHub issue and PR metadata. It is NOT a full source inventory, legal or finance assurance opinion.
+
+| Capability chain | Old technical work | Current commercial / operational gate | Canonical current owner | Investor-claim grade |
+| --- | --- | --- | --- | --- |
+| Corporate identity #204→#515 | #204 closed for bounded owned-site entity/search work; approved legal-facts file records Wisconsin formation 2018-11-01 | External Staff.am/Work.ua conflicting profile values and verified correcting account remain OPEN under HR #515; exact current platform facts still must be reread, not inferred from older snapshots | `W-20261010-038`, HR; Search separately validates external corroboration | Approved entity identity ONLY; no employee/office/agency totals |
+| GA4 #1→#206→PR #2004 | #1 closed for tag installation, #206 closed for owner-provided measurement framework/SEO hygiene; `TrackingConsent` and source event contracts exist | GA4 platform exactly-once receipt, consent withdrawn state, qualified user→receiver→revenue and GSC/Bing authenticated outcomes NOT proven; PR #2004 OPEN, marked nonmergeable at current metadata read | `W-20261004-047`, Technology consent reviewer and Marketing attribution | CODED / engineering; revenue attribution UNKNOWN |
+| Load Board #1252→#1838/#1839→#1836 | Load Board curtain and permissioned Carrier/Dispatcher/Dealer-Shipper workspace PRs merged; #1836 carries recorded bounded production/release receipts | Real source entitlement, live genuine offered loads with expiration, Dispatch 107 authorized login and one actual carrier/dealer shipment flow remain unverified in this bounded audit | `W-20261012-028/029`, Dispatch OS, existing #1836 | Bounded deployed interface, NOT a revenue-generating public board |
+| Connect #585→#960→#510 | #585 monetization coordination closed; existing Repair PWA/auth/booking/operations have test/release receipts; website factory #1033 merged | #960 and #510 still OPEN: one approved real shop owner completing first booking→processing→repeat and payment decision, no verified paid MRR in this batch | `W-20261012-032`, `W-20261011-034`, Technology & Sales/COO | Product/pilot only; paying retention UNKNOWN |
+| Fleet historical data 2022–26→financing | Old car-hauling logs, OFFICE master/monthly sheets and invoice snapshots exist; sampled 141 master-vs-Jan-report duplicate shipment signatures in first 220-row windows | Bank settlements, Hermes fee ownership, 24-month net contribution, fuel/repairs, owned equipment, authority and financing offers not reconciled. Gmail 2025 factoring/referral correspondence is NOT an equipment purchase quote. | `W-20261024-104`, Finance | HISTORICAL_DATA only; equipment ROI NOT PUBLISHABLE |
+
+The issue status `CLOSED` applies to the bounded implementation/hand-off objective, not automatically to the independent current business KPI. Conversely, an `OPEN` program parent does not mean its listed code should be rebuilt. Always link predecessor and successor before touching either.
+
+### C004 — the first two cash-evidence gates, not a new product
+1. **Logistics first:** prove the actual **Hermes earned fee** and settled receipt from one bounded existing carrier/dispatch activity; exclude third-party carrier transportation GROSS, unpaid invoice statuses and repeated monthly views. The old 2022–2026 records permit a reconciliation investigation but not an investor return claim. Use existing Finance Control Tower and `W-20261024-104`.
+2. **Digital services first:** select an existing website/SEO/marketing customer/opportunity and trace source→deliverable→invoice→settlement→renewal only where verified. If no historical cash can be proven, preserve UNKNOWN and test one authorized low-capital paid offer; do not invent a client, change sales offers or send outreach without approval.
+3. If both proof chains support a positive contribution margin, propose a **single-vehicle** independent car-hauling equipment financing pilot with full actual cash needs, legal carrier authority/insurance, maintenance/fuel reserves, downside scenario and debt-service margin. Keep specialized asset-backed financiers separate from strategic business partners and potential software venture investors.
+4. No cross-company completion percentage; report verified counts per source gate, product, and time period. Investor material never contains private mail attachments, contracts, employee contact info, W-9, fuel receipts or internal ledger URLs.
+
+**Current PR evidence:** `b5cf7ca4b4587971391100b5864ed292cc717d98` achieved `Website checks=SUCCESS` and `Open-source web quality audit=SUCCESS` on the recorded head. Subsequent PR changes trigger fresh CI. `PR #2055` remains OPEN/DRAFT, noindex and neither legally approved nor production/live verified. Public preview URLs were unavailable to unauthenticated readback, not evidence of 404.
+
+**Continuation C005:** take the earliest true settled fee and a true digital-services sale (or document SOURCE_GAP), quantify source coverage, compare against historical $50k proposal without resurrecting returns; then audit the 2026 Oct auth/cloud-runtime source chain separately from One Brain.
+
 ## Release rule
 Do not mark READY_TO_SEND until all mandatory gates above are evidenced. Do not send investment emails, upload private documents, or merge/deploy as part of drafting.
