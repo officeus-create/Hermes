@@ -41,7 +41,23 @@ for (const code of [
   assert.ok(bad.incidents.some((item) => item.code === code), `Missing incident ${code}`);
 }
 assert.ok(bad.warnings.some((item) => item.code === "DLQ_NONZERO"));
-assert.ok(bad.incidents.some((item) => item.code === "HEARTBEAT_PUBLICATION_GATE_DRIFT"));
+
+const continuityDrift = evaluateHaeIncidents({
+  source_sha: sha,
+  automation_mode: "dry_run",
+  publication_enabled: false,
+  unknown_outcomes: 0,
+  unverified_readbacks: 0,
+  last_cron_wake: {
+    observed_at: "2026-10-23T15:17:00.000Z",
+    source_sha: sha,
+    automation_mode: "dry_run",
+    publication_enabled: true,
+  },
+  queue: { backlog_count: 0, oldest_message_at: null },
+  dlq: { backlog_count: 0 },
+}, { now, expected_source_sha: sha, gate_phase: "PROVIDER_LIVE" });
+assert.ok(continuityDrift.incidents.some((item) => item.code === "HEARTBEAT_PUBLICATION_GATE_DRIFT"));
 
 const unknown = evaluateHaeIncidents({}, { now });
 assert.equal(unknown.status, "UNKNOWN");
