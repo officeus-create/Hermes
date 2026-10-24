@@ -10,11 +10,18 @@ import {
 import {
   ROLE_CONTRACTS,
   ROLE_CONTRACT_JOB_TYPES,
+  buildRoleContractSemanticRequest,
   roleContractForJobType,
   roleContractSha256,
   runRoleContractPrimitive,
   validateRoleContractInput,
+  validateRoleContractSemanticResult,
 } from "./role-contracts.mjs";
+import {
+  FreeAiUnavailableError,
+  freeAiProviderSnapshot,
+  runFreeSemanticJson,
+} from "./free-ai-runtime.mjs";
 
 const ACCOUNT_KEY = "hermes_logistics";
 const PLATFORM = "threads";
@@ -798,7 +805,21 @@ async function runReadOnlyGenericCapability(env, job) {
       throw new Error("role_contract_stale");
     }
     const observedAt = new Date().toISOString();
-    const result = runRoleContractPrimitive(job.job_type, payload, observedAt);
+    let result;
+    let semanticExecution = null;
+    if (contract.semantic_required) {
+      const semanticRequest = buildRoleContractSemanticRequest(job.job_type, payload);
+      const freeResult = await runFreeSemanticJson(env, semanticRequest);
+      if (Number(freeResult.cost_usd || 0) !== 0) throw new Error("paid_inference_forbidden");
+      result = validateRoleContractSemanticResult(job.job_type, payload, freeResult.result);
+      semanticExecution = {
+        provider_id: clean(freeResult.provider_id, 120),
+        model: clean(freeResult.model, 200),
+        cost_usd: 0,
+      };
+    } else {
+      result = runRoleContractPrimitive(job.job_type, payload, observedAt);
+    }
     return {
       capability: job.job_type,
       observed_at: observedAt,
@@ -811,6 +832,7 @@ async function runReadOnlyGenericCapability(env, job) {
         semantic_required: contract.semantic_required,
         free_ai_policy: contract.free_ai_policy,
       },
+      semantic_execution: semanticExecution,
       result,
     };
   }
@@ -897,7 +919,7 @@ async function processGenericJob(env, message) {
       SET state='RUNNING',current_step='execute',attempt_count=attempt_count+1,last_error_class=NULL,updated_at=?
       WHERE job_id=? AND (
         state='QUEUED' OR
-        (state='RETRY_SCHEDULED' AND (available_at IS NULL OR available_at<=?))
+        (state IN ('RETRY_SCHEDULED','WAITING_FREE_AI') AND (available_at IS NULL OR available_at<=?))
       )
     `).bind(now, jobId, now),
     jobId,
@@ -912,8 +934,47 @@ async function processGenericJob(env, message) {
     const current = await env.DB.prepare("SELECT state,available_at,last_error_class FROM hermes_automation_jobs WHERE job_id=? LIMIT 1").bind(jobId).first();
     return { status: String(current?.state || "not_claimed"), duplicate: true, job_id: jobId };
   }
+function searchDefectsFromSnapshotResult(result) {
+  if (result?.capability !== "search.snapshot.evaluate") return [];
+  const defects = result?.result?.defects || {};
+  const output = [];
+  for (const [defectType, urls] of [
+    ["http_error", defects.http_errors],
+    ["missing_canonical", defects.missing_canonical],
+    ["canonical_mismatch", defects.canonical_mismatch],
+    ["sitemap_indexability_conflict", defects.sitemap_indexability_conflict],
+  ]) {
+    for (const url of Array.isArray(urls) ? urls : []) {
+      if (output.length >= 20) break;
+      output.push({ defect_type: defectType, url });
+    }
+    if (output.length >= 20) break;
+  }
+  return output;
+}
+
+async function ensureSearchSemanticFollowup(env, parentJob, result) {
+  if (parentJob?.job_type !== "search.snapshot.evaluate") return null;
+  const defects = searchDefectsFromSnapshotResult(result);
+  if (!defects.length) return null;
+  return createGenericJob(env, {
+    job_type: "search.defect.prioritize",
+    account_key: parentJob.account_key || ACCOUNT_KEY,
+    project_key: "hae-search-semantic-followup",
+    priority: Math.min(100, Math.max(0, Number(parentJob.priority || 50) + 5)),
+    max_attempts: 3,
+    idempotency_key: `hae:followup:search.defect.prioritize:${parentJob.job_id}`,
+    policy_version: "hae-free-ai-v1",
+    payload: {
+      parent_job_id: parentJob.job_id,
+      defects,
+    },
+  });
+}
+
   try {
     const result = await runReadOnlyGenericCapability(env, before);
+    await ensureSearchSemanticFollowup(env, before, result);
     const completedAt = new Date().toISOString();
     const succeeded = await transitionGenericJobWithEvent(env.DB, {
       updateStatement: env.DB.prepare(
@@ -930,8 +991,34 @@ async function processGenericJob(env, message) {
     if (!succeeded) throw new Error("job_transition_conflict");
     return { status: "SUCCEEDED", job_id: jobId, result };
   } catch (error) {
-    const errorClass = safeRuntimeErrorClass(error, "generic_job_failed");
     const failedAt = new Date().toISOString();
+    if (error instanceof FreeAiUnavailableError || error?.code === "free_ai_unavailable") {
+      const waitSeconds = Math.max(60, Math.min(24 * 60 * 60, Number(error?.retrySeconds || 900)));
+      const waitUntil = addSecondsIso(failedAt, waitSeconds);
+      const waitReason = clean(error?.reason, 160) || "free_ai_unavailable";
+      const waiting = await transitionGenericJobWithEvent(env.DB, {
+        updateStatement: env.DB.prepare(
+          "UPDATE hermes_automation_jobs SET state='WAITING_FREE_AI',current_step='free_ai',available_at=?,attempt_count=MAX(0,attempt_count-1),last_error_class=?,updated_at=? WHERE job_id=? AND state='RUNNING' AND attempt_count=?"
+        ).bind(waitUntil, waitReason, failedAt, jobId, currentAttempt),
+        jobId,
+        eventType: "job.waiting_free_ai",
+        fromState: "RUNNING",
+        toState: "WAITING_FREE_AI",
+        step: "free_ai",
+        errorClass: waitReason,
+        createdAt: failedAt,
+        expectedAttemptCount: Math.max(0, currentAttempt - 1),
+      });
+      if (!waiting) return { status: "transition_conflict", job_id: jobId, error_class: "job_transition_conflict" };
+      return {
+        status: "WAITING_FREE_AI",
+        job_id: jobId,
+        available_at: waitUntil,
+        error_class: waitReason,
+        attempt_consumed: false,
+      };
+    }
+    const errorClass = safeRuntimeErrorClass(error, "generic_job_failed");
     if (currentAttempt < Number(before.max_attempts || 3)) {
       const retryAt = addSecondsIso(failedAt, genericJobBackoffSeconds(currentAttempt));
       const retryScheduled = await transitionGenericJobWithEvent(env.DB, {
@@ -1039,7 +1126,7 @@ async function recoverPendingGenericJobs(env, limit = 20) {
 
   const rows = await env.DB.prepare(`
     SELECT job_id,state,attempt_count FROM hermes_automation_jobs
-    WHERE state IN ('QUEUED','RETRY_SCHEDULED')
+    WHERE state IN ('QUEUED','RETRY_SCHEDULED','WAITING_FREE_AI')
       AND (available_at IS NULL OR available_at<=?)
     ORDER BY priority DESC, created_at ASC
     LIMIT ?
@@ -1055,14 +1142,14 @@ async function recoverPendingGenericJobs(env, limit = 20) {
       // are harmless because the D1 state transition is the execution lock.
       await enqueueGenericJobMessage(env, jobId);
       await env.DB.prepare(
-        "UPDATE hermes_automation_jobs SET last_error_class=NULL,updated_at=? WHERE job_id=? AND state IN ('QUEUED','RETRY_SCHEDULED')"
+        "UPDATE hermes_automation_jobs SET last_error_class=NULL,updated_at=? WHERE job_id=? AND state IN ('QUEUED','RETRY_SCHEDULED','WAITING_FREE_AI')"
       ).bind(now, jobId).run();
       recovered += 1;
     } catch {
       const retryAt = addSecondsIso(now, 5 * 60);
       await transitionGenericJobWithEvent(env.DB, {
         updateStatement: env.DB.prepare(
-          "UPDATE hermes_automation_jobs SET state='RETRY_SCHEDULED',available_at=?,last_error_class='job_enqueue_failed',updated_at=? WHERE job_id=? AND state IN ('QUEUED','RETRY_SCHEDULED')"
+          "UPDATE hermes_automation_jobs SET state='RETRY_SCHEDULED',available_at=?,last_error_class='job_enqueue_failed',updated_at=? WHERE job_id=? AND state IN ('QUEUED','RETRY_SCHEDULED','WAITING_FREE_AI')"
         ).bind(retryAt, now, jobId),
         jobId,
         eventType: "job.enqueue_failed",
@@ -1889,7 +1976,12 @@ export default {
         role_contract_job_types: Array.from(ROLE_CONTRACT_JOB_TYPES),
         normal_loop_requires_paid_ai: false,
         scheduled_role_contracts: true,
-        role_contract_cadence: "per-contract; current first slice every 6 hours",
+        role_contract_cadence: "per-contract; current deterministic slice every 6 hours",
+        free_semantic_only: true,
+        paid_ai_fallback_enabled: false,
+        free_ai_providers: freeAiProviderSnapshot(env).map(({ id, available, configured, model, reason }) => ({
+          id, available, configured, model, reason,
+        })),
         provider_transport: "windsor_connectors_api",
         provider_configured: Boolean(windsorThreadsConfig(env)),
         publication_enabled: publicationEnabled(env),
