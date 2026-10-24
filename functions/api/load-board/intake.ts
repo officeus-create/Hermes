@@ -160,7 +160,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
   const contactRevealPermission = String(managedSource.approved_contact_reveal_permission || "hidden");
   const carHaulingIngestAllowed = Number(managedSource.car_hauling_ingest_allowed || 0) === 1;
   const managedStatus = managedSource.connection_state === "active" ? "active" : "ingest_enabled";
-  await env.DB.prepare(`
+  const sourceUpdate = await env.DB.prepare(`
     UPDATE hermes_load_sources
     SET history_cursor = ?,
         watch_expires_at = ?,
@@ -173,6 +173,12 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
         updated_at = ?
     WHERE id = ? AND ingest_enabled = 1 AND read_enabled = 1
       AND status IN ('ingest_enabled', 'active')
+      AND EXISTS (
+        SELECT 1 FROM hermes_load_source_requests r
+        WHERE r.source_id = hermes_load_sources.id
+          AND r.status = 'approved'
+          AND r.connection_state IN ('ingest_enabled', 'active')
+      )
   `).bind(
     optionalText(payload?.source?.history_cursor, 240),
     validIso(payload?.source?.watch_expires_at),
@@ -181,6 +187,11 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     now,
     sourceId,
   ).run();
+  // A revocation may race with the preceding SELECT. Never ingest if the
+  // guarded D1 update did not reconfirm exactly one approved active source.
+  if (sourceUpdate?.success !== true || Number(sourceUpdate?.meta?.changes) !== 1) {
+    return jsonResponse(409, { success: false, error: "source_ingest_state_changed" });
+  }
 
   let accepted = 0;
   let quarantined = 0;
