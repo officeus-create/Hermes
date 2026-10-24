@@ -22,9 +22,11 @@ import {
   freeAiProviderSnapshot,
   runFreeSemanticJson,
 } from "./free-ai-runtime.mjs";
+import { classifyDlqDisposition } from "./dlq-policy.mjs";
 
 const ACCOUNT_KEY = "hermes_logistics";
 const PLATFORM = "threads";
+const DLQ_QUEUE_NAME = "hermes-automation-dlq";
 const CHICAGO_TZ = "America/Chicago";
 const ALLOWED_HOURS = new Set([0, 1, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23]);
 
@@ -1061,6 +1063,151 @@ async function ensureSearchSemanticFollowup(env, parentJob, result) {
   }
 }
 
+
+function providerOutcomeForDlqPublication(row) {
+  const status = String(row?.status || "");
+  const attempts = Number(row?.attempt_count || 0);
+  if (status === "reserved" && attempts === 0) return "NONE";
+  if (status === "publishing") return "UNKNOWN";
+  if (status === "provider_accepted_readback_pending") return "ACCEPTED_PENDING";
+  if (status === "unknown_outcome_readback_pending") return "UNKNOWN";
+  if (status === "published_verified") return "VERIFIED";
+  return "";
+}
+
+async function loadDlqMessageContext(env, payload) {
+  const messageType = clean(payload?.type, 80) || "UNKNOWN";
+  if (messageType === "job.execute") {
+    const jobId = clean(payload?.job_id, 160);
+    const row = jobId
+      ? await env.DB.prepare(
+        "SELECT job_id,job_type,state,idempotency_key,available_at FROM hermes_automation_jobs WHERE job_id=? LIMIT 1"
+      ).bind(jobId).first()
+      : null;
+    const readOnly = row ? READ_ONLY_GENERIC_JOB_TYPES.has(String(row.job_type || "")) : false;
+    return {
+      messageType,
+      jobId: jobId || null,
+      contentId: null,
+      slotKey: null,
+      currentState: String(row?.state || ""),
+      policyInput: {
+        message_type: messageType,
+        d1_state: String(row?.state || ""),
+        idempotency_key: String(row?.idempotency_key || ""),
+        ...(readOnly ? { external_effect: false } : {}),
+      },
+    };
+  }
+
+  if (messageType === "publication.readback" || messageType === "publication.write") {
+    const contentId = clean(payload?.content_id, 200);
+    const row = contentId
+      ? await env.DB.prepare(
+        "SELECT content_id,status,idempotency_key,attempt_count FROM hermes_automation_publications WHERE content_id=? LIMIT 1"
+      ).bind(contentId).first()
+      : null;
+    return {
+      messageType,
+      jobId: null,
+      contentId: contentId || null,
+      slotKey: null,
+      currentState: String(row?.status || ""),
+      policyInput: {
+        message_type: messageType,
+        d1_state: String(row?.status || ""),
+        idempotency_key: String(row?.idempotency_key || ""),
+        external_effect: messageType === "publication.write",
+        provider_outcome: providerOutcomeForDlqPublication(row),
+      },
+    };
+  }
+
+  const slotKey = clean(payload?.slot_key, 32);
+  const run = slotKey
+    ? await env.DB.prepare(
+      "SELECT status FROM hermes_automation_runs WHERE account_key=? AND platform=? AND slot_key=? LIMIT 1"
+    ).bind(ACCOUNT_KEY, PLATFORM, slotKey).first()
+    : null;
+  return {
+    messageType,
+    jobId: clean(payload?.job_id, 160) || null,
+    contentId: clean(payload?.content_id, 200) || null,
+    slotKey: slotKey || null,
+    currentState: String(run?.status || ""),
+    policyInput: {
+      message_type: messageType,
+      d1_state: String(run?.status || ""),
+      idempotency_key: slotKey ? `plan:${ACCOUNT_KEY}:${PLATFORM}:${slotKey}` : clean(payload?.idempotency_key, 240),
+      external_effect: false,
+    },
+  };
+}
+
+async function requestDlqRecoveryCheckpoint(env, context, disposition, now) {
+  if (disposition === "CANONICAL_RECOVERY" || disposition === "QUARANTINE" || disposition === "OWNER_ACTION") {
+    return true;
+  }
+  if (disposition === "SAFE_REDRIVE" && context.messageType === "job.execute" && context.jobId) {
+    const updated = await env.DB.prepare(
+      "UPDATE hermes_automation_jobs SET available_at=?,last_error_class='dlq_safe_redrive_requested',updated_at=? WHERE job_id=? AND state IN ('QUEUED','RETRY_SCHEDULED')"
+    ).bind(now, now, context.jobId).run();
+    return Number(updated?.meta?.changes || 0) === 1;
+  }
+  if (
+    (disposition === "SAFE_REDRIVE" || disposition === "READBACK_ONLY")
+    && context.contentId
+    && ["publication.readback", "publication.write"].includes(context.messageType)
+  ) {
+    const updated = await env.DB.prepare(
+      "UPDATE hermes_automation_publications SET next_readback_at=?,last_error_class='dlq_readback_recovery_requested',updated_at=? WHERE content_id=? AND status IN ('provider_accepted_readback_pending','unknown_outcome_readback_pending','publishing')"
+    ).bind(now, now, context.contentId).run();
+    return Number(updated?.meta?.changes || 0) === 1;
+  }
+  return false;
+}
+
+function dlqEventType(disposition) {
+  if (disposition === "SAFE_REDRIVE") return "dlq.safe_redrive_requested";
+  if (disposition === "READBACK_ONLY") return "dlq.readback_only_requested";
+  if (disposition === "CANONICAL_RECOVERY") return "dlq.canonical_recovery";
+  if (disposition === "QUARANTINE") return "dlq.quarantined";
+  return "dlq.owner_action_required";
+}
+
+async function processDlqMessage(env, batch, item) {
+  if (!env.DB) throw new Error("database_not_configured");
+  await ensureSchema(env.DB);
+  const payload = item?.body || {};
+  const context = await loadDlqMessageContext(env, payload);
+  const decision = classifyDlqDisposition(context.policyInput);
+  const now = new Date().toISOString();
+  const checkpointReady = await requestDlqRecoveryCheckpoint(env, context, decision.disposition, now);
+  if (!checkpointReady) throw new Error("dlq_recovery_checkpoint_conflict");
+
+  const recorded = await recordRuntimeEvent(env, {
+    eventType: dlqEventType(decision.disposition),
+    queueName: clean(batch?.queue, 120) || DLQ_QUEUE_NAME,
+    queueMessageId: item?.id,
+    messageSentAt: item?.timestamp,
+    messageType: context.messageType,
+    jobId: context.jobId,
+    contentId: context.contentId,
+    slotKey: context.slotKey,
+    attemptCount: item?.attempts,
+    errorClass: decision.reason,
+    createdAt: now,
+  });
+  if (!recorded) throw new Error("dlq_receipt_write_failed");
+  return {
+    disposition: decision.disposition,
+    reason: decision.reason,
+    job_id: context.jobId,
+    content_id: context.contentId,
+    slot_key: context.slotKey,
+  };
+}
+
 async function recoverPendingGenericJobs(env, limit = 20) {
   if (!env.DB || !env.AUTOMATION_QUEUE) return 0;
   await ensureSchema(env.DB);
@@ -1906,6 +2053,29 @@ export default {
   },
 
   async queue(batch, env) {
+    if (clean(batch?.queue, 120) === DLQ_QUEUE_NAME) {
+      for (const item of batch.messages) {
+        try {
+          await processDlqMessage(env, batch, item);
+          item.ack();
+        } catch (error) {
+          await recordRuntimeEvent(env, {
+            eventType: "dlq.consumer_retry",
+            queueName: batch?.queue,
+            queueMessageId: item?.id,
+            messageSentAt: item?.timestamp,
+            messageType: clean(item?.body?.type, 80) || "UNKNOWN",
+            jobId: item?.body?.job_id,
+            contentId: item?.body?.content_id,
+            slotKey: item?.body?.slot_key,
+            attemptCount: item?.attempts,
+            errorClass: safeRuntimeErrorClass(error, "dlq_consumer_failed"),
+          });
+          item.retry();
+        }
+      }
+      return;
+    }
     for (const item of batch.messages) {
       const payload = item.body || {};
       const messageType = clean(payload?.type, 80) || "UNKNOWN";
@@ -1979,6 +2149,8 @@ export default {
         role_contract_cadence: "per-contract; current deterministic slice every 6 hours",
         free_semantic_only: true,
         paid_ai_fallback_enabled: false,
+        dlq_consumer_enabled: true,
+        dlq_recovery_authority: "D1",
         free_ai_providers: freeAiProviderSnapshot(env).map(({ id, available, configured, model, reason }) => ({
           id, available, configured, model, reason,
         })),
