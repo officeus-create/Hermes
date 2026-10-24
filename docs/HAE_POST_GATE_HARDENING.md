@@ -1,10 +1,10 @@
 # Hermes Automation Engine — Post-Gate Hardening Contract
 
-Date: 2026-10-24  
-Status: POST-GATE REPLAY / READ-ONLY RELIABILITY ACCEPTED  
-Owner runtime: existing Cloudflare-native Hermes Automation Engine  
-Canonical runtime state: D1  
-Transport: Cloudflare Queue  
+Date: 2026-10-24
+Status: POST-GATE REPLAY / READ-ONLY RELIABILITY ACCEPTED
+Owner runtime: existing Cloudflare-native Hermes Automation Engine
+Canonical runtime state: D1
+Transport: Cloudflare Queue
 P0 acceptance chain: #1872 + #2028 + #2026 + #2029 merged; HAE Runtime Evidence #557 accepted
 
 ## Purpose
