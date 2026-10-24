@@ -1,0 +1,105 @@
+{
+  "schema_version": 1,
+  "policy_version": "hae-capability-policy-v1",
+  "default_decision": "DENY",
+  "runtime": "hermes-automation-engine",
+  "authoritative_state": "D1",
+  "transport": "Cloudflare Queue",
+  "permission_classes": {
+    "READ_ONLY": {
+      "external_write_allowed": false,
+      "destructive_allowed": false,
+      "owner_review_required_before_execution": false
+    },
+    "DRAFT_ONLY": {
+      "external_write_allowed": false,
+      "destructive_allowed": false,
+      "owner_review_required_before_execution": true
+    },
+    "EXTERNAL_WRITE": {
+      "external_write_allowed": true,
+      "destructive_allowed": false,
+      "owner_review_required_before_execution": true
+    },
+    "DESTRUCTIVE": {
+      "external_write_allowed": true,
+      "destructive_allowed": true,
+      "owner_review_required_before_execution": true
+    }
+  },
+  "capabilities": [
+    {
+      "job_type": "system.health.snapshot",
+      "permission_class": "READ_ONLY",
+      "execution_runtime": "canonical_hae_queue",
+      "external_provider_write": false,
+      "allowed_side_effects": ["d1_job_state", "d1_job_events"],
+      "submission_auth": "HERMES_AUTOMATION_TOKEN",
+      "retention_class": "technical_runtime_evidence"
+    },
+    {
+      "job_type": "history.coverage.audit",
+      "permission_class": "READ_ONLY",
+      "execution_runtime": "canonical_hae_queue",
+      "external_provider_write": false,
+      "allowed_side_effects": ["d1_job_state", "d1_job_events"],
+      "submission_auth": "HERMES_AUTOMATION_TOKEN",
+      "retention_class": "technical_runtime_evidence"
+    },
+    {
+      "job_type": "history.source.normalize",
+      "permission_class": "READ_ONLY",
+      "execution_runtime": "canonical_hae_queue",
+      "external_provider_write": false,
+      "allowed_side_effects": ["d1_job_state", "d1_job_events"],
+      "submission_auth": "HERMES_AUTOMATION_TOKEN",
+      "retention_class": "technical_runtime_evidence"
+    },
+    {
+      "job_type": "history.coverage.evaluate",
+      "permission_class": "READ_ONLY",
+      "execution_runtime": "canonical_hae_queue",
+      "external_provider_write": false,
+      "allowed_side_effects": ["d1_job_state", "d1_job_events"],
+      "submission_auth": "HERMES_AUTOMATION_TOKEN",
+      "retention_class": "technical_runtime_evidence"
+    },
+    {
+      "job_type": "history.social.normalize",
+      "permission_class": "READ_ONLY",
+      "execution_runtime": "canonical_hae_queue",
+      "external_provider_write": false,
+      "allowed_side_effects": ["d1_job_state", "d1_job_events"],
+      "submission_auth": "HERMES_AUTOMATION_TOKEN",
+      "retention_class": "technical_runtime_evidence"
+    },
+    {
+      "job_type": "history.experiment.evaluate",
+      "permission_class": "READ_ONLY",
+      "execution_runtime": "canonical_hae_queue",
+      "external_provider_write": false,
+      "allowed_side_effects": ["d1_job_state", "d1_job_events"],
+      "submission_auth": "HERMES_AUTOMATION_TOKEN",
+      "retention_class": "technical_runtime_evidence"
+    }
+  ],
+  "future_capability_gate": {
+    "required_fields": [
+      "job_type",
+      "permission_class",
+      "execution_runtime",
+      "external_provider_write",
+      "allowed_side_effects",
+      "submission_auth",
+      "retention_class"
+    ],
+    "rules": [
+      "A backlog item or spec is not a capability.",
+      "Unknown job types fail closed.",
+      "No EXTERNAL_WRITE capability may be enabled before the read-only reliability gate is LIVE_VERIFIED.",
+      "DRAFT_ONLY may create an internal draft artifact but may not send, publish, reply, forward, or notify externally.",
+      "DESTRUCTIVE capabilities require an explicit per-action owner gate and are never autonomous by default.",
+      "A capability that can carry PII must define an approved retention and minimization contract before activation."
+    ]
+  }
+}
