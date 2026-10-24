@@ -1,0 +1,97 @@
+name: Provision Hermes Load Board internal staff
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: read
+  id-token: write
+  issues: write
+
+concurrency:
+  group: load-board-internal-staff-provision
+  cancel-in-progress: false
+
+jobs:
+  provision:
+    if: >-
+      github.event.issue.number == 1074 &&
+      github.event.comment.body == '/provision-load-board-staff' &&
+      contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    env:
+      GH_TOKEN: ${{ github.token }}
+      BASE_URL: https://hermeslogisticsus.com
+      OIDC_AUDIENCE: hermes-connect-load-board-staff-provision
+
+    steps:
+      - name: Request short-lived GitHub OIDC token
+        id: oidc
+        shell: bash
+        run: |
+          set -euo pipefail
+          response_file="${RUNNER_TEMP}/oidc-response.json"
+          separator='?'
+          if [[ "${ACTIONS_ID_TOKEN_REQUEST_URL}" == *'?'* ]]; then separator='&'; fi
+          curl -sS --retry 2 --retry-all-errors --connect-timeout 10 --max-time 30 \
+            -H "Authorization: bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" \
+            -H 'Accept: application/json' \
+            "${ACTIONS_ID_TOKEN_REQUEST_URL}${separator}audience=${OIDC_AUDIENCE}" \
+            -o "${response_file}"
+          token="$(jq -r '.value // empty' "${response_file}")"
+          test -n "${token}"
+          echo "::add-mask::${token}"
+          echo "token=${token}" >> "${GITHUB_OUTPUT}"
+
+      - name: Provision exact owner-approved Load Board staff
+        id: provision
+        shell: bash
+        env:
+          OIDC_TOKEN: ${{ steps.oidc.outputs.token }}
+        run: |
+          set -euo pipefail
+          tmp="${RUNNER_TEMP}/load-board-staff"
+          mkdir -p "${tmp}"
+          chmod 700 "${tmp}"
+
+          http="$(curl -sS --retry 2 --retry-all-errors --retry-delay 1 --connect-timeout 10 --max-time 30 \
+            -o "${tmp}/result.json" -w '%{http_code}' \
+            -X POST "${BASE_URL}/api/internal/load-board-staff-provision" \
+            -H "Authorization: Bearer ${OIDC_TOKEN}" \
+            -H 'Content-Type: application/json' \
+            --data-binary '{"operation":"provision_load_board_internal_staff_2026_10_24"}' || printf 000)"
+
+          success="$(jq -r '.success // false' "${tmp}/result.json" 2>/dev/null || printf false)"
+          if [[ "${http}" != "200" || "${success}" != "true" ]]; then
+            error="$(jq -r '.error // "staff_provision_failed"' "${tmp}/result.json" 2>/dev/null || printf staff_provision_failed)"
+            echo "classification=${error}" >> "${GITHUB_OUTPUT"
+            exit 1
+          fi
+
+          [[ "$(jq -r '.accounts_created // 0' "${tmp}/result.json")" == "2" ]]
+          [[ "$(jq -r '.password_returned // true' "${tmp}/result.json")" == "false" ]]
+          [[ "$(jq -r '.credentials_delivered // empty' "${tmp}/result.json")" == "office_internal_admin_mailbox" ]]
+          [[ "$(jq -r '.owner_capability // empty' "${tmp}/result.json")" == "HERMES_INTERNAL_OWNER" ]]
+          [[ "$(jq -r '.reviewer_permission // empty' "${tmp}/result.json")" == "LOAD_BOARD_ROLE_PREVIEW_REVIEWER" ]]
+          echo "classification=pass" >> "${GITHUB_OUTPUT}"
+
+      - name: Publish sanitized receipt
+        if: always()
+        shell: bash
+        env:
+          CLASSIFICATION: ${{ steps.provision.outputs.classification }}
+        run: |
+          if [[ "${CLASSIFICATION:-}" == "pass" ]]; then
+            gh issue comment 1074 --repo "${GITHUB_REPOSITORY}" --body $'## Load Board internal staff provisioning — PASS\n\n- ✅ Volkogon internal owner identity created.\n- ✅ Dispatch 107 internal Load Board reviewer identity created.\n- ✅ Credentials delivered only through the private Office admin mailbox.\n- ✅ No password, session, D1 ID or secret is present in this receipt.\n- Next: production login/readback for both identities.'
+          else
+            gh issue comment 1074 --repo "${GITHUB_REPOSITORY}" --body $'## Load Board internal staff provisioning — STOPPED SAFELY\n\nThe bounded operator did not complete. No password is published. Check the workflow classification and production endpoint readback before retrying.'
+          fi
+
+      - name: Enforce verified completion
+        if: always()
+        shell: bash
+        env:
+          CLASSIFICATION: ${{ steps.provision.outputs.classification }}
+        run: test "${CLASSIFICATION:-}" = pass
