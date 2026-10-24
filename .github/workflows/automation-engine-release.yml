@@ -12,6 +12,7 @@ on:
           - verify
           - provision_dry_run
           - runtime_readonly_proof
+          - schema_snapshot
       target_sha:
         description: Exact current main SHA
         required: true
@@ -31,12 +32,20 @@ jobs:
     if: >-
       github.event_name == 'workflow_dispatch' ||
       (
-        github.event.issue.number == 1018 &&
         github.actor == 'officeus-create' &&
         (
-          startsWith(github.event.comment.body, 'HAE_VERIFY ') ||
-          startsWith(github.event.comment.body, 'HAE_PROVISION_DRY_RUN ') ||
-          startsWith(github.event.comment.body, 'HAE_RUNTIME_READONLY_PROOF ')
+          (
+            github.event.issue.number == 1018 &&
+            (
+              startsWith(github.event.comment.body, 'HAE_VERIFY ') ||
+              startsWith(github.event.comment.body, 'HAE_PROVISION_DRY_RUN ') ||
+              startsWith(github.event.comment.body, 'HAE_RUNTIME_READONLY_PROOF ')
+            )
+          ) ||
+          (
+            github.event.issue.number == 2033 &&
+            startsWith(github.event.comment.body, 'HAE_SCHEMA_SNAPSHOT ')
+          )
         )
       )
     runs-on: ubuntu-latest
@@ -47,6 +56,7 @@ jobs:
       target_sha: ${{ steps.request.outputs.target_sha }}
     env:
       GH_TOKEN: ${{ github.token }}
+      CLOUDFLARE_HAE_RELEASE_TOKEN: ${{ secrets.CLOUDFLARE_HAE_RELEASE_TOKEN }}
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_HAE_RELEASE_TOKEN || secrets.CLOUDFLARE_API_TOKEN || secrets.CF_API_TOKEN || secrets.CLOUDFLARE_TOKEN }}
     steps:
       - name: Resolve explicit owner request
@@ -64,6 +74,7 @@ jobs:
               verify) OPERATION="verify" ;;
               provision_dry_run) OPERATION="provision_dry_run" ;;
               runtime_readonly_proof) OPERATION="runtime_readonly_proof" ;;
+              schema_snapshot) OPERATION="schema_snapshot" ;;
               *) echo "unsupported_operation"; exit 1 ;;
             esac
             TARGET_SHA="$DISPATCH_SHA"
@@ -74,6 +85,7 @@ jobs:
               HAE_VERIFY) OPERATION="verify" ;;
               HAE_PROVISION_DRY_RUN) OPERATION="provision_dry_run" ;;
               HAE_RUNTIME_READONLY_PROOF) OPERATION="runtime_readonly_proof" ;;
+              HAE_SCHEMA_SNAPSHOT) OPERATION="schema_snapshot" ;;
               *) echo "unsupported_comment_command"; exit 1 ;;
             esac
           fi
@@ -112,7 +124,9 @@ jobs:
         run: npm ci
 
       - name: Validate HAE source contract
-        run: node scripts/automation-engine-contract.test.mjs
+        run: |
+          node scripts/automation-engine-contract.test.mjs
+          node scripts/hae-d1-schema-snapshot.test.mjs
 
       - name: Resolve canonical Cloudflare account context
         id: cloudflare
@@ -130,14 +144,24 @@ jobs:
           process.stdout.write(accountId);
           NODE
           )"
+          echo "::add-mask::$ACCOUNT_ID"
           echo "CLOUDFLARE_ACCOUNT_ID=$ACCOUNT_ID" >> "$GITHUB_ENV"
           echo "account_id=$ACCOUNT_ID" >> "$GITHUB_OUTPUT"
 
       - name: Validate Cloudflare release credentials
         shell: bash
+        env:
+          OPERATION: ${{ steps.request.outputs.operation }}
         run: |
           set -euo pipefail
-          if [[ -z "${CLOUDFLARE_API_TOKEN:-}" ]]; then
+          ACTIVE_TOKEN="${CLOUDFLARE_API_TOKEN:-}"
+          if [[ "$OPERATION" == "schema_snapshot" ]]; then
+            ACTIVE_TOKEN="${CLOUDFLARE_HAE_RELEASE_TOKEN:-}"
+            if [[ -z "$ACTIVE_TOKEN" ]]; then
+              echo "missing_CLOUDFLARE_HAE_RELEASE_TOKEN_for_schema_snapshot"
+              exit 1
+            fi
+          elif [[ -z "$ACTIVE_TOKEN" ]]; then
             echo "missing_CLOUDFLARE_HAE_RELEASE_TOKEN_OR_SUPPORTED_ALIAS"
             exit 1
           fi
@@ -145,15 +169,18 @@ jobs:
             echo "canonical_cloudflare_account_id_missing"
             exit 1
           fi
-          echo "::add-mask::$CLOUDFLARE_API_TOKEN"
+          echo "::add-mask::$ACTIVE_TOKEN"
+          echo "HAE_CLOUDFLARE_ACTIVE_TOKEN=$ACTIVE_TOKEN" >> "$GITHUB_ENV"
 
       - name: Discover canonical Hermes Connect production D1
         id: d1
         shell: bash
+        env:
+          OPERATION: ${{ steps.request.outputs.operation }}
         run: |
           set -euo pipefail
           tmp="${RUNNER_TEMP}/hermes-pages.json"
-          http="$(curl -sS -o "$tmp" -w '%{http_code}'             "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/hermes"             -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}"             -H 'Content-Type: application/json')"
+          http="$(curl -sS -o "$tmp" -w '%{http_code}'             "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/hermes"             -H "Authorization: Bearer ${HAE_CLOUDFLARE_ACTIVE_TOKEN}"             -H 'Content-Type: application/json')"
           if [[ "$http" != "200" ]]; then
             echo "blocked_cloudflare_pages_read http=$http"
             exit 1
@@ -165,11 +192,94 @@ jobs:
             echo "production_db_binding_missing"
             exit 1
           fi
+          if [[ "$OPERATION" == "schema_snapshot" && -z "$DB_NAME" ]]; then
+            echo "production_db_name_missing_for_schema_snapshot"
+            exit 1
+          fi
+          DB_NAME="${DB_NAME:-hermes-connect-prototype}"
           echo "::add-mask::$DB_ID"
           echo "database_id=$DB_ID" >> "$GITHUB_OUTPUT"
-          echo "database_name=${DB_NAME:-hermes-connect-prototype}" >> "$GITHUB_OUTPUT"
+          echo "database_name=$DB_NAME" >> "$GITHUB_OUTPUT"
+
+      - name: Capture authenticated read-only D1 schema snapshot
+        if: steps.request.outputs.operation == 'schema_snapshot'
+        id: schema_snapshot
+        shell: bash
+        env:
+          DB_ID: ${{ steps.d1.outputs.database_id }}
+          DB_NAME: ${{ steps.d1.outputs.database_name }}
+          TARGET_SHA: ${{ steps.request.outputs.target_sha }}
+          SCHEMA_SNAPSHOT_TOKEN: ${{ secrets.CLOUDFLARE_HAE_RELEASE_TOKEN }}
+        run: |
+          set -euo pipefail
+          CURRENT_MAIN="$(gh api "repos/${GITHUB_REPOSITORY}/branches/main" --jq '.commit.sha')"
+          if [[ "$CURRENT_MAIN" != "$TARGET_SHA" ]]; then
+            echo "stale_main_before_schema_snapshot target=$TARGET_SHA current=$CURRENT_MAIN"
+            exit 1
+          fi
+          if [[ -z "${SCHEMA_SNAPSHOT_TOKEN:-}" ]]; then
+            echo "missing_CLOUDFLARE_HAE_RELEASE_TOKEN_for_schema_snapshot"
+            exit 1
+          fi
+          raw="${RUNNER_TEMP}/hae-d1-schema-response.json"
+          artifact_dir="${RUNNER_TEMP}/hae-d1-schema-snapshot"
+          artifact="${artifact_dir}/hae-d1-schema-snapshot.json"
+          mkdir -p "$artifact_dir"
+          cleanup() {
+            rm -f "$raw"
+          }
+          trap cleanup EXIT
+
+          sql="SELECT type,name,tbl_name,sql FROM sqlite_master WHERE name NOT LIKE 'sqlite_%' AND type IN ('table','index','trigger','view') ORDER BY type,name,tbl_name"
+          body="$(jq -nc --arg sql "$sql" '{sql:$sql,params:[]}')"
+          http="$(curl -sS -o "$raw" -w '%{http_code}' \
+            -X POST \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/d1/database/${DB_ID}/query" \
+            -H "Authorization: Bearer ${SCHEMA_SNAPSHOT_TOKEN}" \
+            -H 'Content-Type: application/json' \
+            --data "$body")"
+
+          if [[ "$http" != "200" ]]; then
+            echo "hae_d1_schema_snapshot_query_failed http=$http"
+            exit 1
+          fi
+          if [[ "$(jq -r '.success // false' "$raw")" != "true" ]]; then
+            echo "hae_d1_schema_snapshot_cloudflare_unsuccessful"
+            exit 1
+          fi
+          if [[ "$(jq -r '.result[0].success // false' "$raw")" != "true" ]]; then
+            echo "hae_d1_schema_snapshot_statement_unsuccessful"
+            exit 1
+          fi
+
+          node scripts/hae-d1-schema-snapshot.mjs build \
+            --response "$raw" \
+            --target-sha "$TARGET_SHA" \
+            --database-name "$DB_NAME" \
+            --output "$artifact"
+
+          node scripts/hae-d1-schema-snapshot.mjs verify \
+            --artifact "$artifact" \
+            --target-sha "$TARGET_SHA" \
+            --migration-manifest workers/automation-engine/migrations/manifest.json
+
+          object_count="$(jq -r '.object_count' "$artifact")"
+          fingerprint="$(jq -r '.fingerprint' "$artifact")"
+          echo "object_count=$object_count" >> "$GITHUB_OUTPUT"
+          echo "fingerprint=$fingerprint" >> "$GITHUB_OUTPUT"
+          echo "HAE D1 schema snapshot PASS objects=$object_count fingerprint=$fingerprint"
+
+      - name: Upload sanitized D1 schema snapshot evidence
+        if: steps.request.outputs.operation == 'schema_snapshot'
+        uses: actions/upload-artifact@v4
+        with:
+          name: hae-d1-schema-snapshot
+          path: ${{ runner.temp }}/hae-d1-schema-snapshot/hae-d1-schema-snapshot.json
+          if-no-files-found: error
+          retention-days: 14
 
       - name: Inspect or provision canonical HAE queues
+        if: steps.request.outputs.operation != 'schema_snapshot'
         id: queues
         shell: bash
         env:
@@ -197,6 +307,7 @@ jobs:
           ensure_queue "hermes-automation-dlq"
 
       - name: Render non-versioned production config
+        if: steps.request.outputs.operation != 'schema_snapshot'
         shell: bash
         env:
           DB_ID: ${{ steps.d1.outputs.database_id }}
@@ -223,6 +334,7 @@ jobs:
           NODE
 
       - name: Validate composed Worker package
+        if: steps.request.outputs.operation != 'schema_snapshot'
         run: npx --yes wrangler@4 deploy --dry-run --config workers/automation-engine/wrangler.production.generated.jsonc --outdir "${RUNNER_TEMP}/hae-dry-run"
 
       - name: Deploy HAE in fail-closed dry-run mode
@@ -634,6 +746,69 @@ jobs:
         with:
           name: hae-runtime-evidence-accepted
           path: ${{ runner.temp }}/hae-runtime-evidence/hae-runtime-evidence.json
+          if-no-files-found: error
+          retention-days: 14
+
+  schema-snapshot-qa:
+    name: HAE D1 schema snapshot independent QA
+    needs: release
+    if: needs.release.result == 'success' && needs.release.outputs.operation == 'schema_snapshot'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - name: Check out exact target
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ needs.release.outputs.target_sha }}
+          fetch-depth: 1
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+
+      - name: Download sanitized schema snapshot evidence
+        uses: actions/download-artifact@v5
+        with:
+          name: hae-d1-schema-snapshot
+          path: ${{ runner.temp }}/hae-d1-schema-snapshot
+
+      - name: Verify artifact boundary and recompute fingerprint
+        env:
+          ARTIFACT_DIR: ${{ runner.temp }}/hae-d1-schema-snapshot
+          TARGET_SHA: ${{ needs.release.outputs.target_sha }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          CURRENT_MAIN="$(gh api "repos/${GITHUB_REPOSITORY}/branches/main" --jq '.commit.sha')"
+          if [[ "$CURRENT_MAIN" != "$TARGET_SHA" ]]; then
+            echo "stale_main_during_schema_snapshot_qa target=$TARGET_SHA current=$CURRENT_MAIN"
+            exit 1
+          fi
+          mapfile -t files < <(find "$ARTIFACT_DIR" -type f -print | sort)
+          if [[ "${#files[@]}" -ne 1 || "$(basename "${files[0]}")" != "hae-d1-schema-snapshot.json" ]]; then
+            echo "schema_snapshot_artifact_boundary_invalid count=${#files[@]}"
+            printf '%s\n' "${files[@]}"
+            exit 1
+          fi
+
+          node scripts/hae-d1-schema-snapshot.mjs verify \
+            --artifact "${files[0]}" \
+            --target-sha "$TARGET_SHA" \
+            --migration-manifest workers/automation-engine/migrations/manifest.json
+
+          if find "$ARTIFACT_DIR" -type f ! -name 'hae-d1-schema-snapshot.json' -print -quit | grep -q .; then
+            echo "schema_snapshot_raw_or_unexpected_file_present"
+            exit 1
+          fi
+
+      - name: Upload independently accepted schema evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: hae-d1-schema-snapshot-accepted
+          path: ${{ runner.temp }}/hae-d1-schema-snapshot/hae-d1-schema-snapshot.json
           if-no-files-found: error
           retention-days: 14
 

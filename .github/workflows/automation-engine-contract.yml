@@ -6,6 +6,7 @@ on:
       - "workers/automation-engine/**"
       - "scripts/automation-engine-contract.test.mjs"
       - "scripts/automation-engine-historical-learning.test.mjs"
+      - "scripts/hae-d1-schema-snapshot*.mjs"
       - "docs/HERMES_AUTOMATION_ENGINE_*.md"
       - ".github/workflows/automation-engine-contract.yml"
       - ".github/workflows/automation-engine-release.yml"
@@ -34,3 +35,4 @@ jobs:
           node scripts/automation-engine-reconciliation-policy.test.mjs
           node scripts/automation-engine-migration-gate.test.mjs
           node scripts/automation-engine-data-policy.test.mjs
+          node scripts/hae-d1-schema-snapshot.test.mjs
