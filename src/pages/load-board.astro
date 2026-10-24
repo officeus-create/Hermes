@@ -8,6 +8,19 @@ import CarrierRpmCalculator from "../components/CarrierRpmCalculator.astro";
 
 const leadMode = import.meta.env.PUBLIC_CONTACT_MODE === "live" ? "live" : "preview";
 const leadEndpoint = import.meta.env.PUBLIC_CONTACT_ENDPOINT ?? "";
+
+const publicDiscoveryLoads = [
+  { id: "0465001", source: "Atlantic Logistics", sourceUrl: "https://lb.shipatlantic.com/atlantic-logistics-load-board/", pickup: "Oct 26 · 3 PM", origin: "Denton, TX", delivery: "Oct 28 · 8 AM", destination: "Edgewater, FL", equipment: "Hot Shot", rate: "$2,400", miles: "1,144 mi", observed: "Observed Oct 24, 2026" },
+  { id: "0464623", source: "Atlantic Logistics", sourceUrl: "https://lb.shipatlantic.com/atlantic-logistics-load-board/", pickup: "Oct 26 · 6:30 AM–3 PM", origin: "Lake Elsinore, CA", delivery: "Oct 27 · 7 AM–3:30 PM", destination: "San Luis Obispo, CA", equipment: "Flatbed / Step Deck", rate: "$1,050", miles: "295 mi", observed: "Observed Oct 24, 2026" },
+  { id: "0465016", source: "Atlantic Logistics", sourceUrl: "https://lb.shipatlantic.com/atlantic-logistics-load-board/", pickup: "Oct 26 · 7 AM–2 PM", origin: "Elgin, IL", delivery: "Oct 27 · 7:30 AM–3 PM", destination: "Grand Junction, CO", equipment: "Flatbed / Step Deck", rate: "$4,300", miles: "1,213 mi", observed: "Observed Oct 24, 2026" },
+  { id: "0463185", source: "Atlantic Logistics", sourceUrl: "https://lb.shipatlantic.com/atlantic-logistics-load-board/", pickup: "Oct 26 · 7 AM", origin: "Fairless Hills, PA", delivery: "Oct 26 · 1 PM", destination: "Jenkins Township, PA", equipment: "Flatbed w/Tarps", rate: "$1,250", miles: "122 mi", observed: "Observed Oct 24, 2026" },
+  { id: "0464628", source: "Atlantic Logistics", sourceUrl: "https://lb.shipatlantic.com/atlantic-logistics-load-board/", pickup: "Oct 26 · 8 AM–2 PM", origin: "Raiford, FL", delivery: "Oct 26 · 8 AM–3 PM", destination: "Tampa, FL", equipment: "53' Van", rate: "$1,000", miles: "171 mi", observed: "Observed Oct 24, 2026" },
+  { id: "0464954", source: "Atlantic Logistics", sourceUrl: "https://lb.shipatlantic.com/atlantic-logistics-load-board/", pickup: "Oct 26 · 8 AM–3 PM", origin: "Thomasville, GA", delivery: "Oct 27 · 7 AM", destination: "Ellabell, GA", equipment: "26' Straight Box Truck", rate: "$400", miles: "213 mi", observed: "Observed Oct 24, 2026" },
+  { id: "0464840", source: "Atlantic Logistics", sourceUrl: "https://lb.shipatlantic.com/atlantic-logistics-load-board/", pickup: "Oct 26 · 9:47 AM–3 PM", origin: "Cape Canaveral, FL", delivery: "Oct 27 · 8 AM–3 PM", destination: "Winder, GA", equipment: "48' Flat", rate: "$875", miles: "514 mi", observed: "Observed Oct 24, 2026" },
+  { id: "0464769", source: "Atlantic Logistics", sourceUrl: "https://lb.shipatlantic.com/atlantic-logistics-load-board/", pickup: "Oct 27 · 7 AM–2:30 PM", origin: "Savannah, GA", delivery: "Oct 28 · 8 AM", destination: "Jacksonville, FL", equipment: "53' Flat", rate: "$1,050", miles: "141 mi", observed: "Observed Oct 24, 2026" },
+  { id: "0464806", source: "Atlantic Logistics", sourceUrl: "https://lb.shipatlantic.com/atlantic-logistics-load-board/", pickup: "Oct 28 · 7 AM–3:30 PM", origin: "Milan, OH", delivery: "Oct 29 · 8 AM–3 PM", destination: "Sanford, MI", equipment: "Flatbed / Step Deck", rate: "$1,225", miles: "238 mi", observed: "Observed Oct 24, 2026" },
+  { id: "0462992", source: "Atlantic Logistics", sourceUrl: "https://lb.shipatlantic.com/atlantic-logistics-load-board/", pickup: "Oct 28 · 7 AM–7 PM", origin: "Saltville, VA", delivery: "Oct 29 · 6 AM–2 PM", destination: "Patterson, GA", equipment: "Van", rate: "$1,600", miles: "518 mi", observed: "Observed Oct 24, 2026" },
+];
 const schema = {
   "@context": "https://schema.org",
   "@type": "WebPage",
@@ -115,6 +128,37 @@ import "../styles/features/load-board-marketplace.css";
         </div>
       </section>
       <CarrierRpmCalculator sectionId="load-analysis" context="load-board" />
+
+      <section class="section available-loads-preview" id="public-discovery" aria-labelledby="public-discovery-title">
+        <div class="shell">
+          <div class="load-board-section-heading available-loads-heading">
+            <div>
+              <p class="eyebrow">External public source · verify availability</p>
+              <h2 id="public-discovery-title">Current freight discovered on free public boards.</h2>
+            </div>
+            <p>These rows were observed on an open third-party board. Hermes does not own, book, or control them. Open the source and reconfirm availability before any dispatch action.</p>
+          </div>
+          <div class="available-load-list" aria-label="External public freight discovery" data-nosnippet>
+            {publicDiscoveryLoads.map((load) => (
+              <article class="available-load-card" data-public-discovery-load>
+                <div class="load-card-route"><span>{load.origin}</span><ArrowRight size={18} aria-hidden="true" /><span>{load.destination}</span></div>
+                <div class="load-card-price"><strong>{load.rate}</strong><span>{load.miles}</span></div>
+                <p>{load.equipment} · Source load {load.id}</p>
+                <dl>
+                  <div><dt>Pickup</dt><dd>{load.pickup}</dd></div>
+                  <div><dt>Delivery</dt><dd>{load.delivery}</dd></div>
+                  <div><dt>Source</dt><dd>{load.source}</dd></div>
+                  <div><dt>Evidence</dt><dd>{load.observed}</dd></div>
+                </dl>
+                <a class="button button-secondary" href={load.sourceUrl} target="_blank" rel="noopener noreferrer nofollow">Open source & verify <ArrowRight size={16} aria-hidden="true" /></a>
+              </article>
+            ))}
+          </div>
+          <div class="load-board-section-heading">
+            <p><strong>More free discovery:</strong> <a href="https://www.freightfinder.com/database/search/state-to-state" target="_blank" rel="noopener noreferrer nofollow">FreightFinder public search</a> currently exposes a no-login freight search. It remains an external discovery source, not Hermes inventory.</p>
+          </div>
+        </div>
+      </section>
 
       <section class="section available-loads-preview" id="available-loads" aria-labelledby="available-loads-title">
         <div class="shell">
