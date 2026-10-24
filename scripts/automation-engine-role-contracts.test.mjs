@@ -26,11 +26,17 @@ for (const contract of ROLE_CONTRACTS) {
   assert.equal(contract.permission_class, "READ_ONLY");
   assert.equal(contract.semantic_required, false, `${contract.job_type} must not need AI in the first acceptance slice`);
   assert.equal(contract.free_ai_policy, "not_required");
+  assert.equal(contract.runtime_config.cadence_hours, 6, `${contract.job_type} first-slice cadence must be bounded at six hours`);
   const sha = await roleContractSha256(contract);
   assert.match(sha, /^[0-9a-f]{64}$/);
   assert.equal(sha, await roleContractSha256(JSON.parse(stableRoleContractJson(contract))), "Contract digest must be canonical/deterministic");
   assert.equal(roleContractForJobType(contract.job_type)?.contract_version, contract.contract_version);
 }
+const searchContract = roleContractForJobType("search.snapshot.evaluate");
+assert.ok(searchContract.runtime_config.target_urls.length >= 3);
+assert.ok(searchContract.runtime_config.target_urls.every((url) => url.startsWith("https://hermeslogisticsus.com/")));
+assert.ok(roleContractForJobType("marketing.content.dedupe.audit").runtime_config.lookback_limit <= 500);
+assert.equal(roleContractForJobType("logistics.source.freshness.audit").runtime_config.max_age_minutes, 1440);
 
 const searchInput = {
   pages: [
