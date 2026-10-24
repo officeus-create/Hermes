@@ -14,6 +14,7 @@ const clean = auditHaeState({
     source_sha: sha,
     publication_enabled: true,
     proof: {
+      authenticated_deployment: true,
       private_health: true,
       d1: true,
       queue: true,
@@ -21,6 +22,7 @@ const clean = auditHaeState({
       cron_heartbeat: true,
       read_only_job_receipt: true,
       idempotency_replay: true,
+      independent_qa: true,
     },
   },
 });
@@ -69,6 +71,34 @@ for (const code of [
   assert.ok(falseLive.blockers.some((item) => item.code === code), `Missing blocker ${code}`);
 }
 
+const evidenceComplete = auditHaeState({
+  current_main_sha: sha,
+  claimed_state: "EVIDENCE_COMPLETE_FOR_RELEASE_REVIEW",
+  gate_phase: "READ_ONLY_RELIABILITY",
+  expected_runtime_sha: sha,
+  pr: { behind_by: 0, exact_scope_verified: true },
+  plugin: { installed: true },
+  runtime: {
+    source_sha: sha,
+    publication_enabled: false,
+    proof: {
+      authenticated_deployment: true,
+      private_health: true,
+      d1: true,
+      queue: true,
+      dlq: true,
+      cron_heartbeat: true,
+      read_only_job_receipt: true,
+      idempotency_replay: true,
+      dry_run: true,
+      publication_disabled: true,
+      independent_qa: true,
+    },
+  },
+});
+assert.equal(evidenceComplete.status, "CONSISTENT");
+assert.equal(evidenceComplete.live_proof_complete, true);
+
 const evidenceClaimWithoutProof = auditHaeState({
   current_main_sha: sha,
   claimed_state: "EVIDENCE_COMPLETE_FOR_RELEASE_REVIEW",
@@ -78,6 +108,19 @@ const evidenceClaimWithoutProof = auditHaeState({
   runtime: { source_sha: sha, publication_enabled: false, proof: { private_health: true } },
 });
 assert.ok(evidenceClaimWithoutProof.blockers.some((item) => item.code === "RUNTIME_PROOF_INCOMPLETE"));
+const incompleteFinding = evidenceClaimWithoutProof.blockers.find((item) => item.code === "RUNTIME_PROOF_INCOMPLETE");
+assert.ok(incompleteFinding.missing.includes("independent_qa"));
+assert.ok(incompleteFinding.missing.includes("authenticated_deployment"));
+
+const publicationUnknown = auditHaeState({
+  current_main_sha: sha,
+  claimed_state: "CI_GREEN",
+  gate_phase: "READ_ONLY_RELIABILITY",
+  pr: { behind_by: 0, exact_scope_verified: true },
+  runtime: { source_sha: sha, proof: {} },
+});
+assert.equal(publicationUnknown.status, "UNKNOWN");
+assert.ok(publicationUnknown.unknowns.some((item) => item.code === "PUBLICATION_GATE_UNKNOWN"));
 
 const pluginOnly = auditHaeState({
   current_main_sha: sha,
