@@ -30,6 +30,7 @@ for (const contract of ROLE_CONTRACTS) {
     assert.equal(contract.job_type, "search.defect.prioritize");
     assert.equal(contract.free_ai_policy, "free_only_wait_if_unavailable");
     assert.equal(contract.runtime_config.retry_seconds, 900);
+    assert.equal(contract.runtime_config.max_cost_usd, 0, "Semantic contract must be zero-dollar by default");
   } else {
     assert.equal(contract.free_ai_policy, "not_required");
     assert.equal(contract.runtime_config.cadence_hours, 6, `${contract.job_type} deterministic cadence must be bounded at six hours`);
