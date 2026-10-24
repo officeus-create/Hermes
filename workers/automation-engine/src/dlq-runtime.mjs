@@ -121,6 +121,24 @@ async function upsertClassification(env, record) {
     ON CONFLICT(dlq_item_id) DO UPDATE SET
       d1_state=excluded.d1_state,
       idempotency_key=COALESCE(excluded.idempotency_key,hermes_automation_dlq_items.idempotency_key),
+      action_status=CASE
+        WHEN hermes_automation_dlq_items.disposition=excluded.disposition
+         AND hermes_automation_dlq_items.reason=excluded.reason
+        THEN hermes_automation_dlq_items.action_status
+        ELSE excluded.action_status
+      END,
+      alert_status=CASE
+        WHEN hermes_automation_dlq_items.disposition=excluded.disposition
+         AND hermes_automation_dlq_items.reason=excluded.reason
+        THEN hermes_automation_dlq_items.alert_status
+        ELSE excluded.alert_status
+      END,
+      last_error_class=CASE
+        WHEN hermes_automation_dlq_items.disposition=excluded.disposition
+         AND hermes_automation_dlq_items.reason=excluded.reason
+        THEN hermes_automation_dlq_items.last_error_class
+        ELSE NULL
+      END,
       disposition=excluded.disposition,
       reason=excluded.reason,
       updated_at=excluded.updated_at
