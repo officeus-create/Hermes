@@ -167,6 +167,20 @@
       "contract_version": "search-defect-prioritize-v1",
       "semantic_required": true,
       "free_ai_policy": "free_only_wait_if_unavailable"
+    },
+    {
+      "job_type": "work.portfolio.reconcile",
+      "permission_class": "READ_ONLY",
+      "execution_runtime": "canonical_hae_queue",
+      "external_provider_write": false,
+      "allowed_side_effects": ["d1_job_state", "d1_job_events"],
+      "submission_auth": "HERMES_AUTOMATION_TOKEN",
+      "retention_class": "business_runtime_evidence",
+      "role_id": "hermes-agent-coordinator",
+      "plugin_version": "0.1.0",
+      "contract_version": "work-portfolio-reconcile-v1",
+      "semantic_required": false,
+      "free_ai_policy": "not_required"
     }
   ],
   "future_capability_gate": {

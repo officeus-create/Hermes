@@ -11,10 +11,10 @@ import {
   validateRoleContractSemanticResult,
 } from "../workers/automation-engine/src/role-contracts.mjs";
 
-assert.equal(ROLE_CONTRACTS.length, 4, "Runtime must expose three deterministic contracts plus one free-only semantic contract");
+assert.equal(ROLE_CONTRACTS.length, 5, "Runtime must expose four deterministic contracts plus one free-only semantic contract");
 assert.deepEqual(
   [...ROLE_CONTRACT_JOB_TYPES].sort(),
-  ["logistics.source.freshness.audit", "marketing.content.dedupe.audit", "search.snapshot.evaluate", "search.defect.prioritize"].sort(),
+  ["logistics.source.freshness.audit", "marketing.content.dedupe.audit", "search.snapshot.evaluate", "search.defect.prioritize", "work.portfolio.reconcile"].sort(),
 );
 
 for (const contract of ROLE_CONTRACTS) {
@@ -31,7 +31,7 @@ for (const contract of ROLE_CONTRACTS) {
     assert.equal(contract.free_ai_policy, "free_only_wait_if_unavailable");
     assert.equal(contract.runtime_config.retry_seconds, 900);
     assert.equal(contract.runtime_config.max_cost_usd, 0, "Semantic contract must be zero-dollar by default");
-  } else {
+  } else if (contract.runtime_config.scheduled !== false) {
     assert.equal(contract.free_ai_policy, "not_required");
     assert.equal(contract.runtime_config.cadence_hours, 6, `${contract.job_type} deterministic cadence must be bounded at six hours`);
   }
@@ -45,7 +45,7 @@ assert.ok(searchContract.runtime_config.target_urls.length >= 3);
 assert.ok(searchContract.runtime_config.target_urls.every((url) => url.startsWith("https://hermeslogisticsus.com/")));
 assert.ok(roleContractForJobType("marketing.content.dedupe.audit").runtime_config.lookback_limit <= 500);
 assert.equal(roleContractForJobType("logistics.source.freshness.audit").runtime_config.max_age_minutes, 1440);
-assert.equal(ROLE_CONTRACTS.filter((contract) => !contract.semantic_required).length, 3);
+assert.equal(ROLE_CONTRACTS.filter((contract) => !contract.semantic_required).length, 4);
 assert.equal(ROLE_CONTRACTS.filter((contract) => contract.semantic_required).length, 1);
 
 const searchInput = {
@@ -136,4 +136,4 @@ assert.throws(() => validateRoleContractSemanticResult("search.defect.prioritize
 }), /semantic_result_item_not_in_input/);
 assert.throws(() => runRoleContractPrimitive("search.defect.prioritize", semanticPayload), /semantic_job_requires_free_ai/);
 
-console.log("HAE plugin role contracts PASS: 3 zero-model + 1 free-only semantic contract");
+console.log("HAE plugin role contracts PASS: 4 zero-model + 1 free-only semantic contract");

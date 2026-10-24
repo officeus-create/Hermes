@@ -2275,7 +2275,7 @@ export default {
         const code = safeRuntimeErrorClass(error, "job_create_failed");
         const status = code === "idempotency_key_conflict"
           ? 409
-          : code.startsWith("historical_") || code.startsWith("search_") || code.startsWith("marketing_") || code.startsWith("source_") || ["job_type_not_allowed", "business_lane_required", "role_contract_business_lane_mismatch", "semantic_job_internal_only", "idempotency_key_required", "payload_not_serializable", "payload_too_large", "max_age_minutes_invalid"].includes(code) ? 400 : 500;
+          : code.startsWith("historical_") || code.startsWith("search_") || code.startsWith("marketing_") || code.startsWith("source_") || code.startsWith("work_") || ["job_type_not_allowed", "business_lane_required", "role_contract_business_lane_mismatch", "semantic_job_internal_only", "idempotency_key_required", "payload_not_serializable", "payload_too_large", "max_age_minutes_invalid"].includes(code) ? 400 : 500;
         return json(status, { success: false, error: code });
       }
     }

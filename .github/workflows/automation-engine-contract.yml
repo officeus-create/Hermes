@@ -8,6 +8,8 @@ on:
       - "scripts/automation-engine-historical-learning.test.mjs"
       - "scripts/automation-engine-role-contracts.test.mjs"
       - "scripts/automation-engine-free-ai-runtime.test.mjs"
+      - "scripts/automation-engine-work-portfolio.test.mjs"
+      - "workers/automation-engine/src/work-portfolio.mjs"
       - "scripts/automation-engine-dlq-runtime.test.mjs"
       - "scripts/automation-engine-ai-usage-ledger.test.mjs"
       - "scripts/automation-engine-capability-graph.test.mjs"
@@ -35,6 +37,7 @@ jobs:
           node scripts/automation-engine-historical-learning.test.mjs
           node scripts/automation-engine-role-contracts.test.mjs
           node scripts/automation-engine-free-ai-runtime.test.mjs
+          node scripts/automation-engine-work-portfolio.test.mjs
           node scripts/automation-engine-capability-policy.test.mjs
           node scripts/automation-engine-state-freshness.test.mjs
           node scripts/automation-engine-dlq-policy.test.mjs
