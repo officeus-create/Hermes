@@ -32,6 +32,8 @@ class FakeStatement {
           existing.alert_claimed_at = null;
           existing.alert_delivered_at = null;
           existing.alert_provider_message_id = null;
+          existing.alert_channel = null;
+          existing.alert_receipt_ref = null;
           existing.alert_last_error_class = null;
           existing.last_error_class = null;
         }
@@ -56,6 +58,8 @@ class FakeStatement {
           alert_claimed_at: null,
           alert_delivered_at: null,
           alert_provider_message_id: null,
+          alert_channel: null,
+          alert_receipt_ref: null,
           alert_last_error_class: null,
           redrive_count: 0,
           first_seen_at: firstSeenAt,
@@ -92,7 +96,7 @@ class FakeStatement {
     }
 
     if (sql.startsWith("UPDATE hermes_automation_dlq_items SET alert_status=?")) {
-      const [status, increment, claimedAt, deliveredAt, providerMessageId, lastError, updatedAt, id] = this.args;
+      const [status, increment, claimedAt, deliveredAt, providerMessageId, channel, receiptRef, lastError, updatedAt, id] = this.args;
       const row = this.db.dlq.get(id);
       if (!row) return { meta: { changes: 0 } };
       row.alert_status = status;
@@ -100,6 +104,8 @@ class FakeStatement {
       row.alert_claimed_at = claimedAt;
       row.alert_delivered_at = deliveredAt;
       row.alert_provider_message_id = providerMessageId;
+      row.alert_channel = channel;
+      row.alert_receipt_ref = receiptRef;
       row.alert_last_error_class = lastError;
       row.updated_at = updatedAt;
       return { meta: { changes: 1 } };
@@ -265,5 +271,33 @@ const deliveredAgain = await recoverPendingDlqOwnerAlerts(alertEnv, 10, {
   fetchImpl: async () => { throw new Error("delivered alerts must not be retried"); },
 });
 assert.equal(deliveredAgain, 0, "Delivered owner alerts must not be retried");
+
+// Email is the preferred production delivery surface because it needs no API
+// secret and is constrained by the Cloudflare binding to the canonical Hermes
+// sender/recipient. The transport promise is an acceptance receipt; an inbox
+// readback remains the LIVE verification layer.
+outcome = await processDlqMessage(
+  {
+    DB,
+    AUTOMATION_QUEUE: env.AUTOMATION_QUEUE,
+    OWNER_ALERT_EMAIL: {
+      async send(message) {
+        assert.equal(message.to, "officeus@hermeslogisticsus.com");
+        assert.equal(message.from, "website@hermeslogisticsus.com");
+        assert.match(message.subject, /^\[HAE OWNER ACTION\]/);
+        return {};
+      },
+    },
+    HERMES_HAE_OWNER_ALERT_RECIPIENT: "officeus@hermeslogisticsus.com",
+    HERMES_HAE_OWNER_ALERT_SENDER: "website@hermeslogisticsus.com",
+  },
+  message("m-email-alert", { type: "mystery.email", job_id: "unknown-email" }),
+);
+assert.equal(outcome.alert_delivered, true);
+assert.equal(outcome.alert_channel, "cloudflare_email");
+assert.match(outcome.alert_receipt_ref, /^cloudflare-email:\/\/accepted\//);
+assert.equal(DB.dlq.get("dlq:m-email-alert").alert_status, "DELIVERED");
+assert.equal(DB.dlq.get("dlq:m-email-alert").alert_channel, "cloudflare_email");
+assert.match(DB.dlq.get("dlq:m-email-alert").alert_receipt_ref, /^cloudflare-email:\/\/accepted\//);
 
 console.log("HAE DLQ runtime PASS: classify + safe redrive + quarantine + duplicate suppression + durable owner-alert delivery");
