@@ -12,7 +12,7 @@ const PUBLIC_HEADERS={
   "X-Content-Type-Options":"nosniff",
 };
 const MAX_JPEG_BYTES=1_250_000;
-const MAX_ASSETS_PER_INTAKE=10;
+const MAX_ASSETS_PER_INTAKE=11;
 const ASSET_TTL_MS=72*60*60*1000;
 
 function clean(value:unknown,max=240){return String(value??"").trim().slice(0,max);}
@@ -83,7 +83,8 @@ export async function onRequestPost({request,env}:{request:Request;env:Env}){
   if(!business)return jsonResponse(409,{success:false,error:"business_profile_required"},PRIVATE_HEADERS);
   const intakeId=clean(body.intake_id,96);
   if(!/^hbci_[0-9a-f-]{36}$/i.test(intakeId))return jsonResponse(400,{success:false,error:"creative_intake_id_required"},PRIVATE_HEADERS);
-  const slideIndex=Math.max(0,Math.min(9,Math.round(Number(body.slide_index)||0)));
+  const slideIndex=Math.max(0,Math.min(10,Math.round(Number(body.slide_index)||0)));
+  const surfaceHint=String(body.surface_hint||"feed").trim().toLowerCase()==="story"?"story":"feed";
   const width=Math.max(320,Math.min(1920,Math.round(Number(body.width)||0)));
   const height=Math.max(320,Math.min(2400,Math.round(Number(body.height)||0)));
   if(!width||!height)return jsonResponse(400,{success:false,error:"media_dimensions_invalid"},PRIVATE_HEADERS);
@@ -110,13 +111,13 @@ export async function onRequestPost({request,env}:{request:Request;env:Env}){
 
   const digest=await sha256(image.bytes);
   const existing=await env.DB.prepare(`
-    SELECT id,width,height,slide_index,expires_at FROM hermes_business_social_media_assets
+    SELECT id,width,height,slide_index,surface_hint,expires_at FROM hermes_business_social_media_assets
     WHERE business_key=? AND content_sha256=? AND expires_at>? LIMIT 1
   `).bind(business.business_key,digest,new Date().toISOString()).first();
   if(existing){
     return jsonResponse(200,{success:true,duplicate:true,asset:{
       id:String(existing.id),url:publicUrl(request,String(existing.id)),width:Number(existing.width),height:Number(existing.height),
-      slide_index:Number(existing.slide_index),expires_at:String(existing.expires_at),
+      slide_index:Number(existing.slide_index),surface_hint:String(existing.surface_hint||"feed"),expires_at:String(existing.expires_at),
     }},PRIVATE_HEADERS);
   }
 
@@ -125,14 +126,14 @@ export async function onRequestPost({request,env}:{request:Request;env:Env}){
   const expiresAt=new Date(now.getTime()+ASSET_TTL_MS).toISOString();
   await env.DB.prepare(`
     INSERT INTO hermes_business_social_media_assets
-      (id,business_key,owner_specialist_id,intake_id,mime_type,width,height,slide_index,content_sha256,content_base64,status,expires_at,created_at,updated_at)
-    VALUES (?,?,?,?,?,?,?,?,?,?,'ready_public',?,?,?)
+      (id,business_key,owner_specialist_id,intake_id,mime_type,width,height,slide_index,surface_hint,content_sha256,content_base64,status,expires_at,created_at,updated_at)
+    VALUES (?,?,?,?,?,?,?,?,?,?,?,'ready_public',?,?,?)
   `).bind(
-    id,business.business_key,String(specialist.id),intakeId,"image/jpeg",width,height,slideIndex,digest,image.base64,
+    id,business.business_key,String(specialist.id),intakeId,"image/jpeg",width,height,slideIndex,surfaceHint,digest,image.base64,
     expiresAt,now.toISOString(),now.toISOString()
   ).run();
   return jsonResponse(201,{success:true,duplicate:false,asset:{
-    id,url:publicUrl(request,id),width,height,slide_index:slideIndex,expires_at:expiresAt,
+    id,url:publicUrl(request,id),width,height,slide_index:slideIndex,surface_hint:surfaceHint,expires_at:expiresAt,
     note:"Short-lived public JPEG created for owner-approved social publishing. It expires automatically after 72 hours.",
   }},PRIVATE_HEADERS);
 }
