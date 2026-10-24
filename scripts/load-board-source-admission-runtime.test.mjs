@@ -91,6 +91,25 @@ const deniedToken = await attempt(valid, basePayload(), "not-the-secret");
 assert.equal(deniedToken.status, 401);
 assert.deepEqual(deniedToken.dataWrites, []);
 
+const concurrentUnknown = await Promise.all([attempt(null), attempt(null)]);
+for (const result of concurrentUnknown) {
+  assert.equal(result.status, 409, "concurrent unknown source must fail closed");
+  assert.equal(result.body.error, "source_approval_required");
+  assert.deepEqual(result.dataWrites, [], "concurrent reject must not create or mutate source data");
+}
+
+const rejectionLogs = [];
+const originalInfo = console.info;
+console.info = (...args) => rejectionLogs.push(args.join(" "));
+try {
+  const rejectedUnknown = await attempt(null);
+  assert.equal(rejectedUnknown.status, 409);
+} finally {
+  console.info = originalInfo;
+}
+assert.ok(rejectionLogs.some(line => line.includes('"metric":"source_rejected_total"')), "source rejection metric must be emitted");
+assert.ok(rejectionLogs.every(line => !line.includes("fixture-token") && !line.includes("not-the-secret")), "rejection logs must not contain bearer tokens");
+
 const granted = await attempt(valid);
 assert.equal(granted.status, 202, "approved source must retain the positive ingest path");
 assert.equal(granted.body.quarantined, 1);
