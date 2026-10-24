@@ -58,5 +58,30 @@ The investor-facing product is a controlled data room linked from the existing H
 - [ ] Exact-head CI, preview and production smoke evidence
 - [ ] CEO explicitly approves deployment and sending outreach
 
+
+## 2026-10-24 investor programme audit checkpoint (bounded; NOT whole-company 100%)
+- Verified source inventory: 25 owned private plugin packages listed by Plugin Creator (presence only, NOT runtime health), current One Brain Execution & Ideas Ledger, AI Error & Lesson Register, Finance Control Tower, investor PR #2055 and original #1011, HAE current synthesis and selected domain Docs.
+- Knowledge Curator plugin release v0.1.76 confirmed; new investor-evidence-portfolio skill exists and preserves existing onboarding. No 26th plugin created.
+- Existing global Ledger rows `W-20261024-102` through `W-20261024-106` are the cross-domain investor work owners. Business-domain backlogs and errors stay canonical; do not duplicate tasks in this document.
+- English and Russian public pages now map **7 product/operating areas** from a single bilingual `src/data/investor-public-portfolio.ts`, with distinct truthful evidence levels, public destination links and cross-language metadata. Seven areas != seven commercially launched products.
+- The Opportunities hub adds a contextual Investor Relations overview link. Current investor routes are still `noindex,nofollow`; being SEO/AEO-ready is not equivalent to searchable/indexed.
+- A CI contract run on an earlier PR head failed because two routes were missing from the route-release manifest. The bounded fix is `docs/release-manifest-deltas/2026-10-24-investor-relations-en-ru.json`; exact-head rerun must PASS before any merge.
+- Repository currently has functioning static Astro rendering for various public services; no independent private investor auth, published investor report, bank-settled fleet gross model or signed investor offer is verified.
+- HAE elsewhere has specific limited successful Cloudflare Queue/Worker/D1 dry-run/read-only replay proofs and merged no-LLM scheduling components. These do NOT prove 24/7 customer-business automation or investor reporting. HAE implementation ownership remains exclusively with its existing engineering lane/chat.
+- Finance Control Tower's seven exception records are operational reconciliation leads, not an audited 24-month truck-level profit report. Do not expose carriers, invoice detail or settlement assertions on the public investor route.
+- SEC general solicitation guidance: public web investment advertising may trigger securities rules even without direct purchase links. A counsel-approved public corporate information strategy and the Search Release Gate must precede indexability; no securities terms or anticipated returns published in the meantime.
+
+## Investor product-map evidence precedence
+`CEO directive -> first-party live readback -> current main/CI -> domain-source facts -> historical planning`.
+Each project stage records distinct flags `SOURCE_FOUND, CODE, CI, MERGED, DEPLOYED, LIVE, REAL_USER, REVENUE, CASH_SETTLED`. Missing flags are `UNKNOWN`; no global percent without an inventoried denominator and explicit stage definitions.
+
+## Continuation pointer / Investment Program 2
+1. Current single website PR: https://github.com/officeus-create/Hermes/pull/2055 ; latest release-manifest regression must go green first.
+2. Reconcile public copy to all 7 current domain sources, independently run 390px + desktop screenshots, review search/legal noindex state.
+3. Source-check ownership, trucking authority, 24-month truck asset-level gross/fuel/driver/repair/insurance/capex/debt before modeling a fleet investment.
+4. Technology + Access Governor + Security design the pre-existing-auth investor role, private documents and org isolation with explicit fail-closed tests; never display a fake login page.
+5. Source-scoped weekly metrics only through existing One Brain + HAE after independent QA/Finance and CEO publishing gate. No second queue or schedule.
+6. Continue iterative source-passport audit by one domain, update existing Ledger `W-20261024-103` and domain owners, promote validated lessons into existing 25 plugins. Mark every source class separately; don't call this first pass a full ecosystem audit.
+
 ## Release rule
 Do not mark READY_TO_SEND until all mandatory gates above are evidenced. Do not send investment emails, upload private documents, or merge/deploy as part of drafting.
