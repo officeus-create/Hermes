@@ -217,6 +217,11 @@ assert.ok(wrangler.includes("WINDSOR_API_KEY"), "Windsor secret activation step 
 assert.ok(!wrangler.includes('"WINDSOR_API_KEY":'), "Windsor API key must never be committed as a Wrangler var");
 assert.ok(wrangler.includes('"dead_letter_queue": "hermes-automation-dlq"'), "Queue must have a DLQ");
 assert.ok(wrangler.includes('"binding": "AUTOMATION_DLQ"'), "DLQ must be bound read-only in practice for health metrics");
+assert.match(wrangler, /"queue": "hermes-automation-dlq"[\s\S]{0,180}"max_retries": 3/, "Canonical HAE Worker must consume its existing DLQ with bounded retries");
+assert.match(worker, /batch\?\.queue === "hermes-automation-dlq"/, "Queue handler must route DLQ batches to the dedicated classifier before normal processing");
+assert.match(worker, /processDlqMessage/, "DLQ batches must execute the durable classification/redrive runtime");
+assert.match(worker, /url\.pathname === "\/v1\/dlq-runtime"/, "Private control surface must expose DLQ runtime receipts");
+assert.match(worker, /dlq_external_alert_delivery_verified: false/, "Capabilities must not falsely claim that owner alert delivery is verified");
 assert.ok(wrangler.includes('"workers_dev": false'), "Worker must not expose workers.dev by default");
 assert.ok(wrangler.includes('"preview_urls": false'), "Preview URLs must remain disabled by default");
 assert.match(releaseWorkflow, /queues\/\$\{QUEUE_ID\}\/messages/, "Dry-run proof must inject a canary through the Cloudflare Queue API");
