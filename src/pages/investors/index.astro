@@ -2,15 +2,9 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import SiteHeader from "../../components/SiteHeader.astro";
 import SiteFooter from "../../components/SiteFooter.astro";
+import { investorPublicProjects, investorPortfolioReviewedAt } from "../../data/investor-public-portfolio";
 
-const areas = [
-  { title: "U.S. Logistics & Fleet", stage: "Operating foundation", detail: "Carrier relationships, car-hauling operations and a proposed equipment expansion program. Historical unit economics and financing terms are under review.", href: "/paths/logistics/" },
-  { title: "Load Board & Logistics Intelligence", stage: "Product development", detail: "Load discovery, permitted data integrations, route economics, freshness checks and carrier workflows. Live coverage and access are not represented as fully launched.", href: "/load-board/" },
-  { title: "Hermes Connect & Business CRM", stage: "Pilot and development", detail: "Customer, service and business workflow tools for repair shops and other operators. Commercial readiness varies by module.", href: "/services/hermes-connect/" },
-  { title: "ProgressoPro", stage: "Services and technology", detail: "Website delivery, SEO/GEO, marketing operations and repeatable digital growth workflows.", href: "/paths/marketing/" },
-  { title: "Hermes Business Academy", stage: "Training infrastructure", detail: "Role-based education and practical training intended to support future operators and regional teams.", href: "/paths/academy/" },
-  { title: "Hermes Automation Engineer", stage: "Architecture and development", detail: "A proposed orchestration layer connecting specialist tools, evidence checks and business workflows. Autonomous 24/7 scale remains a target, not a verified capability.", href: "/paths/technology/" },
-];
+const areas = investorPublicProjects.map((project) => ({ ...project.en, href: project.href, id: project.id }));
 ---
 <BaseLayout title="Investor Relations | Hermes" description="Explore the Hermes business ecosystem, U.S. logistics foundation, technology roadmap and strategic partnership inquiry process." robots="noindex,nofollow" alternates={[{ lang: "en", href: "/investors/" }, { lang: "ru", href: "/ru/investors/" }, { lang: "x-default", href: "/investors/" }]}>
   <SiteHeader />
@@ -37,8 +31,8 @@ const areas = [
     <section class="investor-shell investor-section" aria-labelledby="portfolio-title">
       <p class="investor-eyebrow">PORTFOLIO</p>
       <h2 id="portfolio-title">Product and operating roadmap</h2>
-      <p>Stages describe direction, not a claim that every product is commercially launched. Detailed evidence and milestone reporting will be made available to approved parties after verification.</p>
-      <div class="investor-grid">{areas.map(area => <article class="investor-card"><span>{area.stage}</span><h3>{area.title}</h3><p>{area.detail}</p><a class="investor-explore" href={area.href}>View public product overview →</a></article>)}</div>
+      <p>Stages are evidence-qualified labels, not a claim that every product is commercially launched. The latest editorial portfolio review was on {investorPortfolioReviewedAt}; independent production and financial proof is required for stronger claims.</p>
+      <div class="investor-grid">{areas.map(area => <article class="investor-card" data-investor-project={area.id}><span>{area.stage}</span><h3>{area.title}</h3><p>{area.detail}</p><a class="investor-explore" href={area.href}>View public product overview →</a></article>)}</div>
     </section>
 
     <section class="investor-shell investor-section" aria-labelledby="capital-title">
