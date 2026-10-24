@@ -220,6 +220,11 @@ export async function ensureBusinessSocialSchema(db) {
       UNIQUE(business_key, content_sha256)
     )
   `).run();
+  const mediaAssetColumns=await db.prepare("PRAGMA table_info(hermes_business_social_media_assets)").all();
+  const mediaAssetColumnNames=new Set((mediaAssetColumns?.results||[]).map((row)=>String(row.name||"")));
+  if(!mediaAssetColumnNames.has("surface_hint")){
+    await db.prepare("ALTER TABLE hermes_business_social_media_assets ADD COLUMN surface_hint TEXT NOT NULL DEFAULT 'feed'").run();
+  }
   await db.prepare(`
     CREATE INDEX IF NOT EXISTS idx_business_social_media_assets_business
     ON hermes_business_social_media_assets(business_key, created_at DESC)
