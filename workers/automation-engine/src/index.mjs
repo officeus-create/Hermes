@@ -8,6 +8,7 @@ import {
   runHistoricalLearningPrimitive,
 } from "./historical-learning.mjs";
 import {
+  ROLE_CONTRACTS,
   ROLE_CONTRACT_JOB_TYPES,
   roleContractForJobType,
   roleContractSha256,
@@ -625,7 +626,9 @@ async function createGenericJob(env, input) {
   if (!env.DB || !env.AUTOMATION_QUEUE) throw new Error("runtime_not_configured");
   await ensureSchema(env.DB);
   const jobType = clean(input?.job_type, 120);
-  const businessLane = clean(input?.business_lane, 120);
+  const roleContract = roleContractForJobType(jobType);
+  const requestedBusinessLane = clean(input?.business_lane, 120);
+  const businessLane = requestedBusinessLane || clean(roleContract?.business_lane, 120);
   const idempotencyKey = clean(input?.idempotency_key, 240);
   const accountKey = clean(input?.account_key, 120) || null;
   const projectKey = clean(input?.project_key, 120) || null;
@@ -636,6 +639,7 @@ async function createGenericJob(env, input) {
   const maxAttempts = rawMaxAttempts === null ? 3 : Math.max(1, Math.min(5, Math.trunc(rawMaxAttempts)));
   if (!READ_ONLY_GENERIC_JOB_TYPES.has(jobType)) throw new Error("job_type_not_allowed");
   if (!businessLane) throw new Error("business_lane_required");
+  if (roleContract && businessLane !== roleContract.business_lane) throw new Error("role_contract_business_lane_mismatch");
   if (!idempotencyKey) throw new Error("idempotency_key_required");
   let payload = input?.payload ?? {};
   if (HISTORICAL_READ_ONLY_JOB_TYPES.includes(jobType)) {
@@ -643,7 +647,7 @@ async function createGenericJob(env, input) {
   }
   if (ROLE_CONTRACT_JOB_TYPES.includes(jobType)) {
     validateRoleContractInput(jobType, payload);
-    const contract = roleContractForJobType(jobType);
+    const contract = roleContract;
     if (!contract) throw new Error("role_contract_missing");
     const roleContractSha = await roleContractSha256(contract);
     payload = {
@@ -1693,9 +1697,31 @@ export default {
         generation_mode: "deterministic_templates",
         generic_job_executor: true,
         read_only_job_types: Array.from(READ_ONLY_GENERIC_JOB_TYPES),
+        role_contract_job_types: Array.from(ROLE_CONTRACT_JOB_TYPES),
+        normal_loop_requires_paid_ai: false,
         provider_transport: "windsor_connectors_api",
         provider_configured: Boolean(windsorThreadsConfig(env)),
         publication_enabled: publicationEnabled(env),
+      });
+    }
+    if (request.method === "GET" && url.pathname === "/v1/role-contracts") {
+      if (!authorized(request, env)) return json(401, { success: false, error: "unauthorized" });
+      const contracts = await Promise.all(ROLE_CONTRACTS.map(async (contract) => ({
+        role_id: contract.role_id,
+        plugin_version: contract.plugin_version,
+        contract_version: contract.contract_version,
+        job_type: contract.job_type,
+        business_lane: contract.business_lane,
+        permission_class: contract.permission_class,
+        semantic_required: contract.semantic_required,
+        free_ai_policy: contract.free_ai_policy,
+        sha256: await roleContractSha256(contract),
+      })));
+      return json(200, {
+        success: true,
+        engine: "hermes-automation-engine",
+        paid_fallback_enabled: false,
+        contracts,
       });
     }
     if (request.method === "GET" && url.pathname === "/v1/health") {
@@ -1713,7 +1739,7 @@ export default {
         const code = safeRuntimeErrorClass(error, "job_create_failed");
         const status = code === "idempotency_key_conflict"
           ? 409
-          : code.startsWith("historical_") || ["job_type_not_allowed", "business_lane_required", "idempotency_key_required", "payload_not_serializable", "payload_too_large"].includes(code) ? 400 : 500;
+          : code.startsWith("historical_") || code.startsWith("search_") || code.startsWith("marketing_") || code.startsWith("source_") || ["job_type_not_allowed", "business_lane_required", "role_contract_business_lane_mismatch", "idempotency_key_required", "payload_not_serializable", "payload_too_large", "max_age_minutes_invalid"].includes(code) ? 400 : 500;
         return json(status, { success: false, error: code });
       }
     }
