@@ -200,6 +200,35 @@ export async function ensureBusinessSocialSchema(db) {
     CREATE INDEX IF NOT EXISTS idx_business_social_creative_intakes_business
     ON hermes_business_social_creative_intakes(business_key, created_at DESC)
   `).run();
+  await db.prepare(`
+    CREATE TABLE IF NOT EXISTS hermes_business_social_media_assets (
+      id TEXT PRIMARY KEY,
+      business_key TEXT NOT NULL,
+      owner_specialist_id TEXT NOT NULL,
+      intake_id TEXT,
+      mime_type TEXT NOT NULL,
+      width INTEGER NOT NULL,
+      height INTEGER NOT NULL,
+      slide_index INTEGER NOT NULL DEFAULT 0,
+      surface_hint TEXT NOT NULL DEFAULT 'feed',
+      content_sha256 TEXT NOT NULL,
+      content_base64 TEXT NOT NULL,
+      status TEXT NOT NULL DEFAULT 'ready_public',
+      expires_at TEXT NOT NULL,
+      created_at TEXT NOT NULL,
+      updated_at TEXT NOT NULL,
+      UNIQUE(business_key, content_sha256)
+    )
+  `).run();
+  const mediaAssetColumns=await db.prepare("PRAGMA table_info(hermes_business_social_media_assets)").all();
+  const mediaAssetColumnNames=new Set((mediaAssetColumns?.results||[]).map((row)=>String(row.name||"")));
+  if(!mediaAssetColumnNames.has("surface_hint")){
+    await db.prepare("ALTER TABLE hermes_business_social_media_assets ADD COLUMN surface_hint TEXT NOT NULL DEFAULT 'feed'").run();
+  }
+  await db.prepare(`
+    CREATE INDEX IF NOT EXISTS idx_business_social_media_assets_business
+    ON hermes_business_social_media_assets(business_key, created_at DESC)
+  `).run();
 }
 
 async function findRepairShop(db, ownerId) {
