@@ -26,8 +26,11 @@ function encodeBase64Url(bytes:Uint8Array){
   let binary="";for(const byte of bytes)binary+=String.fromCharCode(byte);
   return btoa(binary).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/g,"");
 }
+function arrayBufferCopy(value:Uint8Array){
+  const copy=new Uint8Array(value.byteLength);copy.set(value);return copy.buffer;
+}
 async function sha256(value:Uint8Array){
-  return encodeBase64Url(new Uint8Array(await crypto.subtle.digest("SHA-256",value)));
+  return encodeBase64Url(new Uint8Array(await crypto.subtle.digest("SHA-256",arrayBufferCopy(value))));
 }
 function jpegBytes(value:unknown){
   const raw=String(value||"").trim();
@@ -65,7 +68,7 @@ export async function onRequestGet({request,env}:{request:Request;env:Env}){
     return new Response("Expired",{status:410,headers:PUBLIC_HEADERS});
   }
   let bytes:Uint8Array;try{bytes=decodeBase64(String(row.content_base64||""));}catch{return new Response("Not found",{status:404,headers:PUBLIC_HEADERS});}
-  return new Response(bytes,{status:200,headers:{...PUBLIC_HEADERS,"Content-Length":String(bytes.byteLength)}});
+  return new Response(arrayBufferCopy(bytes),{status:200,headers:{...PUBLIC_HEADERS,"Content-Length":String(bytes.byteLength)}});
 }
 
 export async function onRequestPost({request,env}:{request:Request;env:Env}){
