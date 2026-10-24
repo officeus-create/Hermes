@@ -42,6 +42,7 @@ import {
   readyCapabilityGraphNodes,
   settleCapabilityGraphNodeForJob,
 } from "./capability-graph.mjs";
+import { taskMigrationSnapshot } from "./schedule-migrations.mjs";
 
 const ACCOUNT_KEY = "hermes_logistics";
 const PLATFORM = "threads";
@@ -1942,10 +1943,27 @@ async function buildScheduledLogisticsPayload(env, contract) {
   };
 }
 
-async function buildScheduledRoleContractPayload(env, contract) {
+async function buildScheduledRoleContractPayload(env, contract, scheduledAt) {
   if (contract.job_type === "search.snapshot.evaluate") return buildScheduledSearchPayload(contract);
   if (contract.job_type === "marketing.content.dedupe.audit") return buildScheduledMarketingPayload(env, contract);
   if (contract.job_type === "logistics.source.freshness.audit") return buildScheduledLogisticsPayload(env, contract);
+  if (contract.job_type === "ai.gateway.readiness.audit") {
+    const providers = freeAiProviderSnapshot(env);
+    return {
+      binding_ready: Boolean(env?.AI && typeof env.AI.run === "function"),
+      gateway_id_present: Boolean(clean(env?.AI_GATEWAY_ID, 200)),
+      free_provider_ready: providers.some((provider) => provider.available),
+      paid_fallback_enabled: false,
+      budget_usd: 0,
+    };
+  }
+  if (contract.job_type === "academy.english.practice.build") {
+    const parts = chicagoParts(scheduledAt);
+    return {
+      lesson_date: `${parts.year}-${parts.month}-${parts.day}`,
+      track: "LOGISTICS",
+    };
+  }
   throw new Error("scheduled_role_contract_not_supported");
 }
 
@@ -1956,7 +1974,7 @@ async function enqueueScheduledRoleContracts(env, scheduledAt) {
   );
   const outcomes = await Promise.all(eligibleContracts.map(async (contract) => {
     try {
-      const payload = await buildScheduledRoleContractPayload(env, contract);
+      const payload = await buildScheduledRoleContractPayload(env, contract, scheduledAt);
       await createGenericJob(env, {
         job_type: contract.job_type,
         account_key: ACCOUNT_KEY,
@@ -2250,6 +2268,14 @@ export default {
         contracts,
       });
     }
+    if (request.method === "GET" && url.pathname === "/v1/schedule-migrations") {
+      if (!authorized(request, env)) return json(401, { success: false, error: "unauthorized" });
+      return json(200, {
+        success: true,
+        engine: "hermes-automation-engine",
+        ...taskMigrationSnapshot(ROLE_CONTRACT_JOB_TYPES),
+      });
+    }
     if (request.method === "GET" && url.pathname === "/v1/ai-usage") {
       if (!authorized(request, env)) return json(401, { success: false, error: "unauthorized" });
       if (!env.DB) return json(503, { success: false, error: "runtime_not_configured" });
@@ -2277,7 +2303,7 @@ export default {
         const code = safeRuntimeErrorClass(error, "job_create_failed");
         const status = code === "idempotency_key_conflict"
           ? 409
-          : code.startsWith("historical_") || code.startsWith("search_") || code.startsWith("marketing_") || code.startsWith("source_") || ["job_type_not_allowed", "business_lane_required", "role_contract_business_lane_mismatch", "semantic_job_internal_only", "idempotency_key_required", "payload_not_serializable", "payload_too_large", "max_age_minutes_invalid"].includes(code) ? 400 : 500;
+          : ["historical_", "search_", "marketing_", "source_", "work_", "dispatch_", "knowledge_", "technology_", "gateway_", "growth_", "market_", "mention_", "academy_"].some((prefix) => code.startsWith(prefix)) || ["job_type_not_allowed", "business_lane_required", "role_contract_business_lane_mismatch", "semantic_job_internal_only", "idempotency_key_required", "payload_not_serializable", "payload_too_large", "max_age_minutes_invalid"].includes(code) ? 400 : 500;
         return json(status, { success: false, error: code });
       }
     }
