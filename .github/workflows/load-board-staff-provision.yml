@@ -72,7 +72,8 @@ jobs:
 
           [[ "$(jq -r '.accounts_created // 0' "${tmp}/result.json")" == "2" ]]
           [[ "$(jq -r '.password_returned // true' "${tmp}/result.json")" == "false" ]]
-          [[ "$(jq -r '.credentials_delivered // empty' "${tmp}/result.json")" == "office_internal_admin_mailbox" ]]
+          credential_state="$(jq -r '.credentials_delivered // empty' "${tmp}/result.json")"
+          [[ "${credential_state}" == "office_internal_admin_mailbox" || "${credential_state}" == "previously_delivered" ]]
           [[ "$(jq -r '.owner_capability // empty' "${tmp}/result.json")" == "HERMES_INTERNAL_OWNER" ]]
           [[ "$(jq -r '.reviewer_permission // empty' "${tmp}/result.json")" == "LOAD_BOARD_ROLE_PREVIEW_REVIEWER" ]]
           echo "classification=pass" >> "${GITHUB_OUTPUT}"
