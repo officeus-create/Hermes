@@ -14,11 +14,11 @@ export function auditHaeState(snapshot = {}) {
   const findings = [];
   const currentMain = String(snapshot.current_main_sha || "").trim();
   const claimedState = String(snapshot.claimed_state || "UNKNOWN").trim().toUpperCase();
-  const rawPhase = String(snapshot.gate_phase || "").trim().toUpperCase();
-  const phase = rawPhase || "READ_ONLY_RELIABILITY";
+  const rawPhase = typeof snapshot.gate_phase === "string" ? snapshot.gate_phase.trim().toUpperCase() : "";
+  const proofRequired = PROOF_REQUIRED_STATES.has(claimedState);
+  const phase = rawPhase || (proofRequired ? "" : "READ_ONLY_RELIABILITY");
   const runtime = snapshot.runtime || {};
   const pr = snapshot.pr || {};
-  const proofRequired = PROOF_REQUIRED_STATES.has(claimedState);
 
   if (!KNOWN_GATE_PHASES.has(phase)) {
     findings.push({ code: "GATE_PHASE_UNKNOWN", severity: proofRequired ? "BLOCKER" : "UNKNOWN", value: rawPhase });

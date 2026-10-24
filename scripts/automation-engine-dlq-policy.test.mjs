@@ -22,6 +22,30 @@ assert.equal(
   "READBACK_ONLY"
 );
 
+for (const providerOutcome of [undefined, null, ""]) {
+  assert.equal(
+    classifyDlqDisposition({
+      message_type: "publication.write",
+      d1_state: "reserved",
+      idempotency_key: `k-missing-provider-${String(providerOutcome)}`,
+      external_effect: true,
+      ...(providerOutcome !== undefined ? { provider_outcome: providerOutcome } : {}),
+    }).disposition,
+    "OWNER_ACTION"
+  );
+}
+
+assert.equal(
+  classifyDlqDisposition({
+    message_type: "publication.write",
+    d1_state: "reserved",
+    idempotency_key: "k-explicit-none",
+    external_effect: true,
+    provider_outcome: "NONE",
+  }).disposition,
+  "SAFE_REDRIVE"
+);
+
 assert.equal(
   classifyDlqDisposition({
     message_type: "publication.write",

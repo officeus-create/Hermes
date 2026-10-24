@@ -20,7 +20,9 @@ const EXTERNAL_WRITE_MESSAGE_TYPES = new Set(["publication.write"]);
 export function classifyDlqDisposition(input = {}) {
   const messageType = String(input.message_type || "").trim();
   const state = String(input.d1_state || "").trim();
-  const providerOutcome = String(input.provider_outcome || "NONE").trim().toUpperCase();
+  const providerOutcome = typeof input.provider_outcome === "string"
+    ? input.provider_outcome.trim().toUpperCase()
+    : "";
   const hasKey = Boolean(String(input.idempotency_key || "").trim());
   const hasExternalEffect = typeof input.external_effect === "boolean";
   const externalEffect = input.external_effect === true;
@@ -53,6 +55,9 @@ export function classifyDlqDisposition(input = {}) {
     }
     if (PRE_SIDE_EFFECT_STATES.has(state) && providerOutcome === "NONE") {
       return { disposition: "SAFE_REDRIVE", reason: "proven_pre_side_effect_state" };
+    }
+    if (PRE_SIDE_EFFECT_STATES.has(state) && !providerOutcome) {
+      return { disposition: "OWNER_ACTION", reason: "provider_outcome_unknown" };
     }
     return { disposition: "OWNER_ACTION", reason: "external_write_state_ambiguous" };
   }

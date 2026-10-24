@@ -124,6 +124,20 @@ const typoPhase = auditHaeState({
 assert.equal(typoPhase.status, "BLOCKED");
 assert.ok(typoPhase.blockers.some((item) => item.code === "GATE_PHASE_UNKNOWN"));
 
+for (const gate_phase of [undefined, null, "", "   "]) {
+  const missingPhase = auditHaeState({
+    current_main_sha: sha,
+    claimed_state: "EVIDENCE_COMPLETE_FOR_RELEASE_REVIEW",
+    ...(gate_phase !== undefined ? { gate_phase } : {}),
+    expected_runtime_sha: sha,
+    pr: { behind_by: 0, exact_scope_verified: true },
+    runtime: { source_sha: sha, publication_enabled: false, proof: completeProof },
+  });
+  assert.equal(missingPhase.status, "BLOCKED");
+  assert.ok(missingPhase.blockers.some((item) => item.code === "GATE_PHASE_UNKNOWN"));
+  assert.equal(missingPhase.live_proof_complete, false);
+}
+
 const evidenceClaimWithoutProof = auditHaeState({
   current_main_sha: sha,
   claimed_state: "EVIDENCE_COMPLETE_FOR_RELEASE_REVIEW",
