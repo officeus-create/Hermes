@@ -1,6 +1,6 @@
 import {getAuthenticatedSpecialist,jsonResponse} from "../_lib/session.mjs";
 import {
-  cleanWorkspaceId,ensureCarrierDispatchWorkspaceSchema,isApprovedDispatcher,
+  carrierSafeLoad,cleanWorkspaceId,ensureCarrierDispatchWorkspaceSchema,isApprovedDispatcher,
   privateWorkspaceHeaders,safeWorkspaceText,workspaceSameOrigin,
 } from "../_lib/carrier-dispatch-workspace.mjs";
 type Context={request:Request;env:{DB?:any}};
@@ -23,6 +23,19 @@ export async function onRequestGet(context:Context){
     WHERE a.dispatcher_specialist_id=? AND a.status='active'
     ORDER BY c.company_name LIMIT 200
   `).bind(auth.user.id).all();
+  const loads=await db.prepare(`
+    SELECT r.id,r.origin_city,r.origin_state,r.destination_city,r.destination_state,
+      r.equipment,r.vehicle_count,r.pickup_window,r.rate_amount,r.rate_currency,
+      r.distance_miles,r.observed_at,r.expires_at,r.visibility
+    FROM hermes_load_records r
+    JOIN hermes_load_sources s ON s.id=r.source_id
+    WHERE r.status='active' AND r.record_type='load' AND r.expires_at>?
+      AND r.visibility IN ('public','carrier_only')
+      AND s.status='active' AND s.read_enabled=1
+      AND s.redistribution_permission IN ('public','carrier_only')
+    ORDER BY COALESCE(r.source_quality_score,0) DESC,r.observed_at DESC
+    LIMIT 200
+  `).bind(new Date().toISOString()).all();
   const requests=await db.prepare(`
     SELECT i.id,i.load_record_id,i.carrier_company_id,c.company_name,i.carrier_message,
       i.status,i.status_note,i.created_at,i.updated_at,
@@ -65,9 +78,18 @@ export async function onRequestGet(context:Context){
     unavailable:count("unavailable"),declined:count("declined"),
     staleOpen:open.filter((r:any)=>!r.loadStillActive).length,
     activeOpen:open.filter((r:any)=>r.loadStillActive).length,
+    availableLoads:(loads.results||[]).length,
   };
-  return reply(200,{success:true,assignments:assignmentRows,requests:requestRows,summary,
-    automaticallyContactedSource:false,bookingCreated:false,
+  return reply(200,{
+    success:true,
+    accessScope:"assigned_dispatcher_or_internal_owner",
+    assignments:assignmentRows,
+    loads:(loads.results||[]).map(carrierSafeLoad),
+    requests:requestRows,
+    summary,
+    sourceContactsExposed:false,
+    automaticallyContactedSource:false,
+    bookingCreated:false,
   });
 }
 export async function onRequestPost(context:Context){
