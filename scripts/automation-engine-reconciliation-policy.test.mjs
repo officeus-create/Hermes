@@ -18,7 +18,7 @@ assert.deepEqual(
 );
 
 for (const sample of [
-  { provider: { read_supported: false }, expected: "UNKNOWN" },
+  { provider: { read_supported: false }, expected: "UNKNOWN", action: "REVIEW" },
   { provider: { read_supported: true, read_ok: false }, expected: "UNKNOWN" },
   { provider: { read_supported: true, read_ok: true, found: false }, expected: "DRIFT" },
   { provider: { read_supported: true, read_ok: true, found: true }, expected: "UNKNOWN" },
@@ -26,6 +26,7 @@ for (const sample of [
 ]) {
   const result = reconcileExternalReceipt({ receipt: { provider_id: "p1" }, provider: sample.provider });
   assert.equal(result.status, sample.expected);
+  if (sample.action) assert.equal(result.action, sample.action);
   assert.notEqual(result.action, "REPUBLISH");
   assert.notEqual(result.action, "RESEND");
 }
