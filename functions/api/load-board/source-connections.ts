@@ -251,7 +251,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     if (SECRET_PATTERN.test(`${authorityIdentifier} ${authorityEvidenceRef}`)) {
       return jsonResponse(400, { success: false, error: "secret_material_not_allowed" }, privateHeaders);
     }
-    if (verificationKind === "broker_authority" && authorityIdentifier.length < 3) {
+    if (verificationKind === "broker_authority" && !/^(?:MC|FF|MX|USDOT)[\s:#-]*\d{3,12}$/i.test(authorityIdentifier)) {
       return jsonResponse(400, { success: false, error: "broker_authority_identifier_required" }, privateHeaders);
     }
     const trustTier = trustDecision === "verified"
@@ -292,7 +292,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     if (String(row.trust_status || "review_required") !== "verified") {
       return jsonResponse(409, { success: false, error: "source_trust_verification_required" }, privateHeaders);
     }
-        const connectionEvidenceRef = clean(body.connection_evidence_ref ?? body.connectionEvidenceRef, 500);
+    const connectionEvidenceRef = clean(body.connection_evidence_ref ?? body.connectionEvidenceRef, 500);
     if (connectionEvidenceRef.length < 3) return jsonResponse(400, { success: false, error: "connection_evidence_required" }, privateHeaders);
     if (SECRET_PATTERN.test(connectionEvidenceRef)) return jsonResponse(400, { success: false, error: "secret_material_not_allowed" }, privateHeaders);
     if (body.runtime_verified !== true && body.runtimeVerified !== true) {
@@ -323,7 +323,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     if (String(row.trust_status || "review_required") !== "verified") {
       return jsonResponse(409, { success: false, error: "source_trust_verification_required" }, privateHeaders);
     }
-        if (!row.data_rights_evidence_ref || !row.connection_evidence_ref) {
+    if (!row.data_rights_evidence_ref || !row.connection_evidence_ref) {
       return jsonResponse(409, { success: false, error: "connection_and_rights_evidence_required" }, privateHeaders);
     }
     const sourceId = clean(row.source_id, 180);
@@ -348,7 +348,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     if (String(row.trust_status || "review_required") !== "verified") {
       return jsonResponse(409, { success: false, error: "source_trust_verification_required" }, privateHeaders);
     }
-        const sourceId = clean(row.source_id, 180);
+    const sourceId = clean(row.source_id, 180);
     if (!sourceId) return jsonResponse(409, { success: false, error: "source_connection_not_initialized" }, privateHeaders);
 
     const currentRecord = await env.DB.prepare(`
