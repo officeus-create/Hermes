@@ -60,4 +60,9 @@ assert.equal(
   "QUARANTINE"
 );
 
+assert.deepEqual(
+  classifyDlqDisposition({ message_type: "job.execute", idempotency_key: "k-missing-state", external_effect: false }),
+  { disposition: "OWNER_ACTION", reason: "d1_state_missing" }
+);
+
 console.log("HAE DLQ policy contract PASS");
