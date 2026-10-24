@@ -18,7 +18,7 @@ assert.deepEqual(
 for (const contract of ROLE_CONTRACTS) {
   for (const field of [
     "role_id","plugin_version","contract_version","job_type","business_lane","permission_class",
-    "semantic_required","free_ai_policy","trigger","input_schema","preconditions","deterministic_steps",
+    "semantic_required","free_ai_policy","trigger","input_schema","runtime_config","preconditions","deterministic_steps",
     "output_schema","kpi","owner_gate","readback","failure","retention",
   ]) {
     assert.notEqual(contract[field], undefined, `${contract.job_type} missing ${field}`);
@@ -50,15 +50,16 @@ assert.equal(search.sitemap_indexability_conflict_count, 1);
 
 const marketing = runRoleContractPrimitive("marketing.content.dedupe.audit", {
   items: [
-    { content_id: "a", slot_key: "2026-10-24", body: "Same body" },
-    { content_id: "b", slot_key: "2026-10-25", body: "  same   body  " },
-    { content_id: "c", slot_key: "2026-10-25", body: "Different" },
+    { content_id: "a", slot_key: "2026-10-24", body_fingerprint: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" },
+    { content_id: "b", slot_key: "2026-10-25", body_fingerprint: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" },
+    { content_id: "c", slot_key: "2026-10-25", body_fingerprint: "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb" },
   ],
 });
 assert.equal(marketing.duplicate_content_groups, 1);
 assert.equal(marketing.duplicate_slot_groups, 1);
 assert.equal(marketing.raw_body_persisted, false);
-assert.ok(!JSON.stringify(marketing).includes("Same body"), "Runtime result must not persist draft body text");
+assert.equal(marketing.fingerprint_only, true);
+assert.ok(!JSON.stringify(marketing).includes("body_fingerprint"), "Runtime result must expose duplicate ids, not fingerprint material");
 
 const logistics = runRoleContractPrimitive("logistics.source.freshness.audit", {
   max_age_minutes: 60,
@@ -76,7 +77,7 @@ assert.equal(logistics.invalid_source_count, 1);
 assert.equal(logistics.duplicate_source_count, 1);
 
 assert.throws(() => validateRoleContractInput("search.snapshot.evaluate", { pages: [{ url: "not-url" }] }), /search_page_invalid/);
-assert.throws(() => validateRoleContractInput("marketing.content.dedupe.audit", { items: [{ content_id: "x", slot_key: "s", body: "" }] }), /marketing_body_required/);
+assert.throws(() => validateRoleContractInput("marketing.content.dedupe.audit", { items: [{ content_id: "x", slot_key: "s", body_fingerprint: "bad" }] }), /marketing_body_fingerprint_required/);
 assert.throws(() => validateRoleContractInput("logistics.source.freshness.audit", { sources: [], max_age_minutes: 0 }), /max_age_minutes_invalid/);
 
 console.log("HAE plugin role contracts PASS: 3 zero-model domain contracts");
