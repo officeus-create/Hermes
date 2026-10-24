@@ -153,7 +153,7 @@ assert.match(summary, /COUNT\(DISTINCT CASE/);
 assert.match(summary, /r\.record_type \|\| '\|' \|\| r\.dedupe_key/);
 assert.match(intake, /send_enabled = 0/);
 assert.doesNotMatch(intake, /INSERT INTO hermes_load_sources/, "intake may not create unapproved sources");
-assert.match(intake, /car_hauling_outreach_hold = 1/);
+assert.match(intake, /car_hauling_broker_outreach_hold: true/);
 assert.doesNotMatch(intake, /reason: "car_hauling_hold"/);
 assert.match(intake, /const carHaulingIngestAllowed = Number\(managedSource\.car_hauling_ingest_allowed/);
 assert.match(intake, /Number\(managedSource\.car_hauling_ingest_allowed \|\| 0\) === 1/);
