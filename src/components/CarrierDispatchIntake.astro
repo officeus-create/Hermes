@@ -16,13 +16,13 @@ const { leadMode, leadEndpoint } = Astro.props;
       <p class="eyebrow">Direct carrier intake</p>
       <h2 id="dispatch-intake-title">Start with the operating facts Logistics Sales needs.</h2>
       <p>
-        This is the commercial dispatch-review path. It is separate from the fictional Load Board demo and is designed for
+        This commercial dispatch-review path is separate from the Load Board, which shows only source-approved live freight when available and labels market examples as non-bookable previews. This review is designed for
         owner-operators and fleets that want Hermes to review authority, insurance, equipment, operating area, availability,
         and dispatch scope.
       </p>
       <ol>
         <li><span>01</span><div><strong>Prepare the request</strong><small>Company, MC/USDOT, authority, insurance, equipment, capacity, geography, and contact.</small></div></li>
-        <li><span>02</span><div><strong>Review the qualification</strong><small>The page explains whether the next step is dispatcher review, readiness review, or scope clarification.</small></div></li>
+        <li><span>02</span><div><strong>Review the qualification</strong><small>Logistics Sales reviews operating fit, readiness, or missing details before discussing any next step.</small></div></li>
         <li><span>03</span><div><strong>Choose the handoff</strong><small>Use secure delivery when activated, or use the prepared email fallback.</small></div></li>
       </ol>
       <div class="dispatch-intake-boundary-card">
@@ -173,7 +173,11 @@ const { leadMode, leadEndpoint } = Astro.props;
           <input name="carrier_website" tabindex="-1" autocomplete="off" />
         </label>
 
-        <button class="button button-primary" type="submit">Review dispatch request</button>
+        <button class="button button-primary" type="submit" data-review-dispatch-request disabled>Review dispatch request</button>
+        <p class="dispatch-mode-note" data-review-js-fallback>
+          Interactive request review requires JavaScript. Nothing has been sent. You can
+          <a href="mailto:officeus@hermeslogisticsus.com">email Logistics Sales directly</a> instead.
+        </p>
         <p class="dispatch-mode-note">
           {leadMode === "live"
             ? "Secure delivery is available only when the approved same-origin receiver confirms the request."

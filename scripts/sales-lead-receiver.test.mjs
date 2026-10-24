@@ -1,5 +1,7 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { onRequest } from "../functions/api/logistics-lead.ts";
+import { onRequestGet as readOwnerCarrierIntake, onRequestDelete as purgeExpiredCarrierIntake, onRequestPatch as reviewOwnerCarrierIntake } from "../functions/api/internal/carrier-intake.ts";
 import leadEmailWorker, { CarHaulingDeliveryCoordinatorCore, isCarHaulingTelegramWorkHours, sendCarHaulingSalesTelegram } from "../workers/lead-email/src/index.mjs";
 
 class MemoryKv {
@@ -559,54 +561,27 @@ const directCarrierPayload = {
   page_path: "/logistics/start-car-hauling-dispatch/",
   submitted_at: "2026-09-15T01:30:00.000Z",
 };
+// CEO transport hold: a direct carrier submission may not fall back to email
+// when D1 capture is OFF, even with a configured generic Worker or stale Sales
+// recipient settings. Keep the old Worker available to unrelated owner flows.
+const NativeDate = globalThis.Date;
 const carrierLimits = new MemoryKv();
-const carrierWorkerEnv = { ...workerEnv, OWNER_LEAD_ALERT_RECIPIENT: "volkogon.v@gmail.com" };
-const carrierEnv = { ...env, LEAD_LIMITS: carrierLimits, LEAD_EMAIL_SERVICE: serviceBinding(carrierWorkerEnv) };
+const carrierEnv = { ...env, LEAD_LIMITS: carrierLimits };
 const emailsBeforeCarrier = emailMessages.length;
 const serviceCallsBeforeCarrier = serviceCalls.length;
 const telegramBeforeCarrier = telegramMessages.length;
-const NativeDate = globalThis.Date;
-const telegramWorkHoursNow = new NativeDate("2026-09-15T15:00:00.000Z");
-let realCarrier;
-try {
-  globalThis.Date = class extends NativeDate {
-    constructor(...args) {
-      super(...(args.length ? args : [telegramWorkHoursNow]));
-    }
-    static now() { return telegramWorkHoursNow.valueOf(); }
-  };
-  realCarrier = await onRequest({
-    request: leadRequest(directCarrierPayload, { "CF-Connecting-IP": "203.0.113.129" }),
-    env: carrierEnv,
-  });
-} finally {
-  globalThis.Date = NativeDate;
-}
-assert.equal(realCarrier.status, 200);
-assert.deepEqual(await realCarrier.json(), { success: true, request_id: "carrier_real_1296_12345" });
-assert.equal(serviceCalls.length, serviceCallsBeforeCarrier + 1);
-assert.equal(serviceCalls.at(-1).payload.subject, "[HERMES INQUIRY] [LOGISTICS]");
-assert.match(serviceCalls.at(-1).payload.text, /Sales\/owner only — do not notify Dispatch Truck 107 or dispatcher inboxes/);
-const carrierEmails = emailMessages.slice(emailsBeforeCarrier);
-assert.deepEqual(
-  carrierEmails.map((message) => message.to).sort(),
-  ["officeus@hermeslogisticsus.com", "volkogon.v@gmail.com"].sort(),
-);
-assert.ok(carrierEmails.every((message) => !/^dispatchtruck\d+@gmail\.com$/i.test(message.to)), "Dispatcher inboxes must never receive Car Hauling lead notifications.");
-assert.equal(carrierEmails.find((message) => message.to === "officeus@hermeslogisticsus.com")?.subject, "!!! LEAD !!! [HERMES INQUIRY] [LOGISTICS] [ID:carrier_real_1296_12345]");
-assert.match(carrierEmails.find((message) => message.to === "volkogon.v@gmail.com")?.subject || "", /!!! LEAD !!! LOGISTICS/);
-assert.equal(telegramMessages.length, telegramBeforeCarrier, "Sales-only compatibility route must not call the old Car Hauling Telegram fan-out.");
-
+const directWithoutCapture = await onRequest({
+  request: leadRequest(directCarrierPayload, { "CF-Connecting-IP": "203.0.113.129" }),
+  env: carrierEnv,
+});
+assert.equal(directWithoutCapture.status, 503);
+assert.equal((await directWithoutCapture.json()).error, "carrier_capture_not_enabled");
 const duplicateCarrier = await onRequest({
   request: leadRequest(directCarrierPayload, { "CF-Connecting-IP": "203.0.113.129" }),
   env: carrierEnv,
 });
-assert.equal(duplicateCarrier.status, 200);
-assert.equal((await duplicateCarrier.json()).duplicate, true);
-assert.equal(emailMessages.length, emailsBeforeCarrier + 2);
-assert.equal(serviceCalls.length, serviceCallsBeforeCarrier + 1);
-assert.equal(telegramMessages.length, telegramBeforeCarrier);
-
+assert.equal(duplicateCarrier.status, 503);
+assert.equal((await duplicateCarrier.json()).error, "carrier_capture_not_enabled");
 const syntheticCarrierPayload = {
   ...directCarrierPayload,
   request_id: "carrier_qa_1296_12345",
@@ -615,20 +590,17 @@ const syntheticCarrierPayload = {
     .replace("Company: Real Carrier LLC", "Company: Hermes Synthetic Carrier QA")
     .replace("Email: carrier@example.com", "Email: carrier-production-smoke@hermesconnect.app"),
 };
-const emailsBeforeQa = emailMessages.length;
-const telegramBeforeQa = telegramMessages.length;
 const syntheticCarrier = await onRequest({
   request: leadRequest(syntheticCarrierPayload, { "CF-Connecting-IP": "203.0.113.130" }),
   env: carrierEnv,
 });
-assert.equal(syntheticCarrier.status, 200);
-assert.equal(serviceCalls.at(-1).payload.subject, "[HERMES TEST] [CAR HAULING] [CARRIER]");
-const qaEmails = emailMessages.slice(emailsBeforeQa);
-assert.equal(qaEmails.length, 1);
-assert.equal(qaEmails[0].to, "officeus@hermeslogisticsus.com");
-assert.equal(qaEmails[0].subject, "[HERMES TEST] [CAR HAULING] [CARRIER]");
-assert.match(qaEmails[0].text, /exclude from Sales\/CRM KPI/);
-assert.equal(telegramMessages.length, telegramBeforeQa);
+assert.equal(syntheticCarrier.status, 503);
+assert.equal((await syntheticCarrier.json()).error, "carrier_capture_not_enabled");
+assert.deepEqual(
+  [emailMessages.length, serviceCalls.length, telegramMessages.length],
+  [emailsBeforeCarrier, serviceCallsBeforeCarrier, telegramBeforeCarrier],
+  "No generic Sales email, owner alert or Telegram may fire for direct Car Hauling while capture is disabled.",
+);
 
 
 const durableEmailMessages = [];
@@ -769,4 +741,503 @@ try {
 }
 
 globalThis.fetch = originalFetch;
+
+/* CEO 2026-10-13: carrier intake must be durably captured without AI/Worker email.
+ * Synthetic D1 fixture only; zero provider/dispatcher or live network writes. */
+class CaptureOnlyD1 {
+  rows = new Map();
+  prepare(sql) {
+    assert.doesNotMatch(sql.trimStart(), /^CREATE (TABLE|INDEX)/i, "D1 schema DDL must not run on live lead requests.");
+    const db = this;
+    return {
+      values: [],
+      bind(...values) { this.values = values; return this; },
+      async run() {
+        if (sql.trimStart().startsWith("INSERT OR IGNORE INTO hermes_carrier_intake")) {
+          const [request_id, payload_hash, classification, source_path, contact_email, email_body, created_at, retention_until] = this.values;
+          if (db.rows.has(request_id)) return { meta: { changes: 0 } };
+          db.rows.set(request_id, { request_id, payload_hash, classification, source_path, contact_email, email_body, created_at, retention_until, delivery_state: "not_sent" });
+          return { meta: { changes: 1 } };
+        }
+        return { meta: { changes: 0 } };
+      },
+      async first() { return db.rows.get(this.values[0]) ?? null; },
+    };
+  }
+}
+
+const captureDb = new CaptureOnlyD1();
+const captureLimits = new MemoryKv();
+const captureEnv = {
+  ALLOWED_ORIGIN: "https://hermeslogisticsus.com",
+  LEAD_DELIVERY_MODE: "preview",
+  CARRIER_INTAKE_CAPTURE_MODE: "capture_only",
+  LEAD_LIMITS: captureLimits,
+  DB: captureDb,
+  // Explicitly no LEAD_EMAIL_SERVICE, LEAD_SERVICE_TOKEN or outbound provider.
+};
+const capturedCarrier = {
+  ...directCarrierPayload,
+  request_id: "carrier_capture_20261015_12345",
+  email_body: directCarrierBody.replace("carrier@example.com", "carrier@example.invalid"),
+  consent: true,
+};
+const captureBeforeProvider = [serviceCalls.length, emailMessages.length, telegramMessages.length];
+const captureReq = (input, ip = "203.0.113.225") =>
+  leadRequest(input, { "CF-Connecting-IP": ip });
+const captured = await onRequest({ request: captureReq(capturedCarrier), env: captureEnv });
+assert.equal(captured.status, 200);
+assert.deepEqual(await captured.json(), {
+  success: true,
+  request_id: capturedCarrier.request_id,
+  capture_state: "persisted",
+  delivery_state: "not_sent",
+  human_receipt_state: "unconfirmed",
+});
+assert.equal(captureDb.rows.size, 1);
+assert.equal(captureDb.rows.get(capturedCarrier.request_id).classification, "commercial");
+assert.equal(captureDb.rows.get(capturedCarrier.request_id).delivery_state, "not_sent");
+assert.equal(captureDb.rows.get(capturedCarrier.request_id).contact_email, "carrier@example.invalid");
+assert.ok(Date.parse(captureDb.rows.get(capturedCarrier.request_id).retention_until) > Date.now());
+assert.deepEqual([serviceCalls.length, emailMessages.length, telegramMessages.length], captureBeforeProvider, "D1 capture must never contact a provider.");
+
+const repeatedCapture = await onRequest({ request: captureReq(capturedCarrier), env: captureEnv });
+assert.equal(repeatedCapture.status, 200);
+assert.equal((await repeatedCapture.json()).duplicate, true);
+assert.equal(captureDb.rows.size, 1);
+assert.deepEqual([serviceCalls.length, emailMessages.length, telegramMessages.length], captureBeforeProvider);
+
+// A failure updating the anti-abuse KV quota must happen BEFORE any durable
+// carrier capture, so a previously saved D1 record can never be misreported as
+// "capture_temporarily_unavailable". No Worker or email fallback is allowed.
+const kvWriteRejectedRequestId = "carrier_kv_write_rejected_20261016";
+let kvRejectedWriteCount = 0;
+const kvRejectEnv = {
+  ...captureEnv,
+  LEAD_LIMITS: {
+    async get() { return null; },
+    async put() { kvRejectedWriteCount += 1; throw new Error("kv_quota_write_unavailable"); },
+  },
+};
+const captureRowsBeforeKvReject = captureDb.rows.size;
+const kvRejectedAdmission = await onRequest({
+  request: captureReq({ ...capturedCarrier, request_id: kvWriteRejectedRequestId }, "203.0.113.229"),
+  env: kvRejectEnv,
+});
+assert.equal(kvRejectedAdmission.status, 503, "KV write failure must fail closed before D1 capture.");
+assert.equal((await kvRejectedAdmission.json()).error, "capture_temporarily_unavailable");
+assert.equal(kvRejectedWriteCount, 1);
+assert.equal(captureDb.rows.size, captureRowsBeforeKvReject, "Failed KV admission must not durably store an unconfirmed lead.");
+assert.equal(captureDb.rows.has(kvWriteRejectedRequestId), false);
+assert.deepEqual([serviceCalls.length, emailMessages.length, telegramMessages.length], captureBeforeProvider,
+  "KV admission failure may not invoke outbound Workers, email or Telegram.");
+
+const changedCapture = await onRequest({
+  request: captureReq({ ...capturedCarrier, email_body: capturedCarrier.email_body.replace("Real Carrier LLC", "Changed Carrier LLC") }),
+  env: captureEnv,
+});
+assert.equal(changedCapture.status, 409);
+assert.equal((await changedCapture.json()).error, "idempotency_conflict");
+
+const noConsentCapture = await onRequest({
+  request: captureReq({ ...capturedCarrier, request_id: "carrier_no_consent_12345", consent: false }),
+  env: captureEnv,
+});
+assert.equal(noConsentCapture.status, 400);
+assert.equal((await noConsentCapture.json()).error, "consent_required");
+
+const noDbCapture = await onRequest({
+  request: captureReq({ ...capturedCarrier, request_id: "carrier_no_db_20261015" }),
+  env: { ...captureEnv, DB: undefined },
+});
+assert.equal(noDbCapture.status, 503);
+assert.equal((await noDbCapture.json()).error, "capture_not_configured");
+
+const oneTimeMigration = readFileSync(new URL("../migrations/20261015_carrier_intake_d1.sql", import.meta.url), "utf8");
+assert.match(oneTimeMigration, /CREATE TABLE IF NOT EXISTS hermes_carrier_intake/);
+assert.match(oneTimeMigration, /CREATE INDEX IF NOT EXISTS idx_hermes_carrier_intake_retention/);
+assert.match(oneTimeMigration, /delivery_state TEXT NOT NULL DEFAULT 'not_sent'/);
+for (const column of [
+  "qualification_authority_verified",
+  "qualification_insurance_verified",
+  "qualification_equipment_capacity_verified",
+  "qualification_operating_fit_verified",
+]) {
+  assert.match(oneTimeMigration, new RegExp(column + " INTEGER NOT NULL DEFAULT 0"));
+}
+const unmigratedCapture = await onRequest({
+  request: captureReq({ ...capturedCarrier, request_id: "carrier_missing_table_20261015" }, "203.0.113.227"),
+  env: {
+    ...captureEnv,
+    DB: { prepare() { throw new Error("no such table: hermes_carrier_intake"); } },
+  },
+});
+assert.equal(unmigratedCapture.status, 503);
+assert.equal((await unmigratedCapture.json()).error, "capture_temporarily_unavailable");
+assert.deepEqual([serviceCalls.length, emailMessages.length, telegramMessages.length], captureBeforeProvider);
+
+const unrelatedEmailGate = await onRequest({
+  request: captureReq({ ...capturedCarrier, request_id: "carrier_unrelated_20261015", page_path: "/load-board/" }),
+  env: captureEnv,
+});
+assert.equal(unrelatedEmailGate.status, 503);
+assert.equal((await unrelatedEmailGate.json()).error, "outbound_disabled_during_carrier_capture");
+
+// Even a mistakenly present legacy Worker binding/global live flag must not
+// permit unrelated email traffic whenever capture-only is explicitly active.
+let forbiddenWorkerCalls = 0;
+const unrelatedWithBoundWorker = await onRequest({
+  request: captureReq({ ...capturedCarrier, request_id: "carrier_worker_hold_20261016", page_path: "/load-board/" }),
+  env: {
+    ...captureEnv,
+    LEAD_DELIVERY_MODE: "live",
+    LEAD_EMAIL_SERVICE: { fetch() { forbiddenWorkerCalls++; throw new Error("forbidden_outbound"); } },
+    LEAD_SERVICE_TOKEN: "unused-test-token",
+  },
+});
+assert.equal(unrelatedWithBoundWorker.status, 503);
+assert.equal((await unrelatedWithBoundWorker.json()).error, "outbound_disabled_during_carrier_capture");
+assert.equal(forbiddenWorkerCalls, 0, "Capture-only must block unrelated Worker dispatch before touching transport.");
+
+const syntheticStored = await onRequest({
+  request: captureReq({
+    ...capturedCarrier, request_id: "carrier_qa_capture_20261015",
+    email_body: capturedCarrier.email_body.replace("Real Carrier", "Synthetic Carrier QA"),
+  }, "203.0.113.226"),
+  env: captureEnv,
+});
+assert.equal(syntheticStored.status, 200);
+assert.equal(captureDb.rows.get("carrier_qa_capture_20261015").classification, "qa", "Synthetic records are not commercial KPI.");
+assert.deepEqual([serviceCalls.length, emailMessages.length, telegramMessages.length], captureBeforeProvider);
+
+
+/* Private intake evidence read: real session + ACTIVE owner capability only.
+ * Existing Hermes Connect auth must reject unauthenticated or ordinary users. */
+class CarrierOwnerDb {
+  constructor(isOwner = true) { this.isOwner = isOwner; this.rows = captureDb.rows; this.queries = []; }
+  prepare(sql) {
+    this.queries.push(sql);
+    const db = this;
+    return {
+      vals: [],
+      bind(...args) { this.vals = args; return this; },
+      async first() {
+        if (/FROM sessions WHERE token/.test(sql)) return this.vals[0] === "synthetic-owner-session"
+          ? { specialist_id: "synthetic-owner", expires_at: "2099-01-01T00:00:00.000Z" } : null;
+        if (/FROM specialists WHERE id/.test(sql)) return { id: "synthetic-owner", email: "owner@example.invalid", name: "Synthetic Owner", role: "Admin" };
+        if (/FROM hermes_internal_owner_access WHERE specialist_id/.test(sql)) return db.isOwner
+          ? { specialist_id: "synthetic-owner", capability: "HERMES_INTERNAL_OWNER" } : null;
+        if (/FROM hermes_carrier_intake/.test(sql)) {
+          const row = db.rows.get(this.vals[0]);
+          if (!row || row.retention_until <= this.vals[1]) return null;
+          return { ...row, status: row.status || "new" };
+        }
+        return null;
+      },
+      async all() {
+        if (/PRAGMA table_info/.test(sql)) return { results: [] };
+        if (/FROM hermes_carrier_intake/.test(sql)) return {
+          results: [...db.rows.values()]
+            .filter(x => x.classification === this.vals[0] && (x.status || "new") === this.vals[1] && x.retention_until > this.vals[2])
+            .filter(x => this.vals.length < 6 ||
+              x.created_at < this.vals[3] || (x.created_at === this.vals[3] && x.request_id < this.vals[5]))
+            .sort((a, b) => b.created_at.localeCompare(a.created_at) || b.request_id.localeCompare(a.request_id))
+            .slice(0, 21)
+            .map(({ email_body, payload_hash, ...summary }) => ({ ...summary, status: summary.status || "new" }))
+        };
+        return { results: [] };
+      },
+      async run() {
+        if (/UPDATE hermes_carrier_intake SET/.test(sql)) {
+          const [nextStatus, updatedAt, updatedBy, reviewCode,
+            authorityFlag, insuranceFlag, equipmentFlag, operatingFitFlag,
+            id, fromStatus, now] = this.vals;
+          const row = db.rows.get(id);
+          if (!row || (row.status || "new") !== fromStatus ||
+              row.classification !== "commercial" || row.retention_until <= now)
+            return { success: true, meta: { changes: 0 } };
+          db.rows.set(id, { ...row, status: nextStatus, status_updated_at: updatedAt,
+            status_updated_by: updatedBy, status_review_code: reviewCode,
+            qualification_authority_verified: Math.max(Number(row.qualification_authority_verified || 0), Number(authorityFlag || 0)),
+            qualification_insurance_verified: Math.max(Number(row.qualification_insurance_verified || 0), Number(insuranceFlag || 0)),
+            qualification_equipment_capacity_verified: Math.max(Number(row.qualification_equipment_capacity_verified || 0), Number(equipmentFlag || 0)),
+            qualification_operating_fit_verified: Math.max(Number(row.qualification_operating_fit_verified || 0), Number(operatingFitFlag || 0)) });
+          return { success: true, meta: { changes: 1 } };
+        }
+        if (/DELETE FROM hermes_carrier_intake/.test(sql)) {
+          const expired = [...db.rows.values()]
+            .filter(row => row.retention_until <= this.vals[0])
+            .sort((a, b) => a.retention_until.localeCompare(b.retention_until) ||
+              a.request_id.localeCompare(b.request_id))
+            .slice(0, 100);
+          for (const row of expired) db.rows.delete(row.request_id);
+          return { success: true, meta: { changes: expired.length } };
+        }
+        return { success: true, meta: { changes: 0 } };
+      }
+    };
+  }
+}
+const ownerReadReq = (search = "", authenticated = true) => new Request(
+  "https://hermeslogisticsus.com/api/internal/carrier-intake" + search,
+  { headers: authenticated ? { Cookie: "hermes_session=synthetic-owner-session" } : {} },
+);
+const ownerDb = new CarrierOwnerDb();
+const ownerList = await readOwnerCarrierIntake({ request: ownerReadReq(), env: { DB: ownerDb } });
+assert.equal(ownerList.status, 200);
+assert.equal(ownerList.headers.get("Cache-Control"), "private, no-store");
+assert.equal(ownerList.headers.get("X-Robots-Tag"), "noindex, nofollow");
+const ownerRows = await ownerList.json();
+assert.equal(ownerRows.requests.length, 1);
+assert.equal(ownerRows.requests[0].request_id, capturedCarrier.request_id);
+assert.ok(!("email_body" in ownerRows.requests[0]), "Owner list must not expose unbounded lead body.");
+assert.equal(ownerRows.all_are_real_leads, false);
+const ownerQa = await readOwnerCarrierIntake({ request: ownerReadReq("?classification=qa"), env: { DB: ownerDb } });
+assert.equal(ownerQa.status, 200);
+assert.equal((await ownerQa.json()).requests[0].classification, "qa");
+const ownerDetail = await readOwnerCarrierIntake({
+  request: ownerReadReq("?request_id=" + capturedCarrier.request_id), env: { DB: ownerDb },
+});
+assert.equal(ownerDetail.status, 200);
+const detail = await ownerDetail.json();
+assert.match(detail.request.email_body, /Real Carrier LLC/);
+assert.equal(detail.delivery_state, "not_sent");
+assert.equal(detail.human_receipt_state, "unconfirmed");
+const anonymousOwner = await readOwnerCarrierIntake({
+  request: ownerReadReq("", false), env: { DB: new CarrierOwnerDb() },
+});
+assert.equal(anonymousOwner.status, 401);
+const forbiddenOwner = await readOwnerCarrierIntake({
+  request: ownerReadReq(), env: { DB: new CarrierOwnerDb(false) },
+});
+assert.equal(forbiddenOwner.status, 403);
+for (const bad of ["?classification=other", "?status=deleted", "?request_id='or1=1"]) {
+  const denied = await readOwnerCarrierIntake({ request: ownerReadReq(bad), env: { DB: ownerDb } });
+  assert.equal(denied.status, 400);
+}
+assert.deepEqual([serviceCalls.length, emailMessages.length, telegramMessages.length], captureBeforeProvider,
+  "An owner-read API must not trigger providers or dispatcher notifications.");
+
+// Owner-only human review is distinct from verified carrier qualification.
+const ownerPatch = (payload, opt = {}) => new Request("https://hermeslogisticsus.com/api/internal/carrier-intake", {
+  method: "PATCH", headers: {
+    ...(opt.anonymous ? {} : { Cookie: "hermes_session=synthetic-owner-session" }),
+    Origin: opt.origin || "https://hermeslogisticsus.com",
+    "Content-Type": "application/json",
+    ...(opt.noAction ? {} : { "X-Hermes-Owner-Action": "REVIEW_CARRIER_INTAKE" }),
+  },
+  body: JSON.stringify(payload),
+});
+const intendedReview = { request_id: capturedCarrier.request_id, from_status: "new",
+  to_status: "reviewed", review_code: "initial_owner_review" };
+for (const bad of [
+  ownerPatch(intendedReview, { anonymous: true }),
+  ownerPatch(intendedReview, { origin: "https://example.invalid" }),
+  ownerPatch(intendedReview, { noAction: true }),
+  ownerPatch({ ...intendedReview, to_status: "qualified" }),
+  ownerPatch({ ...intendedReview, request_id: "carrier_qa_capture_20261015" }),
+]) {
+  const denied = await reviewOwnerCarrierIntake({ request: bad, env: { DB: ownerDb } });
+  assert.notEqual(denied.status, 200);
+}
+const reviewed = await reviewOwnerCarrierIntake({
+  request: ownerPatch(intendedReview), env: { DB: ownerDb },
+});
+assert.equal(reviewed.status, 200);
+assert.equal((await reviewed.json()).qualified_carrier_state, "not_verified");
+assert.equal(captureDb.rows.get(capturedCarrier.request_id).status, "reviewed");
+assert.equal(captureDb.rows.get(capturedCarrier.request_id).status_updated_by, "synthetic-owner");
+assert.equal((await reviewOwnerCarrierIntake({
+  request: ownerPatch(intendedReview), env: { DB: ownerDb },
+})).status, 409);
+const closed = await reviewOwnerCarrierIntake({
+  request: ownerPatch({ request_id: capturedCarrier.request_id, from_status: "reviewed",
+    to_status: "closed", review_code: "manual_followup_closed" }), env: { DB: ownerDb },
+});
+assert.equal(closed.status, 200);
+assert.equal(captureDb.rows.get(capturedCarrier.request_id).status, "closed");
+assert.equal((await (await readOwnerCarrierIntake({
+  request: ownerReadReq("?request_id=" + capturedCarrier.request_id), env: { DB: ownerDb },
+})).json()).human_receipt_state, "owner_reviewed");
+
+// Qualification is a separate explicit human decision. It is impossible without
+// the complete bounded verification checklist and never triggers outbound.
+const qualificationId = "carrier_qualified_20261017";
+const qualificationSource = captureDb.rows.get(capturedCarrier.request_id);
+ownerDb.rows.set(qualificationId, {
+  ...qualificationSource,
+  request_id: qualificationId,
+  payload_hash: "synthetic-qualification-payload-hash",
+  contact_email: "qualification@example.invalid",
+  email_body: "SYNTHETIC QUALIFICATION CANDIDATE — NOT A REAL LEAD",
+  status: "reviewed",
+  status_updated_at: "2026-10-17T00:00:00.000Z",
+  status_updated_by: "synthetic-owner",
+  status_review_code: "initial_owner_review",
+  created_at: "2026-10-17T00:00:00.000Z",
+  retention_until: "2099-01-01T00:00:00.000Z",
+});
+const qualificationBase = {
+  request_id: qualificationId,
+  from_status: "reviewed",
+  to_status: "qualified",
+  review_code: "manual_carrier_qualification",
+};
+for (const body of [
+  qualificationBase,
+  { ...qualificationBase, verification_checks: { authority_verified: true } },
+  { ...qualificationBase, verification_checks: {
+    authority_verified: true, insurance_verified: true,
+    equipment_capacity_verified: true, operating_fit_verified: false,
+  } },
+]) {
+  const denied = await reviewOwnerCarrierIntake({ request: ownerPatch(body), env: { DB: ownerDb } });
+  assert.equal(denied.status, 400);
+}
+const qualified = await reviewOwnerCarrierIntake({
+  request: ownerPatch({ ...qualificationBase, verification_checks: {
+    authority_verified: true,
+    insurance_verified: true,
+    equipment_capacity_verified: true,
+    operating_fit_verified: true,
+  } }),
+  env: { DB: ownerDb },
+});
+assert.equal(qualified.status, 200);
+const qualifiedBody = await qualified.json();
+assert.equal(qualifiedBody.qualified_carrier_state, "owner_qualified");
+assert.equal(ownerDb.rows.get(qualificationId).status, "qualified");
+assert.equal(ownerDb.rows.get(qualificationId).status_review_code, "manual_carrier_qualification");
+assert.equal(ownerDb.rows.get(qualificationId).qualification_authority_verified, 1);
+assert.equal(ownerDb.rows.get(qualificationId).qualification_insurance_verified, 1);
+assert.equal(ownerDb.rows.get(qualificationId).qualification_equipment_capacity_verified, 1);
+assert.equal(ownerDb.rows.get(qualificationId).qualification_operating_fit_verified, 1);
+const qualificationReadback = await (await readOwnerCarrierIntake({
+  request: ownerReadReq("?request_id=" + qualificationId), env: { DB: ownerDb },
+})).json();
+assert.equal(qualificationReadback.qualified_carrier_state, "owner_qualified");
+assert.equal(qualificationReadback.request.qualification_authority_verified, 1);
+assert.equal(qualificationReadback.request.qualification_insurance_verified, 1);
+assert.equal(qualificationReadback.request.qualification_equipment_capacity_verified, 1);
+assert.equal(qualificationReadback.request.qualification_operating_fit_verified, 1);
+
+assert.deepEqual([serviceCalls.length, emailMessages.length, telegramMessages.length], captureBeforeProvider,
+  "Owner status or qualification must never invoke email, Telegram or dispatcher notification.");
+
+/* Owner-only cursor pagination must not hide a 21st+ NEW request or leak
+ * batches to anonymous/ordinary Sales identities. These are synthetic rows. */
+const pagedDb = new CarrierOwnerDb();
+pagedDb.rows = new Map();
+for (let index = 0; index < 45; index += 1) {
+  const id = `synthetic_carrier_${String(index).padStart(5, "0")}`;
+  pagedDb.rows.set(id, {
+    request_id: id, classification: "commercial", status: "new",
+    source_path: "/logistics/start-car-hauling-dispatch/",
+    contact_email: "synthetic@example.invalid", email_body: "SYNTHETIC — NOT A REAL LEAD",
+    payload_hash: `fakehash${index}`, delivery_state: "not_sent",
+    created_at: new Date(Date.UTC(2026, 9, 15, 8, index % 60)).toISOString(),
+    retention_until: "2099-01-01T00:00:00.000Z",
+  });
+}
+const seenIds = [];
+let nextCursor = null;
+for (let pageNumber = 0; pageNumber < 4; pageNumber += 1) {
+  const search = nextCursor === null ? "" : "?cursor=" + encodeURIComponent(nextCursor);
+  const response = await readOwnerCarrierIntake({
+    request: ownerReadReq(search), env: { DB: pagedDb },
+  });
+  assert.equal(response.status, 200);
+  const payload = await response.json();
+  assert.equal(payload.requests.length, pageNumber < 2 ? 20 : 5);
+  assert.equal(payload.partial, pageNumber < 2);
+  assert.equal(Boolean(payload.next_cursor), pageNumber < 2);
+  assert.ok(pagedDb.queries.some(sql => /ORDER BY created_at DESC, request_id DESC LIMIT 21/.test(sql)));
+  seenIds.push(...payload.requests.map(row => row.request_id));
+  nextCursor = payload.next_cursor;
+  if (!nextCursor) break;
+}
+assert.equal(seenIds.length, 45, "All synthetic requests must be retrievable, even past page 20.");
+assert.equal(new Set(seenIds).size, 45, "Keyset pages must not duplicate records.");
+assert.deepEqual(seenIds.slice(0, 2), ["synthetic_carrier_00044", "synthetic_carrier_00043"]);
+for (const invalidCursor of ["", "fake", "%%%%", "eyJ2IjoyfQ", "a".repeat(513)]) {
+  const response = await readOwnerCarrierIntake({
+    request: ownerReadReq("?cursor=" + encodeURIComponent(invalidCursor)), env: { DB: pagedDb },
+  });
+  assert.equal(response.status, 400, "Malformed or excessively long cursor must fail closed.");
+}
+const validFirst = await readOwnerCarrierIntake({ request: ownerReadReq(), env: { DB: pagedDb } });
+const validToken = (await validFirst.json()).next_cursor;
+const mismatchedScope = await readOwnerCarrierIntake({
+  request: ownerReadReq("?classification=qa&cursor=" + encodeURIComponent(validToken)), env: { DB: pagedDb },
+});
+assert.equal(mismatchedScope.status, 400, "Cursor cannot cross classification scope.");
+const hiddenPage = await readOwnerCarrierIntake({
+  request: ownerReadReq("?cursor=" + encodeURIComponent(validToken), false), env: { DB: pagedDb },
+});
+assert.equal(hiddenPage.status, 401, "Cursor never bypasses authentication.");
+const deniedPage = await readOwnerCarrierIntake({
+  request: ownerReadReq("?cursor=" + encodeURIComponent(validToken)), env: { DB: new CarrierOwnerDb(false) },
+});
+assert.equal(deniedPage.status, 403, "Cursor never expands owner capability.");
+assert.deepEqual([serviceCalls.length, emailMessages.length, telegramMessages.length], captureBeforeProvider,
+  "Pagination must not trigger any outbound channel.");
+
+/* Owner-confirmed expired-only physical purge. No automatic purger, production
+ * requests, mail or dispatcher side effects; pure synthetic D1 fixture. */
+const expiredPurgeDb = new CarrierOwnerDb();
+expiredPurgeDb.rows = new Map();
+for (let index = 0; index < 107; index += 1) {
+  const id = `expired_carrier_${String(index).padStart(5, "0")}`;
+  expiredPurgeDb.rows.set(id, {
+    request_id: id, classification: "commercial", status: "new",
+    created_at: "2025-01-01T00:00:00.000Z",
+    retention_until: "2026-01-01T00:00:00.000Z",
+  });
+}
+expiredPurgeDb.rows.set("active_carrier_12345", {
+  request_id: "active_carrier_12345", classification: "commercial",
+  status: "new", created_at: "2026-10-15T08:00:00.000Z",
+  retention_until: "2099-01-01T00:00:00.000Z",
+});
+const purgeRequest = (authenticated = true, confirm = true, origin = "https://hermeslogisticsus.com") =>
+  new Request("https://hermeslogisticsus.com/api/internal/carrier-intake", {
+    method: "DELETE",
+    headers: {
+      ...(authenticated ? { Cookie: "hermes_session=synthetic-owner-session" } : {}),
+      Origin: origin,
+      ...(confirm ? { "X-Hermes-Confirm-Expired-Purge": "PURGE_EXPIRED_CARRIER_INTAKE" } : {}),
+    },
+  });
+for (const badRequest of [
+  purgeRequest(false), purgeRequest(true, false), purgeRequest(true, true, "https://example.invalid"),
+]) {
+  const response = await purgeExpiredCarrierIntake({ request: badRequest, env: { DB: expiredPurgeDb } });
+  assert.ok(response.status === 401 || response.status === 403);
+  assert.equal(expiredPurgeDb.rows.size, 108, "Unauthorized purge must not delete rows.");
+}
+const purgeDenied = await purgeExpiredCarrierIntake({
+  request: purgeRequest(), env: { DB: new CarrierOwnerDb(false) },
+});
+assert.equal(purgeDenied.status, 403);
+const purgeFirst = await purgeExpiredCarrierIntake({
+  request: purgeRequest(), env: { DB: expiredPurgeDb },
+});
+assert.equal(purgeFirst.status, 200);
+assert.deepEqual(
+  { count: (await purgeFirst.json()).purged_expired_rows, size: expiredPurgeDb.rows.size },
+  { count: 100, size: 8 },
+);
+const purgeSecond = await purgeExpiredCarrierIntake({
+  request: purgeRequest(), env: { DB: expiredPurgeDb },
+});
+assert.equal((await purgeSecond.json()).purged_expired_rows, 7);
+assert.equal(expiredPurgeDb.rows.size, 1, "Active carrier must survive expiry purge.");
+assert.ok(expiredPurgeDb.rows.has("active_carrier_12345"));
+const purgeAgain = await purgeExpiredCarrierIntake({ request: purgeRequest(), env: { DB: expiredPurgeDb } });
+assert.equal((await purgeAgain.json()).purged_expired_rows, 0, "Repeated purge is idempotent.");
+assert.deepEqual([serviceCalls.length, emailMessages.length, telegramMessages.length], captureBeforeProvider,
+  "Private retention purge must never send mail or Telegram.");
+
+
+
 console.log("Sales lead receiver, four-direction contact intake, Car Hauling QA/commercial routing, and private Email Worker checks passed.");

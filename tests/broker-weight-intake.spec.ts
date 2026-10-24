@@ -13,7 +13,19 @@ test('broker original weight survives review and mock submitted receipt, without
       return;
     }
     const response = await fetch(`http://127.0.0.1:${process.env.HERMES_E2E_PORT ?? '4321'}${url.pathname}${url.search}`);
-    await route.fulfill({ status: response.status, headers: { 'content-type': response.headers.get('content-type') || 'application/octet-stream' }, body: Buffer.from(await response.arrayBuffer()) });
+    const contentType = response.headers.get('content-type') || 'application/octet-stream';
+    if (url.pathname === '/logistics/request-vehicle-transport/' && contentType.includes('text/html')) {
+      const source = await response.text();
+      const previewMode = /\bdata-lead-mode=(["'])preview\1/.test(source);
+      const emptyEndpoint = /\bdata-lead-endpoint(?:=(["'])\1)?(?=[\s>])/.test(source);
+      if (!previewMode || !emptyEndpoint) throw new Error('Expected fail-closed transport SSR shell');
+      const approvedFixture = source
+        .replace(/\bdata-lead-mode=(["'])preview\1/, 'data-lead-mode="live"')
+        .replace(/\bdata-lead-endpoint(?:=(["'])\1)?(?=[\s>])/, 'data-lead-endpoint="/api/logistics-lead"');
+      await route.fulfill({ status: response.status, headers: { 'content-type': contentType }, body: approvedFixture });
+      return;
+    }
+    await route.fulfill({ status: response.status, headers: { 'content-type': contentType }, body: Buffer.from(await response.arrayBuffer()) });
   });
   await page.goto(`${origin}/logistics/request-vehicle-transport/?role=broker#transport-intake`);
   const form = page.locator('[data-transport-form]');
