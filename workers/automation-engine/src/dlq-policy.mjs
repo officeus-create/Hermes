@@ -16,6 +16,11 @@ const PRE_SIDE_EFFECT_STATES = new Set([
 
 const READ_ONLY_MESSAGE_TYPES = new Set(["job.execute", "publication.readback"]);
 const EXTERNAL_WRITE_MESSAGE_TYPES = new Set(["publication.write"]);
+const CANONICAL_D1_RECOVERY_STATES = new Set(["RUNNING", "WAITING_FREE_AI"]);
+const READBACK_RETRYABLE_STATES = new Set([
+  "provider_accepted_readback_pending",
+  "unknown_outcome_readback_pending",
+]);
 
 export function classifyDlqDisposition(input = {}) {
   const messageType = String(input.message_type || "").trim();
@@ -38,6 +43,12 @@ export function classifyDlqDisposition(input = {}) {
 
   if (READ_ONLY_MESSAGE_TYPES.has(messageType) && externalEffect) {
     return { disposition: "OWNER_ACTION", reason: "read_only_message_external_effect_ambiguous" };
+  }
+  if (messageType === "job.execute" && !externalEffect && CANONICAL_D1_RECOVERY_STATES.has(state)) {
+    return { disposition: "CANONICAL_RECOVERY", reason: "d1_state_owns_recovery" };
+  }
+  if (messageType === "publication.readback" && !externalEffect && READBACK_RETRYABLE_STATES.has(state)) {
+    return { disposition: "SAFE_REDRIVE", reason: "readback_retryable" };
   }
   if (EXTERNAL_WRITE_MESSAGE_TYPES.has(messageType) && !externalEffect) {
     return { disposition: "OWNER_ACTION", reason: "external_write_classification_ambiguous" };
