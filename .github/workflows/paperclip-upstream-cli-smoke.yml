@@ -1,0 +1,34 @@
+name: Paperclip upstream CLI sandbox smoke
+on:
+  pull_request:
+    paths:
+      - 'scripts/paperclip-pilot-candidates*'
+      - 'docs/PAPERCLIP_REVIEW_ONLY_PILOT_2026-10-20.md'
+      - '.github/workflows/paperclip-upstream-cli-smoke.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  upstream-cli-no-agent:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    env:
+      CI: 'true'
+      DO_NOT_TRACK: '1'
+      PAPERCLIP_TELEMETRY_DISABLED: '1'
+      NPM_CONFIG_AUDIT: 'false'
+      NPM_CONFIG_FUND: 'false'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.11.0'
+      - name: Inspect runtime and immutable CLI version
+        run: |
+          node --version
+          npm --version
+          npm view paperclipai@2026.720.0 version
+      - name: Execute upstream CLI help only (no onboard, service, API key or agent)
+        run: npx --yes --registry=https://registry.npmjs.org paperclipai@2026.720.0 --help
+# Only verifies published upstream CLI on disposable GitHub runner.
+# It never starts Paperclip server/agent or changes Hermes runtime.
