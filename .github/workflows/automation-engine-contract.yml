@@ -7,6 +7,7 @@ on:
       - "scripts/automation-engine-contract.test.mjs"
       - "scripts/automation-engine-historical-learning.test.mjs"
       - "scripts/automation-engine-role-contracts.test.mjs"
+      - "scripts/automation-engine-free-ai-runtime.test.mjs"
       - "scripts/hae-d1-schema-snapshot*.mjs"
       - "docs/HERMES_AUTOMATION_ENGINE_*.md"
       - ".github/workflows/automation-engine-contract.yml"
@@ -30,6 +31,7 @@ jobs:
           node scripts/automation-engine-contract.test.mjs
           node scripts/automation-engine-historical-learning.test.mjs
           node scripts/automation-engine-role-contracts.test.mjs
+          node scripts/automation-engine-free-ai-runtime.test.mjs
           node scripts/automation-engine-capability-policy.test.mjs
           node scripts/automation-engine-state-freshness.test.mjs
           node scripts/automation-engine-dlq-policy.test.mjs
