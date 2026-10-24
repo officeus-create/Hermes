@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { dlqRuntimeSnapshot, processDlqMessage } from "../workers/automation-engine/src/dlq-runtime.mjs";
+import { dlqRuntimeSnapshot, processDlqMessage, recoverPendingDlqOwnerAlerts } from "../workers/automation-engine/src/dlq-runtime.mjs";
 
 class FakeStatement {
   constructor(db, sql) {
@@ -28,6 +28,11 @@ class FakeStatement {
         if (classificationChanged) {
           existing.action_status = actionStatus;
           existing.alert_status = alertStatus;
+          existing.alert_attempt_count = 0;
+          existing.alert_claimed_at = null;
+          existing.alert_delivered_at = null;
+          existing.alert_provider_message_id = null;
+          existing.alert_last_error_class = null;
           existing.last_error_class = null;
         }
         existing.disposition = disposition;
@@ -47,6 +52,11 @@ class FakeStatement {
           reason,
           action_status: actionStatus,
           alert_status: alertStatus,
+          alert_attempt_count: 0,
+          alert_claimed_at: null,
+          alert_delivered_at: null,
+          alert_provider_message_id: null,
+          alert_last_error_class: null,
           redrive_count: 0,
           first_seen_at: firstSeenAt,
           updated_at: updatedAt,
@@ -63,6 +73,34 @@ class FakeStatement {
       row.action_status = actionStatus;
       row.redrive_count += Number(increment || 0);
       row.last_error_class = lastError;
+      row.updated_at = updatedAt;
+      return { meta: { changes: 1 } };
+    }
+
+    if (sql.startsWith("UPDATE hermes_automation_dlq_items SET alert_status='ALERT_SENDING'")) {
+      const [claimedAt, updatedAt, id] = this.args;
+      const row = this.db.dlq.get(id);
+      if (!row || row.alert_status !== "PENDING_OWNER_ALERT" || row.alert_claimed_at) {
+        return { meta: { changes: 0 } };
+      }
+      row.alert_status = "ALERT_SENDING";
+      row.alert_attempt_count += 1;
+      row.alert_claimed_at = claimedAt;
+      row.alert_last_error_class = "delivery_claimed_reconcile_before_retry";
+      row.updated_at = updatedAt;
+      return { meta: { changes: 1 } };
+    }
+
+    if (sql.startsWith("UPDATE hermes_automation_dlq_items SET alert_status=?")) {
+      const [status, increment, claimedAt, deliveredAt, providerMessageId, lastError, updatedAt, id] = this.args;
+      const row = this.db.dlq.get(id);
+      if (!row) return { meta: { changes: 0 } };
+      row.alert_status = status;
+      row.alert_attempt_count += Number(increment || 0);
+      row.alert_claimed_at = claimedAt;
+      row.alert_delivered_at = deliveredAt;
+      row.alert_provider_message_id = providerMessageId;
+      row.alert_last_error_class = lastError;
       row.updated_at = updatedAt;
       return { meta: { changes: 1 } };
     }
@@ -93,6 +131,14 @@ class FakeStatement {
         grouped.set(key, current);
       }
       return { results: [...grouped.values()] };
+    }
+    if (sql.includes("WHERE alert_status='PENDING_OWNER_ALERT'")) {
+      const limit = Number(this.args[0] || 20);
+      return {
+        results: [...this.db.dlq.values()]
+          .filter((row) => row.alert_status === "PENDING_OWNER_ALERT" && !row.alert_claimed_at)
+          .slice(0, limit),
+      };
     }
     if (sql.includes("FROM hermes_automation_dlq_items ORDER BY updated_at DESC")) {
       const limit = Number(this.args[0] || 50);
@@ -181,9 +227,43 @@ outcome = await processDlqMessage(env, message("m-unknown", { type: "mystery.tas
 assert.equal(outcome.disposition, "QUARANTINE");
 assert.equal(outcome.alert_status, "PENDING_OWNER_ALERT");
 
-const snapshot = await dlqRuntimeSnapshot(env, 10);
-assert.equal(snapshot.external_alert_delivery_verified, false, "T4 must not claim delivered owner alert until a real delivery channel is verified");
+let snapshot = await dlqRuntimeSnapshot(env, 10);
+assert.equal(snapshot.external_alert_delivery_verified, false, "T4 must not claim delivered owner alert before a real provider receipt exists");
 assert.ok(snapshot.counts.some((row) => row.disposition === "QUARANTINE"));
 assert.equal(snapshot.items.length, 4);
+assert.ok([...DB.dlq.values()].some((row) => row.alert_last_error_class === "owner_alert_not_configured"));
 
-console.log("HAE DLQ runtime PASS: classify + safe redrive + quarantine + duplicate suppression; external alert remains unverified");
+const telegramCalls = [];
+const alertEnv = {
+  ...env,
+  HERMES_HAE_TELEGRAM_BOT_TOKEN: "synthetic-bot-token",
+  HERMES_HAE_TELEGRAM_OWNER_CHAT_ID: "123456",
+};
+const delivered = await recoverPendingDlqOwnerAlerts(alertEnv, 10, {
+  fetchImpl: async (url, options) => {
+    telegramCalls.push({ url, options });
+    return {
+      ok: true,
+      status: 200,
+      async json() {
+        return { ok: true, result: { message_id: 7000 + telegramCalls.length } };
+      },
+    };
+  },
+});
+assert.equal(delivered, 3, "All three pending owner-action/quarantine receipts should be delivered");
+assert.equal(telegramCalls.length, 3);
+assert.ok(telegramCalls.every((call) => call.url.includes("api.telegram.org/bot")));
+assert.ok(telegramCalls.every((call) => JSON.parse(call.options.body).chat_id === "123456"));
+
+snapshot = await dlqRuntimeSnapshot(env, 10);
+assert.equal(snapshot.external_alert_delivery_verified, true, "A real-shaped provider message_id receipt should verify the delivery channel in runtime state");
+assert.equal(snapshot.items.filter((row) => row.alert_status === "DELIVERED").length, 3);
+assert.ok(snapshot.items.filter((row) => row.alert_status === "DELIVERED").every((row) => row.alert_provider_message_id));
+
+const deliveredAgain = await recoverPendingDlqOwnerAlerts(alertEnv, 10, {
+  fetchImpl: async () => { throw new Error("delivered alerts must not be retried"); },
+});
+assert.equal(deliveredAgain, 0, "Delivered owner alerts must not be retried");
+
+console.log("HAE DLQ runtime PASS: classify + safe redrive + quarantine + duplicate suppression + durable owner-alert delivery");
