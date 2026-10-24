@@ -125,14 +125,27 @@ export async function onRequestPost({request,env}:{request:Request;env:Env}){
   const id=`hbsm_${crypto.randomUUID().replaceAll("-","")}`;
   const now=new Date();
   const expiresAt=new Date(now.getTime()+ASSET_TTL_MS).toISOString();
-  await env.DB.prepare(`
-    INSERT INTO hermes_business_social_media_assets
+  const insert=await env.DB.prepare(`
+    INSERT OR IGNORE INTO hermes_business_social_media_assets
       (id,business_key,owner_specialist_id,intake_id,mime_type,width,height,slide_index,surface_hint,content_sha256,content_base64,status,expires_at,created_at,updated_at)
     VALUES (?,?,?,?,?,?,?,?,?,?,?,'ready_public',?,?,?)
   `).bind(
     id,business.business_key,String(specialist.id),intakeId,"image/jpeg",width,height,slideIndex,surfaceHint,digest,image.base64,
     expiresAt,now.toISOString(),now.toISOString()
   ).run();
+  if(Number(insert?.meta?.changes||0)!==1){
+    const raced=await env.DB.prepare(`
+      SELECT id,width,height,slide_index,surface_hint,expires_at FROM hermes_business_social_media_assets
+      WHERE business_key=? AND content_sha256=? AND expires_at>? LIMIT 1
+    `).bind(business.business_key,digest,new Date().toISOString()).first();
+    if(raced){
+      return jsonResponse(200,{success:true,duplicate:true,asset:{
+        id:String(raced.id),url:publicUrl(request,String(raced.id)),width:Number(raced.width),height:Number(raced.height),
+        slide_index:Number(raced.slide_index),surface_hint:String(raced.surface_hint||"feed"),expires_at:String(raced.expires_at),
+      }},PRIVATE_HEADERS);
+    }
+    return jsonResponse(409,{success:false,error:"media_asset_reservation_conflict"},PRIVATE_HEADERS);
+  }
   return jsonResponse(201,{success:true,duplicate:false,asset:{
     id,url:publicUrl(request,id),width,height,slide_index:slideIndex,surface_hint:surfaceHint,expires_at:expiresAt,
     note:"Short-lived public JPEG created for owner-approved social publishing. It expires automatically after 72 hours.",
