@@ -14,6 +14,8 @@ test.describe("Hermes Investor Relations bilingual public preview", () => {
       await expect(page.locator('link[rel="alternate"][hreflang="en"]')).toHaveAttribute("href", /\/investors\/$/);
       await expect(page.locator('link[rel="alternate"][hreflang="ru"]')).toHaveAttribute("href", /\/ru\/investors\/$/);
       await expect(page.locator("main .investor-card")).toHaveCount(7);
+      await expect(page.locator("main .investor-ladder > li")).toHaveCount(5);
+      await expect(page.locator('main [data-investor-ladder-step="asset"]')).toBeVisible();
       const publicLinks = await page.locator(".investor-card .investor-explore").count();
       expect(publicLinks).toBe(7);
       const hrefs = await page.locator(".investor-card .investor-explore").evaluateAll((els) => els.map((el) => el.getAttribute("href")));
