@@ -96,7 +96,7 @@
     "rules": [
       "A backlog item or spec is not a capability.",
       "Unknown job types fail closed.",
-      "No EXTERNAL_WRITE capability may be enabled before the read-only reliability gate is LIVE_VERIFIED.",
+      "No EXTERNAL_WRITE capability may be enabled until the bounded read-only reliability gate is accepted through authenticated runtime evidence and independent QA, and the specific write capability has a separate owner-approved write gate.",
       "DRAFT_ONLY may create an internal draft artifact but may not send, publish, reply, forward, or notify externally.",
       "DESTRUCTIVE capabilities require an explicit per-action owner gate and are never autonomous by default.",
       "A capability that can carry PII must define an approved retention and minimization contract before activation."
