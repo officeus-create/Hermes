@@ -101,24 +101,25 @@ export async function onRequestPost({request,env}:{request:Request;env:Env}){
   if(!["draft_ready","source_registered"].includes(String(intake.status||""))){
     return jsonResponse(409,{success:false,error:"creative_intake_not_renderable"},PRIVATE_HEADERS);
   }
-  const countRow=await env.DB.prepare(`
-    SELECT COUNT(*) AS count FROM hermes_business_social_media_assets
-    WHERE intake_id=? AND business_key=? AND expires_at>?
-  `).bind(intakeId,business.business_key,new Date().toISOString()).first();
-  if(Number(countRow?.count||0)>=MAX_ASSETS_PER_INTAKE){
-    return jsonResponse(409,{success:false,error:"creative_media_limit_reached",max_assets:MAX_ASSETS_PER_INTAKE},PRIVATE_HEADERS);
-  }
-
+  const nowIso=new Date().toISOString();
   const digest=await sha256(image.bytes);
   const existing=await env.DB.prepare(`
     SELECT id,width,height,slide_index,surface_hint,expires_at FROM hermes_business_social_media_assets
     WHERE business_key=? AND content_sha256=? AND expires_at>? LIMIT 1
-  `).bind(business.business_key,digest,new Date().toISOString()).first();
+  `).bind(business.business_key,digest,nowIso).first();
   if(existing){
     return jsonResponse(200,{success:true,duplicate:true,asset:{
       id:String(existing.id),url:publicUrl(request,String(existing.id)),width:Number(existing.width),height:Number(existing.height),
       slide_index:Number(existing.slide_index),surface_hint:String(existing.surface_hint||"feed"),expires_at:String(existing.expires_at),
     }},PRIVATE_HEADERS);
+  }
+
+  const countRow=await env.DB.prepare(`
+    SELECT COUNT(*) AS count FROM hermes_business_social_media_assets
+    WHERE intake_id=? AND business_key=? AND expires_at>?
+  `).bind(intakeId,business.business_key,nowIso).first();
+  if(Number(countRow?.count||0)>=MAX_ASSETS_PER_INTAKE){
+    return jsonResponse(409,{success:false,error:"creative_media_limit_reached",max_assets:MAX_ASSETS_PER_INTAKE},PRIVATE_HEADERS);
   }
 
   const id=`hbsm_${crypto.randomUUID().replaceAll("-","")}`;
