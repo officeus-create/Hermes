@@ -43,7 +43,7 @@ assert.equal(
     external_effect: true,
     provider_outcome: "NONE",
   }).disposition,
-  "SAFE_REDRIVE"
+  "OWNER_ACTION"
 );
 
 assert.equal(
@@ -65,7 +65,7 @@ assert.equal(
     external_effect: true,
     provider_outcome: "NONE",
   }).disposition,
-  "SAFE_REDRIVE"
+  "OWNER_ACTION"
 );
 
 assert.equal(
