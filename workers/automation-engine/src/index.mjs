@@ -1701,10 +1701,11 @@ async function buildScheduledRoleContractPayload(env, contract) {
 }
 
 async function enqueueScheduledRoleContracts(env, scheduledAt) {
-  let submitted = 0;
   const slotKey = chicagoSlotKey(scheduledAt);
-  for (const contract of ROLE_CONTRACTS) {
-    if (contract.semantic_required || !roleContractScheduleEligible(contract, scheduledAt)) continue;
+  const eligibleContracts = ROLE_CONTRACTS.filter(
+    (contract) => !contract.semantic_required && roleContractScheduleEligible(contract, scheduledAt),
+  );
+  const outcomes = await Promise.all(eligibleContracts.map(async (contract) => {
     try {
       const payload = await buildScheduledRoleContractPayload(env, contract);
       await createGenericJob(env, {
@@ -1721,7 +1722,7 @@ async function enqueueScheduledRoleContracts(env, scheduledAt) {
           scheduled_at: scheduledAt.toISOString(),
         },
       });
-      submitted += 1;
+      return 1;
     } catch (error) {
       await recordRuntimeEvent(env, {
         eventType: "cron.role_contract_submit_failed",
@@ -1729,9 +1730,10 @@ async function enqueueScheduledRoleContracts(env, scheduledAt) {
         slotKey,
         errorClass: safeRuntimeErrorClass(error, "role_contract_submit_failed"),
       });
+      return 0;
     }
-  }
-  return submitted;
+  }));
+  return outcomes.reduce((sum, value) => sum + value, 0);
 }
 
 export default {
