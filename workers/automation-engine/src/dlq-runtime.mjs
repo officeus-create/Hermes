@@ -31,6 +31,8 @@ export async function ensureDlqRuntimeSchema(db) {
       alert_claimed_at TEXT,
       alert_delivered_at TEXT,
       alert_provider_message_id TEXT,
+      alert_channel TEXT,
+      alert_receipt_ref TEXT,
       alert_last_error_class TEXT,
       redrive_count INTEGER NOT NULL DEFAULT 0,
       first_seen_at TEXT NOT NULL,
@@ -162,6 +164,18 @@ async function upsertClassification(env, record) {
         THEN hermes_automation_dlq_items.alert_provider_message_id
         ELSE NULL
       END,
+      alert_channel=CASE
+        WHEN hermes_automation_dlq_items.disposition=excluded.disposition
+         AND hermes_automation_dlq_items.reason=excluded.reason
+        THEN hermes_automation_dlq_items.alert_channel
+        ELSE NULL
+      END,
+      alert_receipt_ref=CASE
+        WHEN hermes_automation_dlq_items.disposition=excluded.disposition
+         AND hermes_automation_dlq_items.reason=excluded.reason
+        THEN hermes_automation_dlq_items.alert_receipt_ref
+        ELSE NULL
+      END,
       alert_last_error_class=CASE
         WHEN hermes_automation_dlq_items.disposition=excluded.disposition
          AND hermes_automation_dlq_items.reason=excluded.reason
@@ -222,6 +236,18 @@ async function markAction(env, dlqItemId, {
 }
 
 function ownerAlertConfig(env) {
+  const emailBinding = env?.OWNER_ALERT_EMAIL;
+  const emailRecipient = clean(env?.HERMES_HAE_OWNER_ALERT_RECIPIENT, 320).toLowerCase();
+  const emailSender = clean(env?.HERMES_HAE_OWNER_ALERT_SENDER, 320).toLowerCase();
+  if (emailBinding?.send && emailRecipient && emailSender) {
+    return {
+      channel: "cloudflare_email",
+      emailBinding,
+      emailRecipient,
+      emailSender,
+    };
+  }
+
   const botToken = clean(
     env?.HERMES_HAE_TELEGRAM_BOT_TOKEN || env?.HERMES_CONNECT_TELEGRAM_BOT_TOKEN,
     300,
@@ -230,7 +256,9 @@ function ownerAlertConfig(env) {
     env?.HERMES_HAE_TELEGRAM_OWNER_CHAT_ID || env?.HERMES_CONNECT_TELEGRAM_OWNER_CHAT_ID,
     120,
   );
-  return botToken && ownerChatId ? { botToken, ownerChatId } : null;
+  return botToken && ownerChatId
+    ? { channel: "telegram", botToken, ownerChatId }
+    : null;
 }
 
 function ownerAlertText(row) {
@@ -255,6 +283,8 @@ async function setAlertState(env, dlqItemId, {
   claimedAt = null,
   deliveredAt = null,
   providerMessageId = null,
+  channel = null,
+  receiptRef = null,
   lastErrorClass = null,
 }) {
   const now = new Date().toISOString();
@@ -265,6 +295,8 @@ async function setAlertState(env, dlqItemId, {
         alert_claimed_at=?,
         alert_delivered_at=?,
         alert_provider_message_id=?,
+        alert_channel=?,
+        alert_receipt_ref=?,
         alert_last_error_class=?,
         updated_at=?
     WHERE dlq_item_id=?
@@ -274,6 +306,8 @@ async function setAlertState(env, dlqItemId, {
     claimedAt,
     deliveredAt,
     providerMessageId === null ? null : clean(String(providerMessageId), 120),
+    clean(channel, 80) || null,
+    clean(receiptRef, 240) || null,
     clean(lastErrorClass, 160) || null,
     now,
     dlqItemId,
@@ -319,6 +353,57 @@ async function deliverOwnerAlert(env, row, {
     };
   }
 
+  if (config.channel === "cloudflare_email") {
+    const subject = `[HAE OWNER ACTION] ${clean(row.dlq_item_id, 120)}`;
+    try {
+      const result = await config.emailBinding.send({
+        to: config.emailRecipient,
+        from: config.emailSender,
+        subject,
+        text: ownerAlertText(row),
+      });
+      const deliveredAt = new Date().toISOString();
+      const providerMessageId = clean(result?.messageId, 120) || null;
+      const receiptRef = providerMessageId
+        ? `cloudflare-email://message/${providerMessageId}`
+        : `cloudflare-email://accepted/${clean(row.dlq_item_id, 200)}`;
+      await setAlertState(env, row.dlq_item_id, {
+        status: "DELIVERED",
+        claimedAt,
+        deliveredAt,
+        providerMessageId,
+        channel: "cloudflare_email",
+        receiptRef,
+        lastErrorClass: null,
+      });
+      return {
+        attempted: true,
+        delivered: true,
+        status: "DELIVERED",
+        channel: "cloudflare_email",
+        provider_message_id: providerMessageId,
+        receipt_ref: receiptRef,
+        delivered_at: deliveredAt,
+      };
+    } catch {
+      // Email binding errors can be ambiguous after provider handoff. Keep the
+      // durable claim and require reconciliation rather than blindly resending.
+      await setAlertState(env, row.dlq_item_id, {
+        status: "ALERT_DELIVERY_AMBIGUOUS",
+        claimedAt,
+        channel: "cloudflare_email",
+        receiptRef: `cloudflare-email://ambiguous/${clean(row.dlq_item_id, 200)}`,
+        lastErrorClass: "delivery_ambiguous_manual_review",
+      }).catch(() => {});
+      return {
+        attempted: true,
+        delivered: false,
+        status: "ALERT_DELIVERY_AMBIGUOUS",
+        channel: "cloudflare_email",
+      };
+    }
+  }
+
   try {
     const response = await fetchImpl(
       `https://api.telegram.org/bot${config.botToken}/sendMessage`,
@@ -360,6 +445,8 @@ async function deliverOwnerAlert(env, row, {
       claimedAt,
       deliveredAt,
       providerMessageId: messageId,
+      channel: "telegram",
+      receiptRef: `telegram://message/${String(messageId)}`,
       lastErrorClass: null,
     });
     return {
@@ -367,6 +454,8 @@ async function deliverOwnerAlert(env, row, {
       delivered: true,
       status: "DELIVERED",
       provider_message_id: String(messageId),
+      channel: "telegram",
+      receipt_ref: `telegram://message/${String(messageId)}`,
       delivered_at: deliveredAt,
     };
   } catch {
@@ -515,6 +604,8 @@ export async function processDlqMessage(env, item, {
     alert_delivery_attempted: Boolean(alert?.attempted),
     alert_delivered: Boolean(alert?.delivered),
     alert_provider_message_id: alert?.provider_message_id || null,
+    alert_channel: alert?.channel || null,
+    alert_receipt_ref: alert?.receipt_ref || null,
   };
 }
 
@@ -530,7 +621,8 @@ export async function dlqRuntimeSnapshot(env, limit = 50) {
   const items = await env.DB.prepare(`
     SELECT dlq_item_id,message_type,job_id,content_id,d1_state,disposition,reason,
            action_status,alert_status,alert_attempt_count,alert_claimed_at,alert_delivered_at,
-           alert_provider_message_id,alert_last_error_class,redrive_count,first_seen_at,updated_at,last_error_class
+           alert_provider_message_id,alert_channel,alert_receipt_ref,alert_last_error_class,
+           redrive_count,first_seen_at,updated_at,last_error_class
     FROM hermes_automation_dlq_items
     ORDER BY updated_at DESC
     LIMIT ?
