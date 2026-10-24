@@ -159,6 +159,9 @@ assert.match(active, /cluster_rank = 1/);
 assert.match(active, /duplicateCount/);
 assert.match(active, /reviewFlags/);
 assert.match(summary, /COUNT\(DISTINCT CASE/);
+assert.match(summary, /getSpecialistLoadBoardCompany/);
+assert.match(summary, /redistribution_permission='carrier_scoped'/);
+assert.match(summary, /authorized_carrier_company_id=\?/);
 assert.match(summary, /r\.record_type \|\| '\|' \|\| r\.dedupe_key/);
 assert.match(intake, /send_enabled = 0/);
 assert.match(intake, /car_hauling_ingest_allowed = 1/);
@@ -177,6 +180,8 @@ assert.match(intake, /INSERT INTO hermes_load_quarantine/);
 assert.match(intake, /quarantined/);
 assert.match(intake, /items_required/);
 assert.match(intake, /clampVisibility/);
+assert.match(intake, /permission === "carrier_scoped"/);
+assert.match(intake, /"internal_only", "carrier_scoped", "carrier_only", "public"/);
 assert.match(intake, /record\.covered === true/);
 assert.match(intake, /\["covered", "booked", "unavailable", "cancelled", "canceled"\]/);
 assert.match(intake, /sourceCovered \? "covered"/);
@@ -250,6 +255,9 @@ assert.doesNotMatch(dispatchPlan, forbiddenContactFields);
 
 assert.match(agentContext, /HERMES_AI_LOGISTICS_TOKEN/);
 assert.match(agentContext, /"opportunities", "lanes", "providers"/);
+assert.match(agentContext, /"internal_only", "carrier_scoped", "carrier_only", "public"/);
+assert.match(agentContext, /s\.redistribution_permission IN \('public','carrier_only'\)/,
+  "generic AI freight context must exclude carrier-scoped records until a tenant-aware contract is supplied");
 assert.match(agentContext, /data_classification: "internal-logistics-context"/);
 assert.match(agentContext, /contact_details_exposed: false/);
 assert.match(agentContext, /raw_evidence_exposed: false/);
