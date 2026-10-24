@@ -14,6 +14,10 @@ export function reconcileExternalReceipt(input = {}) {
   }
 
   const expectedId = String(receipt.provider_id || "").trim();
+  if (!expectedId && !expectedPermalink && !expectedHash) {
+    return { status: "UNKNOWN", action: "REVIEW", reason: "receipt_identity_missing" };
+  }
+
   const actualId = String(provider.provider_id || "").trim();
   if (expectedId && !actualId) {
     return { status: "UNKNOWN", action: "REVIEW", reason: "provider_id_missing_from_readback" };

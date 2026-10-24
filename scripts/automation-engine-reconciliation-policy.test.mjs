@@ -9,6 +9,14 @@ assert.deepEqual(
   { status: "CONSISTENT", action: "NONE", reason: "receipt_matches_provider" }
 );
 
+assert.deepEqual(
+  reconcileExternalReceipt({
+    receipt: {},
+    provider: { read_supported: true, read_ok: true, found: true, provider_id: "p1" },
+  }),
+  { status: "UNKNOWN", action: "REVIEW", reason: "receipt_identity_missing" }
+);
+
 for (const sample of [
   { provider: { read_supported: false }, expected: "UNKNOWN" },
   { provider: { read_supported: true, read_ok: false }, expected: "UNKNOWN" },
