@@ -63,4 +63,17 @@ const unknown = evaluateHaeIncidents({}, { now });
 assert.equal(unknown.status, "UNKNOWN");
 assert.ok(unknown.unknowns.length > 0);
 
+const queueUnknown = evaluateHaeIncidents({
+  source_sha: sha,
+  publication_enabled: false,
+  unknown_outcomes: 0,
+  unverified_readbacks: 0,
+  automation_mode: "dry_run",
+  last_cron_wake: { observed_at: "2026-10-23T15:17:00.000Z", source_sha: sha, automation_mode: "dry_run", publication_enabled: false },
+  queue: { backlog_count: "UNKNOWN", oldest_message_at: null },
+  dlq: { backlog_count: 0 },
+}, { now, expected_source_sha: sha });
+assert.equal(queueUnknown.status, "UNKNOWN");
+assert.ok(queueUnknown.unknowns.some((item) => item.code === "QUEUE_BACKLOG_UNKNOWN"));
+
 console.log("HAE incident policy contract PASS");
