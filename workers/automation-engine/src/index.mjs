@@ -25,6 +25,7 @@ import {
 import {
   dlqRuntimeSnapshot,
   processDlqMessage,
+  recoverPendingDlqOwnerAlerts,
 } from "./dlq-runtime.mjs";
 
 const ACCOUNT_KEY = "hermes_logistics";
@@ -1899,6 +1900,7 @@ export default {
       ["cron.recover_readbacks_failed", enqueueDueReadbacks],
       ["cron.recover_plan_runs_failed", recoverPendingPlanRuns],
       ["cron.recover_generic_jobs_failed", recoverPendingGenericJobs],
+      ["cron.recover_dlq_owner_alerts_failed", recoverPendingDlqOwnerAlerts],
     ]) {
       try {
         await maintenance(env);
