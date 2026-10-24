@@ -2193,7 +2193,7 @@ export default {
         publication_enabled: publicationEnabled(env),
       });
     }
-    if (request.method === "POST" && url.pathname === "/v1/task-graphs") {
+    if (request.method === "POST" && url.pathname === "/v1/capability-graphs") {
       if (!authorized(request, env)) return json(401, { success: false, error: "unauthorized" });
       if (!env.DB || !env.AUTOMATION_QUEUE) return json(503, { success: false, error: "runtime_not_configured" });
       const body = await request.json().catch(() => ({}));
@@ -2213,12 +2213,12 @@ export default {
       }
     }
 
-    if (request.method === "GET" && url.pathname.startsWith("/v1/task-graphs/")) {
+    if (request.method === "GET" && url.pathname.startsWith("/v1/capability-graphs/")) {
       if (!authorized(request, env)) return json(401, { success: false, error: "unauthorized" });
       if (!env.DB) return json(503, { success: false, error: "runtime_not_configured" });
       let graphId = "";
       try {
-        graphId = clean(decodeURIComponent(url.pathname.slice("/v1/task-graphs/".length)), 160);
+        graphId = clean(decodeURIComponent(url.pathname.slice("/v1/capability-graphs/".length)), 160);
       } catch {
         return json(400, { success: false, error: "graph_id_invalid" });
       }
