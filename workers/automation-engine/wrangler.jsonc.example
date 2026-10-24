@@ -36,6 +36,12 @@
         "max_batch_timeout": 5,
         "max_retries": 3,
         "dead_letter_queue": "hermes-automation-dlq"
+      },
+      {
+        "queue": "hermes-automation-dlq",
+        "max_batch_size": 5,
+        "max_batch_timeout": 5,
+        "max_retries": 3
       }
     ]
   },
