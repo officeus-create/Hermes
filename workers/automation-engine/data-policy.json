@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "default": "DENY_UNCLASSIFIED_DATA",
+  "classes": {
+    "technical_runtime_evidence": {
+      "pii_allowed": false,
+      "secret_allowed": false,
+      "automated_purge_enabled": false,
+      "retention_days": null,
+      "deletion_path": "OWNER_POLICY_REQUIRED_BEFORE_AUTOMATION"
+    }
+  },
+  "future_activation_rules": [
+    "A capability that can persist PII must reference a defined data class.",
+    "A PII-enabled data class must define a finite retention_days value and a deletion_path before capability activation.",
+    "Secrets, tokens, passwords, cookies and recovery values are never permitted in HAE payload/event retention classes.",
+    "Analytics and public receipts must receive only minimized non-PII projections.",
+    "No automated purge is enabled until the owner-approved retention policy is recorded."
+  ],
+  "runtime_enforcement_status": "DECLARATIVE_PRE_ACTIVATION",
+  "runtime_enforcement_note": "This file classifies allowed data policy but does not itself sanitize or reject arbitrary job payload fields. PII-bearing or secret-bearing ingestion requires a separate enforced minimization/redaction gate before activation."
+}
