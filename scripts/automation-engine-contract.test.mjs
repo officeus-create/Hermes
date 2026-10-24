@@ -347,6 +347,12 @@ assert.match(worker, /"history\.coverage\.audit"/, "Generic executor must suppor
 assert.match(worker, /HISTORICAL_READ_ONLY_JOB_TYPES/, "Historical primitives must bind into the existing generic job registry");
 assert.match(worker, /runHistoricalLearningPrimitive/, "Historical primitive execution must reuse the existing generic executor");
 assert.match(worker, /\.\.\.HISTORICAL_READ_ONLY_JOB_TYPES/, "Historical jobs must extend the same read-only generic allowlist");
+assert.match(worker, /\.\.\.ROLE_CONTRACT_JOB_TYPES/, "Plugin-derived role contracts must extend the same generic executor allowlist");
+assert.match(worker, /roleContractSha256/, "Role-contract execution must bind a cryptographic contract digest");
+assert.match(worker, /_role_contract/, "Role-contract identity must be persisted with the durable job payload");
+assert.match(worker, /role_contract_stale/, "Role-contract drift must fail closed instead of silently changing instructions");
+assert.match(worker, /semantic_required/, "Role-contract receipt must preserve whether AI was required");
+assert.match(worker, /free_ai_policy/, "Role-contract receipt must preserve the free-AI policy");
 assert.match(worker, /HISTORICAL_READ_ONLY_JOB_TYPES\.includes\(jobType\)[\s\S]*runHistoricalLearningPrimitive\(jobType, payload\)/, "Historical job payloads must be validated before enqueue");
 assert.match(worker, /HISTORICAL_READ_ONLY_JOB_TYPES\.includes\(job\.job_type\)[\s\S]*runHistoricalLearningPrimitive\(job\.job_type, payload\)/, "Historical jobs must execute inside the same runReadOnlyGenericCapability path");
 assert.doesNotMatch(worker, /READ_ONLY_GENERIC_JOB_TYPES[\s\S]{0,240}"social\.publish"/, "Live social writes must not be allowed through the first generic read-only executor");
