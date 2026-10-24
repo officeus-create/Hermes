@@ -7,7 +7,7 @@ type Env = { DB?: any };
 const PRIVATE_HEADERS={ "Cache-Control":"private, no-store","X-Robots-Tag":"noindex, nofollow" };
 const PUBLIC_HEADERS={
   "Content-Type":"image/jpeg",
-  "Cache-Control":"public, max-age=3600",
+  "Cache-Control":"public, max-age=300, must-revalidate",
   "X-Robots-Tag":"noindex, nofollow, noarchive",
   "X-Content-Type-Options":"nosniff",
 };
@@ -56,6 +56,7 @@ export async function onRequestGet({request,env}:{request:Request;env:Env}){
   const id=clean(new URL(request.url).searchParams.get("id"),96);
   if(!/^hbsm_[a-f0-9]{32}$/i.test(id))return new Response("Not found",{status:404,headers:PUBLIC_HEADERS});
   await ensureBusinessSocialSchema(env.DB);
+  await cleanupExpired(env.DB);
   const row=await env.DB.prepare(`
     SELECT mime_type,content_base64,expires_at,status
     FROM hermes_business_social_media_assets
