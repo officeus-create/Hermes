@@ -98,6 +98,13 @@ for (const result of concurrentUnknown) {
   assert.deepEqual(result.dataWrites, [], "concurrent reject must not create or mutate source data");
 }
 
+const repeatedUnknown = [await attempt(null), await attempt(null)];
+for (const result of repeatedUnknown) {
+  assert.equal(result.status, 409, "repeated unknown-source reject must stay idempotent");
+  assert.equal(result.body.error, "source_approval_required");
+  assert.deepEqual(result.dataWrites, [], "repeated reject must not create or mutate source data");
+}
+
 const rejectionLogs = [];
 const originalInfo = console.info;
 console.info = (...args) => rejectionLogs.push(args.join(" "));
