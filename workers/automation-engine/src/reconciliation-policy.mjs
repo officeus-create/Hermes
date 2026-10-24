@@ -3,7 +3,7 @@ export function reconcileExternalReceipt(input = {}) {
   const provider = input.provider || {};
 
   if (provider.read_supported !== true) {
-    return { status: "UNKNOWN", action: "NONE", reason: "provider_read_not_supported" };
+    return { status: "UNKNOWN", action: "REVIEW", reason: "provider_read_not_supported" };
   }
   if (provider.read_ok !== true) {
     return { status: "UNKNOWN", action: "REVIEW", reason: "provider_read_failed" };
