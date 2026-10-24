@@ -1,4 +1,5 @@
 import {getAuthenticatedSpecialist,jsonResponse} from "../_lib/session.mjs";
+import {specialistHasInternalOwnerCapability} from "../_lib/load-board-market-posts.mjs";
 import {
   carrierSafeLoad,cleanWorkspaceId,ensureCarrierDispatchWorkspaceSchema,isApprovedDispatcher,
   privateWorkspaceHeaders,safeWorkspaceText,workspaceSameOrigin,
@@ -15,6 +16,7 @@ async function identify(context:Context){
 export async function onRequestGet(context:Context){
   const auth=await identify(context);if(auth.error)return auth.error;
   const db=context.env.DB;
+  const internalOwner=await specialistHasInternalOwnerCapability(db,auth.user.id);
   const assignments=await db.prepare(`
     SELECT a.carrier_company_id,c.company_name,c.state,c.city
     FROM hermes_carrier_dispatch_assignments a
@@ -32,10 +34,34 @@ export async function onRequestGet(context:Context){
     WHERE r.status='active' AND r.record_type='load' AND r.expires_at>?
       AND r.visibility IN ('public','carrier_only')
       AND s.status='active' AND s.read_enabled=1
-      AND s.redistribution_permission IN ('public','carrier_only')
+      AND (
+        (r.visibility='public' AND s.redistribution_permission='public')
+        OR (r.visibility='carrier_only' AND s.redistribution_permission IN ('public','carrier_only'))
+        OR (
+          r.visibility='carrier_only'
+          AND s.redistribution_permission='carrier_scoped'
+          AND EXISTS (
+            SELECT 1
+            FROM hermes_company_profiles scoped_company
+            JOIN hermes_carrier_board_entitlements scoped_entitlement
+              ON scoped_entitlement.company_id=scoped_company.id AND scoped_entitlement.status='active'
+            WHERE scoped_company.id=s.authorized_carrier_company_id
+              AND scoped_company.load_board_access=1
+              AND (
+                ?=1
+                OR EXISTS (
+                  SELECT 1 FROM hermes_carrier_dispatch_assignments scoped_assignment
+                  WHERE scoped_assignment.carrier_company_id=scoped_company.id
+                    AND scoped_assignment.dispatcher_specialist_id=?
+                    AND scoped_assignment.status='active'
+                )
+              )
+          )
+        )
+      )
     ORDER BY COALESCE(r.source_quality_score,0) DESC,r.observed_at DESC
     LIMIT 200
-  `).bind(new Date().toISOString()).all();
+  `).bind(new Date().toISOString(),internalOwner?1:0,auth.user.id).all();
   const requests=await db.prepare(`
     SELECT i.id,i.load_record_id,i.carrier_company_id,c.company_name,i.carrier_message,
       i.status,i.status_note,i.created_at,i.updated_at,
@@ -82,7 +108,7 @@ export async function onRequestGet(context:Context){
   };
   return reply(200,{
     success:true,
-    accessScope:"assigned_dispatcher_or_internal_owner",
+    accessScope:internalOwner?"internal_owner":"assigned_dispatcher",
     assignments:assignmentRows,
     loads:(loads.results||[]).map(carrierSafeLoad),
     requests:requestRows,
