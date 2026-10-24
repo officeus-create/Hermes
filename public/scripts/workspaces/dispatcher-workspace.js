@@ -50,6 +50,7 @@ function loadCard(r){
  ].join(" · ");
  card.append(el("p",meta,"wsp-muted"));
  if(r.pickupWindow)card.append(el("p","Pickup: "+r.pickupWindow,"wsp-muted"));
+ if(r.carrierScope?.companyName)card.append(el("p","Authorized carrier: "+r.carrierScope.companyName,"wsp-status"));
  if(r.expiresAt)card.append(el("p","Expires: "+new Date(r.expiresAt).toLocaleString(),"wsp-muted"));
  card.append(el("p","Source identity and direct contact stay hidden. Verify the load, authority, carrier fit and current availability before any outside action.","wsp-notice"));
  return card;
@@ -102,4 +103,5 @@ for(const b of document.querySelectorAll("[data-status-filter]"))b.addEventListe
 });
 if(loadSearch)loadSearch.addEventListener("input",renderLoads);
 refresh().catch(e=>info(e.message,true));
+setInterval(()=>{if(document.visibilityState==="visible")refresh().catch(()=>{});},30000);
 })();
