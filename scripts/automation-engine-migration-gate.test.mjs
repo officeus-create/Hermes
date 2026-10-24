@@ -13,8 +13,12 @@ assert.ok(["PENDING_RUNTIME_SNAPSHOT", "VERIFIED"].includes(manifest.baseline_st
 if (manifest.baseline_status !== "VERIFIED") {
   assert.deepEqual(sqlFiles, [], "No D1 SQL migration may exist before the authenticated runtime schema baseline is VERIFIED");
   assert.equal(manifest.baseline_source_sha, null);
+  assert.equal(manifest.baseline_evidence_ref, null);
+  assert.equal(manifest.baseline_schema_fingerprint, null);
 } else {
   assert.match(String(manifest.baseline_source_sha || ""), /^[0-9a-f]{40}$/, "Verified migration baseline requires exact source SHA");
+  assert.ok(String(manifest.baseline_evidence_ref || "").trim(), "Verified migration baseline requires authenticated schema evidence reference");
+  assert.match(String(manifest.baseline_schema_fingerprint || ""), /^sha256:[0-9a-f]{64}$/, "Verified migration baseline requires deterministic schema fingerprint");
   assert.deepEqual(manifest.migration_files, sqlFiles, "Migration manifest must list every numbered SQL migration exactly once and in order");
 }
 

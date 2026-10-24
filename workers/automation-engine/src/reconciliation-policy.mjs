@@ -15,19 +15,28 @@ export function reconcileExternalReceipt(input = {}) {
 
   const expectedId = String(receipt.provider_id || "").trim();
   const actualId = String(provider.provider_id || "").trim();
-  if (expectedId && actualId && expectedId !== actualId) {
+  if (expectedId && !actualId) {
+    return { status: "UNKNOWN", action: "REVIEW", reason: "provider_id_missing_from_readback" };
+  }
+  if (expectedId && actualId !== expectedId) {
     return { status: "DRIFT", action: "REVIEW", reason: "provider_id_mismatch" };
   }
 
   const expectedPermalink = String(receipt.permalink || "").trim();
   const actualPermalink = String(provider.permalink || "").trim();
-  if (expectedPermalink && actualPermalink && expectedPermalink !== actualPermalink) {
+  if (expectedPermalink && !actualPermalink) {
+    return { status: "UNKNOWN", action: "REVIEW", reason: "permalink_missing_from_readback" };
+  }
+  if (expectedPermalink && actualPermalink !== expectedPermalink) {
     return { status: "DRIFT", action: "REVIEW", reason: "permalink_mismatch" };
   }
 
   const expectedHash = String(receipt.content_hash || "").trim();
   const actualHash = String(provider.content_hash || "").trim();
-  if (expectedHash && actualHash && expectedHash !== actualHash) {
+  if (expectedHash && !actualHash) {
+    return { status: "UNKNOWN", action: "REVIEW", reason: "content_hash_missing_from_readback" };
+  }
+  if (expectedHash && actualHash !== expectedHash) {
     return { status: "DRIFT", action: "REVIEW", reason: "content_hash_mismatch" };
   }
 

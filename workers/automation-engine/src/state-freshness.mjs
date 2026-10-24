@@ -1,4 +1,5 @@
 const SHA40 = /^[0-9a-f]{40}$/;
+const PROOF_REQUIRED_STATES = new Set(["LIVE_VERIFIED", "EVIDENCE_COMPLETE_FOR_RELEASE_REVIEW"]);
 
 function bool(value) {
   return value === true;
@@ -57,9 +58,9 @@ export function auditHaeState(snapshot = {}) {
   ];
   const missingLiveProof = requiredLiveProof.filter((key) => !proofOk(runtime.proof, key));
 
-  if (claimedState === "LIVE_VERIFIED" && missingLiveProof.length) {
+  if (PROOF_REQUIRED_STATES.has(claimedState) && missingLiveProof.length) {
     findings.push({
-      code: "FALSE_LIVE_CLAIM",
+      code: claimedState === "LIVE_VERIFIED" ? "FALSE_LIVE_CLAIM" : "RUNTIME_PROOF_INCOMPLETE",
       severity: "BLOCKER",
       missing: missingLiveProof,
     });
@@ -69,7 +70,7 @@ export function auditHaeState(snapshot = {}) {
     findings.push({ code: "UNKNOWN_COERCED_TO_ZERO", severity: "BLOCKER" });
   }
 
-  if (snapshot.plugin?.installed === true && claimedState === "LIVE_VERIFIED" && runtime.proof == null) {
+  if (snapshot.plugin?.installed === true && PROOF_REQUIRED_STATES.has(claimedState) && runtime.proof == null) {
     findings.push({ code: "PLUGIN_MISTAKEN_FOR_RUNTIME", severity: "BLOCKER" });
   }
 

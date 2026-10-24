@@ -5,5 +5,7 @@
   "baseline_status": "PENDING_RUNTIME_SNAPSHOT",
   "baseline_source_sha": null,
   "destructive_migration_requires_owner_confirmation": true,
-  "migration_files": []
+  "migration_files": [],
+  "baseline_evidence_ref": null,
+  "baseline_schema_fingerprint": null
 }

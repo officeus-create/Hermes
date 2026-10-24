@@ -69,6 +69,16 @@ for (const code of [
   assert.ok(falseLive.blockers.some((item) => item.code === code), `Missing blocker ${code}`);
 }
 
+const evidenceClaimWithoutProof = auditHaeState({
+  current_main_sha: sha,
+  claimed_state: "EVIDENCE_COMPLETE_FOR_RELEASE_REVIEW",
+  gate_phase: "READ_ONLY_RELIABILITY",
+  pr: { behind_by: 0, exact_scope_verified: true },
+  plugin: { installed: true },
+  runtime: { source_sha: sha, publication_enabled: false, proof: { private_health: true } },
+});
+assert.ok(evidenceClaimWithoutProof.blockers.some((item) => item.code === "RUNTIME_PROOF_INCOMPLETE"));
+
 const pluginOnly = auditHaeState({
   current_main_sha: sha,
   claimed_state: "LIVE_VERIFIED",

@@ -20,11 +20,36 @@ export function evaluateHaeIncidents(health = {}, options = {}) {
   const warnings = [];
   const unknowns = [];
 
-  const heartbeatMs = timestampMs(health?.last_cron_wake?.observed_at || health?.last_cron_wake?.scheduled_at);
+  const heartbeat = health?.last_cron_wake || {};
+  const heartbeatMs = timestampMs(heartbeat?.observed_at || heartbeat?.scheduled_at);
   if (heartbeatMs === null) {
     unknowns.push({ code: "CRON_FRESHNESS_UNKNOWN" });
   } else if (nowMs - heartbeatMs > intervalMinutes * 2 * 60_000) {
     incidents.push({ code: "CRON_STALE", age_minutes: Math.floor((nowMs - heartbeatMs) / 60_000) });
+  }
+
+  const heartbeatSha = String(heartbeat?.source_sha || "").trim();
+  if (heartbeatMs !== null) {
+    if (!heartbeatSha) {
+      unknowns.push({ code: "HEARTBEAT_SOURCE_SHA_UNKNOWN" });
+    } else if (expectedSha && heartbeatSha !== expectedSha) {
+      incidents.push({ code: "HEARTBEAT_SOURCE_SHA_DRIFT", expected: expectedSha, actual: heartbeatSha });
+    }
+  }
+
+  const runtimeMode = String(health?.automation_mode || "").trim();
+  const heartbeatMode = String(heartbeat?.automation_mode || "").trim();
+  if (runtimeMode && heartbeatMode && runtimeMode !== heartbeatMode) {
+    incidents.push({ code: "HEARTBEAT_MODE_DRIFT", expected: runtimeMode, actual: heartbeatMode });
+  }
+
+  if (typeof health?.publication_enabled === "boolean" && typeof heartbeat?.publication_enabled === "boolean"
+      && health.publication_enabled !== heartbeat.publication_enabled) {
+    incidents.push({
+      code: "HEARTBEAT_PUBLICATION_GATE_DRIFT",
+      expected: health.publication_enabled,
+      actual: heartbeat.publication_enabled,
+    });
   }
 
   const dlqBacklog = numberOrNull(health?.dlq?.backlog_count);
@@ -50,6 +75,9 @@ export function evaluateHaeIncidents(health = {}, options = {}) {
 
   if (phase === "READ_ONLY_RELIABILITY" && health?.publication_enabled === true) {
     incidents.push({ code: "PUBLICATION_ENABLED_DURING_READ_ONLY_GATE" });
+  }
+  if (phase === "READ_ONLY_RELIABILITY" && heartbeat?.publication_enabled === true) {
+    incidents.push({ code: "HEARTBEAT_PUBLICATION_ENABLED_DURING_READ_ONLY_GATE" });
   }
 
   const sourceSha = String(health?.source_sha || "").trim();
