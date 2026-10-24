@@ -21,12 +21,13 @@ The remaining product gap was between **storyboard** and **publishable image URL
 After an owner reviews the AI package, **Render publish-ready JPEGs**:
 
 1. turns the reviewed carousel plan into original Hermes Connect editorial cards in the browser;
-2. renders 4:5 JPEG at 900×1125;
-3. adaptively lowers JPEG quality if required;
-4. uploads each approved render through the authenticated same-origin Social Studio endpoint;
-5. stores only a short-lived JPEG payload and asset metadata in the existing D1 binding;
-6. returns an opaque same-domain public HTTPS URL;
-7. inserts the URLs into the existing unified composer for final review/publish.
+2. renders feed/carousel cards at 4:5 (900×1125);
+3. renders a separate Instagram Story derivative at 9:16 (900×1600) from the reviewed Story direction instead of stretching the feed card;
+4. adaptively lowers JPEG quality if required;
+5. uploads each approved render through the authenticated same-origin Social Studio endpoint;
+6. stores only a short-lived JPEG payload and asset metadata in the existing D1 binding;
+7. returns an opaque same-domain public HTTPS URL;
+8. inserts feed URLs into the existing unified composer and routes the dedicated Story URL only to Instagram Story for final review/publish.
 
 The asset endpoint does not publish to Meta. External social publication still requires the existing explicit owner confirmation.
 
@@ -37,7 +38,7 @@ The asset endpoint does not publish to Meta. External social publication still r
 - The creative intake must belong to the same owner/business.
 - Only JPEG is accepted.
 - Maximum JPEG size: 1,250,000 bytes.
-- Maximum active assets per intake: 10.
+- Maximum active assets per intake: 11 (up to 10 feed/carousel images plus one dedicated 9:16 Story image).
 - Asset IDs are cryptographically random opaque identifiers.
 - Public GET exposes one image only; there is no public listing endpoint.
 - Public responses are `noindex, nofollow, noarchive`.
@@ -56,7 +57,7 @@ If media volume grows, promote the same interface to Hermes-controlled object st
 
 ## Rendering boundary
 
-The first renderer is deterministic and source-bounded. It does **not** invent source photography, customer results, people, locations or product UI. It renders:
+The first renderer is deterministic and source-bounded. Feed/carousel and Story use separate aspect-ratio derivatives; Threads is never represented as having an Instagram-style Story surface. It does **not** invent source photography, customer results, people, locations or product UI. It renders:
 
 - business identity;
 - AI-reviewed carousel headline/body;
