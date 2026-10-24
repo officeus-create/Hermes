@@ -226,7 +226,7 @@ assert.match(worker, /recordAiUsage/, "Semantic execution must persist an AI usa
 assert.match(worker, /ai_budget_exceeded/, "Semantic execution must fail closed when actual cost exceeds the contract budget");
 assert.match(worker, /default_semantic_budget_usd: 0/, "Capabilities must expose the zero-dollar default semantic budget");
 assert.match(worker, /url\.pathname === "\/v1\/ai-usage"/, "Private control surface must expose the AI usage/cost ledger");
-assert.match(worker, /url\.pathname === "\/v1\/task-graphs"/, "Private control surface must accept bounded capability graphs");
+assert.match(worker, /url\.pathname === "\/v1\/capability-graphs"/, "Private control surface must accept bounded capability graphs");
 assert.match(worker, /dispatchCapabilityGraphReadyNodes/, "HAE must dispatch ready graph nodes through the existing generic job executor");
 assert.match(worker, /syncCapabilityGraphJobBestEffort/, "Generic job outcomes must reconcile back into graph node evidence");
 assert.match(worker, /cron\.recover_capability_graphs_failed/, "Existing Cron maintenance must recover active graphs without a second scheduler");
