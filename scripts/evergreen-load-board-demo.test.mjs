@@ -15,6 +15,12 @@ for (const label of [
 }
 
 assert.equal((html.match(/<dt>Status<\/dt><dd>PREVIEW · NOT LIVE<\/dd>/g) ?? []).length, 4);
+assert.match(html, /External public source · verify availability/);
+assert.match(html, /Open source & verify/);
+assert.match(html, /Atlantic Logistics/);
+assert.match(html, /FreightFinder public search/);
+assert.equal((html.match(/data-public-discovery-load/g) ?? []).length, 10);
+assert.doesNotMatch(html, /tel:|mailto:/i, "Public discovery must not expose broker contact links");
 assert.doesNotMatch(html, /Jul\s+2[2-6]/i);
 assert.doesNotMatch(html, /\b\d+\s*(?:min|hr)s?\s+ago\b/i);
 
