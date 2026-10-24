@@ -21,8 +21,15 @@ class FakeStatement {
       ] = this.args;
       const existing = this.db.dlq.get(id);
       if (existing) {
+        const classificationChanged =
+          existing.disposition !== disposition || existing.reason !== reason;
         existing.d1_state = d1State;
         existing.idempotency_key = idempotencyKey || existing.idempotency_key;
+        if (classificationChanged) {
+          existing.action_status = actionStatus;
+          existing.alert_status = alertStatus;
+          existing.last_error_class = null;
+        }
         existing.disposition = disposition;
         existing.reason = reason;
         existing.updated_at = updatedAt;
@@ -131,6 +138,21 @@ assert.equal(DB.dlq.get("dlq:m-job-1").redrive_count, 1);
 outcome = await processDlqMessage(env, message("m-job-1", { type: "job.execute", job_id: "job:queued" }));
 assert.equal(outcome.duplicate_suppressed, true);
 assert.equal(sent.length, 1, "Same DLQ item must not send a second redrive after REDRIVE_SENT");
+
+// Authoritative D1 state can change after an earlier redrive. Reclassifying the
+// same DLQ item must reset stale action/alert state rather than treating the old
+// REDRIVE_SENT receipt as proof that the new terminal classification was handled.
+DB.jobs.set("job:queued", {
+  job_id: "job:queued",
+  state: "SUCCEEDED",
+  idempotency_key: "job-key-queued",
+});
+outcome = await processDlqMessage(env, message("m-job-1", { type: "job.execute", job_id: "job:queued" }));
+assert.equal(outcome.disposition, "QUARANTINE");
+assert.equal(outcome.action_status, "QUARANTINED");
+assert.equal(outcome.alert_status, "PENDING_OWNER_ALERT");
+assert.equal(outcome.duplicate_suppressed, undefined);
+assert.equal(sent.length, 1, "Terminal reclassification must not redrive again");
 
 DB.jobs.set("job:done", {
   job_id: "job:done",
