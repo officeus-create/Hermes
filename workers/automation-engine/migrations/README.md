@@ -11,7 +11,7 @@ Rules:
 1. Never create a second HAE database.
 2. The canonical database is discovered from the existing `hermes` Pages production `DB` binding.
 3. Current V1 additive `ensureSchema` behavior remains unchanged until the deployed schema snapshot is captured and this migration baseline is explicitly promoted from PENDING_RUNTIME_SNAPSHOT.
-4. After the first verified runtime baseline, change `baseline_status` to `VERIFIED`, record the exact deployed source SHA, and introduce numbered forward migrations.
+4. After the authenticated schema snapshot, change `baseline_status` to `VERIFIED`, record the exact deployed source SHA, the immutable evidence reference, and the deterministic `sha256:` schema fingerprint; only then may numbered forward migrations be introduced.
 5. Every migration must be listed in `manifest.json` in execution order.
 6. Destructive migrations require explicit owner confirmation and a separate restore/rollback plan.
 7. D1 Time Travel/restore is a production action; never invoke it from CI or a normal migration test.
