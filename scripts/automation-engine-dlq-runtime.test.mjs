@@ -263,7 +263,8 @@ assert.ok(telegramCalls.every((call) => call.url.includes("api.telegram.org/bot"
 assert.ok(telegramCalls.every((call) => JSON.parse(call.options.body).chat_id === "123456"));
 
 snapshot = await dlqRuntimeSnapshot(env, 10);
-assert.equal(snapshot.external_alert_delivery_verified, true, "A real-shaped provider message_id receipt should verify the delivery channel in runtime state");
+assert.equal(snapshot.external_alert_transport_accepted, true, "Provider message_id receipts should prove transport acceptance");
+assert.equal(snapshot.external_alert_delivery_verified, false, "Provider acceptance alone must not promote T4 to LIVE_VERIFIED without independent owner-channel readback");
 assert.equal(snapshot.items.filter((row) => row.alert_status === "DELIVERED").length, 3);
 assert.ok(snapshot.items.filter((row) => row.alert_status === "DELIVERED").every((row) => row.alert_provider_message_id));
 
