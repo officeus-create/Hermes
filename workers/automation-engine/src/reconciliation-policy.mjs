@@ -8,12 +8,13 @@ export function reconcileExternalReceipt(input = {}) {
   if (provider.read_ok !== true) {
     return { status: "UNKNOWN", action: "REVIEW", reason: "provider_read_failed" };
   }
-
   if (provider.found !== true) {
     return { status: "DRIFT", action: "REVIEW", reason: "provider_object_missing" };
   }
 
   const expectedId = String(receipt.provider_id || "").trim();
+  const expectedPermalink = String(receipt.permalink || "").trim();
+  const expectedHash = String(receipt.content_hash || "").trim();
   if (!expectedId && !expectedPermalink && !expectedHash) {
     return { status: "UNKNOWN", action: "REVIEW", reason: "receipt_identity_missing" };
   }
@@ -26,7 +27,6 @@ export function reconcileExternalReceipt(input = {}) {
     return { status: "DRIFT", action: "REVIEW", reason: "provider_id_mismatch" };
   }
 
-  const expectedPermalink = String(receipt.permalink || "").trim();
   const actualPermalink = String(provider.permalink || "").trim();
   if (expectedPermalink && !actualPermalink) {
     return { status: "UNKNOWN", action: "REVIEW", reason: "permalink_missing_from_readback" };
@@ -35,7 +35,6 @@ export function reconcileExternalReceipt(input = {}) {
     return { status: "DRIFT", action: "REVIEW", reason: "permalink_mismatch" };
   }
 
-  const expectedHash = String(receipt.content_hash || "").trim();
   const actualHash = String(provider.content_hash || "").trim();
   if (expectedHash && !actualHash) {
     return { status: "UNKNOWN", action: "REVIEW", reason: "content_hash_missing_from_readback" };
