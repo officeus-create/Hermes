@@ -29,8 +29,12 @@ export function auditHaeState(snapshot = {}) {
     findings.push({ code: "PR_SCOPE_UNVERIFIED", severity: "BLOCKER" });
   }
 
-  if (phase === "READ_ONLY_RELIABILITY" && bool(runtime.publication_enabled)) {
-    findings.push({ code: "PUBLICATION_GATE_VIOLATION", severity: "BLOCKER" });
+  if (phase === "READ_ONLY_RELIABILITY") {
+    if (typeof runtime.publication_enabled !== "boolean") {
+      findings.push({ code: "PUBLICATION_GATE_UNKNOWN", severity: "UNKNOWN" });
+    } else if (bool(runtime.publication_enabled)) {
+      findings.push({ code: "PUBLICATION_GATE_VIOLATION", severity: "BLOCKER" });
+    }
   }
 
   const runtimeSha = String(runtime.source_sha || "").trim();
@@ -47,15 +51,32 @@ export function auditHaeState(snapshot = {}) {
     });
   }
 
-  const requiredLiveProof = [
-    "private_health",
-    "d1",
-    "queue",
-    "dlq",
-    "cron_heartbeat",
-    "read_only_job_receipt",
-    "idempotency_replay",
-  ];
+  const requiredLiveProof = claimedState === "EVIDENCE_COMPLETE_FOR_RELEASE_REVIEW"
+    ? [
+        "authenticated_deployment",
+        "private_health",
+        "d1",
+        "queue",
+        "dlq",
+        "cron_heartbeat",
+        "read_only_job_receipt",
+        "idempotency_replay",
+        "dry_run",
+        "publication_disabled",
+        "independent_qa",
+      ]
+    : claimedState === "LIVE_VERIFIED"
+      ? [
+          "authenticated_deployment",
+          "private_health",
+          "d1",
+          "queue",
+          "dlq",
+          "cron_heartbeat",
+          "idempotency_replay",
+          "independent_qa",
+        ]
+      : [];
   const missingLiveProof = requiredLiveProof.filter((key) => !proofOk(runtime.proof, key));
 
   if (PROOF_REQUIRED_STATES.has(claimedState) && missingLiveProof.length) {
