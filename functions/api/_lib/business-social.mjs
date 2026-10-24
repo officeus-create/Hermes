@@ -210,6 +210,7 @@ export async function ensureBusinessSocialSchema(db) {
       width INTEGER NOT NULL,
       height INTEGER NOT NULL,
       slide_index INTEGER NOT NULL DEFAULT 0,
+      surface_hint TEXT NOT NULL DEFAULT 'feed',
       content_sha256 TEXT NOT NULL,
       content_base64 TEXT NOT NULL,
       status TEXT NOT NULL DEFAULT 'ready_public',
