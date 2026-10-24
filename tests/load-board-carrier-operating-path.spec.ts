@@ -84,8 +84,11 @@ test("canonical Load Board source is wired to separate live load, capacity and t
   expect(live).toContain('href="/carrier/"');
   expect(parser).not.toContain('reason: "car_hauling_hold"');
   expect(parser).toContain('return "car_hauler"');
-  expect(intake).toContain("car_hauling_ingest_allowed = 1");
-  expect(intake).toContain("car_hauling_outreach_hold = 1");
+  expect(intake).toContain("Number(managedSource.car_hauling_ingest_allowed || 0) === 1");
+  expect(intake).toContain("car_hauling_broker_outreach_hold: true");
+  expect(intake).toContain("source_approval_required");
+  expect(intake).toContain("source_ingest_not_enabled");
+  expect(intake).not.toContain("INSERT INTO hermes_load_sources");
   expect(intake).toContain("outbound_enabled: false");
 });
 

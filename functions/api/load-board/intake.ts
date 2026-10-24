@@ -78,11 +78,35 @@ async function stableId(prefix: string, sourceId: string, sourceMessageId: strin
   return `${prefix}_${hex.slice(0, 40)}`;
 }
 
+async function constantTimeTokenMatch(candidate: string, expected: string) {
+  const encoder = new TextEncoder();
+  const [candidateDigest, expectedDigest] = await Promise.all([
+    crypto.subtle.digest("SHA-256", encoder.encode(candidate)),
+    crypto.subtle.digest("SHA-256", encoder.encode(expected)),
+  ]);
+  const left = new Uint8Array(candidateDigest);
+  const right = new Uint8Array(expectedDigest);
+  let diff = 0;
+  for (let index = 0; index < left.length; index += 1) diff |= left[index] ^ right[index];
+  return diff === 0;
+}
+
+function rejectSource(reason: string, sourceId: string, extra: Record<string, unknown> = {}) {
+  console.info("LOAD_BOARD_SOURCE_REJECTED", JSON.stringify({
+    metric: "source_rejected_total",
+    value: 1,
+    reason,
+    source_id: sourceId || null,
+  }));
+  return jsonResponse(409, { success: false, error: reason, ...extra });
+}
+
 export async function onRequestPost({ request, env }: { request: Request; env: Env }) {
   if (!env.DB) return jsonResponse(503, { success: false, error: "database_not_configured" });
   const configuredToken = String(env.HERMES_LOADBOARD_INGEST_TOKEN || env.LEAD_SERVICE_TOKEN || "");
   if (!configuredToken) return jsonResponse(503, { success: false, error: "ingest_secret_not_configured" });
-  if (request.headers.get("Authorization") !== `Bearer ${configuredToken}`) {
+  const presentedAuthorization = String(request.headers.get("Authorization") || "");
+  if (!(await constantTimeTokenMatch(presentedAuthorization, `Bearer ${configuredToken}`))) {
     return jsonResponse(401, { success: false, error: "unauthorized" });
   }
 
@@ -115,6 +139,10 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     SELECT
       r.status AS request_status,
       r.connection_state,
+      s.id AS registered_source_id,
+      s.status AS registered_source_status,
+      s.read_enabled AS registered_read_enabled,
+      s.ingest_enabled AS registered_ingest_enabled,
       s.source_type AS approved_source_type,
       s.redistribution_permission AS approved_redistribution_permission,
       s.contact_reveal_permission AS approved_contact_reveal_permission,
@@ -125,97 +153,66 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     LIMIT 1
   `).bind(sourceId).first();
 
-  if (managedSource && String(managedSource.request_status || "") !== "approved") {
-    return jsonResponse(409, { success: false, error: "source_request_not_approved" });
+  // A valid shared ingest token is not permission to register a new freight source.
+  // Partner approval, verified connection and ingest enablement are separate gates.
+  if (!managedSource) {
+    return rejectSource("source_approval_required", sourceId);
   }
-  if (managedSource && !["ingest_enabled", "active"].includes(String(managedSource.connection_state || ""))) {
-    return jsonResponse(409, {
-      success: false,
-      error: "source_connection_not_ingest_enabled",
+  if (String(managedSource.request_status || "") !== "approved") {
+    return rejectSource("source_request_not_approved", sourceId);
+  }
+  if (!["ingest_enabled", "active"].includes(String(managedSource.connection_state || ""))) {
+    return rejectSource("source_connection_not_ingest_enabled", sourceId, {
       connection_state: managedSource.connection_state || "not_started",
     });
   }
-  if (managedSource && String(managedSource.approved_source_type || "") !== sourceType) {
-    return jsonResponse(409, { success: false, error: "source_type_mismatch" });
+  if (String(managedSource.approved_source_type || "") !== sourceType) {
+    return rejectSource("source_type_mismatch", sourceId);
   }
 
-  const redistributionPermission = managedSource
-    ? String(managedSource.approved_redistribution_permission || "internal_only")
-    : requestedRedistributionPermission;
-  const contactRevealPermission = managedSource
-    ? String(managedSource.approved_contact_reveal_permission || "hidden")
-    : requestedContactRevealPermission;
-  const carHaulingIngestAllowed = managedSource
-    ? Number(managedSource.car_hauling_ingest_allowed || 0) === 1
-    : true;
+  // Do not infer connection approval from a request row without its real source.
+  if (!managedSource.registered_source_id ||
+      !["ingest_enabled", "active"].includes(String(managedSource.registered_source_status || "")) ||
+      Number(managedSource.registered_read_enabled) !== 1 ||
+      Number(managedSource.registered_ingest_enabled) !== 1) {
+    return rejectSource("source_ingest_not_enabled", sourceId);
+  }
 
-  if (managedSource) {
-    const managedStatus = managedSource.connection_state === "active" ? "active" : "ingest_enabled";
-    await env.DB.prepare(`
-      UPDATE hermes_load_sources
-      SET history_cursor = ?,
-          watch_expires_at = ?,
-          read_enabled = 1,
-          send_enabled = 0,
-          ingest_enabled = 1,
-          last_successful_sync = ?,
-          last_error = NULL,
-          status = ?,
-          updated_at = ?
-      WHERE id = ?
-    `).bind(
-      optionalText(payload?.source?.history_cursor, 240),
-      validIso(payload?.source?.watch_expires_at),
-      now,
-      managedStatus,
-      now,
-      sourceId,
-    ).run();
-  } else {
-    await env.DB.prepare(`
-      INSERT INTO hermes_load_sources (
-        id, provider, mailbox_email, source_name, source_type, credential_ref,
-        history_cursor, watch_expires_at, read_enabled, send_enabled, ingest_enabled,
-        car_hauling_ingest_allowed, car_hauling_outreach_hold,
-        redistribution_permission, contact_reveal_permission,
-        last_successful_sync, last_error, status, created_at, updated_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 0, ?, 1, 1, ?, ?, ?, NULL, 'active', ?, ?)
-      ON CONFLICT(id) DO UPDATE SET
-        provider = excluded.provider,
-        mailbox_email = excluded.mailbox_email,
-        source_name = excluded.source_name,
-        source_type = excluded.source_type,
-        credential_ref = excluded.credential_ref,
-        history_cursor = excluded.history_cursor,
-        watch_expires_at = excluded.watch_expires_at,
-        read_enabled = excluded.read_enabled,
+  const redistributionPermission = String(managedSource.approved_redistribution_permission || "internal_only");
+  const contactRevealPermission = String(managedSource.approved_contact_reveal_permission || "hidden");
+  const carHaulingIngestAllowed = Number(managedSource.car_hauling_ingest_allowed || 0) === 1;
+  const managedStatus = managedSource.connection_state === "active" ? "active" : "ingest_enabled";
+  const sourceUpdate = await env.DB.prepare(`
+    UPDATE hermes_load_sources
+    SET history_cursor = ?,
+        watch_expires_at = ?,
+        read_enabled = 1,
         send_enabled = 0,
-        ingest_enabled = excluded.ingest_enabled,
-        car_hauling_ingest_allowed = 1,
-        car_hauling_outreach_hold = 1,
-        redistribution_permission = excluded.redistribution_permission,
-        contact_reveal_permission = excluded.contact_reveal_permission,
-        last_successful_sync = excluded.last_successful_sync,
+        ingest_enabled = 1,
+        last_successful_sync = ?,
         last_error = NULL,
-        status = 'active',
-        updated_at = excluded.updated_at
-    `).bind(
-      sourceId,
-      provider,
-      mailboxEmail,
-      sourceName,
-      sourceType,
-      credentialRef,
-      optionalText(payload?.source?.history_cursor, 240),
-      validIso(payload?.source?.watch_expires_at),
-      boolInt(payload?.source?.read_enabled, true),
-      boolInt(payload?.source?.ingest_enabled, true),
-      requestedRedistributionPermission,
-      requestedContactRevealPermission,
-      now,
-      now,
-      now,
-    ).run();
+        status = ?,
+        updated_at = ?
+    WHERE id = ? AND ingest_enabled = 1 AND read_enabled = 1
+      AND status IN ('ingest_enabled', 'active')
+      AND EXISTS (
+        SELECT 1 FROM hermes_load_source_requests r
+        WHERE r.source_id = hermes_load_sources.id
+          AND r.status = 'approved'
+          AND r.connection_state IN ('ingest_enabled', 'active')
+      )
+  `).bind(
+    optionalText(payload?.source?.history_cursor, 240),
+    validIso(payload?.source?.watch_expires_at),
+    now,
+    managedStatus,
+    now,
+    sourceId,
+  ).run();
+  // A revocation may race with the preceding SELECT. Never ingest if the
+  // guarded D1 update did not reconfirm exactly one approved active source.
+  if (sourceUpdate?.success !== true || Number(sourceUpdate?.meta?.changes) !== 1) {
+    return rejectSource("source_ingest_state_changed", sourceId);
   }
 
   let accepted = 0;
@@ -270,7 +267,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     const fingerprint = text(record.fingerprint, 220);
     const recordType = text(record.record_type, 20) as RecordType;
     const equipment = normalizeEquipment(record.equipment || "other");
-    if (managedSource && equipment === "car_hauler" && !carHaulingIngestAllowed) {
+    if (equipment === "car_hauler" && !carHaulingIngestAllowed) {
       rejected.push({ kind: "record", index, reason: "car_hauling_not_approved_for_source" });
       continue;
     }
