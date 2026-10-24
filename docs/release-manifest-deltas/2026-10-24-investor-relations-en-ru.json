@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "base_manifest": "docs/release-manifest-2026-08-01.json",
+  "release_delta": "2026-10-24-investor-relations-en-ru",
+  "generated_at": "2026-10-24T19:35:00Z",
+  "status": "COMPLETE_PENDING_DEPLOYMENT",
+  "production_verified_at": null,
+  "production_verification_run": null,
+  "additions": [
+    {
+      "route": "/investors/",
+      "source_state": "current_main",
+      "indexability": "noindex",
+      "robots": "noindex,nofollow",
+      "canonical": "https://hermeslogisticsus.com/investors/",
+      "sitemap_owner": null,
+      "source_file": "src/pages/investors/index.astro",
+      "status": "COMPLETE",
+      "blocker": "SEO and counsel review; owner-approved merge/deploy; exact-head CI and live readback. Private data room not launched.",
+      "response_status": null,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/ru/investors/",
+      "source_state": "current_main",
+      "indexability": "noindex",
+      "robots": "noindex,nofollow",
+      "canonical": "https://hermeslogisticsus.com/ru/investors/",
+      "sitemap_owner": null,
+      "source_file": "src/pages/ru/investors/index.astro",
+      "status": "COMPLETE",
+      "blocker": "Founder localization review; owner-approved merge/deploy; exact-head CI and live readback.",
+      "response_status": null,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    }
+  ],
+  "acceptance": {
+    "route_count_added": 2,
+    "indexable_route_count_added": 0,
+    "requires_green_current_head_ci": true,
+    "requires_production_snapshot_reconciliation_after_deploy": true
+  }
+}
