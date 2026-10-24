@@ -5,7 +5,14 @@ import { ensureLoadBoardSchema } from "../_lib/load-board-schema.mjs";
 type Env = { DB?: any };
 
 const privateHeaders = { "Cache-Control": "private, no-store", "X-Robots-Tag": "noindex, nofollow" };
-const ACTIONS = new Set(["initialize", "verify_connection", "enable_ingest", "verify_first_record", "revoke"]);
+const ACTIONS = new Set(["initialize", "verify_trust", "verify_connection", "enable_ingest", "verify_first_record", "revoke"]);
+const TRUST_DECISIONS = new Set(["verified", "blocked"]);
+const VERIFICATION_KINDS = new Set([
+  "broker_authority",
+  "provider_entitlement",
+  "direct_shipper_relationship",
+  "direct_dealer_relationship",
+]);
 const REDISTRIBUTION = new Set(["internal_only", "carrier_only", "public"]);
 const CONTACT_MODES = new Set(["hidden", "hermes_review", "source_direct"]);
 const REDISTRIBUTION_RANK: Record<string, number> = { internal_only: 0, carrier_only: 1, public: 2 };
@@ -37,6 +44,12 @@ function safeLifecycle(row: any) {
     approved_redistribution_permission: row.approved_redistribution_permission || null,
     approved_contact_reveal_permission: row.approved_contact_reveal_permission || null,
     car_hauling_ingest_allowed: Number(row.car_hauling_ingest_allowed || 0) === 1,
+    trust_status: row.trust_status || "review_required",
+    trust_tier: Number(row.trust_tier || 3),
+    verification_kind: row.verification_kind || null,
+    authority_identifier_recorded: Boolean(row.authority_identifier),
+    authority_evidence_recorded: Boolean(row.authority_evidence_ref),
+    trust_verified_at: row.trust_verified_at || null,
     connection_evidence_recorded: Boolean(row.connection_evidence_ref),
     data_rights_evidence_recorded: Boolean(row.data_rights_evidence_ref),
     retention_rule_recorded: Boolean(row.retention_rule),
@@ -66,6 +79,7 @@ async function loadSource(db: any, sourceId: string) {
     SELECT id, provider, source_name, source_type, read_enabled, send_enabled, ingest_enabled,
            car_hauling_ingest_allowed, car_hauling_outreach_hold,
            redistribution_permission, contact_reveal_permission,
+           trust_status, trust_tier, verification_kind, authority_identifier, trust_verified_at,
            last_successful_sync, last_error, status, created_at, updated_at
     FROM hermes_load_sources
     WHERE id = ?
@@ -87,6 +101,10 @@ function safeSource(row: any) {
     car_hauling_outreach_hold: Number(row.car_hauling_outreach_hold || 0) === 1,
     redistribution_permission: row.redistribution_permission,
     contact_reveal_permission: row.contact_reveal_permission,
+    trust_status: row.trust_status || "review_required",
+    trust_tier: Number(row.trust_tier || 3),
+    verification_kind: row.verification_kind || null,
+    authority_identifier: row.authority_identifier || null,
     status: row.status,
     last_successful_sync: row.last_successful_sync || null,
     last_error_present: Boolean(row.last_error),
@@ -208,11 +226,73 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     `).bind(sourceId, approvedRedistribution, approvedContactMode, dataRightsEvidenceRef, retentionRule, revocationRule, carHaulingAllowed, now, requestId).run();
   }
 
+  if (action === "verify_trust") {
+    if (currentState !== "connection_pending") {
+      return jsonResponse(409, { success: false, error: "connection_pending_required_for_trust_review", connection_state: currentState }, privateHeaders);
+    }
+    const sourceId = clean(row.source_id, 180);
+    if (!sourceId) return jsonResponse(409, { success: false, error: "source_connection_not_initialized" }, privateHeaders);
+
+    const verificationKind = clean(body.verification_kind ?? body.verificationKind, 60).toLowerCase();
+    const trustDecision = clean(body.trust_decision ?? body.trustDecision, 30).toLowerCase();
+    const authorityIdentifier = clean(body.authority_identifier ?? body.authorityIdentifier, 80);
+    const authorityEvidenceRef = clean(body.authority_evidence_ref ?? body.authorityEvidenceRef, 500);
+    const requestedTier = Number.parseInt(String(body.trust_tier ?? body.trustTier ?? ""), 10);
+
+    if (!VERIFICATION_KINDS.has(verificationKind)) {
+      return jsonResponse(400, { success: false, error: "verification_kind_invalid" }, privateHeaders);
+    }
+    if (!TRUST_DECISIONS.has(trustDecision)) {
+      return jsonResponse(400, { success: false, error: "trust_decision_invalid" }, privateHeaders);
+    }
+    if (authorityEvidenceRef.length < 3) {
+      return jsonResponse(400, { success: false, error: "trust_evidence_required" }, privateHeaders);
+    }
+    if (SECRET_PATTERN.test(`${authorityIdentifier} ${authorityEvidenceRef}`)) {
+      return jsonResponse(400, { success: false, error: "secret_material_not_allowed" }, privateHeaders);
+    }
+    if (verificationKind === "broker_authority" && authorityIdentifier.length < 3) {
+      return jsonResponse(400, { success: false, error: "broker_authority_identifier_required" }, privateHeaders);
+    }
+    const trustTier = trustDecision === "verified"
+      ? (requestedTier === 1 || requestedTier === 2 ? requestedTier : 2)
+      : 3;
+    const nextState = trustDecision === "blocked" ? "trust_blocked" : "connection_pending";
+    const sourceStatus = trustDecision === "blocked" ? "blocked" : "connection_pending";
+    const verifiedAt = trustDecision === "verified" ? now : null;
+
+    await env.DB.prepare(`
+      UPDATE hermes_load_sources
+      SET trust_status = ?, trust_tier = ?, verification_kind = ?,
+          authority_identifier = ?, authority_evidence_ref = ?, trust_verified_at = ?,
+          status = ?, read_enabled = 0, ingest_enabled = 0, send_enabled = 0, updated_at = ?
+      WHERE id = ?
+    `).bind(
+      trustDecision, trustTier, verificationKind,
+      authorityIdentifier || null, authorityEvidenceRef, verifiedAt,
+      sourceStatus, now, sourceId,
+    ).run();
+    await env.DB.prepare(`
+      UPDATE hermes_load_source_requests
+      SET trust_status = ?, trust_tier = ?, verification_kind = ?,
+          authority_identifier = ?, authority_evidence_ref = ?, trust_verified_at = ?,
+          connection_state = ?, updated_at = ?
+      WHERE id = ?
+    `).bind(
+      trustDecision, trustTier, verificationKind,
+      authorityIdentifier || null, authorityEvidenceRef, verifiedAt,
+      nextState, now, requestId,
+    ).run();
+  }
+
   if (action === "verify_connection") {
     if (currentState !== "connection_pending") {
       return jsonResponse(409, { success: false, error: "connection_pending_required", connection_state: currentState }, privateHeaders);
     }
-    const connectionEvidenceRef = clean(body.connection_evidence_ref ?? body.connectionEvidenceRef, 500);
+    if (String(row.trust_status || "review_required") !== "verified") {
+      return jsonResponse(409, { success: false, error: "source_trust_verification_required" }, privateHeaders);
+    }
+        const connectionEvidenceRef = clean(body.connection_evidence_ref ?? body.connectionEvidenceRef, 500);
     if (connectionEvidenceRef.length < 3) return jsonResponse(400, { success: false, error: "connection_evidence_required" }, privateHeaders);
     if (SECRET_PATTERN.test(connectionEvidenceRef)) return jsonResponse(400, { success: false, error: "secret_material_not_allowed" }, privateHeaders);
     if (body.runtime_verified !== true && body.runtimeVerified !== true) {
@@ -240,7 +320,10 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     if (currentState !== "connection_verified") {
       return jsonResponse(409, { success: false, error: "verified_connection_required", connection_state: currentState }, privateHeaders);
     }
-    if (!row.data_rights_evidence_ref || !row.connection_evidence_ref) {
+    if (String(row.trust_status || "review_required") !== "verified") {
+      return jsonResponse(409, { success: false, error: "source_trust_verification_required" }, privateHeaders);
+    }
+        if (!row.data_rights_evidence_ref || !row.connection_evidence_ref) {
       return jsonResponse(409, { success: false, error: "connection_and_rights_evidence_required" }, privateHeaders);
     }
     const sourceId = clean(row.source_id, 180);
@@ -262,7 +345,10 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     if (currentState !== "ingest_enabled") {
       return jsonResponse(409, { success: false, error: "ingest_enabled_required", connection_state: currentState }, privateHeaders);
     }
-    const sourceId = clean(row.source_id, 180);
+    if (String(row.trust_status || "review_required") !== "verified") {
+      return jsonResponse(409, { success: false, error: "source_trust_verification_required" }, privateHeaders);
+    }
+        const sourceId = clean(row.source_id, 180);
     if (!sourceId) return jsonResponse(409, { success: false, error: "source_connection_not_initialized" }, privateHeaders);
 
     const currentRecord = await env.DB.prepare(`
@@ -318,6 +404,6 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     success: true,
     lifecycle: safeLifecycle(saved),
     source: safeSource(source),
-    boundary: "Outbound stays disabled. ACTIVE requires a verified connection, enabled ingestion and at least one current active D1 record from this exact source.",
+    boundary: "Outbound stays disabled. ACTIVE requires verified source trust, a verified connection, enabled ingestion and at least one current active D1 record from this exact source. Authority or entitlement evidence is a source-access gate, not a fraud or payment guarantee.",
   }, privateHeaders);
 }
