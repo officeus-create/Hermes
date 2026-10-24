@@ -13,9 +13,9 @@ test.describe("Hermes Investor Relations bilingual public preview", () => {
       await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", "noindex,nofollow");
       await expect(page.locator('link[rel="alternate"][hreflang="en"]')).toHaveAttribute("href", /\/investors\/$/);
       await expect(page.locator('link[rel="alternate"][hreflang="ru"]')).toHaveAttribute("href", /\/ru\/investors\/$/);
-      await expect(page.locator("main .investor-card")).toHaveCount(6);
+      await expect(page.locator("main .investor-card")).toHaveCount(7);
       const publicLinks = await page.locator(".investor-card .investor-explore").count();
-      expect(publicLinks).toBe(6);
+      expect(publicLinks).toBe(7);
       const hrefs = await page.locator(".investor-card .investor-explore").evaluateAll((els) => els.map((el) => el.getAttribute("href")));
       expect(hrefs).toEqual([
         "/paths/logistics/",
@@ -24,6 +24,7 @@ test.describe("Hermes Investor Relations bilingual public preview", () => {
         "/paths/marketing/",
         "/paths/academy/",
         "/paths/technology/",
+        "/businesses/",
       ]);
       const body = await page.locator("main").innerText();
       expect(body).not.toMatch(/\$\s*1,?000,?000\s*(?:raised|revenue)/i);
