@@ -11,6 +11,18 @@ const OPERATION_ID = "provision_load_board_internal_staff_2026_10_24";
 const INTERNAL_RECIPIENT = "officeus@hermeslogisticsus.com";
 const ACCOUNT_EMAIL_PATH = "https://lead-email.internal/v1/send-account";
 const PRIVATE_HEADERS = { "Cache-Control": "private, no-store", "X-Robots-Tag": "noindex, nofollow" };
+const RECEIPT_ID = OPERATION_ID;
+
+async function ensureReceiptSchema(db: any) {
+  await db.prepare(`
+    CREATE TABLE IF NOT EXISTS hermes_load_board_staff_provisioning_receipts (
+      operation_id TEXT PRIMARY KEY,
+      status TEXT NOT NULL CHECK(status IN ('pending','completed')),
+      created_at TEXT NOT NULL,
+      completed_at TEXT
+    )
+  `).run();
+}
 
 const STAFF = Object.freeze([
   {
@@ -99,6 +111,33 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
 
   await ensureInternalAiSchema(env.DB);
   await ensureLoadBoardReviewerSchema(env.DB);
+  await ensureReceiptSchema(env.DB);
+
+  const receipt = await env.DB.prepare(
+    "SELECT status,completed_at FROM hermes_load_board_staff_provisioning_receipts WHERE operation_id=? LIMIT 1"
+  ).bind(RECEIPT_ID).first();
+  if (receipt?.status === "completed") {
+    return jsonResponse(200, {
+      success: true,
+      provisioning_state: "already_completed",
+      accounts_created: 2,
+      owner_email: STAFF[0].email,
+      reviewer_email: STAFF[1].email,
+      owner_capability: "HERMES_INTERNAL_OWNER",
+      reviewer_permission: "LOAD_BOARD_ROLE_PREVIEW_REVIEWER",
+      credentials_delivered: "previously_delivered",
+      password_returned: false,
+      login_path: "/services/hermes-connect/load-board/access/?mode=login",
+      role_review_path: "/services/hermes-connect/load-board/role-preview/",
+    }, PRIVATE_HEADERS);
+  }
+  if (receipt) {
+    return jsonResponse(409, {
+      success: false,
+      error: "provisioning_incomplete_manual_review",
+      credentials_rotated: false,
+    }, PRIVATE_HEADERS);
+  }
 
   const existingRows = [];
   for (const staff of STAFF) {
@@ -121,6 +160,9 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
   const now = new Date().toISOString();
 
   try {
+    await env.DB.prepare(
+      "INSERT INTO hermes_load_board_staff_provisioning_receipts (operation_id,status,created_at,completed_at) VALUES (?,'pending',?,NULL)"
+    ).bind(RECEIPT_ID, now).run();
     for (const staff of STAFF) {
       const password = temporaryPassword(staff.entitlement === "internal_owner" ? "Owner" : "Dispatch");
       const { hash, salt } = await hashPassword(password);
@@ -165,7 +207,12 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
       throw new Error("credential_delivery_failed");
     }
 
+    await env.DB.prepare(
+      "UPDATE hermes_load_board_staff_provisioning_receipts SET status='completed',completed_at=? WHERE operation_id=? AND status='pending'"
+    ).bind(new Date().toISOString(), RECEIPT_ID).run();
+
     return jsonResponse(200, {
+      provisioning_state: "completed",
       success: true,
       accounts_created: 2,
       owner_email: STAFF[0].email,
@@ -179,6 +226,9 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     }, PRIVATE_HEADERS);
   } catch (error) {
     await cleanupCreated(env.DB, createdIds);
+    await env.DB.prepare(
+      "DELETE FROM hermes_load_board_staff_provisioning_receipts WHERE operation_id=? AND status='pending'"
+    ).bind(RECEIPT_ID).run();
     console.error("load_board_staff_provision_failed", {
       category: "bounded_internal_staff_provisioning",
       error: error instanceof Error ? error.message : "unknown_error",
