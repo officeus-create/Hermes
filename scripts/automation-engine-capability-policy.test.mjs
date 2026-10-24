@@ -49,4 +49,9 @@ assert.equal(policy.permission_classes.DRAFT_ONLY.external_write_allowed, false)
 assert.equal(policy.permission_classes.EXTERNAL_WRITE.owner_review_required_before_execution, true);
 assert.equal(policy.permission_classes.DESTRUCTIVE.destructive_allowed, true);
 
+const futureRules = policy.future_capability_gate.rules.join("\n");
+assert.match(futureRules, /authenticated runtime evidence and independent QA/, "External-write gate must build on accepted authenticated read-only evidence");
+assert.match(futureRules, /separate owner-approved write gate/, "Every external-write capability needs a separate owner-approved gate");
+assert.ok(!futureRules.includes("read-only reliability gate is LIVE_VERIFIED"), "Do not force a false LIVE_VERIFIED promotion just to unlock future write review");
+
 console.log(`HAE capability policy contract PASS: ${manifestTypes.length} current read-only capabilities; default DENY`);
