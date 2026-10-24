@@ -147,6 +147,9 @@ Before consuming a large amount of context, check whether the answer already exi
 - Search for an existing implementation/PR before opening another branch.
 - Create small, reviewable commits and keep unrelated generated files out of the task.
 - Treat a green historical commit as historical evidence only; a newer head must pass its own required checks.
+- For public AI tools, treat JSON Schema/tool descriptions as hints, not a server-side trust boundary. Validate type, raw length, and sensitive content **before** trimming or truncation; add malformed/over-limit negative tests with zero private DB or outbound side effects. Evidence: public MCP pilot PR #1884, 2026-10-15, commits `12abc5b` + `9f7b63d`. This is a drafted lesson until exact-head CI succeeds; do not treat plugin guidance as a deployed security control.
+- Stacked branches are versioned dependencies. Case PR #1887 (2026-10-15): old base was 19 parent commits behind. Reconcile one reviewed tree preserving parent safety tests and child's read-only workflow using a single Git merge commit with both parents; advance the existing branch by fast-forward/expected SHA, **never** publish a temporary empty diff or silently replace the branch. Commit `e7128e5`, parent #1884 `9f7b63d`; authenticated GitHub compare: child `behind=0`, `mergeable=true`. CI on that new commit is its own gate. `ROUTED_NOT_EXECUTED` means no actual private plugin invocation or task execution.
+- Technology radar is evidence, not auto-adoption: official MCP TS SDK v2.3.1 (2026-10-05) adds optional audience-bound `expectedResource` on its legacy bearer middleware, which must be explicitly configured to enforce it. Cloudflare Workers OAuth Provider v1 (2026-10-01) supports split issuer/resource-server and Service Binding token validation. Evaluate against existing #1881/#1891/#1895 auth guards in a bounded test; do not attach real OAuth credentials or upgrade deployed dependencies without owner approval. Sources: https://github.com/modelcontextprotocol/typescript-sdk/releases ; https://developers.cloudflare.com/changelog/post/2026-10-01-workers-oauth-provider-1x/.
 - When a branch becomes stale/non-mergeable and its useful change is small, prefer reconstructing the bounded diff on fresh `main` over carrying obsolete branch history.
 - At completion, update the applicable issue and `docs/ai-project-state.json` when canonical state materially changed; append a concise handoff only when historical/audit continuity adds value.
 - If blocked by access, state the exact missing permission/account/environment and the smallest next action. Do not claim a tool is unavailable until an actual access attempt fails.
@@ -180,3 +183,108 @@ The applicable owner-confirmation gate remains for:
 - enabling a standing permission-bypass or unrestricted full-access mode.
 
 These gates protect the business and cannot be silently removed by another agent or future document edit.
+
+## Digital employees: plugins as department owners (CEO directive, 2026-10-14)
+
+**Operating goal:** A conversation is an interface to an existing digital employee, not a new department. Work, lessons, tasks, and release evidence stay in the existing canonical GitHub issue/PR and Google Drive One Brain; employees evolve as versioned plugin skills. Do **not** open a new chat or create a new private plugin to work around a missing handoff.
+
+### Verified owner-private plugin inventory
+
+These are eleven owner-private plugin identities read back in the authenticated personal inventory on 2026-10-15. Names, IDs and versions are point-in-time evidence. They are *not* claims that every plugin is installed in all agent hosts, connected to external provider accounts, or allowed to act autonomously.
+
+| Primary owner / scope | Existing private plugin | Exact plugin ID | Observed version |
+| --- | --- | --- | --- |
+| Cross-department plugin router, evidence-backed handoffs and versioned skill-growth (not CEO impersonation) | `hermes-agent-coordinator` | `plugins_6acf865dbc3c8191a21ca0da11dfb094` | 0.1.17 |
+| Technology, shared Identity, API, MCP, source CI, Website Factory | `hermes-technology-developer` | `plugins_6acf3453cfa48191884198be23defd3c` | 0.1.27 |
+| HR, candidate onboarding, recruitment communication drafts | `hermes-hr` | `plugins_6acf343b2738819194bff27b7452102d` | 0.1.6 |
+| Sales, commercial qualification and handoff | `hermes-sales` | `plugins_6acf5d95089c8191b5cb4a786148a0c1` | 0.1.5 |
+| Academy, curricula, training and learner progress | `hermes-academy` | `plugins_6acf344acf8481919ecb846796ea59ee` | 0.1.3 |
+| Hermes Catalog product/claims/public projection | `hermes-catalog` | `plugins_6acf345dede881918978f13ab23f4310` | 0.1.4 |
+| Dispatch processes and bounded operations (no unsolicited dispatcher contact) | `hermes-dispatch-os` | `plugins_6acccd5a49d48191932fc106919bf824` | 0.1.10 |
+| Design system, UX, mobile and visual approval | `hermes-design-hub` | `plugins_6acc9a1fe78c8191b7d149f2689029f8` | 0.2.16 |
+| Existing automation engine runtime/reliability/HAE only | `hermes-automatic-engineer` | `plugins_6ace1c27c458819186989a5aa3ef87b5` | 0.1.3 |
+| Open-source/news/technology research, evidence and radar support | `hermes-news` | `plugins_6acf3466650c8191960248cd2a96d49e` | 0.1.2 |
+| Authorized corporate VPN and private network only | `hermes-private-network` | `plugins_6ace33b7a780819181a6ce85eac06f05` | 0.1.0 |
+
+Other existing owned, workspace, organization, marketplace, or connected plugins **may** exist outside this private personal list. Before classifying a department as missing, search the current plugin directory, accessible connected plugin list, canonical One Brain, and current project work. A previously referenced SEO Director plugin must be verified through the appropriate current installation/access evidence; absence from personal plugins alone is not evidence it does not exist.
+
+**Routing hierarchy:** the owner/CEO is the human decision-maker; ChatGPT/Claude/Codex coordinate through authorized connected tools and One Brain; each domain has exactly one accountable *plugin* and one active implementation writer per task. Reviewers from another plugin can comment but must not concurrently own its files.
+
+### Required procedure for EVERY new request
+
+1. **Resolve** the business direction and objective; read only the current relevant One Brain/GitHub issue and owned plugin skill, not a full archive each time.
+2. **Find existing employee** using the verified inventory above and the current accessible plugin directory/One Brain. If an exact plugin tool is connected and supports the task, invoke it. A plugin link, registry entry, or archived name alone does not establish a live tool call.
+3. **Assign ownership**: exactly one plugin, named specific issue/PR/source, acceptance criteria, KPI, deadline/next review and risk gate. Specialists from other departments may receive bounded linked subtasks.
+4. **Execute** the smallest safe slice with authenticated tools. Write evidence, source SHA, test result and durable handoff in the existing canonical issue/PR and One Brain. Readback confirms actual state; do not claim background work without a real durable job or an enabled automation.
+5. **Learn**: convert a verified recurring error or reusable method into a versioned plugin skill/test, guard update against current release ID, read back installed version and source. Saving a chat note or assigning an issue does not mean an autonomous plugin learned.
+6. **Create a new plugin ONLY for a proven durable capability gap**, not for an individual task or chat. First compare existing plugin scopes, skills and connectors; prove there is no owner; define a single narrow mission, unique inputs/actions and safe read/write scope; create a private plugin with a bounded skill/evaluation/owner; register exact ID and version here + One Brain after plugin-creator readback. Do not create new databases, project folders or general-purpose superadmins.
+7. **Continue** through current-state source tests, PR review, CI, authorized deployment, production readback, actual user value. Route out-of-department work via linked issue to its existing owner; do not silently edit another department's area.
+
+If direct invocation of another plugin is unavailable in the current host, label the handoff **ROUTED_NOT_EXECUTED**. Do not impersonate another plugin or assert that autonomous inter-plugin communication exists. The verified private `hermes-agent-coordinator` plugin is the routing-policy specialist (https://chatgpt.com/plugins/plugins_6acf865dbc3c8191a21ca0da11dfb094). It remains skills-only; the actual GitHub/One Brain handoff requires an authorized host invocation. It does not automatically start other agents, run background work or grant any permission. Use these inspectable handoffs until a real authenticated MCP orchestrator exists.
+
+### Priority and learning boundaries
+
+- Business priority: (1) findability via SEO/GEO/AEO/LLMO and existing traffic protection, (2) real US car-hauling carriers, (3) US Hermes Connect/Website inbound, then remaining departments. Security, privacy, law, correctness and data integrity remain release gates.
+- Every employee's improvement proposal: **source date → observed gap → candidate technology/skill → license/cost/security check → current-platform compatibility → expected benefit → independent negative test → bounded PR/skill release → verified readback**.
+- Existing six-hour Hermes Ecosystem Watch includes *read-only* technology scouting of official MCP, OAuth, SDKs, ChatGPT/Claude, Cloudflare and licensed OSS. Its outputs are candidates, not self-applied software upgrades or automatic skill releases.
+- Revisit 3/6/9/12/15-month roadmap in the existing MCP issue #1883. Prefer platform-independent, standards-based methods and real adoption evidence; do not promise future interoperability ahead of host support.
+- No AI-sent email, DMs or dispatcher interruptions under the owner's standing ban. Permission, OAuth consent, provider secret, production deployment, cost, content publishing and privileged changes retain their specific owner approval gates.
+- Skill-only plugins are reusable instructions, not persistent background agents, automatic schedulers or unlimited access tokens. Permanent delegation requires separately authorized tooling, a job runner and revocation controls.
+
+### Current release and truth boundary (2026-10-14)
+
+- Releases observed 2026-10-14 (historical, superseded by the current date below): Hermes Technology Developer `0.1.25` (release `pluginrel_6acfea9a67d08191a48451336ba1cfda`) and Hermes Agent Coordinator `0.1.15` (release `pluginrel_6acfeaa699fc81918dd674f36b6d6070`). Creator readback confirmed the versioned skills for opt-in MCP preview-only host mode and the boundaries between public product feedback writes and private CRM permissions. Earlier releases covered scoped whoami; none constitute a deployed private tool.
+- Identity #1873 / #1881, MCP #1883 / #1884, read-only routing #1887, authorization guard #1891 and staged scoped-whoami #1895 are separate review/CI/production gates. **None is proof an AI host can log in or invoke a private customer CRM**.
+- The October 12 Cloudflare MCP Portal documentation warns that an upstream server's direct URL can bypass portal-only ACLs. All future protected Hermes MCP data requires authorization at the upstream resource itself. Do not route users through a generic portal admin credential instead of per-user consent.
+
+### Public MCP tool exposure gate (2026-10-14)
+
+- Existing public MCP includes D1-writing `submit_product_feedback`. A client-supplied `consent_to_product_learning:true` is not independent proof of end-user permission. A model's tool annotation is not authorization.
+- Draft MCP #1884 now contains optional server flag `MCP_PUBLIC_PREVIEW_ONLY=true`: both legacy and modern `tools/list` hide the feedback writer, while server-side `tools/call` rejects a direct invocation with HTTP 403 before D1 is touched. **Default off** to preserve existing feedback. No Cloudflare env value was set and no production release occurred.
+- First external-host demonstration may use an owner-approved preview-only configuration. Independent real-host proof must verify tool enumeration, direct denial and zero customer writes. Later public feedback write requires its own human-consent and rate/abuse-control design.
+
+### Current application
+
+- **Identity / unified auth:** `hermes-technology-developer`, issue #1873, draft integration PR #1881.
+- **Public MCP chat-first funnel:** `hermes-technology-developer`, issue #1883, draft PR #1884, followed by stacked routing preview #1887. **Private MCP tenant protection:** same existing technology owner, draft PR #1891 (disabled, not connected, OAuth service still pending).
+- **CRM funnel content review:** `hermes-sales` advises on conversion, `hermes-dispatch-os` on carrier qualification and operational handoff, `hermes-design-hub` on the future MCP Apps UX; Technology Developer remains one implementation owner.
+- **Agent-to-agent orchestration:** use this routing policy and existing governance first. Assign runtime service implementation to Technology Developer with Automation Engineer as strictly bounded HAE/runtime reviewer, not a new generic employee.
+
+
+### Verified technology and closeout delta (late 2026-10-14)
+
+- **Installed knowledge releases (2026-10-14 historical readback), not autonomously running workers:** Plugin Creator readback then verified Technology Developer `v0.1.25` and Agent Coordinator `v0.1.15` (IDs above). The Technology Developer now includes `skills/workers-oauth-v1/SKILL.md`, which explains Cloudflare's maintained MIT `@cloudflare/workers-oauth-provider` v1 split authorization/resource architecture. It is a candidate, **not** a configured provider.
+- **Private MCP unresolved adapter contract:** Existing draft #1891 accepts only `MCP_AUTH_INTROSPECTOR.fetch(.../introspect)` returning a validated proof; Cloudflare's official v1 prefers `env.AUTH_SERVER.validateToken(resource, token)` over a first-party Service Binding. Do not call this drop-in or copy a model-supplied `ctx.auth` without verifying the actual API/subject/client/grant and per-company membership. See existing issue #1883 and current #1891 documentation.
+- **Independent client tester:** Official MCP Inspector release `2.11.0` was published Oct 14. It remains a version-pinned future read-only post-deploy test candidate, not installed. **Cloudflare MCP Events** for Worker issues require Notifications Write and Workers Observability Write; HOLD until owner approval. Reuse the already active read-only Ecosystem Watch.
+- **Governance truth / corrected incident:** Draft #1903 briefly **CLOSED WITHOUT MERGE** because the branch was temporarily reset to the exact `main` commit during a two-step replay. That removed its diff and caused GitHub to close the PR. The same existing PR was explicitly **REOPENED** after restoring its sole file change; verified **OPEN, DRAFT, ahead=1, behind=0** as of the latest Oct 14 comparison. Its new exact-head CI remains independent. **Never replay an open PR by temporarily moving its branch ref to the base SHA**; preserve a nonempty diff using an atomic tree/commit + compare-and-swap ref, or use an already validated safe replay mechanism. An accidental closure is not a merge and must be separately corrected/read back. The repository's main `docs/ai-project-state.json` still has general review date `2026-09-04` until an approved merge.
+- **Priorities:** private One Brain controls; P0 anonymous-Editor public-snapshot issue #431 and genuine US car-hauling Sales receiver issue #1296 remain ahead of optional connector expansion. All rights and no-email/no-dispatch holds remain unchanged.
+
+Sources: https://developers.cloudflare.com/changelog/post/2026-10-01-workers-oauth-provider-1x/ ; https://github.com/modelcontextprotocol/inspector/releases/tag/2.11.0 ; https://developers.cloudflare.com/changelog/post/2026-10-13-cloudflare-mcp-events/ .
+
+
+### 2026-10-15 CURRENT plugin releases and carrier acquisition ownership
+
+Real Plugin Creator post-release readback, as distinct from source-code CI, confirms:
+- `hermes-sales` (existing SALES owner) **v0.1.5**, release `pluginrel_6acff0656b808191bad89eb9f8601274`. Skill `skills/carrier-intake-receiver/SKILL.md` installed. Holds genuine Sales-only carrier lead qualification, independently verified human receipt, contract and revenue attribution. No message sending.
+- `hermes-technology-developer` **v0.1.26**, release `pluginrel_6acfefa74c3c8191ab09d807b5a193b9`. Skill `skills/carrier-intake-feature-gate/SKILL.md` installed. Bounded source-code owner, not Sales recipient or production publisher.
+- `hermes-agent-coordinator` **v0.1.16**, release `pluginrel_6acfefb051e48191a4f959375d31c6bb`. Routing knowledge updated; the Coordinator did not call another plugin simply by writing a handoff preview.
+
+Technical evidence: **draft PR #1904** corrects an explicit server `PUBLIC_CONTACT_MODE=preview` that browser JS previously overrode to live solely on canonical HTTPS hostname. API has separate `LEAD_DELIVERY_MODE` and receiver-binding gate. New tests defend canonical preview and reject non-HTTPS, foreign, absent or incorrect live endpoints. Owner Business Sales issue #1296. NO production change, no real consumer submit, no AI email and no dispatch staff contact. Release requires exact-head CI, authorised Cloudflare build/runtime flag check and genuinely observed Sales human receipt.
+
+Owner lifecycle: Search/Design owns discoverability and truthful crawler/SSR copy; Technology Developer owns Astro/browser/receiver tests; Sales owns genuine carrier qualification and recipient proof; COO/CEO owns release and permission approval. Avoid duplicate Sales databases, digital employees or unjustified Turnstile registration. Existing `functions/api/_lib/turnstile.mjs` is reusable ONLY if measured bot abuse establishes a need.
+
+Evidence states remain: CODED → EXACT-HEAD CI → PRODUCT/SECURITY REVIEW → APPROVED DEPLOY → LIVE RECEIVER PROOF → HUMAN QUALIFIED LEAD → AGREEMENT → REVENUE. No step inferred from an earlier one.
+
+
+### 2026-10-15 — Cloudflare MIT Security Audit Skill: three plugin learning releases
+
+Source-verified upstream: https://github.com/cloudflare/security-audit-skill (MIT, Copyright 2025–2026 Cloudflare, Inc.; adapted defensive methodology, NOT copied runner or an installed upstream CLI).
+
+Plugin Creator released and **re-read**:
+- Hermes Technology Developer **v0.1.27**, release `pluginrel_6ad0540cb85c81919d6c3df2d38eee81`; installed `skills/cloudflare-security-review/SKILL.md`. Source-first identity/MCP/tenant/Pages security review and strict no-production-probe.
+- Hermes Agent Coordinator **v0.1.17**, release `pluginrel_6ad0541567bc81918dd2327d73940de6`; installed `skills/security-audit-routing/SKILL.md`. Routes security candidates to existing owner and independent verifier, without claiming plugins were auto-invoked.
+- Hermes Automatic Engineer **v0.1.3**, release `pluginrel_6ad053a38e048191ada493ea770b07d3`; installed `skills/cloudflare-security-audit/SKILL.md`. HAE Worker/Queue/D1 security evidence; no HAE runtime/config change.
+
+Hermes threat map from authenticated read-only inputs: **One Brain** legacy/public snapshot anyone-Writer grants -> #431 owner-only permission correction, no exploitation asserted; **MCP public feedback** client Boolean consent != human authorization -> #1883/#1884 staged server write guard and owner review; **carrier UI** old host-based preview escalation -> #1296/PR #1904 DRAFT, runtime Sales receipt UNKNOWN. Classify boundary evidence as confirmed / needs_validation / rejected; don't label a configuration finding as successful compromise. Cloudflare upstream requires OS-enforced sandbox, no network, empty allowlisted env and independent verification for full audits; plugin skill installation by itself does not satisfy those execution requirements.
+
+Source and applied rules are in the existing One Brain; no new security daemon, plugin, CRM, account access, messages, ACL changes, production deploy, or paid dependency. Preserve search discovery and real carrier lead routing while repairing security. This section is post-release evidence for **skills only**; exact GitHub draft PR CI remains a separate gate.
