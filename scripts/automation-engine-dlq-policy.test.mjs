@@ -114,4 +114,35 @@ assert.deepEqual(
   { disposition: "OWNER_ACTION", reason: "d1_state_missing" }
 );
 
+
+assert.deepEqual(
+  classifyDlqDisposition({ message_type: "job.execute", d1_state: "RUNNING", idempotency_key: "k-running", external_effect: false }),
+  { disposition: "CANONICAL_RECOVERY", reason: "d1_state_owns_recovery" }
+);
+
+assert.deepEqual(
+  classifyDlqDisposition({ message_type: "job.execute", d1_state: "WAITING_FREE_AI", idempotency_key: "k-waiting-free", external_effect: false }),
+  { disposition: "CANONICAL_RECOVERY", reason: "d1_state_owns_recovery" }
+);
+
+assert.deepEqual(
+  classifyDlqDisposition({
+    message_type: "publication.readback",
+    d1_state: "provider_accepted_readback_pending",
+    idempotency_key: "k-readback",
+    external_effect: false,
+  }),
+  { disposition: "SAFE_REDRIVE", reason: "readback_retryable" }
+);
+
+assert.deepEqual(
+  classifyDlqDisposition({
+    message_type: "publication.readback",
+    d1_state: "unknown_outcome_readback_pending",
+    idempotency_key: "k-readback-unknown",
+    external_effect: false,
+  }),
+  { disposition: "SAFE_REDRIVE", reason: "readback_retryable" }
+);
+
 console.log("HAE DLQ policy contract PASS");
