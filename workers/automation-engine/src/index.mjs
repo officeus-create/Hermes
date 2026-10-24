@@ -7,6 +7,13 @@ import {
   HISTORICAL_READ_ONLY_JOB_TYPES,
   runHistoricalLearningPrimitive,
 } from "./historical-learning.mjs";
+import {
+  ROLE_CONTRACT_JOB_TYPES,
+  roleContractForJobType,
+  roleContractSha256,
+  runRoleContractPrimitive,
+  validateRoleContractInput,
+} from "./role-contracts.mjs";
 
 const ACCOUNT_KEY = "hermes_logistics";
 const PLATFORM = "threads";
@@ -489,6 +496,7 @@ const READ_ONLY_GENERIC_JOB_TYPES = new Set([
   "system.health.snapshot",
   "history.coverage.audit",
   ...HISTORICAL_READ_ONLY_JOB_TYPES,
+  ...ROLE_CONTRACT_JOB_TYPES,
 ]);
 
 function genericJobEventId(jobId, eventType) {
@@ -629,9 +637,24 @@ async function createGenericJob(env, input) {
   if (!READ_ONLY_GENERIC_JOB_TYPES.has(jobType)) throw new Error("job_type_not_allowed");
   if (!businessLane) throw new Error("business_lane_required");
   if (!idempotencyKey) throw new Error("idempotency_key_required");
-  const payload = input?.payload ?? {};
+  let payload = input?.payload ?? {};
   if (HISTORICAL_READ_ONLY_JOB_TYPES.includes(jobType)) {
     runHistoricalLearningPrimitive(jobType, payload);
+  }
+  if (ROLE_CONTRACT_JOB_TYPES.includes(jobType)) {
+    validateRoleContractInput(jobType, payload);
+    const contract = roleContractForJobType(jobType);
+    if (!contract) throw new Error("role_contract_missing");
+    const roleContractSha = await roleContractSha256(contract);
+    payload = {
+      ...payload,
+      _role_contract: {
+        role_id: contract.role_id,
+        plugin_version: contract.plugin_version,
+        contract_version: contract.contract_version,
+        sha256: roleContractSha,
+      },
+    };
   }
   let payloadJson = "{}";
   try {
@@ -744,6 +767,43 @@ async function submitRuntimeProofJob(env, message) {
 }
 
 async function runReadOnlyGenericCapability(env, job) {
+  if (ROLE_CONTRACT_JOB_TYPES.includes(job.job_type)) {
+    let payload = {};
+    try {
+      payload = JSON.parse(String(job.payload_json || "{}"));
+    } catch {
+      throw new Error("generic_job_payload_invalid");
+    }
+    const contract = roleContractForJobType(job.job_type);
+    if (!contract) throw new Error("role_contract_missing");
+    const currentRoleContractSha = await roleContractSha256(contract);
+    const bound = payload?._role_contract;
+    if (
+      !bound ||
+      bound.role_id !== contract.role_id ||
+      bound.plugin_version !== contract.plugin_version ||
+      bound.contract_version !== contract.contract_version ||
+      bound.sha256 !== currentRoleContractSha
+    ) {
+      throw new Error("role_contract_stale");
+    }
+    const observedAt = new Date().toISOString();
+    const result = runRoleContractPrimitive(job.job_type, payload, observedAt);
+    return {
+      capability: job.job_type,
+      observed_at: observedAt,
+      external_write: false,
+      role_contract: {
+        role_id: contract.role_id,
+        plugin_version: contract.plugin_version,
+        contract_version: contract.contract_version,
+        sha256: currentRoleContractSha,
+        semantic_required: contract.semantic_required,
+        free_ai_policy: contract.free_ai_policy,
+      },
+      result,
+    };
+  }
   if (HISTORICAL_READ_ONLY_JOB_TYPES.includes(job.job_type)) {
     let payload = {};
     try {
