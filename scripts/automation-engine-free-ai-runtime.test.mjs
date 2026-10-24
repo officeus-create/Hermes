@@ -65,6 +65,10 @@ const cloudflareResult = await runFreeSemanticJson(cloudflareEnv, {
 assert.equal(cloudflareResult.provider_id, "cloudflare-workers-ai");
 assert.equal(cloudflareResult.cost_usd, 0);
 assert.deepEqual(cloudflareResult.result, { priorities: [] });
+assert.ok(cloudflareResult.usage.input_chars > 0);
+assert.ok(cloudflareResult.usage.output_chars > 0);
+assert.equal(cloudflareResult.usage.input_tokens, null);
+assert.equal(cloudflareResult.usage.output_tokens, null);
 
 const quotaEnv = {
   ...cloudflareEnv,
