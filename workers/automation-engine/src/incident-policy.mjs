@@ -43,6 +43,28 @@ export function evaluateHaeIncidents(health = {}, options = {}) {
     incidents.push({ code: "HEARTBEAT_MODE_DRIFT", expected: runtimeMode, actual: heartbeatMode });
   }
 
+  if (phase === "READ_ONLY_RELIABILITY") {
+    if (!runtimeMode) unknowns.push({ code: "AUTOMATION_MODE_UNKNOWN" });
+    else if (runtimeMode !== "dry_run") incidents.push({ code: "AUTOMATION_MODE_NOT_DRY_RUN", actual: runtimeMode });
+
+    if (heartbeatMs !== null) {
+      if (!heartbeatMode) unknowns.push({ code: "HEARTBEAT_MODE_UNKNOWN" });
+      else if (heartbeatMode !== "dry_run") incidents.push({ code: "HEARTBEAT_MODE_NOT_DRY_RUN", actual: heartbeatMode });
+    }
+
+    if (typeof health?.publication_enabled !== "boolean") {
+      unknowns.push({ code: "PUBLICATION_GATE_UNKNOWN" });
+    } else if (health.publication_enabled === true) {
+      incidents.push({ code: "PUBLICATION_ENABLED_DURING_READ_ONLY_GATE" });
+    }
+
+    if (heartbeatMs !== null && typeof heartbeat?.publication_enabled !== "boolean") {
+      unknowns.push({ code: "HEARTBEAT_PUBLICATION_GATE_UNKNOWN" });
+    } else if (heartbeat?.publication_enabled === true) {
+      incidents.push({ code: "HEARTBEAT_PUBLICATION_ENABLED_DURING_READ_ONLY_GATE" });
+    }
+  }
+
   if (typeof health?.publication_enabled === "boolean" && typeof heartbeat?.publication_enabled === "boolean"
       && health.publication_enabled !== heartbeat.publication_enabled) {
     incidents.push({
@@ -76,12 +98,6 @@ export function evaluateHaeIncidents(health = {}, options = {}) {
     else if (value > 0) incidents.push({ code, count: value });
   }
 
-  if (phase === "READ_ONLY_RELIABILITY" && health?.publication_enabled === true) {
-    incidents.push({ code: "PUBLICATION_ENABLED_DURING_READ_ONLY_GATE" });
-  }
-  if (phase === "READ_ONLY_RELIABILITY" && heartbeat?.publication_enabled === true) {
-    incidents.push({ code: "HEARTBEAT_PUBLICATION_ENABLED_DURING_READ_ONLY_GATE" });
-  }
 
   const sourceSha = String(health?.source_sha || "").trim();
   if (!sourceSha) unknowns.push({ code: "SOURCE_SHA_UNKNOWN" });
