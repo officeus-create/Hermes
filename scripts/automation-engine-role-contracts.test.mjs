@@ -11,10 +11,24 @@ import {
   validateRoleContractSemanticResult,
 } from "../workers/automation-engine/src/role-contracts.mjs";
 
-assert.equal(ROLE_CONTRACTS.length, 5, "Runtime must expose four deterministic contracts plus one free-only semantic contract");
+assert.equal(ROLE_CONTRACTS.length, 13, "Runtime must expose twelve deterministic contracts plus one free-only semantic contract");
 assert.deepEqual(
   [...ROLE_CONTRACT_JOB_TYPES].sort(),
-  ["logistics.source.freshness.audit", "marketing.content.dedupe.audit", "search.snapshot.evaluate", "search.defect.prioritize", "work.portfolio.reconcile"].sort(),
+  [
+    "academy.english.practice.build",
+    "ai.gateway.readiness.audit",
+    "dispatch.daily.closeout.audit",
+    "growth.error.closure.audit",
+    "knowledge.evidence.audit",
+    "logistics.source.freshness.audit",
+    "market.car-hauling.snapshot.evaluate",
+    "marketing.content.dedupe.audit",
+    "marketing.mentions.audit",
+    "search.defect.prioritize",
+    "search.snapshot.evaluate",
+    "technology.release.radar",
+    "work.portfolio.reconcile",
+  ].sort(),
 );
 
 for (const contract of ROLE_CONTRACTS) {
@@ -33,7 +47,8 @@ for (const contract of ROLE_CONTRACTS) {
     assert.equal(contract.runtime_config.max_cost_usd, 0, "Semantic contract must be zero-dollar by default");
   } else if (contract.runtime_config.scheduled !== false) {
     assert.equal(contract.free_ai_policy, "not_required");
-    assert.equal(contract.runtime_config.cadence_hours, 6, `${contract.job_type} deterministic cadence must be bounded at six hours`);
+    assert.ok(Number.isInteger(contract.runtime_config.cadence_hours));
+    assert.ok(contract.runtime_config.cadence_hours >= 1 && contract.runtime_config.cadence_hours <= 24);
   }
   const sha = await roleContractSha256(contract);
   assert.match(sha, /^[0-9a-f]{64}$/);
@@ -45,7 +60,9 @@ assert.ok(searchContract.runtime_config.target_urls.length >= 3);
 assert.ok(searchContract.runtime_config.target_urls.every((url) => url.startsWith("https://hermeslogisticsus.com/")));
 assert.ok(roleContractForJobType("marketing.content.dedupe.audit").runtime_config.lookback_limit <= 500);
 assert.equal(roleContractForJobType("logistics.source.freshness.audit").runtime_config.max_age_minutes, 1440);
-assert.equal(ROLE_CONTRACTS.filter((contract) => !contract.semantic_required).length, 4);
+assert.equal(roleContractForJobType("ai.gateway.readiness.audit").runtime_config.cadence_hours, 24);
+assert.equal(roleContractForJobType("academy.english.practice.build").runtime_config.cadence_hours, 24);
+assert.equal(ROLE_CONTRACTS.filter((contract) => !contract.semantic_required).length, 12);
 assert.equal(ROLE_CONTRACTS.filter((contract) => contract.semantic_required).length, 1);
 
 const searchInput = {
@@ -136,4 +153,4 @@ assert.throws(() => validateRoleContractSemanticResult("search.defect.prioritize
 }), /semantic_result_item_not_in_input/);
 assert.throws(() => runRoleContractPrimitive("search.defect.prioritize", semanticPayload), /semantic_job_requires_free_ai/);
 
-console.log("HAE plugin role contracts PASS: 4 zero-model + 1 free-only semantic contract");
+console.log("HAE plugin role contracts PASS: 12 zero-model + 1 free-only semantic contract");

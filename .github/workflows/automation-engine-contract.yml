@@ -10,6 +10,9 @@ on:
       - "scripts/automation-engine-free-ai-runtime.test.mjs"
       - "scripts/automation-engine-work-portfolio.test.mjs"
       - "workers/automation-engine/src/work-portfolio.mjs"
+      - "scripts/automation-engine-zero-token-plugin-tasks.test.mjs"
+      - "workers/automation-engine/src/zero-token-plugin-tasks.mjs"
+      - "workers/automation-engine/src/schedule-migrations.mjs"
       - "scripts/automation-engine-dlq-runtime.test.mjs"
       - "scripts/automation-engine-ai-usage-ledger.test.mjs"
       - "scripts/automation-engine-capability-graph.test.mjs"
@@ -38,6 +41,7 @@ jobs:
           node scripts/automation-engine-role-contracts.test.mjs
           node scripts/automation-engine-free-ai-runtime.test.mjs
           node scripts/automation-engine-work-portfolio.test.mjs
+          node scripts/automation-engine-zero-token-plugin-tasks.test.mjs
           node scripts/automation-engine-capability-policy.test.mjs
           node scripts/automation-engine-state-freshness.test.mjs
           node scripts/automation-engine-dlq-policy.test.mjs

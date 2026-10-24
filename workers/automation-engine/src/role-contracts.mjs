@@ -2,6 +2,12 @@ import {
   normalizeWorkPortfolioSnapshot,
   reconcileWorkPortfolioSnapshot,
 } from "./work-portfolio.mjs";
+import {
+  isZeroTokenPluginTask,
+  runZeroTokenPluginTask,
+  validateZeroTokenPluginTaskInput,
+  ZERO_TOKEN_PLUGIN_TASK_CONTRACTS,
+} from "./zero-token-plugin-tasks.mjs";
 
 const MAX_ITEMS = 1000;
 
@@ -181,6 +187,7 @@ export const ROLE_CONTRACTS = Object.freeze([
     failure: "fail_closed_on_invalid_or_sensitive_payload",
     retention: "business_runtime_evidence",
   }),
+  ...ZERO_TOKEN_PLUGIN_TASK_CONTRACTS,
 ]);
 
 export const ROLE_CONTRACT_JOB_TYPES = Object.freeze(ROLE_CONTRACTS.map((contract) => contract.job_type));
@@ -362,6 +369,7 @@ export function validateRoleContractInput(jobType, payload) {
   if (jobType === "logistics.source.freshness.audit") return validateLogisticsPayload(payload);
   if (jobType === "search.defect.prioritize") return validateSearchDefectPayload(payload);
   if (jobType === "work.portfolio.reconcile") return normalizeWorkPortfolioSnapshot(payload);
+  if (isZeroTokenPluginTask(jobType)) return validateZeroTokenPluginTaskInput(jobType, payload);
   throw new Error("role_contract_job_type_not_allowed");
 }
 
@@ -474,5 +482,6 @@ export function runRoleContractPrimitive(jobType, payload, observedAt = new Date
   if (jobType === "work.portfolio.reconcile") {
     return reconcileWorkPortfolioSnapshot(payload, ROLE_CONTRACT_JOB_TYPES);
   }
+  if (isZeroTokenPluginTask(jobType)) return runZeroTokenPluginTask(jobType, payload);
   throw new Error("role_contract_job_type_not_allowed");
 }
