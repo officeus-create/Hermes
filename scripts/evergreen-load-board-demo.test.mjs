@@ -15,6 +15,16 @@ for (const label of [
 }
 
 assert.equal((html.match(/<dt>Status<\/dt><dd>PREVIEW · NOT LIVE<\/dd>/g) ?? []).length, 4);
+assert.match(html, /External public source · verify availability/);
+assert.match(html, /Open source & verify/);
+assert.match(html, /Atlantic Logistics/);
+assert.match(html, /FreightFinder public search/);
+const discoveryStart = html.indexOf('id="public-discovery"');
+const discoveryEnd = html.indexOf('id="available-loads"', discoveryStart);
+assert.ok(discoveryStart >= 0 && discoveryEnd > discoveryStart, "Public discovery section must render before preview inventory");
+const discoveryHtml = html.slice(discoveryStart, discoveryEnd);
+assert.equal((discoveryHtml.match(/data-public-discovery-load/g) ?? []).length, 10);
+assert.doesNotMatch(discoveryHtml, /tel:|mailto:/i, "Public discovery must not expose broker contact links");
 assert.doesNotMatch(html, /Jul\s+2[2-6]/i);
 assert.doesNotMatch(html, /\b\d+\s*(?:min|hr)s?\s+ago\b/i);
 
