@@ -1,6 +1,6 @@
 import { ensureHermesCompanyProfilesSchema } from "./hermes-company-profiles.mjs";
 import { ensureLoadBoardSchema } from "./load-board-schema.mjs";
-import { specialistHasInternalOwnerCapability } from "./load-board-market-posts.mjs";
+import { specialistHasInternalLoadBoardAccess } from "./load-board-internal-access.mjs";
 
 export const privateWorkspaceHeaders = Object.freeze({
   "Cache-Control": "private, no-store",
@@ -97,8 +97,8 @@ export async function verifiedAssignment(db, carrierCompanyId) {
 export async function isApprovedDispatcher(db, specialist) {
   if (!specialist) return false;
   await ensureCarrierDispatchWorkspaceSchema(db);
-  // Only an owner-capability operator or a specially provisioned assigned dispatcher.
-  if (await specialistHasInternalOwnerCapability(db, specialist.id)) return true;
+  // Internal owner/dispatcher entitlement is independent of carrier assignment.
+  if (await specialistHasInternalLoadBoardAccess(db, specialist.id)) return true;
   const row = await db.prepare(`
     SELECT 1 AS allowed FROM hermes_carrier_dispatch_assignments
     WHERE dispatcher_specialist_id=? AND status='active' LIMIT 1
