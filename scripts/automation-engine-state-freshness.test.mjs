@@ -44,6 +44,8 @@ const accessGap = auditHaeState({
 assert.equal(accessGap.status, "UNKNOWN");
 assert.ok(accessGap.unknowns.some((item) => item.code === "RUNTIME_SOURCE_SHA_UNKNOWN"));
 assert.ok(!accessGap.findings.some((item) => item.code === "PLUGIN_MISTAKEN_FOR_RUNTIME"));
+assert.equal(accessGap.live_proof_complete, false);
+assert.equal(accessGap.missing_live_proof, null);
 
 const falseLive = auditHaeState({
   current_main_sha: sha,
@@ -121,6 +123,8 @@ const publicationUnknown = auditHaeState({
 });
 assert.equal(publicationUnknown.status, "UNKNOWN");
 assert.ok(publicationUnknown.unknowns.some((item) => item.code === "PUBLICATION_GATE_UNKNOWN"));
+assert.equal(publicationUnknown.live_proof_complete, false);
+assert.equal(publicationUnknown.missing_live_proof, null);
 
 const pluginOnly = auditHaeState({
   current_main_sha: sha,
