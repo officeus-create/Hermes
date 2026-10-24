@@ -6,6 +6,8 @@ const dataPolicy = JSON.parse(readFileSync(new URL("../workers/automation-engine
 
 assert.equal(dataPolicy.schema_version, 1);
 assert.equal(dataPolicy.default, "DENY_UNCLASSIFIED_DATA");
+assert.equal(dataPolicy.runtime_enforcement_status, "DECLARATIVE_PRE_ACTIVATION", "Policy JSON must not be mistaken for runtime payload enforcement");
+assert.match(dataPolicy.runtime_enforcement_note, /does not itself sanitize or reject arbitrary job payload fields/i);
 
 for (const capability of capabilities.capabilities) {
   const policy = dataPolicy.classes[capability.retention_class];
