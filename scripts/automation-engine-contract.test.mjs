@@ -217,6 +217,12 @@ assert.ok(wrangler.includes("WINDSOR_API_KEY"), "Windsor secret activation step 
 assert.ok(!wrangler.includes('"WINDSOR_API_KEY":'), "Windsor API key must never be committed as a Wrangler var");
 assert.ok(wrangler.includes('"dead_letter_queue": "hermes-automation-dlq"'), "Queue must have a DLQ");
 assert.ok(wrangler.includes('"binding": "AUTOMATION_DLQ"'), "DLQ must be bound read-only in practice for health metrics");
+assert.ok(wrangler.includes('"name": "OWNER_ALERT_EMAIL"'), "HAE must bind a dedicated owner-alert email surface");
+assert.ok(wrangler.includes('"destination_address": "officeus@hermeslogisticsus.com"'), "Owner-alert email binding must be destination-restricted");
+assert.ok(wrangler.includes('"allowed_sender_addresses"'), "Owner-alert email binding must restrict sender identities");
+assert.ok(wrangler.includes('"website@hermeslogisticsus.com"'), "Owner-alert sender must use the canonical verified Hermes sender");
+assert.ok(wrangler.includes('"HERMES_HAE_OWNER_ALERT_RECIPIENT": "officeus@hermeslogisticsus.com"'), "Owner-alert recipient must be explicit in reviewed config");
+assert.ok(!wrangler.includes('"HERMES_HAE_TELEGRAM_BOT_TOKEN":'), "Telegram fallback secret must never be committed as a Wrangler var");
 assert.match(wrangler, /"queue": "hermes-automation-dlq"[\s\S]{0,180}"max_retries": 3/, "Canonical HAE Worker must consume its existing DLQ with bounded retries");
 assert.match(worker, /batch\?\.queue === "hermes-automation-dlq"/, "Queue handler must route DLQ batches to the dedicated classifier before normal processing");
 assert.match(worker, /processDlqMessage/, "DLQ batches must execute the durable classification/redrive runtime");
