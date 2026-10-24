@@ -353,6 +353,11 @@ assert.match(worker, /_role_contract/, "Role-contract identity must be persisted
 assert.match(worker, /role_contract_stale/, "Role-contract drift must fail closed instead of silently changing instructions");
 assert.match(worker, /semantic_required/, "Role-contract receipt must preserve whether AI was required");
 assert.match(worker, /free_ai_policy/, "Role-contract receipt must preserve the free-AI policy");
+assert.match(worker, /url\.pathname === "\/v1\/role-contracts"/, "Private runtime must expose the active role-contract registry and digests");
+assert.match(worker, /enqueueScheduledRoleContracts/, "Cron must enqueue plugin-derived role contracts without a chat trigger");
+assert.match(worker, /Promise\.all\(eligibleContracts\.map/, "Independent plugin role submissions must fan out instead of blocking each other sequentially");
+assert.match(worker, /body_fingerprint/, "Marketing dedupe scheduling must persist only a body fingerprint, not duplicate raw content in job payload");
+assert.match(worker, /scheduled_role_contracts: true/, "Capabilities readback must report autonomous role scheduling");
 assert.match(worker, /HISTORICAL_READ_ONLY_JOB_TYPES\.includes\(jobType\)[\s\S]*runHistoricalLearningPrimitive\(jobType, payload\)/, "Historical job payloads must be validated before enqueue");
 assert.match(worker, /HISTORICAL_READ_ONLY_JOB_TYPES\.includes\(job\.job_type\)[\s\S]*runHistoricalLearningPrimitive\(job\.job_type, payload\)/, "Historical jobs must execute inside the same runReadOnlyGenericCapability path");
 assert.doesNotMatch(worker, /READ_ONLY_GENERIC_JOB_TYPES[\s\S]{0,240}"social\.publish"/, "Live social writes must not be allowed through the first generic read-only executor");
