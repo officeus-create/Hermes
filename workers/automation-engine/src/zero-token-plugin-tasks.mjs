@@ -1,3 +1,6 @@
+import { evaluateHaeSelfImprovementSnapshot } from "./hae-self-improvement.mjs";
+import { pluginRuntimeVersion } from "./plugin-runtime-registry.mjs";
+
 const MAX_ITEMS = 500;
 
 function clean(value, max = 500) {
@@ -41,10 +44,10 @@ function bounded(values, limit = 100) {
   return values.slice(0, limit);
 }
 
-function contract({ roleId, pluginVersion, contractVersion, jobType, lane, trigger, input, steps, output, kpi, cadenceHours = null }) {
+function contract({ roleId, contractVersion, jobType, lane, trigger, input, steps, output, kpi, cadenceHours = null }) {
   return Object.freeze({
     role_id: roleId,
-    plugin_version: pluginVersion,
+    plugin_version: pluginRuntimeVersion(roleId),
     contract_version: contractVersion,
     job_type: jobType,
     business_lane: lane,
@@ -73,7 +76,6 @@ function contract({ roleId, pluginVersion, contractVersion, jobType, lane, trigg
 export const ZERO_TOKEN_PLUGIN_TASK_CONTRACTS = Object.freeze([
   contract({
     roleId: "hermes-dispatch-os",
-    pluginVersion: "0.1.20",
     contractVersion: "dispatch-daily-closeout-v1",
     jobType: "dispatch.daily.closeout.audit",
     lane: "logistics",
@@ -84,8 +86,7 @@ export const ZERO_TOKEN_PLUGIN_TASK_CONTRACTS = Object.freeze([
     kpi: ["unique_order_count", "missing_date_count", "declared_value_cents", "commission_cents"],
   }),
   contract({
-    roleId: "hermes-connect-operator",
-    pluginVersion: "0.1.0",
+    roleId: "hermes-knowledge-curator",
     contractVersion: "knowledge-evidence-audit-v1",
     jobType: "knowledge.evidence.audit",
     lane: "knowledge",
@@ -97,7 +98,6 @@ export const ZERO_TOKEN_PLUGIN_TASK_CONTRACTS = Object.freeze([
   }),
   contract({
     roleId: "hermes-automatic-engineer",
-    pluginVersion: "0.1.0",
     contractVersion: "technology-release-radar-v1",
     jobType: "technology.release.radar",
     lane: "technology",
@@ -109,7 +109,6 @@ export const ZERO_TOKEN_PLUGIN_TASK_CONTRACTS = Object.freeze([
   }),
   contract({
     roleId: "hermes-automatic-engineer",
-    pluginVersion: "0.1.0",
     contractVersion: "ai-gateway-readiness-v1",
     jobType: "ai.gateway.readiness.audit",
     lane: "automation",
@@ -122,7 +121,6 @@ export const ZERO_TOKEN_PLUGIN_TASK_CONTRACTS = Object.freeze([
   }),
   contract({
     roleId: "hermes-marketing-growth",
-    pluginVersion: "0.1.6",
     contractVersion: "growth-error-closure-v1",
     jobType: "growth.error.closure.audit",
     lane: "growth",
@@ -134,7 +132,6 @@ export const ZERO_TOKEN_PLUGIN_TASK_CONTRACTS = Object.freeze([
   }),
   contract({
     roleId: "hermes-dispatch-os",
-    pluginVersion: "0.1.20",
     contractVersion: "car-hauling-market-snapshot-v1",
     jobType: "market.car-hauling.snapshot.evaluate",
     lane: "logistics",
@@ -146,7 +143,6 @@ export const ZERO_TOKEN_PLUGIN_TASK_CONTRACTS = Object.freeze([
   }),
   contract({
     roleId: "hermes-marketing-growth",
-    pluginVersion: "0.1.6",
     contractVersion: "internet-mentions-audit-v1",
     jobType: "marketing.mentions.audit",
     lane: "marketing",
@@ -158,7 +154,6 @@ export const ZERO_TOKEN_PLUGIN_TASK_CONTRACTS = Object.freeze([
   }),
   contract({
     roleId: "hermes-academy",
-    pluginVersion: "0.1.0",
     contractVersion: "work-english-practice-v1",
     jobType: "academy.english.practice.build",
     lane: "academy",
@@ -168,6 +163,29 @@ export const ZERO_TOKEN_PLUGIN_TASK_CONTRACTS = Object.freeze([
     output: "lesson id + phrases + practice prompts",
     kpi: ["phrase_count", "practice_prompt_count", "cost_usd"],
     cadenceHours: 24,
+  }),
+  contract({
+    roleId: "hermes-automatic-engineer",
+    contractVersion: "hae-self-improvement-audit-v1",
+    jobType: "hae.self.improvement.audit",
+    lane: "automation",
+    trigger: "verified_hae_evidence_snapshot",
+    input: { observed_at: "ISO-8601", coverage_complete: "boolean", findings: "bounded verified GitHub/CI metadata only" },
+    steps: ["require complete evidence coverage before routing", "prioritize verified open defects", "respect active writer locks", "route repair ownership to Automatic Engineer and independent review to QA"],
+    output: "repair candidates + next WORK_ID + HOLD_REPAIR or NO_ACTION",
+    kpi: ["repair_candidate_count", "next_work_id", "cost_usd"],
+    cadenceHours: 6,
+  }),
+  contract({
+    roleId: "hermes-automatic-engineer",
+    contractVersion: "hae-self-repair-packet-v1",
+    jobType: "hae.self.repair.packet",
+    lane: "automation",
+    trigger: "downstream_from_hae_self_improvement_audit",
+    input: { work_id: "HAE-SELF:*", finding_id: "verified finding id", artifact_key: "bounded repository path" },
+    steps: ["freeze repair WORK_ID and artifact", "bind current repair and independent-review plugin versions", "emit required verification gates", "hold before source mutation"],
+    output: "HOLD_REPAIR packet with owner/version/checklist",
+    kpi: ["work_id", "repair_state", "cost_usd"],
   }),
 ]);
 
@@ -394,6 +412,42 @@ function runEnglish(payload) {
   return { lesson_id: `${track.toLowerCase()}:${lessonDate}`, track, phrases, practice_prompts: phrases.map((phrase) => `Use “${phrase}” in one work sentence.`), phrase_count: phrases.length, practice_prompt_count: phrases.length, cost_usd: 0 };
 }
 
+function normalizeSelfRepairPacket(payload) {
+  const workId = clean(payload?.work_id, 180);
+  const findingId = clean(payload?.finding_id, 160);
+  const artifactKey = clean(payload?.artifact_key, 240);
+  if (!/^HAE-SELF:/.test(workId)) throw new Error("hae_repair_work_id_invalid");
+  if (!findingId) throw new Error("hae_repair_finding_id_required");
+  if (!artifactKey || artifactKey.includes("..") || artifactKey.startsWith("/")) throw new Error("hae_repair_artifact_key_invalid");
+  return { work_id: workId, finding_id: findingId, artifact_key: artifactKey };
+}
+
+function runSelfRepairPacket(payload) {
+  const input = normalizeSelfRepairPacket(payload);
+  return {
+    ...input,
+    repair_state: "HOLD_REPAIR",
+    repair_owner: {
+      role_id: "hermes-automatic-engineer",
+      plugin_version: pluginRuntimeVersion("hermes-automatic-engineer"),
+    },
+    independent_review_owner: {
+      role_id: "hermes-qa-evidence-auditor",
+      plugin_version: pluginRuntimeVersion("hermes-qa-evidence-auditor"),
+    },
+    required_checks: [
+      "bounded source diff on one active-writer branch",
+      "exact-head HAE contract tests",
+      "repository-required CI",
+      "independent QA evidence before release",
+    ],
+    source_change_performed: false,
+    automatic_merge_performed: false,
+    automatic_deploy_performed: false,
+    cost_usd: 0,
+  };
+}
+
 export function validateZeroTokenPluginTaskInput(jobType, payload) {
   if (jobType === "dispatch.daily.closeout.audit") return normalizeDispatch(payload);
   if (jobType === "knowledge.evidence.audit") return normalizeEvidence(payload);
@@ -403,6 +457,8 @@ export function validateZeroTokenPluginTaskInput(jobType, payload) {
   if (jobType === "market.car-hauling.snapshot.evaluate") return { current: normalizeMarketSnapshot(payload?.current, "market_current"), previous: payload?.previous == null ? null : normalizeMarketSnapshot(payload.previous, "market_previous") };
   if (jobType === "marketing.mentions.audit") return normalizeMentions(payload);
   if (jobType === "academy.english.practice.build") return runEnglish(payload);
+  if (jobType === "hae.self.improvement.audit") return evaluateHaeSelfImprovementSnapshot(payload);
+  if (jobType === "hae.self.repair.packet") return normalizeSelfRepairPacket(payload);
   throw new Error("zero_token_plugin_job_type_not_allowed");
 }
 
@@ -415,6 +471,8 @@ export function runZeroTokenPluginTask(jobType, payload) {
   if (jobType === "market.car-hauling.snapshot.evaluate") return runMarket(payload);
   if (jobType === "marketing.mentions.audit") return runMentions(payload);
   if (jobType === "academy.english.practice.build") return runEnglish(payload);
+  if (jobType === "hae.self.improvement.audit") return evaluateHaeSelfImprovementSnapshot(payload);
+  if (jobType === "hae.self.repair.packet") return runSelfRepairPacket(payload);
   throw new Error("zero_token_plugin_job_type_not_allowed");
 }
 
