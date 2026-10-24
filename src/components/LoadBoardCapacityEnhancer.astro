@@ -28,24 +28,31 @@ const previewDemoLoads = [
   { origin: "Madison, WI", destination: "Indianapolis, IN", equipment: "car_hauler", pickup: "9 AM", delivery: "9 PM", distanceMiles: 330, deadheadMiles: 17, weightLbs: 13500, lengthFeet: 70, rateAmount: 1525, commodity: "5 vehicles", loadType: "Full" },
   { origin: "St. Louis, MO", destination: "Louisville, KY", equipment: "dry_van", pickup: "3 PM", delivery: "2 AM", distanceMiles: 260, deadheadMiles: 25, weightLbs: 42500, lengthFeet: 53, rateAmount: 875, commodity: "Packaged goods", loadType: "FTL" },
 ];
-const externalPublicLoads = Object.freeze([
-  { id: "ATL-0465001", source: "Atlantic Logistics", sourceUrl: "https://lb.shipatlantic.com/atlantic-logistics-load-board/", observedAt: "2026-10-24T00:00:00Z", expiresAt: "2026-10-29T23:59:59Z", pickup: "Oct 26 · 3:00 PM", delivery: "Oct 28 · 8:00 AM", origin: "Denton, TX", destination: "Edgewater, FL", equipment: "Hot Shot", rate: "$2,400", miles: 1144 },
-  { id: "ATL-0464623", source: "Atlantic Logistics", sourceUrl: "https://lb.shipatlantic.com/atlantic-logistics-load-board/", observedAt: "2026-10-24T00:00:00Z", expiresAt: "2026-10-28T23:59:59Z", pickup: "Oct 26 · 6:30 AM–3:00 PM", delivery: "Oct 27 · 7:00 AM–3:30 PM", origin: "Lake Elsinore, CA", destination: "San Luis Obispo, CA", equipment: "Flatbed / Step Deck", rate: "$1,050", miles: 295 },
-  { id: "ATL-0465016", source: "Atlantic Logistics", sourceUrl: "https://lb.shipatlantic.com/atlantic-logistics-load-board/", observedAt: "2026-10-24T00:00:00Z", expiresAt: "2026-10-28T23:59:59Z", pickup: "Oct 26 · 7:00 AM–2:00 PM", delivery: "Oct 27 · 7:30 AM–3:00 PM", origin: "Elgin, IL", destination: "Grand Junction, CO", equipment: "Flatbed / Step Deck", rate: "$4,300", miles: 1213 },
-  { id: "ATL-0463185", source: "Atlantic Logistics", sourceUrl: "https://lb.shipatlantic.com/atlantic-logistics-load-board/", observedAt: "2026-10-24T00:00:00Z", expiresAt: "2026-10-27T23:59:59Z", pickup: "Oct 26 · 7:00 AM", delivery: "Oct 26 · 1:00 PM", origin: "Fairless Hills, PA", destination: "Jenkins Township, PA", equipment: "Flatbed w/Tarps", rate: "$1,250", miles: 122 },
-  { id: "ATL-0464628", source: "Atlantic Logistics", sourceUrl: "https://lb.shipatlantic.com/atlantic-logistics-load-board/", observedAt: "2026-10-24T00:00:00Z", expiresAt: "2026-10-27T23:59:59Z", pickup: "Oct 26 · 8:00 AM–2:00 PM", delivery: "Oct 26 · 8:00 AM–3:00 PM", origin: "Raiford, FL", destination: "Tampa, FL", equipment: "53' Van", rate: "$1,000", miles: 171 },
-  { id: "ATL-0464954", source: "Atlantic Logistics", sourceUrl: "https://lb.shipatlantic.com/atlantic-logistics-load-board/", observedAt: "2026-10-24T00:00:00Z", expiresAt: "2026-10-28T23:59:59Z", pickup: "Oct 26 · 8:00 AM–3:00 PM", delivery: "Oct 27 · 7:00 AM", origin: "Thomasville, GA", destination: "Ellabell, GA", equipment: "26' Straight Box Truck", rate: "$400", miles: 213 },
-  { id: "ATL-0464840", source: "Atlantic Logistics", sourceUrl: "https://lb.shipatlantic.com/atlantic-logistics-load-board/", observedAt: "2026-10-24T00:00:00Z", expiresAt: "2026-10-28T23:59:59Z", pickup: "Oct 26 · 9:47 AM–3:00 PM", delivery: "Oct 27 · 8:00 AM–3:00 PM", origin: "Cape Canaveral, FL", destination: "Winder, GA", equipment: "48' Flat", rate: "$900", miles: 514 },
-  { id: "ATL-0464769", source: "Atlantic Logistics", sourceUrl: "https://lb.shipatlantic.com/atlantic-logistics-load-board/", observedAt: "2026-10-24T00:00:00Z", expiresAt: "2026-10-29T23:59:59Z", pickup: "Oct 27 · 7:00 AM–2:30 PM", delivery: "Oct 28 · 8:00 AM", origin: "Savannah, GA", destination: "Jacksonville, FL", equipment: "53' Flat", rate: "$1,050", miles: 141 },
-  { id: "ATL-0464806", source: "Atlantic Logistics", sourceUrl: "https://lb.shipatlantic.com/atlantic-logistics-load-board/", observedAt: "2026-10-24T00:00:00Z", expiresAt: "2026-10-30T23:59:59Z", pickup: "Oct 28 · 7:00 AM–3:30 PM", delivery: "Oct 29 · 8:00 AM–3:00 PM", origin: "Milan, OH", destination: "Sanford, MI", equipment: "Flatbed / Step Deck", rate: "$1,225", miles: 238 },
-  { id: "ATL-0462992", source: "Atlantic Logistics", sourceUrl: "https://lb.shipatlantic.com/atlantic-logistics-load-board/", observedAt: "2026-10-24T00:00:00Z", expiresAt: "2026-10-30T23:59:59Z", pickup: "Oct 28 · 7:00 AM–7:00 PM", delivery: "Oct 29 · 6:00 AM–2:00 PM", origin: "Saltville, VA", destination: "Patterson, GA", equipment: "Van", rate: "$1,600", miles: 518 },
-]);
-
 const externalPublicBoards = Object.freeze([
-  { label: "FreightFinder", url: "https://www.freightfinder.com/database/search/state-to-state", note: "Free public search · verify each listing with the source" },
-  { label: "Atlantic Logistics", url: "https://lb.shipatlantic.com/atlantic-logistics-load-board/", note: "Open public load table · source availability can change" },
-  { label: "Landstar", url: "https://www.landstaronline.com/loadspublic", note: "Public load search · source terms apply" },
-  { label: "Prime", url: "https://www.primeinc.com/carrier-solutions/brokerage/loads/", note: "Public brokerage load search · verify before action" },
+  {
+    label: "Atlantic Logistics",
+    url: "https://lb.shipatlantic.com/atlantic-logistics-load-board/",
+    status: "Current public board verified Oct 24",
+    note: "Open the original board to view current loads. Hermes does not copy broker contacts or load rows until redistribution/feed rights are confirmed.",
+  },
+  {
+    label: "FreightFinder",
+    url: "https://www.freightfinder.com/database/search/state-to-state",
+    status: "Manual source only",
+    note: "FreightFinder Terms prohibit automated access/use without written permission. Hermes provides the link only; no scraping, count import, or copied listings.",
+  },
+  {
+    label: "Landstar",
+    url: "https://www.landstaronline.com/loadspublic",
+    status: "Public search · terms review pending",
+    note: "Use the provider's own public search. Hermes does not import or republish rows without explicit data-use rights.",
+  },
+  {
+    label: "Prime",
+    url: "https://www.primeinc.com/carrier-solutions/brokerage/loads/",
+    status: "Public brokerage search · terms review pending",
+    note: "Open the original provider search and verify availability there. Automated Hermes ingestion remains disabled without permission.",
+  },
 ]);
 
 const previewEquipmentLabel = (value: string) => value.replaceAll("_", " ").replace(/\b\w/g, (char) => char.toUpperCase());
@@ -145,12 +152,11 @@ const previewRpm = (item: { rateAmount: number; distanceMiles: number }) => (ite
         <div class="hlb-public-discovery-head">
           <div>
             <p class="hlb-live-eyebrow">External public sources · signed-in discovery</p>
-            <h3 id="hlb-public-discovery-title">Open freight you can verify at the original source.</h3>
-            <p>These rows come from public, no-login source pages. They are not Hermes-owned freight, are not included in the LIVE count, and may disappear or change at the source. Verify availability before any dispatcher action.</p>
+            <h3 id="hlb-public-discovery-title">Open load-board sources, verified before you leave Hermes.</h3>
+            <p>These are source links, not copied inventory. Open the original provider to see current loads and verify availability. Hermes does not scrape, import contacts, or count these sources as LIVE freight without explicit provider data rights.</p>
           </div>
           <span class="hlb-public-discovery-count" data-public-discovery-count>Checking…</span>
         </div>
-        <div class="hlb-public-discovery-list" data-public-discovery-list></div>
         <div class="hlb-public-discovery-boards" data-public-discovery-boards></div>
       </section>
 
@@ -172,7 +178,7 @@ const previewRpm = (item: { rateAmount: number; distanceMiles: number }) => (ite
 )}
 
 {(isCanonicalLoadBoard || isHermesCatalog) && (
-  <script is:inline define:vars={{ isCanonicalLoadBoard, isHermesCatalog, accessPath, previewDemoLoads, externalPublicLoads, externalPublicBoards }}>
+  <script is:inline define:vars={{ isCanonicalLoadBoard, isHermesCatalog, accessPath, previewDemoLoads, externalPublicBoards }}>
     (() => {
       const equipmentLabel = (value) => ({ dry_van: "Dry Van", reefer: "Reefer", flatbed: "Flatbed", step_deck: "Step Deck", power_only: "Power Only", hotshot: "Hotshot", box_truck: "Box Truck", sprinter_van: "Sprinter Van", car_hauler: "Car Hauler", other: "Other" }[String(value || "")] || String(value || "Other").replaceAll("_", " "));
       const companyTypeLabel = (value) => ({ carrier: "Carrier", owner_operator: "Owner-Operator", fleet: "Fleet", dispatcher: "Dispatcher", broker: "Broker", shipper: "Shipper", dealer: "Dealer", other: "Business" }[String(value || "")] || "Business");
@@ -493,10 +499,9 @@ const previewRpm = (item: { rateAmount: number; distanceMiles: number }) => (ite
 
       const renderPublicDiscovery = async () => {
         const section = root.querySelector("[data-public-discovery]");
-        const list = root.querySelector("[data-public-discovery-list]");
         const boards = root.querySelector("[data-public-discovery-boards]");
         const count = root.querySelector("[data-public-discovery-count]");
-        if (!(section instanceof HTMLElement) || !(list instanceof HTMLElement) || !(boards instanceof HTMLElement)) return;
+        if (!(section instanceof HTMLElement) || !(boards instanceof HTMLElement)) return;
 
         let account = null;
         try {
@@ -513,60 +518,22 @@ const previewRpm = (item: { rateAmount: number; distanceMiles: number }) => (ite
           return;
         }
 
-        const now = Date.now();
-        const active = (Array.isArray(externalPublicLoads) ? externalPublicLoads : []).filter((item) => {
-          const expiry = Date.parse(String(item?.expiresAt || ""));
-          return Number.isFinite(expiry) && expiry >= now;
-        });
-
+        const sources = Array.isArray(externalPublicBoards) ? externalPublicBoards : [];
         section.hidden = false;
-        if (count) count.textContent = active.length ? `${active.length} current row${active.length === 1 ? "" : "s"}` : "No current rows";
-        list.replaceChildren();
-
-        if (!active.length) {
-          list.append(createEmptyState("No current public-source rows in this snapshot.", "Use the open source links below and verify availability at the original board."));
-        } else {
-          for (const item of active) {
-            const card = createNode("article", "hlb-public-load-card");
-            const top = createNode("div", "hlb-public-load-top");
-            top.append(
-              createNode("span", "hlb-public-source-pill", "EXTERNAL PUBLIC SOURCE"),
-              createNode("small", "", `${item.source} · observed ${new Date(item.observedAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}`),
-            );
-
-            const route = createNode("div", "hlb-public-load-route");
-            route.append(createNode("strong", "", item.origin), createNode("b", "", "→"), createNode("strong", "", item.destination));
-
-            const meta = createNode("div", "hlb-public-load-meta");
-            meta.append(
-              createNode("span", "", `Pickup ${item.pickup}`),
-              createNode("span", "", `Delivery ${item.delivery}`),
-              createNode("span", "", item.equipment),
-              createNode("span", "", `${Number(item.miles || 0).toLocaleString("en-US")} mi`),
-            );
-
-            const action = createNode("div", "hlb-public-load-action");
-            action.append(createNode("strong", "", item.rate));
-            const link = createNode("a", "", "Open original source ↗");
-            link.href = item.sourceUrl;
-            link.target = "_blank";
-            link.rel = "noopener noreferrer nofollow";
-            link.setAttribute("aria-label", `Open ${item.source} source page for ${item.origin} to ${item.destination}; verify availability before action`);
-            action.append(link);
-
-            const warning = createNode("p", "hlb-public-load-warning", "Verify availability at source · not Hermes inventory · no booking or source contact is performed here.");
-            card.append(top, route, meta, action, warning);
-            list.append(card);
-          }
-        }
-
+        if (count) count.textContent = `${sources.length} source${sources.length === 1 ? "" : "s"}`;
         boards.replaceChildren();
-        for (const board of Array.isArray(externalPublicBoards) ? externalPublicBoards : []) {
+
+        for (const board of sources) {
           const link = createNode("a", "hlb-public-board-link");
           link.href = board.url;
           link.target = "_blank";
           link.rel = "noopener noreferrer nofollow";
-          link.append(createNode("strong", "", board.label), createNode("span", "", board.note));
+          link.setAttribute("aria-label", `Open ${board.label} at the original provider; Hermes does not copy listings from this source without data rights`);
+          link.append(
+            createNode("strong", "", board.label),
+            createNode("em", "", board.status),
+            createNode("span", "", board.note),
+          );
           boards.append(link);
         }
       };
@@ -665,20 +632,11 @@ const previewRpm = (item: { rateAmount: number; distanceMiles: number }) => (ite
     .hlb-public-discovery-head h3{margin:.25rem 0 .45rem;font-size:1.45rem}
     .hlb-public-discovery-head p:last-child{margin:0;max-width:820px;color:#aebbd4;font-size:.7rem;line-height:1.55}
     .hlb-public-discovery-count{align-self:flex-start;padding:.42rem .58rem;border-radius:999px;background:rgba(99,214,167,.12);color:#79dfb5;font-size:.62rem;font-weight:900;white-space:nowrap}
-    .hlb-public-discovery-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.75rem;padding:1rem}
-    .hlb-public-load-card{display:grid;gap:.65rem;padding:.9rem;border:1px solid rgba(255,255,255,.09);border-radius:14px;background:rgba(255,255,255,.035)}
-    .hlb-public-load-top,.hlb-public-load-action{display:flex;justify-content:space-between;align-items:center;gap:.75rem}
-    .hlb-public-source-pill{padding:.3rem .42rem;border-radius:999px;background:rgba(92,168,255,.12);color:#9ac7ff;font-size:.54rem;font-weight:900;letter-spacing:.05em}
-    .hlb-public-load-top small{color:#8392b2;font-size:.61rem}
-    .hlb-public-load-route{display:flex;align-items:center;gap:.45rem;font-size:.78rem}.hlb-public-load-route b{color:#6f82b5}
-    .hlb-public-load-meta{display:flex;flex-wrap:wrap;gap:.4rem;color:#aeb9d2;font-size:.64rem}.hlb-public-load-meta span{padding:.24rem .36rem;border-radius:7px;background:rgba(255,255,255,.045)}
-    .hlb-public-load-action strong{font-size:1rem}.hlb-public-load-action a{color:#9ac7ff;font-size:.65rem;font-weight:850;text-decoration:none}.hlb-public-load-action a:hover{text-decoration:underline}
-    .hlb-public-load-warning{margin:0;color:#8090b0;font-size:.58rem;line-height:1.45}
-    .hlb-public-discovery-boards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.6rem;padding:0 1rem 1rem}
-    .hlb-public-board-link{display:grid;gap:.18rem;padding:.7rem .78rem;border:1px solid rgba(255,255,255,.08);border-radius:11px;color:#dce5fb;text-decoration:none;background:rgba(255,255,255,.025)}
-    .hlb-public-board-link span{color:#8595b7;font-size:.59rem;line-height:1.4}.hlb-public-board-link strong{font-size:.68rem}
-    @media(max-width:900px){.hlb-public-discovery-list{grid-template-columns:1fr}.hlb-public-discovery-boards{grid-template-columns:1fr 1fr}}
-    @media(max-width:620px){.hlb-public-discovery-head{display:grid}.hlb-public-discovery-boards{grid-template-columns:1fr}.hlb-public-load-top,.hlb-public-load-action{align-items:flex-start;flex-direction:column}}
+    .hlb-public-discovery-boards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.7rem;padding:1rem}
+    .hlb-public-board-link{display:grid;gap:.32rem;padding:.85rem .9rem;border:1px solid rgba(255,255,255,.08);border-radius:12px;color:#dce5fb;text-decoration:none;background:rgba(255,255,255,.025)}
+    .hlb-public-board-link strong{font-size:.76rem}.hlb-public-board-link em{color:#79dfb5;font-size:.59rem;font-style:normal;font-weight:850}.hlb-public-board-link span{color:#8595b7;font-size:.61rem;line-height:1.45}
+    @media(max-width:900px){.hlb-public-discovery-boards{grid-template-columns:1fr}}
+    @media(max-width:620px){.hlb-public-discovery-head{display:grid}}
   </style>
 )}
 
