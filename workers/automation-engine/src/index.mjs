@@ -30,6 +30,17 @@ import {
   aiUsageLedgerSnapshot,
   recordAiUsage,
 } from "./ai-usage-ledger.mjs";
+import {
+  CAPABILITY_GRAPH_LIMITS,
+  bindCapabilityGraphNodeJob,
+  createCapabilityGraph,
+  getCapabilityGraph,
+  listActiveCapabilityGraphIds,
+  listCapabilityGraphJobBindings,
+  markCapabilityGraphNodeDispatchFailure,
+  readyCapabilityGraphNodes,
+  settleCapabilityGraphNodeForJob,
+} from "./capability-graph.mjs";
 
 const ACCOUNT_KEY = "hermes_logistics";
 const PLATFORM = "threads";
@@ -768,6 +779,108 @@ async function createGenericJob(env, input) {
   return { created: true, duplicate: false, job };
 }
 
+async function dispatchCapabilityGraphReadyNodes(env, graphId) {
+  const ready = await readyCapabilityGraphNodes(env, graphId);
+  const outcomes = await Promise.all(ready.map(async (node) => {
+    try {
+      const created = await createGenericJob(env, {
+        job_type: node.job_type,
+        account_key: ACCOUNT_KEY,
+        project_key: `hae-graph:${graphId}`,
+        priority: 50,
+        max_attempts: 3,
+        internal_submission: true,
+        idempotency_key: `hae:graph:${graphId}:node:${node.node_id}`,
+        policy_version: "hae-capability-graph-v1",
+        payload: {
+          ...node.payload,
+          _graph: {
+            graph_id: graphId,
+            node_id: node.node_id,
+          },
+        },
+      });
+      const jobId = clean(created?.job?.job_id, 160);
+      if (!jobId) throw new Error("graph_node_job_missing");
+      await bindCapabilityGraphNodeJob(env, graphId, node.node_id, jobId);
+      return 1;
+    } catch (error) {
+      await markCapabilityGraphNodeDispatchFailure(
+        env,
+        graphId,
+        node.node_id,
+        safeRuntimeErrorClass(error, "graph_node_dispatch_failed"),
+      );
+      return 0;
+    }
+  }));
+  return outcomes.reduce((sum, value) => sum + value, 0);
+}
+
+async function syncCapabilityGraphJobBestEffort(env, {
+  jobId,
+  jobState,
+  result = null,
+  errorClass = null,
+}) {
+  try {
+    const settled = await settleCapabilityGraphNodeForJob(env, {
+      job_id: jobId,
+      job_state: jobState,
+      result,
+      error_class: errorClass,
+    });
+    if (settled?.graph_id && ["SUCCEEDED", "FAILED"].includes(jobState)) {
+      await dispatchCapabilityGraphReadyNodes(env, settled.graph_id);
+    }
+  } catch (error) {
+    await recordRuntimeEvent(env, {
+      eventType: "graph.job_sync_failed",
+      messageType: "job.execute",
+      jobId,
+      errorClass: safeRuntimeErrorClass(error, "graph_job_sync_failed"),
+    });
+  }
+}
+
+async function recoverCapabilityGraphs(env, limit = 20) {
+  if (!env?.DB || !env?.AUTOMATION_QUEUE) return 0;
+  const graphIds = await listActiveCapabilityGraphIds(env, limit);
+  let touched = 0;
+  for (const graphId of graphIds) {
+    const bindings = await listCapabilityGraphJobBindings(env, graphId);
+    for (const binding of bindings) {
+      if (binding.job_state === "SUCCEEDED") {
+        let result = null;
+        try {
+          result = binding.result_json ? JSON.parse(String(binding.result_json)) : null;
+        } catch {
+          result = null;
+        }
+        await settleCapabilityGraphNodeForJob(env, {
+          job_id: binding.job_id,
+          job_state: "SUCCEEDED",
+          result,
+        });
+      } else if (binding.job_state === "FAILED") {
+        await settleCapabilityGraphNodeForJob(env, {
+          job_id: binding.job_id,
+          job_state: "FAILED",
+          error_class: binding.last_error_class,
+        });
+      } else if (binding.job_state === "WAITING_FREE_AI") {
+        await settleCapabilityGraphNodeForJob(env, {
+          job_id: binding.job_id,
+          job_state: "WAITING_FREE_AI",
+          error_class: binding.last_error_class,
+        });
+      }
+    }
+    touched += await dispatchCapabilityGraphReadyNodes(env, graphId);
+  }
+  return touched;
+}
+
 async function submitRuntimeProofJob(env, message) {
   if (!env.DB || !env.AUTOMATION_QUEUE) throw new Error("runtime_not_configured");
   const automationMode = clean(env.HERMES_AUTOMATION_MODE, 40) || "UNKNOWN";
@@ -1022,6 +1135,11 @@ async function ensureSearchSemanticFollowup(env, parentJob, result) {
       expectedAttemptCount: currentAttempt,
     });
     if (!succeeded) throw new Error("job_transition_conflict");
+    await syncCapabilityGraphJobBestEffort(env, {
+      jobId,
+      jobState: "SUCCEEDED",
+      result,
+    });
     return { status: "SUCCEEDED", job_id: jobId, result };
   } catch (error) {
     const failedAt = new Date().toISOString();
@@ -1043,6 +1161,11 @@ async function ensureSearchSemanticFollowup(env, parentJob, result) {
         expectedAttemptCount: Math.max(0, currentAttempt - 1),
       });
       if (!waiting) return { status: "transition_conflict", job_id: jobId, error_class: "job_transition_conflict" };
+      await syncCapabilityGraphJobBestEffort(env, {
+        jobId,
+        jobState: "WAITING_FREE_AI",
+        errorClass: waitReason,
+      });
       return {
         status: "WAITING_FREE_AI",
         job_id: jobId,
@@ -1090,6 +1213,11 @@ async function ensureSearchSemanticFollowup(env, parentJob, result) {
       expectedAttemptCount: currentAttempt,
     });
     if (!failed) return { status: "transition_conflict", job_id: jobId, error_class: "job_transition_conflict" };
+    await syncCapabilityGraphJobBestEffort(env, {
+      jobId,
+      jobState: "FAILED",
+      errorClass,
+    });
     return { status: "FAILED", job_id: jobId, error_class: errorClass };
   }
 }
@@ -1926,6 +2054,7 @@ export default {
       ["cron.recover_readbacks_failed", enqueueDueReadbacks],
       ["cron.recover_plan_runs_failed", recoverPendingPlanRuns],
       ["cron.recover_generic_jobs_failed", recoverPendingGenericJobs],
+      ["cron.recover_capability_graphs_failed", recoverCapabilityGraphs],
     ]) {
       try {
         await maintenance(env);
@@ -2052,6 +2181,10 @@ export default {
         dlq_external_alert_delivery_verified: false,
         ai_cost_ledger: true,
         default_semantic_budget_usd: 0,
+        capability_graphs: true,
+        capability_graph_permission_class: CAPABILITY_GRAPH_LIMITS.permission_class,
+        capability_graph_max_nodes: CAPABILITY_GRAPH_LIMITS.max_nodes,
+        structured_kpi_completion: true,
         free_ai_providers: freeAiProviderSnapshot(env).map(({ id, available, configured, model, reason }) => ({
           id, available, configured, model, reason,
         })),
@@ -2060,6 +2193,41 @@ export default {
         publication_enabled: publicationEnabled(env),
       });
     }
+    if (request.method === "POST" && url.pathname === "/v1/capability-graphs") {
+      if (!authorized(request, env)) return json(401, { success: false, error: "unauthorized" });
+      if (!env.DB || !env.AUTOMATION_QUEUE) return json(503, { success: false, error: "runtime_not_configured" });
+      const body = await request.json().catch(() => ({}));
+      try {
+        const created = await createCapabilityGraph(env, body, ROLE_CONTRACT_JOB_TYPES);
+        await dispatchCapabilityGraphReadyNodes(env, created.graph_id);
+        const snapshot = await getCapabilityGraph(env, created.graph_id);
+        return json(created.created ? 202 : 200, {
+          success: true,
+          ...created,
+          snapshot,
+        });
+      } catch (error) {
+        const code = safeRuntimeErrorClass(error, "graph_create_failed");
+        const status = code === "graph_idempotency_conflict" ? 409 : code.startsWith("graph_") ? 400 : 500;
+        return json(status, { success: false, error: code });
+      }
+    }
+
+    if (request.method === "GET" && url.pathname.startsWith("/v1/capability-graphs/")) {
+      if (!authorized(request, env)) return json(401, { success: false, error: "unauthorized" });
+      if (!env.DB) return json(503, { success: false, error: "runtime_not_configured" });
+      let graphId = "";
+      try {
+        graphId = clean(decodeURIComponent(url.pathname.slice("/v1/capability-graphs/".length)), 160);
+      } catch {
+        return json(400, { success: false, error: "graph_id_invalid" });
+      }
+      if (!graphId) return json(400, { success: false, error: "graph_id_invalid" });
+      const snapshot = await getCapabilityGraph(env, graphId);
+      if (!snapshot) return json(404, { success: false, error: "graph_not_found" });
+      return json(200, { success: true, ...snapshot });
+    }
+
     if (request.method === "GET" && url.pathname === "/v1/role-contracts") {
       if (!authorized(request, env)) return json(401, { success: false, error: "unauthorized" });
       const contracts = await Promise.all(ROLE_CONTRACTS.map(async (contract) => ({
