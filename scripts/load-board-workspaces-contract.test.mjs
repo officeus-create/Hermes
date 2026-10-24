@@ -14,6 +14,10 @@ for(const [name,script] of Object.entries({
  const page=read(pageRoot+name+"/index.astro");
  assert.match(page,/noindex,nofollow/);
  assert.match(page,new RegExp("/scripts/workspaces/"+script+"\\.js"));
+ if(name==="dispatcher"){
+  assert.match(page,/dispatcher-loads/);
+  assert.match(page,/dispatcher-load-search/);
+ }
  execFileSync(process.execPath,["--check",decodeURIComponent(new URL("../public/scripts/workspaces/"+script+".js",import.meta.url).pathname)]);
 }
 assert(CARRIER_TYPES.has("carrier")&&CARRIER_TYPES.has("fleet")&&CARRIER_TYPES.has("owner_operator"));
@@ -54,6 +58,11 @@ assert.match(scripted.carrier,/existing_request_terminal/);
 assert.match(scripted.carrier,/existing_request_dispatcher_changed/);
 assert.match(scripted.carrier,/queuedForDispatcher:false/);
 assert.match(scripted.dispatcher,/dispatcher_specialist_id/);
+assert.match(scripted.dispatcher,/carrierSafeLoad/);
+assert.match(scripted.dispatcher,/r\.record_type='load'/);
+assert.match(scripted.dispatcher,/r\.visibility IN \('public','carrier_only'\)/);
+assert.match(scripted.dispatcher,/s\.redistribution_permission IN \('public','carrier_only'\)/);
+assert.match(scripted.dispatcher,/sourceContactsExposed:false/);
 for(const key of ["active","opportunities","plan"]){
  assert.match(scripted[key],/r\.visibility='public' AND s\.redistribution_permission='public'/,
    key+" must require public/public for any broader visibility path");
