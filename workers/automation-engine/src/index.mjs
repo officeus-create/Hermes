@@ -210,6 +210,12 @@ export function chicagoSlotKey(date = new Date()) {
   return `${parts.year}-${parts.month}-${parts.day}T${String(parts.hour).padStart(2, "0")}`;
 }
 
+async function sha256HexText(value) {
+  const bytes = new TextEncoder().encode(String(value ?? ""));
+  const digest = await crypto.subtle.digest("SHA-256", bytes);
+  return [...new Uint8Array(digest)].map((item) => item.toString(16).padStart(2, "0")).join("");
+}
+
 function fnv1a(value) {
   let hash = 0x811c9dc5;
   for (const char of String(value || "")) {
@@ -1557,6 +1563,177 @@ async function enqueueScheduledHealthSnapshot(env, scheduledAt) {
   });
 }
 
+function roleContractScheduleEligible(contract, scheduledAt) {
+  const cadence = Number(contract?.runtime_config?.cadence_hours || 0);
+  if (!Number.isInteger(cadence) || cadence < 1 || cadence > 24) return false;
+  return chicagoParts(scheduledAt).hour % cadence === 0;
+}
+
+function extractCanonicalFromHtml(html, pageUrl) {
+  for (const tag of String(html || "").match(/<link\b[^>]*>/gi) || []) {
+    if (!/\brel\s*=\s*["'][^"']*\bcanonical\b[^"']*["']/i.test(tag)) continue;
+    const href = tag.match(/\bhref\s*=\s*["']([^"']+)["']/i)?.[1] || "";
+    if (!href) continue;
+    try {
+      return new URL(href, pageUrl).toString();
+    } catch {
+      return "";
+    }
+  }
+  return "";
+}
+
+function htmlNoindex(html) {
+  for (const tag of String(html || "").match(/<meta\b[^>]*>/gi) || []) {
+    const name = tag.match(/\bname\s*=\s*["']([^"']+)["']/i)?.[1]?.toLowerCase() || "";
+    if (name !== "robots") continue;
+    const content = tag.match(/\bcontent\s*=\s*["']([^"']+)["']/i)?.[1]?.toLowerCase() || "";
+    if (/(^|[,\s])noindex([,\s]|$)/.test(content)) return true;
+  }
+  return false;
+}
+
+async function buildScheduledSearchPayload(contract) {
+  const targets = Array.isArray(contract?.runtime_config?.target_urls)
+    ? contract.runtime_config.target_urls.slice(0, 20)
+    : [];
+  if (!targets.length) throw new Error("search_contract_targets_missing");
+  const pages = await Promise.all(targets.map(async (url) => {
+    try {
+      const response = await fetch(url, {
+        method: "GET",
+        redirect: "follow",
+        headers: { "user-agent": "HermesAutomationEngine/1.0 search-readonly" },
+      });
+      const contentType = response.headers.get("content-type") || "";
+      const html = contentType.toLowerCase().includes("text/html") ? await response.text() : "";
+      const xRobots = String(response.headers.get("x-robots-tag") || "").toLowerCase();
+      const canonical = extractCanonicalFromHtml(html, url);
+      const indexable = response.status >= 200
+        && response.status < 400
+        && !/(^|[,\s])noindex([,\s]|$)/.test(xRobots)
+        && !htmlNoindex(html);
+      return {
+        url,
+        status: response.status,
+        canonical,
+        indexable,
+        in_sitemap: null,
+      };
+    } catch {
+      return {
+        url,
+        status: 599,
+        canonical: "",
+        indexable: false,
+        in_sitemap: null,
+      };
+    }
+  }));
+  return { pages };
+}
+
+async function buildScheduledMarketingPayload(env, contract) {
+  const requestedLimit = Number(contract?.runtime_config?.lookback_limit || 200);
+  const limit = Math.max(1, Math.min(500, Number.isInteger(requestedLimit) ? requestedLimit : 200));
+  const rows = await env.DB.prepare(
+    "SELECT content_id,slot_key,body FROM hermes_automation_content ORDER BY updated_at DESC LIMIT ?"
+  ).bind(limit).all();
+  const items = [];
+  for (const row of rows?.results || []) {
+    const contentId = clean(row?.content_id, 200);
+    const slotKey = clean(row?.slot_key, 200);
+    if (!contentId || !slotKey || typeof row?.body !== "string" || !row.body.trim()) continue;
+    items.push({
+      content_id: contentId,
+      slot_key: slotKey,
+      body_fingerprint: await sha256HexText(row.body.replace(/\s+/g, " ").trim().toLowerCase()),
+    });
+  }
+  return { items };
+}
+
+async function requiredTablesPresent(db, tableNames) {
+  const names = tableNames.map((name) => clean(name, 120)).filter(Boolean);
+  if (!names.length) return true;
+  const placeholders = names.map(() => "?").join(",");
+  const rows = await db.prepare(
+    `SELECT name FROM sqlite_master WHERE type='table' AND name IN (${placeholders})`
+  ).bind(...names).all();
+  const present = new Set((rows?.results || []).map((row) => String(row.name || "")));
+  return names.every((name) => present.has(name));
+}
+
+async function buildScheduledLogisticsPayload(env, contract) {
+  if (!await requiredTablesPresent(env.DB, ["hermes_load_sources", "hermes_load_records"])) {
+    throw new Error("logistics_source_tables_missing");
+  }
+  const rows = await env.DB.prepare(`
+    SELECT
+      s.id AS source_id,
+      COALESCE(MAX(r.last_seen_at), s.last_successful_sync) AS last_seen_at,
+      MAX(r.expires_at) AS expires_at
+    FROM hermes_load_sources s
+    LEFT JOIN hermes_load_records r
+      ON r.source_id = s.id AND r.status = 'active'
+    WHERE s.read_enabled = 1
+      AND s.ingest_enabled = 1
+      AND s.status != 'revoked'
+    GROUP BY s.id, s.last_successful_sync
+    ORDER BY MAX(s.updated_at) DESC
+    LIMIT 500
+  `).all();
+  return {
+    sources: (rows?.results || []).map((row) => ({
+      source_id: clean(row?.source_id, 200),
+      last_seen_at: row?.last_seen_at || null,
+      expires_at: row?.expires_at || null,
+    })),
+    max_age_minutes: Number(contract?.runtime_config?.max_age_minutes || 1440),
+  };
+}
+
+async function buildScheduledRoleContractPayload(env, contract) {
+  if (contract.job_type === "search.snapshot.evaluate") return buildScheduledSearchPayload(contract);
+  if (contract.job_type === "marketing.content.dedupe.audit") return buildScheduledMarketingPayload(env, contract);
+  if (contract.job_type === "logistics.source.freshness.audit") return buildScheduledLogisticsPayload(env, contract);
+  throw new Error("scheduled_role_contract_not_supported");
+}
+
+async function enqueueScheduledRoleContracts(env, scheduledAt) {
+  let submitted = 0;
+  const slotKey = chicagoSlotKey(scheduledAt);
+  for (const contract of ROLE_CONTRACTS) {
+    if (contract.semantic_required || !roleContractScheduleEligible(contract, scheduledAt)) continue;
+    try {
+      const payload = await buildScheduledRoleContractPayload(env, contract);
+      await createGenericJob(env, {
+        job_type: contract.job_type,
+        account_key: ACCOUNT_KEY,
+        project_key: "hae-plugin-role-runtime",
+        priority: 45,
+        max_attempts: 3,
+        idempotency_key: `hae:role:${contract.job_type}:${slotKey}`,
+        policy_version: "hae-role-contract-v1",
+        payload: {
+          ...payload,
+          trigger_type: "cron",
+          scheduled_at: scheduledAt.toISOString(),
+        },
+      });
+      submitted += 1;
+    } catch (error) {
+      await recordRuntimeEvent(env, {
+        eventType: "cron.role_contract_submit_failed",
+        messageType: `role:${contract.job_type}`,
+        slotKey,
+        errorClass: safeRuntimeErrorClass(error, "role_contract_submit_failed"),
+      });
+    }
+  }
+  return submitted;
+}
+
 export default {
   async scheduled(controller, env, ctx) {
     if (!env.DB || !env.AUTOMATION_QUEUE) return;
@@ -1585,6 +1762,16 @@ export default {
         messageType: "job.execute",
         slotKey: chicagoSlotKey(scheduledAt),
         errorClass: safeRuntimeErrorClass(error, "scheduled_health_snapshot_failed"),
+      });
+    }
+
+    try {
+      await enqueueScheduledRoleContracts(env, scheduledAt);
+    } catch (error) {
+      await recordRuntimeEvent(env, {
+        eventType: "cron.role_contract_batch_failed",
+        slotKey: chicagoSlotKey(scheduledAt),
+        errorClass: safeRuntimeErrorClass(error, "scheduled_role_contract_batch_failed"),
       });
     }
 
@@ -1699,6 +1886,8 @@ export default {
         read_only_job_types: Array.from(READ_ONLY_GENERIC_JOB_TYPES),
         role_contract_job_types: Array.from(ROLE_CONTRACT_JOB_TYPES),
         normal_loop_requires_paid_ai: false,
+        scheduled_role_contracts: true,
+        role_contract_cadence: "per-contract; current first slice every 6 hours",
         provider_transport: "windsor_connectors_api",
         provider_configured: Boolean(windsorThreadsConfig(env)),
         publication_enabled: publicationEnabled(env),
