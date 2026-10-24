@@ -27,6 +27,11 @@ export async function ensureDlqRuntimeSchema(db) {
       reason TEXT NOT NULL,
       action_status TEXT NOT NULL,
       alert_status TEXT NOT NULL,
+      alert_attempt_count INTEGER NOT NULL DEFAULT 0,
+      alert_claimed_at TEXT,
+      alert_delivered_at TEXT,
+      alert_provider_message_id TEXT,
+      alert_last_error_class TEXT,
       redrive_count INTEGER NOT NULL DEFAULT 0,
       first_seen_at TEXT NOT NULL,
       updated_at TEXT NOT NULL,
@@ -133,6 +138,36 @@ async function upsertClassification(env, record) {
         THEN hermes_automation_dlq_items.alert_status
         ELSE excluded.alert_status
       END,
+      alert_attempt_count=CASE
+        WHEN hermes_automation_dlq_items.disposition=excluded.disposition
+         AND hermes_automation_dlq_items.reason=excluded.reason
+        THEN hermes_automation_dlq_items.alert_attempt_count
+        ELSE 0
+      END,
+      alert_claimed_at=CASE
+        WHEN hermes_automation_dlq_items.disposition=excluded.disposition
+         AND hermes_automation_dlq_items.reason=excluded.reason
+        THEN hermes_automation_dlq_items.alert_claimed_at
+        ELSE NULL
+      END,
+      alert_delivered_at=CASE
+        WHEN hermes_automation_dlq_items.disposition=excluded.disposition
+         AND hermes_automation_dlq_items.reason=excluded.reason
+        THEN hermes_automation_dlq_items.alert_delivered_at
+        ELSE NULL
+      END,
+      alert_provider_message_id=CASE
+        WHEN hermes_automation_dlq_items.disposition=excluded.disposition
+         AND hermes_automation_dlq_items.reason=excluded.reason
+        THEN hermes_automation_dlq_items.alert_provider_message_id
+        ELSE NULL
+      END,
+      alert_last_error_class=CASE
+        WHEN hermes_automation_dlq_items.disposition=excluded.disposition
+         AND hermes_automation_dlq_items.reason=excluded.reason
+        THEN hermes_automation_dlq_items.alert_last_error_class
+        ELSE NULL
+      END,
       last_error_class=CASE
         WHEN hermes_automation_dlq_items.disposition=excluded.disposition
          AND hermes_automation_dlq_items.reason=excluded.reason
@@ -186,6 +221,183 @@ async function markAction(env, dlqItemId, {
   ).run();
 }
 
+function ownerAlertConfig(env) {
+  const botToken = clean(
+    env?.HERMES_HAE_TELEGRAM_BOT_TOKEN || env?.HERMES_CONNECT_TELEGRAM_BOT_TOKEN,
+    300,
+  );
+  const ownerChatId = clean(
+    env?.HERMES_HAE_TELEGRAM_OWNER_CHAT_ID || env?.HERMES_CONNECT_TELEGRAM_OWNER_CHAT_ID,
+    120,
+  );
+  return botToken && ownerChatId ? { botToken, ownerChatId } : null;
+}
+
+function ownerAlertText(row) {
+  return [
+    "HAE OWNER ACTION REQUIRED",
+    "",
+    `DLQ item: ${clean(row?.dlq_item_id, 200) || "—"}`,
+    `Type: ${clean(row?.message_type, 80) || "—"}`,
+    row?.job_id ? `Job: ${clean(row.job_id, 160)}` : "",
+    row?.content_id ? `Content: ${clean(row.content_id, 200)}` : "",
+    `D1 state: ${clean(row?.d1_state, 80) || "UNKNOWN"}`,
+    `Disposition: ${clean(row?.disposition, 80) || "UNKNOWN"}`,
+    `Reason: ${clean(row?.reason, 160) || "UNKNOWN"}`,
+    "",
+    "Open HAE DLQ runtime receipt before taking action. Do not blindly redrive an external write.",
+  ].filter(Boolean).join("\n");
+}
+
+async function setAlertState(env, dlqItemId, {
+  status,
+  incrementAttempt = false,
+  claimedAt = null,
+  deliveredAt = null,
+  providerMessageId = null,
+  lastErrorClass = null,
+}) {
+  const now = new Date().toISOString();
+  await env.DB.prepare(`
+    UPDATE hermes_automation_dlq_items
+    SET alert_status=?,
+        alert_attempt_count=alert_attempt_count+?,
+        alert_claimed_at=?,
+        alert_delivered_at=?,
+        alert_provider_message_id=?,
+        alert_last_error_class=?,
+        updated_at=?
+    WHERE dlq_item_id=?
+  `).bind(
+    status,
+    incrementAttempt ? 1 : 0,
+    claimedAt,
+    deliveredAt,
+    providerMessageId === null ? null : clean(String(providerMessageId), 120),
+    clean(lastErrorClass, 160) || null,
+    now,
+    dlqItemId,
+  ).run();
+}
+
+async function deliverOwnerAlert(env, row, {
+  fetchImpl = globalThis.fetch,
+} = {}) {
+  if (!row || row.alert_status !== "PENDING_OWNER_ALERT") {
+    return { attempted: false, status: row?.alert_status || "NOT_REQUIRED" };
+  }
+  const config = ownerAlertConfig(env);
+  if (!config) {
+    await setAlertState(env, row.dlq_item_id, {
+      status: "PENDING_OWNER_ALERT",
+      lastErrorClass: "owner_alert_not_configured",
+    });
+    return { attempted: false, status: "PENDING_OWNER_ALERT", error_class: "owner_alert_not_configured" };
+  }
+
+  const claimedAt = new Date().toISOString();
+  const claim = await env.DB.prepare(`
+    UPDATE hermes_automation_dlq_items
+    SET alert_status='ALERT_SENDING',
+        alert_attempt_count=alert_attempt_count+1,
+        alert_claimed_at=?,
+        alert_last_error_class='delivery_claimed_reconcile_before_retry',
+        updated_at=?
+    WHERE dlq_item_id=?
+      AND alert_status='PENDING_OWNER_ALERT'
+      AND alert_claimed_at IS NULL
+  `).bind(claimedAt, claimedAt, row.dlq_item_id).run();
+  if (Number(claim?.meta?.changes || 0) !== 1) {
+    const current = await env.DB.prepare(
+      "SELECT alert_status,alert_claimed_at,alert_provider_message_id FROM hermes_automation_dlq_items WHERE dlq_item_id=? LIMIT 1"
+    ).bind(row.dlq_item_id).first();
+    return {
+      attempted: false,
+      status: clean(current?.alert_status, 80) || "UNKNOWN",
+      claimed: Boolean(current?.alert_claimed_at),
+      provider_message_id: clean(current?.alert_provider_message_id, 120) || null,
+    };
+  }
+
+  try {
+    const response = await fetchImpl(
+      `https://api.telegram.org/bot${config.botToken}/sendMessage`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          chat_id: config.ownerChatId,
+          text: ownerAlertText(row),
+          disable_web_page_preview: true,
+        }),
+      },
+    );
+    let payload = null;
+    try { payload = await response.json(); } catch {}
+
+    if (!response.ok || payload?.ok === false) {
+      await setAlertState(env, row.dlq_item_id, {
+        status: "PENDING_OWNER_ALERT",
+        claimedAt: null,
+        lastErrorClass: `telegram_http_${Number(response.status || 0) || "rejected"}`,
+      });
+      return { attempted: true, delivered: false, status: "PENDING_OWNER_ALERT", provider_rejected: true };
+    }
+
+    const messageId = payload?.result?.message_id;
+    if (messageId === undefined || messageId === null || messageId === "") {
+      await setAlertState(env, row.dlq_item_id, {
+        status: "ALERT_DELIVERY_AMBIGUOUS",
+        claimedAt,
+        lastErrorClass: "delivery_ambiguous_manual_review",
+      });
+      return { attempted: true, delivered: false, status: "ALERT_DELIVERY_AMBIGUOUS" };
+    }
+
+    const deliveredAt = new Date().toISOString();
+    await setAlertState(env, row.dlq_item_id, {
+      status: "DELIVERED",
+      claimedAt,
+      deliveredAt,
+      providerMessageId: messageId,
+      lastErrorClass: null,
+    });
+    return {
+      attempted: true,
+      delivered: true,
+      status: "DELIVERED",
+      provider_message_id: String(messageId),
+      delivered_at: deliveredAt,
+    };
+  } catch {
+    await setAlertState(env, row.dlq_item_id, {
+      status: "ALERT_DELIVERY_AMBIGUOUS",
+      claimedAt,
+      lastErrorClass: "delivery_ambiguous_manual_review",
+    }).catch(() => {});
+    return { attempted: true, delivered: false, status: "ALERT_DELIVERY_AMBIGUOUS" };
+  }
+}
+
+export async function recoverPendingDlqOwnerAlerts(env, limit = 20, options = {}) {
+  if (!env?.DB) return 0;
+  await ensureDlqRuntimeSchema(env.DB);
+  const rows = await env.DB.prepare(`
+    SELECT *
+    FROM hermes_automation_dlq_items
+    WHERE alert_status='PENDING_OWNER_ALERT'
+      AND alert_claimed_at IS NULL
+    ORDER BY updated_at ASC
+    LIMIT ?
+  `).bind(Math.max(1, Math.min(50, Number(limit) || 20))).all();
+  let delivered = 0;
+  for (const row of rows?.results || []) {
+    const outcome = await deliverOwnerAlert(env, row, options);
+    if (outcome?.delivered) delivered += 1;
+  }
+  return delivered;
+}
+
 function safeOriginalBody(body) {
   const messageType = clean(body?.type, 80);
   if (messageType === "job.execute") {
@@ -203,6 +415,7 @@ function safeOriginalBody(body) {
 
 export async function processDlqMessage(env, item, {
   mainQueueName = "hermes-automation",
+  fetchImpl = globalThis.fetch,
 } = {}) {
   if (!env?.DB || !env?.AUTOMATION_QUEUE) throw new Error("dlq_runtime_not_configured");
   const body = item?.body || {};
@@ -293,11 +506,15 @@ export async function processDlqMessage(env, item, {
     }
   }
 
+  const alert = await deliverOwnerAlert(env, persisted, { fetchImpl });
   return {
     dlq_item_id: dlqItemId,
     disposition: disposition.disposition,
     action_status: nextActionForDisposition(disposition.disposition),
-    alert_status: alertStatusForDisposition(disposition.disposition),
+    alert_status: alert?.status || alertStatusForDisposition(disposition.disposition),
+    alert_delivery_attempted: Boolean(alert?.attempted),
+    alert_delivered: Boolean(alert?.delivered),
+    alert_provider_message_id: alert?.provider_message_id || null,
   };
 }
 
@@ -312,14 +529,18 @@ export async function dlqRuntimeSnapshot(env, limit = 50) {
   `).all();
   const items = await env.DB.prepare(`
     SELECT dlq_item_id,message_type,job_id,content_id,d1_state,disposition,reason,
-           action_status,alert_status,redrive_count,first_seen_at,updated_at,last_error_class
+           action_status,alert_status,alert_attempt_count,alert_claimed_at,alert_delivered_at,
+           alert_provider_message_id,alert_last_error_class,redrive_count,first_seen_at,updated_at,last_error_class
     FROM hermes_automation_dlq_items
     ORDER BY updated_at DESC
     LIMIT ?
   `).bind(Math.max(1, Math.min(100, Number(limit) || 50))).all();
+  const normalizedCounts = counts?.results || [];
   return {
-    counts: counts?.results || [],
+    counts: normalizedCounts,
     items: items?.results || [],
-    external_alert_delivery_verified: false,
+    external_alert_delivery_verified: normalizedCounts.some(
+      (row) => row?.alert_status === "DELIVERED" && Number(row?.count || 0) > 0,
+    ),
   };
 }
