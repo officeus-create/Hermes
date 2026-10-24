@@ -76,4 +76,36 @@ const queueUnknown = evaluateHaeIncidents({
 assert.equal(queueUnknown.status, "UNKNOWN");
 assert.ok(queueUnknown.unknowns.some((item) => item.code === "QUEUE_BACKLOG_UNKNOWN"));
 
+const gateUnknown = evaluateHaeIncidents({
+  source_sha: sha,
+  unknown_outcomes: 0,
+  unverified_readbacks: 0,
+  last_cron_wake: { observed_at: "2026-10-23T15:17:00.000Z", source_sha: sha },
+  queue: { backlog_count: 0 },
+  dlq: { backlog_count: 0 },
+}, { now, expected_source_sha: sha });
+assert.equal(gateUnknown.status, "UNKNOWN");
+for (const code of ["AUTOMATION_MODE_UNKNOWN", "HEARTBEAT_MODE_UNKNOWN", "PUBLICATION_GATE_UNKNOWN", "HEARTBEAT_PUBLICATION_GATE_UNKNOWN"]) {
+  assert.ok(gateUnknown.unknowns.some((item) => item.code === code), `Missing unknown ${code}`);
+}
+
+const wrongReadOnlyMode = evaluateHaeIncidents({
+  source_sha: sha,
+  automation_mode: "live",
+  publication_enabled: false,
+  unknown_outcomes: 0,
+  unverified_readbacks: 0,
+  last_cron_wake: {
+    observed_at: "2026-10-23T15:17:00.000Z",
+    source_sha: sha,
+    automation_mode: "live",
+    publication_enabled: false,
+  },
+  queue: { backlog_count: 0 },
+  dlq: { backlog_count: 0 },
+}, { now, expected_source_sha: sha });
+assert.equal(wrongReadOnlyMode.status, "INCIDENT");
+assert.ok(wrongReadOnlyMode.incidents.some((item) => item.code === "AUTOMATION_MODE_NOT_DRY_RUN"));
+assert.ok(wrongReadOnlyMode.incidents.some((item) => item.code === "HEARTBEAT_MODE_NOT_DRY_RUN"));
+
 console.log("HAE incident policy contract PASS");
