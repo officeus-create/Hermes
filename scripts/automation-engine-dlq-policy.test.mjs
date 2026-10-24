@@ -118,7 +118,7 @@ for (const state of ["provider_accepted_readback_pending", "unknown_outcome_read
 
 assert.deepEqual(
   classifyDlqDisposition({ message_type: "publication.write", d1_state: "reserved", idempotency_key: "k-write-proven", external_effect: true, provider_outcome: "NONE" }),
-  { disposition: "SAFE_REDRIVE", reason: "proven_pre_side_effect_state" }
+  { disposition: "OWNER_ACTION", reason: "external_write_redrive_handler_unavailable" }
 );
 
 assert.deepEqual(
