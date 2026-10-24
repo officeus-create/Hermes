@@ -108,4 +108,38 @@ assert.equal(wrongReadOnlyMode.status, "INCIDENT");
 assert.ok(wrongReadOnlyMode.incidents.some((item) => item.code === "AUTOMATION_MODE_NOT_DRY_RUN"));
 assert.ok(wrongReadOnlyMode.incidents.some((item) => item.code === "HEARTBEAT_MODE_NOT_DRY_RUN"));
 
+const typoPhase = evaluateHaeIncidents({
+  source_sha: sha,
+  automation_mode: "live",
+  publication_enabled: true,
+  unknown_outcomes: 0,
+  unverified_readbacks: 0,
+  last_cron_wake: { observed_at: "2026-10-23T15:17:00.000Z", source_sha: sha, automation_mode: "live", publication_enabled: true },
+  queue: { backlog_count: 0 },
+  dlq: { backlog_count: 0 },
+}, { now, expected_source_sha: sha, gate_phase: "READ_ONLY_RELIABILTY" });
+assert.equal(typoPhase.status, "UNKNOWN");
+assert.ok(typoPhase.unknowns.some((item) => item.code === "GATE_PHASE_UNKNOWN"));
+
+for (const [field, container] of [
+  ["queue.backlog_count", { queue: { backlog_count: -1 } }],
+  ["dlq.backlog_count", { dlq: { backlog_count: -1 } }],
+  ["unknown_outcomes", { unknown_outcomes: -1 }],
+  ["unverified_readbacks", { unverified_readbacks: -1 }],
+]) {
+  const negative = evaluateHaeIncidents({
+    source_sha: sha,
+    automation_mode: "dry_run",
+    publication_enabled: false,
+    unknown_outcomes: 0,
+    unverified_readbacks: 0,
+    last_cron_wake: { observed_at: "2026-10-23T15:17:00.000Z", source_sha: sha, automation_mode: "dry_run", publication_enabled: false },
+    queue: { backlog_count: 0 },
+    dlq: { backlog_count: 0 },
+    ...container,
+  }, { now, expected_source_sha: sha, gate_phase: "READ_ONLY_RELIABILITY" });
+  assert.equal(negative.status, "UNKNOWN", field);
+  assert.ok(negative.unknowns.length > 0, field);
+}
+
 console.log("HAE incident policy contract PASS");

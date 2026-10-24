@@ -61,6 +61,31 @@ assert.equal(
 );
 
 assert.deepEqual(
+  classifyDlqDisposition({ message_type: "job.execute", d1_state: "QUEUED", idempotency_key: "k-unknown-effect" }),
+  { disposition: "OWNER_ACTION", reason: "external_effect_unknown" }
+);
+
+assert.deepEqual(
+  classifyDlqDisposition({ message_type: "unknown.job", d1_state: "QUEUED", idempotency_key: "k-unknown-type", external_effect: false }),
+  { disposition: "OWNER_ACTION", reason: "message_type_untrusted" }
+);
+
+assert.deepEqual(
+  classifyDlqDisposition({ message_type: "publication.write", d1_state: "QUEUED", idempotency_key: "k-write-unknown", external_effect: false }),
+  { disposition: "OWNER_ACTION", reason: "external_write_classification_ambiguous" }
+);
+
+assert.deepEqual(
+  classifyDlqDisposition({ message_type: "job.execute", d1_state: "QUEUED", idempotency_key: "k-read-only", external_effect: false }),
+  { disposition: "SAFE_REDRIVE", reason: "read_only_retryable" }
+);
+
+assert.deepEqual(
+  classifyDlqDisposition({ message_type: "publication.write", d1_state: "reserved", idempotency_key: "k-write-proven", external_effect: true, provider_outcome: "NONE" }),
+  { disposition: "SAFE_REDRIVE", reason: "proven_pre_side_effect_state" }
+);
+
+assert.deepEqual(
   classifyDlqDisposition({ message_type: "job.execute", idempotency_key: "k-missing-state", external_effect: false }),
   { disposition: "OWNER_ACTION", reason: "d1_state_missing" }
 );

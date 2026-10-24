@@ -1,5 +1,6 @@
 const SHA40 = /^[0-9a-f]{40}$/;
 const PROOF_REQUIRED_STATES = new Set(["LIVE_VERIFIED", "EVIDENCE_COMPLETE_FOR_RELEASE_REVIEW"]);
+const KNOWN_GATE_PHASES = new Set(["READ_ONLY_RELIABILITY", "PROVIDER_LIVE"]);
 
 function bool(value) {
   return value === true;
@@ -13,9 +14,15 @@ export function auditHaeState(snapshot = {}) {
   const findings = [];
   const currentMain = String(snapshot.current_main_sha || "").trim();
   const claimedState = String(snapshot.claimed_state || "UNKNOWN").trim().toUpperCase();
-  const phase = String(snapshot.gate_phase || "READ_ONLY_RELIABILITY").trim().toUpperCase();
+  const rawPhase = String(snapshot.gate_phase || "").trim().toUpperCase();
+  const phase = rawPhase || "READ_ONLY_RELIABILITY";
   const runtime = snapshot.runtime || {};
   const pr = snapshot.pr || {};
+  const proofRequired = PROOF_REQUIRED_STATES.has(claimedState);
+
+  if (!KNOWN_GATE_PHASES.has(phase)) {
+    findings.push({ code: "GATE_PHASE_UNKNOWN", severity: proofRequired ? "BLOCKER" : "UNKNOWN", value: rawPhase });
+  }
 
   if (!SHA40.test(currentMain)) {
     findings.push({ code: "CURRENT_MAIN_UNKNOWN", severity: "BLOCKER" });
@@ -51,6 +58,13 @@ export function auditHaeState(snapshot = {}) {
     });
   }
 
+  const expectedRuntimeSha = String(snapshot.expected_runtime_sha || "").trim();
+  if (proofRequired && !expectedRuntimeSha) {
+    findings.push({ code: "EXPECTED_RUNTIME_SHA_UNKNOWN", severity: "BLOCKER" });
+  } else if (proofRequired && !SHA40.test(expectedRuntimeSha)) {
+    findings.push({ code: "EXPECTED_RUNTIME_SHA_INVALID", severity: "BLOCKER" });
+  }
+
   const requiredLiveProof = claimedState === "EVIDENCE_COMPLETE_FOR_RELEASE_REVIEW"
     ? [
         "authenticated_deployment",
@@ -79,7 +93,7 @@ export function auditHaeState(snapshot = {}) {
       : [];
   const missingLiveProof = requiredLiveProof.filter((key) => !proofOk(runtime.proof, key));
 
-  if (PROOF_REQUIRED_STATES.has(claimedState) && missingLiveProof.length) {
+  if (proofRequired && missingLiveProof.length) {
     findings.push({
       code: claimedState === "LIVE_VERIFIED" ? "FALSE_LIVE_CLAIM" : "RUNTIME_PROOF_INCOMPLETE",
       severity: "BLOCKER",
@@ -103,7 +117,11 @@ export function auditHaeState(snapshot = {}) {
     blockers,
     unknowns,
     findings,
-    live_proof_complete: PROOF_REQUIRED_STATES.has(claimedState) && missingLiveProof.length === 0,
-    missing_live_proof: PROOF_REQUIRED_STATES.has(claimedState) ? missingLiveProof : null,
+    live_proof_complete: proofRequired
+      && KNOWN_GATE_PHASES.has(phase)
+      && SHA40.test(expectedRuntimeSha)
+      && runtimeSha === expectedRuntimeSha
+      && missingLiveProof.length === 0,
+    missing_live_proof: proofRequired ? missingLiveProof : null,
   };
 }

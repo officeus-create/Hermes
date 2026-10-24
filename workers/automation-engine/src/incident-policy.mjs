@@ -4,6 +4,11 @@ function numberOrNull(value) {
   return null;
 }
 
+function countOrNull(value) {
+  const number = numberOrNull(value);
+  return number !== null && Number.isInteger(number) && number >= 0 ? number : null;
+}
+
 function timestampMs(value) {
   const parsed = Date.parse(String(value || ""));
   return Number.isFinite(parsed) ? parsed : null;
@@ -14,11 +19,14 @@ export function evaluateHaeIncidents(health = {}, options = {}) {
   const intervalMinutes = Math.max(1, numberOrNull(options.schedule_interval_minutes) ?? 60);
   const recoveryWindowMinutes = Math.max(intervalMinutes, numberOrNull(options.recovery_window_minutes) ?? intervalMinutes * 2);
   const phase = String(options.gate_phase || "READ_ONLY_RELIABILITY").toUpperCase();
+  const knownPhase = new Set(["READ_ONLY_RELIABILITY", "PROVIDER_LIVE"]).has(phase);
   const expectedSha = String(options.expected_source_sha || "").trim();
 
   const incidents = [];
   const warnings = [];
   const unknowns = [];
+
+  if (!knownPhase) unknowns.push({ code: "GATE_PHASE_UNKNOWN" });
 
   const heartbeat = health?.last_cron_wake || {};
   const heartbeatMs = timestampMs(heartbeat?.observed_at || heartbeat?.scheduled_at);
@@ -74,11 +82,11 @@ export function evaluateHaeIncidents(health = {}, options = {}) {
     });
   }
 
-  const dlqBacklog = numberOrNull(health?.dlq?.backlog_count);
+  const dlqBacklog = countOrNull(health?.dlq?.backlog_count);
   if (dlqBacklog === null) unknowns.push({ code: "DLQ_BACKLOG_UNKNOWN" });
   else if (dlqBacklog > 0) warnings.push({ code: "DLQ_NONZERO", count: dlqBacklog });
 
-  const queueBacklog = numberOrNull(health?.queue?.backlog_count);
+  const queueBacklog = countOrNull(health?.queue?.backlog_count);
   const oldest = timestampMs(health?.queue?.oldest_message_at);
   if (queueBacklog === null) {
     unknowns.push({ code: "QUEUE_BACKLOG_UNKNOWN" });
@@ -93,7 +101,7 @@ export function evaluateHaeIncidents(health = {}, options = {}) {
     ["unknown_outcomes", "UNKNOWN_PROVIDER_OUTCOME"],
     ["unverified_readbacks", "UNVERIFIED_READBACK"],
   ]) {
-    const value = numberOrNull(health?.[field]);
+    const value = countOrNull(health?.[field]);
     if (value === null) unknowns.push({ code: `${code}_COUNT_UNKNOWN` });
     else if (value > 0) incidents.push({ code, count: value });
   }

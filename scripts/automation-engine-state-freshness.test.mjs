@@ -2,6 +2,19 @@ import assert from "node:assert/strict";
 import { auditHaeState } from "../workers/automation-engine/src/state-freshness.mjs";
 
 const sha = "a".repeat(40);
+const completeProof = {
+  authenticated_deployment: true,
+  private_health: true,
+  d1: true,
+  queue: true,
+  dlq: true,
+  cron_heartbeat: true,
+  read_only_job_receipt: true,
+  idempotency_replay: true,
+  dry_run: true,
+  publication_disabled: true,
+  independent_qa: true,
+};
 
 const clean = auditHaeState({
   current_main_sha: sha,
@@ -13,17 +26,7 @@ const clean = auditHaeState({
   runtime: {
     source_sha: sha,
     publication_enabled: true,
-    proof: {
-      authenticated_deployment: true,
-      private_health: true,
-      d1: true,
-      queue: true,
-      dlq: true,
-      cron_heartbeat: true,
-      read_only_job_receipt: true,
-      idempotency_replay: true,
-      independent_qa: true,
-    },
+    proof: completeProof,
   },
 });
 assert.equal(clean.status, "CONSISTENT");
@@ -83,23 +86,43 @@ const evidenceComplete = auditHaeState({
   runtime: {
     source_sha: sha,
     publication_enabled: false,
-    proof: {
-      authenticated_deployment: true,
-      private_health: true,
-      d1: true,
-      queue: true,
-      dlq: true,
-      cron_heartbeat: true,
-      read_only_job_receipt: true,
-      idempotency_replay: true,
-      dry_run: true,
-      publication_disabled: true,
-      independent_qa: true,
-    },
+    proof: completeProof,
   },
 });
 assert.equal(evidenceComplete.status, "CONSISTENT");
 assert.equal(evidenceComplete.live_proof_complete, true);
+
+const evidenceWithoutExpectedSha = auditHaeState({
+  current_main_sha: sha,
+  claimed_state: "EVIDENCE_COMPLETE_FOR_RELEASE_REVIEW",
+  gate_phase: "READ_ONLY_RELIABILITY",
+  pr: { behind_by: 0, exact_scope_verified: true },
+  runtime: { source_sha: sha, publication_enabled: false, proof: completeProof },
+});
+assert.equal(evidenceWithoutExpectedSha.status, "BLOCKED");
+assert.ok(evidenceWithoutExpectedSha.blockers.some((item) => item.code === "EXPECTED_RUNTIME_SHA_UNKNOWN"));
+
+const evidenceWithWrongSha = auditHaeState({
+  current_main_sha: sha,
+  claimed_state: "EVIDENCE_COMPLETE_FOR_RELEASE_REVIEW",
+  gate_phase: "READ_ONLY_RELIABILITY",
+  expected_runtime_sha: sha,
+  pr: { behind_by: 0, exact_scope_verified: true },
+  runtime: { source_sha: "b".repeat(40), publication_enabled: false, proof: completeProof },
+});
+assert.equal(evidenceWithWrongSha.status, "BLOCKED");
+assert.ok(evidenceWithWrongSha.blockers.some((item) => item.code === "RUNTIME_SOURCE_DRIFT"));
+
+const typoPhase = auditHaeState({
+  current_main_sha: sha,
+  claimed_state: "EVIDENCE_COMPLETE_FOR_RELEASE_REVIEW",
+  gate_phase: "READ_ONLY_RELIABILTY",
+  expected_runtime_sha: sha,
+  pr: { behind_by: 0, exact_scope_verified: true },
+  runtime: { source_sha: sha, publication_enabled: false, proof: completeProof },
+});
+assert.equal(typoPhase.status, "BLOCKED");
+assert.ok(typoPhase.blockers.some((item) => item.code === "GATE_PHASE_UNKNOWN"));
 
 const evidenceClaimWithoutProof = auditHaeState({
   current_main_sha: sha,
