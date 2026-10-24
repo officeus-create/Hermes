@@ -311,6 +311,38 @@ assert.ok(multiCapacity.records.every((item) => item.record_type === "capacity")
 assert.ok(multiCapacity.records.every((item) => /^sha256:[a-f0-9]{64}$/.test(item.fingerprint)));
 assert.ok(multiCapacity.records.every((item) => !JSON.stringify(item).includes("dispatcher@example.com")));
 
+const currentHegelmannStyle = await parseCapacityListEmail({
+  subject: "Truck list",
+  body: [
+    "Good Morning,",
+    "If you have any freight from these areas,",
+    "please contact dispatcher directly.",
+    "MC-1106753",
+    "Thursdays Empty 53” dry vans list:",
+    "Pell City, AL - ready 12PM (Need load to SC or NC)",
+    "Mesquite, TX - ready 11AM",
+    "Eagan, MN - ready 12PM",
+    "Mokena, IL - ready now",
+    "Jonesboro, AR - ready 12PM",
+    "York, SC - ready 12PM",
+    "Sales Team",
+  ].join("\n"),
+  receivedAt: now,
+  observedAt: now,
+  source: { ...sourceConfig[0], requestedVisibility: "carrier_only", ttlHours: 12 },
+  sourceMessageId: "hegelmann-format-20261022@example.com",
+  rawEvidenceRef: "email:src_hegelmann_capacity:fixture",
+});
+assert.equal(currentHegelmannStyle.quarantine.length, 0);
+assert.equal(currentHegelmannStyle.records.length, 6);
+assert.deepEqual(currentHegelmannStyle.records.map((item) => item.origin), [
+  "Pell City, AL", "Mesquite, TX", "Eagan, MN", "Mokena, IL", "Jonesboro, AR", "York, SC",
+]);
+assert.ok(currentHegelmannStyle.records.every((item) => item.equipment === "dry_van"));
+assert.ok(currentHegelmannStyle.records.every((item) => item.pickup_window.startsWith("Thursday ")));
+assert.ok(currentHegelmannStyle.records.every((item) => item.visibility === "carrier_only"));
+assert.doesNotMatch(JSON.stringify(currentHegelmannStyle.records), /phone|email|hegelmann\.us/i);
+
 const carHauling = await parseFreightEmail({
   subject: "Vehicle transport order",
   body: "Origin: Chicago, IL\nDestination: Miami, FL\nEquipment: 3-car wedge\nRate: $3,200",
