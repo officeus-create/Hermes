@@ -129,6 +129,27 @@ function normalizedRequest(request = {}) {
   return { systemPrompt, userPrompt, maxOutputTokens };
 }
 
+function finiteNonnegativeInteger(value) {
+  const numeric = Number(value);
+  return Number.isFinite(numeric) && numeric >= 0 ? Math.trunc(numeric) : null;
+}
+
+function usageReceipt(rawUsage, request, result) {
+  const usage = rawUsage && typeof rawUsage === "object" ? rawUsage : {};
+  const inputTokens = finiteNonnegativeInteger(
+    usage.input_tokens ?? usage.prompt_tokens ?? usage.inputTokens ?? usage.promptTokens
+  );
+  const outputTokens = finiteNonnegativeInteger(
+    usage.output_tokens ?? usage.completion_tokens ?? usage.outputTokens ?? usage.completionTokens
+  );
+  return {
+    input_tokens: inputTokens,
+    output_tokens: outputTokens,
+    input_chars: request.systemPrompt.length + request.userPrompt.length,
+    output_chars: JSON.stringify(result ?? null).length,
+  };
+}
+
 async function runCloudflareWorkersAi(env, provider, request) {
   try {
     const response = await env.AI.run(provider.model, {
@@ -140,11 +161,13 @@ async function runCloudflareWorkersAi(env, provider, request) {
       temperature: 0,
     });
     const value = response?.response ?? response?.result ?? response;
+    const result = extractJsonObject(value);
     return {
       provider_id: provider.id,
       model: provider.model,
       cost_usd: 0,
-      result: extractJsonObject(value),
+      usage: usageReceipt(response?.usage, request, result),
+      result,
     };
   } catch (error) {
     if (capacityLikeError(error)) throw new FreeAiUnavailableError("cloudflare_free_capacity_unavailable");
@@ -197,11 +220,13 @@ async function runDeepSeekSelfHosted(env, provider, request) {
   }
   const body = await response.json().catch(() => null);
   const text = body?.choices?.[0]?.message?.content;
+  const result = extractJsonObject(text);
   return {
     provider_id: provider.id,
     model: provider.model,
     cost_usd: 0,
-    result: extractJsonObject(text),
+    usage: usageReceipt(body?.usage, request, result),
+    result,
   };
 }
 

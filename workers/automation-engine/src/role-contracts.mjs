@@ -116,6 +116,7 @@ export const ROLE_CONTRACTS = Object.freeze([
     runtime_config: {
       max_items: 20,
       max_output_tokens: 600,
+      max_cost_usd: 0,
       retry_seconds: 900,
     },
     preconditions: [
