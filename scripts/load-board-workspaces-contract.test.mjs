@@ -19,6 +19,10 @@ for(const [name,script] of Object.entries({
   assert.match(page,/dispatcher-load-search/);
  }
  execFileSync(process.execPath,["--check",decodeURIComponent(new URL("../public/scripts/workspaces/"+script+".js",import.meta.url).pathname)]);
+ if(name==="dispatcher"){
+  assert.match(read("public/scripts/workspaces/dispatcher-workspace.js"),/Authorized carrier:/);
+  assert.match(read("public/scripts/workspaces/dispatcher-workspace.js"),/30000/);
+ }
 }
 assert(CARRIER_TYPES.has("carrier")&&CARRIER_TYPES.has("fleet")&&CARRIER_TYPES.has("owner_operator"));
 assert(!CARRIER_TYPES.has("broker")&&!CARRIER_TYPES.has("dealer"));
@@ -63,6 +67,8 @@ assert.match(scripted.dispatcher,/r\.record_type='load'/);
 assert.match(scripted.dispatcher,/r\.visibility IN \('public','carrier_only'\)/);
 assert.match(scripted.dispatcher,/s\.redistribution_permission IN \('public','carrier_only'\)/);
 assert.match(scripted.dispatcher,/sourceContactsExposed:false/);
+assert.match(scripted.dispatcher,/authorized_carrier_name/);
+assert.match(scripted.dispatcher,/carrierScope/);
 assert.match(scripted.dispatcher,/carrier_scoped/);
 assert.match(scripted.dispatcher,/authorized_carrier_company_id/);
 assert.match(scripted.dispatcher,/scoped_assignment\.carrier_company_id=scoped_company\.id/);
