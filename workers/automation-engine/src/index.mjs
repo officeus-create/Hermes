@@ -22,6 +22,10 @@ import {
   freeAiProviderSnapshot,
   runFreeSemanticJson,
 } from "./free-ai-runtime.mjs";
+import {
+  dlqRuntimeSnapshot,
+  processDlqMessage,
+} from "./dlq-runtime.mjs";
 
 const ACCOUNT_KEY = "hermes_logistics";
 const PLATFORM = "threads";
@@ -1908,6 +1912,42 @@ export default {
   },
 
   async queue(batch, env) {
+    if (batch?.queue === "hermes-automation-dlq") {
+      for (const item of batch.messages) {
+        try {
+          const outcome = await processDlqMessage(env, item);
+          await recordRuntimeEvent(env, {
+            eventType: "dlq.processed",
+            queueName: batch?.queue,
+            queueMessageId: item?.id,
+            messageSentAt: item?.timestamp,
+            messageType: item?.body?.type,
+            jobId: item?.body?.job_id,
+            contentId: item?.body?.content_id,
+            attemptCount: item?.attempts,
+            errorClass: outcome?.disposition === "OWNER_ACTION" || outcome?.disposition === "QUARANTINE"
+              ? `dlq_${String(outcome.disposition || "").toLowerCase()}`
+              : null,
+          });
+          item.ack();
+        } catch (error) {
+          await recordRuntimeEvent(env, {
+            eventType: "dlq.process_retry",
+            queueName: batch?.queue,
+            queueMessageId: item?.id,
+            messageSentAt: item?.timestamp,
+            messageType: item?.body?.type,
+            jobId: item?.body?.job_id,
+            contentId: item?.body?.content_id,
+            attemptCount: item?.attempts,
+            errorClass: safeRuntimeErrorClass(error, "dlq_runtime_failed"),
+          });
+          item.retry();
+        }
+      }
+      return;
+    }
+
     for (const item of batch.messages) {
       const payload = item.body || {};
       const messageType = clean(payload?.type, 80) || "UNKNOWN";
@@ -1981,6 +2021,8 @@ export default {
         role_contract_cadence: "per-contract; current deterministic slice every 6 hours",
         free_semantic_only: true,
         paid_ai_fallback_enabled: false,
+        dlq_runtime_consumer: true,
+        dlq_external_alert_delivery_verified: false,
         free_ai_providers: freeAiProviderSnapshot(env).map(({ id, available, configured, model, reason }) => ({
           id, available, configured, model, reason,
         })),
@@ -2008,6 +2050,12 @@ export default {
         paid_fallback_enabled: false,
         contracts,
       });
+    }
+    if (request.method === "GET" && url.pathname === "/v1/dlq-runtime") {
+      if (!authorized(request, env)) return json(401, { success: false, error: "unauthorized" });
+      if (!env.DB) return json(503, { success: false, error: "runtime_not_configured" });
+      const limit = Math.max(1, Math.min(100, Number(url.searchParams.get("limit") || 50) || 50));
+      return json(200, { success: true, ...(await dlqRuntimeSnapshot(env, limit)) });
     }
     if (request.method === "GET" && url.pathname === "/v1/health") {
       if (!authorized(request, env)) return json(401, { success: false, error: "unauthorized" });
