@@ -14,6 +14,15 @@ export const ROLE_CONTRACTS = Object.freeze([
     input_schema: {
       pages: "array<{url,status,canonical,indexable,in_sitemap}>",
     },
+    runtime_config: {
+      target_urls: [
+        "https://hermeslogisticsus.com/",
+        "https://hermeslogisticsus.com/load-board/",
+        "https://hermeslogisticsus.com/logistics/car-hauling-dispatch/",
+        "https://hermeslogisticsus.com/services/seo/",
+      ],
+      cadence_hours: 6,
+    },
     preconditions: ["payload.pages is a bounded current snapshot"],
     deterministic_steps: [
       "validate page snapshot",
@@ -39,11 +48,15 @@ export const ROLE_CONTRACTS = Object.freeze([
     free_ai_policy: "not_required",
     trigger: "before_scheduling_or_batch_review",
     input_schema: {
-      items: "array<{content_id,slot_key,body}>",
+      items: "array<{content_id,slot_key,body_fingerprint}>",
     },
-    preconditions: ["payload contains draft/approved-template candidates only"],
+    runtime_config: {
+      lookback_limit: 200,
+      cadence_hours: 6,
+    },
+    preconditions: ["payload contains content identifiers, slot keys and non-reversible body fingerprints only"],
     deterministic_steps: [
-      "normalize content without persisting raw body in result",
+      "compare content fingerprints without copying raw body into the job payload",
       "detect duplicate content",
       "detect duplicate slot ownership",
     ],
@@ -67,6 +80,10 @@ export const ROLE_CONTRACTS = Object.freeze([
     input_schema: {
       sources: "array<{source_id,last_seen_at,expires_at}>",
       max_age_minutes: "integer 1..10080 optional",
+    },
+    runtime_config: {
+      max_age_minutes: 1440,
+      cadence_hours: 6,
     },
     preconditions: ["source identifiers are non-secret and timestamps are bounded metadata"],
     deterministic_steps: [
@@ -156,7 +173,7 @@ function validateMarketingPayload(payload) {
     if (!item || typeof item !== "object") throw new Error("marketing_item_invalid");
     if (!cleanText(item.content_id, 200)) throw new Error("marketing_content_id_required");
     if (!cleanText(item.slot_key, 200)) throw new Error("marketing_slot_key_required");
-    if (!cleanText(item.body, 4000)) throw new Error("marketing_body_required");
+    if (!/^[0-9a-f]{64}$/.test(cleanText(item.body_fingerprint, 80))) throw new Error("marketing_body_fingerprint_required");
   }
   return { items };
 }
@@ -217,7 +234,7 @@ function evaluateMarketing(payload) {
 
   for (const item of items) {
     const id = cleanText(item.content_id, 200);
-    const bodyKey = cleanText(item.body, 4000).toLowerCase();
+    const bodyKey = cleanText(item.body_fingerprint, 80);
     const slotKey = cleanText(item.slot_key, 200);
     if (!byBody.has(bodyKey)) byBody.set(bodyKey, []);
     if (!bySlot.has(slotKey)) bySlot.set(slotKey, []);
@@ -235,6 +252,7 @@ function evaluateMarketing(payload) {
     duplicate_content_ids: bounded(duplicateContent, 50),
     duplicate_slot_ids: bounded(duplicateSlots, 50),
     raw_body_persisted: false,
+    fingerprint_only: true,
   };
 }
 
