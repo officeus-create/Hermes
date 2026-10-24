@@ -68,6 +68,9 @@ assert.match(accessPage, /\/api\/auth\/me/);
 assert.match(accessPage, /\/api\/hermes-connect\/company/);
 assert.match(accessPage, /catalogOptIn/);
 assert.match(accessPage, /Self-submitted · verification pending/);
+assert.match(accessPage, /company_required === false/);
+assert.match(accessPage, /Internal Load Board access verified/);
+assert.match(accessPage, /verified Hermes internal owner\/dispatcher access goes directly to the restricted board/);
 assert.match(accessPage, /carrier/);
 
 assert.match(companyHelper, /CREATE TABLE IF NOT EXISTS hermes_company_profiles/);
@@ -85,7 +88,12 @@ assert.ok(companyApi.includes('/services/hermes-connect/load-board/partners/'));
 
 assert.match(accountApi, /key: "load_board"/);
 assert.match(accountApi, /kind: "company_workspace"/);
+assert.match(accountApi, /kind: "capability_workspace"/);
+assert.match(accountApi, /specialistHasInternalLoadBoardAccess/);
+assert.match(accountApi, /company_required: false/);
+assert.match(accountApi, /HERMES_INTERNAL_DISPATCHER/);
 assert.match(accountApi, /href: "\/load-board\/\?access=unlocked#live-marketplace"/);
+assert.match(accountApi, /href: "\/load-board\/\?access=internal#live-marketplace"/);
 assert.match(accountApi, /load_board: Boolean/);
 assert.match(accountApi, /catalog_status/);
 assert.doesNotMatch(accountApi, /authority_number/);
