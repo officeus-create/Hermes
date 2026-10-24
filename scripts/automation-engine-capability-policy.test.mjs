@@ -43,8 +43,8 @@ for (const capability of policy.capabilities) {
     assert.equal(capability.role_id, contract.role_id);
     assert.equal(capability.plugin_version, contract.plugin_version);
     assert.equal(capability.contract_version, contract.contract_version);
-    assert.equal(capability.semantic_required, false);
-    assert.equal(capability.free_ai_policy, "not_required");
+    assert.equal(capability.semantic_required, contract.semantic_required);
+    assert.equal(capability.free_ai_policy, contract.free_ai_policy);
   }
 }
 
@@ -65,5 +65,7 @@ assert.match(futureRules, /separate owner-approved write gate/, "Every external-
 assert.ok(!futureRules.includes("read-only reliability gate is LIVE_VERIFIED"), "Do not force a false LIVE_VERIFIED promotion just to unlock future write review");
 assert.match(futureRules, /bind role_id, plugin_version, contract_version and SHA-256/, "Plugin-derived jobs must freeze a role-contract identity at enqueue time");
 assert.match(futureRules, /no automatic paid fallback/i, "Free-first policy must prohibit automatic paid inference fallback");
+assert.match(futureRules, /WAITING_FREE_AI/, "Free semantic capacity exhaustion must be a durable wait state");
+assert.match(futureRules, /paid provider endpoints must never be admitted/i, "Open weights must not turn a paid API endpoint into a free provider");
 
 console.log(`HAE capability policy contract PASS: ${manifestTypes.length} current read-only capabilities; default DENY`);
