@@ -78,11 +78,35 @@ async function stableId(prefix: string, sourceId: string, sourceMessageId: strin
   return `${prefix}_${hex.slice(0, 40)}`;
 }
 
+async function constantTimeTokenMatch(candidate: string, expected: string) {
+  const encoder = new TextEncoder();
+  const [candidateDigest, expectedDigest] = await Promise.all([
+    crypto.subtle.digest("SHA-256", encoder.encode(candidate)),
+    crypto.subtle.digest("SHA-256", encoder.encode(expected)),
+  ]);
+  const left = new Uint8Array(candidateDigest);
+  const right = new Uint8Array(expectedDigest);
+  let diff = 0;
+  for (let index = 0; index < left.length; index += 1) diff |= left[index] ^ right[index];
+  return diff === 0;
+}
+
+function rejectSource(reason: string, sourceId: string, extra: Record<string, unknown> = {}) {
+  console.info("LOAD_BOARD_SOURCE_REJECTED", JSON.stringify({
+    metric: "source_rejected_total",
+    value: 1,
+    reason,
+    source_id: sourceId || null,
+  }));
+  return jsonResponse(409, { success: false, error: reason, ...extra });
+}
+
 export async function onRequestPost({ request, env }: { request: Request; env: Env }) {
   if (!env.DB) return jsonResponse(503, { success: false, error: "database_not_configured" });
   const configuredToken = String(env.HERMES_LOADBOARD_INGEST_TOKEN || env.LEAD_SERVICE_TOKEN || "");
   if (!configuredToken) return jsonResponse(503, { success: false, error: "ingest_secret_not_configured" });
-  if (request.headers.get("Authorization") !== `Bearer ${configuredToken}`) {
+  const presentedAuthorization = String(request.headers.get("Authorization") || "");
+  if (!(await constantTimeTokenMatch(presentedAuthorization, `Bearer ${configuredToken}`))) {
     return jsonResponse(401, { success: false, error: "unauthorized" });
   }
 
@@ -132,20 +156,18 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
   // A valid shared ingest token is not permission to register a new freight source.
   // Partner approval, verified connection and ingest enablement are separate gates.
   if (!managedSource) {
-    return jsonResponse(409, { success: false, error: "source_approval_required" });
+    return rejectSource("source_approval_required", sourceId);
   }
   if (String(managedSource.request_status || "") !== "approved") {
-    return jsonResponse(409, { success: false, error: "source_request_not_approved" });
+    return rejectSource("source_request_not_approved", sourceId);
   }
   if (!["ingest_enabled", "active"].includes(String(managedSource.connection_state || ""))) {
-    return jsonResponse(409, {
-      success: false,
-      error: "source_connection_not_ingest_enabled",
+    return rejectSource("source_connection_not_ingest_enabled", sourceId, {
       connection_state: managedSource.connection_state || "not_started",
     });
   }
   if (String(managedSource.approved_source_type || "") !== sourceType) {
-    return jsonResponse(409, { success: false, error: "source_type_mismatch" });
+    return rejectSource("source_type_mismatch", sourceId);
   }
 
   // Do not infer connection approval from a request row without its real source.
@@ -153,7 +175,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
       !["ingest_enabled", "active"].includes(String(managedSource.registered_source_status || "")) ||
       Number(managedSource.registered_read_enabled) !== 1 ||
       Number(managedSource.registered_ingest_enabled) !== 1) {
-    return jsonResponse(409, { success: false, error: "source_ingest_not_enabled" });
+    return rejectSource("source_ingest_not_enabled", sourceId);
   }
 
   const redistributionPermission = String(managedSource.approved_redistribution_permission || "internal_only");
@@ -190,7 +212,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
   // A revocation may race with the preceding SELECT. Never ingest if the
   // guarded D1 update did not reconfirm exactly one approved active source.
   if (sourceUpdate?.success !== true || Number(sourceUpdate?.meta?.changes) !== 1) {
-    return jsonResponse(409, { success: false, error: "source_ingest_state_changed" });
+    return rejectSource("source_ingest_state_changed", sourceId);
   }
 
   let accepted = 0;
