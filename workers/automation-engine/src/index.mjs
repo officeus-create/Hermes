@@ -1471,6 +1471,28 @@ async function health(env) {
   };
 }
 
+
+function scheduledHealthSnapshotIdempotencyKey(scheduledAt) {
+  return `hae:system.health.snapshot:${scheduledAt.toISOString().slice(0, 16)}`;
+}
+
+async function enqueueScheduledHealthSnapshot(env, scheduledAt) {
+  return createGenericJob(env, {
+    job_type: "system.health.snapshot",
+    business_lane: "automation",
+    account_key: ACCOUNT_KEY,
+    project_key: "hae-hourly-health",
+    priority: 40,
+    max_attempts: 3,
+    idempotency_key: scheduledHealthSnapshotIdempotencyKey(scheduledAt),
+    policy_version: "hae-readonly-v1",
+    payload: {
+      trigger_type: "cron",
+      scheduled_at: scheduledAt.toISOString(),
+    },
+  });
+}
+
 export default {
   async scheduled(controller, env, ctx) {
     if (!env.DB || !env.AUTOMATION_QUEUE) return;
@@ -1488,6 +1510,17 @@ export default {
         eventType: "cron.heartbeat_write_failed",
         slotKey: chicagoSlotKey(scheduledAt),
         errorClass: safeRuntimeErrorClass(error, "heartbeat_write_failed"),
+      });
+    }
+
+    try {
+      await enqueueScheduledHealthSnapshot(env, scheduledAt);
+    } catch (error) {
+      await recordRuntimeEvent(env, {
+        eventType: "cron.system_health_snapshot_failed",
+        messageType: "job.execute",
+        slotKey: chicagoSlotKey(scheduledAt),
+        errorClass: safeRuntimeErrorClass(error, "scheduled_health_snapshot_failed"),
       });
     }
 

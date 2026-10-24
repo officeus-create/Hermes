@@ -173,6 +173,16 @@ assert.doesNotMatch(worker, /ctx\.waitUntil\(enqueuePlanRun\(env, slotKey\)/, "C
   const recoveryLoop = worker.indexOf('["cron.recover_readbacks_failed", enqueueDueReadbacks]', scheduledStart);
   assert.ok(scheduledStart >= 0 && currentEnqueue > scheduledStart && recoveryLoop > currentEnqueue, "Current-slot enqueue must complete before scheduled recovery maintenance begins");
 }
+{
+  const scheduledStart = worker.indexOf("async scheduled(controller, env, ctx)");
+  const healthEnqueue = worker.indexOf("await enqueueScheduledHealthSnapshot(env, scheduledAt)", scheduledStart);
+  const contentEnqueue = worker.indexOf("const enqueued = await enqueuePlanRun(env, slotKey)", scheduledStart);
+  assert.ok(healthEnqueue > scheduledStart && healthEnqueue < contentEnqueue, "Hourly read-only health snapshot must enqueue before optional content-plan work");
+}
+assert.match(worker, /hae:system\.health\.snapshot:\$\{scheduledAt\.toISOString\(\)\.slice\(0, 16\)\}/, "Scheduled health snapshots must use deterministic minute-scoped idempotency keys");
+assert.match(worker, /project_key: "hae-hourly-health"/, "Scheduled health snapshots must stay in the canonical HAE health project");
+assert.match(worker, /job_type: "system\.health\.snapshot"[\s\S]*business_lane: "automation"[\s\S]*policy_version: "hae-readonly-v1"/, "Scheduled health snapshots must use the bounded read-only generic job contract");
+assert.match(worker, /cron\.system_health_snapshot_failed/, "Scheduled health snapshot failures must leave a durable runtime signal");
 assert.match(worker, /live_slot_override_forbidden/, "Live manual ticks must not backfill arbitrary slots");
 assert.match(worker, /live_outside_publish_window/, "Live manual ticks must respect the Central Time publish window");
 assert.match(worker, /expired_live_slot/, "Recovered queue backlog must never publish a stale historical slot");
