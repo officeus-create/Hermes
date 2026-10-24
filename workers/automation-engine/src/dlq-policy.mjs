@@ -23,6 +23,7 @@ export function classifyDlqDisposition(input = {}) {
 
   if (!messageType) return { disposition: "QUARANTINE", reason: "message_type_missing" };
   if (!hasKey) return { disposition: "QUARANTINE", reason: "idempotency_key_missing" };
+  if (!state) return { disposition: "OWNER_ACTION", reason: "d1_state_missing" };
 
   if (externalEffect) {
     if (
@@ -43,7 +44,7 @@ export function classifyDlqDisposition(input = {}) {
   if (TERMINAL_STATES.has(state)) {
     return { disposition: "QUARANTINE", reason: "terminal_state_no_replay" };
   }
-  if (PRE_SIDE_EFFECT_STATES.has(state) || !state) {
+  if (PRE_SIDE_EFFECT_STATES.has(state)) {
     return { disposition: "SAFE_REDRIVE", reason: "read_only_retryable" };
   }
   return { disposition: "OWNER_ACTION", reason: "unclassified_state" };
