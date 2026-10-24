@@ -1,6 +1,5 @@
 ---
 import BaseLayout from "../../../layouts/BaseLayout.astro";
-import DirectionProductNav from "../../../components/DirectionProductNav.astro";
 import SiteHeader from "../../../components/SiteHeader.astro";
 import SiteFooter from "../../../components/SiteFooter.astro";
 import { directoryStates, directoryCities, repairShopDirectory, type RepairShopDirectoryEntry } from "../../../data/repair-shop-directory";
@@ -41,7 +40,7 @@ const schema=[
     { name: internationalCountry.name, item: `https://hermeslogisticsus.com/businesses/${internationalCountry.slug}/` }
   ]}
 /> : (<BaseLayout title={`Repair Businesses in ${state.name} | Hermes Catalog`} description={`Evidence-backed repair and service business profiles in ${state.name}, grouped by city with source notes, claim state, and owner-verification boundaries.`} schema={schema} robots={collectionRobots}>
-<SiteHeader theme="light" activePath="/businesses/"/><DirectionProductNav direction="catalog" theme="light" />
+<SiteHeader theme="light" activePath="/businesses/"/>
 <main id="main-content" class="state-page"><div class="shell">
   <a class="back" href="/businesses/">← Hermes Catalog</a>
   <header><p class="eyebrow">Hermes Catalog · {state.name}</p><h1>Repair businesses in {state.name}</h1><p>This page contains only businesses for which Hermes currently has enough bounded public-source evidence to publish a useful profile. It is not a complete list of repair businesses in {state.name}. Unclaimed listings remain separate from Hermes customer accounts, and private CRM, scheduling, and booking features stay off until an authorized owner verifies the profile.</p></header>

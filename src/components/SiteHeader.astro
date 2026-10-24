@@ -21,7 +21,12 @@ interface Props {
   contactHref?: string;
 }
 
-const { theme = "dark", activePath, locale = "en", contactHref = "/contacts/" } = Astro.props;
+const { theme = "dark", activePath, locale: requestedPropLocale = "en", contactHref = "/contacts/" } = Astro.props;
+// Localized routes (/ru/, /ua/, /es/, /it/, /fr/) keep their chrome in the page language even when a
+// template forgets to pass `locale`.
+const pathLocaleMatch = Astro.url.pathname.match(/^\/(ru|ua|es|it|fr)\//)?.[1];
+const pathLocale = pathLocaleMatch === "ua" ? "uk" : pathLocaleMatch;
+const locale = (requestedPropLocale !== "en" ? requestedPropLocale : (pathLocale ?? "en")) as typeof requestedPropLocale;
 const currentPath = Astro.url.pathname;
 const isApprovedHome = currentPath === "/";
 const isApprovedProductsShell = currentPath === "/products/";
@@ -88,6 +93,14 @@ const localizedLabels = {
   it: { logistics: "Logistica", marketing: "Marketing", academy: "Academy", technology: "Sviluppo IT", contact: "Inizia una conversazione", home: "Home", signIn: "Accedi" },
   fr: { logistics: "Logistique", marketing: "Marketing", academy: "Académie", technology: "Développement IT", contact: "Démarrer une conversation", home: "Accueil", signIn: "Connexion" },
 };
+const productsCopy = {
+  en: { menu: "Products", all: "All products", allNote: "Built and run by Hermes", connectNote: "AI operating system · live pilot", catalog: "Catalog", catalogNote: "Business directory", insights: "Insights", insightsNote: "News and case studies", opportunities: "Opportunities", opportunitiesNote: "Careers and partnerships" },
+  uk: { menu: "Продукти", all: "Усі продукти", allNote: "Створені й працюють у Hermes", connectNote: "AI-система для бізнесу · живий пілот", catalog: "Каталог", catalogNote: "Каталог бізнесів", insights: "Новини", insightsNote: "Новини та кейси", opportunities: "Можливості", opportunitiesNote: "Кар'єра та партнерство" },
+  ru: { menu: "Продукты", all: "Все продукты", allNote: "Созданы и работают в Hermes", connectNote: "AI-система для бизнеса · живой пилот", catalog: "Каталог", catalogNote: "Каталог бизнесов", insights: "Новости", insightsNote: "Новости и кейсы", opportunities: "Возможности", opportunitiesNote: "Карьера и партнёрство" },
+  es: { menu: "Productos", all: "Todos los productos", allNote: "Creados y operados por Hermes", connectNote: "Sistema operativo con IA · piloto activo", catalog: "Catálogo", catalogNote: "Directorio de empresas", insights: "Insights", insightsNote: "Noticias y casos", opportunities: "Oportunidades", opportunitiesNote: "Empleo y alianzas" },
+  it: { menu: "Prodotti", all: "Tutti i prodotti", allNote: "Creati e gestiti da Hermes", connectNote: "Sistema operativo con AI · pilota attivo", catalog: "Catalogo", catalogNote: "Elenco aziende", insights: "Insights", insightsNote: "Notizie e casi", opportunities: "Opportunità", opportunitiesNote: "Carriere e partnership" },
+  fr: { menu: "Produits", all: "Tous les produits", allNote: "Conçus et exploités par Hermes", connectNote: "Système d'exploitation IA · pilote actif", catalog: "Catalogue", catalogNote: "Annuaire d'entreprises", insights: "Insights", insightsNote: "Actualités et études de cas", opportunities: "Opportunités", opportunitiesNote: "Carrières et partenariats" },
+}[activeLocale];
 const directionOrder: Record<string, number> = { logistics: 0, technology: 1, academy: 2, marketing: 3 };
 const navDirectionId = (href: string) => href.match(/^paths\/([^/]+)\//)?.[1] ?? "";
 const orderedNavigation = [...site.navigation].sort(
@@ -180,25 +193,25 @@ const languageLinks = siteLocales.filter((language) => !isCatalogLocaleRoute || 
   <nav class="desktop-nav desktop-nav--ecosystem" aria-label="Primary navigation">
     {navigation.map((item) => <a class="nav-primary-link" data-nav-tone={item.key} href={item.url} aria-current={item.active ? "page" : undefined}>{item.label}{item.key === "academy" && homeUpdates?.academy && <span class="home-update-sheen" data-home-update={homeUpdates.academy.publishedAt} data-update-description="home-academy-update" hidden aria-hidden="true"></span>}</a>)}
     <details class="desktop-products-menu" data-hermes-products>
-      <summary aria-controls="hermes-products-grid">Products <ChevronDown size={14} aria-hidden="true" /></summary>
+      <summary aria-controls="hermes-products-grid">{productsCopy.menu} <ChevronDown size={14} aria-hidden="true" /></summary>
       <div class="desktop-products-grid" id="hermes-products-grid" role="group" aria-label="Hermes products and opportunities">
         <a href="/products/" data-product="all-products" aria-current={isApprovedProductsShell ? "page" : undefined}>
-          <strong>All products</strong><span>Built and run by Hermes</span>
+          <strong>{productsCopy.all}</strong><span>{productsCopy.allNote}</span>
         </a>
         <a href={connectProductHref} data-product="connect" aria-current={isHermesConnectRoute ? "page" : undefined}>
-          <strong><HermesConnectMark size={13} class="header-connect-mark" />Hermes Connect</strong><span>AI operating system · live pilot</span>
+          <strong><HermesConnectMark size={13} class="header-connect-mark" />Hermes Connect</strong><span>{productsCopy.connectNote}</span>
           {homeUpdates?.connect && <span class="home-update-sheen" data-home-update={homeUpdates.connect.publishedAt} data-update-description="home-connect-update" hidden aria-hidden="true"></span>}
         </a>
         <a href="/businesses/" data-product="catalog" aria-current={isCatalogRoute ? "page" : undefined}>
-          <strong>Catalog</strong><span>Business directory</span>
+          <strong>{productsCopy.catalog}</strong><span>{productsCopy.catalogNote}</span>
           {homeUpdates?.catalog && <span class="home-update-sheen" data-home-update={homeUpdates.catalog.publishedAt} data-update-description="home-catalog-update" hidden aria-hidden="true"></span>}
         </a>
         <a href="/insights/" data-product="insights" aria-current={isInsightsRoute ? "page" : undefined}>
-          <strong>Insights</strong><span>News and case studies</span>
+          <strong>{productsCopy.insights}</strong><span>{productsCopy.insightsNote}</span>
           {homeUpdates?.insights && <span class="home-update-sheen" data-home-update={homeUpdates.insights.publishedAt} data-update-description="home-insights-update" hidden aria-hidden="true"></span>}
         </a>
         <a href="/opportunities/" data-product="opportunities" aria-current={isOpportunitiesRoute ? "page" : undefined}>
-          <strong>Opportunities</strong><span>Careers and partnerships</span>
+          <strong>{productsCopy.opportunities}</strong><span>{productsCopy.opportunitiesNote}</span>
         </a>
       </div>
     </details>
@@ -243,13 +256,13 @@ const languageLinks = siteLocales.filter((language) => !isCatalogLocaleRoute || 
   <nav class="mobile-nav" id="mobile-menu" aria-label="Mobile navigation" data-mobile-menu hidden>
     {navigation.map((item) => <a class="mobile-nav-pillar" data-nav-tone={item.key} href={item.url} aria-current={item.active ? "page" : undefined}>{item.label}{item.key === "academy" && homeUpdates?.academy && <span class="home-update-sheen" data-home-update={homeUpdates.academy.publishedAt} data-update-description="home-academy-update" hidden aria-hidden="true"></span>}</a>)}
     <details class="mobile-products-menu" data-hermes-products>
-      <summary class="mobile-nav-pillar mobile-secondary-start">Products <ChevronDown size={17} aria-hidden="true" /></summary>
+      <summary class="mobile-nav-pillar mobile-secondary-start">{productsCopy.menu} <ChevronDown size={17} aria-hidden="true" /></summary>
       <div class="mobile-products-grid" role="group" aria-label="Products">
-        <a href="/products/" data-product="all-products" aria-current={isApprovedProductsShell ? "page" : undefined}>All products</a>
+        <a href="/products/" data-product="all-products" aria-current={isApprovedProductsShell ? "page" : undefined}>{productsCopy.all}</a>
         <a href={connectProductHref} data-product="connect" aria-current={isHermesConnectRoute ? "page" : undefined}><HermesConnectMark size={14} class="header-connect-mark" />Hermes Connect</a>
-        <a href="/businesses/" data-product="catalog" aria-current={isCatalogRoute ? "page" : undefined}>Catalog</a>
-        <a href="/insights/" data-product="insights" aria-current={isInsightsRoute ? "page" : undefined}>Insights</a>
-        <a href="/opportunities/" data-product="opportunities" aria-current={isOpportunitiesRoute ? "page" : undefined}>Opportunities</a>
+        <a href="/businesses/" data-product="catalog" aria-current={isCatalogRoute ? "page" : undefined}>{productsCopy.catalog}</a>
+        <a href="/insights/" data-product="insights" aria-current={isInsightsRoute ? "page" : undefined}>{productsCopy.insights}</a>
+        <a href="/opportunities/" data-product="opportunities" aria-current={isOpportunitiesRoute ? "page" : undefined}>{productsCopy.opportunities}</a>
       </div>
     </details>
     <a class="mobile-nav-pillar mobile-login-link" data-nav-tone="account" data-hermes-sign-in href="/services/hermes-connect/access/">{signInLabel}</a>
@@ -266,6 +279,7 @@ const languageLinks = siteLocales.filter((language) => !isCatalogLocaleRoute || 
     </div>
   </nav>
   {isApprovedDirectionShell && (section || isApprovedProductsShell) && <DirectionProductNav direction={section ?? "products"} theme="light" locale={activeLocale === "ru" ? "ru" : "en"} />}
+  {isApprovedVisualShell && currentPath.startsWith("/businesses/") && !/^\/businesses\/(?:concepts|italy|marketing-growth-audit-example)\//.test(currentPath) && <DirectionProductNav direction="catalog" theme="light" locale={activeLocale === "ru" ? "ru" : "en"} />}
   {isApprovedHome && <span class="home-update-descriptions"><span id="home-academy-update" hidden>New Academy update within the last seven days.</span><span id="home-insights-update" hidden>New Insight within the last seven days.</span><span id="home-connect-update" hidden>New Connect update within the last seven days.</span><span id="home-catalog-update" hidden>New Catalog update within the last seven days.</span></span>}
 </header>
 
@@ -975,8 +989,10 @@ const languageLinks = siteLocales.filter((language) => !isCatalogLocaleRoute || 
   /* Narrow laptops (1101–1360px): keep the larger 1440+ nav size from pushing the CTA off-screen. */
   @media (min-width: 1101px) and (max-width: 1360px) {
     :root body .site-header[data-approved-visual-shell="true"] { column-gap: 10px; padding-left: 16px; }
-    :root body .site-header[data-approved-visual-shell="true"] .desktop-nav > a[data-nav-tone],
+    :root body .site-header[data-approved-visual-shell="true"] .desktop-nav > a[data-nav-tone] { padding: 10px 10px 10px 21px; font-size: .86rem; }
+    :root body .site-header[data-approved-visual-shell="true"] .desktop-nav > a[data-nav-tone]::before { left: 10px; }
     :root body .site-header[data-approved-visual-shell="true"] .desktop-products-menu > summary { padding-inline: 10px; font-size: .86rem; }
     :root body .site-header[data-approved-visual-shell="true"] .header-login-link { padding-inline: 8px; font-size: .86rem; }
+    :root body .site-header[data-approved-visual-shell="true"]:not(:has(> .direction-product-nav)) .header-cta { display: inline-flex; padding-inline: 16px; font-size: .86rem; }
   }
 </style>

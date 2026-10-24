@@ -1,6 +1,5 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import DirectionProductNav from "../../components/DirectionProductNav.astro";
 import HermesPromoRail from "../../components/HermesPromoRail.astro";
 import CatalogClientBenefit from "../../components/CatalogClientBenefit.astro";
 import MarketingPackageSelector from "../../components/MarketingPackageSelector.astro";
@@ -35,7 +34,6 @@ const schema = [
 ---
 <BaseLayout title="Hermes Catalog | Find Businesses, Services & Locations" description="Search evidence-backed public business profiles by company, service and location. Claim a profile and connect verified business details to Hermes Connect, Marketing, Logistics and Academy." schema={schema}>
   <SiteHeader theme="light" activePath="/businesses/" />
-  <DirectionProductNav direction="catalog" theme="light" />
 
   <main id="main-content" class="catalog-page">
     <div class="shell catalog-shell">
