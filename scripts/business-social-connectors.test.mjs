@@ -130,6 +130,8 @@ assert.match(core, /hermes_business_social_creative_intakes/);
 assert.match(core, /hermes_business_social_media_assets/);
 assert.match(core, /content_sha256/);
 assert.match(core, /surface_hint/);
+assert.match(core, /PRAGMA table_info\(hermes_business_social_media_assets\)/);
+assert.match(core, /ALTER TABLE hermes_business_social_media_assets ADD COLUMN surface_hint/);
 assert.match(core, /expires_at/);
 
 for (const source of [connections,start,callback,select,disconnect,publish]) {
@@ -186,6 +188,8 @@ assert.match(mediaAssets, /ASSET_TTL_MS=72\*60\*60\*1000/);
 assert.match(mediaAssets, /surface_hint/);
 assert.match(mediaAssets, /ready_public/);
 assert.match(mediaAssets, /X-Robots-Tag/);
+assert.match(mediaAssets, /max-age=300, must-revalidate/);
+assert.ok((mediaAssets.match(/cleanupExpired\(env\.DB\)/g)||[]).length>=2, "expired media cleanup must run on public reads and owner writes");
 assert.match(mediaAssets, /creative_intake_not_found/);
 assert.match(mediaAssets, /content_base64/);
 assert.match(mediaAssets, /INSERT OR IGNORE INTO hermes_business_social_media_assets/);
