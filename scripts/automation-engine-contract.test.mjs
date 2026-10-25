@@ -401,6 +401,7 @@ assert.match(worker, /\.\.\.ROLE_CONTRACT_JOB_TYPES/, "Plugin-derived role contr
 assert.match(worker, /roleContractSha256/, "Role-contract execution must bind a cryptographic contract digest");
 assert.match(worker, /_role_contract/, "Role-contract identity must be persisted with the durable job payload");
 assert.match(worker, /role_contract_stale/, "Role-contract drift must fail closed instead of silently changing instructions");
+assert.match(worker, /const executionPayload = \{ \.\.\.payload \};[\s\S]*delete executionPayload\._role_contract;/, "Persisted role-contract binding metadata must be verified then stripped before deterministic task execution");
 assert.match(worker, /semantic_required/, "Role-contract receipt must preserve whether AI was required");
 assert.match(worker, /free_ai_policy/, "Role-contract receipt must preserve the free-AI policy");
 assert.match(worker, /url\.pathname === "\/v1\/role-contracts"/, "Private runtime must expose the active role-contract registry and digests");

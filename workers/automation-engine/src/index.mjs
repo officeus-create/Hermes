@@ -934,11 +934,13 @@ async function runReadOnlyGenericCapability(env, job) {
     ) {
       throw new Error("role_contract_stale");
     }
+    const executionPayload = { ...payload };
+    delete executionPayload._role_contract;
     const observedAt = new Date().toISOString();
     let result;
     let semanticExecution = null;
     if (contract.semantic_required) {
-      const semanticRequest = buildRoleContractSemanticRequest(job.job_type, payload);
+      const semanticRequest = buildRoleContractSemanticRequest(job.job_type, executionPayload);
       const budgetUsd = Number(contract?.runtime_config?.max_cost_usd);
       if (!Number.isFinite(budgetUsd) || budgetUsd < 0) throw new Error("semantic_budget_invalid");
       const freeResult = await runFreeSemanticJson(env, semanticRequest);
@@ -958,7 +960,7 @@ async function runReadOnlyGenericCapability(env, job) {
         status: "PROVIDER_RETURNED",
       });
       if (actualCostUsd !== 0) throw new Error("paid_inference_forbidden");
-      result = validateRoleContractSemanticResult(job.job_type, payload, freeResult.result);
+      result = validateRoleContractSemanticResult(job.job_type, executionPayload, freeResult.result);
       semanticExecution = {
         provider_id: clean(freeResult.provider_id, 120),
         model: clean(freeResult.model, 200),
@@ -971,7 +973,7 @@ async function runReadOnlyGenericCapability(env, job) {
         output_chars: usageReceipt.output_chars,
       };
     } else {
-      result = runRoleContractPrimitive(job.job_type, payload, observedAt);
+      result = runRoleContractPrimitive(job.job_type, executionPayload, observedAt);
     }
     return {
       capability: job.job_type,
