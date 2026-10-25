@@ -73,4 +73,4 @@ assert.deepEqual(extracted.sort(), [
 
 console.log(`GSC indexing triage contract passed with ${sitemaps.size} current sitemap URL(s).`);
 
-assert.match(redirects, /^\\/paths\\/logistics\\/broker-capacity\\/ \\/paths\\/logistics\\/brokers\\/carrier-capacity\\/ 301$/m, "retired broker-capacity path must redirect to the current broker carrier-capacity owner");
+assert.match(redirects, /^\/paths\/logistics\/broker-capacity\/ \/paths\/logistics\/brokers\/carrier-capacity\/ 301$/m, "retired broker-capacity path must redirect to the current broker carrier-capacity owner");
