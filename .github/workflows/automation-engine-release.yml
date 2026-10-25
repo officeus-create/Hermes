@@ -244,7 +244,7 @@ jobs:
           }
           trap cleanup EXIT
 
-          sql="SELECT type,name,tbl_name,sql FROM sqlite_master WHERE name NOT LIKE 'sqlite_%' AND type IN ('table','index','trigger','view') ORDER BY type,name,tbl_name"
+          sql="SELECT type,name,tbl_name,sql FROM sqlite_master WHERE name NOT LIKE 'sqlite_%' AND name <> '_cf_KV' AND type IN ('table','index','trigger','view') ORDER BY type,name,tbl_name"
           body="$(jq -nc --arg sql "$sql" '{sql:$sql,params:[]}')"
           http="$(curl -sS -o "$raw" -w '%{http_code}' \
             -X POST \
