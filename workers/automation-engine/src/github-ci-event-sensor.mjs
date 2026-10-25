@@ -35,8 +35,8 @@ export function normalizeGithubCIEvent(event, trusted = {}) {
   if (run.status !== "completed") failure("github_ci_run_incomplete");
   if (!positiveInt(run.id) || !positiveInt(run.run_attempt)) failure("github_ci_identity_invalid");
   if (!SHA.test(run.head_sha || "")) failure("github_ci_head_sha_invalid");
-  const workflowName = String(run.name || "").trim();
-  if (!SAFE_WORKFLOW.test(workflowName)) failure("github_ci_workflow_name_invalid");
+  const workflowName = run.name;
+  if (typeof workflowName !== "string" || workflowName !== workflowName.trim() || !SAFE_WORKFLOW.test(workflowName)) failure("github_ci_workflow_name_invalid");
   if (run.html_url !== "https://github.com/" + REPO + "/actions/runs/" + run.id) {
     failure("github_ci_source_url_invalid");
   }
