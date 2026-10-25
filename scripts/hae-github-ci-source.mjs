@@ -3,6 +3,7 @@
 // It performs exactly one authenticated Cloudflare Queue POST after read-only
 // GitHub verification, with no blind resend if the result is ambiguous.
 import fs from "node:fs";
+import { pathToFileURL } from "node:url";
 
 const REPO="officeus-create/Hermes",API="https://api.cloudflare.com/client/v4";
 const ALLOWED=new Set(["Hermes Automation Engine Contract","Website checks"]);
@@ -47,7 +48,7 @@ export async function dispatchGithubCIEvent({
     queue_receipt:"CLOUDFLARE_ACCEPTED_NOT_YET_D1_VERIFIED",
     model_cost_usd:0,automatic_repair_allowed:false};
 }
-if(process.argv[1]&&import.meta.url==="file://"+new URL("file://"+process.argv[1]).pathname){
+if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   const runId=Number(process.env.HAE_CI_RUN_ID),runAttempt=Number(process.env.HAE_CI_RUN_ATTEMPT);
   let accountId="";
   try{accountId=JSON.parse(fs.readFileSync("workers/lead-email/wrangler.production.jsonc","utf8")).account_id;}
