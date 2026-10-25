@@ -71,11 +71,22 @@ export async function executeT4Canary({
 
   const pages = await cfGet(API + "/accounts/" + accountId + "/pages/projects/hermes");
   const binding = pages.result?.deployment_configs?.production?.d1_databases?.DB;
-  if (!validId.test(binding?.id || "") ||
-      (binding?.database_name || binding?.name) !== manifest.canonical_database) {
+  // Pages production bindings can include the D1 ID but omit its display name.
+  // Resolve that name only through an authenticated exact-ID D1 metadata read.
+  // Never guess it from a local fallback or accept a mismatched identity.
+  if (!validId.test(binding?.id || "")) fail("t4_canonical_database_binding_id_missing");
+  const dbId = binding.id;
+  let boundName = binding?.database_name || binding?.name;
+  if (!boundName) {
+    const detail = await cfGet(API + "/accounts/" + accountId + "/d1/database/" + dbId);
+    if (detail?.result?.uuid && detail.result.uuid !== dbId) {
+      fail("t4_canonical_database_metadata_id_mismatch");
+    }
+    boundName = detail?.result?.name || detail?.result?.database_name;
+  }
+  if (boundName !== manifest.canonical_database) {
     fail("t4_canonical_database_binding_mismatch");
   }
-  const dbId = binding.id;
 
   const queues = await cfGet(API + "/accounts/" + accountId + "/queues");
   if (!Array.isArray(queues.result)) fail("t4_queue_response_invalid");
