@@ -355,13 +355,41 @@ jobs:
         if: steps.request.outputs.operation != 'schema_snapshot'
         run: npx --yes wrangler@4 deploy --dry-run --config workers/automation-engine/wrangler.production.generated.jsonc --outdir "${RUNNER_TEMP}/hae-dry-run"
 
+      - name: Re-verify exact current main before dry-run deploy
+        if: steps.request.outputs.operation == 'provision_dry_run'
+        shell: bash
+        env:
+          TARGET_SHA: ${{ steps.request.outputs.target_sha }}
+        run: |
+          set -euo pipefail
+          CURRENT_MAIN="$(gh api "repos/${GITHUB_REPOSITORY}/branches/main" --jq '.commit.sha')"
+          if [[ "$CURRENT_MAIN" != "$TARGET_SHA" ]]; then
+            echo "stale_main_before_dry_run_deploy target=$TARGET_SHA current=$CURRENT_MAIN"
+            exit 1
+          fi
+
       - name: Deploy HAE in fail-closed dry-run mode
         if: steps.request.outputs.operation == 'provision_dry_run'
         run: npx --yes wrangler@4 deploy --config workers/automation-engine/wrangler.production.generated.jsonc
 
+
+      - name: Re-verify exact current main after dry-run deploy
+        if: steps.request.outputs.operation == 'provision_dry_run'
+        shell: bash
+        env:
+          TARGET_SHA: ${{ steps.request.outputs.target_sha }}
+        run: |
+          set -euo pipefail
+          CURRENT_MAIN="$(gh api "repos/${GITHUB_REPOSITORY}/branches/main" --jq '.commit.sha')"
+          if [[ "$CURRENT_MAIN" != "$TARGET_SHA" ]]; then
+            echo "stale_main_after_dry_run_deploy target=$TARGET_SHA current=$CURRENT_MAIN"
+            exit 1
+          fi
+
       - name: Verify deployed Worker inventory
         if: steps.request.outputs.operation == 'provision_dry_run'
         run: npx --yes wrangler@4 deployments list --config workers/automation-engine/wrangler.production.generated.jsonc
+
 
       - name: Run private Queue → Worker → D1 dry-run canary
         if: steps.request.outputs.operation == 'provision_dry_run'
@@ -430,6 +458,19 @@ jobs:
             sleep 5
           done
 
+      - name: Re-verify exact current main after dry-run canary
+        if: steps.request.outputs.operation == 'provision_dry_run'
+        shell: bash
+        env:
+          TARGET_SHA: ${{ steps.request.outputs.target_sha }}
+        run: |
+          set -euo pipefail
+          CURRENT_MAIN="$(gh api "repos/${GITHUB_REPOSITORY}/branches/main" --jq '.commit.sha')"
+          if [[ "$CURRENT_MAIN" != "$TARGET_SHA" ]]; then
+            echo "stale_main_after_dry_run_canary target=$TARGET_SHA current=$CURRENT_MAIN"
+            exit 1
+          fi
+
       - name: Publish dry-run evidence summary
         if: steps.request.outputs.operation == 'provision_dry_run'
         shell: bash
@@ -459,6 +500,12 @@ jobs:
           TARGET_SHA: ${{ steps.request.outputs.target_sha }}
         run: |
           set -euo pipefail
+
+          CURRENT_MAIN="$(gh api "repos/${GITHUB_REPOSITORY}/branches/main" --jq '.commit.sha')"
+          if [[ "$CURRENT_MAIN" != "$TARGET_SHA" ]]; then
+            echo "stale_main_before_runtime_readonly_proof target=$TARGET_SHA current=$CURRENT_MAIN"
+            exit 1
+          fi
 
           d1_query() {
             local sql="$1"
@@ -637,6 +684,12 @@ jobs:
           queue_evidence="cloudflare://queues/hermes-automation/metrics/run-${GITHUB_RUN_ID}"
           dlq_evidence="cloudflare://queues/hermes-automation-dlq/metrics/run-${GITHUB_RUN_ID}"
 
+          CURRENT_MAIN="$(gh api "repos/${GITHUB_REPOSITORY}/branches/main" --jq '.commit.sha')"
+          if [[ "$CURRENT_MAIN" != "$TARGET_SHA" ]]; then
+            echo "stale_main_during_runtime_readonly_proof target=$TARGET_SHA current=$CURRENT_MAIN"
+            exit 1
+          fi
+
           jq -n \
             --arg target_sha "$TARGET_SHA" \
             --arg database_binding_fingerprint "$DB_BINDING_FINGERPRINT" \
@@ -730,8 +783,15 @@ jobs:
       - name: Independently validate executor evidence and attest QA
         env:
           EVIDENCE_PATH: ${{ runner.temp }}/hae-runtime-evidence/hae-runtime-evidence.json
+          TARGET_SHA: ${{ needs.release.outputs.target_sha }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
+          CURRENT_MAIN="$(gh api "repos/${GITHUB_REPOSITORY}/branches/main" --jq '.commit.sha')"
+          if [[ "$CURRENT_MAIN" != "$TARGET_SHA" ]]; then
+            echo "stale_main_during_runtime_evidence_qa target=$TARGET_SHA current=$CURRENT_MAIN"
+            exit 1
+          fi
           node --input-type=module - <<'NODE'
           import fs from "node:fs";
           import { evaluateHaeRuntimeEvidence } from "./scripts/hae-runtime-evidence-check.mjs";
