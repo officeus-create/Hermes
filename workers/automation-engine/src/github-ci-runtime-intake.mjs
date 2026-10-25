@@ -37,6 +37,7 @@ export async function verifyGithubCIQueueEnvelope(message,{fetchImpl=fetch}={}){
   const run=await githubGet("/actions/runs/"+run_id,fetchImpl);
   if(run?.id!==run_id||run?.run_attempt!==run_attempt ||
      run?.repository?.full_name!==REPO ||
+     run?.head_repository?.full_name!==REPO ||
      !ALLOWED.has(run?.name)||run?.status!=="completed" ||
      !["failure","timed_out"].includes(run?.conclusion)||!SHA.test(run?.head_sha||"") ||
      run?.html_url!=="https://github.com/"+REPO+"/actions/runs/"+run_id) {
