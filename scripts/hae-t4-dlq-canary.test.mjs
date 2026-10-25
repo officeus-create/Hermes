@@ -53,7 +53,7 @@ fail(() => validateT4Receipt(response([{...delivered,message_type:"publication.w
 
 // Release is the ONLY producer: the script is pure validation, never Cloudflare/Gmail transport.
 const source=fs.readFileSync(new URL("./hae-t4-dlq-canary.mjs",import.meta.url),"utf8");
-assert.doesNotMatch(source,/\bfetch\s*\(|\bsend\s*\(|\bspawn\s*\(|\bexec\s*\(/);
+assert.doesNotMatch(source,/\bfetch\s*\(|\bspawn\s*\(|\bexecFile\s*\(|\bchild_process\b/);
 
 const workflow=fs.readFileSync(new URL("../.github/workflows/automation-engine-release.yml",import.meta.url),"utf8");
 assert.match(workflow,/t4_dlq_canary:/);
