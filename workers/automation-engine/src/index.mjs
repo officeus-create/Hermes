@@ -43,6 +43,7 @@ import {
   settleCapabilityGraphNodeForJob,
 } from "./capability-graph.mjs";
 import { taskMigrationSnapshot } from "./schedule-migrations.mjs";
+import { pluginRuntimeRegistrySnapshot } from "./plugin-runtime-registry.mjs";
 
 const ACCOUNT_KEY = "hermes_logistics";
 const PLATFORM = "threads";
@@ -1120,9 +1121,38 @@ async function ensureSearchSemanticFollowup(env, parentJob, result) {
   });
 }
 
+async function ensureHaeSelfRepairFollowup(env, parentJob, result) {
+  if (parentJob?.job_type !== "hae.self.improvement.audit") return null;
+  const audit = result?.result;
+  if (
+    audit?.next_action !== "HOLD_REPAIR"
+    || !audit?.next_work_id
+    || !audit?.next_finding_id
+    || !audit?.next_artifact_key
+  ) {
+    return null;
+  }
+  return createGenericJob(env, {
+    job_type: "hae.self.repair.packet",
+    account_key: parentJob.account_key || ACCOUNT_KEY,
+    project_key: "hae-self-repair",
+    priority: Math.min(100, Math.max(80, Number(parentJob.priority || 80) + 5)),
+    max_attempts: 1,
+    internal_submission: true,
+    idempotency_key: `hae:followup:self.repair:${audit.next_work_id}`,
+    policy_version: "hae-self-improvement-v1",
+    payload: {
+      work_id: audit.next_work_id,
+      finding_id: audit.next_finding_id,
+      artifact_key: audit.next_artifact_key,
+    },
+  });
+}
+
   try {
     const result = await runReadOnlyGenericCapability(env, before);
     await ensureSearchSemanticFollowup(env, before, result);
+    await ensureHaeSelfRepairFollowup(env, before, result);
     const completedAt = new Date().toISOString();
     const succeeded = await transitionGenericJobWithEvent(env.DB, {
       updateStatement: env.DB.prepare(
@@ -1943,6 +1973,34 @@ async function buildScheduledLogisticsPayload(env, contract) {
   };
 }
 
+function buildScheduledHaeSelfImprovementPayload(scheduledAt) {
+  const observedAt = scheduledAt.toISOString();
+  const registry = new Map(
+    pluginRuntimeRegistrySnapshot().entries.map((entry) => [entry.role_id, entry.plugin_version]),
+  );
+  const findings = [];
+  const seenJobTypes = new Set();
+
+  for (const contract of ROLE_CONTRACTS) {
+    const sourceRef = `github://officeus-create/Hermes/runtime/role-contract/${contract.job_type}`;
+    if (seenJobTypes.has(contract.job_type)) {
+      findings.push({ finding_id: `duplicate-job-type:${contract.job_type}`, source_ref: sourceRef, category: "CONTRACT_DRIFT", severity: "P0", status: "OPEN", artifact_key: "workers/automation-engine/src/role-contracts.mjs", verified: true, writer_active: false, observed_at: observedAt });
+    }
+    seenJobTypes.add(contract.job_type);
+    const expectedVersion = registry.get(contract.role_id);
+    if (!expectedVersion || expectedVersion !== contract.plugin_version) {
+      findings.push({ finding_id: `plugin-version-drift:${contract.job_type}`, source_ref: sourceRef, category: "PLUGIN_VERSION_DRIFT", severity: "P0", status: "OPEN", artifact_key: "workers/automation-engine/src/plugin-runtime-registry.mjs", verified: true, writer_active: false, observed_at: observedAt });
+    }
+    if (contract.permission_class !== "READ_ONLY") {
+      findings.push({ finding_id: `permission-drift:${contract.job_type}`, source_ref: sourceRef, category: "CONTRACT_DRIFT", severity: "P0", status: "OPEN", artifact_key: "workers/automation-engine/src/role-contracts.mjs", verified: true, writer_active: false, observed_at: observedAt });
+    }
+    if (contract.semantic_required && Number(contract?.runtime_config?.max_cost_usd) !== 0) {
+      findings.push({ finding_id: `semantic-budget-drift:${contract.job_type}`, source_ref: sourceRef, category: "CONTRACT_DRIFT", severity: "P0", status: "OPEN", artifact_key: "workers/automation-engine/src/role-contracts.mjs", verified: true, writer_active: false, observed_at: observedAt });
+    }
+  }
+  return { observed_at: observedAt, coverage_complete: true, findings };
+}
+
 async function buildScheduledRoleContractPayload(env, contract, scheduledAt) {
   if (contract.job_type === "search.snapshot.evaluate") return buildScheduledSearchPayload(contract);
   if (contract.job_type === "marketing.content.dedupe.audit") return buildScheduledMarketingPayload(env, contract);
@@ -1963,6 +2021,9 @@ async function buildScheduledRoleContractPayload(env, contract, scheduledAt) {
       lesson_date: `${parts.year}-${parts.month}-${parts.day}`,
       track: "LOGISTICS",
     };
+  }
+  if (contract.job_type === "hae.self.improvement.audit") {
+    return buildScheduledHaeSelfImprovementPayload(scheduledAt);
   }
   throw new Error("scheduled_role_contract_not_supported");
 }
@@ -2205,6 +2266,10 @@ export default {
         capability_graph_permission_class: CAPABILITY_GRAPH_LIMITS.permission_class,
         capability_graph_max_nodes: CAPABILITY_GRAPH_LIMITS.max_nodes,
         structured_kpi_completion: true,
+        self_improvement_audit: true,
+        self_improvement_automatic_source_changes: false,
+        self_improvement_automatic_merge: false,
+        self_improvement_automatic_deploy: false,
         free_ai_providers: freeAiProviderSnapshot(env).map(({ id, available, configured, model, reason }) => ({
           id, available, configured, model, reason,
         })),
@@ -2213,6 +2278,11 @@ export default {
         publication_enabled: publicationEnabled(env),
       });
     }
+    if (request.method === "GET" && url.pathname === "/v1/plugin-runtime-registry") {
+      if (!authorized(request, env)) return json(401, { success: false, error: "unauthorized" });
+      return json(200, { success: true, ...pluginRuntimeRegistrySnapshot() });
+    }
+
     if (request.method === "POST" && url.pathname === "/v1/capability-graphs") {
       if (!authorized(request, env)) return json(401, { success: false, error: "unauthorized" });
       if (!env.DB || !env.AUTOMATION_QUEUE) return json(503, { success: false, error: "runtime_not_configured" });
