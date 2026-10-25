@@ -116,3 +116,14 @@ ${clientExperienceBlock}
 </main><script src="/catalog-business-telemetry.js" data-catalog-business-id="company-crm:${esc(String(row.id))}" defer></script><script src="/catalog-traffic-stats.js" data-catalog-traffic-loader defer></script></body></html>`;
   return new Response(html, { status: 200, headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "public, max-age=60, s-maxage=300" } });
 }
+
+
+export async function onRequestHead(context: any) {
+  const response = await onRequestGet(context);
+  try { await response.body?.cancel(); } catch {}
+  return new Response(null, {
+    status: response.status,
+    statusText: response.statusText,
+    headers: response.headers,
+  });
+}
