@@ -60,7 +60,7 @@ assert.match(workflow,/t4_dlq_canary:/);
 assert.match(workflow,/github\.event\.issue\.number == 2033/);
 assert.match(workflow,/github\.actor == 'officeus-create'/);
 assert.match(workflow,/startsWith\(github\.event\.comment\.body, 'HAE_T4_DLQ_CANARY '\)/);
-assert.match(workflow,/node scripts\\/hae-t4-cloudflare-transport\\.mjs/);
+assert.ok(workflow.includes("run: node scripts/hae-t4-cloudflare-transport.mjs"));
 assert.match(workflow,/CLOUDFLARE_HAE_RELEASE_TOKEN/);
 assert.doesNotMatch(workflow.slice(workflow.indexOf("  t4_dlq_canary:")), /wrangler@4 deploy/);
 const transport=fs.readFileSync(new URL("./hae-t4-cloudflare-transport.mjs",import.meta.url),"utf8");
