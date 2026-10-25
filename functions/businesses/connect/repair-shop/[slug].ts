@@ -258,3 +258,14 @@ export async function onRequestGet({ env, params }: { env: Env; params: { slug?:
     },
   });
 }
+
+
+export async function onRequestHead(context: any) {
+  const response = await onRequestGet(context);
+  try { await response.body?.cancel(); } catch {}
+  return new Response(null, {
+    status: response.status,
+    statusText: response.statusText,
+    headers: response.headers,
+  });
+}
