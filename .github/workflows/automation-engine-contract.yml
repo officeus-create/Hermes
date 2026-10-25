@@ -28,6 +28,8 @@ on:
       - "scripts/hae-t4-*.mjs"
       - "scripts/hae-bounded-repair-preflight.test.mjs"
       - "scripts/hae-evidence-lesson-preflight.test.mjs"
+      - "scripts/hae-github-ci-*.mjs"
+      - ".github/workflows/hae-github-ci-sensor.yml"
       - "docs/HERMES_AUTOMATION_ENGINE_*.md"
       - ".github/workflows/automation-engine-contract.yml"
       - ".github/workflows/automation-engine-release.yml"
@@ -74,3 +76,6 @@ jobs:
           node scripts/hae-t4-readonly-d1-diagnostic.test.mjs
           node scripts/hae-bounded-repair-preflight.test.mjs
           node scripts/hae-evidence-lesson-preflight.test.mjs
+          node scripts/hae-github-ci-event-sensor.test.mjs
+          node scripts/hae-github-ci-runtime-intake.test.mjs
+          node scripts/hae-github-ci-source.test.mjs
