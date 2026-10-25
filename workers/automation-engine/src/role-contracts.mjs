@@ -1,3 +1,4 @@
+import { pluginRuntimeVersion } from "./plugin-runtime-registry.mjs";
 import {
   normalizeWorkPortfolioSnapshot,
   reconcileWorkPortfolioSnapshot,
@@ -14,7 +15,7 @@ const MAX_ITEMS = 1000;
 export const ROLE_CONTRACTS = Object.freeze([
   Object.freeze({
     role_id: "hermes-search-growth",
-    plugin_version: "0.1.6",
+    plugin_version: pluginRuntimeVersion("hermes-search-growth"),
     contract_version: "search-snapshot-evaluate-v1",
     job_type: "search.snapshot.evaluate",
     business_lane: "search",
@@ -50,7 +51,7 @@ export const ROLE_CONTRACTS = Object.freeze([
   }),
   Object.freeze({
     role_id: "hermes-marketing-growth",
-    plugin_version: "0.1.6",
+    plugin_version: pluginRuntimeVersion("hermes-marketing-growth"),
     contract_version: "marketing-content-dedupe-v1",
     job_type: "marketing.content.dedupe.audit",
     business_lane: "marketing",
@@ -80,7 +81,7 @@ export const ROLE_CONTRACTS = Object.freeze([
   }),
   Object.freeze({
     role_id: "hermes-dispatch-os",
-    plugin_version: "0.1.20",
+    plugin_version: pluginRuntimeVersion("hermes-dispatch-os"),
     contract_version: "logistics-source-freshness-v1",
     job_type: "logistics.source.freshness.audit",
     business_lane: "logistics",
@@ -112,7 +113,7 @@ export const ROLE_CONTRACTS = Object.freeze([
   }),
   Object.freeze({
     role_id: "hermes-search-growth",
-    plugin_version: "0.1.6",
+    plugin_version: pluginRuntimeVersion("hermes-search-growth"),
     contract_version: "search-defect-prioritize-v1",
     job_type: "search.defect.prioritize",
     business_lane: "search",
@@ -150,7 +151,7 @@ export const ROLE_CONTRACTS = Object.freeze([
   }),
   Object.freeze({
     role_id: "hermes-agent-coordinator",
-    plugin_version: "0.1.0",
+    plugin_version: pluginRuntimeVersion("hermes-agent-coordinator"),
     contract_version: "work-portfolio-reconcile-v1",
     job_type: "work.portfolio.reconcile",
     business_lane: "automation",

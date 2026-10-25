@@ -31,7 +31,9 @@ const result = reconcileWorkPortfolioSnapshot(input, [
 assert.equal(result.coverage_status, "PARTIAL");
 assert.equal(result.unfinished_count, 5);
 assert.deepEqual(result.ready_work_ids, ["W-2"]);
-assert.deepEqual(result.routing_candidate_work_ids, ["W-2"]);
+assert.deepEqual(result.routing_candidate_work_ids, []);
+assert.equal(result.routing_candidate_count, 0);
+assert.equal(result.routing_blocked_reason, "PARTIAL_COVERAGE");
 assert.equal(result.blocked_count, 3);
 assert.equal(result.writer_conflict_count, 2);
 assert.equal(result.stale_count, 1);
@@ -39,6 +41,13 @@ assert.equal(result.unknown_count, 1);
 assert.equal(result.unresolved_dependency_count, 1);
 assert.equal(result.automatic_execution_performed, false);
 assert.equal(result.raw_chat_history_persisted, false);
+
+const completeResult = reconcileWorkPortfolioSnapshot({ ...input, coverage_complete: true }, [
+  "search.snapshot.evaluate",
+  "marketing.content.dedupe.audit",
+]);
+assert.deepEqual(completeResult.routing_candidate_work_ids, ["W-2"]);
+assert.equal(completeResult.routing_blocked_reason, null);
 
 assert.throws(
   () => normalizeWorkPortfolioSnapshot({ ...input, source_kind: "CHATGPT_ALL" }),

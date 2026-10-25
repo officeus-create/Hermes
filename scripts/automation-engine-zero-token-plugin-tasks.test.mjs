@@ -34,14 +34,37 @@ const fixtures = {
     { mention_id: "M-1", fingerprint: hash, source_url: "https://example.com/hermes", classification: "UNKNOWN", first_seen_at: "2026-10-24T17:00:00Z" },
   ] },
   "academy.english.practice.build": { lesson_date: "2026-10-24", track: "LOGISTICS" },
+  "hae.self.improvement.audit": {
+    observed_at: "2026-10-25T00:30:00Z",
+    coverage_complete: true,
+    findings: [
+      {
+        finding_id: "self-test-gap",
+        source_ref: "github://officeus-create/Hermes/issues/2062",
+        category: "TEST_GAP",
+        severity: "P1",
+        status: "OPEN",
+        artifact_key: "scripts/automation-engine-self-improvement.test.mjs",
+        verified: true,
+        writer_active: false,
+        writer_state_verified: true,
+        observed_at: "2026-10-25T00:20:00Z"
+      }
+    ]
+  },
+  "hae.self.repair.packet": {
+    work_id: "HAE-SELF:self-test-gap",
+    finding_id: "self-test-gap",
+    artifact_key: "scripts/automation-engine-self-improvement.test.mjs"
+  },
 };
 
-assert.equal(ZERO_TOKEN_PLUGIN_TASK_CONTRACTS.length, 8);
+assert.equal(ZERO_TOKEN_PLUGIN_TASK_CONTRACTS.length, 10);
 for (const contract of ZERO_TOKEN_PLUGIN_TASK_CONTRACTS) {
   assert.equal(contract.semantic_required, false);
   assert.equal(contract.permission_class, "READ_ONLY");
   assert.equal(contract.runtime_config.max_cost_usd, 0);
-  if (!["ai.gateway.readiness.audit", "academy.english.practice.build"].includes(contract.job_type)) {
+  if (!["ai.gateway.readiness.audit", "academy.english.practice.build", "hae.self.improvement.audit"].includes(contract.job_type)) {
     assert.equal(contract.runtime_config.scheduled, false, "External-source tasks must wait for their authorized plugin adapter");
   }
   validateZeroTokenPluginTaskInput(contract.job_type, fixtures[contract.job_type]);
@@ -55,6 +78,14 @@ assert.equal(runZeroTokenPluginTask("ai.gateway.readiness.audit", fixtures["ai.g
 assert.equal(runZeroTokenPluginTask("growth.error.closure.audit", fixtures["growth.error.closure.audit"]).closure_candidate_count, 1);
 assert.equal(runZeroTokenPluginTask("market.car-hauling.snapshot.evaluate", fixtures["market.car-hauling.snapshot.evaluate"]).unknown_metric_count, 1);
 assert.equal(runZeroTokenPluginTask("marketing.mentions.audit", fixtures["marketing.mentions.audit"]).raw_page_content_stored, false);
+assert.equal(runZeroTokenPluginTask("hae.self.improvement.audit", fixtures["hae.self.improvement.audit"]).next_action, "HOLD_REPAIR");
+assert.equal(runZeroTokenPluginTask("hae.self.repair.packet", fixtures["hae.self.repair.packet"]).repair_state, "HOLD_REPAIR");
+assert.equal(runZeroTokenPluginTask("hae.self.repair.packet", fixtures["hae.self.repair.packet"]).source_change_performed, false);
+assert.equal(ZERO_TOKEN_PLUGIN_TASK_CONTRACTS.find((item) => item.job_type === "hae.self.improvement.audit")?.runtime_config.cadence_hours, 6);
+assert.equal(ZERO_TOKEN_PLUGIN_TASK_CONTRACTS.find((item) => item.job_type === "knowledge.evidence.audit")?.role_id, "hermes-knowledge-curator");
+assert.equal(ZERO_TOKEN_PLUGIN_TASK_CONTRACTS.find((item) => item.job_type === "knowledge.evidence.audit")?.plugin_version, "0.1.77");
+assert.equal(ZERO_TOKEN_PLUGIN_TASK_CONTRACTS.find((item) => item.job_type === "technology.release.radar")?.plugin_version, "0.1.25");
+assert.equal(ZERO_TOKEN_PLUGIN_TASK_CONTRACTS.find((item) => item.job_type === "academy.english.practice.build")?.plugin_version, "0.1.12");
 
 assert.throws(() => validateZeroTokenPluginTaskInput("dispatch.daily.closeout.audit", { ...fixtures["dispatch.daily.closeout.audit"], coverage_complete: "yes" }), /dispatch_coverage_complete_required/);
 assert.throws(() => validateZeroTokenPluginTaskInput("knowledge.evidence.audit", { observed_at: "2026-10-24T18:00:00Z", evidence: [{ evidence_id: "E", fingerprint: hash, source_ref: "gmail://raw/body", status: "VERIFIED", observed_at: "2026-10-24T17:00:00Z" }] }), /knowledge_source_ref_invalid/);
@@ -71,7 +102,19 @@ assert.equal(migration.normal_loop_requires_chatgpt_task, false);
 assert.equal(migration.maximum_automatic_ai_cost_usd, 0);
 assert.match(worker, /contract\.job_type === "ai\.gateway\.readiness\.audit"/);
 assert.match(worker, /contract\.job_type === "academy\.english\.practice\.build"/);
+assert.match(worker, /contract\.job_type === "hae\.self\.improvement\.audit"/);
+assert.match(worker, /buildScheduledHaeSelfImprovementPayload/);
+assert.match(worker, /ensureHaeSelfRepairFollowup/);
+assert.match(worker, /writer_state_verified: false/);
+assert.match(worker, /pluginRuntimeRegistryEvidenceStatus/);
+assert.doesNotMatch(worker, /registry\.get\(contract\.role_id\)/);
+assert.match(worker, /existingHaeSelfRepairFollowup/);
+assert.match(worker, /frozen_contract_reused: true/);
+assert.match(worker, /hae_self_repair_idempotency_conflict/);
+assert.match(worker, /job_type: "hae\.self\.repair\.packet"/);
+assert.match(worker, /const idempotencyKey = `hae:followup:self\.repair:\${audit\.next_work_id}`/);
+assert.match(worker, /idempotency_key: idempotencyKey/);
 assert.match(worker, /!contract\.semantic_required && roleContractScheduleEligible/);
 assert.match(worker, /url\.pathname === "\/v1\/schedule-migrations"/);
 
-console.log("HAE zero-token plugin task migration PASS: 14 recovered schedules, 8 deterministic plugin capabilities, no ChatGPT runtime dependency");
+console.log("HAE zero-token plugin task migration PASS: 14 recovered schedules, 10 deterministic plugin capabilities, no ChatGPT runtime dependency");

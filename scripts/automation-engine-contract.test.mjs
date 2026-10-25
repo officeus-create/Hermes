@@ -238,6 +238,11 @@ assert.match(worker, /syncCapabilityGraphJobBestEffort/, "Generic job outcomes m
 assert.match(worker, /cron\.recover_capability_graphs_failed/, "Existing Cron maintenance must recover active graphs without a second scheduler");
 assert.match(worker, /capability_graphs: true/, "Capabilities must expose bounded graph support");
 assert.match(worker, /structured_kpi_completion: true/, "Capabilities must expose structured KPI completion verification");
+assert.match(worker, /self_improvement_audit: true/, "Capabilities must expose the bounded self-improvement audit lane");
+assert.match(worker, /self_improvement_automatic_source_changes: false/, "Self-improvement v1 must not mutate source automatically");
+assert.match(worker, /self_improvement_automatic_merge: false/, "Self-improvement v1 must not merge automatically");
+assert.match(worker, /self_improvement_automatic_deploy: false/, "Self-improvement v1 must not deploy automatically");
+assert.match(worker, /url\.pathname === "\/v1\/plugin-runtime-registry"/, "Runtime must expose authenticated plugin-version truth");
 const graphRuntime = readFileSync(new URL("../workers/automation-engine/src/capability-graph.mjs", import.meta.url), "utf8");
 assert.match(graphRuntime, /MAX_GRAPH_NODES = 16/, "Capability DAG must stay bounded");
 assert.match(graphRuntime, /graph_cycle_detected/, "Capability DAG must fail closed on dependency cycles");

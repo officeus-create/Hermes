@@ -130,7 +130,8 @@ export function reconcileWorkPortfolioSnapshot(input = {}, allowedReadOnlyJobTyp
     if (!isReady) continue;
     ready.push(task.work_id);
     if (
-      task.permission_class === "READ_ONLY"
+      snapshot.coverage_complete
+      && task.permission_class === "READ_ONLY"
       && task.capability_job_type
       && allowed.has(task.capability_job_type)
       && task.capability_job_type !== "work.portfolio.reconcile"
@@ -156,6 +157,7 @@ export function reconcileWorkPortfolioSnapshot(input = {}, allowedReadOnlyJobTyp
     writer_conflict_count: writerConflicts.size,
     unresolved_dependency_count: unresolvedDependencies.length,
     routing_candidate_count: routingCandidates.length,
+    routing_blocked_reason: snapshot.coverage_complete ? null : "PARTIAL_COVERAGE",
     unfinished_work_ids: bounded(unfinished),
     ready_work_ids: bounded(ready),
     blocked_work_ids: bounded([...new Set(blocked)]),
