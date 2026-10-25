@@ -1,5 +1,7 @@
 import assert from "node:assert/strict";
 import { readdirSync, readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+import { validateVerifiedMigrationBaseline } from "./hae-migration-baseline-promotion-gate.mjs";
 
 const dir = new URL("../workers/automation-engine/migrations/", import.meta.url);
 const manifest = JSON.parse(readFileSync(new URL("manifest.json", dir), "utf8"));
@@ -19,6 +21,7 @@ if (manifest.baseline_status !== "VERIFIED") {
   assert.match(String(manifest.baseline_source_sha || ""), /^[0-9a-f]{40}$/, "Verified migration baseline requires exact source SHA");
   assert.ok(String(manifest.baseline_evidence_ref || "").trim(), "Verified migration baseline requires authenticated schema evidence reference");
   assert.match(String(manifest.baseline_schema_fingerprint || ""), /^sha256:[0-9a-f]{64}$/, "Verified migration baseline requires deterministic schema fingerprint");
+  validateVerifiedMigrationBaseline({ manifest, migrationsDir: fileURLToPath(dir) });
   assert.deepEqual(manifest.migration_files, sqlFiles, "Migration manifest must list every numbered SQL migration exactly once and in order");
 }
 
