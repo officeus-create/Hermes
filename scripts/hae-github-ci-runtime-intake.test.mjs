@@ -11,14 +11,14 @@ const run={
   repository:{full_name:repo},name:"Hermes Automation Engine Contract",
   head_sha:sha,html_url:"https://github.com/"+repo+"/actions/runs/"+runId,
   event:"pull_request",workflow_id:445566,updated_at:"2026-10-26T00:38:00Z",
-  pull_requests:[{number:2088}],secrets:{raw:"NEVER_PERSIST_THIS"},
+  pull_requests:[{number:2088,base:{sha:baseSha}}],secrets:{raw:"NEVER_PERSIST_THIS"},
 };
 const pr={number:2088,head:{sha},base:{sha:baseSha,repo:{full_name:repo}},body:"PRIVATE_UNTRUSTED_BODY"};
 const calls=[];
 const fetchImpl=async(url,init)=>{
   calls.push({url,init});
   if(url.endsWith("/actions/runs/"+runId))return {ok:true,json:async()=>run};
-  if(url.endsWith("/pulls/2088"))return {ok:true,json:async()=>pr};
+  if(url.endsWith("/pulls/2088"))throw Error("CI replay must never read mutable PR state");
   throw new Error("unexpected_request");
 };
 const obj=await verifyGithubCIQueueEnvelope(env,{fetchImpl});
@@ -28,6 +28,7 @@ assert.equal(obj.idempotency_key,"hae:ci:audit:github-ci:"+runId+":"+runAttempt+
 assert.equal(obj.payload.coverage_complete,false);
 assert.equal(obj.payload._source.pr_number,2088);
 assert.equal(obj.payload._source.base_sha,baseSha);
+assert.equal(calls.length,1,"Only immutable workflow run endpoint is needed");
 assert.equal(obj.payload._source.writer_state,"UNVERIFIED");
 assert.equal(obj.model_cost_usd,0);
 assert.equal(obj.automatic_repair_allowed,false);
