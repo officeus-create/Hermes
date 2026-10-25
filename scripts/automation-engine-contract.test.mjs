@@ -237,6 +237,7 @@ assert.match(worker, /dispatchCapabilityGraphReadyNodes/, "HAE must dispatch rea
 assert.match(worker, /syncCapabilityGraphJobBestEffort/, "Generic job outcomes must reconcile back into graph node evidence");
 assert.match(worker, /cron\.recover_capability_graphs_failed/, "Existing Cron maintenance must recover active graphs without a second scheduler");
 assert.match(worker, /capability_graphs: true/, "Capabilities must expose bounded graph support");
+assert.match(worker, /createCapabilityGraph\(env, body, CAPABILITY_GRAPH_ROLE_CONTRACT_JOB_TYPES\)/, "Capability graphs must use the routable subset and exclude dormant self-release verification");
 assert.match(worker, /structured_kpi_completion: true/, "Capabilities must expose structured KPI completion verification");
 assert.match(worker, /self_improvement_audit: true/, "Capabilities must expose the bounded self-improvement audit lane");
 assert.match(worker, /self_improvement_automatic_source_changes: false/, "Self-improvement v1 must not mutate source automatically");
@@ -244,7 +245,8 @@ assert.match(worker, /self_improvement_automatic_merge: false/, "Self-improvemen
 assert.match(worker, /self_improvement_automatic_deploy: false/, "Self-improvement v1 must not deploy automatically");
 assert.match(worker, /url\.pathname === "\/v1\/plugin-runtime-registry"/, "Runtime must expose authenticated plugin-version truth");
 const selfReleaseGate = readFileSync(new URL("../workers/automation-engine/src/hae-self-release-gate.mjs", import.meta.url), "utf8");
-assert.match(selfReleaseGate, /hae_release_self_asserted_\$\{field\}_forbidden/, "Self-release verification must reject caller-asserted verifier/source/CI evidence");
+assert.match(selfReleaseGate, /ALLOWED_INPUT_FIELD_SET/, "Self-release verification must enforce a strict three-field allowlist rather than a denylist");
+assert.match(selfReleaseGate, /hae_release_payload_field_\$\{clean\(field, 80\) \|\| "unknown"\}_forbidden/, "Self-release verification must reject every non-allowlisted caller field");
 assert.match(selfReleaseGate, /AUTHENTICATED_RELEASE_EVIDENCE_UNAVAILABLE/, "Self-release gate must fail closed until authenticated evidence adapters exist");
 assert.match(selfReleaseGate, /hold_release_reachable: false/, "HOLD_RELEASE must remain unreachable before #2067/#2068 activation dependencies");
 assert.match(selfReleaseGate, /human_hold_release_required: true/, "Self-release verification must preserve the human HOLD_RELEASE boundary");

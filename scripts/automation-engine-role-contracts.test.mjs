@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import {
+  CAPABILITY_GRAPH_ROLE_CONTRACT_JOB_TYPES,
   ROLE_CONTRACTS,
   ROLE_CONTRACT_JOB_TYPES,
   buildRoleContractSemanticRequest,
@@ -69,6 +70,9 @@ assert.equal(roleContractForJobType("work.portfolio.reconcile").plugin_version, 
 assert.equal(roleContractForJobType("hae.self.improvement.audit").plugin_version, "0.1.25");
 assert.equal(roleContractForJobType("hae.self.release.verify").role_id, "hermes-qa-evidence-auditor");
 assert.equal(roleContractForJobType("hae.self.release.verify").plugin_version, "0.1.5");
+assert.ok(ROLE_CONTRACT_JOB_TYPES.includes("hae.self.release.verify"), "Dormant self-release capability remains directly inspectable");
+assert.ok(!CAPABILITY_GRAPH_ROLE_CONTRACT_JOB_TYPES.includes("hae.self.release.verify"), "Dormant self-release capability must not be graph-routable before authenticated activation");
+assert.equal(CAPABILITY_GRAPH_ROLE_CONTRACT_JOB_TYPES.length, ROLE_CONTRACT_JOB_TYPES.length - 1);
 assert.equal(roleContractForJobType("knowledge.evidence.audit").role_id, "hermes-knowledge-curator");
 assert.equal(roleContractForJobType("knowledge.evidence.audit").plugin_version, "0.1.77");
 assert.equal(ROLE_CONTRACTS.filter((contract) => !contract.semantic_required).length, 15);

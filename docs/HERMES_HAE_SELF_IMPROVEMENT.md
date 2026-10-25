@@ -89,10 +89,12 @@ A repair packet is not release evidence.
 
 The next bounded READ_ONLY capability is `hae.self.release.verify`, but this source slice deliberately implements it as a **dormant fail-closed gate**.
 
-The public job payload may provide only:
+The public job payload is enforced by a strict allowlist and may provide only:
 - a stable `HAE-SELF:*` WORK_ID;
 - one bounded artifact key;
 - a persisted repair job reference.
+
+Any fourth or unexpected field is rejected, including future names that were not anticipated by an earlier denylist. The dormant self-release job is also excluded from capability-graph routing, so a caller cannot turn its expected `BLOCKED` result into graph-level `ACCEPTED` by choosing a permissive KPI assertion.
 
 It may not self-assert a verifier verdict, verification job id, repair owner, base/head SHA, diff digest, changed paths, CI results, trust level, backlog, source-change state, rollback state or any string claiming that evidence is authenticated.
 

@@ -56,11 +56,20 @@ for (const [field, value] of Object.entries({
 })) {
   assert.throws(
     () => normalizeHaeSelfReleaseEvidence({ ...request, [field]: value }),
-    new RegExp(`self_asserted_${field}_forbidden`),
-    `${field} must never be trusted from caller JSON`,
+    new RegExp(`payload_field_${field}_forbidden`),
+    `${field} must never be accepted outside the three-field allowlist`,
   );
 }
 
+for (const extraField of ["verdict", "head_sha", "ci_status", "rollback_verified", "authenticated", "unexpected"]) {
+  assert.throws(
+    () => normalizeHaeSelfReleaseEvidence({ ...request, [extraField]: "forged" }),
+    new RegExp(`payload_field_${extraField}_forbidden`),
+    `${extraField} must be rejected even when it was never anticipated by a denylist`,
+  );
+}
+
+assert.equal(Object.keys(normalized).length, 3);
 assert.equal(HAE_SELF_RELEASE_LIMITS.hold_release_reachable, false);
 assert.equal(HAE_SELF_RELEASE_LIMITS.automatic_merge_allowed, false);
 assert.equal(HAE_SELF_RELEASE_LIMITS.automatic_deploy_allowed, false);

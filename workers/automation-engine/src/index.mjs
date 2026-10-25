@@ -8,6 +8,7 @@ import {
   runHistoricalLearningPrimitive,
 } from "./historical-learning.mjs";
 import {
+  CAPABILITY_GRAPH_ROLE_CONTRACT_JOB_TYPES,
   ROLE_CONTRACTS,
   ROLE_CONTRACT_JOB_TYPES,
   buildRoleContractSemanticRequest,
@@ -2325,7 +2326,7 @@ export default {
       if (!env.DB || !env.AUTOMATION_QUEUE) return json(503, { success: false, error: "runtime_not_configured" });
       const body = await request.json().catch(() => ({}));
       try {
-        const created = await createCapabilityGraph(env, body, ROLE_CONTRACT_JOB_TYPES);
+        const created = await createCapabilityGraph(env, body, CAPABILITY_GRAPH_ROLE_CONTRACT_JOB_TYPES);
         await dispatchCapabilityGraphReadyNodes(env, created.graph_id);
         const snapshot = await getCapabilityGraph(env, created.graph_id);
         return json(created.created ? 202 : 200, {

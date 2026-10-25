@@ -3,25 +3,12 @@ import { pluginRuntimeVersion } from "./plugin-runtime-registry.mjs";
 const MAX_WORK_ID = 180;
 const MAX_ARTIFACT_KEY = 240;
 const MAX_JOB_ID = 180;
-const FORBIDDEN_SELF_ASSERTED_FIELDS = Object.freeze([
-  "verifier",
-  "verification_job_id",
-  "repair_owner",
-  "base_sha",
-  "patch_sha",
-  "diff_sha256",
-  "changed_paths",
-  "checks",
-  "trust_level",
-  "source_change_performed",
-  "revert_sha",
-  "revert_checks",
-  "backlog",
-  "github_evidence",
-  "repair_receipt",
-  "verifier_receipt",
-  "source_class",
+const ALLOWED_INPUT_FIELDS = Object.freeze([
+  "work_id",
+  "artifact_key",
+  "repair_job_id",
 ]);
+const ALLOWED_INPUT_FIELD_SET = new Set(ALLOWED_INPUT_FIELDS);
 
 const FUTURE_REQUIRED_EVIDENCE = Object.freeze([
   "D1_AUTHENTICATED_REPAIR_EXECUTOR_RECEIPT",
@@ -61,9 +48,9 @@ export function normalizeHaeSelfReleaseEvidence(input = {}) {
   const repairJobId = clean(input.repair_job_id, MAX_JOB_ID);
   if (!repairJobId) throw new Error("hae_release_repair_job_id_required");
 
-  for (const field of FORBIDDEN_SELF_ASSERTED_FIELDS) {
-    if (Object.prototype.hasOwnProperty.call(input, field)) {
-      throw new Error(`hae_release_self_asserted_${field}_forbidden`);
+  for (const field of Object.keys(input)) {
+    if (!ALLOWED_INPUT_FIELD_SET.has(field)) {
+      throw new Error(`hae_release_payload_field_${clean(field, 80) || "unknown"}_forbidden`);
     }
   }
 
