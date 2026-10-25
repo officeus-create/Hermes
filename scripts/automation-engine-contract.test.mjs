@@ -542,3 +542,6 @@ for (const secretPattern of ["sk-", "ghp_", "AIza", "Bearer eyJ"]) {
 }
 
 console.log("Hermes Automation Engine V1 contract: ok");
+
+// Metadata-only ecosystem learning gates are part of the existing HAE contract CI.
+await import("./automation-engine-ecosystem-learning.test.mjs");
