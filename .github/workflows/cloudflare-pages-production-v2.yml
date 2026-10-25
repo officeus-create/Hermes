@@ -271,7 +271,7 @@ jobs:
             echo "- Build output: \`dist\`"
             echo "- Release owner: Cloudflare Git integration exact-SHA deploy"
             echo "- Deployment evidence: ${NATIVE_DEPLOYMENT_DETAILS:-not returned}"
-            echo "- Logistics contact verification: preview-safe Logistics contact shell and its live browser runtime activation"
+            echo "- Logistics contact verification: preview-safe Logistics contact shell and matching hydrated preview gate"
             echo "- Home cinematic verification: four lanes require byte-range delivery, autonomous visible playback, visible frame change, reduced-motion fallback and Save-Data fallback"
             echo "- WEB10 Academy production contract: five public learning tracks required; retired two-program copy forbidden"
             echo

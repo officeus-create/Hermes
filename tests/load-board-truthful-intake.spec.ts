@@ -38,7 +38,23 @@ test("production transport form rejects generic 2xx and preserves retries with s
       return;
     }
     const response = await fetch(`http://127.0.0.1:${process.env.HERMES_E2E_PORT ?? "4321"}${url.pathname}${url.search}`);
-    await route.fulfill({ status: response.status, headers: { "content-type": response.headers.get("content-type") || "application/octet-stream" }, body: Buffer.from(await response.arrayBuffer()) });
+    const contentType = response.headers.get("content-type") || "application/octet-stream";
+    if (url.pathname === "/logistics/request-vehicle-transport/" && contentType.includes("text/html")) {
+      const source = await response.text();
+      const previewMode = /\bdata-lead-mode=(["'])preview\1/.test(source);
+      const emptyEndpoint = /\bdata-lead-endpoint(?:=(["'])\1)?(?=[\s>])/.test(source);
+      if (!previewMode || !emptyEndpoint) throw new Error("Expected fail-closed transport SSR shell");
+      const approvedFixture = source
+        .replace(/\bdata-lead-mode=(["'])preview\1/, 'data-lead-mode="live"')
+        .replace(/\bdata-lead-endpoint(?:=(["'])\1)?(?=[\s>])/, 'data-lead-endpoint="/api/logistics-lead"')
+        .replace(
+          "Preview mode is active. The form prepares a review and email handoff without automatic delivery or storage.",
+          "Live request intake: review your details, then submit to the request service. Submission does not confirm delivery, human receipt, carrier assignment, or booking.",
+        );
+      await route.fulfill({ status: response.status, headers: { "content-type": contentType }, body: approvedFixture });
+      return;
+    }
+    await route.fulfill({ status: response.status, headers: { "content-type": contentType }, body: Buffer.from(await response.arrayBuffer()) });
   });
   await page.goto(`${origin}/logistics/request-vehicle-transport/?role=customer`);
   await expect(page.locator("[data-transport-mode-note]")).toContainText("Live request intake");

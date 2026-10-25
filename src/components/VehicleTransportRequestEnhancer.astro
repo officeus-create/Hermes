@@ -27,11 +27,22 @@
     const storageDeadline = root?.querySelector<HTMLInputElement>('input[name="storage_deadline"]');
     if (!root || !form || !alert || !result || !decision || !preview || !email || !sendButton || !deliveryStatus || !boundary) return;
 
-    const canonicalProductionHost = window.location.protocol === "https:" && window.location.hostname === "hermeslogisticsus.com";
-    if (canonicalProductionHost) {
-      form.dataset.leadMode = "live";
-      if (!form.dataset.leadEndpoint) form.dataset.leadEndpoint = "/api/logistics-lead";
+    // Hostname alone is not authorization for lead delivery. Preserve an
+    // explicit SSR live mode only with the approved same-origin HTTPS receiver.
+    const declaredLive = form.dataset.leadMode === "live";
+    let configuredLive = false;
+    if (declaredLive && form.dataset.leadEndpoint) {
+      try {
+        const endpoint = new URL(form.dataset.leadEndpoint, window.location.origin);
+        configuredLive = endpoint.protocol === "https:" &&
+          endpoint.origin === window.location.origin &&
+          endpoint.pathname === "/api/logistics-lead" &&
+          !endpoint.search && !endpoint.hash;
+      } catch {
+        // Invalid or absent receiver remains preview-only.
+      }
     }
+    form.dataset.leadMode = configuredLive ? "live" : "preview";
     const modeNote = form.querySelector<HTMLElement>("[data-transport-mode-note]");
     if (modeNote && form.dataset.leadMode === "live") {
       modeNote.textContent = "Live request intake: review your details, then submit to the request service. Submission does not confirm delivery, human receipt, carrier assignment, or booking.";

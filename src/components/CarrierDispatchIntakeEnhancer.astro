@@ -30,11 +30,25 @@
     const availableFrom = root?.querySelector<HTMLInputElement>('input[name="available_from"]');
     if (!root || !form || !alert || !result || !decision || !state || !preview || !email || !sendButton || !deliveryStatus || !boundary) return;
 
-    const canonicalProductionHost = window.location.protocol === "https:" && window.location.hostname === "hermeslogisticsus.com";
-    if (canonicalProductionHost) {
-      form.dataset.leadMode = "live";
-      if (!form.dataset.leadEndpoint) form.dataset.leadEndpoint = "/api/logistics-lead";
+    // Server-rendered PUBLIC_CONTACT_MODE is the feature/safety gate.
+    // The browser hostname is NOT authorization to turn preview into live:
+    // backend LEAD_DELIVERY_MODE or receiver credentials may still be disabled.
+    // Only an explicitly configured live mode with a same-origin HTTPS endpoint
+    // can expose the send action. This never sends or mutates a lead by itself.
+    const declaredLive = form.dataset.leadMode === "live";
+    let configuredLive = false;
+    if (declaredLive && form.dataset.leadEndpoint) {
+      try {
+        const configuredEndpoint = new URL(form.dataset.leadEndpoint, window.location.origin);
+        configuredLive = configuredEndpoint.protocol === "https:" &&
+          configuredEndpoint.origin === window.location.origin &&
+          configuredEndpoint.pathname === "/api/logistics-lead" &&
+          !configuredEndpoint.search && !configuredEndpoint.hash;
+      } catch {
+        // Invalid endpoints are preview-only and never silently replaced.
+      }
     }
+    form.dataset.leadMode = configuredLive ? "live" : "preview";
 
     const modeNote = root.querySelector<HTMLElement>(".dispatch-mode-note");
     if (modeNote) {
@@ -221,6 +235,7 @@
       const timeout = window.setTimeout(() => controller.abort(), 10000);
 
       try {
+        const consentInput = form.querySelector?.('input[name="carrier_consent"]') as HTMLInputElement | null | undefined;
         const response = await fetch(endpoint, {
           method: "POST",
           headers: { "Content-Type": "application/json", "Idempotency-Key": requestId },
@@ -228,16 +243,22 @@
             request_id: requestId,
             submitted_at: new Date().toISOString(),
             page_path: window.location.pathname,
+            consent: consentInput?.checked === true,
             ...activeLead,
           }),
           signal: controller.signal,
         });
+        const stateCopy = response.clone().json().catch(() => null);
         const receipt = await requireSubmittedReceipt(response, requestId);
+        const state = await stateCopy;
+        const storedWithoutEmail = state?.capture_state === "persisted" && state?.delivery_state === "not_sent";
 
         deliveryStatus.dataset.submissionState = receipt.submission;
-        deliveryStatus.dataset.deliveryState = receipt.delivery;
+        deliveryStatus.dataset.deliveryState = storedWithoutEmail ? "not_sent" : receipt.delivery;
         deliveryStatus.dataset.humanReceiptState = receipt.humanReceipt;
-        deliveryStatus.textContent = submittedReceiptCopy;
+        deliveryStatus.textContent = storedWithoutEmail
+          ? "Request securely saved for Logistics Sales review. No automated email was sent. Human review remains unconfirmed."
+          : submittedReceiptCopy;
         sendButton.hidden = true;
         pushEvent({
           event: "carrier_submitted",
@@ -254,6 +275,16 @@
         sendButton.disabled = false;
       }
     });
+
+    // Native HTML must stay fail-closed until the review and handoff listeners
+    // have been installed. If JavaScript is disabled or initialization fails,
+    // the static disabled submit cannot issue a GET with contact/MC data in URL.
+    const reviewButton = root.querySelector<HTMLButtonElement>("[data-review-dispatch-request]");
+    if (reviewButton) {
+      const noScriptFallback = root.querySelector<HTMLElement>("[data-review-js-fallback]");
+      if (noScriptFallback) noScriptFallback.hidden = true;
+      reviewButton.disabled = false;
+    }
   };
 
   setupCarrierDispatchIntake();

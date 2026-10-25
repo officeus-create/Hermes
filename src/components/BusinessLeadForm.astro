@@ -309,7 +309,6 @@ const t = copy[locale];
   const alert = form?.querySelector<HTMLElement>("[data-form-alert]");
   const submitButton = form?.querySelector<HTMLButtonElement>('button[type="submit"]');
   const submitLabel = form?.querySelector<HTMLElement>("[data-submit-label]");
-  const productionHosts = new Set(["hermeslogisticsus.com", "www.hermeslogisticsus.com"]);
 
   const setAlert = (message = "") => {
     if (!alert) return;
@@ -328,10 +327,9 @@ const t = copy[locale];
         : form.dataset.previewLabel || "Preview request";
   };
 
-  if (form && window.location.protocol === "https:" && productionHosts.has(window.location.hostname)) {
-    form.dataset.contactMode = "live";
-    setSubmitting(false);
-  }
+  // Production hostnames cannot override the server-declared preview/send mode.
+  // Only an owner-authorized build + matching receiver may expose live delivery.
+  if (form) setSubmitting(false);
 
   const getAttribution = () => {
     const params = new URLSearchParams(window.location.search);
