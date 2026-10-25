@@ -893,3 +893,49 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
+# Single owner-triggered DLQ canary; no deploy, no scheduler, no new endpoint.
+  t4_dlq_canary:
+    if: >-
+      github.event_name == 'issue_comment' &&
+      github.actor == 'officeus-create' &&
+      github.event.issue.number == 2033 &&
+      !github.event.issue.pull_request &&
+      startsWith(github.event.comment.body, 'HAE_T4_DLQ_CANARY ')
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    environment: production
+    permissions:
+      contents: read
+    env:
+      GH_TOKEN: ${ github.token }
+      CLOUDFLARE_HAE_RELEASE_TOKEN: ${ secrets.CLOUDFLARE_HAE_RELEASE_TOKEN }
+      T4_OWNER_COMMENT: ${ github.event.comment.body }
+    steps:
+      - name: Checkout canonical main
+        uses: actions/checkout@v6
+        with:
+          ref: main
+          persist-credentials: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+
+      - name: Validate T4 contract and immutable D1 baseline
+        run: |
+          node scripts/hae-t4-dlq-canary.test.mjs
+          node scripts/automation-engine-migration-gate.test.mjs
+
+      - name: Inject once into the existing DLQ and capture D1 transport receipt
+        id: transport
+        run: node scripts/hae-t4-cloudflare-transport.mjs
+
+      - name: Retain sanitized D1 transport receipt for independent inbox readback
+        if: steps.transport.outputs.dlq_item_id != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: hae-t4-dlq-transport-receipt
+          path: ${ runner.temp }/t4-d1-transport-receipt.json
+          if-no-files-found: error
+          retention-days: 90
