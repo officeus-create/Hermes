@@ -1,8 +1,10 @@
+import { normalizeHistoricalSource } from "../workers/automation-engine/src/historical-learning.mjs";
 import assert from "node:assert/strict";
 import {
   ECOSYSTEM_SOURCE_FAMILIES,
   normalizeEcosystemLearningSource,
   evaluateEcosystemLearningCoverage,
+  proposeHistoricalLearningSourceJobs,
 } from "../workers/automation-engine/src/ecosystem-learning-preflight.mjs";
 
 const clean = {
@@ -44,4 +46,28 @@ assert.equal(normalizeEcosystemLearningSource({ ...clean, access_state: "BLOCKED
 assert.throws(() => evaluateEcosystemLearningCoverage([clean, clean]), /ecosystem_duplicate_source_id/);
 assert.throws(() => evaluateEcosystemLearningCoverage(new Array(101).fill(clean)), /ecosystem_sources_invalid/);
 assert.equal(evaluateEcosystemLearningCoverage([]).known_source_count, 0);
+
+const proposals = proposeHistoricalLearningSourceJobs([clean]);
+assert.equal(proposals.source_candidates_found, 1);
+assert.equal(proposals.proposals.length, 1);
+assert.equal(proposals.coverage_status, "PARTIAL_COVERAGE");
+assert.equal(proposals.automatic_submit_allowed, false);
+assert.equal(proposals.automatic_promotion_allowed, false);
+assert.equal(proposals.proposals[0].job_type, "history.source.normalize");
+assert.equal(proposals.proposals[0].next_action, "HOLD_AUTHENTICATED_SOURCE_ADAPTER");
+assert.equal(proposals.proposals[0].payload.current_status, "UNKNOWN");
+assert.equal(proposals.proposals[0].payload.source_uri_or_ref, null);
+assert.equal(proposals.proposals[0].payload.trust_tier, "SOURCE_METADATA_NOT_INDEPENDENTLY_ADMITTED");
+assert.equal(proposals.proposals[0].payload.content_hash, clean.evidence_hash);
+assert.equal(normalizeHistoricalSource(proposals.proposals[0].payload).current_status, "UNKNOWN");
+assert.equal(proposeHistoricalLearningSourceJobs([{...clean, source_verified: false}]).proposals.length, 0);
+assert.equal(proposeHistoricalLearningSourceJobs([{...clean, scan_state: "PARTIAL_SCAN"}]).proposals.length, 0);
+assert.equal(proposeHistoricalLearningSourceJobs([{...clean, redaction_verified: false}]).proposals.length, 0);
+assert.throws(() => proposeHistoricalLearningSourceJobs([{...clean, message_body: "private"}]), /ecosystem_unexpected_field/);
+const tenPlus = Array.from({length:12},(_,i)=>({...clean, source_id:`github:hermes:job-${i}`}));
+const boundedProposals = proposeHistoricalLearningSourceJobs(tenPlus);
+assert.equal(boundedProposals.proposals.length, 10);
+assert.equal(boundedProposals.unmaterialized_count, 2);
+assert.ok(boundedProposals.proposals.every(p=>p.automatic_submit_allowed === false));
+
 console.log("ecosystem learning preflight: PASS");
