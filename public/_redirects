@@ -10,3 +10,4 @@
 /tools/load-analyzer/ /services/hermes-connect/load-analyzer/ 301
 /ai-command-center/ /services/hermes-connect/ai-command-center/ 301
 /unified-inbox/ /services/hermes-connect/unified-inbox/ 301
+/paths/logistics/broker-capacity/ /paths/logistics/brokers/carrier-capacity/ 301
