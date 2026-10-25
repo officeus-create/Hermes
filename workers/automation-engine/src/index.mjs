@@ -49,6 +49,7 @@ import {
   pluginRuntimeRegistrySnapshot,
 } from "./plugin-runtime-registry.mjs";
 import { haeSelfRepairPacketReplayMatches } from "./hae-self-improvement.mjs";
+import { verifyGithubCIQueueEnvelope } from "./github-ci-runtime-intake.mjs";
 
 const ACCOUNT_KEY = "hermes_logistics";
 const PLATFORM = "threads";
@@ -2229,6 +2230,15 @@ export default {
       const payload = item.body || {};
       const messageType = clean(payload?.type, 80) || "UNKNOWN";
       try {
+        if (messageType === "github.ci.audit") {
+          // The Queue producer can send only a run ID and attempt. All proof is
+          // re-read from GitHub's canonical public API before creating one
+          // idempotent, read-only HAE job. Writer-state coverage stays PARTIAL.
+          const authenticated = await verifyGithubCIQueueEnvelope(payload);
+          await createGenericJob(env, authenticated);
+          item.ack();
+          continue;
+        }
         if (messageType === "job.submit.runtime_proof") {
           await submitRuntimeProofJob(env, payload);
           item.ack();
