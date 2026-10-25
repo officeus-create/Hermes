@@ -81,11 +81,13 @@ const { executeT4Canary }=await import("./hae-t4-cloudflare-transport.mjs");
 const accountId="a".repeat(32), dbId="b".repeat(32),queueId="c".repeat(32);
 const trace=[];
 let sendCount=0, didSend=false;
+let omitPagesDbName=false, detailDatabaseName="hermes-connect-prototype",detailUuid=dbId;
 const fakeFetch=async(url,options={})=>{
   const method=options.method||"GET";
   trace.push({url,method});
   if(url.includes("api.github.com/"))return {ok:true,json:async()=>({commit:{sha:targetSha}})};
-  if(url.endsWith("/pages/projects/hermes"))return {ok:true,json:async()=>({success:true,result:{deployment_configs:{production:{d1_databases:{DB:{id:dbId,database_name:"hermes-connect-prototype"}}}}}})};
+  if(url.endsWith("/pages/projects/hermes"))return {ok:true,json:async()=>({success:true,result:{deployment_configs:{production:{d1_databases:{DB:omitPagesDbName?{id:dbId}:{id:dbId,database_name:"hermes-connect-prototype"}}}}}})};
+  if(url.endsWith("/d1/database/"+dbId))return {ok:true,json:async()=>({success:true,result:{name:detailDatabaseName,uuid:detailUuid}})};
   if(url.endsWith("/queues"))return {ok:true,json:async()=>({success:true,result:[{queue_name:"hermes-automation-dlq",queue_id:queueId}]})};
   if(url.endsWith("/messages")){
     sendCount++;
@@ -115,6 +117,27 @@ assert.equal(sendCount,1);
 assert.equal(trace.filter(x=>x.url.endsWith("/messages")).length,1);
 await assert.rejects(()=>executeT4Canary({...opts,runAttempt:"2"}), e=>e.code==="t4_same_run_retry_forbidden");
 assert.equal(sendCount,1);
+// Production Pages metadata sometimes omits the D1 name. Explicit exact-ID lookup must
+// recover it without weakening the canonical database check or writing to D1.
+didSend=false;
+sendCount=0;
+omitPagesDbName=true;
+const metadataRecovered=await executeT4Canary(opts);
+assert.equal(metadataRecovered.status, "PASS");
+assert.equal(sendCount,1);
+assert.ok(trace.some(x=>x.url.endsWith("/d1/database/"+dbId) && x.method==="GET"));
+didSend=false;
+sendCount=0;
+detailDatabaseName="other-d1";
+await assert.rejects(()=>executeT4Canary(opts),e=>e.code==="t4_canonical_database_binding_mismatch");
+assert.equal(sendCount,0,"Wrong metadata name must stop before Queue POST");
+detailDatabaseName="hermes-connect-prototype";
+detailUuid="f".repeat(32);
+await assert.rejects(()=>executeT4Canary(opts),e=>e.code==="t4_canonical_database_metadata_id_mismatch");
+assert.equal(sendCount,0,"Wrong metadata UUID must stop before Queue POST");
+detailUuid=dbId;
+omitPagesDbName=false;
+
 const ambiguous=async(url,options)=>{
   if(url.endsWith("/messages"))throw Error("ambiguous_send");
   return fakeFetch(url,options);
