@@ -51,4 +51,12 @@ await assert.rejects(()=>verifyGithubCIQueueEnvelope(env,{fetchImpl:async()=>({o
 await assert.rejects(()=>verifyGithubCIQueueEnvelope(env,{fetchImpl:async()=>({ok:false,status:403})}),e=>e.code==="github_ci_source_http_not_ok");
 const source=fs.readFileSync(new URL("../workers/automation-engine/src/github-ci-runtime-intake.mjs",import.meta.url),"utf8");
 assert.doesNotMatch(source,/github_pat_|ghp_|api\.openai\.com|\/repos\/.*\/pulls\/.*\/merge|\/sendMessage/);
+const worker=fs.readFileSync(new URL("../workers/automation-engine/src/index.mjs",import.meta.url),"utf8");
+assert.match(worker,/if \(messageType === "github\.ci\.audit"\)\s*\{[\s\S]*?verifyGithubCIQueueEnvelope\(payload\)[\s\S]*?createGenericJob\(env, authenticated\)[\s\S]*?item\.ack\(\)/);
+const wf=fs.readFileSync(new URL("../.github/workflows/hae-github-ci-sensor.yml",import.meta.url),"utf8");
+assert.ok(wf.includes("vars.HAE_CI_SENSOR_ENABLED == 'true'"));
+assert.ok(wf.includes("github.event.workflow_run.head_repository.full_name == 'officeus-create/Hermes'"));
+assert.ok(wf.includes("persist-credentials: false"));
+assert.ok(!wf.includes("pull_request_target:"));
+assert.ok(!wf.includes("secrets.GITHUB_ADMIN_TOKEN"));
 console.log("HAE #2067 verified CI Queue intake PASS: source readback, dedupe, minimized payload, PARTIAL writer coverage, $0");
