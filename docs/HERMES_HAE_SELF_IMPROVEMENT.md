@@ -87,33 +87,27 @@ This slice is cleanly replayed directly on the accepted #2051 line. Promotion st
 
 A repair packet is not release evidence.
 
-The next bounded READ_ONLY capability is `hae.self.release.verify`. It consumes evidence from a separate verification job/context and requires:
+The next bounded READ_ONLY capability is `hae.self.release.verify`, but this source slice deliberately implements it as a **dormant fail-closed gate**.
 
+The public job payload may provide only:
 - a stable `HAE-SELF:*` WORK_ID;
-- exact `patch_sha` and SHA-256 diff digest;
-- the complete required exact-head CI set whose head SHA equals the patch SHA;
-- current Hermes Automatic Engineer identity for the repair owner;
-- current Hermes QA/Evidence Auditor identity for the verifier;
-- distinct repair and verification job IDs;
-- verifier criteria digest and verdict;
-- rollback/revert evidence whose checks are bound to the exact revert SHA whenever a source change has occurred;
-- P0/P1/P2 self-backlog counts.
+- one bounded artifact key;
+- a persisted repair job reference.
 
-The gate returns only `HOLD_RELEASE`, `REPAIR` or `BLOCKED`. It never authorizes automatic merge or deploy.
+It may not self-assert a verifier verdict, verification job id, repair owner, base/head SHA, diff digest, changed paths, CI results, trust level, backlog, source-change state, rollback state or any string claiming that evidence is authenticated.
 
-`HOLD_RELEASE` cannot be reached from caller JSON alone. The public job payload may name only the WORK_ID, artifact, persisted repair job id and verifier verdict/criteria digest. It may not self-assert verification job id, repair owner, base/head SHA, diff digest, changed paths, CI results, backlog or rollback state.
+Therefore `HOLD_RELEASE` is intentionally unreachable in this slice. Normal runtime execution returns `BLOCKED / AUTHENTICATED_RELEASE_EVIDENCE_UNAVAILABLE`, never automatic merge or deploy.
 
-Those fields must arrive through an internal sealed evidence context built from:
-- authenticated D1 readback of a successful `hae.self.repair.execute` receipt;
-- authenticated GitHub evidence for the exact repository/base/head/diff/changed-path set;
-- GitHub workflow-run and job ids for every required check;
-- authenticated D1 backlog counts;
-- exact revert SHA and the same required checks bound to that revert SHA.
+Activation is deferred until the post-runtime dependencies can provide real evidence:
+- #2067 authenticated GitHub/CI event sensor;
+- #2068 DRAFT_ONLY repair executor with a persisted D1 repair receipt;
+- a separate D1-backed QA verifier receipt bound to WORK_ID/artifact/base/head/diff/role/version/verdict/criteria;
+- authenticated GitHub base/head/diff/complete changed paths and workflow-run/job identifiers;
+- rollback proof tied to the repaired change itself: the revert must be proven as the inverse/restoration of the exact patch, not merely a different green SHA;
+- authenticated D1 P0/P1/P2 backlog readback.
 
-The repair receipt and GitHub evidence must independently agree on base SHA, patch SHA, diff SHA-256 and the complete changed-path set. A distinct base/head is itself the source-change signal, so rollback evidence cannot be disabled by a caller flag.
+Only when those adapters exist should the gate gain a reachable `HOLD_RELEASE` path. This is fail-closed readiness, not a claim of LIVE self-release.
 
-Until the post-runtime GitHub/CI sensor and DRAFT_ONLY repair executor can construct this sealed context, normal runtime execution of `hae.self.release.verify` intentionally returns `BLOCKED / VERIFIED_EVIDENCE_CONTEXT_REQUIRED`. This is fail-closed readiness, not a claim of LIVE self-release.
+Stopping condition remains a future acceptance rule: after authenticated activation, self-improvement may pause and return to the business queue only when the current item is at `HOLD_RELEASE` and there are no open P0/P1 self-tasks. Remaining non-blocking P2 improvements must not monopolize the engine.
 
-Stopping condition v1 is explicit: self-improvement may pause and return to the business queue only when the current item is at `HOLD_RELEASE` and there are no open P0/P1 self-tasks. Remaining non-blocking P2 improvements do not monopolize the engine.
-
-Structural verification is still not proof that an external human or AI independently reasoned about the patch. Actual verifier execution remains a separate evidence source and contract/schema/provider-write changes keep the human HOLD_RELEASE boundary.
+SOURCE/CI success for this slice proves only that the dormant gate fails closed. It does not prove authenticated verifier execution, rollback equivalence, deployment or LIVE runtime behavior.

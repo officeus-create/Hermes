@@ -60,8 +60,7 @@ const fixtures = {
   "hae.self.release.verify": {
     work_id: "HAE-SELF:self-test-gap",
     artifact_key: "scripts/automation-engine-self-improvement.test.mjs",
-    repair_job_id: "job:repair:1",
-    verifier: { verdict: "ACCEPTED", criteria_sha256: "c".repeat(64) }
+    repair_job_id: "job:repair:1"
   },
 };
 
@@ -88,7 +87,7 @@ assert.equal(runZeroTokenPluginTask("hae.self.improvement.audit", fixtures["hae.
 assert.equal(runZeroTokenPluginTask("hae.self.repair.packet", fixtures["hae.self.repair.packet"]).repair_state, "HOLD_REPAIR");
 assert.equal(runZeroTokenPluginTask("hae.self.repair.packet", fixtures["hae.self.repair.packet"]).source_change_performed, false);
 assert.equal(runZeroTokenPluginTask("hae.self.release.verify", fixtures["hae.self.release.verify"]).release_state, "BLOCKED");
-assert.equal(runZeroTokenPluginTask("hae.self.release.verify", fixtures["hae.self.release.verify"]).blocker, "VERIFIED_EVIDENCE_CONTEXT_REQUIRED");
+assert.equal(runZeroTokenPluginTask("hae.self.release.verify", fixtures["hae.self.release.verify"]).blocker, "AUTHENTICATED_RELEASE_EVIDENCE_UNAVAILABLE");
 assert.equal(runZeroTokenPluginTask("hae.self.release.verify", fixtures["hae.self.release.verify"]).next_lane, "SELF_IMPROVEMENT");
 assert.equal(ZERO_TOKEN_PLUGIN_TASK_CONTRACTS.find((item) => item.job_type === "hae.self.improvement.audit")?.runtime_config.cadence_hours, 6);
 assert.equal(ZERO_TOKEN_PLUGIN_TASK_CONTRACTS.find((item) => item.job_type === "knowledge.evidence.audit")?.role_id, "hermes-knowledge-curator");

@@ -197,9 +197,9 @@ export const ZERO_TOKEN_PLUGIN_TASK_CONTRACTS = Object.freeze([
     jobType: "hae.self.release.verify",
     lane: "automation",
     trigger: "separate_verifier_evidence_packet",
-    input: { work_id: "HAE-SELF:*", artifact_key: "bounded repository path", repair_job_id: "persisted D1 repair executor job id", verifier: "QA verdict + criteria digest only; source/CI evidence is forbidden in caller payload" },
-    steps: ["block ordinary payloads from self-asserting verifier independence or GitHub evidence", "consume only sealed context built from D1-authenticated repair readback plus authenticated GitHub evidence", "bind base/head/diff/changed paths and workflow-run/job ids", "derive source change from distinct base/head and always require rollback checks", "calculate stopping condition"],
-    output: "BLOCKED without verified context; otherwise HOLD_RELEASE | REPAIR | BLOCKED + immutable evidence fields + next lane",
+    input: { work_id: "HAE-SELF:*", artifact_key: "bounded repository path", repair_job_id: "persisted repair reference only; verifier/source/CI/rollback assertions are forbidden in caller payload" },
+    steps: ["reject all self-asserted verifier, source, CI, backlog and rollback evidence", "remain fail-closed until authenticated D1 repair + QA verifier receipts and authenticated GitHub evidence adapters exist", "keep HOLD_RELEASE unreachable before #2067/#2068 activation dependencies"],
+    output: "BLOCKED / AUTHENTICATED_RELEASE_EVIDENCE_UNAVAILABLE until authenticated evidence adapters are implemented",
     kpi: ["release_state", "failing_check_count", "self_improvement_should_pause", "cost_usd"],
   }),
 ]);
