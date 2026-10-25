@@ -907,9 +907,9 @@ jobs:
     permissions:
       contents: read
     env:
-      GH_TOKEN: ${ github.token }
-      CLOUDFLARE_HAE_RELEASE_TOKEN: ${ secrets.CLOUDFLARE_HAE_RELEASE_TOKEN }
-      T4_OWNER_COMMENT: ${ github.event.comment.body }
+      GH_TOKEN: ${{ github.token }}
+      CLOUDFLARE_HAE_RELEASE_TOKEN: ${{ secrets.CLOUDFLARE_HAE_RELEASE_TOKEN }}
+      T4_OWNER_COMMENT: ${{ github.event.comment.body }}
     steps:
       - name: Checkout canonical main
         uses: actions/checkout@v6
@@ -936,6 +936,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: hae-t4-dlq-transport-receipt
-          path: ${ runner.temp }/t4-d1-transport-receipt.json
+          path: ${{ runner.temp }}/t4-d1-transport-receipt.json
           if-no-files-found: error
           retention-days: 90
