@@ -11,7 +11,7 @@ import {
   validateRoleContractSemanticResult,
 } from "../workers/automation-engine/src/role-contracts.mjs";
 
-assert.equal(ROLE_CONTRACTS.length, 13, "Runtime must expose twelve deterministic contracts plus one free-only semantic contract");
+assert.equal(ROLE_CONTRACTS.length, 15, "Runtime must expose fourteen deterministic contracts plus one free-only semantic contract");
 assert.deepEqual(
   [...ROLE_CONTRACT_JOB_TYPES].sort(),
   [
@@ -19,6 +19,8 @@ assert.deepEqual(
     "ai.gateway.readiness.audit",
     "dispatch.daily.closeout.audit",
     "growth.error.closure.audit",
+    "hae.self.improvement.audit",
+    "hae.self.repair.packet",
     "knowledge.evidence.audit",
     "logistics.source.freshness.audit",
     "market.car-hauling.snapshot.evaluate",
@@ -62,7 +64,11 @@ assert.ok(roleContractForJobType("marketing.content.dedupe.audit").runtime_confi
 assert.equal(roleContractForJobType("logistics.source.freshness.audit").runtime_config.max_age_minutes, 1440);
 assert.equal(roleContractForJobType("ai.gateway.readiness.audit").runtime_config.cadence_hours, 24);
 assert.equal(roleContractForJobType("academy.english.practice.build").runtime_config.cadence_hours, 24);
-assert.equal(ROLE_CONTRACTS.filter((contract) => !contract.semantic_required).length, 12);
+assert.equal(roleContractForJobType("work.portfolio.reconcile").plugin_version, "0.1.68");
+assert.equal(roleContractForJobType("hae.self.improvement.audit").plugin_version, "0.1.25");
+assert.equal(roleContractForJobType("knowledge.evidence.audit").role_id, "hermes-knowledge-curator");
+assert.equal(roleContractForJobType("knowledge.evidence.audit").plugin_version, "0.1.77");
+assert.equal(ROLE_CONTRACTS.filter((contract) => !contract.semantic_required).length, 14);
 assert.equal(ROLE_CONTRACTS.filter((contract) => contract.semantic_required).length, 1);
 
 const searchInput = {
@@ -153,4 +159,4 @@ assert.throws(() => validateRoleContractSemanticResult("search.defect.prioritize
 }), /semantic_result_item_not_in_input/);
 assert.throws(() => runRoleContractPrimitive("search.defect.prioritize", semanticPayload), /semantic_job_requires_free_ai/);
 
-console.log("HAE plugin role contracts PASS: 12 zero-model + 1 free-only semantic contract");
+console.log("HAE plugin role contracts PASS: 14 zero-model + 1 free-only semantic contract");

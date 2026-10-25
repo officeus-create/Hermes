@@ -173,11 +173,14 @@
       "permission_class": "READ_ONLY",
       "execution_runtime": "canonical_hae_queue",
       "external_provider_write": false,
-      "allowed_side_effects": ["d1_job_state", "d1_job_events"],
+      "allowed_side_effects": [
+        "d1_job_state",
+        "d1_job_events"
+      ],
       "submission_auth": "HERMES_AUTOMATION_TOKEN",
       "retention_class": "business_runtime_evidence",
       "role_id": "hermes-agent-coordinator",
-      "plugin_version": "0.1.0",
+      "plugin_version": "0.1.68",
       "contract_version": "work-portfolio-reconcile-v1",
       "semantic_required": false,
       "free_ai_policy": "not_required"
@@ -187,7 +190,10 @@
       "permission_class": "READ_ONLY",
       "execution_runtime": "canonical_hae_queue",
       "external_provider_write": false,
-      "allowed_side_effects": ["d1_job_state", "d1_job_events"],
+      "allowed_side_effects": [
+        "d1_job_state",
+        "d1_job_events"
+      ],
       "submission_auth": "HERMES_AUTOMATION_TOKEN",
       "retention_class": "business_runtime_evidence",
       "role_id": "hermes-dispatch-os",
@@ -201,11 +207,14 @@
       "permission_class": "READ_ONLY",
       "execution_runtime": "canonical_hae_queue",
       "external_provider_write": false,
-      "allowed_side_effects": ["d1_job_state", "d1_job_events"],
+      "allowed_side_effects": [
+        "d1_job_state",
+        "d1_job_events"
+      ],
       "submission_auth": "HERMES_AUTOMATION_TOKEN",
       "retention_class": "business_runtime_evidence",
-      "role_id": "hermes-connect-operator",
-      "plugin_version": "0.1.0",
+      "role_id": "hermes-knowledge-curator",
+      "plugin_version": "0.1.77",
       "contract_version": "knowledge-evidence-audit-v1",
       "semantic_required": false,
       "free_ai_policy": "not_required"
@@ -215,11 +224,14 @@
       "permission_class": "READ_ONLY",
       "execution_runtime": "canonical_hae_queue",
       "external_provider_write": false,
-      "allowed_side_effects": ["d1_job_state", "d1_job_events"],
+      "allowed_side_effects": [
+        "d1_job_state",
+        "d1_job_events"
+      ],
       "submission_auth": "HERMES_AUTOMATION_TOKEN",
       "retention_class": "business_runtime_evidence",
       "role_id": "hermes-automatic-engineer",
-      "plugin_version": "0.1.0",
+      "plugin_version": "0.1.25",
       "contract_version": "technology-release-radar-v1",
       "semantic_required": false,
       "free_ai_policy": "not_required"
@@ -229,11 +241,14 @@
       "permission_class": "READ_ONLY",
       "execution_runtime": "canonical_hae_queue",
       "external_provider_write": false,
-      "allowed_side_effects": ["d1_job_state", "d1_job_events"],
+      "allowed_side_effects": [
+        "d1_job_state",
+        "d1_job_events"
+      ],
       "submission_auth": "HERMES_AUTOMATION_TOKEN",
       "retention_class": "technical_runtime_evidence",
       "role_id": "hermes-automatic-engineer",
-      "plugin_version": "0.1.0",
+      "plugin_version": "0.1.25",
       "contract_version": "ai-gateway-readiness-v1",
       "semantic_required": false,
       "free_ai_policy": "not_required"
@@ -243,7 +258,10 @@
       "permission_class": "READ_ONLY",
       "execution_runtime": "canonical_hae_queue",
       "external_provider_write": false,
-      "allowed_side_effects": ["d1_job_state", "d1_job_events"],
+      "allowed_side_effects": [
+        "d1_job_state",
+        "d1_job_events"
+      ],
       "submission_auth": "HERMES_AUTOMATION_TOKEN",
       "retention_class": "business_runtime_evidence",
       "role_id": "hermes-marketing-growth",
@@ -257,7 +275,10 @@
       "permission_class": "READ_ONLY",
       "execution_runtime": "canonical_hae_queue",
       "external_provider_write": false,
-      "allowed_side_effects": ["d1_job_state", "d1_job_events"],
+      "allowed_side_effects": [
+        "d1_job_state",
+        "d1_job_events"
+      ],
       "submission_auth": "HERMES_AUTOMATION_TOKEN",
       "retention_class": "business_runtime_evidence",
       "role_id": "hermes-dispatch-os",
@@ -271,7 +292,10 @@
       "permission_class": "READ_ONLY",
       "execution_runtime": "canonical_hae_queue",
       "external_provider_write": false,
-      "allowed_side_effects": ["d1_job_state", "d1_job_events"],
+      "allowed_side_effects": [
+        "d1_job_state",
+        "d1_job_events"
+      ],
       "submission_auth": "HERMES_AUTOMATION_TOKEN",
       "retention_class": "business_runtime_evidence",
       "role_id": "hermes-marketing-growth",
@@ -285,12 +309,49 @@
       "permission_class": "READ_ONLY",
       "execution_runtime": "canonical_hae_queue",
       "external_provider_write": false,
-      "allowed_side_effects": ["d1_job_state", "d1_job_events"],
+      "allowed_side_effects": [
+        "d1_job_state",
+        "d1_job_events"
+      ],
       "submission_auth": "HERMES_AUTOMATION_TOKEN",
       "retention_class": "business_runtime_evidence",
       "role_id": "hermes-academy",
-      "plugin_version": "0.1.0",
+      "plugin_version": "0.1.12",
       "contract_version": "work-english-practice-v1",
+      "semantic_required": false,
+      "free_ai_policy": "not_required"
+    },
+    {
+      "job_type": "hae.self.improvement.audit",
+      "permission_class": "READ_ONLY",
+      "execution_runtime": "canonical_hae_queue",
+      "external_provider_write": false,
+      "allowed_side_effects": [
+        "d1_job_state",
+        "d1_job_events"
+      ],
+      "submission_auth": "HERMES_AUTOMATION_TOKEN",
+      "retention_class": "technical_runtime_evidence",
+      "role_id": "hermes-automatic-engineer",
+      "plugin_version": "0.1.25",
+      "contract_version": "hae-self-improvement-audit-v1",
+      "semantic_required": false,
+      "free_ai_policy": "not_required"
+    },
+    {
+      "job_type": "hae.self.repair.packet",
+      "permission_class": "READ_ONLY",
+      "execution_runtime": "canonical_hae_queue",
+      "external_provider_write": false,
+      "allowed_side_effects": [
+        "d1_job_state",
+        "d1_job_events"
+      ],
+      "submission_auth": "HERMES_AUTOMATION_TOKEN",
+      "retention_class": "technical_runtime_evidence",
+      "role_id": "hermes-automatic-engineer",
+      "plugin_version": "0.1.25",
+      "contract_version": "hae-self-repair-packet-v1",
       "semantic_required": false,
       "free_ai_policy": "not_required"
     }

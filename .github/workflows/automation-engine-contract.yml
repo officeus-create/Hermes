@@ -11,7 +11,10 @@ on:
       - "scripts/automation-engine-work-portfolio.test.mjs"
       - "workers/automation-engine/src/work-portfolio.mjs"
       - "scripts/automation-engine-zero-token-plugin-tasks.test.mjs"
+      - "scripts/automation-engine-self-improvement.test.mjs"
       - "workers/automation-engine/src/zero-token-plugin-tasks.mjs"
+      - "workers/automation-engine/src/hae-self-improvement.mjs"
+      - "workers/automation-engine/src/plugin-runtime-registry.mjs"
       - "workers/automation-engine/src/schedule-migrations.mjs"
       - "scripts/automation-engine-dlq-runtime.test.mjs"
       - "scripts/automation-engine-ai-usage-ledger.test.mjs"
@@ -42,6 +45,7 @@ jobs:
           node scripts/automation-engine-free-ai-runtime.test.mjs
           node scripts/automation-engine-work-portfolio.test.mjs
           node scripts/automation-engine-zero-token-plugin-tasks.test.mjs
+          node scripts/automation-engine-self-improvement.test.mjs
           node scripts/automation-engine-capability-policy.test.mjs
           node scripts/automation-engine-state-freshness.test.mjs
           node scripts/automation-engine-dlq-policy.test.mjs
