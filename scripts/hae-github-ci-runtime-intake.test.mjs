@@ -8,7 +8,7 @@ const sha="a".repeat(40),baseSha="b".repeat(40);
 const env={type:"github.ci.audit",run_id:runId,run_attempt:runAttempt};
 const run={
   id:runId,run_attempt:runAttempt,status:"completed",conclusion:"failure",
-  repository:{full_name:repo},name:"Hermes Automation Engine Contract",
+  repository:{full_name:repo},head_repository:{full_name:repo},name:"Hermes Automation Engine Contract",
   head_sha:sha,html_url:"https://github.com/"+repo+"/actions/runs/"+runId,
   event:"pull_request",workflow_id:445566,updated_at:"2026-10-26T00:38:00Z",
   pull_requests:[{number:2088,base:{sha:baseSha}}],secrets:{raw:"NEVER_PERSIST_THIS"},
