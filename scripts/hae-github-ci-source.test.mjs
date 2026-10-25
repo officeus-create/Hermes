@@ -3,7 +3,7 @@ import fs from "node:fs";
 import {dispatchGithubCIEvent} from "./hae-github-ci-source.mjs";
 const repo="officeus-create/Hermes",runId=40249991001,runAttempt=1;
 const account="a".repeat(32),queue="b".repeat(32);
-const r={id:runId,run_attempt:runAttempt,repository:{full_name:repo},
+const r={id:runId,run_attempt:runAttempt,repository:{full_name:repo},head_repository:{full_name:repo},
   name:"Hermes Automation Engine Contract",status:"completed",conclusion:"failure",
   html_url:"https://github.com/"+repo+"/actions/runs/"+runId};
 const calls=[];
