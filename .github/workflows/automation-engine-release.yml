@@ -193,6 +193,8 @@ jobs:
             exit 1
           fi
           echo "::add-mask::$DB_ID"
+          DB_BINDING_FINGERPRINT="$(printf '%s' "$DB_ID" | sha256sum | awk '{print "sha256:"$1}')"
+          echo "database_binding_fingerprint=$DB_BINDING_FINGERPRINT" >> "$GITHUB_OUTPUT"
           if [[ "$OPERATION" == "schema_snapshot" && -z "$DB_NAME" ]]; then
             detail="${RUNNER_TEMP}/hermes-d1-database.json"
             detail_http="$(curl -sS -o "$detail" -w '%{http_code}' \
@@ -222,6 +224,7 @@ jobs:
         env:
           DB_ID: ${{ steps.d1.outputs.database_id }}
           DB_NAME: ${{ steps.d1.outputs.database_name }}
+          DB_BINDING_FINGERPRINT: ${{ steps.d1.outputs.database_binding_fingerprint }}
           TARGET_SHA: ${{ steps.request.outputs.target_sha }}
           SCHEMA_SNAPSHOT_TOKEN: ${{ secrets.CLOUDFLARE_HAE_RELEASE_TOKEN }}
         run: |
@@ -244,7 +247,7 @@ jobs:
           }
           trap cleanup EXIT
 
-          sql="SELECT type,name,tbl_name,sql FROM sqlite_master WHERE name NOT LIKE 'sqlite_%' AND type IN ('table','index','trigger','view') ORDER BY type,name,tbl_name"
+          sql="SELECT type,name,tbl_name,sql FROM sqlite_master WHERE name NOT LIKE 'sqlite_%' AND name <> '_cf_KV' AND type IN ('table','index','trigger','view') ORDER BY type,name,tbl_name"
           body="$(jq -nc --arg sql "$sql" '{sql:$sql,params:[]}')"
           http="$(curl -sS -o "$raw" -w '%{http_code}' \
             -X POST \
@@ -270,6 +273,7 @@ jobs:
             --response "$raw" \
             --target-sha "$TARGET_SHA" \
             --database-name "$DB_NAME" \
+            --database-binding-fingerprint "$DB_BINDING_FINGERPRINT" \
             --output "$artifact"
 
           node scripts/hae-d1-schema-snapshot.mjs verify \
@@ -451,6 +455,7 @@ jobs:
         shell: bash
         env:
           DB_ID: ${{ steps.d1.outputs.database_id }}
+          DB_BINDING_FINGERPRINT: ${{ steps.d1.outputs.database_binding_fingerprint }}
           TARGET_SHA: ${{ steps.request.outputs.target_sha }}
         run: |
           set -euo pipefail
@@ -634,6 +639,7 @@ jobs:
 
           jq -n \
             --arg target_sha "$TARGET_SHA" \
+            --arg database_binding_fingerprint "$DB_BINDING_FINGERPRINT" \
             --arg deployment_ref "github-actions://${GITHUB_REPOSITORY}/runs/${GITHUB_RUN_ID}/deployed-worker" \
             --arg health_ref "$health_evidence" \
             --slurpfile health "$proof_dir/health.json" \
@@ -649,6 +655,7 @@ jobs:
             --argjson duplicate_receipts "$duplicate_receipts" \
             '{
               target_sha: $target_sha,
+              database_binding_fingerprint: $database_binding_fingerprint,
               deployment: {evidence_ref: $deployment_ref, source_sha: $target_sha},
               runtime: {automation_mode: "dry_run", publication_enabled: false},
               health: ($health[0] + {evidence_ref: $health_ref}),

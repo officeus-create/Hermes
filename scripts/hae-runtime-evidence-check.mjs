@@ -1,6 +1,7 @@
 import { pathToFileURL } from "node:url";
 
 const SHA40 = /^[0-9a-f]{40}$/;
+const FINGERPRINT = /^sha256:[0-9a-f]{64}$/;
 
 export const HAE_ACCEPTANCE_READ_ONLY_JOB_TYPES = Object.freeze([
   "system.health.snapshot",
@@ -92,6 +93,11 @@ export function evaluateHaeRuntimeEvidence(snapshot = {}) {
   const targetSha = String(snapshot.target_sha || "").trim();
   if (!SHA40.test(targetSha)) {
     add(findings, "TARGET_SHA_INVALID", "target_sha must be an exact 40-character Git SHA.");
+  }
+
+  const databaseBindingFingerprint = String(snapshot.database_binding_fingerprint || "").trim().toLowerCase();
+  if (!FINGERPRINT.test(databaseBindingFingerprint)) {
+    add(findings, "DATABASE_BINDING_FINGERPRINT_INVALID", "Runtime evidence must include a sanitized sha256 fingerprint of the exact production D1 binding.");
   }
 
   const deployment = snapshot.deployment || {};
