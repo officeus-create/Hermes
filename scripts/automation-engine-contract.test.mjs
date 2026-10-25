@@ -310,6 +310,29 @@ assert.match(releaseWorkflow, /stale_main_after_dry_run_canary/, "Provisioning m
 assert.match(releaseWorkflow, /stale_main_before_runtime_readonly_proof/, "Runtime proof must re-check exact current main before creating proof work");
 assert.match(releaseWorkflow, /stale_main_during_runtime_readonly_proof/, "Runtime proof must reject evidence if main moves while proof is collected");
 assert.match(releaseWorkflow, /stale_main_during_runtime_evidence_qa/, "Independent runtime QA must reject evidence if main moves before acceptance");
+{
+  const preDeploy = releaseWorkflow.indexOf("Re-verify exact current main before dry-run deploy");
+  const deploy = releaseWorkflow.indexOf("Deploy HAE in fail-closed dry-run mode");
+  const postDeploy = releaseWorkflow.indexOf("Re-verify exact current main after dry-run deploy");
+  const canary = releaseWorkflow.indexOf("Run private Queue → Worker → D1 dry-run canary");
+  const postCanary = releaseWorkflow.indexOf("Re-verify exact current main after dry-run canary");
+  const summary = releaseWorkflow.indexOf("Publish dry-run evidence summary");
+  assert.ok(
+    preDeploy >= 0 && deploy > preDeploy && postDeploy > deploy && canary > postDeploy && postCanary > canary && summary > postCanary,
+    "Exact-main provisioning guards must bracket deploy and canary before dry-run evidence is accepted",
+  );
+}
+{
+  const runtimeProof = releaseWorkflow.indexOf("Run private read-only runtime proof");
+  const runtimeStartGuard = releaseWorkflow.indexOf("stale_main_before_runtime_readonly_proof", runtimeProof);
+  const runtimeEndGuard = releaseWorkflow.indexOf("stale_main_during_runtime_readonly_proof", runtimeStartGuard);
+  const runtimeArtifact = releaseWorkflow.indexOf("hae-runtime-evidence.json", runtimeEndGuard);
+  const runtimeQa = releaseWorkflow.indexOf("stale_main_during_runtime_evidence_qa", runtimeArtifact);
+  assert.ok(
+    runtimeProof >= 0 && runtimeStartGuard > runtimeProof && runtimeEndGuard > runtimeStartGuard && runtimeArtifact > runtimeEndGuard && runtimeQa > runtimeArtifact,
+    "Runtime exact-main guards must bracket proof collection and precede independent acceptance",
+  );
+}
 assert.doesNotMatch(releaseWorkflow, /runtime_readonly_proof[\s\S]{0,6000}create_text_post/, "Read-only runtime proof must not invoke provider publishing");
 assert.match(releaseWorkflow, /environment: production/, "Production Worker release must pass through the production environment");
 assert.match(releaseWorkflow, /CLOUDFLARE_HAE_RELEASE_TOKEN/, "HAE should prefer one dedicated least-privilege Cloudflare release token");
