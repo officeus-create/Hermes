@@ -47,6 +47,7 @@ const fixtures = {
         artifact_key: "scripts/automation-engine-self-improvement.test.mjs",
         verified: true,
         writer_active: false,
+        writer_state_verified: true,
         observed_at: "2026-10-25T00:20:00Z"
       }
     ]
@@ -104,8 +105,15 @@ assert.match(worker, /contract\.job_type === "academy\.english\.practice\.build"
 assert.match(worker, /contract\.job_type === "hae\.self\.improvement\.audit"/);
 assert.match(worker, /buildScheduledHaeSelfImprovementPayload/);
 assert.match(worker, /ensureHaeSelfRepairFollowup/);
+assert.match(worker, /writer_state_verified: false/);
+assert.match(worker, /pluginRuntimeRegistryEvidenceStatus/);
+assert.doesNotMatch(worker, /registry\.get\(contract\.role_id\)/);
+assert.match(worker, /existingHaeSelfRepairFollowup/);
+assert.match(worker, /frozen_contract_reused: true/);
+assert.match(worker, /hae_self_repair_idempotency_conflict/);
 assert.match(worker, /job_type: "hae\.self\.repair\.packet"/);
-assert.match(worker, /idempotency_key: `hae:followup:self\.repair:\${audit\.next_work_id}`/);
+assert.match(worker, /const idempotencyKey = `hae:followup:self\.repair:\${audit\.next_work_id}`/);
+assert.match(worker, /idempotency_key: idempotencyKey/);
 assert.match(worker, /!contract\.semantic_required && roleContractScheduleEligible/);
 assert.match(worker, /url\.pathname === "\/v1\/schedule-migrations"/);
 

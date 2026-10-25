@@ -171,7 +171,7 @@ export const ZERO_TOKEN_PLUGIN_TASK_CONTRACTS = Object.freeze([
     lane: "automation",
     trigger: "verified_hae_evidence_snapshot",
     input: { observed_at: "ISO-8601", coverage_complete: "boolean", findings: "bounded verified GitHub/CI metadata only" },
-    steps: ["require complete evidence coverage before routing", "prioritize verified open defects", "respect active writer locks", "route repair ownership to Automatic Engineer and independent review to QA"],
+    steps: ["require complete evidence coverage before routing", "prioritize verified open defects", "require independently verified clear writer state", "route repair ownership to Automatic Engineer and independent review to QA"],
     output: "repair candidates + next WORK_ID + HOLD_REPAIR or NO_ACTION",
     kpi: ["repair_candidate_count", "next_work_id", "cost_usd"],
     cadenceHours: 6,

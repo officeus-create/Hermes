@@ -43,7 +43,11 @@ import {
   settleCapabilityGraphNodeForJob,
 } from "./capability-graph.mjs";
 import { taskMigrationSnapshot } from "./schedule-migrations.mjs";
-import { pluginRuntimeRegistrySnapshot } from "./plugin-runtime-registry.mjs";
+import {
+  pluginRuntimeRegistryEvidenceStatus,
+  pluginRuntimeRegistrySnapshot,
+} from "./plugin-runtime-registry.mjs";
+import { haeSelfRepairPacketReplayMatches } from "./hae-self-improvement.mjs";
 
 const ACCOUNT_KEY = "hermes_logistics";
 const PLATFORM = "threads";
@@ -1121,6 +1125,26 @@ async function ensureSearchSemanticFollowup(env, parentJob, result) {
   });
 }
 
+async function existingHaeSelfRepairFollowup(env, idempotencyKey, audit) {
+  const existing = await env.DB.prepare(
+    "SELECT job_id,job_type,business_lane,account_key,project_key,priority,state,max_attempts,idempotency_key,policy_version,payload_json,result_json,last_error_class FROM hermes_automation_jobs WHERE idempotency_key=? LIMIT 1"
+  ).bind(idempotencyKey).first();
+  if (!existing) return null;
+  let payload = null;
+  try {
+    payload = JSON.parse(String(existing.payload_json || "{}"));
+  } catch {
+    throw new Error("hae_self_repair_idempotency_conflict");
+  }
+  if (
+    String(existing.job_type || "") !== "hae.self.repair.packet"
+    || !haeSelfRepairPacketReplayMatches(payload, audit)
+  ) {
+    throw new Error("hae_self_repair_idempotency_conflict");
+  }
+  return { created: false, duplicate: true, frozen_contract_reused: true, job: existing };
+}
+
 async function ensureHaeSelfRepairFollowup(env, parentJob, result) {
   if (parentJob?.job_type !== "hae.self.improvement.audit") return null;
   const audit = result?.result;
@@ -1132,6 +1156,9 @@ async function ensureHaeSelfRepairFollowup(env, parentJob, result) {
   ) {
     return null;
   }
+  const idempotencyKey = `hae:followup:self.repair:${audit.next_work_id}`;
+  const frozen = await existingHaeSelfRepairFollowup(env, idempotencyKey, audit);
+  if (frozen) return frozen;
   return createGenericJob(env, {
     job_type: "hae.self.repair.packet",
     account_key: parentJob.account_key || ACCOUNT_KEY,
@@ -1139,7 +1166,7 @@ async function ensureHaeSelfRepairFollowup(env, parentJob, result) {
     priority: Math.min(100, Math.max(80, Number(parentJob.priority || 80) + 5)),
     max_attempts: 1,
     internal_submission: true,
-    idempotency_key: `hae:followup:self.repair:${audit.next_work_id}`,
+    idempotency_key: idempotencyKey,
     policy_version: "hae-self-improvement-v1",
     payload: {
       work_id: audit.next_work_id,
@@ -1975,29 +2002,39 @@ async function buildScheduledLogisticsPayload(env, contract) {
 
 function buildScheduledHaeSelfImprovementPayload(scheduledAt) {
   const observedAt = scheduledAt.toISOString();
-  const registry = new Map(
-    pluginRuntimeRegistrySnapshot().entries.map((entry) => [entry.role_id, entry.plugin_version]),
-  );
+  const registryEvidence = pluginRuntimeRegistryEvidenceStatus(observedAt, 24);
   const findings = [];
   const seenJobTypes = new Set();
 
   for (const contract of ROLE_CONTRACTS) {
     const sourceRef = `github://officeus-create/Hermes/runtime/role-contract/${contract.job_type}`;
     if (seenJobTypes.has(contract.job_type)) {
-      findings.push({ finding_id: `duplicate-job-type:${contract.job_type}`, source_ref: sourceRef, category: "CONTRACT_DRIFT", severity: "P0", status: "OPEN", artifact_key: "workers/automation-engine/src/role-contracts.mjs", verified: true, writer_active: false, observed_at: observedAt });
+      findings.push({ finding_id: `duplicate-job-type:${contract.job_type}`, source_ref: sourceRef, category: "CONTRACT_DRIFT", severity: "P0", status: "OPEN", artifact_key: "workers/automation-engine/src/role-contracts.mjs", verified: true, writer_active: false, writer_state_verified: false, observed_at: observedAt });
     }
     seenJobTypes.add(contract.job_type);
-    const expectedVersion = registry.get(contract.role_id);
-    if (!expectedVersion || expectedVersion !== contract.plugin_version) {
-      findings.push({ finding_id: `plugin-version-drift:${contract.job_type}`, source_ref: sourceRef, category: "PLUGIN_VERSION_DRIFT", severity: "P0", status: "OPEN", artifact_key: "workers/automation-engine/src/plugin-runtime-registry.mjs", verified: true, writer_active: false, observed_at: observedAt });
-    }
     if (contract.permission_class !== "READ_ONLY") {
-      findings.push({ finding_id: `permission-drift:${contract.job_type}`, source_ref: sourceRef, category: "CONTRACT_DRIFT", severity: "P0", status: "OPEN", artifact_key: "workers/automation-engine/src/role-contracts.mjs", verified: true, writer_active: false, observed_at: observedAt });
+      findings.push({ finding_id: `permission-drift:${contract.job_type}`, source_ref: sourceRef, category: "CONTRACT_DRIFT", severity: "P0", status: "OPEN", artifact_key: "workers/automation-engine/src/role-contracts.mjs", verified: true, writer_active: false, writer_state_verified: false, observed_at: observedAt });
     }
     if (contract.semantic_required && Number(contract?.runtime_config?.max_cost_usd) !== 0) {
-      findings.push({ finding_id: `semantic-budget-drift:${contract.job_type}`, source_ref: sourceRef, category: "CONTRACT_DRIFT", severity: "P0", status: "OPEN", artifact_key: "workers/automation-engine/src/role-contracts.mjs", verified: true, writer_active: false, observed_at: observedAt });
+      findings.push({ finding_id: `semantic-budget-drift:${contract.job_type}`, source_ref: sourceRef, category: "CONTRACT_DRIFT", severity: "P0", status: "OPEN", artifact_key: "workers/automation-engine/src/role-contracts.mjs", verified: true, writer_active: false, writer_state_verified: false, observed_at: observedAt });
     }
   }
+
+  if (!registryEvidence.fresh) {
+    findings.push({
+      finding_id: "plugin-runtime-registry-evidence-stale",
+      source_ref: "github://officeus-create/Hermes/runtime/plugin-runtime-registry",
+      category: "EVIDENCE_OVERCLAIM",
+      severity: "P1",
+      status: "OPEN",
+      artifact_key: "workers/automation-engine/src/plugin-runtime-registry.mjs",
+      verified: true,
+      writer_active: false,
+      writer_state_verified: false,
+      observed_at: observedAt,
+    });
+  }
+
   return { observed_at: observedAt, coverage_complete: true, findings };
 }
 

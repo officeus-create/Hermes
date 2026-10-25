@@ -53,6 +53,7 @@ export function normalizeHaeSelfImprovementSnapshot(input = {}) {
     if (!artifactKey) throw new Error("hae_self_artifact_key_required");
     if (typeof finding.verified !== "boolean") throw new Error("hae_self_verified_required");
     if (typeof finding.writer_active !== "boolean") throw new Error("hae_self_writer_active_required");
+    if (typeof finding.writer_state_verified !== "boolean") throw new Error("hae_self_writer_state_verified_required");
     return {
       finding_id: findingId,
       source_ref: sourceRef,
@@ -62,6 +63,7 @@ export function normalizeHaeSelfImprovementSnapshot(input = {}) {
       artifact_key: artifactKey,
       verified: finding.verified,
       writer_active: finding.writer_active,
+      writer_state_verified: finding.writer_state_verified,
       observed_at: iso(finding.observed_at, "finding_observed_at"),
     };
   });
@@ -84,11 +86,20 @@ export function evaluateHaeSelfImprovementSnapshot(input = {}) {
     plugin_version: pluginRuntimeVersion("hermes-qa-evidence-auditor"),
   };
 
+  const writerStateUnverifiedCount = snapshot.findings.filter((finding) =>
+    snapshot.coverage_complete
+    && finding.verified
+    && finding.status === "OPEN"
+    && !finding.writer_active
+    && !finding.writer_state_verified
+  ).length;
+
   const candidates = snapshot.findings
     .filter((finding) =>
       snapshot.coverage_complete
       && finding.verified
       && finding.status === "OPEN"
+      && finding.writer_state_verified
       && !finding.writer_active
     )
     .sort((left, right) => {
@@ -108,7 +119,10 @@ export function evaluateHaeSelfImprovementSnapshot(input = {}) {
     next_finding_id: next?.finding_id || null,
     next_artifact_key: next?.artifact_key || null,
     next_action: next ? "HOLD_REPAIR" : "NO_ACTION",
-    routing_blocked_reason: snapshot.coverage_complete ? null : "PARTIAL_COVERAGE",
+    routing_blocked_reason: !snapshot.coverage_complete
+      ? "PARTIAL_COVERAGE"
+      : (!next && writerStateUnverifiedCount > 0 ? "WRITER_STATE_UNVERIFIED" : null),
+    writer_state_unverified_count: writerStateUnverifiedCount,
     repair_owner: repairOwner,
     independent_review_owner: reviewOwner,
     automatic_source_change_performed: false,
@@ -116,6 +130,12 @@ export function evaluateHaeSelfImprovementSnapshot(input = {}) {
     automatic_deploy_performed: false,
     cost_usd: 0,
   };
+}
+
+export function haeSelfRepairPacketReplayMatches(existingPayload = {}, audit = {}) {
+  return clean(existingPayload.work_id, 180) === clean(audit.next_work_id, 180)
+    && clean(existingPayload.finding_id, 160) === clean(audit.next_finding_id, 160)
+    && clean(existingPayload.artifact_key, 240) === clean(audit.next_artifact_key, 240);
 }
 
 export const HAE_SELF_IMPROVEMENT_LIMITS = Object.freeze({

@@ -29,3 +29,28 @@ export function pluginRuntimeRegistrySnapshot() {
     })),
   };
 }
+
+export function pluginRuntimeRegistryEvidenceStatus(nowIso, maxAgeHours = 24) {
+  const snapshot = pluginRuntimeRegistrySnapshot();
+  const nowMs = Date.parse(String(nowIso || ""));
+  const observedMs = Date.parse(`${snapshot.observed_at}T00:00:00Z`);
+  const maxAge = Number(maxAgeHours);
+  if (!Number.isFinite(nowMs) || !Number.isFinite(observedMs) || !Number.isFinite(maxAge) || maxAge <= 0) {
+    return {
+      fresh: false,
+      reason: "INVALID_EVIDENCE_TIME",
+      age_hours: null,
+      source_class: snapshot.source_class,
+      observed_at: snapshot.observed_at,
+    };
+  }
+  const ageHours = (nowMs - observedMs) / 3600000;
+  const fresh = ageHours >= 0 && ageHours <= maxAge;
+  return {
+    fresh,
+    reason: fresh ? "FRESH" : "STALE_OR_FUTURE",
+    age_hours: Math.round(ageHours * 100) / 100,
+    source_class: snapshot.source_class,
+    observed_at: snapshot.observed_at,
+  };
+}

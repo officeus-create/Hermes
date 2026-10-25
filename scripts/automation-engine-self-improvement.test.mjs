@@ -1,9 +1,11 @@
 import assert from "node:assert/strict";
 import {
   evaluateHaeSelfImprovementSnapshot,
+  haeSelfRepairPacketReplayMatches,
   normalizeHaeSelfImprovementSnapshot,
 } from "../workers/automation-engine/src/hae-self-improvement.mjs";
 import {
+  pluginRuntimeRegistryEvidenceStatus,
   pluginRuntimeRegistrySnapshot,
   pluginRuntimeVersion,
 } from "../workers/automation-engine/src/plugin-runtime-registry.mjs";
@@ -18,6 +20,7 @@ const findings = [
     artifact_key: "workers/automation-engine/src/zero-token-plugin-tasks.mjs",
     verified: true,
     writer_active: false,
+    writer_state_verified: true,
     observed_at: "2026-10-25T00:20:00Z",
   },
   {
@@ -29,6 +32,7 @@ const findings = [
     artifact_key: "workers/automation-engine/src/work-portfolio.mjs",
     verified: true,
     writer_active: false,
+    writer_state_verified: true,
     observed_at: "2026-10-25T00:10:00Z",
   },
   {
@@ -40,6 +44,7 @@ const findings = [
     artifact_key: "scripts/example.test.mjs",
     verified: false,
     writer_active: false,
+    writer_state_verified: true,
     observed_at: "2026-10-25T00:00:00Z",
   },
 ];
@@ -71,6 +76,50 @@ assert.equal(complete.cost_usd, 0);
 assert.equal(complete.repair_owner.role_id, "hermes-automatic-engineer");
 assert.equal(complete.repair_owner.plugin_version, "0.1.25");
 assert.equal(complete.independent_review_owner.plugin_version, "0.1.5");
+
+const writerUnknown = evaluateHaeSelfImprovementSnapshot({
+  observed_at: "2026-10-25T00:30:00Z",
+  coverage_complete: true,
+  findings: [{ ...findings[0], writer_state_verified: false }],
+});
+assert.equal(writerUnknown.repair_candidate_count, 0);
+assert.equal(writerUnknown.next_action, "NO_ACTION");
+assert.equal(writerUnknown.routing_blocked_reason, "WRITER_STATE_UNVERIFIED");
+assert.equal(writerUnknown.writer_state_unverified_count, 1);
+
+assert.equal(
+  haeSelfRepairPacketReplayMatches(
+    {
+      work_id: "HAE-SELF:plugin-version-drift",
+      finding_id: "plugin-version-drift",
+      artifact_key: "workers/automation-engine/src/zero-token-plugin-tasks.mjs",
+      _role_contract: { contract_version: "old" },
+    },
+    {
+      next_work_id: "HAE-SELF:plugin-version-drift",
+      next_finding_id: "plugin-version-drift",
+      next_artifact_key: "workers/automation-engine/src/zero-token-plugin-tasks.mjs",
+    },
+  ),
+  true,
+);
+assert.equal(
+  haeSelfRepairPacketReplayMatches(
+    {
+      work_id: "HAE-SELF:plugin-version-drift",
+      finding_id: "plugin-version-drift",
+      artifact_key: "workers/automation-engine/src/other.mjs",
+    },
+    {
+      next_work_id: "HAE-SELF:plugin-version-drift",
+      next_finding_id: "plugin-version-drift",
+      next_artifact_key: "workers/automation-engine/src/zero-token-plugin-tasks.mjs",
+    },
+  ),
+  false,
+);
+assert.equal(pluginRuntimeRegistryEvidenceStatus("2026-10-25T12:00:00Z").fresh, true);
+assert.equal(pluginRuntimeRegistryEvidenceStatus("2026-10-27T12:00:00Z").fresh, false);
 
 assert.equal(pluginRuntimeVersion("hermes-agent-coordinator"), "0.1.68");
 assert.equal(pluginRuntimeVersion("hermes-academy"), "0.1.12");
