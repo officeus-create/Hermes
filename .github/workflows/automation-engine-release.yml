@@ -458,6 +458,19 @@ jobs:
             sleep 5
           done
 
+      - name: Re-verify exact current main after dry-run canary
+        if: steps.request.outputs.operation == 'provision_dry_run'
+        shell: bash
+        env:
+          TARGET_SHA: ${{ steps.request.outputs.target_sha }}
+        run: |
+          set -euo pipefail
+          CURRENT_MAIN="$(gh api "repos/${GITHUB_REPOSITORY}/branches/main" --jq '.commit.sha')"
+          if [[ "$CURRENT_MAIN" != "$TARGET_SHA" ]]; then
+            echo "stale_main_after_dry_run_canary target=$TARGET_SHA current=$CURRENT_MAIN"
+            exit 1
+          fi
+
       - name: Publish dry-run evidence summary
         if: steps.request.outputs.operation == 'provision_dry_run'
         shell: bash
