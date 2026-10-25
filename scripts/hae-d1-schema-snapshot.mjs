@@ -4,6 +4,7 @@ import fs from "node:fs";
 const SHA40 = /^[0-9a-f]{40}$/;
 const FINGERPRINT = /^sha256:[0-9a-f]{64}$/;
 const ALLOWED_TYPES = new Set(["table", "index", "trigger", "view"]);
+const RESERVED_D1_OBJECTS = new Set(["_cf_KV"]);
 const SNAPSHOT_FIELDS = new Set([
   "schema_version",
   "evidence_type",
@@ -59,7 +60,7 @@ export function normalizeSchemaObjects(rows) {
 
     if (!ALLOWED_TYPES.has(type)) fail("schema_object_type_invalid");
     if (!name) fail("schema_object_name_missing");
-    if (name.startsWith("sqlite_")) continue;
+    if (name.startsWith("sqlite_") || RESERVED_D1_OBJECTS.has(name)) continue;
     if (!tableName) fail("schema_table_name_missing");
     if (!sql) fail("schema_sql_missing");
 
@@ -113,7 +114,7 @@ export function buildSchemaSnapshot({ response, targetSha, databaseName }) {
     evidence_type: "hae_d1_schema_snapshot",
     target_sha: sourceSha,
     database_name: canonicalDatabase,
-    normalization: "sqlite_master_non_internal_v1",
+    normalization: "sqlite_master_non_internal_v2",
     object_count: objects.length,
     objects,
     fingerprint,
@@ -139,7 +140,7 @@ export function validateSchemaSnapshotArtifact(artifact, { expectedTargetSha, ex
   if (!artifact || typeof artifact !== "object" || Array.isArray(artifact)) fail("snapshot_artifact_invalid");
   if (!hasExactKeys(artifact, SNAPSHOT_FIELDS)) fail("snapshot_top_level_fields_invalid");
   if (artifact.schema_version !== 1 || artifact.evidence_type !== "hae_d1_schema_snapshot") fail("snapshot_identity_invalid");
-  if (artifact.normalization !== "sqlite_master_non_internal_v1") fail("snapshot_normalization_invalid");
+  if (artifact.normalization !== "sqlite_master_non_internal_v2") fail("snapshot_normalization_invalid");
 
   const targetSha = text(artifact.target_sha);
   if (!SHA40.test(targetSha)) fail("snapshot_target_sha_invalid");
