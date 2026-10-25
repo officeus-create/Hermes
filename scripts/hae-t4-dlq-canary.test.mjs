@@ -60,10 +60,64 @@ assert.match(workflow,/t4_dlq_canary:/);
 assert.match(workflow,/github\.event\.issue\.number == 2033/);
 assert.match(workflow,/github\.actor == 'officeus-create'/);
 assert.match(workflow,/startsWith\(github\.event\.comment\.body, 'HAE_T4_DLQ_CANARY '\)/);
-assert.match(workflow,/--data "\$BODY"/);
-assert.match(workflow,/hermes-automation-dlq/);
-assert.match(workflow,/node scripts\/hae-t4-dlq-canary\.mjs heartbeat/);
-assert.match(workflow,/node scripts\/hae-t4-dlq-canary\.mjs receipt/);
+assert.match(workflow,/node scripts\\/hae-t4-cloudflare-transport\\.mjs/);
 assert.match(workflow,/CLOUDFLARE_HAE_RELEASE_TOKEN/);
-assert.doesNotMatch(workflow,/HAE_T4_DLQ_CANARY .*[\s\S]*?npx --yes wrangler@4 deploy/);
+assert.doesNotMatch(workflow.slice(workflow.indexOf("  t4_dlq_canary:")), /wrangler@4 deploy/);
+const transport=fs.readFileSync(new URL("./hae-t4-cloudflare-transport.mjs",import.meta.url),"utf8");
+assert.match(transport,/hermes-automation-dlq/);
+assert.match(transport,/validateT4Heartbeat/);
+assert.match(transport,/validateT4Receipt/);
+assert.match(transport,/cloudflareToken/);
+assert.match(transport,/t4_same_run_retry_forbidden/);
+assert.match(transport,/t4_queue_send_unconfirmed_no_retry/);
+assert.match(transport,/method: "POST"/);
+
+// Fixture: one real DLQ HTTP send, D1 transition to DELIVERED, no source/deploy/provider writes.
+const { executeT4Canary }=await import("./hae-t4-cloudflare-transport.mjs");
+const accountId="a".repeat(32), dbId="b".repeat(32),queueId="c".repeat(32);
+const trace=[];
+let sendCount=0, didSend=false;
+const fakeFetch=async(url,options={})=>{
+  const method=options.method||"GET";
+  trace.push({url,method});
+  if(url.includes("api.github.com/"))return {ok:true,json:async()=>({commit:{sha:targetSha}})};
+  if(url.endsWith("/pages/projects/hermes"))return {ok:true,json:async()=>({success:true,result:{deployment_configs:{production:{d1_databases:{DB:{id:dbId,database_name:"hermes-connect-prototype"}}}}}})};
+  if(url.endsWith("/queues"))return {ok:true,json:async()=>({success:true,result:[{queue_name:"hermes-automation-dlq",queue_id:queueId}]})};
+  if(url.endsWith("/messages")){
+    sendCount++;
+    assert.equal(method,"POST");
+    assert.deepEqual(JSON.parse(options.body),{body:{type:messageType}});
+    didSend=true;
+    return {ok:true,json:async()=>({success:true})};
+  }
+  if(url.endsWith("/query")){
+    const q=JSON.parse(options.body);
+    if(q.sql.includes("FROM hermes_automation_heartbeats"))return {ok:true,json:async()=>response([heartbeat])};
+    if(q.sql.includes("FROM hermes_automation_dlq_items")){
+      assert.deepEqual(q.params,[messageType]);
+      return {ok:true,json:async()=>response(didSend?[delivered]:[])};
+    }
+  }
+  throw Error("unexpected_api_call");
+};
+const opts={ownerComment:`HAE_T4_DLQ_CANARY ${targetSha}`,runId,runAttempt:attempt,
+  githubToken:"test-github",cloudflareToken:"test-cloudflare",expectedGithubSha:targetSha,
+  fetchImpl:fakeFetch,sleepImpl:async()=>{},now:()=>now,accountId,
+  manifest:{baseline_status:"VERIFIED",canonical_database:"hermes-connect-prototype",baseline_source_sha:sourceSha,migration_files:[]}};
+const successful=await executeT4Canary(opts);
+assert.equal(successful.dlq_item_id,delivered.dlq_item_id);
+assert.equal(successful.inbox_verified,false);
+assert.equal(sendCount,1);
+assert.equal(trace.filter(x=>x.url.endsWith("/messages")).length,1);
+await assert.rejects(()=>executeT4Canary({...opts,runAttempt:"2"}), e=>e.code==="t4_same_run_retry_forbidden");
+assert.equal(sendCount,1);
+const ambiguous=async(url,options)=>{
+  if(url.endsWith("/messages"))throw Error("ambiguous_send");
+  return fakeFetch(url,options);
+};
+didSend=false;
+sendCount=0;
+await assert.rejects(()=>executeT4Canary({...opts,fetchImpl:ambiguous}),e=>e.code==="t4_transport_ambiguous_no_retry");
+assert.equal(sendCount,0);
+
 console.log("HAE T4 canary contract PASS: strict owner input, one canary, heartbeat gate, quarantine/email receipt, no retry");
