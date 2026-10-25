@@ -336,7 +336,10 @@ assert.match(releaseWorkflow, /CLOUDFLARE_HAE_RELEASE_TOKEN:\s*\$\{\{\s*secrets\
   assert.match(credentialSection, /HAE_CLOUDFLARE_ACTIVE_TOKEN/, "Validated Cloudflare credential must be passed to downstream read-only discovery through a masked active-token boundary");
   assert.match(discoverySection, /Authorization: Bearer \$\{HAE_CLOUDFLARE_ACTIVE_TOKEN\}/, "Canonical D1 discovery must use the validated active token");
   assert.doesNotMatch(discoverySection, /Authorization: Bearer \$\{CLOUDFLARE_API_TOKEN\}/, "Schema-capable D1 discovery must not directly consume a broader alias token");
-  assert.match(discoverySection, /production_db_name_missing_for_schema_snapshot/, "Schema snapshot must fail closed when the canonical production binding does not expose its real database name");
+  assert.match(discoverySection, /d1\\/database\\/\\$\\{DB_ID\\}/, "When Pages metadata omits the D1 name, schema discovery must resolve it from the exact canonical database ID");
+  assert.match(discoverySection, /\\.result\\.name \\/\\/ empty/, "Canonical D1 metadata readback must source the real database name from Cloudflare D1");
+  assert.match(discoverySection, /production_db_metadata_read_failed/, "Schema discovery must fail closed when canonical D1 metadata cannot be read");
+  assert.match(discoverySection, /production_db_name_missing_after_d1_read/, "Schema discovery must fail closed when the D1 detail response still lacks a name");
 }
 
 {
