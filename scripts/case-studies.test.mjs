@@ -70,7 +70,6 @@ for (const required of [
   "not a like-for-like experiment",
   "Evidence stage: search discovery, not conversion or revenue",
   'id="query-comparison"',
-  'itemtype="https://schema.org/Dataset"',
   'aria-label="Comparable Appleton query impressions"',
   'aria-describedby="appleton-query-chart-desc"',
   "Comparable query exposure",
@@ -112,5 +111,7 @@ for (const url of [
 assert.ok(primarySitemap.includes("<loc>https://hermeslogisticsus.com/case/it-development/</loc>"));
 assert.ok(robots.includes("Sitemap: https://hermeslogisticsus.com/sitemap-cases.xml"));
 assert.ok(homepage.includes('href="/case/"'), "English footer must link to the case hub");
+
+assert.doesNotMatch(appletonCase, /itemtype="https:\/\/schema\.org\/Dataset"/, "Appleton GSC comparison is case evidence, not a separately licensed public Dataset");
 
 console.log("Case studies and Appleton intent-boundary checks passed: current GSC evidence is dated and filter-scoped, the comparable-query chart and accessible data table preserve the same facts, historical and current checkpoints are not blended, Appleton remains the vehicle-transport owner, the case routes to the canonical Logistics SEO owner, sitemap ownership stays unique, and no warehousing-intent stuffing is present.");
