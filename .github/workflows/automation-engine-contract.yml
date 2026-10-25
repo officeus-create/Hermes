@@ -23,6 +23,7 @@ on:
       - "scripts/automation-engine-capability-graph.test.mjs"
       - "scripts/hae-d1-schema-snapshot*.mjs"
       - "scripts/hae-migration-baseline-candidate*.mjs"
+      - "scripts/hae-t4-*.mjs"
       - "docs/HERMES_AUTOMATION_ENGINE_*.md"
       - ".github/workflows/automation-engine-contract.yml"
       - ".github/workflows/automation-engine-release.yml"
@@ -63,3 +64,5 @@ jobs:
           node scripts/automation-engine-data-policy.test.mjs
           node scripts/hae-d1-schema-snapshot.test.mjs
           node scripts/hae-migration-baseline-candidate.test.mjs
+          node scripts/hae-t4-dlq-canary.test.mjs
+          node scripts/hae-t4-readonly-d1-diagnostic.test.mjs
