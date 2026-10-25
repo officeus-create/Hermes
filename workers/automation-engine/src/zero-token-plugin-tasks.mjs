@@ -197,9 +197,9 @@ export const ZERO_TOKEN_PLUGIN_TASK_CONTRACTS = Object.freeze([
     jobType: "hae.self.release.verify",
     lane: "automation",
     trigger: "separate_verifier_evidence_packet",
-    input: { work_id: "HAE-SELF:*", patch_sha: "git sha", diff_sha256: "sha256", changed_paths: "bounded verified repository paths used to derive required CI", checks: "complete required exact-head CI evidence", verifier: "independent QA verdict", backlog: "P0/P1/P2 counts", revert_checks: "same derived required checks bound to revert SHA after source change" },
-    steps: ["verify separate repair and verification jobs", "require current QA identity/version", "require exact patch SHA and complete required CI set", "require rollback checks bound to exact revert SHA after source mutation", "calculate stopping condition"],
-    output: "HOLD_RELEASE | REPAIR | BLOCKED + immutable evidence fields + next lane",
+    input: { work_id: "HAE-SELF:*", artifact_key: "bounded repository path", repair_job_id: "persisted D1 repair executor job id", verifier: "QA verdict + criteria digest only; source/CI evidence is forbidden in caller payload" },
+    steps: ["block ordinary payloads from self-asserting verifier independence or GitHub evidence", "consume only sealed context built from D1-authenticated repair readback plus authenticated GitHub evidence", "bind base/head/diff/changed paths and workflow-run/job ids", "derive source change from distinct base/head and always require rollback checks", "calculate stopping condition"],
+    output: "BLOCKED without verified context; otherwise HOLD_RELEASE | REPAIR | BLOCKED + immutable evidence fields + next lane",
     kpi: ["release_state", "failing_check_count", "self_improvement_should_pause", "cost_usd"],
   }),
 ]);

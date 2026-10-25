@@ -61,21 +61,7 @@ const fixtures = {
     work_id: "HAE-SELF:self-test-gap",
     artifact_key: "scripts/automation-engine-self-improvement.test.mjs",
     repair_job_id: "job:repair:1",
-    verification_job_id: "job:verify:1",
-    repair_owner: { role_id: "hermes-automatic-engineer", plugin_version: "0.1.25" },
-    verifier: { role_id: "hermes-qa-evidence-auditor", plugin_version: "0.1.5", verdict: "ACCEPTED", criteria_sha256: "c".repeat(64) },
-    patch_sha: "b".repeat(40),
-    diff_sha256: "d".repeat(64),
-    ci_exact_head_sha: "b".repeat(40),
-    changed_paths: ["workers/automation-engine/src/hae-self-release-gate.mjs"],
-    checks: [
-      { name: "Hermes Automation Engine Contract", conclusion: "SUCCESS", head_sha: "b".repeat(40) },
-      { name: "Website checks", conclusion: "SUCCESS", head_sha: "b".repeat(40) },
-      { name: "Open-source web quality audit", conclusion: "SUCCESS", head_sha: "b".repeat(40) },
-    ],
-    trust_level: "CONTRACT",
-    source_change_performed: false,
-    backlog: { p0_open: 0, p1_open: 0, p2_open: 1 }
+    verifier: { verdict: "ACCEPTED", criteria_sha256: "c".repeat(64) }
   },
 };
 
@@ -101,8 +87,9 @@ assert.equal(runZeroTokenPluginTask("marketing.mentions.audit", fixtures["market
 assert.equal(runZeroTokenPluginTask("hae.self.improvement.audit", fixtures["hae.self.improvement.audit"]).next_action, "HOLD_REPAIR");
 assert.equal(runZeroTokenPluginTask("hae.self.repair.packet", fixtures["hae.self.repair.packet"]).repair_state, "HOLD_REPAIR");
 assert.equal(runZeroTokenPluginTask("hae.self.repair.packet", fixtures["hae.self.repair.packet"]).source_change_performed, false);
-assert.equal(runZeroTokenPluginTask("hae.self.release.verify", fixtures["hae.self.release.verify"]).release_state, "HOLD_RELEASE");
-assert.equal(runZeroTokenPluginTask("hae.self.release.verify", fixtures["hae.self.release.verify"]).next_lane, "BUSINESS_QUEUE");
+assert.equal(runZeroTokenPluginTask("hae.self.release.verify", fixtures["hae.self.release.verify"]).release_state, "BLOCKED");
+assert.equal(runZeroTokenPluginTask("hae.self.release.verify", fixtures["hae.self.release.verify"]).blocker, "VERIFIED_EVIDENCE_CONTEXT_REQUIRED");
+assert.equal(runZeroTokenPluginTask("hae.self.release.verify", fixtures["hae.self.release.verify"]).next_lane, "SELF_IMPROVEMENT");
 assert.equal(ZERO_TOKEN_PLUGIN_TASK_CONTRACTS.find((item) => item.job_type === "hae.self.improvement.audit")?.runtime_config.cadence_hours, 6);
 assert.equal(ZERO_TOKEN_PLUGIN_TASK_CONTRACTS.find((item) => item.job_type === "knowledge.evidence.audit")?.role_id, "hermes-knowledge-curator");
 assert.equal(ZERO_TOKEN_PLUGIN_TASK_CONTRACTS.find((item) => item.job_type === "knowledge.evidence.audit")?.plugin_version, "0.1.77");

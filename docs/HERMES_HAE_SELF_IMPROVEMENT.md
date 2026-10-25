@@ -101,6 +101,19 @@ The next bounded READ_ONLY capability is `hae.self.release.verify`. It consumes 
 
 The gate returns only `HOLD_RELEASE`, `REPAIR` or `BLOCKED`. It never authorizes automatic merge or deploy.
 
+`HOLD_RELEASE` cannot be reached from caller JSON alone. The public job payload may name only the WORK_ID, artifact, persisted repair job id and verifier verdict/criteria digest. It may not self-assert verification job id, repair owner, base/head SHA, diff digest, changed paths, CI results, backlog or rollback state.
+
+Those fields must arrive through an internal sealed evidence context built from:
+- authenticated D1 readback of a successful `hae.self.repair.execute` receipt;
+- authenticated GitHub evidence for the exact repository/base/head/diff/changed-path set;
+- GitHub workflow-run and job ids for every required check;
+- authenticated D1 backlog counts;
+- exact revert SHA and the same required checks bound to that revert SHA.
+
+The repair receipt and GitHub evidence must independently agree on base SHA, patch SHA, diff SHA-256 and the complete changed-path set. A distinct base/head is itself the source-change signal, so rollback evidence cannot be disabled by a caller flag.
+
+Until the post-runtime GitHub/CI sensor and DRAFT_ONLY repair executor can construct this sealed context, normal runtime execution of `hae.self.release.verify` intentionally returns `BLOCKED / VERIFIED_EVIDENCE_CONTEXT_REQUIRED`. This is fail-closed readiness, not a claim of LIVE self-release.
+
 Stopping condition v1 is explicit: self-improvement may pause and return to the business queue only when the current item is at `HOLD_RELEASE` and there are no open P0/P1 self-tasks. Remaining non-blocking P2 improvements do not monopolize the engine.
 
-Structural verification of distinct job IDs and verifier identity is not itself proof that an external human or AI independently reasoned about the patch. Actual verifier execution remains a separate evidence source and contract/schema/provider-write changes keep the human HOLD_RELEASE boundary.
+Structural verification is still not proof that an external human or AI independently reasoned about the patch. Actual verifier execution remains a separate evidence source and contract/schema/provider-write changes keep the human HOLD_RELEASE boundary.

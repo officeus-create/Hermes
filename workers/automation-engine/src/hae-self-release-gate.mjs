@@ -2,14 +2,14 @@ import { pluginRuntimeVersion } from "./plugin-runtime-registry.mjs";
 
 const MAX_CHECKS = 30;
 const MAX_CHANGED_PATHS = 100;
-const BASE_REQUIRED_CI_CHECKS = Object.freeze([
-  "Website checks",
-  "Open-source web quality audit",
-]);
+const EXPECTED_REPOSITORY = "officeus-create/Hermes";
+const VERIFIED_CONTEXT = Symbol("hae-self-release-verified-context");
+const BASE_REQUIRED_CI_CHECKS = Object.freeze(["Website checks", "Open-source web quality audit"]);
 const HAE_CONTRACT_CHECK = "Hermes Automation Engine Contract";
 const CLOUDFLARE_OWNERSHIP_CHECK = "Cloudflare deployment ownership contract";
 const TRUST_LEVELS = new Set(["LOW_RISK_DRAFT", "CONTRACT", "SCHEMA", "PROVIDER_WRITE"]);
 const VERDICTS = new Set(["ACCEPTED", "REPAIR", "BLOCKED"]);
+const REPAIR_EXECUTOR_JOB_TYPE = "hae.self.repair.execute";
 
 function clean(value, max = 500) {
   return typeof value === "string"
@@ -17,8 +17,8 @@ function clean(value, max = 500) {
     : "";
 }
 
-function integer(value, field) {
-  if (typeof value !== "number" || !Number.isInteger(value) || value < 0 || value > 1000000) {
+function integer(value, field, { positive = false } = {}) {
+  if (typeof value !== "number" || !Number.isInteger(value) || value < (positive ? 1 : 0) || value > Number.MAX_SAFE_INTEGER) {
     throw new Error(`hae_release_${field}_invalid`);
   }
   return value;
@@ -31,9 +31,33 @@ function sha(value, length, field) {
   return normalized;
 }
 
-function bool(value, field) {
-  if (typeof value !== "boolean") throw new Error(`hae_release_${field}_required`);
-  return value;
+function normalizeArtifactKey(value) {
+  const artifactKey = clean(value, 240);
+  if (!artifactKey || artifactKey.startsWith("/") || artifactKey.includes("..") || artifactKey.includes("\\")) {
+    throw new Error("hae_release_artifact_key_invalid");
+  }
+  return artifactKey;
+}
+
+function normalizeChangedPaths(value, field = "changed_paths") {
+  if (!Array.isArray(value) || value.length === 0 || value.length > MAX_CHANGED_PATHS) {
+    throw new Error(`hae_release_${field}_invalid`);
+  }
+  const seen = new Set();
+  const paths = value.map((item) => {
+    const path = clean(item, 300);
+    if (!path || path.startsWith("/") || path.includes("..") || path.includes("\\")) {
+      throw new Error(`hae_release_${field}_item_invalid`);
+    }
+    if (seen.has(path)) throw new Error(`hae_release_${field}_duplicate`);
+    seen.add(path);
+    return path;
+  });
+  return paths.sort();
+}
+
+function samePaths(left, right) {
+  return JSON.stringify(left) === JSON.stringify(right);
 }
 
 function normalizeChecks(value, field) {
@@ -45,28 +69,14 @@ function normalizeChecks(value, field) {
     const name = clean(item?.name, 160);
     const conclusion = clean(item?.conclusion, 40).toUpperCase();
     const headSha = sha(item?.head_sha, 40, `${field}_head_sha`);
+    const workflowRunId = integer(item?.workflow_run_id, `${field}_workflow_run_id`, { positive: true });
+    const jobId = integer(item?.job_id, `${field}_job_id`, { positive: true });
     if (!name || !["SUCCESS", "FAILURE", "CANCELLED", "SKIPPED", "NEUTRAL"].includes(conclusion)) {
       throw new Error(`hae_release_${field}_item_invalid`);
     }
     if (seen.has(name)) throw new Error(`hae_release_${field}_duplicate_name`);
     seen.add(name);
-    return { name, conclusion, head_sha: headSha };
-  });
-}
-
-function normalizeChangedPaths(value) {
-  if (!Array.isArray(value) || value.length === 0 || value.length > MAX_CHANGED_PATHS) {
-    throw new Error("hae_release_changed_paths_invalid");
-  }
-  const seen = new Set();
-  return value.map((item) => {
-    const path = clean(item, 300);
-    if (!path || path.startsWith("/") || path.includes("..") || path.includes("\\")) {
-      throw new Error("hae_release_changed_path_invalid");
-    }
-    if (seen.has(path)) throw new Error("hae_release_changed_path_duplicate");
-    seen.add(path);
-    return path;
+    return { name, conclusion, head_sha: headSha, workflow_run_id: workflowRunId, job_id: jobId };
   });
 }
 
@@ -108,9 +118,7 @@ function requiredCiChecksForPaths(changedPaths) {
 function evaluateCheckSet(checks, expectedSha, requiredCheckNames) {
   const byName = new Map(checks.map((item) => [item.name, item]));
   const missingRequiredChecks = requiredCheckNames.filter((name) => !byName.has(name));
-  const failingChecks = checks.filter(
-    (item) => item.head_sha !== expectedSha || item.conclusion !== "SUCCESS",
-  );
+  const failingChecks = checks.filter((item) => item.head_sha !== expectedSha || item.conclusion !== "SUCCESS");
   return {
     accepted: missingRequiredChecks.length === 0 && failingChecks.length === 0,
     missing_required_checks: missingRequiredChecks,
@@ -118,130 +126,242 @@ function evaluateCheckSet(checks, expectedSha, requiredCheckNames) {
   };
 }
 
-export function normalizeHaeSelfReleaseEvidence(input = {}) {
+function normalizeRequest(input = {}) {
   const workId = clean(input.work_id, 180);
   if (!/^HAE-SELF:[A-Za-z0-9._:-]+$/.test(workId)) throw new Error("hae_release_work_id_invalid");
-
+  const artifactKey = normalizeArtifactKey(input.artifact_key);
   const repairJobId = clean(input.repair_job_id, 180);
-  const verificationJobId = clean(input.verification_job_id, 180);
-  if (!repairJobId || !verificationJobId || repairJobId === verificationJobId) {
-    throw new Error("hae_release_verification_context_not_independent");
-  }
-
-  const repairRoleId = clean(input.repair_owner?.role_id, 120);
-  const repairPluginVersion = clean(input.repair_owner?.plugin_version, 80);
-  if (
-    repairRoleId !== "hermes-automatic-engineer"
-    || repairPluginVersion !== pluginRuntimeVersion("hermes-automatic-engineer")
-  ) {
-    throw new Error("hae_release_repair_owner_invalid");
-  }
-
-  const verifierRoleId = clean(input.verifier?.role_id, 120);
-  const verifierPluginVersion = clean(input.verifier?.plugin_version, 80);
+  if (!repairJobId) throw new Error("hae_release_repair_job_id_required");
   const verifierVerdict = clean(input.verifier?.verdict, 40).toUpperCase();
+  if (!VERDICTS.has(verifierVerdict)) throw new Error("hae_release_verifier_verdict_invalid");
   const criteriaSha256 = sha(input.verifier?.criteria_sha256, 64, "verifier_criteria_sha256");
-  if (
-    verifierRoleId !== "hermes-qa-evidence-auditor"
-    || verifierPluginVersion !== pluginRuntimeVersion("hermes-qa-evidence-auditor")
-    || verifierRoleId === repairRoleId
-    || !VERDICTS.has(verifierVerdict)
-  ) {
-    throw new Error("hae_release_verifier_invalid");
+
+  for (const field of [
+    "verification_job_id", "repair_owner", "patch_sha", "base_sha", "diff_sha256", "changed_paths",
+    "checks", "source_change_performed", "revert_sha", "revert_checks", "backlog",
+  ]) {
+    if (Object.prototype.hasOwnProperty.call(input, field)) {
+      throw new Error(`hae_release_self_asserted_${field}_forbidden`);
+    }
   }
-
-  const patchSha = sha(input.patch_sha, 40, "patch_sha");
-  const diffSha256 = sha(input.diff_sha256, 64, "diff_sha256");
-  const ciExactHeadSha = sha(input.ci_exact_head_sha, 40, "ci_exact_head_sha");
-  if (patchSha !== ciExactHeadSha) throw new Error("hae_release_ci_head_mismatch");
-
-  const changedPaths = normalizeChangedPaths(input.changed_paths);
-  const requiredCheckNames = requiredCiChecksForPaths(changedPaths);
-  const checks = normalizeChecks(input.checks, "checks");
-
-  const trustLevel = clean(input.trust_level, 40).toUpperCase();
-  if (!TRUST_LEVELS.has(trustLevel)) throw new Error("hae_release_trust_level_invalid");
-
-  const sourceChangePerformed = bool(input.source_change_performed, "source_change_performed");
-  if (input.revert_ci_verified != null) throw new Error("hae_release_legacy_revert_ci_verified_forbidden");
-  let revertSha = null;
-  let revertChecks = [];
-  if (sourceChangePerformed) {
-    revertSha = sha(input.revert_sha, 40, "revert_sha");
-    revertChecks = normalizeChecks(input.revert_checks, "revert_checks");
-  } else if (input.revert_sha != null || input.revert_checks != null) {
-    throw new Error("hae_release_revert_without_source_change");
-  }
-
-  const backlog = {
-    p0_open: integer(input.backlog?.p0_open, "backlog_p0"),
-    p1_open: integer(input.backlog?.p1_open, "backlog_p1"),
-    p2_open: integer(input.backlog?.p2_open, "backlog_p2"),
-  };
 
   return {
     work_id: workId,
-    artifact_key: clean(input.artifact_key, 240),
+    artifact_key: artifactKey,
     repair_job_id: repairJobId,
-    verification_job_id: verificationJobId,
-    repair_owner: { role_id: repairRoleId, plugin_version: repairPluginVersion },
     verifier: {
-      role_id: verifierRoleId,
-      plugin_version: verifierPluginVersion,
+      role_id: "hermes-qa-evidence-auditor",
+      plugin_version: pluginRuntimeVersion("hermes-qa-evidence-auditor"),
       verdict: verifierVerdict,
       criteria_sha256: criteriaSha256,
     },
-    patch_sha: patchSha,
-    diff_sha256: diffSha256,
-    ci_exact_head_sha: ciExactHeadSha,
-    changed_paths: changedPaths,
-    required_check_names: requiredCheckNames,
-    checks,
-    trust_level: trustLevel,
-    source_change_performed: sourceChangePerformed,
-    revert_sha: revertSha,
-    revert_checks: revertChecks,
-    backlog,
   };
 }
 
-export function evaluateHaeSelfReleaseEvidence(input = {}) {
-  const evidence = normalizeHaeSelfReleaseEvidence(input);
+function normalizeRepairReceipt(value = {}) {
+  if (clean(value.source_class, 80) !== "D1_AUTHENTICATED_READBACK") {
+    throw new Error("hae_release_repair_receipt_source_unverified");
+  }
+  const jobId = clean(value.job_id, 180);
+  const jobType = clean(value.job_type, 120);
+  const state = clean(value.state, 40).toUpperCase();
+  const workId = clean(value.work_id, 180);
+  const artifactKey = normalizeArtifactKey(value.artifact_key);
+  const roleId = clean(value.role_id, 120);
+  const pluginVersion = clean(value.plugin_version, 80);
+  if (!jobId || jobType !== REPAIR_EXECUTOR_JOB_TYPE || state !== "SUCCEEDED") {
+    throw new Error("hae_release_repair_receipt_invalid");
+  }
+  if (roleId !== "hermes-automatic-engineer" || pluginVersion !== pluginRuntimeVersion("hermes-automatic-engineer")) {
+    throw new Error("hae_release_repair_owner_invalid");
+  }
+  const baseSha = sha(value.base_sha, 40, "repair_base_sha");
+  const patchSha = sha(value.patch_sha, 40, "repair_patch_sha");
+  if (baseSha === patchSha) throw new Error("hae_release_repair_patch_not_source_change");
+  const diffSha256 = sha(value.diff_sha256, 64, "repair_diff_sha256");
+  const changedPaths = normalizeChangedPaths(value.changed_paths, "repair_changed_paths");
+  if (value.rollback_recipe_present !== true) throw new Error("hae_release_rollback_recipe_required");
+  return {
+    source_class: "D1_AUTHENTICATED_READBACK",
+    job_id: jobId,
+    job_type: jobType,
+    state,
+    work_id: workId,
+    artifact_key: artifactKey,
+    role_id: roleId,
+    plugin_version: pluginVersion,
+    base_sha: baseSha,
+    patch_sha: patchSha,
+    diff_sha256: diffSha256,
+    changed_paths: changedPaths,
+    rollback_recipe_present: true,
+  };
+}
+
+function normalizeGithubEvidence(value = {}) {
+  const sourceClass = clean(value.source_class, 80);
+  const repository = clean(value.repository, 200);
+  const evidenceRef = clean(value.evidence_ref, 500);
+  if (
+    sourceClass !== "GITHUB_API_AUTHENTICATED"
+    || repository !== EXPECTED_REPOSITORY
+    || !/^github:\/\/officeus-create\/Hermes\//.test(evidenceRef)
+  ) {
+    throw new Error("hae_release_github_evidence_source_unverified");
+  }
+  const baseSha = sha(value.base_sha, 40, "github_base_sha");
+  const patchSha = sha(value.patch_sha, 40, "github_patch_sha");
+  if (baseSha === patchSha) throw new Error("hae_release_github_patch_not_source_change");
+  const diffSha256 = sha(value.diff_sha256, 64, "github_diff_sha256");
+  const changedPaths = normalizeChangedPaths(value.changed_paths, "github_changed_paths");
+  const checks = normalizeChecks(value.checks, "checks");
+  const revertSha = sha(value.revert_sha, 40, "revert_sha");
+  if (revertSha === patchSha) throw new Error("hae_release_revert_sha_same_as_patch");
+  const revertChecks = normalizeChecks(value.revert_checks, "revert_checks");
+  return {
+    source_class: sourceClass,
+    repository,
+    evidence_ref: evidenceRef,
+    base_sha: baseSha,
+    patch_sha: patchSha,
+    diff_sha256: diffSha256,
+    changed_paths: changedPaths,
+    checks,
+    revert_sha: revertSha,
+    revert_checks: revertChecks,
+  };
+}
+
+function normalizeBacklogEvidence(value = {}) {
+  if (clean(value.source_class, 80) !== "D1_AUTHENTICATED_READBACK") {
+    throw new Error("hae_release_backlog_source_unverified");
+  }
+  return {
+    source_class: "D1_AUTHENTICATED_READBACK",
+    p0_open: integer(value.p0_open, "backlog_p0"),
+    p1_open: integer(value.p1_open, "backlog_p1"),
+    p2_open: integer(value.p2_open, "backlog_p2"),
+  };
+}
+
+export function createVerifiedHaeSelfReleaseContext(input = {}) {
+  const verificationJobId = clean(input.verification_job_id, 180);
+  if (!verificationJobId) throw new Error("hae_release_verification_job_id_required");
+  const repair = normalizeRepairReceipt(input.repair_receipt);
+  if (verificationJobId === repair.job_id) throw new Error("hae_release_verification_context_not_independent");
+  const github = normalizeGithubEvidence(input.github_evidence);
+  if (
+    repair.base_sha !== github.base_sha
+    || repair.patch_sha !== github.patch_sha
+    || repair.diff_sha256 !== github.diff_sha256
+    || !samePaths(repair.changed_paths, github.changed_paths)
+  ) {
+    throw new Error("hae_release_repair_github_evidence_mismatch");
+  }
+  const backlog = normalizeBacklogEvidence(input.backlog);
+  const trustLevel = clean(input.trust_level, 40).toUpperCase();
+  if (!TRUST_LEVELS.has(trustLevel)) throw new Error("hae_release_trust_level_invalid");
+
+  return Object.freeze({
+    [VERIFIED_CONTEXT]: true,
+    verification_job_id: verificationJobId,
+    repair_receipt: repair,
+    github_evidence: github,
+    backlog,
+    trust_level: trustLevel,
+  });
+}
+
+export function normalizeHaeSelfReleaseEvidence(input = {}, verifiedContext = null) {
+  const request = normalizeRequest(input);
+  if (!verifiedContext?.[VERIFIED_CONTEXT]) return { request, verified_context: false };
+
+  const repair = verifiedContext.repair_receipt;
+  const github = verifiedContext.github_evidence;
+  if (repair.job_id !== request.repair_job_id || repair.work_id !== request.work_id || repair.artifact_key !== request.artifact_key) {
+    throw new Error("hae_release_repair_receipt_request_mismatch");
+  }
+
+  return {
+    request,
+    verified_context: true,
+    work_id: request.work_id,
+    artifact_key: request.artifact_key,
+    repair_job_id: repair.job_id,
+    verification_job_id: verifiedContext.verification_job_id,
+    repair_owner: { role_id: repair.role_id, plugin_version: repair.plugin_version },
+    verifier: request.verifier,
+    base_sha: github.base_sha,
+    patch_sha: github.patch_sha,
+    diff_sha256: github.diff_sha256,
+    changed_paths: github.changed_paths,
+    required_check_names: requiredCiChecksForPaths(github.changed_paths),
+    checks: github.checks,
+    trust_level: verifiedContext.trust_level,
+    source_change_performed: true,
+    revert_sha: github.revert_sha,
+    revert_checks: github.revert_checks,
+    github_evidence_ref: github.evidence_ref,
+    backlog: verifiedContext.backlog,
+  };
+}
+
+function blockedWithoutVerifiedContext(request) {
+  return {
+    receipt_version: "hae-self-release-v2",
+    work_id: request.work_id,
+    artifact_key: request.artifact_key,
+    repair_job_id: request.repair_job_id,
+    verification_job_id: null,
+    release_state: "BLOCKED",
+    blocker: "VERIFIED_EVIDENCE_CONTEXT_REQUIRED",
+    independent_verifier_identity_ok: false,
+    source_change_performed: null,
+    automatic_merge_allowed: false,
+    automatic_deploy_allowed: false,
+    human_hold_release_required: true,
+    self_improvement_should_pause: false,
+    next_lane: "SELF_IMPROVEMENT",
+    cost_usd: 0,
+  };
+}
+
+export function evaluateHaeSelfReleaseEvidence(input = {}, verifiedContext = null) {
+  const evidence = normalizeHaeSelfReleaseEvidence(input, verifiedContext);
+  if (!evidence.verified_context) return blockedWithoutVerifiedContext(evidence.request);
+
   const ci = evaluateCheckSet(evidence.checks, evidence.patch_sha, evidence.required_check_names);
-  const rollback = evidence.source_change_performed
-    ? evaluateCheckSet(evidence.revert_checks, evidence.revert_sha, evidence.required_check_names)
-    : { accepted: true, missing_required_checks: [], failing_checks: [] };
-  const ciAccepted = ci.accepted;
-  const rollbackAccepted = rollback.accepted;
+  const rollback = evaluateCheckSet(evidence.revert_checks, evidence.revert_sha, evidence.required_check_names);
   const verifierAccepted = evidence.verifier.verdict === "ACCEPTED";
 
-  let release_state = "HOLD_RELEASE";
+  let releaseState = "HOLD_RELEASE";
   let blocker = null;
   if (evidence.verifier.verdict === "BLOCKED") {
-    release_state = "BLOCKED";
+    releaseState = "BLOCKED";
     blocker = "VERIFIER_BLOCKED";
   } else if (!verifierAccepted) {
-    release_state = "REPAIR";
+    releaseState = "REPAIR";
     blocker = "VERIFIER_REPAIR";
-  } else if (!ciAccepted) {
-    release_state = "REPAIR";
+  } else if (!ci.accepted) {
+    releaseState = "REPAIR";
     blocker = "CI_NOT_ACCEPTED";
-  } else if (!rollbackAccepted) {
-    release_state = "REPAIR";
+  } else if (!rollback.accepted) {
+    releaseState = "REPAIR";
     blocker = "ROLLBACK_NOT_VERIFIED";
   }
 
   const blockingSelfWork = evidence.backlog.p0_open + evidence.backlog.p1_open;
-  const selfImprovementShouldPause = blockingSelfWork === 0 && release_state === "HOLD_RELEASE";
+  const selfImprovementShouldPause = blockingSelfWork === 0 && releaseState === "HOLD_RELEASE";
 
   return {
-    receipt_version: "hae-self-release-v1",
+    receipt_version: "hae-self-release-v2",
     work_id: evidence.work_id,
-    artifact_key: evidence.artifact_key || null,
+    artifact_key: evidence.artifact_key,
+    base_sha: evidence.base_sha,
     patch_sha: evidence.patch_sha,
     diff_sha256: evidence.diff_sha256,
-    ci_exact_head_sha: evidence.ci_exact_head_sha,
     changed_paths: evidence.changed_paths,
+    github_evidence_ref: evidence.github_evidence_ref,
     repair_job_id: evidence.repair_job_id,
     verification_job_id: evidence.verification_job_id,
     checks: evidence.checks,
@@ -254,20 +374,24 @@ export function evaluateHaeSelfReleaseEvidence(input = {}) {
     independent_verifier_identity_ok:
       evidence.repair_job_id !== evidence.verification_job_id
       && evidence.repair_owner.role_id !== evidence.verifier.role_id,
-    source_change_performed: evidence.source_change_performed,
-    rollback_required: evidence.source_change_performed,
-    rollback_verified: rollbackAccepted,
+    source_change_performed: true,
+    rollback_required: true,
+    rollback_verified: rollback.accepted,
     revert_sha: evidence.revert_sha,
     revert_checks: evidence.revert_checks,
     rollback_missing_required_checks: rollback.missing_required_checks,
     rollback_failing_checks: rollback.failing_checks,
     trust_level: evidence.trust_level,
-    release_state,
+    release_state: releaseState,
     blocker,
     automatic_merge_allowed: false,
     automatic_deploy_allowed: false,
     human_hold_release_required: true,
-    backlog: evidence.backlog,
+    backlog: {
+      p0_open: evidence.backlog.p0_open,
+      p1_open: evidence.backlog.p1_open,
+      p2_open: evidence.backlog.p2_open,
+    },
     self_improvement_should_pause: selfImprovementShouldPause,
     next_lane: selfImprovementShouldPause ? "BUSINESS_QUEUE" : "SELF_IMPROVEMENT",
     cost_usd: 0,
@@ -277,10 +401,13 @@ export function evaluateHaeSelfReleaseEvidence(input = {}) {
 export const HAE_SELF_RELEASE_LIMITS = Object.freeze({
   max_checks: MAX_CHECKS,
   max_changed_paths: MAX_CHANGED_PATHS,
+  expected_repository: EXPECTED_REPOSITORY,
+  repair_executor_job_type: REPAIR_EXECUTOR_JOB_TYPE,
   base_required_ci_checks: BASE_REQUIRED_CI_CHECKS,
   path_sensitive_ci_checks: Object.freeze([HAE_CONTRACT_CHECK, CLOUDFLARE_OWNERSHIP_CHECK]),
   trust_levels: Object.freeze([...TRUST_LEVELS]),
   verifier_role_id: "hermes-qa-evidence-auditor",
+  unverified_payload_release_state: "BLOCKED",
   automatic_merge_allowed: false,
   automatic_deploy_allowed: false,
 });
