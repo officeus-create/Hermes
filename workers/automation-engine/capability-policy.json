@@ -354,6 +354,23 @@
       "contract_version": "hae-self-repair-packet-v1",
       "semantic_required": false,
       "free_ai_policy": "not_required"
+    },
+    {
+      "job_type": "hae.self.release.verify",
+      "permission_class": "READ_ONLY",
+      "execution_runtime": "canonical_hae_queue",
+      "external_provider_write": false,
+      "allowed_side_effects": [
+        "d1_job_state",
+        "d1_job_events"
+      ],
+      "submission_auth": "HERMES_AUTOMATION_TOKEN",
+      "retention_class": "technical_runtime_evidence",
+      "role_id": "hermes-qa-evidence-auditor",
+      "plugin_version": "0.1.5",
+      "contract_version": "hae-self-release-verify-v1",
+      "semantic_required": false,
+      "free_ai_policy": "not_required"
     }
   ],
   "future_capability_gate": {

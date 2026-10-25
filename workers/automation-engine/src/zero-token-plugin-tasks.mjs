@@ -1,4 +1,8 @@
 import { evaluateHaeSelfImprovementSnapshot } from "./hae-self-improvement.mjs";
+import {
+  evaluateHaeSelfReleaseEvidence,
+  normalizeHaeSelfReleaseEvidence,
+} from "./hae-self-release-gate.mjs";
 import { pluginRuntimeVersion } from "./plugin-runtime-registry.mjs";
 
 const MAX_ITEMS = 500;
@@ -186,6 +190,17 @@ export const ZERO_TOKEN_PLUGIN_TASK_CONTRACTS = Object.freeze([
     steps: ["freeze repair WORK_ID and artifact", "bind current repair and independent-review plugin versions", "emit required verification gates", "hold before source mutation"],
     output: "HOLD_REPAIR packet with owner/version/checklist",
     kpi: ["work_id", "repair_state", "cost_usd"],
+  }),
+  contract({
+    roleId: "hermes-qa-evidence-auditor",
+    contractVersion: "hae-self-release-verify-v1",
+    jobType: "hae.self.release.verify",
+    lane: "automation",
+    trigger: "separate_verifier_evidence_packet",
+    input: { work_id: "HAE-SELF:*", patch_sha: "git sha", diff_sha256: "sha256", changed_paths: "bounded verified repository paths used to derive required CI", checks: "complete required exact-head CI evidence", verifier: "independent QA verdict", backlog: "P0/P1/P2 counts", revert_checks: "same derived required checks bound to revert SHA after source change" },
+    steps: ["verify separate repair and verification jobs", "require current QA identity/version", "require exact patch SHA and complete required CI set", "require rollback checks bound to exact revert SHA after source mutation", "calculate stopping condition"],
+    output: "HOLD_RELEASE | REPAIR | BLOCKED + immutable evidence fields + next lane",
+    kpi: ["release_state", "failing_check_count", "self_improvement_should_pause", "cost_usd"],
   }),
 ]);
 
@@ -459,6 +474,7 @@ export function validateZeroTokenPluginTaskInput(jobType, payload) {
   if (jobType === "academy.english.practice.build") return runEnglish(payload);
   if (jobType === "hae.self.improvement.audit") return evaluateHaeSelfImprovementSnapshot(payload);
   if (jobType === "hae.self.repair.packet") return normalizeSelfRepairPacket(payload);
+  if (jobType === "hae.self.release.verify") return normalizeHaeSelfReleaseEvidence(payload);
   throw new Error("zero_token_plugin_job_type_not_allowed");
 }
 
@@ -473,6 +489,7 @@ export function runZeroTokenPluginTask(jobType, payload) {
   if (jobType === "academy.english.practice.build") return runEnglish(payload);
   if (jobType === "hae.self.improvement.audit") return evaluateHaeSelfImprovementSnapshot(payload);
   if (jobType === "hae.self.repair.packet") return runSelfRepairPacket(payload);
+  if (jobType === "hae.self.release.verify") return evaluateHaeSelfReleaseEvidence(payload);
   throw new Error("zero_token_plugin_job_type_not_allowed");
 }
 

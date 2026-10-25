@@ -82,3 +82,25 @@ Domain runtime versions used by current zero-token contracts are bound from the 
 ## Stack boundary
 
 This slice is cleanly replayed directly on the accepted #2051 line. Promotion still requires exact-head CI and independent review. SOURCE/CI success is not DEPLOYED or LIVE verification.
+
+## Independent release verification
+
+A repair packet is not release evidence.
+
+The next bounded READ_ONLY capability is `hae.self.release.verify`. It consumes evidence from a separate verification job/context and requires:
+
+- a stable `HAE-SELF:*` WORK_ID;
+- exact `patch_sha` and SHA-256 diff digest;
+- the complete required exact-head CI set whose head SHA equals the patch SHA;
+- current Hermes Automatic Engineer identity for the repair owner;
+- current Hermes QA/Evidence Auditor identity for the verifier;
+- distinct repair and verification job IDs;
+- verifier criteria digest and verdict;
+- rollback/revert evidence whose checks are bound to the exact revert SHA whenever a source change has occurred;
+- P0/P1/P2 self-backlog counts.
+
+The gate returns only `HOLD_RELEASE`, `REPAIR` or `BLOCKED`. It never authorizes automatic merge or deploy.
+
+Stopping condition v1 is explicit: self-improvement may pause and return to the business queue only when the current item is at `HOLD_RELEASE` and there are no open P0/P1 self-tasks. Remaining non-blocking P2 improvements do not monopolize the engine.
+
+Structural verification of distinct job IDs and verifier identity is not itself proof that an external human or AI independently reasoned about the patch. Actual verifier execution remains a separate evidence source and contract/schema/provider-write changes keep the human HOLD_RELEASE boundary.
