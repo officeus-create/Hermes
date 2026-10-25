@@ -43,18 +43,13 @@ export async function verifyGithubCIQueueEnvelope(message,{fetchImpl=fetch}={}){
     invalid("github_ci_source_evidence_mismatch");
   }
   let prNumber=null,baseSha=null,changedPathsFingerprint=null;
-  // PR identity and active-writer state are NOT implied by a workflow run alone.
-  // Without independent writer lease verification coverage must remain PARTIAL.
-  if(Array.isArray(run.pull_requests)&&run.pull_requests.length===1){
-    const ref=run.pull_requests[0];
-    if(positiveSafe(ref?.number)){
-      const pr=await githubGet("/pulls/"+ref.number,fetchImpl);
-      if(pr?.number===ref.number && pr?.base?.repo?.full_name===REPO &&
-         pr?.head?.sha===run.head_sha && SHA.test(pr?.base?.sha||"")){
-        prNumber=pr.number;
-        baseSha=pr.base.sha;
-      }
-    }
+  // Use the immutable workflow_run source snapshot, NEVER a later mutable
+  // PR detail response: replaying the same run must yield the same D1 payload
+  // even if the PR was rebased or the repository main moved afterwards.
+  const runPrs=Array.isArray(run.pull_requests)?run.pull_requests:[];
+  if(runPrs.length===1&&positiveSafe(runPrs[0]?.number)){
+    prNumber=runPrs[0].number;
+    if(SHA.test(runPrs[0]?.base?.sha||""))baseSha=runPrs[0].base.sha;
   }
   const normalized=normalizeGithubCIEvent({
     action:"completed",
