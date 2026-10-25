@@ -111,3 +111,58 @@ export function evaluateEcosystemLearningCoverage(inputs = []) {
     paid_ai_cost_usd: 0,
   });
 }
+
+/**
+ * Build bounded SOURCE_ONLY proposals for the *existing* history.source.normalize
+ * primitive. Neither a trusted adapter nor HAE Queue is available in this pure
+ * preflight: no job submission or CURRENT/COMPLETE status may be inferred here.
+ */
+export function proposeHistoricalLearningSourceJobs(inputs = []) {
+  const coverage = evaluateEcosystemLearningCoverage(inputs);
+  const normalized = inputs.map(normalizeEcosystemLearningSource);
+  const eligible = normalized
+    .filter((source) => source.access_state === "READ_ONLY_READY"
+      && source.scan_state === "VERIFIED_SCAN"
+      && source.source_verified && source.redaction_verified
+      && source.scanned_at && source.evidence_hash);
+  const limit = 10;
+  const proposals = eligible.slice(0, limit).map((source) => Object.freeze({
+    work_id: `HAE-LEARN:${source.source_family}:${source.source_id}:${source.evidence_hash.slice(7, 19)}`,
+    job_type: "history.source.normalize",
+    role_owner: "hermes-knowledge-curator",
+    independent_qa_role: "hermes-qa-evidence-auditor",
+    permission_class: "READ_ONLY",
+    next_action: "HOLD_AUTHENTICATED_SOURCE_ADAPTER",
+    automatic_submit_allowed: false,
+    knowledge_promotion_allowed: false,
+    plugin_update_allowed: false,
+    paid_ai_cost_usd: 0,
+    payload: Object.freeze({
+      source_id: `${source.source_family}:${source.source_id}`,
+      source_family: source.source_family,
+      source_class: "ECOSYSTEM_METADATA_PREFLIGHT",
+      source_uri_or_ref: null,
+      source_owner: null,
+      source_created_at: null,
+      source_modified_at: null,
+      ingested_at: source.scanned_at,
+      content_hash: source.evidence_hash,
+      trust_tier: "SOURCE_METADATA_NOT_INDEPENDENTLY_ADMITTED",
+      freshness_class: "UNKNOWN",
+      current_status: "UNKNOWN",
+      coverage_start: null,
+      coverage_end: null,
+      coverage_limit_reason: "AWAITING_AUTHENTICATED_SOURCE_ADAPTER_AND_QA",
+      parent_source_id: null,
+    }),
+  }));
+  return Object.freeze({
+    coverage_status: coverage.status,
+    source_candidates_found: eligible.length,
+    proposals,
+    unmaterialized_count: eligible.length - proposals.length,
+    automatic_submit_allowed: false,
+    automatic_promotion_allowed: false,
+    paid_ai_cost_usd: 0,
+  });
+}
