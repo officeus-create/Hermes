@@ -21,7 +21,8 @@ test("car-hauling recommendation uses the direct dispatch intake and keeps demo 
   await expect(page.locator("[data-recommendation-demo]")).toHaveText("Preview carrier Load Board demo");
   await expect(page.locator("[data-car-hauling-direct-intake]")).toBeVisible();
   await expect(page.getByRole("heading", { name: "Use direct intake for a real car-hauling dispatch review." })).toBeVisible();
-  await expect(page.getByText(/does not create an account, assign a dispatcher, publish a load, guarantee acceptance, or book freight/i)).toBeVisible();
+  await expect(page.getByText(/source-gated active records, which may be zero, with non-bookable market examples/i)).toBeVisible();
+  await expect(page.getByText(/Using either surface does not assign a dispatcher, publish a load, guarantee acceptance, or book freight/i)).toBeVisible();
 
   const primaryDemoLinks = page.locator(
     '[data-recommendation-primary][href*="/load-board/"], [data-recommendation-primary-bottom][href*="/load-board/"]',
