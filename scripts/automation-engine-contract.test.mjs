@@ -243,6 +243,11 @@ assert.match(worker, /self_improvement_automatic_source_changes: false/, "Self-i
 assert.match(worker, /self_improvement_automatic_merge: false/, "Self-improvement v1 must not merge automatically");
 assert.match(worker, /self_improvement_automatic_deploy: false/, "Self-improvement v1 must not deploy automatically");
 assert.match(worker, /url\.pathname === "\/v1\/plugin-runtime-registry"/, "Runtime must expose authenticated plugin-version truth");
+const selfReleaseGate = readFileSync(new URL("../workers/automation-engine/src/hae-self-release-gate.mjs", import.meta.url), "utf8");
+assert.match(selfReleaseGate, /verification_context_not_independent/, "Self-release verification must reject writer/verifier context collapse");
+assert.match(selfReleaseGate, /human_hold_release_required: true/, "Self-release verification must preserve the human HOLD_RELEASE boundary");
+assert.match(selfReleaseGate, /automatic_merge_allowed: false/, "Self-release verification must never authorize automatic merge in v1");
+assert.match(selfReleaseGate, /self_improvement_should_pause/, "Self-release verification must expose an explicit stopping condition");
 const graphRuntime = readFileSync(new URL("../workers/automation-engine/src/capability-graph.mjs", import.meta.url), "utf8");
 assert.match(graphRuntime, /MAX_GRAPH_NODES = 16/, "Capability DAG must stay bounded");
 assert.match(graphRuntime, /graph_cycle_detected/, "Capability DAG must fail closed on dependency cycles");
