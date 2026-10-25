@@ -192,12 +192,26 @@ jobs:
             echo "production_db_binding_missing"
             exit 1
           fi
+          echo "::add-mask::$DB_ID"
           if [[ "$OPERATION" == "schema_snapshot" && -z "$DB_NAME" ]]; then
-            echo "production_db_name_missing_for_schema_snapshot"
-            exit 1
+            detail="${RUNNER_TEMP}/hermes-d1-database.json"
+            detail_http="$(curl -sS -o "$detail" -w '%{http_code}' \
+              "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/d1/database/${DB_ID}" \
+              -H "Authorization: Bearer ${HAE_CLOUDFLARE_ACTIVE_TOKEN}" \
+              -H 'Content-Type: application/json')"
+            if [[ "$detail_http" != "200" ]] || [[ "$(jq -r '.success // false' "$detail")" != "true" ]]; then
+              echo "production_db_metadata_read_failed http=$detail_http"
+              rm -f "$detail"
+              exit 1
+            fi
+            DB_NAME="$(jq -r '.result.name // empty' "$detail")"
+            rm -f "$detail"
+            if [[ -z "$DB_NAME" ]]; then
+              echo "production_db_name_missing_after_d1_read"
+              exit 1
+            fi
           fi
           DB_NAME="${DB_NAME:-hermes-connect-prototype}"
-          echo "::add-mask::$DB_ID"
           echo "database_id=$DB_ID" >> "$GITHUB_OUTPUT"
           echo "database_name=$DB_NAME" >> "$GITHUB_OUTPUT"
 
