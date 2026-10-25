@@ -939,3 +939,45 @@ jobs:
           path: ${{ runner.temp }}/t4-d1-transport-receipt.json
           if-no-files-found: error
           retention-days: 90
+
+# Strictly read-only D1 receipt diagnostic. Existing issue #2033 owner command only.
+  t4_readback:
+    if: >-
+      github.event_name == 'issue_comment' &&
+      github.actor == 'officeus-create' &&
+      github.event.issue.number == 2033 &&
+      !github.event.issue.pull_request &&
+      startsWith(github.event.comment.body, 'HAE_T4_READBACK ')
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    environment: production
+    permissions:
+      contents: read
+    env:
+      GH_TOKEN: ${{ github.token }}
+      CLOUDFLARE_HAE_RELEASE_TOKEN: ${{ secrets.CLOUDFLARE_HAE_RELEASE_TOKEN }}
+      T4_READBACK_COMMENT: ${{ github.event.comment.body }}
+    steps:
+      - name: Checkout exact current main
+        uses: actions/checkout@v6
+        with:
+          ref: main
+          persist-credentials: false
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+      - name: Run bounded read-only D1 receipt validator
+        id: readback
+        run: |
+          set -euo pipefail
+          node scripts/hae-t4-readonly-d1-diagnostic.test.mjs
+          node scripts/hae-t4-readonly-d1-diagnostic.mjs
+      - name: Save sanitized receipt evidence
+        if: steps.readback.outputs.dlq_item_id != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: hae-t4-readonly-d1-diagnostic
+          path: ${{ runner.temp }}/hae-t4-readonly-d1-diagnostic.json
+          retention-days: 90
+          if-no-files-found: error
