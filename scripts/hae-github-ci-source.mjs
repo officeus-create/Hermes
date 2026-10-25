@@ -31,6 +31,7 @@ export async function dispatchGithubCIEvent({
   const run=await jsonFetch("https://api.github.com/repos/"+REPO+"/actions/runs/"+runId,githubToken,fetchImpl);
   if(run?.id!==runId||run?.run_attempt!==runAttempt ||
     run?.repository?.full_name!==REPO ||
+     run?.head_repository?.full_name!==REPO ||
     !ALLOWED.has(run?.name) ||
     run?.status!=="completed"||!["failure","timed_out"].includes(run?.conclusion)||
     run?.html_url!=="https://github.com/"+REPO+"/actions/runs/"+runId) {
