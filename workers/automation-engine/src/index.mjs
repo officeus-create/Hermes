@@ -8,6 +8,7 @@ import {
   runHistoricalLearningPrimitive,
 } from "./historical-learning.mjs";
 import {
+  CAPABILITY_GRAPH_ROLE_CONTRACT_JOB_TYPES,
   ROLE_CONTRACTS,
   ROLE_CONTRACT_JOB_TYPES,
   buildRoleContractSemanticRequest,
@@ -933,11 +934,13 @@ async function runReadOnlyGenericCapability(env, job) {
     ) {
       throw new Error("role_contract_stale");
     }
+    const executionPayload = { ...payload };
+    delete executionPayload._role_contract;
     const observedAt = new Date().toISOString();
     let result;
     let semanticExecution = null;
     if (contract.semantic_required) {
-      const semanticRequest = buildRoleContractSemanticRequest(job.job_type, payload);
+      const semanticRequest = buildRoleContractSemanticRequest(job.job_type, executionPayload);
       const budgetUsd = Number(contract?.runtime_config?.max_cost_usd);
       if (!Number.isFinite(budgetUsd) || budgetUsd < 0) throw new Error("semantic_budget_invalid");
       const freeResult = await runFreeSemanticJson(env, semanticRequest);
@@ -957,7 +960,7 @@ async function runReadOnlyGenericCapability(env, job) {
         status: "PROVIDER_RETURNED",
       });
       if (actualCostUsd !== 0) throw new Error("paid_inference_forbidden");
-      result = validateRoleContractSemanticResult(job.job_type, payload, freeResult.result);
+      result = validateRoleContractSemanticResult(job.job_type, executionPayload, freeResult.result);
       semanticExecution = {
         provider_id: clean(freeResult.provider_id, 120),
         model: clean(freeResult.model, 200),
@@ -970,7 +973,7 @@ async function runReadOnlyGenericCapability(env, job) {
         output_chars: usageReceipt.output_chars,
       };
     } else {
-      result = runRoleContractPrimitive(job.job_type, payload, observedAt);
+      result = runRoleContractPrimitive(job.job_type, executionPayload, observedAt);
     }
     return {
       capability: job.job_type,
@@ -2325,7 +2328,7 @@ export default {
       if (!env.DB || !env.AUTOMATION_QUEUE) return json(503, { success: false, error: "runtime_not_configured" });
       const body = await request.json().catch(() => ({}));
       try {
-        const created = await createCapabilityGraph(env, body, ROLE_CONTRACT_JOB_TYPES);
+        const created = await createCapabilityGraph(env, body, CAPABILITY_GRAPH_ROLE_CONTRACT_JOB_TYPES);
         await dispatchCapabilityGraphReadyNodes(env, created.graph_id);
         const snapshot = await getCapabilityGraph(env, created.graph_id);
         return json(created.created ? 202 : 200, {

@@ -57,9 +57,14 @@ const fixtures = {
     finding_id: "self-test-gap",
     artifact_key: "scripts/automation-engine-self-improvement.test.mjs"
   },
+  "hae.self.release.verify": {
+    work_id: "HAE-SELF:self-test-gap",
+    artifact_key: "scripts/automation-engine-self-improvement.test.mjs",
+    repair_job_id: "job:repair:1"
+  },
 };
 
-assert.equal(ZERO_TOKEN_PLUGIN_TASK_CONTRACTS.length, 10);
+assert.equal(ZERO_TOKEN_PLUGIN_TASK_CONTRACTS.length, 11);
 for (const contract of ZERO_TOKEN_PLUGIN_TASK_CONTRACTS) {
   assert.equal(contract.semantic_required, false);
   assert.equal(contract.permission_class, "READ_ONLY");
@@ -81,6 +86,9 @@ assert.equal(runZeroTokenPluginTask("marketing.mentions.audit", fixtures["market
 assert.equal(runZeroTokenPluginTask("hae.self.improvement.audit", fixtures["hae.self.improvement.audit"]).next_action, "HOLD_REPAIR");
 assert.equal(runZeroTokenPluginTask("hae.self.repair.packet", fixtures["hae.self.repair.packet"]).repair_state, "HOLD_REPAIR");
 assert.equal(runZeroTokenPluginTask("hae.self.repair.packet", fixtures["hae.self.repair.packet"]).source_change_performed, false);
+assert.equal(runZeroTokenPluginTask("hae.self.release.verify", fixtures["hae.self.release.verify"]).release_state, "BLOCKED");
+assert.equal(runZeroTokenPluginTask("hae.self.release.verify", fixtures["hae.self.release.verify"]).blocker, "AUTHENTICATED_RELEASE_EVIDENCE_UNAVAILABLE");
+assert.equal(runZeroTokenPluginTask("hae.self.release.verify", fixtures["hae.self.release.verify"]).next_lane, "SELF_IMPROVEMENT");
 assert.equal(ZERO_TOKEN_PLUGIN_TASK_CONTRACTS.find((item) => item.job_type === "hae.self.improvement.audit")?.runtime_config.cadence_hours, 6);
 assert.equal(ZERO_TOKEN_PLUGIN_TASK_CONTRACTS.find((item) => item.job_type === "knowledge.evidence.audit")?.role_id, "hermes-knowledge-curator");
 assert.equal(ZERO_TOKEN_PLUGIN_TASK_CONTRACTS.find((item) => item.job_type === "knowledge.evidence.audit")?.plugin_version, "0.1.77");
@@ -117,4 +125,4 @@ assert.match(worker, /idempotency_key: idempotencyKey/);
 assert.match(worker, /!contract\.semantic_required && roleContractScheduleEligible/);
 assert.match(worker, /url\.pathname === "\/v1\/schedule-migrations"/);
 
-console.log("HAE zero-token plugin task migration PASS: 14 recovered schedules, 10 deterministic plugin capabilities, no ChatGPT runtime dependency");
+console.log("HAE zero-token plugin task migration PASS: 14 recovered schedules, 11 deterministic plugin capabilities, no ChatGPT runtime dependency");

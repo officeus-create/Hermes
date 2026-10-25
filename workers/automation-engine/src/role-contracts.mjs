@@ -193,6 +193,11 @@ export const ROLE_CONTRACTS = Object.freeze([
 
 export const ROLE_CONTRACT_JOB_TYPES = Object.freeze(ROLE_CONTRACTS.map((contract) => contract.job_type));
 
+const DORMANT_GRAPH_JOB_TYPES = new Set(["hae.self.release.verify"]);
+export const CAPABILITY_GRAPH_ROLE_CONTRACT_JOB_TYPES = Object.freeze(
+  ROLE_CONTRACT_JOB_TYPES.filter((jobType) => !DORMANT_GRAPH_JOB_TYPES.has(jobType)),
+);
+
 function cleanText(value, max = 500) {
   return typeof value === "string"
     ? value.replace(/[<>\u0000-\u001f\u007f]/g, " ").replace(/\s+/g, " ").trim().slice(0, max)

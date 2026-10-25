@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import {
+  CAPABILITY_GRAPH_ROLE_CONTRACT_JOB_TYPES,
   ROLE_CONTRACTS,
   ROLE_CONTRACT_JOB_TYPES,
   buildRoleContractSemanticRequest,
@@ -11,7 +12,7 @@ import {
   validateRoleContractSemanticResult,
 } from "../workers/automation-engine/src/role-contracts.mjs";
 
-assert.equal(ROLE_CONTRACTS.length, 15, "Runtime must expose fourteen deterministic contracts plus one free-only semantic contract");
+assert.equal(ROLE_CONTRACTS.length, 16, "Runtime must expose fifteen deterministic contracts plus one free-only semantic contract");
 assert.deepEqual(
   [...ROLE_CONTRACT_JOB_TYPES].sort(),
   [
@@ -21,6 +22,7 @@ assert.deepEqual(
     "growth.error.closure.audit",
     "hae.self.improvement.audit",
     "hae.self.repair.packet",
+    "hae.self.release.verify",
     "knowledge.evidence.audit",
     "logistics.source.freshness.audit",
     "market.car-hauling.snapshot.evaluate",
@@ -66,9 +68,14 @@ assert.equal(roleContractForJobType("ai.gateway.readiness.audit").runtime_config
 assert.equal(roleContractForJobType("academy.english.practice.build").runtime_config.cadence_hours, 24);
 assert.equal(roleContractForJobType("work.portfolio.reconcile").plugin_version, "0.1.68");
 assert.equal(roleContractForJobType("hae.self.improvement.audit").plugin_version, "0.1.25");
+assert.equal(roleContractForJobType("hae.self.release.verify").role_id, "hermes-qa-evidence-auditor");
+assert.equal(roleContractForJobType("hae.self.release.verify").plugin_version, "0.1.5");
+assert.ok(ROLE_CONTRACT_JOB_TYPES.includes("hae.self.release.verify"), "Dormant self-release capability remains directly inspectable");
+assert.ok(!CAPABILITY_GRAPH_ROLE_CONTRACT_JOB_TYPES.includes("hae.self.release.verify"), "Dormant self-release capability must not be graph-routable before authenticated activation");
+assert.equal(CAPABILITY_GRAPH_ROLE_CONTRACT_JOB_TYPES.length, ROLE_CONTRACT_JOB_TYPES.length - 1);
 assert.equal(roleContractForJobType("knowledge.evidence.audit").role_id, "hermes-knowledge-curator");
 assert.equal(roleContractForJobType("knowledge.evidence.audit").plugin_version, "0.1.77");
-assert.equal(ROLE_CONTRACTS.filter((contract) => !contract.semantic_required).length, 14);
+assert.equal(ROLE_CONTRACTS.filter((contract) => !contract.semantic_required).length, 15);
 assert.equal(ROLE_CONTRACTS.filter((contract) => contract.semantic_required).length, 1);
 
 const searchInput = {
@@ -159,4 +166,4 @@ assert.throws(() => validateRoleContractSemanticResult("search.defect.prioritize
 }), /semantic_result_item_not_in_input/);
 assert.throws(() => runRoleContractPrimitive("search.defect.prioritize", semanticPayload), /semantic_job_requires_free_ai/);
 
-console.log("HAE plugin role contracts PASS: 14 zero-model + 1 free-only semantic contract");
+console.log("HAE plugin role contracts PASS: 15 zero-model + 1 free-only semantic contract");

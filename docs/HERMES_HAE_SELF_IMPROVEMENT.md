@@ -82,3 +82,34 @@ Domain runtime versions used by current zero-token contracts are bound from the 
 ## Stack boundary
 
 This slice is cleanly replayed directly on the accepted #2051 line. Promotion still requires exact-head CI and independent review. SOURCE/CI success is not DEPLOYED or LIVE verification.
+
+## Independent release verification
+
+A repair packet is not release evidence.
+
+The next bounded READ_ONLY capability is `hae.self.release.verify`, but this source slice deliberately implements it as a **dormant fail-closed gate**.
+
+The public job payload is enforced by a strict allowlist and may provide only:
+- a stable `HAE-SELF:*` WORK_ID;
+- one bounded artifact key;
+- a persisted repair job reference.
+
+Any fourth or unexpected field is rejected, including future names that were not anticipated by an earlier denylist. The dormant self-release job is also excluded from capability-graph routing, so a caller cannot turn its expected `BLOCKED` result into graph-level `ACCEPTED` by choosing a permissive KPI assertion.
+
+It may not self-assert a verifier verdict, verification job id, repair owner, base/head SHA, diff digest, changed paths, CI results, trust level, backlog, source-change state, rollback state or any string claiming that evidence is authenticated.
+
+Therefore `HOLD_RELEASE` is intentionally unreachable in this slice. Normal runtime execution returns `BLOCKED / AUTHENTICATED_RELEASE_EVIDENCE_UNAVAILABLE`, never automatic merge or deploy.
+
+Activation is deferred until the post-runtime dependencies can provide real evidence:
+- #2067 authenticated GitHub/CI event sensor;
+- #2068 DRAFT_ONLY repair executor with a persisted D1 repair receipt;
+- a separate D1-backed QA verifier receipt bound to WORK_ID/artifact/base/head/diff/role/version/verdict/criteria;
+- authenticated GitHub base/head/diff/complete changed paths and workflow-run/job identifiers;
+- rollback proof tied to the repaired change itself: the revert must be proven as the inverse/restoration of the exact patch, not merely a different green SHA;
+- authenticated D1 P0/P1/P2 backlog readback.
+
+Only when those adapters exist should the gate gain a reachable `HOLD_RELEASE` path. This is fail-closed readiness, not a claim of LIVE self-release.
+
+Stopping condition remains a future acceptance rule: after authenticated activation, self-improvement may pause and return to the business queue only when the current item is at `HOLD_RELEASE` and there are no open P0/P1 self-tasks. Remaining non-blocking P2 improvements must not monopolize the engine.
+
+SOURCE/CI success for this slice proves only that the dormant gate fails closed. It does not prove authenticated verifier execution, rollback equivalence, deployment or LIVE runtime behavior.
