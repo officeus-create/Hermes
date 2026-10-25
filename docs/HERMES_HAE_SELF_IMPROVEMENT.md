@@ -86,3 +86,26 @@ Do not promote toward main until the clean release ancestry is rebuilt:
 `#2059 -> fresh #2060 -> fresh #2061 -> replay Codex intake -> replay self-improvement lane`.
 
 SOURCE/CI success on this stacked draft is not DEPLOYED or LIVE verification.
+
+
+## Independent release verification
+
+A repair packet is not release evidence.
+
+The next bounded READ_ONLY capability is `hae.self.release.verify`. It consumes evidence from a separate verification job/context and requires:
+
+- a stable `HAE-SELF:*` WORK_ID;
+- exact `patch_sha` and SHA-256 diff digest;
+- exact-head CI checks whose head SHA equals the patch SHA;
+- current Hermes Automatic Engineer identity for the repair owner;
+- current Hermes QA/Evidence Auditor identity for the verifier;
+- distinct repair and verification job IDs;
+- verifier criteria digest and verdict;
+- rollback/revert evidence whenever a source change has occurred;
+- P0/P1/P2 self-backlog counts.
+
+The gate returns only `HOLD_RELEASE`, `REPAIR` or `BLOCKED`. It never authorizes automatic merge or deploy.
+
+Stopping condition v1 is explicit: self-improvement may pause and return to the business queue only when the current item is at `HOLD_RELEASE` and there are no open P0/P1 self-tasks. Remaining non-blocking P2 improvements do not monopolize the engine.
+
+Structural verification of distinct job IDs and verifier identity is not itself proof that an external human or AI independently reasoned about the patch. Actual verifier execution remains a separate evidence source and contract/schema/provider-write changes keep the human HOLD_RELEASE boundary.
