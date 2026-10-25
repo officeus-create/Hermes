@@ -170,7 +170,7 @@ const languageLinks = siteLocales.filter((language) => !isCatalogLocaleRoute || 
 <header class={`site-header site-header-${isApprovedVisualShell ? "light" : theme}`} data-header data-home-portal={isApprovedHome ? "true" : undefined} data-approved-visual-shell={isApprovedVisualShell ? "true" : undefined}>
   <a class="wordmark" href={activeLocale === "en" ? "/#top" : `${localeConfig[activeLocale].path}#top`} aria-label="Hermes home">
     {isApprovedVisualShell ? (
-      <span class="wordmark-mark wordmark-mark-corporate"><img src="/brand/hermes-mark.svg" alt="Hermes logo" width="36" height="36" decoding="async" /></span>
+      <span class="wordmark-mark wordmark-mark-corporate"><img src="/brand/hermes-mark.svg" alt="Hermes logo" width="36" height="36" loading="eager" decoding="async" /></span>
     ) : (
       <span class="wordmark-mark">H</span>
     )}
