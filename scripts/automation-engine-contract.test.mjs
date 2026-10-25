@@ -304,6 +304,11 @@ assert.match(releaseWorkflow, /job\.duplicate_suppressed/, "Runtime proof must r
 assert.match(releaseWorkflow, /queues\/\$\{qid\}\/metrics/, "Runtime proof must read authoritative Queue and DLQ backlog metrics from Cloudflare");
 assert.match(releaseWorkflow, /hae-runtime-evidence-accepted/, "Runtime proof must pass through an independently validated sanitized evidence artifact");
 assert.match(releaseWorkflow, /HAE runtime evidence independent QA/, "Runtime proof must separate executor and evidence QA jobs");
+assert.match(releaseWorkflow, /stale_main_before_dry_run_deploy/, "Provisioning must re-check exact current main immediately before Worker deployment");
+assert.match(releaseWorkflow, /stale_main_after_dry_run_deploy/, "Provisioning must reject evidence if main moves during Worker deployment");
+assert.match(releaseWorkflow, /stale_main_before_runtime_readonly_proof/, "Runtime proof must re-check exact current main before creating proof work");
+assert.match(releaseWorkflow, /stale_main_during_runtime_readonly_proof/, "Runtime proof must reject evidence if main moves while proof is collected");
+assert.match(releaseWorkflow, /stale_main_during_runtime_evidence_qa/, "Independent runtime QA must reject evidence if main moves before acceptance");
 assert.doesNotMatch(releaseWorkflow, /runtime_readonly_proof[\s\S]{0,6000}create_text_post/, "Read-only runtime proof must not invoke provider publishing");
 assert.match(releaseWorkflow, /environment: production/, "Production Worker release must pass through the production environment");
 assert.match(releaseWorkflow, /CLOUDFLARE_HAE_RELEASE_TOKEN/, "HAE should prefer one dedicated least-privilege Cloudflare release token");
