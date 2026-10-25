@@ -63,8 +63,9 @@ test("Colorado Springs GEO page answers carrier load-search intent without publi
 
   const supportItems = page.locator(".carrier-geo-support-list > li");
   await expect(supportItems).toHaveCount(20);
-  await expect(page.getByRole("link", { name: /Preview Load Board/i })).toHaveAttribute("href", "/load-board/#available-loads");
-  await expect(page.getByText(/illustrative\/demo surface/i)).toBeVisible();
+  await expect(page.getByRole("link", { name: /Open Load Board/i })).toHaveAttribute("href", "/load-board/#available-loads");
+  await expect(page.getByText(/source-gated and may be zero/i)).toBeVisible();
+  await expect(page.getByText(/preview examples remain separate and non-bookable/i)).toBeVisible();
   await expect(page.getByText(/discounts, parts offers, or partner benefits are shown only/i)).toBeVisible();
 
   const body = await page.locator("main").innerText();
