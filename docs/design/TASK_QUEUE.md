@@ -28,8 +28,8 @@ Ranking effects need 2–8 weeks after deploy; every slice records its recheck d
 5. **Careers funnel** — BLOCKED on owner: the dispatcher vacancy is held closed ("awaiting fresh owner review"); reopening needs an owner hiring decision. (`/careers/car-hauling-dispatcher/` pos 6, real clicks; `/logistics/careers/`). Accept: role
    promise → requirements proof → one apply action.
 6. ~~**Logistics commercial funnel**~~ DONE #2118 LIVE 26.10 (one primary hero action, brand ink headings, Logistics blue accents) — (car-hauling dispatch, Appleton/Wisconsin vehicle transport, dealer transport).
-7. **Technology services funnel** — IN PR: proof rail on website development / redesign / auto-repair design; (website development / redesign / auto-repair design).
-8. **Academy funnel** (`/academy/us-logistics-operations/`, apply).
+7. ~~**Technology services funnel**~~ DONE #2119 LIVE 26.10 — proof rail on website development / redesign / auto-repair design; (website development / redesign / auto-repair design).
+8. **Academy funnel** — IN PR: funnel structure already complete (hero CTA → audiences → curriculum → process → boundaries → FAQ → closing CTA); legacy violet boundary cards and consent links now follow the Academy accent; (`/academy/us-logistics-operations/`, apply).
 9. **Direction owners proof block** (`/paths/*`) — only with existing approved proof.
 10. **Classify London cluster** (`/gb/london/*`) into the matrix.
 11. **Controls cleanup**: remaining 12px-radius public buttons; status chips by semantic state.
@@ -47,6 +47,8 @@ Ranking effects need 2–8 weeks after deploy; every slice records its recheck d
 - Authority (#368): real partner/client/directory links; no link schemes.
 
 ## Done (most recent first)
+
+- 2026-10-26 #2119 Technology services proof rail — LIVE.
 
 - 2026-10-26 #2118 Logistics commercial pages: one primary hero action, ink headings, blue accents — LIVE.
 - 2026-10-26 #2117 /contacts/ primary request action + four directions (E2) — LIVE.

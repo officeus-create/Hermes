@@ -2097,3 +2097,8 @@ ai_name: Codex; role: delegated Academy owner; contribution_type: Implementation
 - Careers funnel blocked: the dispatcher vacancy is intentionally held closed until the owner confirms hiring.
 - Slice: website development / redesign / auto-repair design get the proof rail (IT case, brief template, conversion checklist). Build diff: 2 pages, links added. 420 related specs green.
 - Next action — Academy funnel (`/academy/us-logistics-operations/`, apply); accept — proof + one primary apply action.
+
+## 2026-10-26 — Claude Code — #2119 LIVE; Academy accents
+
+- #2119 merged d7ebd170; live: website development shows the proof rail, canonical unchanged.
+- Academy owner page already follows the funnel order; slice reroutes `--color-violet-600` to the family accent on family pages and gives `.capacity-boundary-grid` cards the family top border. `/paths/academy/` (approved direction owner, untagged) still has violet eyebrows → task 9.
