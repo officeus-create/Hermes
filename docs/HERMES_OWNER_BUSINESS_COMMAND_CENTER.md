@@ -60,11 +60,11 @@ Multiple owner work items may exist. The current Internal AI invariant remains o
 ## Voice
 
 Browser speech recognition is only an input helper:
-- speech is transcribed locally by browser capability where available;
+- speech recognition is handled by the browser/OS/provider available on that device; Hermes does not assume it is on-device;
 - transcript is visible/editable before saving;
 - no work is dispatched by voice alone;
 - OS/browser keyboard dictation remains the fallback;
-- Command Center does not create a microphone recording archive.
+- Hermes stores only the reviewed submitted text; Command Center does not create an audio recording archive.
 
 ## Owner access
 
