@@ -54,4 +54,5 @@ assert.match(access,/hermes_internal_owner_access_audit/,"access changes must be
 assert.doesNotMatch(access,/volkogon|officeus@|HERMES_OWNER_EMAIL/i,"private people/emails must not be hardcoded as authorization policy");
 assert.match(nav,/internal\/command-center/,"existing owner navigation must expose the unified command center only behind its current server gate");
 
+await import("./internal-command-center-runtime.test.mjs");
 console.log("Hermes Business Command Center contract: PASS");
