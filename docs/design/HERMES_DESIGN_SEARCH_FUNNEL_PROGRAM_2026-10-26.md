@@ -183,3 +183,13 @@ Use the CURRENT brief's §17 "CLAUDE START COMMAND" (Drive). The short repositor
 - OpenRush audit: on-page score 98.3; its "thin /ua/academy/" = NOT_REPRODUCED (414 words), "no alt" = decorative by design.
 
 Cycle order: (1) design waves to LIVE → (2) reproduced runtime errors (JSON-LD/Clarity) → (3) self-case Insight with the baseline above → (4) Logistics family funnel (highest impressions: Home, careers, company/contacts/about, /paths/logistics/) → (5) owner-confirmed account actions (GA4 key events, GSC link, Clutch, Telegram cache).
+
+### 10.1 Owner exports 2026-10-26 (Bing + Clarity) — classification
+
+Raw small CSVs and the full classification are in the Drive evidence folder (doc "03 — Owner exports 26 Oct 2026"). Summary:
+
+- Bing search 12.08–24.10: 12 clicks / 239 impressions — CURRENT, authority-bound (#368). Bing AI (Copilot) citations: 48 over 17 days, latest 23.10 — positive GEO signal; cited URL NOT EXPORTED.
+- Bing IndexNow: 5,843 notifications → 55 crawled / 49 indexed. Peaks are full-sitemap resubmits after release batches; since 07.10 submissions are change-based. EXPECTED, no code change.
+- Bing IndexNow issue list: 10 × `/logistics/car-hauler-loads/{city}/` + `/services/hermes-connect/repair-shops/`. Live: 200, index,follow, self-canonical, in sitemap. Export lacks the issue label → **HOLD**. Do not noindex or mass-edit geo pages; if confirmed as quality/duplication, add unique per-city evidence on the same URLs.
+- Bing Site Explorer shows slash-less URLs; live they 308 to the trailing-slash canonical → PROVIDER DISPLAY.
+- Clarity: 88% of recorded sessions are from Ukraine (team + job seekers), US 13 sessions. Quick-back/dead-click rates are not buyer behaviour → do not redesign from them. Owner action: exclude internal traffic in Clarity and GA4. The `@context` JS error is fixed (#2093); the 90-day aggregate will lag.
