@@ -34,12 +34,18 @@ export async function onRequestPatch({request,env,params}:{request:Request;env:E
   if(action==="dispatch"){
     if(["done","cancelled"].includes(String(row.status)))return jsonResponse(409,{success:false,error:"work_item_terminal",work_item:publicWorkItem(row)},headers);
     if(row.linked_task_id && ["queued","running","needs_approval"].includes(String(row.linked_task_status||"")))return jsonResponse(409,{success:false,error:"work_item_task_active",work_item:publicWorkItem(row)},headers);
-    const active=await env.DB.prepare("SELECT id FROM hermes_internal_ai_tasks WHERE organization_scope=? AND status IN ('queued','running','needs_approval') ORDER BY created_at ASC LIMIT 1").bind(INTERNAL_AI_ORGANIZATION_SCOPE).first();
-    if(active)return jsonResponse(409,{success:false,error:"active_task_exists",active_task_id:active.id,work_item:publicWorkItem(row)},headers);
     const prompt=normalizePrompt(workItemPrompt(row)); if(!prompt)return jsonResponse(400,{success:false,error:"work_item_prompt_invalid"},headers);
     const taskId=newTaskId();
-    await env.DB.prepare(`INSERT INTO hermes_internal_ai_tasks (id,organization_scope,agent_role,prompt,status,created_by,created_at,updated_at)
-      VALUES (?,?,'software_engineer',?,'queued',?,?,?)`).bind(taskId,INTERNAL_AI_ORGANIZATION_SCOPE,prompt,String(owner.specialist.id),now,now).run();
+    const inserted=await env.DB.prepare(`INSERT INTO hermes_internal_ai_tasks (id,organization_scope,agent_role,prompt,status,created_by,created_at,updated_at)
+      SELECT ?,?,'software_engineer',?,'queued',?,?,?
+      WHERE NOT EXISTS (
+        SELECT 1 FROM hermes_internal_ai_tasks
+        WHERE organization_scope=? AND status IN ('queued','running','needs_approval')
+      )`).bind(taskId,INTERNAL_AI_ORGANIZATION_SCOPE,prompt,String(owner.specialist.id),now,now,INTERNAL_AI_ORGANIZATION_SCOPE).run();
+    if(!inserted?.meta?.changes){
+      const active=await env.DB.prepare("SELECT id FROM hermes_internal_ai_tasks WHERE organization_scope=? AND status IN ('queued','running','needs_approval') ORDER BY created_at ASC LIMIT 1").bind(INTERNAL_AI_ORGANIZATION_SCOPE).first();
+      return jsonResponse(409,{success:false,error:"active_task_exists",active_task_id:active?.id||null,work_item:publicWorkItem(row)},headers);
+    }
     await env.DB.prepare("UPDATE hermes_owner_work_items SET status='in_progress', linked_task_id=?, blocked_reason=NULL, completed_at=NULL, updated_at=? WHERE id=? AND organization_scope=?").bind(taskId,now,id,INTERNAL_AI_ORGANIZATION_SCOPE).run();
     row=await getItem(env.DB,id);
     const task=await env.DB.prepare("SELECT * FROM hermes_internal_ai_tasks WHERE id=? AND organization_scope=?").bind(taskId,INTERNAL_AI_ORGANIZATION_SCOPE).first();
