@@ -40,6 +40,7 @@ assert.match(collection,/status,'planned'|status.*planned/s,"captured work must 
 assert.doesNotMatch(collection,/hermes_internal_ai_tasks.*INSERT/s,"capture endpoint must not silently dispatch AI work");
 
 assert.match(item,/active_task_exists/,"dispatch must preserve the existing one-active-task invariant");
+assert.match(item,/WHERE NOT EXISTS \([\s\S]*status IN \(\'queued\',\'running\',\'needs_approval\'\)/,"dispatch insert must atomically enforce the one-active-task invariant");
 assert.match(item,/INSERT INTO hermes_internal_ai_tasks/,"dispatch must reuse the canonical internal AI queue");
 assert.match(item,/agent_role,prompt,status/,"dispatch must preserve existing AI task shape");
 assert.match(item,/workItemPrompt/,"dispatch must add bounded direction/context rather than another queue");
