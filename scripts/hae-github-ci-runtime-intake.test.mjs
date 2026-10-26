@@ -10,7 +10,7 @@ const run={
   id:runId,run_attempt:runAttempt,status:"completed",conclusion:"failure",
   repository:{full_name:repo},head_repository:{full_name:repo},name:"Hermes Automation Engine Contract",
   head_sha:sha,html_url:"https://github.com/"+repo+"/actions/runs/"+runId,
-  event:"pull_request",workflow_id:445566,updated_at:"2026-10-26T00:38:00Z",
+  event:"pull_request",workflow_id:382680939,path:".github/workflows/automation-engine-contract.yml",updated_at:"2026-10-26T00:38:00Z",
   pull_requests:[{number:2088,base:{sha:baseSha}}],secrets:{raw:"NEVER_PERSIST_THIS"},
 };
 const pr={number:2088,head:{sha},base:{sha:baseSha,repo:{full_name:repo}},body:"PRIVATE_UNTRUSTED_BODY"};
@@ -49,6 +49,20 @@ for(const payload of [
 await assert.rejects(()=>verifyGithubCIQueueEnvelope(env,{fetchImpl:async()=>({ok:true,json:async()=>({...run,conclusion:"success"})})}),e=>e.code==="github_ci_source_evidence_mismatch");
 await assert.rejects(()=>verifyGithubCIQueueEnvelope(env,{fetchImpl:async()=>({ok:true,json:async()=>({...run,repository:{full_name:"evil/repo"}})})}),e=>e.code==="github_ci_source_evidence_mismatch");
 await assert.rejects(()=>verifyGithubCIQueueEnvelope(env,{fetchImpl:async()=>({ok:false,status:403})}),e=>e.code==="github_ci_source_http_not_ok");
+// A matching display name is NOT sufficient workflow identity evidence.
+for(const override of [
+  {path:".github/workflows/impostor.yml"},
+  {workflow_id:999999999},
+  {path:null},
+  {name:"Website checks"},
+  {name:"__proto__"},
+]){
+  await assert.rejects(
+    ()=>verifyGithubCIQueueEnvelope(env,{fetchImpl:async()=>({ok:true,json:async()=>({...run,...override})})}),
+    e=>e.code==="github_ci_source_evidence_mismatch"
+  );
+}
+
 const source=fs.readFileSync(new URL("../workers/automation-engine/src/github-ci-runtime-intake.mjs",import.meta.url),"utf8");
 assert.doesNotMatch(source,/github_pat_|ghp_|api\.openai\.com|\/repos\/.*\/pulls\/.*\/merge|\/sendMessage/);
 const worker=fs.readFileSync(new URL("../workers/automation-engine/src/index.mjs",import.meta.url),"utf8");

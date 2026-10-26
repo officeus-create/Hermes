@@ -13,7 +13,7 @@ const record={
   repository:{full_name:repo},head_repository:{full_name:repo},
   status:"completed",conclusion:"failure",head_sha:head,
   html_url:"https://github.com/"+repo+"/actions/runs/"+runId,
-  event:"pull_request",workflow_id:223366,
+  event:"pull_request",workflow_id:382680939,path:".github/workflows/automation-engine-contract.yml",
   updated_at:"2026-10-26T14:00:00Z",
   pull_requests:[{number:2094,base:{sha:base}}],
 };

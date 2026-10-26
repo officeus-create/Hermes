@@ -1,11 +1,19 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import {dispatchGithubCIEvent} from "./hae-github-ci-source.mjs";
+import {githubCIWorkflowIdentityVerified} from "../workers/automation-engine/src/github-ci-workflow-identity.mjs";
 const repo="officeus-create/Hermes",runId=40249991001,runAttempt=1;
 const account="a".repeat(32),queue="b".repeat(32);
 const r={id:runId,run_attempt:runAttempt,repository:{full_name:repo},head_repository:{full_name:repo},
-  name:"Hermes Automation Engine Contract",status:"completed",conclusion:"failure",
+  name:"Hermes Automation Engine Contract",path:".github/workflows/automation-engine-contract.yml",workflow_id:382680939,status:"completed",conclusion:"failure",
   html_url:"https://github.com/"+repo+"/actions/runs/"+runId};
+assert.equal(githubCIWorkflowIdentityVerified(r),true);
+assert.equal(githubCIWorkflowIdentityVerified({
+  name:"Website checks",path:".github/workflows/ci.yml",workflow_id:311612557
+}),true);
+assert.equal(githubCIWorkflowIdentityVerified({
+  name:"Website checks",path:".github/workflows/ci.yml",workflow_id:382680939
+}),false);
 const calls=[];
 const mock=async(url,request)=>{
   calls.push({url,request});
@@ -33,6 +41,23 @@ let mismatched=async(url,request)=>{
   return mock(url,request);
 };
 await fail({fetchImpl:mismatched},"github_ci_source_run_verification_failed");
+// Producer must not enqueue a same-name workflow from a different file/ID.
+for(const override of [
+  {path:".github/workflows/impostor.yml"},
+  {workflow_id:999999999},
+  {path:null},
+  {name:"Website checks"},
+]){
+  const requests=[];
+  await fail({fetchImpl:async(url,request)=>{
+    requests.push({url,request});
+    if(url.endsWith("/actions/runs/"+runId))
+      return {ok:true,json:async()=>({...r,...override})};
+    throw Error("producer must reject before Cloudflare request");
+  }},"github_ci_source_run_verification_failed");
+  assert.equal(requests.length,1,"Spoofed workflow must never reach Cloudflare");
+}
+
 const afterValidation=calls.length;
 assert.equal(afterValidation,callsBefore);
 await fail({fetchImpl:async(url,request)=>{

@@ -2,10 +2,10 @@
 // GitHub's authoritative read-only API, then reuse the existing HAE audit job.
 // A Queue message never supplies "verified", writer state, diffs or raw logs.
 import { normalizeGithubCIEvent } from "./github-ci-event-sensor.mjs";
+import { githubCIWorkflowIdentityVerified } from "./github-ci-workflow-identity.mjs";
 
 const REPO="officeus-create/Hermes";
 const API="https://api.github.com/repos/"+REPO;
-const ALLOWED=new Set(["Hermes Automation Engine Contract","Website checks"]);
 const SHA=/^[a-f0-9]{40}$/;
 
 function invalid(code){const e=new Error(code);e.code=code;throw e;}
@@ -38,7 +38,7 @@ export async function verifyGithubCIQueueEnvelope(message,{fetchImpl=fetch}={}){
   if(run?.id!==run_id||run?.run_attempt!==run_attempt ||
      run?.repository?.full_name!==REPO ||
      run?.head_repository?.full_name!==REPO ||
-     !ALLOWED.has(run?.name)||run?.status!=="completed" ||
+     !githubCIWorkflowIdentityVerified(run)||run?.status!=="completed" ||
      !["failure","timed_out"].includes(run?.conclusion)||!SHA.test(run?.head_sha||"") ||
      run?.html_url!=="https://github.com/"+REPO+"/actions/runs/"+run_id) {
     invalid("github_ci_source_evidence_mismatch");

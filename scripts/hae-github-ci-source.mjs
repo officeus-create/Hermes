@@ -3,10 +3,10 @@
 // It performs exactly one authenticated Cloudflare Queue POST after read-only
 // GitHub verification, with no blind resend if the result is ambiguous.
 import fs from "node:fs";
+import { githubCIWorkflowIdentityVerified } from "../workers/automation-engine/src/github-ci-workflow-identity.mjs";
 import { pathToFileURL } from "node:url";
 
 const REPO="officeus-create/Hermes",API="https://api.cloudflare.com/client/v4";
-const ALLOWED=new Set(["Hermes Automation Engine Contract","Website checks"]);
 const UUID=/^[a-f0-9-]{32,36}$/;
 function fail(code){const e=new Error(code);e.code=code;throw e;}
 async function jsonFetch(url,token,fetchImpl,postBody){
@@ -32,7 +32,7 @@ export async function dispatchGithubCIEvent({
   if(run?.id!==runId||run?.run_attempt!==runAttempt ||
     run?.repository?.full_name!==REPO ||
      run?.head_repository?.full_name!==REPO ||
-    !ALLOWED.has(run?.name) ||
+    !githubCIWorkflowIdentityVerified(run) ||
     run?.status!=="completed"||!["failure","timed_out"].includes(run?.conclusion)||
     run?.html_url!=="https://github.com/"+REPO+"/actions/runs/"+runId) {
     fail("github_ci_source_run_verification_failed");
