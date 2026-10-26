@@ -173,3 +173,27 @@ DEPLOY CODE WITH PUBLISH OFF
 ```
 
 No code readiness claim equals production activation.
+
+
+## 2026-10-26 — read-only discovery draft PR #2092 (NOT MERGED / NOT LIVE)
+
+**Owner:** GitHub issue #1018. Reuse the encrypted native secondary-brand connection (Office Test / ProgressoPro / Academy), not Windsor's Hermes Logistics connection and not a second publisher.
+
+Draft endpoint (internal owner only, noindex/no-store):
+- \`GET /api/internal/social/threads/read?brand=progressopro&mode=owned\`
+- \`GET /api/internal/social/threads/read?brand=progressopro&mode=search&q=website%20design&search_type=RECENT&limit=25\`
+- \`GET /api/internal/social/threads/read?brand=progressopro&mode=thread&thread_id=PROVIDER_VERIFIED_NUMERIC_ID\`
+- \`GET /api/internal/social/threads/read?brand=progressopro&mode=thread&post_url=ENCODED_PUBLIC_THREADS_URL\`
+
+**Meta permission gates:**
+- Own posts: \`threads_basic\`.
+- Search other public accounts: app-reviewed \`threads_keyword_search\` plus \`threads_basic\`.
+- Read a known ID's conversation: \`threads_read_replies\` plus \`threads_basic\`; third-party eligibility must be validated with the actual provider readback.
+- Resolve a public permalink from an author's visible profile: \`threads_profile_discovery\` additionally. It is *allowlisted but not a default OAuth scope*. Request app review, set \`THREADS_BRAND_SCOPES\`, reconnect the exact brand, and inspect the stored \`granted_scope\` before testing.
+- Meta may restrict access to third-party conversations even with scopes, and search ranking is not exhaustive; a \`complete=false\` result is not all comments.
+
+**One-post acceptance target:** \`https://www.threads.com/@tsapushel_olena/post/De6z1w-iAC5\`. Do not claim competitors' prices were collected until provider returns the author's post, accessible comment pages, stable IDs, and a bounded coverage record. There is no third-party cookie/anti-bot bypass.
+
+**Commercial follow-up:** Treat raw quotes as proposals (not verified prices). Human review -> compare scope/currency/delivery/hosting/SEO/design -> optional *approved* reply through current Social Studio/Windsor -> tracked CTA -> human-qualified CRM opportunity -> revenue receipt. Never bulk unsolicited comments, scraped-profile messaging, or automated posting on outside discussions.
+
+**Status gates:** CODED \`#2092\` does not mean CI_GREEN, MERGED, LIVE_VERIFIED, META_SCOPE_APPROVED, or SOURCE_COMPLETE. The Threads contract unit tests run inside \`scripts/threads-brand-connector.test.mjs\`; owner and release gates are unchanged.
