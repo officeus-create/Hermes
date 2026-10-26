@@ -2102,3 +2102,10 @@ ai_name: Codex; role: delegated Academy owner; contribution_type: Implementation
 
 - #2119 merged d7ebd170; live: website development shows the proof rail, canonical unchanged.
 - Academy owner page already follows the funnel order; slice reroutes `--color-violet-600` to the family accent on family pages and gives `.capacity-boundary-grid` cards the family top border. `/paths/academy/` (approved direction owner, untagged) still has violet eyebrows → task 9.
+
+## 2026-10-26 — Claude Code — #2121 merged; London cluster classified (task 10)
+
+- #2121 (coverage matrix docs) merged 46168a03.
+- London audit on the live site: all 45 London pages are Pearl, index/follow, self-canonical. 23 pages had no direction family (industry `*-marketing`, Meta Ads, SMM, GBP, content, CRM, landing pages, Academy guides, all `/ru|ua/gb/london/{section}/`), so their eyebrows stayed violet and their headings navy. `BaseLayout` family patterns now cover them; the three multi-direction hubs stay untagged with neutral eyebrows, and the EN hub direction cards carry the direction accent and open their owner page from anywhere on the card.
+- Gates: build, `npm test`, SEO hygiene, GSC triage, owner clarity, hreflang, internal links, performance budget all green. Build diff vs main 46168a03: 0 href/fact changes. New `tests/london-family-accents.spec.ts`; London and locale specs: 58 passed.
+- Next action — task 11 (controls cleanup); accept — no 12px-radius public primary buttons, status chips coloured by semantic state.

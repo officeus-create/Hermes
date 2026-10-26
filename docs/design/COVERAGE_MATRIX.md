@@ -33,7 +33,7 @@ MECHANISM → ONE primary action → measurement on an existing approved event, 
 | 11 | Case studies | `/case/`, `/case/appleton-…/`, `/case/it-development/` | 32 / 8 / 19 | Pearl, per-route accent | light (#2109) | case CTA | PARTIAL | #2091, #2109 | — | — |
 | 12 | Resources / guides | `/resources/*`, `/logistics/resources/*` | ≤29 | Pearl | light (#2109) | resource CTA | PARTIAL | #2091, #2109 | — | — |
 | 13 | Localized overviews + owners | `/{es,fr,it,ru,ua}/`, `/{locale}/{direction}/` | 74 RU / 68 UA / 37 IT | live window (wave B) | light (#2109) | localized contact panel | PARTIAL | #2091, #2109 | — | full RU/UA translation plan (separate project) |
-| 14 | London cluster | `/gb/london/*` | ≤3 | not audited this cycle | — | — | NOT_CLASSIFIED | #1185 era | — | classify |
+| 14 | London cluster | `/gb/london/*`, `/{ru,ua}/gb/london/*` (45 pages) | ≤3 | Pearl; every service/industry/guide page follows its direction family (marketing / technology / academy); hubs neutral with direction-accent cards | light | hero CTA → scope → measurement → related → FAQ → `/business-growth/` request (UTM-tagged) | CURRENT_BASELINE (classified 26.10; no London proof asset) | #2122 | live audit 26.10 | proof only when a real London client result exists |
 | 15 | Legal / policy | `/privacy/`, `/terms/`, `/legal-compliance/`, … | ≤36 | Pearl (TrustPage / legal hero) | light | policy contact | CURRENT_BASELINE | #2091 | ✓ | — |
 | 16 | Insights | `/insights/*` | 49 sessions | indigo product accent | — | article CTA | INTENTIONAL_PRODUCT | #2100 | ✓ | dated readbacks |
 | 17 | Catalog | `/businesses/*` | 9 | teal product accent | — | — | INTENTIONAL_PRODUCT | #2027 | ✓ | — |
@@ -42,8 +42,8 @@ MECHANISM → ONE primary action → measurement on an existing approved event, 
 | 20 | Agreements / sign / onboarding | `/contracts/*`, `/sign/*` | — | Pearl (wave A) | — | — | PRIVATE | #2091 | ✓ | — |
 | 21 | 404 | `/404.html` | — | Pearl | — | home links | CURRENT_BASELINE | #2091 | ✓ | — |
 
-MACRO 2026-10-26 evening: 3 of 13 commercial/content families `ACCEPTED_LIVE` (Marketing services, brand-intent trust,
-Technology services); 5 `CURRENT_BASELINE`; 3 `PARTIAL`; 1 `BLOCKED`; 1 `NOT_CLASSIFIED`. Product/private families (16–20) are out of the brand-shell migration by decision.
+MACRO 2026-10-26 night (after London classification): 3 of 13 commercial/content families `ACCEPTED_LIVE` (Marketing services, brand-intent trust,
+Technology services); 6 `CURRENT_BASELINE`; 3 `PARTIAL`; 1 `BLOCKED`; 0 `NOT_CLASSIFIED`. Product/private families (16–20) are out of the brand-shell migration by decision.
 
 ## Evidence anchors (do not re-derive)
 

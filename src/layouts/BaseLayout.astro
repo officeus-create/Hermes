@@ -82,9 +82,9 @@ type DirectionFamily = "logistics" | "technology" | "academy" | "marketing";
 let directionFamilyValue: DirectionFamily | undefined;
 const directionFamilyPatterns: Array<[DirectionFamily, RegExp]> = [
   ["logistics", /^\/(?:paths\/)?logistics\/|^\/carrier(?:-[a-z-]+)?\/|^\/(?:ru|ua|es|it|fr)\/(?:logistics|logistica|logistique)\//],
-  ["academy", /^\/academy\/|^\/(?:ru|ua|es|it|fr)\/(?:academy|academia|academie)\/|^\/gb\/london\/academy\/|^\/gb\/london\/us-logistics-training\//],
-  ["technology", /^\/services\/(?:website-|auto-repair-website-design\/)|^\/case\/it-development\/|^\/resources\/website-project-brief-template\/|^\/(?:ru|ua|es|it|fr)\/(?:technology|tecnologia|technologie)\/|^\/gb\/london\/(?:it-web-development|website-development)\//],
-  ["marketing", /^\/services\/(?:seo|local-seo)|^\/(?:(?:ru|ua)\/)?business-growth\/|^\/(?:ru|ua|es|it|fr)\/marketing\/|^\/resources\/(?:technical-seo-checklist|search-to-inquiry-conversion-checklist|logistics-seo-audit-sample)\/|^\/case\/appleton-vehicle-transport-seo\/|^\/gb\/london\/(?:marketing|seo-services|local-seo|marketing-audit|guides)\//],
+  ["academy", /^\/academy\/|^\/(?:ru|ua|es|it|fr)\/(?:academy|academia|academie)\/|^\/(?:(?:ru|ua)\/)?gb\/london\/(?:academy|us-logistics-training|guides\/(?:b2-english-us-logistics|dispatcher-vs-load-planner|training-curriculum|us-logistics-roles))\//],
+  ["technology", /^\/services\/(?:website-|auto-repair-website-design\/)|^\/case\/it-development\/|^\/resources\/website-project-brief-template\/|^\/(?:ru|ua|es|it|fr)\/(?:technology|tecnologia|technologie)\/|^\/(?:(?:ru|ua)\/)?gb\/london\/(?:it-web-development|website-development|landing-page-development|crm-automation|guides\/small-business-website-guide)\//],
+  ["marketing", /^\/services\/(?:seo|local-seo)|^\/(?:(?:ru|ua)\/)?business-growth\/|^\/(?:ru|ua|es|it|fr)\/marketing\/|^\/resources\/(?:technical-seo-checklist|search-to-inquiry-conversion-checklist|logistics-seo-audit-sample)\/|^\/case\/appleton-vehicle-transport-seo\/|^\/(?:(?:ru|ua)\/)?gb\/london\/(?:marketing|seo-services|local-seo|marketing-audit|guides|meta-ads|social-media-management|google-business-profile|content-reels-scripts|[a-z-]+-marketing)\//],
 ];
 for (const [family, pattern] of directionFamilyPatterns) {
   if (pattern.test(familyPath)) { directionFamilyValue = family; break; }
