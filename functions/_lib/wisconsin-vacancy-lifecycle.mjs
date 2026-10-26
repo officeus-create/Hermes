@@ -40,8 +40,8 @@ function replaceSimpleMarkedContent(html, marker, text) {
 function replacePausedDescriptionMeta(html) {
   return html.replace(/<meta\b[^>]*>/gi, (tag) => {
     const isDescription = /(?:name|property)=["'](?:description|og:description|twitter:description)["']/i.test(tag);
-    if (!isDescription || !/\\bcontent=["'][^"']*["']/i.test(tag)) return tag;
-    return tag.replace(/\\bcontent=(["'])[^"']*\\1/i, `content="${PAUSED_WISCONSIN_DESCRIPTION}"`);
+    if (!isDescription || !/\bcontent=["'][^"']*["']/i.test(tag)) return tag;
+    return tag.replace(/\bcontent=(["'])[^"']*\1/i, `content="${PAUSED_WISCONSIN_DESCRIPTION}"`);
   });
 }
 
