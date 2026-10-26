@@ -311,3 +311,17 @@ html body main:not(#pearl-scope) section.digital-project-cta .eyebrow { color: v
 html body main :is(article.insight-card, article.business-card, article.service-card, article.opportunity-card, article.technology-solution-card, article.technology-proof-item) { position: relative; cursor: pointer; }
 html body main :is(article.insight-card, article.business-card, article.service-card, article.opportunity-card, article.technology-solution-card, article.technology-proof-item) a[href] { position: static; }
 html body main :is(article.insight-card, article.business-card, article.service-card, article.opportunity-card, article.technology-solution-card, article.technology-proof-item) a[href]::after { content: ""; position: absolute; inset: 0; z-index: 1; border-radius: inherit; }
+
+/* Logistics family funnel: one primary action per hero. The third hero action (carrier capacity) stays, but reads as a
+   text link instead of a third button; legacy navy headings take the brand ink. */
+html body[data-direction-family] { --color-navy-900: var(--pearl-shell-text); }
+html body[data-direction-family="logistics"] main:not(#pearl-scope) .logistics-audience-actions > a.button:not(.button-primary):nth-of-type(n+3) {
+  min-height: 0;
+  padding: .35rem .15rem;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  color: var(--family-accent-text);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
