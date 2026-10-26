@@ -19,6 +19,7 @@ const baseQuote: WebsiteSalesQuote = {
   discountClass: "NONE",
   discountPercent: 0,
   approvalState: "AUTO_POLICY",
+  approvalReference: null,
   salesRepCode: "rep-demo",
   commissionRateBps: 2000,
   commissionAmountCents: 55800,
@@ -79,6 +80,23 @@ test("discount policy requires explicit approval", () => {
     caseStudyTerms: "APPROVED",
   });
   expect(caseStudy.valid).toBe(true);
+
+  const ceoWithoutReference = validateWebsiteSalesQuote({
+    ...baseQuote,
+    discountClass: "CEO_EXCEPTION",
+    discountPercent: 20,
+    approvalState: "CEO_APPROVED",
+  });
+  expect(ceoWithoutReference.errors).toContain("ceo_approval_reference_required");
+
+  const ceoWithReference = validateWebsiteSalesQuote({
+    ...baseQuote,
+    discountClass: "CEO_EXCEPTION",
+    discountPercent: 20,
+    approvalState: "CEO_APPROVED",
+    approvalReference: "ceo:pricing-exception-1",
+  });
+  expect(ceoWithReference.valid).toBe(true);
 });
 
 test("gross margin stays unknown until delivery cost evidence is verified", () => {
