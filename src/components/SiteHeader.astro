@@ -22,11 +22,11 @@ interface Props {
 }
 
 const { theme = "dark", activePath, locale: requestedPropLocale = "en", contactHref = "/contacts/" } = Astro.props;
-// Localized routes (/ru/, /ua/, /es/, /it/, /fr/) keep their chrome in the page language even when a
-// template forgets to pass `locale`.
+const locale = requestedPropLocale;
+// Localized routes (/ru/, /ua/, /es/, /it/, /fr/) whose template does not pass `locale` keep every
+// href exactly as before (English link graph) but show visible labels in the page language.
 const pathLocaleMatch = Astro.url.pathname.match(/^\/(ru|ua|es|it|fr)\//)?.[1];
-const pathLocale = pathLocaleMatch === "ua" ? "uk" : pathLocaleMatch;
-const locale = (requestedPropLocale !== "en" ? requestedPropLocale : (pathLocale ?? "en")) as typeof requestedPropLocale;
+const pathLocale = (pathLocaleMatch === "ua" ? "uk" : pathLocaleMatch) as typeof requestedPropLocale | undefined;
 const currentPath = Astro.url.pathname;
 const isApprovedHome = currentPath === "/";
 const isApprovedProductsShell = currentPath === "/products/";
@@ -86,6 +86,7 @@ const isCatalogLocaleRoute = currentPath === "/businesses/" || currentPath.start
 const activeLocale = requestedLocale && ((isHermesConnectExperienceRoute && siteLocales.includes(requestedLocale as SiteLocale)) || (isCatalogLocaleRoute && (requestedLocale === "en" || requestedLocale === "uk")))
   ? requestedLocale as SiteLocale
   : locale;
+const labelLocale = activeLocale !== "en" ? activeLocale : (pathLocale ?? "en");
 const localizedLabels = {
   uk: { logistics: "Логістика", marketing: "Маркетинг", academy: "Академія", technology: "IT-розробка", contact: "Почати розмову", home: "Головна", signIn: "Увійти" },
   ru: { logistics: "Логистика", marketing: "Маркетинг", academy: "Академия", technology: "IT-разработка", contact: "Начать разговор", home: "Главная", signIn: "Войти" },
@@ -100,7 +101,7 @@ const productsCopy = {
   es: { menu: "Productos", all: "Todos los productos", allNote: "Creados y operados por Hermes", connectNote: "Sistema operativo con IA · piloto activo", catalog: "Catálogo", catalogNote: "Directorio de empresas", insights: "Insights", insightsNote: "Noticias y casos", opportunities: "Oportunidades", opportunitiesNote: "Empleo y alianzas" },
   it: { menu: "Prodotti", all: "Tutti i prodotti", allNote: "Creati e gestiti da Hermes", connectNote: "Sistema operativo con AI · pilota attivo", catalog: "Catalogo", catalogNote: "Elenco aziende", insights: "Insights", insightsNote: "Notizie e casi", opportunities: "Opportunità", opportunitiesNote: "Carriere e partnership" },
   fr: { menu: "Produits", all: "Tous les produits", allNote: "Conçus et exploités par Hermes", connectNote: "Système d'exploitation IA · pilote actif", catalog: "Catalogue", catalogNote: "Annuaire d'entreprises", insights: "Insights", insightsNote: "Actualités et études de cas", opportunities: "Opportunités", opportunitiesNote: "Carrières et partenariats" },
-}[activeLocale];
+}[labelLocale];
 const directionOrder: Record<string, number> = { logistics: 0, technology: 1, academy: 2, marketing: 3 };
 const navDirectionId = (href: string) => href.match(/^paths\/([^/]+)\//)?.[1] ?? "";
 const orderedNavigation = [...site.navigation].sort(
@@ -112,7 +113,10 @@ const orderedPaths = [...site.paths].sort(
 const navigation = activeLocale === "en"
   ? orderedNavigation.map((item) => {
       const url = `/${item.href}`;
-      const label = item.href === "paths/technology/" ? "Technology" : item.label;
+      const directionId = navDirectionId(item.href);
+      const label = labelLocale !== "en" && directionId in localizedLabels[labelLocale as keyof typeof localizedLabels]
+        ? localizedLabels[labelLocale as keyof typeof localizedLabels][directionId as keyof typeof localizedLabels.uk]
+        : item.href === "paths/technology/" ? "Technology" : item.label;
       return { ...item, key: navDirectionId(item.href), label, url, active: (activePath ?? currentPath) === url };
     })
   : orderedPaths.map((path) => ({
@@ -124,8 +128,8 @@ const navigation = activeLocale === "en"
 const isCatalogRoute = currentPath === "/businesses/" || currentPath.startsWith("/businesses/");
 const isInsightsRoute = currentPath === "/insights/" || currentPath.startsWith("/insights/");
 const isOpportunitiesRoute = currentPath === "/opportunities/" || currentPath.startsWith("/opportunities/");
-const contactLabel = activeLocale === "en" ? "Start a conversation" : localizedLabels[activeLocale].contact;
-const signInLabel = activeLocale === "en" ? "Sign in" : localizedLabels[activeLocale].signIn;
+const contactLabel = labelLocale === "en" ? "Start a conversation" : localizedLabels[labelLocale as keyof typeof localizedLabels].contact;
+const signInLabel = labelLocale === "en" ? "Sign in" : localizedLabels[labelLocale as keyof typeof localizedLabels].signIn;
 // The Home and localized overview Products navigation must preserve Hermes Connect's
 // supported ?lang= locale when crossing from a localized corporate page.
 const connectProductHref = activeLocale === "en" ? "/services/hermes-connect/" : `/services/hermes-connect/?lang=${activeLocale}`;
@@ -279,7 +283,7 @@ const languageLinks = siteLocales.filter((language) => !isCatalogLocaleRoute || 
     </div>
   </nav>
   {isApprovedDirectionShell && (section || isApprovedProductsShell) && <DirectionProductNav direction={section ?? "products"} theme="light" locale={activeLocale === "ru" ? "ru" : "en"} />}
-  {isApprovedVisualShell && currentPath.startsWith("/businesses/") && !/^\/businesses\/(?:concepts|italy|marketing-growth-audit-example)\//.test(currentPath) && <DirectionProductNav direction="catalog" theme="light" locale={activeLocale === "ru" || activeLocale === "uk" ? activeLocale : "en"} />}
+  {isApprovedVisualShell && currentPath.startsWith("/businesses/") && !/^\/businesses\/(?:concepts|italy|ukraine|marketing-growth-audit-example)\//.test(currentPath) && <DirectionProductNav direction="catalog" theme="light" locale={activeLocale === "ru" || activeLocale === "uk" ? activeLocale : "en"} />}
   {isApprovedHome && <span class="home-update-descriptions"><span id="home-academy-update" hidden>New Academy update within the last seven days.</span><span id="home-insights-update" hidden>New Insight within the last seven days.</span><span id="home-connect-update" hidden>New Connect update within the last seven days.</span><span id="home-catalog-update" hidden>New Catalog update within the last seven days.</span></span>}
 </header>
 {isCatalogLocaleRoute && (

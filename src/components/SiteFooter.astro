@@ -8,14 +8,19 @@ import RussianLocaleIntegrity from "./RussianLocaleIntegrity.astro";
 
 interface Props {
   locale?: SiteLocale;
+  /** Visible text language only; hrefs follow `locale` (default English link graph). */
+  textLocale?: SiteLocale;
 }
 
-const { locale: requestedPropLocale = "en" } = Astro.props;
+const { locale: requestedPropLocale = "en", textLocale: requestedTextLocale } = Astro.props;
 const currentPath = Astro.url.pathname;
 const connectRequestedLocale = currentPath.startsWith("/services/hermes-connect") ? Astro.url.searchParams.get("lang") : null;
 const pathLocaleMatch = currentPath.match(/^\/(ru|ua|es|it|fr)\//)?.[1];
 const pathLocale = (pathLocaleMatch === "ua" ? "uk" : pathLocaleMatch) as SiteLocale | undefined;
-const locale: SiteLocale = connectRequestedLocale === "ru" ? "ru" : requestedPropLocale !== "en" ? requestedPropLocale : (pathLocale ?? "en");
+const locale: SiteLocale = connectRequestedLocale === "ru" ? "ru" : requestedPropLocale;
+// Localized routes whose template does not pass `locale` keep the English footer's hrefs exactly
+// (same link graph) and only show visible text in the page language.
+const textLocale: SiteLocale = requestedTextLocale ?? (locale !== "en" ? locale : (pathLocale ?? "en"));
 const publicLocationBoundary = {
   en: "U.S. logistics · International email coordination",
   ru: "Логистика в США · международная координация по электронной почте",
@@ -23,7 +28,7 @@ const publicLocationBoundary = {
   es: "Logística en EE. UU. · coordinación internacional por email",
   it: "Logistica negli USA · coordinamento internazionale via email",
   fr: "Logistique aux États-Unis · coordination internationale par email",
-}[locale];
+}[textLocale];
 const showTransportRequestActions = currentPath === "/logistics/request-vehicle-transport/";
 const directionOrder = { logistics: 0, technology: 1, academy: 2, marketing: 3 } as const;
 const directionRank = (href: string) => {
@@ -35,7 +40,7 @@ const directionRank = (href: string) => {
 const orderedSiteNavigation = [...site.navigation].sort(
   (a, b) => directionRank(`/${a.href}`) - directionRank(`/${b.href}`),
 );
-const localized = {
+const localizedByLocale = {
   en: {
     statement: "Logistics, growth, education, and technology working with one practical standard.",
     nav: [
@@ -109,11 +114,12 @@ const localized = {
     privacy: "Confidentialité", contact: "Contact", route: "Choisir le canal de contact",
     designed: "Conçu et développé par", method: "Dirigé par l'humain, assisté par AI", status: "Les demandes sont envoyées par email",
   },
-}[locale];
+};
+const localized = localizedByLocale[locale];
+const localizedText = (language: SiteLocale) => localizedByLocale[language];
 const localizedNav = [...localized.nav].sort((a, b) => directionRank(a.href) - directionRank(b.href));
-// RU/UA footers keep the same server-rendered link graph the English footer gave these pages
-// (direction owners, money pages, trust and legal routes); only the visible labels are translated.
-const footerOwnerLinks = {
+// Translated labels for the English footer's links on RU/UA routes (hrefs never change).
+const footerLabelByHrefSource = {
   ru: [
     ["Логистика (EN)", "/paths/logistics/"], ["IT-разработка (EN)", "/paths/technology/"], ["Академия (EN)", "/paths/academy/"], ["Маркетинг (EN)", "/paths/marketing/"],
     ["Новости", "/insights/"], ["Кейсы", "/case/"], ["Разработка сайтов", "/services/website-development/"], ["SEO-услуги", "/services/seo/"],
@@ -128,7 +134,18 @@ const footerOwnerLinks = {
     ["Правова інформація", "/legal-compliance/"], ["Регіональна приватність", "/regional-privacy/"], ["Налаштування приватності", "/privacy-choices/"], ["Про компанію", "/company-information/"],
     ["Про Hermes", "/about/"], ["Доступ до Hermes Connect", "/download/"], ["Умови використання", "/terms/"], ["Редакційна політика", "/editorial-policy/"], ["Доступність", "/accessibility/"],
   ],
-}[locale as "ru" | "uk"] ?? [];
+}[textLocale as "ru" | "uk"] ?? [];
+const footerLabelByHref = Object.fromEntries(footerLabelByHrefSource.map(([label, href]) => [href, label]));
+const footerLabel = (href: string, label: string) => (locale === "en" ? footerLabelByHref[href] : undefined) ?? label;
+const text = {
+  statement: localizedText(textLocale).statement,
+  privacy: localizedText(textLocale).privacy,
+  contact: localizedText(textLocale).contact,
+  route: localizedText(textLocale).route,
+  designed: localizedText(textLocale).designed,
+  method: localizedText(textLocale).method,
+  status: localizedText(textLocale).status,
+};
 const localePath = localeConfig[locale].path;
 const privacyHref = locale === "ru" ? "/ru/privacy/" : "/privacy/";
 const homeFooterGroups = [
@@ -224,7 +241,7 @@ const homeFooterGroups = [
   <div class="shell footer-main">
     <div class="footer-intro">
       <p class={`footer-brand${currentPath === "/" ? " footer-brand-approved" : ""}`}>{currentPath === "/" && <img src="/brand/hermes-mark.svg" alt="Hermes corporate H mark" width="36" height="36" decoding="async" />}<span>{site.brand}</span></p>
-      <p>{localized.statement}</p>
+      <p>{text.statement}</p>
       <p class="footer-location">{publicLocationBoundary}</p>
       <HermesConnectLauncher variant="footer" />
     </div>
@@ -239,27 +256,26 @@ const homeFooterGroups = [
       </nav>
     ) : (
       <nav class="footer-primary-nav" aria-label="Footer navigation">
-        {localizedNav.map((item) => <a href={item.href}>{item.label}</a>)}
-        <a href={privacyHref}>{localized.privacy}</a>
+        {localizedNav.map((item) => <a href={item.href}>{footerLabel(item.href, item.label)}</a>)}
+        <a href={privacyHref}>{text.privacy}</a>
         {locale === "en" && (
           <>
-            <a href="/legal-compliance/">Legal & Compliance</a>
-            <a href="/regional-privacy/">Regional Privacy</a>
-            <a href="/privacy-choices/">Privacy Choices</a>
-            <a href="/company-information/">Company Information</a>
-            <a href="/about/">About Hermes</a>
-            <a href="/download/">Hermes Connect Access</a>
-            <a href="/terms/">Terms of Use</a>
-            <a href="/editorial-policy/">Editorial & Corrections</a>
-            <a href="/accessibility/">Accessibility</a>
+            <a href="/legal-compliance/">{footerLabel("/legal-compliance/", "Legal & Compliance")}</a>
+            <a href="/regional-privacy/">{footerLabel("/regional-privacy/", "Regional Privacy")}</a>
+            <a href="/privacy-choices/">{footerLabel("/privacy-choices/", "Privacy Choices")}</a>
+            <a href="/company-information/">{footerLabel("/company-information/", "Company Information")}</a>
+            <a href="/about/">{footerLabel("/about/", "About Hermes")}</a>
+            <a href="/download/">{footerLabel("/download/", "Hermes Connect Access")}</a>
+            <a href="/terms/">{footerLabel("/terms/", "Terms of Use")}</a>
+            <a href="/editorial-policy/">{footerLabel("/editorial-policy/", "Editorial & Corrections")}</a>
+            <a href="/accessibility/">{footerLabel("/accessibility/", "Accessibility")}</a>
           </>
         )}
-        {footerOwnerLinks.map(([label, href]) => <a href={href}>{label}</a>)}
       </nav>
     )}
     <div class="footer-contacts" aria-label="Contact options">
-      <p class="footer-contacts-label">{localized.contact}</p>
-      <a href={locale === "en" ? "/contacts/" : `${localePath}#contact`}>{localized.route}</a>
+      <p class="footer-contacts-label">{text.contact}</p>
+      <a href={locale === "en" ? "/contacts/" : `${localePath}#contact`}>{text.route}</a>
       <a href="mailto:officeus@hermeslogisticsus.com">officeus@hermeslogisticsus.com</a>
     </div>
     <nav class="footer-social" aria-label="Social media">
@@ -281,9 +297,9 @@ const homeFooterGroups = [
   </div>
   <div class="shell footer-meta">
     <span>
-      {localized.designed} <a href={directionOwnerRoutes[locale].technology}>Hermes Technology</a> · {localized.method}
+      {text.designed} <a href={directionOwnerRoutes[locale].technology}>Hermes Technology</a> · {text.method}
     </span>
-    <span>© 2026 Hermes · {publicLocationBoundary} · {localized.status}</span>
+    <span>© 2026 Hermes · {publicLocationBoundary} · {text.status}</span>
   </div>
 </footer>
 <RussianLocaleIntegrity />
