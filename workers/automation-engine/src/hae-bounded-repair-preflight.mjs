@@ -64,7 +64,8 @@ function verifyDiff(diff,expected){
       if(oldCount<0||newCount<0)deny("hunk_count_mismatch");
       if(ch==="+" && (
         /(?:\b(?:token|api_key|private_key|password|secret)\b\s*[=:])|(?:sk-proj-|ghp_|BEGIN [A-Z ]*PRIVATE KEY)/i.test(line)||
-        /(?:child_process|execSync|spawnSync|process\.env|fetch\s*\(|https?:\/\/|eval\s*\(|Function\s*\()/i.test(line)
+        /(?:child_process|execSync|spawnSync|process\.|globalThis\.|fetch\s*\(|WebSocket\b|https?:\/\/|eval\s*\(|Function\s*\(|import\s*\(|\brequire\s*\(|from\s+["']node:|import\s+.*["']node:)/i.test(line)||
+        /(?:\b(?:fs|http|https|net|tls|dns|dgram|vm|worker_threads)\s*\.|\b(?:writeFile|writeFileSync|appendFile|appendFileSync|rm|rmSync|unlink|unlinkSync|rename|renameSync|chmod|chmodSync|chown|chownSync|mkdir|mkdirSync|symlink|symlinkSync|copyFile|copyFileSync|truncate|truncateSync)\s*\()/i.test(line)
       ))deny("unsafe_added_code");
     }
   }
