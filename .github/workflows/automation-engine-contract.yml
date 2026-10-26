@@ -71,3 +71,4 @@ jobs:
           node scripts/hae-migration-baseline-candidate.test.mjs
           node scripts/hae-t4-dlq-canary.test.mjs
           node scripts/hae-t4-readonly-d1-diagnostic.test.mjs
+          node scripts/hae-bounded-repair-preflight.test.mjs
