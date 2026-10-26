@@ -75,7 +75,7 @@ import SiteFooter from "../../../../../components/SiteFooter.astro";
             </select>
           </label>
           <label>Text <span data-byte-count>0 / 500 UTF-8 bytes</span><textarea name="text" rows="7" maxlength="500" placeholder="Owner-approved Threads text."></textarea></label>
-          <label>Idempotency key <input name="idempotency_key" value="office-threads-canary-20260929-01" /></label>
+          <label>Idempotency key <input name="idempotency_key" autocomplete="off" placeholder="Generated per brand + approved post" /></label>
           <button type="submit" data-compose-publish disabled>Publish selected brand</button>
           <p data-canary-status role="status"></p>
         </form>
@@ -112,6 +112,7 @@ import SiteFooter from "../../../../../components/SiteFooter.astro";
   const refreshMetrics = document.querySelector<HTMLButtonElement>("[data-refresh-metrics]");
   const composeBrand = form?.elements.namedItem("brand") as HTMLSelectElement | null;
   const composePublish = form?.querySelector<HTMLButtonElement>("[data-compose-publish]");
+  const composeKey = form?.elements.namedItem("idempotency_key") as HTMLInputElement | null;
   const connectionByBrand = new Map<string,Connection>();
   const healthButtons = [...document.querySelectorAll<HTMLButtonElement>("[data-health-brand]")];
   let healthBrand = "office_test";
@@ -137,6 +138,14 @@ import SiteFooter from "../../../../../components/SiteFooter.astro";
     if (!status) return;
     status.textContent = message;
     status.dataset.error = error ? "true" : "false";
+  }
+
+  function refreshComposeKey(force=false) {
+    if (!composeKey || !composeBrand) return;
+    if (composeKey.value && !force) return;
+    const day = new Date().toISOString().slice(0,10).replaceAll("-","");
+    const nonce = crypto.randomUUID().replaceAll("-","").slice(0,12);
+    composeKey.value = `${composeBrand.value}-threads-manual-${day}-${nonce}`;
   }
 
   function updateComposeGate() {
@@ -234,8 +243,12 @@ import SiteFooter from "../../../../../components/SiteFooter.astro";
     if (byteCount) byteCount.textContent = `${bytes} / 500 UTF-8 bytes`;
   };
   canaryText?.addEventListener("input", countBytes);
-  composeBrand?.addEventListener("change", updateComposeGate);
+  composeBrand?.addEventListener("change", ()=>{
+    refreshComposeKey(true);
+    updateComposeGate();
+  });
   countBytes();
+  refreshComposeKey();
   updateComposeGate();
 
   form?.addEventListener("submit", async (event)=>{
@@ -260,6 +273,7 @@ import SiteFooter from "../../../../../components/SiteFooter.astro";
         : `Published ${brand} with media ID ${payload.media_id}; readback pending.`;
       healthBrand = brand;
       for(const button of healthButtons) button.dataset.active=String(button.dataset.healthBrand===brand);
+      refreshComposeKey(true);
       await loadReceipts();
     } catch (error:any) {
       if (canaryStatus) canaryStatus.textContent = error?.payload?.error || "Canary publish failed.";
