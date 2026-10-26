@@ -150,3 +150,64 @@ Only after a fresh `INTERNAL_AI_PREFLIGHT=PASS`, the first live proof must remai
 `owner browser session → queued task → outbound Mac runner → isolated branch → Hermes Codex → sanitized evidence receipt`
 
 It must not require merge, deployment, credential access, billing, external communication, destructive database work, Telegram, Carrier Database, or another production mutation. Any need to cross those boundaries is evidence of a blocked pilot, not authorization to widen the runner.
+
+
+## macOS login auto-resume — coded, not provisioned
+
+The optional login-session recovery layer is:
+
+`scripts/ai/hermes-internal-ai-launch-wrapper.sh`
+
+with the bounded installer/rollback helper:
+
+`scripts/ai/install-hermes-internal-ai-launchagent.sh`
+
+This does **not** create another Hermes scheduler or task engine. The LaunchAgent
+only keeps the existing outbound `hermes-internal-ai-runner.py` process available
+after a macOS user login.
+
+Power boundary:
+
+- Cloudflare/D1 remains available while the Mac is offline;
+- queued owner work remains durable in the cloud;
+- a fully powered-off Mac cannot execute Codex work;
+- `RunAtLoad` means recovery begins only after the authorized macOS login session
+  exists and its login Keychain is available;
+- an always-on execution guarantee requires a separately approved always-on host,
+  not wording that pretends a laptop is a server.
+
+Secret boundary:
+
+- the plist contains no `HERMES_INTERNAL_AI_RUNNER_TOKEN`;
+- the scoped token is retrieved from the macOS login Keychain service
+  `com.hermes.internal-ai.runner-token`, account `hermes-internal-ai-runner`;
+- the installer checks for that Keychain item but never creates, changes, prints,
+  exports, or deletes it;
+- runner-token provisioning remains an owner/security action;
+- uninstalling the LaunchAgent deliberately leaves the Keychain item unchanged.
+
+Startup boundary:
+
+1. launchd invokes the wrapper;
+2. wrapper verifies the clean HTTPS API origin, repository boundary, Codex binary,
+   and Keychain token availability;
+3. wrapper unsets any one-time owner-bootstrap token;
+4. wrapper runs `codex-hermes-doctor --internal-ai`;
+5. only an `INTERNAL_AI_PREFLIGHT=PASS` path may exec the existing runner;
+6. failed preflight exits before task claim; launchd may retry later with a
+   throttle, but it never widens authority.
+
+The installer uses the dedicated label `com.hermes.internal-ai.runner`. It must
+not modify the separate temporary `com.hermes.viktor.*` local-learning jobs.
+
+Example owner-controlled prerequisite check, after the Keychain item has been
+provisioned through an approved local security path:
+
+```bash
+cd ~/Documents/Hermes
+bash scripts/ai/install-hermes-internal-ai-launchagent.sh --check-only
+```
+
+Actual `--install`, Keychain provisioning, and production runner activation are
+consequential owner/security actions. Repository CI proves only syntax and
+contract boundaries; it does not claim the user's Mac has been provisioned.
