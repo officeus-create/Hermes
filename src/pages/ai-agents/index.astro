@@ -3,6 +3,9 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 
 /** Public gateway only. Never proxy private audit, chat, prompt or provider data here. */
 const accessUrl = "https://agents.hermeslogisticsus.com/ai-agents/";
+// Fail closed until owner-approved Cloudflare Access + Tunnel have independent
+// anonymous-deny and authorized-login readback. This is not an environment toggle.
+const accessVerified = false;
 ---
 
 <BaseLayout
@@ -20,10 +23,23 @@ const accessUrl = "https://agents.hermeslogisticsus.com/ai-agents/";
         <p>The actual AI console is hosted separately from this public website, behind Cloudflare Access. A valid company login is required. Availability also depends on the Mac host being online.</p>
       </div>
       <div class="hermes-ai-entry__actions">
-        <a class="hermes-ai-entry__primary" href={accessUrl} rel="noopener noreferrer nofollow">Open private Hermes AI console <span aria-hidden="true">↗</span></a>
+        {accessVerified ? (
+          <a class="hermes-ai-entry__primary" href={accessUrl} rel="noopener noreferrer nofollow">Open private Hermes AI console <span aria-hidden="true">↗</span></a>
+        ) : (
+          <button class="hermes-ai-entry__primary hermes-ai-entry__primary--disabled" type="button" disabled aria-describedby="hermes-ai-access-pending">Private console — access setup pending</button>
+        )}
         <a class="hermes-ai-entry__secondary" href="/paths/technology/">Explore Hermes Technology</a>
       </div>
-      <p class="hermes-ai-entry__fineprint">If the private address does not open, the Cloudflare Access / Tunnel connection has not been fully activated. No private records, logs or chat history are displayed on this page.</p>
+      <p id="hermes-ai-access-pending" class="hermes-ai-entry__fineprint">Remote access is not yet verified. This page never connects directly to the Mac, Cloudflare Workers, model APIs or private HAE records. No login button is enabled until the independent Cloudflare Access and Tunnel checks pass.</p>
+      <section class="hermes-ai-entry__workspace" aria-labelledby="hermes-ai-workspace-heading">
+        <h2 id="hermes-ai-workspace-heading">One control room, separate runtimes</h2>
+        <p>Hermes AI is being prepared as a private operations workspace. The cloud orchestrator and local model have different responsibilities and evidence requirements.</p>
+        <div class="hermes-ai-entry__workspace-grid">
+          <article><span class="hermes-ai-entry__label">Cloud control plane</span><h3>HAE · Cloudflare</h3><p>Existing Worker, D1 and Queue own verified jobs, evidence and approved routing. A code PR is not proof of a deployed runtime.</p><span class="hermes-ai-entry__state">Read-only status required</span></article>
+          <article><span class="hermes-ai-entry__label">Local specialist</span><h3>Hermes AI · Mac</h3><p>Runs bounded website and GitHub QA and proposes fixes. Mac availability is not cloud availability; no autonomous production writes.</p><span class="hermes-ai-entry__state">Private tunnel pending</span></article>
+          <article><span class="hermes-ai-entry__label">Optional cloud inference</span><h3>Free AI specialist</h3><p>Provider access, free quota and data-handling rules must be authenticated before activation. No paid fallback or confidential data export.</p><span class="hermes-ai-entry__state">Not connected / unverified</span></article>
+        </div>
+      </section>
     </section>
     <aside class="hermes-ai-entry__aside" aria-label="Access boundaries">
       <div><span class="hermes-ai-entry__label">01 · Identity</span><strong>Company account</strong><p>Explicit allowlist and Cloudflare Access login. No public or anonymous API.</p></div>
@@ -41,9 +57,19 @@ const accessUrl = "https://agents.hermeslogisticsus.com/ai-agents/";
     .hermes-ai-entry__notice strong{font-size:1.02rem}.hermes-ai-entry__notice p,.hermes-ai-entry__aside p{color:#586e82;line-height:1.6;margin:.45rem 0 0}
     .hermes-ai-entry__actions{display:flex;gap:.8rem;flex-wrap:wrap;margin:2rem 0 1.2rem;align-items:center}
     .hermes-ai-entry__actions a{border-radius:12px;padding:.92rem 1.35rem;text-decoration:none;font-weight:650;min-height:48px;display:inline-flex;align-items:center;gap:.65rem}
-    .hermes-ai-entry__primary{color:white;background:#205b96}.hermes-ai-entry__primary:hover{background:#154570}
+    .hermes-ai-entry__primary{color:white;background:#205b96;border:0;font:inherit}.hermes-ai-entry__primary:not(:disabled):hover{background:#154570}
+    .hermes-ai-entry__primary--disabled{background:#e4eaf1;color:#506781;cursor:not-allowed;opacity:1}
     .hermes-ai-entry__secondary{border:1px solid #d9e1eb;color:#25496c;background:#fff}.hermes-ai-entry__secondary:hover{background:#f8fafc}
     .hermes-ai-entry__fineprint{font-size:.84rem;color:#738397;line-height:1.6;max-width:650px}
+    .hermes-ai-entry__workspace{margin-top:3rem;border-top:1px solid #e0e8f0;padding-top:1.65rem}
+    .hermes-ai-entry__workspace h2{font-size:1.3rem;letter-spacing:-.035em;margin:0 0 .45rem}
+    .hermes-ai-entry__workspace>p{margin:0;color:#586e82;line-height:1.55}
+    .hermes-ai-entry__workspace-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.75rem;margin-top:1.2rem}
+    .hermes-ai-entry__workspace-grid article{min-width:0;background:#fff;border:1px solid #e2e9f2;border-radius:16px;padding:1rem}
+    .hermes-ai-entry__workspace-grid h3{font-size:1rem;line-height:1.25;margin:.35rem 0;color:#172840}
+    .hermes-ai-entry__workspace-grid p{font-size:.82rem;line-height:1.55;color:#5b6d82;margin:.4rem 0 1rem}
+    .hermes-ai-entry__state{display:inline-block;padding:.3rem .55rem;border-radius:8px;color:#71561b;background:#fff5dd;font-size:.72rem;font-weight:680}
+    @media(max-width:1040px){.hermes-ai-entry__workspace-grid{grid-template-columns:1fr}}
     .hermes-ai-entry__aside{border:1px solid #e0e8f0;background:#fbfdff;border-radius:24px;padding:1.7rem 1.7rem 1rem;display:flex;flex-direction:column;gap:1.35rem;align-self:start}
     .hermes-ai-entry__aside>div{padding-bottom:1.3rem;border-bottom:1px solid #e3e9f1}.hermes-ai-entry__aside>div:last-child{border:0}
     .hermes-ai-entry__label{display:block;color:#66819d;letter-spacing:.09em;text-transform:uppercase;font-size:.7rem;font-weight:700;margin-bottom:.5rem}
