@@ -21,7 +21,7 @@ const calls=[];
 const originalFetch=globalThis.fetch;
 globalThis.fetch=async(url,options)=>{
   calls.push({url:String(url),method:options?.method||"GET"});
-  assert.equal(String(url),"https://api.github.com/repos/"+repo+"/actions/runs/"+runId);
+  assert.equal(String(url),"https://api.github.com/repos/"+repo+"/actions/runs/"+record.id);
   return {ok:true,json:async()=>structuredClone(record)};
 };
 const raw=new DatabaseSync(":memory:");
@@ -61,7 +61,7 @@ function batch(){
  return {state,object:{
   queue:"hermes-automation",
   messages:[{
-   body:{type:"github.ci.audit",run_id:runId,run_attempt:runAttempt},
+   body:{type:"github.ci.audit",run_id:record.id,run_attempt:runAttempt},
    id:"synthetic_message_id",attempts:1,
    ack(){state.ack++},retry(){state.retry++}
   }]
@@ -101,8 +101,36 @@ try{
  assert.deepEqual(conflictingReplay.state,{ack:0,retry:1});
  assert.equal(queueWrites.length,1);
  assert.equal(raw.prepare("SELECT COUNT(*) AS count FROM hermes_automation_jobs").get().count,1);
+ // Independent failure injection: D1 reservation succeeds, but downstream
+ // Queue send fails. The event must ACK only after durable RETRY_SCHEDULED,
+ // and duplicate source delivery must not enqueue an unleased second job.
+ record.id=runId+1;
+ record.html_url="https://github.com/"+repo+"/actions/runs/"+record.id;
+ record.updated_at="2026-10-26T15:10:00Z";
+ const originalSend=env.AUTOMATION_QUEUE.send;
+ env.AUTOMATION_QUEUE.send=async()=>{throw Error("synthetic_queue_unavailable");};
+ const failedEnqueue=batch();
+ await worker.queue(failedEnqueue.object,env);
+ assert.deepEqual(failedEnqueue.state,{ack:1,retry:0});
+ const deferred=raw.prepare(
+   "SELECT job_id,state,last_error_class,available_at FROM hermes_automation_jobs WHERE idempotency_key=?"
+ ).get("hae:ci:audit:github-ci:"+(runId+1)+":"+runAttempt+":"+head);
+ assert.ok(deferred,"D1 reservation must survive Queue outage");
+ assert.equal(deferred.state,"RETRY_SCHEDULED");
+ assert.equal(deferred.last_error_class,"job_enqueue_failed");
+ assert.ok(Date.parse(deferred.available_at)>Date.now(),"Retry deadline must be in the future");
+ assert.equal(raw.prepare(
+   "SELECT COUNT(*) AS count FROM hermes_automation_job_events WHERE job_id=? AND event_type='job.enqueue_failed'"
+ ).get(deferred.job_id).count,1);
+ env.AUTOMATION_QUEUE.send=originalSend;
+ const replayAfterOutage=batch();
+ await worker.queue(replayAfterOutage.object,env);
+ assert.deepEqual(replayAfterOutage.state,{ack:1,retry:0});
+ assert.equal(raw.prepare("SELECT COUNT(*) AS count FROM hermes_automation_jobs").get().count,2);
+ assert.equal(queueWrites.length,1,"Replay must not bypass durable retry recovery");
  console.log("HAE_CI_QUEUE_D1_LOCAL_INTEGRATION_PASS",JSON.stringify({
-  duplicated_deliveries:2,d1_jobs:rows.length,job_created_events:1,
+  duplicated_deliveries:2,d1_jobs:2,job_created_events:2,
+  failed_queue_send_jobs_recoverable:1,conflicting_replays_rejected:1,
   queued_executions:queueWrites.length,external_provider_writes:0,
   real_cloud_runtime_proven:false,authoritative_git_run_authenticated:false,
   model_cost_usd:0,automatic_repair_allowed:false
