@@ -2006,3 +2006,20 @@ ai_name: Codex; role: delegated Academy owner; contribution_type: Implementation
 - Browser evidence: three full Playwright shards were run sequentially because Astro enforces a same-project preview lock. Full browser runs exposed unrelated existing UI timing/element-stability failures outside the #2033 file scope. Shard 3 completed 792 passed / 4 skipped / 18 failed; rerunning only those 18 produced 12 PASS / 6 timeout failures. The previously failed mobile consent case separately passed 1/1. Do not modify unrelated UI in this HAE evidence PR; exact-head GitHub CI remains the release gate.
 - Generated Playwright result directories and the test-generated `docs/screenshots/intake02-marketing-desktop.png` change were removed/restored before commit; no test artifact is part of the PR.
 - Next: bounded commit + push + one PR tied to #2033. Independent QA must review the new exact PR head. After merge, schema snapshot execution still requires a separate owner-authorized exact-main invocation; only accepted artifact readback can open a separate migration-baseline review.
+
+## 2026-10-26 — Claude Code — #2027 replayed on fresh main under the Design × Search/GEO contract
+
+- Branch `claude/beautiful-mendel-lknlyq`, PR #2027: one bounded delta on current `main` (e26e13db), 0 behind; the stale 132-behind branch was used only as the design source.
+- Delta: RU/UA/ES/IT/FR chrome via path locale; Products menu localized; RU/UA footers keep the English footer's link graph (same hrefs); Catalog submenu in the approved header with RU/UK labels (browser switch on `?lang=uk`, no new owner); light commercial hero; 1101–1360px header fixes; contact/lead forms localize labels only.
+- Search/GEO gate (#2087): SEO hygiene, GSC triage, owner clarity, hreflang, internal-link, performance budget, `npm test` — pass. Full build diff vs main: canonical/hreflang/robots/title/description/H1/JSON-LD/form names/hooks unchanged, no pages added/removed, no internal link lost.
+- QA on fresh head: 0 horizontal overflow at 390/1440 on all pages; keyboard reaches all Catalog submenu links with visible focus (EN/UK, 1440/390); no running animation under reduced motion; Lighthouse mobile LCP on commercial pages equal or better than main (2.4–2.9s vs 2.9–3.2s), CLS 0.
+- Provider facts in `docs/handoffs/2026-10-23-codex-seo-owner-platform-tasks.md` now carry evidence classes; no stale Bing/GSC items re-fixed.
+- Next: CI on the fresh head → merge → live readback (car-hauling hero, `/businesses/?lang=uk`, `/ru/gb/london/` footer, canonicals) → Search Console/Bing readback by the Search owner.
+
+## 2026-10-26 (later) — Claude Code — #2027 rebased on b87ffdee; link graph identical to main
+
+- Main `b87ffdee` (includes the #2004 GA withdrawal fix, untouched here). Head `fb27090e` + this entry; 0 behind.
+- Fix: RU/UA chrome now localizes labels only (`labelLocale` in SiteHeader, `textLocale` in SiteFooter); hrefs follow the template locale. Build-to-build vs main: 0 pages with any href change, 0 lost links, 0 new pages; canonical/hreflang/robots/title/description/H1/JSON-LD/fields/hooks/consent unchanged.
+- New `tests/locale-mechanisms.spec.ts` + "Locale mechanisms" section in `docs/DESIGN_INTEGRATION_CONTRACT.md`: `/ru/` `/ua/` = server locales; Catalog `?lang=uk` = browser switch, same HTML/canonical/hrefs.
+- Local: build 0 errors; `npm test` + all #2087 Search gates pass; 605 affected-zone Playwright specs pass (3 skipped), desktop + 390.
+- Owner (2026-10-26) authorized Claude to decide and publish this design work. Next: exact-head CI green → merge → live readback.
