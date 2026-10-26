@@ -148,6 +148,9 @@ export function validateWebsiteSalesQuote(quote: WebsiteSalesQuote) {
 
   const discountError = discountPolicyError(quote);
   if (discountError) errors.push(discountError);
+  if (quote.approvalState === "CASE_STUDY_APPROVED" && !quote.approvalReference?.trim()) {
+    errors.push("case_study_approval_reference_required");
+  }
   if (quote.approvalState === "CEO_APPROVED" && !quote.approvalReference?.trim()) {
     errors.push("ceo_approval_reference_required");
   }
