@@ -193,3 +193,12 @@ Raw small CSVs and the full classification are in the Drive evidence folder (doc
 - Bing IndexNow issue list: 10 × `/logistics/car-hauler-loads/{city}/` + `/services/hermes-connect/repair-shops/`. Live: 200, index,follow, self-canonical, in sitemap. Export lacks the issue label → **HOLD**. Do not noindex or mass-edit geo pages; if confirmed as quality/duplication, add unique per-city evidence on the same URLs.
 - Bing Site Explorer shows slash-less URLs; live they 308 to the trailing-slash canonical → PROVIDER DISPLAY.
 - Clarity: 88% of recorded sessions are from Ukraine (team + job seekers), US 13 sessions. Quick-back/dead-click rates are not buyer behaviour → do not redesign from them. Owner action: exclude internal traffic in Clarity and GA4. The `@context` JS error is fixed (#2093); the 90-day aggregate will lag.
+
+### 10.2 GSC exports 2026-10-26 — the trend the total hid
+
+- Half-month windows (clicks / impressions / position): 1–15 Aug 15 / 663 / 44; 16–31 Aug 16 / 1,108 / 39; 1–15 Sep 2 / 127 / 54; 16–30 Sep 4 / 122 / 22; 1–15 Oct 2 / 71 / 26; 16–23 Oct 0 / 48 / 45. Daily impressions fell from 60–110 to 4–17 on 29 Aug.
+- The lost impressions were non-brand "logistics/trucking SEO" searches on `/services/seo-for-logistics-companies/` (676 impressions, pos 56) and `/services/seo/` (189, pos 72). Brand, careers and RU/UA homes keep working.
+- Root cause NOT DETERMINED. 28–29 Aug changes (#888 noindex of nine thin result routes, sitemap lastmod refresh) did not touch those pages; pages stay indexed and canonical. Working hypothesis: quality/authority re-evaluation of a young domain on competitive queries (backlinks: only staff.am, work.ua, victra.careers).
+- HOLD on SEO code from this signal until the GSC Compare export (9–28 Aug vs 29 Aug–25 Oct, Pages + Queries) exists. Funnel/design work on the affected owners continues without URL/H1/canonical changes.
+- Brand-intent pages (`/company-information/` pos 10, `/about/` pos 26, `/contacts/` pos 19, ~1% CTR) had no route to services: they now end with the four direction owners (server-rendered links).
+- The own-search baseline Insight now states the August peak and the drop, so the public case is not misleading.

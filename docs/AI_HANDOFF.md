@@ -2070,3 +2070,9 @@ ai_name: Codex; role: delegated Academy owner; contribution_type: Implementation
 - Lesson: the first attempt lost to Astro scoped styles (`.x[data-astro-cid]` beats `html body main :is(section.x)`); the block now scopes with `main:not(#pearl-scope)`.
 - Build diff vs main 5aeb40fc: 0 changes to facts, hrefs, canonicals, H1, JSON-LD, forms. Gates green. Contracts updated by decision: case-studies, shared-resource, localized-overview, digital-services, academy-fr-it-process.
 - Owner Bing/Clarity exports classified (program doc §10.1; Drive doc 03). No new code defect; Bing IndexNow geo issue = HOLD pending the issue label; owner to exclude internal traffic in Clarity/GA4.
+
+## 2026-10-26 — Claude Code — GSC trend classified; brand-intent pages get a next step
+
+- Owner GSC exports (Drive folder "SEARCH PROVIDER EVIDENCE — CLAUDE", doc 04): Google impressions dropped ~90% from 29 Aug (non-brand logistics-SEO searches). Root cause not determined → HOLD on SEO code; needed: GSC Compare export by page/query. Program doc §10.2.
+- `/company-information/` and `/about/` (brand-intent landings) now end with the four direction owners before the policy contact (`TrustPage` `directionRouter`). Own-search baseline Insight gains an honest trend paragraph.
+- #2109 follow-up fix: digital-services closing panel padding + family eyebrow.

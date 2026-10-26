@@ -62,3 +62,19 @@ test("Trust family remains usable at 390px", async ({ page }) => {
   expect(mobile!.contactRadius).toBe("22px");
   expect(mobile!.actionWidth).toBeLessThanOrEqual(mobile!.contactWidth);
 });
+for (const route of ["/company-information/", "/about/"]) {
+  test(`${route} routes brand-intent visitors to the four direction owners`, async ({ page }) => {
+    await page.goto(route);
+    const links = page.locator(".trust-directions a.trust-direction");
+    await expect(links).toHaveCount(4);
+    expect(await links.evaluateAll((items) => items.map((item) => item.getAttribute("href")))).toEqual([
+      "/paths/logistics/",
+      "/paths/technology/",
+      "/paths/academy/",
+      "/paths/marketing/",
+    ]);
+    // The policy/correction contact stays the last block on the page.
+    await expect(page.locator(".trust-contact")).toBeVisible();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  });
+}
