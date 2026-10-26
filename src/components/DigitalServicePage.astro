@@ -353,8 +353,9 @@ const faqSchema = {
       </section>
     )}
 
-    <HermesConnectLauncher variant="banner" context={seoContext ? "marketing" : "general"} />
     <ContactCTA selectedPath={seoContext ? "ProgressoPro" : "IT Development"} />
+    <!-- Product cross-sell sits after the inquiry form so the closing call to action leads straight into it. -->
+    <HermesConnectLauncher variant="banner" context={seoContext ? "marketing" : "general"} />
   </main>
   <SiteFooter />
 </BaseLayout>
