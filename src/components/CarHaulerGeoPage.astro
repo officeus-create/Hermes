@@ -111,7 +111,7 @@ const schema = [
             <a class="button button-primary" href={intakePath} data-commercial-primary-cta data-service-group="car_hauler_geo" data-carrier-geo-cta="start_review">Start carrier load-search review<ArrowRight size={18} aria-hidden="true" /></a>
             <a class="button carrier-geo-secondary" href={carrierPath} data-carrier-geo-cta="carrier_agreement"><FileSignature size={18} aria-hidden="true" />Plans & carrier agreement</a>
           </div>
-          <div class="carrier-geo-proofline" aria-label="Carrier control and scope">
+          <div class="carrier-geo-proofline" role="group" aria-label="Carrier control and scope">
             <span><ShieldCheck size={17} aria-hidden="true" />Carrier approves every load</span>
             <span><Search size={17} aria-hidden="true" />Multi-source search</span>
             <span><MapPin size={17} aria-hidden="true" />Local + route-aware review</span>
@@ -185,7 +185,7 @@ const schema = [
           <p>Depending on carrier eligibility, account access, source rules, and the signed scope, Hermes can research major auto-transport marketplaces and carrier networks together with broker, dealer, auction, shipper, and direct-customer sources.</p>
           <p class="carrier-geo-fineprint">Platform names below are industry source examples. Hermes does not claim a partnership, automatic access, exclusive freight, or guaranteed availability on any third-party platform.</p>
         </div>
-        <div class="carrier-geo-source-list" aria-label="Car hauling platform examples">
+        <div class="carrier-geo-source-list" role="group" aria-label="Car hauling platform examples">
           {carHaulerPlatformExamples.map((platform) => <span>{platform}</span>)}
           <span>Broker & dealer portals</span>
           <span>Auction transport networks</span>
@@ -201,7 +201,7 @@ const schema = [
           <h2>Search the load that fits the equipment — not just the city.</h2>
           <p>Candidate searches can be narrowed by equipment, capacity, vehicle condition, pickup/delivery requirements, and the carrier's approved operating rules.</p>
         </div>
-        <div class="carrier-geo-chip-grid" aria-label="Vehicle move types">
+        <div class="carrier-geo-chip-grid" role="group" aria-label="Vehicle move types">
           {["Passenger cars", "SUVs & crossovers", "Pickup trucks", "Vans & cargo vans", "EVs & hybrids", "Luxury & classic vehicles", "INOP / non-running units", "Multi-unit dealer & auction moves"].map((item) => <span>{item}</span>)}
         </div>
       </div>

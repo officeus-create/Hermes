@@ -22,7 +22,7 @@ const visibleRoutes = selectedContactInterest
       <p class="eyebrow">{site.contact.eyebrow}</p>
       <h2>{site.contact.title}</h2>
       <p>{site.contact.body}</p>
-      <div class="contact-direct-routes" aria-label="Direct contact options">
+      <div class="contact-direct-routes" role="group" aria-label="Direct contact options">
         <p>Direct contact available now</p>
         {visibleRoutes.map((route) => (
           <a href={route.href}>
