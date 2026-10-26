@@ -34,7 +34,7 @@ test.describe("Hermes Business Command Center",()=>{
     await expect(page.getByText("Threads website demand")).toBeVisible();
     await expect(page.getByText(/Cloud backlog remains safe/)).toBeVisible();
     await expect(page.getByText("Cloudflare + D1")).toBeVisible();
-    await expect(page.getByText("internal ai")).toBeVisible();
+    await expect(page.locator("[data-account-workspaces]").getByRole("link",{name:/internal ai/i})).toBeVisible();
   });
 
   test("captures work into D1 before any agent dispatch",async({page})=>{
