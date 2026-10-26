@@ -50,6 +50,18 @@ export function validateT4Heartbeat(response, sourceSha, now = Date.now()) {
   return { source_sha: sourceSha, status: "PASS" };
 }
 
+// Match the two canonical Cloudflare Email receipt modes. Actual provider
+// Message-IDs may contain '.', '+', '@' and ':'; reject URLs, controls,
+// whitespace, and unbounded or unknown receipt shapes.
+export function validT4EmailReceipt(value, expectedItemId = null, providerMessageId = null) {
+  if (typeof value !== "string" || value.length > 240) return false;
+  if (expectedItemId !== null && !/^dlq:[a-f0-9]{32}$/.test(expectedItemId)) return false;
+  const accepted = /^cloudflare-email:\/\/accepted\/(dlq:[a-f0-9]{32})$/.exec(value);
+  if (accepted) return expectedItemId === null || accepted[1] === expectedItemId;
+  const message = /^cloudflare-email:\/\/message\/([A-Za-z0-9._@:+-]{8,180})$/.exec(value);
+  return Boolean(message && providerMessageId === message[1]);
+}
+
 export function validateT4Receipt(response, expectedMessageType) {
   if (!CANARY.test(expectedMessageType)) fail("t4_canary_identity_invalid");
   const rows = d1Rows(response);
@@ -71,7 +83,7 @@ export function validateT4Receipt(response, expectedMessageType) {
   if (row?.alert_status !== "DELIVERED") fail("t4_alert_ambiguous_or_failed");
   if (Number(row?.alert_attempt_count) !== 1 ||
       row?.alert_channel !== "cloudflare_email" ||
-      !/^cloudflare-email:\/\/(?:accepted|message)\/[a-zA-Z0-9:_-]+$/.test(String(row?.alert_receipt_ref || ""))) {
+      !validT4EmailReceipt(row?.alert_receipt_ref, row?.dlq_item_id, row?.alert_provider_message_id)) {
     fail("t4_alert_receipt_invalid");
   }
   return {
