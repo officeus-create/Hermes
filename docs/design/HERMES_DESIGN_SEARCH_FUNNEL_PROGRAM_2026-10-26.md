@@ -67,6 +67,8 @@ The 185 dark heroes split into:
 
 ## 3. Convergence matrix (the definition of "done")
 
+> Superseded for status tracking by the per-family `docs/design/COVERAGE_MATRIX.md` (2026-10-26). The wave table below is history.
+
 | Wave | Scope | Mechanism | Status |
 |---|---|---|---|
 | 0 | Header/footer, Catalog nav, commercial template, Load Board hero, form labels, locale chrome | #2025, #2027 | LIVE |

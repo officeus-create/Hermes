@@ -86,6 +86,8 @@ These come from `docs/DESIGN_INTEGRATION_CONTRACT.md`, `docs/PUBLIC_INFORMATION_
 
 When Claude is the active design writer, do not treat SEO/GEO as a later cleanup phase.
 
+Session protocol: start by reading `docs/design/COVERAGE_MATRIX.md`, `docs/design/TASK_QUEUE.md` and `docs/design/DEFINITION_OF_DONE.md`; finish by updating the matrix and queue. Status lives in those files, not in chat reports.
+
 Before editing shared navigation, route templates, commercial heroes, Catalog/Insights discovery, localized chrome, forms, media loading, or global styling:
 
 1. Read `docs/DESIGN_INTEGRATION_CONTRACT.md`.
