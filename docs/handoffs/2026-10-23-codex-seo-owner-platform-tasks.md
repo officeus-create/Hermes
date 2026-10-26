@@ -7,6 +7,20 @@ per `CLAUDE.md` (account/settings changes, publishing on the owner's behalf).
 
 ## Baseline (OpenRush, 2026-10-23)
 
+> Evidence classification (added 2026-10-26 per `docs/DESIGN_INTEGRATION_CONTRACT.md` / #2087):
+> every line below is a dated third-party provider observation, **not** a code task. Classify it
+> against current `main` + live before acting (`CURRENT / REPRODUCED / PROVIDER_LAG / STALE /
+> RETIRED_ROUTE`); only `CURRENT + REPRODUCED` becomes repository work. Current owners: #1948,
+> #2045, #2004, #368 (authority/backlinks, Clutch WAIT_PROVIDER_READBACK) — the backlink and
+> directory items below belong to #368, not to a new writer.
+>
+> | Observation | Class (2026-10-26) | Owner |
+> |---|---|---|
+> | Low indexed-keyword count / no top-30 for core terms | PROVIDER observation, not reproducible in code | #368 / Search owner |
+> | 0 Google AI Overview citations | PROVIDER observation | #368 |
+> | Local pack on dispatch queries | CURRENT (off-repo: Business Profile) | owner / Codex |
+> | ~2,370 spam referring domains | PROVIDER observation; no manual action seen → no code task | #368 |
+
 - 8 keywords indexed for hermeslogisticsus.com; no top-30 position for core terms
   ("car hauling dispatch services", "car hauler dispatch", "owner operator dispatch services",
   "new authority dispatch", "car hauling load board", "how to start a trucking company").
