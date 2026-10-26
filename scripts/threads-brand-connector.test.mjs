@@ -163,5 +163,8 @@ assert.match(pageSource, /data-compose-brand/);
 assert.match(pageSource, /identity_verified/);
 assert.match(pageSource, /publish_enabled/);
 assert.doesNotMatch(pageSource, /setInterval|cron|schedulePost|new scheduler/i);
+assert.match(pageSource, /threads-manual-/);
+assert.match(pageSource, /crypto\.randomUUID/);
+assert.doesNotMatch(pageSource, /office-threads-canary-20260929-01/);
 await import("./threads-discovery.test.mjs");
 console.log("threads brand connector contract: PASS");
