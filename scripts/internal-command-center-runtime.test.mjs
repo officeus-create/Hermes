@@ -82,7 +82,9 @@ const delegateAccess=sqlite.prepare("SELECT active,capability FROM hermes_intern
 assert.equal(delegateAccess.active,1);
 assert.equal(delegateAccess.capability,"HERMES_INTERNAL_OWNER");
 const audit=sqlite.prepare("SELECT action,actor_specialist_id,target_specialist_id FROM hermes_internal_owner_access_audit ORDER BY id DESC LIMIT 1").get();
-assert.deepEqual(audit,{action:"grant",actor_specialist_id:"owner",target_specialist_id:"delegate"});
+assert.equal(audit.action,"grant");
+assert.equal(audit.actor_specialist_id,"owner");
+assert.equal(audit.target_specialist_id,"delegate");
 
 const selfRevoke=await mutateAccess({request:request("/api/internal-command-center/access",{method:"POST",body:{action:"revoke",email:"owner@example.invalid"}}),env:{DB:db}});
 assert.equal(selfRevoke.status,409);
