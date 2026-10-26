@@ -185,3 +185,73 @@ html body main:is(.localized-overview, .localized-owner) .localized-owner-hero .
 @media (max-width: 480px) {
   html body main :is(h1, h2) { hyphens: auto; -webkit-hyphens: auto; }
 }
+
+/* Logistics family (execution brief phase 2): direction accents — eyebrows, step numbers, active
+   states, focus rings — follow the H-mark Logistics blue instead of Intelligence violet. The
+   tokens are rerouted for every var() consumer; hard-coded legacy violet is listed below. */
+body[data-direction-family="logistics"] {
+  --family-accent: var(--hermes-logistics, #2f6bf6);
+  --family-accent-text: color-mix(in srgb, var(--hermes-logistics, #2f6bf6) 82%, var(--hermes-ink, #0b0d12));
+  --family-accent-on-dark: color-mix(in srgb, var(--hermes-logistics, #2f6bf6) 42%, #fff);
+  --hermes-violet-text: var(--family-accent-text);
+  --hermes-violet-on-dark: var(--family-accent-on-dark);
+}
+html body[data-direction-family="logistics"] :is(
+  .carrier-geo-grid article > span:first-child,
+  .logistics-audience-grid span,
+  .logistics-audience-steps span,
+  .recommendation-explanation li svg,
+  .recommendation-case li svg,
+  .recommendation-included-grid span,
+  .recommendation-next ol span,
+  .path-engine-toolbar button:hover,
+  .path-engine-toolbar button:focus-visible
+) {
+  color: var(--family-accent-text);
+}
+html body[data-direction-family="logistics"] :is(.carrier-geo-dark, .recommendation-cta, .commercial-final-card, .logistics-audience-final-card) .eyebrow,
+html body[data-direction-family="logistics"] .carrier-geo-support-list li span {
+  color: var(--family-accent-on-dark);
+}
+html body[data-direction-family="logistics"] .path-engine-progress i {
+  background: linear-gradient(90deg, var(--family-accent), color-mix(in srgb, var(--family-accent) 70%, #fff));
+}
+html body[data-direction-family="logistics"] .recommendation-note {
+  border-left-color: var(--family-accent);
+  background: color-mix(in srgb, var(--family-accent) 7%, #fff);
+  color: var(--hermes-ink, #0b0d12);
+}
+html body[data-direction-family="logistics"] .commercial-value-signal {
+  box-shadow: 0 0 .9rem color-mix(in srgb, var(--family-accent) 60%, transparent);
+}
+html body[data-direction-family="logistics"] .commercial-value-section::before {
+  background: radial-gradient(circle, color-mix(in srgb, var(--family-accent) 10%, transparent), transparent 68%);
+}
+html body[data-direction-family="logistics"] :is(.commercial-grid article:hover, .commercial-grid article:focus-within) {
+  border-color: color-mix(in srgb, var(--family-accent) 34%, transparent);
+}
+
+/* Logistics audience/path pages: the product sub-navigation keeps its links but uses the light,
+   attached direction-submenu grammar with a Logistics-blue active state. */
+html body[data-direction-family="logistics"] .logistics-product-nav {
+  background: rgba(255, 255, 255, .95);
+  color: #111324;
+  border-bottom-color: rgba(17, 19, 36, .1);
+}
+html body[data-direction-family="logistics"] .logistics-product-nav__links a:is(:hover, :focus-visible, [aria-current="page"]) {
+  border-color: color-mix(in srgb, var(--family-accent) 30%, transparent);
+  background: color-mix(in srgb, var(--family-accent) 9%, transparent);
+}
+html body[data-direction-family="logistics"] .logistics-product-nav__brand {
+  border-right-color: rgba(17, 19, 36, .16);
+}
+html body[data-direction-family="logistics"] .logistics-product-nav__brand span::before {
+  content: "";
+  display: inline-block;
+  width: 4px;
+  height: 12px;
+  margin-right: .45rem;
+  border-radius: 2px;
+  background: var(--family-accent);
+  vertical-align: -1px;
+}
