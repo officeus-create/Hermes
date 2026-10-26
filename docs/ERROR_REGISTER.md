@@ -750,7 +750,7 @@ REUSE_RULE: Never change bytes behind an existing `/media/*` URL — always ship
 - **#2033 evidence:** KNB locale navigation, Hermes Connect locale selector, Load Board mobile journey, and both repair-public-entry interaction timeouts were independently compared against clean `main`; where compared, the same failure reproduced outside the schema-snapshot branch. One Home touch timeout did not reproduce on clean `main` and requires an isolated branch rerun before final classification.
 - **Safety:** No production, D1, secret, provider-write, or migration change is authorized by this error record.
 
-## ERR-DESIGN-2027-STALE-BRANCH-LOCALE-LINK-GRAPH-20261026 — RESOLVED_IN_BRANCH / EXACT_HEAD_CI_PENDING
+## ERR-DESIGN-2027-STALE-BRANCH-LOCALE-LINK-GRAPH-20261026 — LIVE_VERIFIED (#2027, d17e80fe)
 
 PROBLEM: Claude design PR #2027 (EN/RU/UA chrome, light commercial hero, Catalog submenu in the header) sat 132 commits behind `main` after a long session pause. Its first localized-footer version dropped the English footer's internal links (direction owners, money pages, trust/legal routes) from 10 RU/UA pages, and the embedded Catalog submenu stayed English on `?lang=uk` because the header passed only `en | ru` and the static build cannot see query strings.
 
@@ -759,3 +759,13 @@ ROOT_CAUSE: Design work was validated against its own old base and by screenshot
 WORKING_APPROACH: Replayed only the bounded design delta onto fresh `main` (no whole-file blobs); RU/UA footers render the same hrefs with translated labels; Catalog submenu and header labels switch in the browser on `?lang=uk` without new URLs or owners; full-site build diff vs `main` proves canonical/hreflang/robots/title/description/H1/JSON-LD/form names/hooks unchanged and zero lost internal links; #2087 Search gates, 390/1440 overflow, keyboard/reduced-motion and Lighthouse LCP/CLS checked on the fresh head.
 
 REUSE_RULE: For any design PR touching shared chrome, run a build-to-build diff against current `main` (canonical, hreflang, robots, H1, schema, form names/hooks, internal links per page) before review; localize labels, never the link set; treat `?lang=` locales as runtime-only on static routes; re-replay onto fresh `main` whenever the branch falls behind instead of merging old blobs.
+
+## ERR-DESIGN-SCOPE-NARROWED-TO-OPEN-PR-20261026 — OPEN (program active)
+
+PROBLEM: The owner asked to bring *all remaining* design to the new brand book, Home and structure and publish it. Claude finished and merged PR #2027 and reported the design work as done and live, while ~120 public pages (car-hauler geo, logistics path results, Academy, resources, careers, case, legal, contracts, 404, localized overviews) still rendered the legacy dark navy/obsidian heroes. The owner experienced Home + header as new and every inner page as "another website".
+
+ROOT_CAUSE: The task was scoped by the open PR instead of by the owner's outcome; "done" was not checked against a site-wide measurement; the repository's own gap analysis already listed the unfinished families.
+
+WORKING_APPROACH: Measured every built page (hero surface, H1 colour/tracking, buttons, template) and classified dark heroes as LEGACY vs PRODUCT ACCENT (Insights, Load Board, Connect stay by brand rule). Wave A moves legacy heroes to the Pearl shell through one shared layer (`src/styles/hermes-public-pearl-shell.css`). Remaining waves B–F with exit criteria live in `docs/design/HERMES_DESIGN_SEARCH_FUNNEL_PROGRAM_2026-10-26.md` (Russian copy in One Brain on Drive).
+
+REUSE_RULE: Scope design work by the owner's outcome; before reporting "done", re-run the site-wide crawl and report per wave with page counts and the rows still open; never call the design finished while the program's convergence matrix has open rows.

@@ -57,10 +57,11 @@ for (const route of routes) {
 
     expect(visual).not.toBeNull();
     expect(visual!.rootBackground).toBe("rgb(247, 246, 243)");
-    expect(visual!.heroBackground).toBe("rgb(11, 13, 18)");
-    expect(visual!.heroPrimaryBackground).toBe("rgb(255, 255, 255)");
-    expect(visual!.heroPrimaryColor).toBe("rgb(11, 13, 18)");
-    expect(visual!.heroPrimaryRadius).toBe("12px");
+    // Pearl shell (design wave A, 2026-10-26): Pearl hero, ink pill primary action.
+    expect(visual!.heroBackground).toBe("rgb(247, 246, 243)");
+    expect(visual!.heroPrimaryBackground).toBe("rgb(10, 22, 79)");
+    expect(visual!.heroPrimaryColor).toBe("rgb(255, 255, 255)");
+    expect(visual!.heroPrimaryRadius).toBe("999px");
     expect(visual!.safetyRadius).toBe("22px");
     expect(visual!.relatedBackground).toBe("rgb(255, 255, 255)");
     expect(visual!.relatedRadius).toBe("22px");

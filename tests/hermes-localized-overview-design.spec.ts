@@ -49,10 +49,11 @@ for (const route of routes) {
     });
 
     expect(visual).not.toBeNull();
-    expect(visual!.heroBackground).toBe("rgb(11, 13, 18)");
-    expect(visual!.heroPrimaryBackground).toBe("rgb(255, 255, 255)");
-    expect(visual!.heroPrimaryColor).toBe("rgb(11, 13, 18)");
-    expect(visual!.heroPrimaryRadius).toBe("12px");
+    // Pearl shell + live window (design wave B, 2026-10-26): Pearl hero, ink pill primary action.
+    expect(visual!.heroBackground).toBe("rgb(247, 246, 243)");
+    expect(visual!.heroPrimaryBackground).toBe("rgb(10, 22, 79)");
+    expect(visual!.heroPrimaryColor).toBe("rgb(255, 255, 255)");
+    expect(visual!.heroPrimaryRadius).toBe("999px");
     expect(visual!.directionBackground).toBe("rgb(255, 255, 255)");
     expect(visual!.mediaRadius).toBe("22px");
     expect(visual!.eyebrowColor).toBe("rgb(100, 70, 230)");
