@@ -317,13 +317,18 @@ const { loadBoardContext = false } = Astro.props;
       try {
         const response = await fetch("/api/internal-ai/status", { credentials: "same-origin", headers: { Accept: "application/json" } });
         const payload = await response.json().catch(() => null);
-        if (!response.ok || !payload?.success || nav.querySelector("[data-hc-internal-ai-link]")) return;
-        const link = document.createElement("a");
-        link.textContent = "AI Connect";
-        link.href = withLocale("/services/hermes-connect/internal/ai-connect/");
-        link.setAttribute("data-hc-internal-ai-link", "true");
-        if (path.replace(/\/+$/, "/") === "/services/hermes-connect/internal/ai-connect/") link.setAttribute("aria-current", "page");
-        nav.append(link);
+        if (!response.ok || !payload?.success || nav.querySelector("[data-hc-owner-command-link]")) return;
+        const command = document.createElement("a");
+        command.textContent = locale === "ru" ? "Центр управления" : "Command Center";
+        command.href = withLocale("/services/hermes-connect/internal/command-center/");
+        command.setAttribute("data-hc-owner-command-link", "true");
+        if (path.replace(/\/+$/, "/") === "/services/hermes-connect/internal/command-center/") command.setAttribute("aria-current", "page");
+        const ai = document.createElement("a");
+        ai.textContent = "AI Connect";
+        ai.href = withLocale("/services/hermes-connect/internal/ai-connect/");
+        ai.setAttribute("data-hc-internal-ai-link", "true");
+        if (path.replace(/\/+$/, "/") === "/services/hermes-connect/internal/ai-connect/") ai.setAttribute("aria-current", "page");
+        nav.append(command, ai);
         updateFamilyNavCue();
       } catch {
         // Fail closed: an unavailable authorization endpoint never exposes an
