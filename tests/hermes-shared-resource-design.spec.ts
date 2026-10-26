@@ -65,7 +65,9 @@ for (const route of routes) {
     expect(visual!.safetyRadius).toBe("22px");
     expect(visual!.relatedBackground).toBe("rgb(255, 255, 255)");
     expect(visual!.relatedRadius).toBe("22px");
-    expect(visual!.accentColor).toBe("rgb(100, 70, 230)");
+    // Logistics family accents follow the H-mark Logistics blue (same token as /paths/logistics/),
+    // not Intelligence violet — execution brief phase 2, 2026-10-26.
+    expect(visual!.accentColor).toBe("color(srgb 0.158902 0.353255 0.803765)");
     expect(visual!.darkSectionBackground).toBe("rgb(11, 13, 18)");
     expect(visual!.darkRowRadius).toBe("12px");
     expect(visual!.finalBackground).toBe("rgb(11, 13, 18)");

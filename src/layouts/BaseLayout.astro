@@ -73,6 +73,11 @@ const {
 const isRepairShopLaunchRoute = Astro.url.pathname.startsWith("/services/hermes-connect/repair-shops");
 const isRepairShopBookingRoute = Astro.url.pathname.replace(/\/+$/, "") === "/services/hermes-connect/repair-shops/booking";
 const isHermesConnectProductHub = Astro.url.pathname === "/services/hermes-connect/";
+// Public page family for direction-tinted accents (eyebrows, numbers, active states). Load Board
+// keeps its own product surface and is deliberately not part of the Logistics family here.
+const directionFamily = /^\/(?:paths\/)?logistics\//.test(Astro.url.pathname) || /^\/carrier(?:-[a-z-]+)?\//.test(Astro.url.pathname)
+  ? "logistics"
+  : undefined;
 const isHermesConnectExperienceRoute = Astro.url.pathname.startsWith("/services/hermes-connect") || Astro.url.pathname.startsWith("/load-board");
 const CLARITY_BLOCKED_PATH_PREFIXES = [
   "/services/hermes-connect",
@@ -279,7 +284,7 @@ const schemaEntities = safeSchema ? (Array.isArray(safeSchema) ? safeSchema : [s
     {isRepairShopLaunchRoute && <script is:inline src="/repair-shop-local-demo.js"></script>}
     <title>{title}</title>
   </head>
-  <body>
+  <body data-direction-family={directionFamily}>
     <!--email_off-->
     <a class="skip-link" href="#main-content">Skip to content</a>
     <slot />
