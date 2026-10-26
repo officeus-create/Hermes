@@ -158,3 +158,28 @@ Use the CURRENT brief's §17 "CLAUDE START COMMAND" (Drive). The short repositor
 > Merge/deploy only when the owner says so for that wave. Do not touch Load Board design, SEO copy, H1s,
 > analytics/consent, Load Board facts or other owners' active tasks. Classify before fixing (§6 E4/E7).
 > Update §3, `docs/AI_HANDOFF.md` and, for new failure classes, `docs/ERROR_REGISTER.md`.
+
+## 9. Owner directives ledger (do not re-ask; append only)
+
+| Date | Directive (owner, paraphrased from Russian) | Status |
+|---|---|---|
+| 2026-10-23 | H-mark palette everywhere; brand book is one input, old site another; only what helps SEO/GEO | DONE (#2025) |
+| 2026-10-23 | Link previews must show the new brand card | Site DONE; Telegram cache refresh is an owner action via @WebpageBot |
+| 2026-10-26 | All remaining design to the new brand book + Home + structure; decide and publish | IN PROGRESS (waves A+B #2091) |
+| 2026-10-26 | Reports in Russian only | ACTIVE |
+| 2026-10-26 | Close Google/Bing/analytics errors through the brand + funnel lens; one holistic loop | ACTIVE (§10) |
+| 2026-10-26 | Do not delete reworked pages; turn changes into Insights cases with real before/after numbers and a "follow the updates" measurement log | ACTIVE (self-case article queued) |
+| 2026-10-26 | Hermes proves its competence on itself (logistics, academy, marketing, IT); show results publicly and honestly | ACTIVE |
+| 2026-10-26 | Use every open dashboard (GSC, Bing, GA4, Clarity, Clutch, Cloudflare, GitHub) as evidence each cycle | ACTIVE |
+| 2026-10-26 | Account registrations / provider settings / credentials: prepare fully, owner confirms each action | STANDING RULE |
+
+## 10. Evidence snapshot and gap list (2026-10-26)
+
+- GSC (domain property, 29.07–26.10): 42 clicks, 2,173 impressions, avg position 39.8 (previous 3 months: 1 click, 11 impressions). Indexed 149 / not indexed 267 (as of 23.10): canonical alternates 61 and noindex 60 = BY DESIGN; discovered-not-indexed 130 + crawled-not-indexed 3 = PROVIDER/AUTHORITY (internal links + backlinks, #368); 404 ×7 and 403 ×1 = validation already started; 401 ×1 = private route.
+- Bing (12.08–24.10): 12 clicks, 239 impressions; top recommendation "not enough quality inbound links" = #368 (authority), not code.
+- Clarity (90 days): 445 sessions, LCP 1.3 s, INP 200 ms (borderline), CLS 0.012; quick-backs 33%, dead clicks 11%; **JS error `r["@context"].toLowerCase` in 5.84% of sessions = CURRENT + REPRODUCED** — the site emits JSON-LD as one top-level array; Clarity's parser expects an object. Fix: one JSON-LD block per entity.
+- GA4: 0 key events configured → the funnel cannot be measured. Owner action: mark form-submit / qualified CTA events as key events and link GA4 ↔ Search Console.
+- Clutch: no reviews, no social links; founded/location facts must match `CANONICAL_COMPANY_FACTS_APPROVAL.md` (#368 owner).
+- OpenRush audit: on-page score 98.3; its "thin /ua/academy/" = NOT_REPRODUCED (414 words), "no alt" = decorative by design.
+
+Cycle order: (1) design waves to LIVE → (2) reproduced runtime errors (JSON-LD/Clarity) → (3) self-case Insight with the baseline above → (4) Logistics family funnel (highest impressions: Home, careers, company/contacts/about, /paths/logistics/) → (5) owner-confirmed account actions (GA4 key events, GSC link, Clutch, Telegram cache).
