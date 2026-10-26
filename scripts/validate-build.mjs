@@ -170,7 +170,13 @@ if (!html.includes('hreflang="it"')) {
 function validateStructuredData(pageHtml, pageName) {
   const matches = [...pageHtml.matchAll(/<script[^>]+type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/g)];
   if (matches.length === 0) throw new Error(`Structured data missing in ${pageName}`);
-  for (const match of matches) JSON.parse(match[1]);
+  for (const match of matches) {
+    const parsed = JSON.parse(match[1]);
+    // One entity per block: a top-level array crashes Microsoft Clarity's JSON-LD reader.
+    if (Array.isArray(parsed) || typeof parsed?.["@context"] !== "string") {
+      throw new Error(`Structured data in ${pageName} must be one entity object with a string @context per block`);
+    }
+  }
 }
 
 // The homepage is deliberately an entrance, not a catalogue. Rich service/product/contact
@@ -421,6 +427,9 @@ const allHtmlFiles = await collectHtmlFiles(dist);
 const generatedPages = await Promise.all(
   allHtmlFiles.map(async (path) => [path, await readFile(join(dist, path), "utf8")]),
 );
+for (const [path, pageHtml] of generatedPages) {
+  if (pageHtml.includes('type="application/ld+json"')) validateStructuredData(pageHtml, path);
+}
 
 for (const [pageName, pageHtml] of generatedPages) {
   if (pageHtml.includes("/cdn-cgi/l/email-protection")) {

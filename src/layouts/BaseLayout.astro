@@ -161,6 +161,7 @@ const alternateOgLocales = alternates
 const safeSchema = schema
   ? replaceRetiredPublicText(schema) as Record<string, unknown> | Record<string, unknown>[]
   : undefined;
+const schemaEntities = safeSchema ? (Array.isArray(safeSchema) ? safeSchema : [safeSchema]) : [];
 ---
 
 <!doctype html>
@@ -271,7 +272,9 @@ const safeSchema = schema
         }
       }
     </script>
-    {safeSchema && <script is:inline type="application/ld+json" set:html={JSON.stringify(safeSchema)} />}
+    {/* One JSON-LD block per entity: a top-level array is valid JSON-LD, but third-party parsers
+        (Microsoft Clarity) read `["@context"]` on the parsed root and throw on arrays. */}
+    {schemaEntities.map((entity) => <script is:inline type="application/ld+json" set:html={JSON.stringify(entity)} />)}
     {isRepairShopBookingRoute && <script is:inline src="/repair-shop-public-read-dedupe.js"></script>}
     {isRepairShopLaunchRoute && <script is:inline src="/repair-shop-local-demo.js"></script>}
     <title>{title}</title>

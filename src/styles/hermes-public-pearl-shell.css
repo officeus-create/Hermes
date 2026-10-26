@@ -179,3 +179,9 @@ html body main:is(.localized-overview, .localized-owner) .localized-owner-hero .
   }
   html body main:is(.localized-overview, .localized-owner) :is(.localized-hero-content, .localized-owner-hero-grid) { padding-left: 0; padding-right: 0; }
 }
+
+/* Narrow screens: long words in display headings break at syllables (lang-aware) instead of
+   mid-word, e.g. Spanish "concesionarios" at 390px. */
+@media (max-width: 480px) {
+  html body main :is(h1, h2) { hyphens: auto; -webkit-hyphens: auto; }
+}
