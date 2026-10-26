@@ -101,6 +101,7 @@ async function loadAll(){
   const [work,taskList,accessList]=await Promise.all([jsonFetch("/api/internal-command-center/work-items"),jsonFetch("/api/internal-ai/tasks"),jsonFetch("/api/internal-command-center/access")]);
   if(work.r.ok&&work.d.success)items=work.d.work_items||[]; if(taskList.r.ok&&taskList.d.success)tasks=taskList.d.tasks||[];
   setText("[data-backlog-count]",String(items.filter(x=>!["done","cancelled"].includes(x.status)).length));setText("[data-approval-count]",String(tasks.filter(x=>x.status==="needs_approval").length));
+  document.querySelectorAll<HTMLElement>("[data-module]").forEach(card=>{const key=card.dataset.module||"";const count=items.filter(x=>x.workstream===key&&!["done","cancelled"].includes(x.status)).length;const badge=card.querySelector<HTMLElement>(".module-state");if(badge)badge.textContent=count?String(count)+" "+t("open","открыто"):t("Clear","Чисто")});
   renderItems(); if(accessList.r.ok&&accessList.d.success)renderOwners(accessList.d);
 }
 function visible(item:WorkItem){if(filter==="open")return !["done","cancelled"].includes(item.status);if(filter==="done")return item.status==="done";return item.workstream===filter}
