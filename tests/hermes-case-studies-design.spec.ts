@@ -86,7 +86,8 @@ for (const config of routes) {
     expect(visual!.surfaceBackground).toBe("rgb(255, 255, 255)");
     expect(visual!.radiusValue).toBe("22px");
     expect(visual!.accentColor).toBe(config.accentColor);
-    if (config.dark) expect(visual!.darkBackground).toBe("rgb(11, 13, 18)");
+    // Body sections (2026-10-26): reading surfaces are light; Focus Ink stays on one bounded closing panel.
+    if (config.dark) expect(visual!.darkBackground).toBe("rgb(255, 255, 255)");
     expect(visual!.overflow).toBe(false);
     expect(visual!.rootRight).toBeLessThanOrEqual(visual!.viewportWidth);
   });

@@ -270,3 +270,44 @@ html body[data-direction-family="logistics"] .logistics-product-nav__brand span:
   background: var(--family-accent);
   vertical-align: -1px;
 }
+
+
+/* Body sections (execution brief phase 1 remainder; Brand System §1 "Bounded Focus Ink"): dark
+   reading surfaces — process lists, FAQs, boundaries, support lists, worked examples, partnership
+   copy — return to the light reading grammar. Focus Ink is kept for one bounded closing panel.
+   `main:not(#pearl-scope)` lifts specificity above Astro scoped rules (`.x[data-astro-cid-*]`). */
+html body main:not(#pearl-scope) :is(section.carrier-geo-dark, section.capacity-example, section.localized-owner-process, section.digital-boundary-section, section.localized-partnership, section.it-commercial-process, section.it-commercial-faq, section.resource-submit, section.case-study-qa, section.case-boundaries, section.appleton-planning, section.appleton-carrier-note, section.recommendation-case, body[data-direction-family] section.next) {
+  color: var(--pearl-shell-text);
+  background: var(--hermes-paper, #fbfaf8);
+}
+html body main:not(#pearl-scope) :is(section.carrier-geo-dark, section.capacity-example, section.localized-owner-process, section.digital-boundary-section, section.localized-partnership, section.it-commercial-process, section.it-commercial-faq, section.resource-submit, section.case-study-qa, section.case-boundaries, section.appleton-planning, section.appleton-carrier-note, section.recommendation-case, body[data-direction-family] section.next) :is(h2, h3, h4, strong, b, dt, summary):not(.button *) { color: var(--pearl-shell-text); }
+html body main:not(#pearl-scope) :is(section.carrier-geo-dark, section.capacity-example, section.localized-owner-process, section.digital-boundary-section, section.localized-partnership, section.it-commercial-process, section.it-commercial-faq, section.resource-submit, section.case-study-qa, section.case-boundaries, section.appleton-planning, section.appleton-carrier-note, section.recommendation-case, body[data-direction-family] section.next) :is(p, li, dd, small, figcaption, label, td, th, span):not(.eyebrow, .button, .button *) { color: var(--pearl-shell-body); }
+html body main:not(#pearl-scope) :is(section.carrier-geo-dark, section.capacity-example, section.localized-owner-process, section.digital-boundary-section, section.localized-partnership, section.it-commercial-process, section.it-commercial-faq, section.resource-submit, section.case-study-qa, section.case-boundaries, section.appleton-planning, section.appleton-carrier-note, section.recommendation-case, body[data-direction-family] section.next) a:not(.button) { color: var(--family-accent-text, var(--pearl-shell-body)); }
+html body main:not(#pearl-scope) :is(section.carrier-geo-dark, section.capacity-example, section.localized-owner-process, section.digital-boundary-section, section.localized-partnership, section.it-commercial-process, section.it-commercial-faq, section.resource-submit, section.case-study-qa, section.case-boundaries, section.appleton-planning, section.appleton-carrier-note, section.recommendation-case, body[data-direction-family] section.next) .eyebrow { color: var(--family-accent-text, var(--pearl-shell-body)); }
+html body main:not(#pearl-scope) :is(section.carrier-geo-dark, section.capacity-example, section.localized-owner-process, section.digital-boundary-section, section.localized-partnership, section.it-commercial-process, section.it-commercial-faq, section.resource-submit, section.case-study-qa, section.case-boundaries, section.appleton-planning, section.appleton-carrier-note, section.recommendation-case, body[data-direction-family] section.next) *:not(.button-primary) { border-color: var(--pearl-shell-line); }
+html body main:not(#pearl-scope) :is(section.carrier-geo-dark, section.capacity-example, section.localized-owner-process, section.digital-boundary-section, section.localized-partnership, section.it-commercial-process, section.it-commercial-faq, section.resource-submit, section.case-study-qa, section.case-boundaries, section.appleton-planning, section.appleton-carrier-note, section.recommendation-case, body[data-direction-family] section.next) :is(article, li, details, dl > div, [class*="card"], [class*="panel"], [class*="item"]):not(.button) {
+  background: #fff;
+  box-shadow: 0 .6rem 1.8rem rgba(10, 22, 79, .05);
+}
+html body main:not(#pearl-scope) :is(section.carrier-geo-dark, section.capacity-example, section.localized-owner-process, section.digital-boundary-section, section.localized-partnership, section.it-commercial-process, section.it-commercial-faq, section.resource-submit, section.case-study-qa, section.case-boundaries, section.appleton-planning, section.appleton-carrier-note, section.recommendation-case, body[data-direction-family] section.next) svg { color: var(--family-accent-text, var(--pearl-shell-body)); }
+html body main:not(#pearl-scope) :is(section.carrier-geo-dark, section.capacity-example, section.localized-owner-process, section.digital-boundary-section, section.localized-partnership, section.it-commercial-process, section.it-commercial-faq, section.resource-submit, section.case-study-qa, section.case-boundaries, section.appleton-planning, section.appleton-carrier-note, section.recommendation-case, body[data-direction-family] section.next) .button:not(.button-primary) { border-color: rgba(10, 22, 79, .16); background: #fff; color: var(--pearl-shell-text); }
+html body main:not(#pearl-scope) :is(section.carrier-geo-dark, section.capacity-example, section.localized-owner-process, section.digital-boundary-section, section.localized-partnership, section.it-commercial-process, section.it-commercial-faq, section.resource-submit, section.case-study-qa, section.case-boundaries, section.appleton-planning, section.appleton-carrier-note, section.recommendation-case, body[data-direction-family] section.next) .button-primary { background: var(--hermes-action-ink, #0a164f); color: #fff; }
+
+/* Closing calls to action: one bounded Focus Ink panel inside the content width instead of a
+   full-bleed dark band (same grammar as the approved commercial final card). */
+html body main:not(#pearl-scope) :is(section.recommendation-cta, section.localized-contact) { background: transparent; }
+html body main:not(#pearl-scope) :is(section.recommendation-cta, section.localized-contact) > .shell {
+  padding: clamp(1.75rem, 4vw, 3.25rem);
+  border-radius: var(--hermes-radius-panel, 30px);
+  background: #172033;
+  color: #fff;
+}
+html body main:not(#pearl-scope) section.digital-project-cta { background: transparent; }
+html body main:not(#pearl-scope) section.digital-project-cta > .digital-project-cta-card { padding: clamp(1.75rem, 4vw, 3.25rem); border-radius: var(--hermes-radius-panel, 30px); background: #172033; }
+html body main:not(#pearl-scope) section.digital-project-cta .eyebrow { color: var(--family-accent-on-dark, #c8bdff); }
+
+/* Dead clicks (search error matrix E13): these cards look clickable but only a small inner link worked.
+   The card now follows its single existing link (same href; the link stays the only focus stop). */
+html body main :is(article.insight-card, article.business-card, article.service-card, article.opportunity-card, article.technology-solution-card, article.technology-proof-item) { position: relative; cursor: pointer; }
+html body main :is(article.insight-card, article.business-card, article.service-card, article.opportunity-card, article.technology-solution-card, article.technology-proof-item) a[href] { position: static; }
+html body main :is(article.insight-card, article.business-card, article.service-card, article.opportunity-card, article.technology-solution-card, article.technology-proof-item) a[href]::after { content: ""; position: absolute; inset: 0; z-index: 1; border-radius: inherit; }

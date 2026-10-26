@@ -68,7 +68,8 @@ for (const route of routes) {
     // Logistics family accents follow the H-mark Logistics blue (same token as /paths/logistics/),
     // not Intelligence violet — execution brief phase 2, 2026-10-26.
     expect(visual!.accentColor).toBe("color(srgb 0.158902 0.353255 0.803765)");
-    expect(visual!.darkSectionBackground).toBe("rgb(11, 13, 18)");
+    // Body sections (2026-10-26): reading surfaces are light; Focus Ink stays on one bounded closing panel.
+    expect(visual!.darkSectionBackground).toBe("rgb(255, 255, 255)");
     expect(visual!.darkRowRadius).toBe("12px");
     expect(visual!.finalBackground).toBe("rgb(11, 13, 18)");
     expect(visual!.finalRadius).toBe("30px");
