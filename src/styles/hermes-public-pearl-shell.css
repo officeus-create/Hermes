@@ -305,3 +305,9 @@ html body main:not(#pearl-scope) :is(section.recommendation-cta, section.localiz
 html body main:not(#pearl-scope) section.digital-project-cta { background: transparent; }
 html body main:not(#pearl-scope) section.digital-project-cta > .digital-project-cta-card { padding: clamp(1.75rem, 4vw, 3.25rem); border-radius: var(--hermes-radius-panel, 30px); background: #172033; }
 html body main:not(#pearl-scope) section.digital-project-cta .eyebrow { color: var(--family-accent-on-dark, #c8bdff); }
+
+/* Dead clicks (search error matrix E13): these cards look clickable but only a small inner link worked.
+   The card now follows its single existing link (same href; the link stays the only focus stop). */
+html body main :is(article.insight-card, article.business-card, article.service-card, article.opportunity-card, article.technology-solution-card, article.technology-proof-item) { position: relative; cursor: pointer; }
+html body main :is(article.insight-card, article.business-card, article.service-card, article.opportunity-card, article.technology-solution-card, article.technology-proof-item) a[href] { position: static; }
+html body main :is(article.insight-card, article.business-card, article.service-card, article.opportunity-card, article.technology-solution-card, article.technology-proof-item) a[href]::after { content: ""; position: absolute; inset: 0; z-index: 1; border-radius: inherit; }
