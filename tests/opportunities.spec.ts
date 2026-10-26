@@ -41,7 +41,10 @@ test.describe("Work With Hermes opportunities hub", () => {
       await expect(opportunities).toHaveAttribute("data-product", "opportunities");
     }
 
-    await expect(page.locator(".opportunities-current").getByRole("link", { name: "officeus@hermeslogisticsus.com" })).toHaveAttribute("href", "mailto:officeus@hermeslogisticsus.com?subject=Wisconsin%20Owner-Operator%20Application");\n    await expect(page.locator(".opportunities-current").getByRole("link", { name: "+1 (414) 269-7377 — Call Yuri" })).toHaveAttribute("href", "tel:+14142697377");\n    await expect(page.locator(".opportunities-current")).toContainText("Monday–Friday after 2:15 PM CT");\n    await expect(page.locator(".opportunities-current")).toContainText("Saturday–Sunday 10:00 AM–9:00 PM CT");
+    await expect(page.locator(".opportunities-current").getByRole("link", { name: "officeus@hermeslogisticsus.com" })).toHaveAttribute("href", "mailto:officeus@hermeslogisticsus.com?subject=Wisconsin%20Owner-Operator%20Application");
+    await expect(page.locator(".opportunities-current").getByRole("link", { name: "+1 (414) 269-7377 — Call Yuri" })).toHaveAttribute("href", "tel:+14142697377");
+    await expect(page.locator(".opportunities-current")).toContainText("Monday–Friday after 2:15 PM CT");
+    await expect(page.locator(".opportunities-current")).toContainText("Saturday–Sunday 10:00 AM–9:00 PM CT");
     await expect(page.getByRole("link", { name: "officeus@hermeslogisticsus.com" }).first()).toBeVisible();
     await expect(page.getByRole("link", { name: "partnership@hermeslogisticsus.com" }).first()).toBeVisible();
 
