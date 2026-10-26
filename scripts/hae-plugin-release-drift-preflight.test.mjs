@@ -22,13 +22,17 @@ assert.equal(current.one_brain_write_allowed,false);
 assert.equal(current.automatic_plugin_update_allowed,false);
 assert.equal(current.requires_external_provider_release_readback,true);
 
-const newer={
- "hermes-automatic-engineer":"0.1.26",
- "hermes-agent-coordinator":"0.1.71",
- "hermes-qa-evidence-auditor":"0.1.8",
- "hermes-knowledge-curator":"0.1.81"
+const driftRoles=new Set([
+ "hermes-automatic-engineer",
+ "hermes-agent-coordinator",
+ "hermes-qa-evidence-auditor",
+ "hermes-knowledge-curator"
+]);
+const bumpPatch=(version)=>{
+ const [major,minor,patch]=version.split(".").map(Number);
+ return `${major}.${minor}.${patch+1}`;
 };
-const drift=plan({...base,entries:base.entries.map(x=>({...x,plugin_version:newer[x.role_id]||x.plugin_version}))},"2026-10-26T16:00:00Z");
+const drift=plan({...base,entries:base.entries.map(x=>({...x,plugin_version:driftRoles.has(x.role_id)?bumpPatch(x.plugin_version):x.plugin_version}))},"2026-10-26T16:00:00Z");
 assert.equal(drift.status,"HOLD_VERSION_DRIFT_REVIEW");
 assert.equal(drift.version_mismatches.length,4);
 assert.ok(drift.version_mismatches.every(x=>x.next_action==="INDEPENDENT_CONTRACT_TEST_AND_RELEASE_READBACK"));
