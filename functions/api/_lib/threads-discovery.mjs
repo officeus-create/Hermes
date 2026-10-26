@@ -42,6 +42,7 @@ function stripPost(item) {
   return {
     id: clean(item.id, 160),
     text: clean(item.text, 2500),
+    research_signal: classifyThreadsResearchText(clean(item.text, 2500)),
     username: clean(item.username, 160),
     permalink: /^https:\/\/(www\.)?threads\.(com|net)\//.test(permalink) ? permalink : null,
     shortcode: clean(item.shortcode, 50),
@@ -168,5 +169,27 @@ export async function threadsConversationRead({ token, threadId, transport = fet
     replies: conversation.rows, pages: conversation.pages, complete: conversation.complete,
     limit_reached: conversation.limit_reached,
     provider: "meta_threads_official",
+  };
+}
+
+
+// Conservative advisory triage only; NEVER creates a CRM lead or authorizes a reply.
+// This deliberately keeps uncertainty explicit because public Threads requests can be stale,
+// non-U.S., duplicates, agents seeking vendors, job vacancies, or spam.
+export function classifyThreadsResearchText(raw) {
+  const value = clean(raw, 2500);
+  const lower = value.toLowerCase();
+  const priceMatches = value.match(/(?:[$€£]\s?\d[\d\s.,]*|\d[\d\s.,]*\s?(?:usd|eur|uah|грн|доларів|долларов|євро|\$|€))/gi) || [];
+  const mentions = [...new Set(priceMatches.map(s => s.trim().slice(0,60)))].slice(0,4);
+  const buyer = /(?:i (?:need|want|am looking for)|looking for|шукаю|ищу|потрібен|потрібна|нужен|need someone)/i.test(lower)
+    && /(?:web(?:site)?|сайт|лендинг|landing|web developer|web designer|дизайнер)/i.test(lower);
+  const seller = /(?:i (?:build|create|design) websites|we (?:build|create|design) websites|можу зробити|зроблю сайт|робимо сайти|створюю сайти|могу сделать сайт|ми розробляємо)/i.test(lower);
+  const type = buyer && seller ? "ambiguous" : buyer ? "possible_buyer_request" : seller ? "possible_supplier_offer" : "other";
+  return {
+    type, price_mentions: mentions,
+    status: "UNVERIFIED_PUBLIC_SIGNAL",
+    human_review_required: true,
+    reply_authorized: false,
+    crm_qualified: false,
   };
 }
