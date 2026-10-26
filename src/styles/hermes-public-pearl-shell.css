@@ -303,4 +303,5 @@ html body main:not(#pearl-scope) :is(section.recommendation-cta, section.localiz
   color: #fff;
 }
 html body main:not(#pearl-scope) section.digital-project-cta { background: transparent; }
-html body main:not(#pearl-scope) section.digital-project-cta > .digital-project-cta-card { border-radius: var(--hermes-radius-panel, 30px); background: #172033; }
+html body main:not(#pearl-scope) section.digital-project-cta > .digital-project-cta-card { padding: clamp(1.75rem, 4vw, 3.25rem); border-radius: var(--hermes-radius-panel, 30px); background: #172033; }
+html body main:not(#pearl-scope) section.digital-project-cta .eyebrow { color: var(--family-accent-on-dark, #c8bdff); }
