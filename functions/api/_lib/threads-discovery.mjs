@@ -181,7 +181,7 @@ export function classifyThreadsResearchText(raw) {
   const lower = value.toLowerCase();
   const priceMatches = value.match(/(?:[$€£]\s?\d[\d\s.,]*|\d[\d\s.,]*\s?(?:usd|eur|uah|грн|доларів|долларов|євро|\$|€))/gi) || [];
   const mentions = [...new Set(priceMatches.map(s => s.trim().slice(0,60)))].slice(0,4);
-  const buyer = /(?:i (?:need|want|am looking for)|looking for|шукаю|ищу|потрібен|потрібна|нужен|need someone)/i.test(lower)
+  const buyer = /(?:i (?:need|want|am looking for)|looking for|(?:client|who|he|she|they) needs?|шукаю|ищу|потрібен|потрібна|нужен|need someone)/i.test(lower)
     && /(?:web(?:site)?|сайт|лендинг|landing|web developer|web designer|дизайнер)/i.test(lower);
   const seller = /(?:i (?:build|create|design) websites|we (?:build|create|design) websites|можу зробити|зроблю сайт|робимо сайти|створюю сайти|могу сделать сайт|ми розробляємо)/i.test(lower);
   const type = buyer && seller ? "ambiguous" : buyer ? "possible_buyer_request" : seller ? "possible_supplier_offer" : "other";
