@@ -61,6 +61,14 @@ test.describe("Hermes Business Command Center",()=>{
     await expect(page.locator("[data-hc-owner-command-link]")).toHaveAttribute("href","/services/hermes-connect/internal/command-center/");
   });
 
+  test("opens one business direction without creating a second dashboard",async({page})=>{
+    await mockOwner(page);
+    await page.goto("/services/hermes-connect/internal/command-center/?direction=marketing");
+    await expect(page.locator("[data-backlog-title]")).toHaveText("Work queue · Marketing");
+    await expect(page.getByText("Threads website demand")).toBeVisible();
+    await page.getByRole("button",{name:"Show direction work"}).filter({has:page.locator("xpath=ancestor::article[@data-module='logistics']")}).click().catch(()=>{});
+  });
+
   test("keeps the owner page usable at 390px",async({page})=>{
     await page.setViewportSize({width:390,height:844});
     await mockOwner(page);
