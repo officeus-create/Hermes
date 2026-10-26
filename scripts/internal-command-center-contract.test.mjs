@@ -16,7 +16,7 @@ assert.match(page,/HermesConnectInternalAiNav/,"must reuse the existing owner AI
 assert.match(page,/\/api\/internal-ai\/status/,"must read the existing runner state instead of inventing a second agent runtime");
 assert.match(page,/\/api\/internal-ai\/tasks/,"must read the existing AI queue");
 assert.match(page,/\/api\/internal-command-center\/work-items/,"must use the bounded owner backlog");
-assert.match(page,/SpeechRecognition.*webkitSpeechRecognition/s,"voice capture must be local browser dictation with keyboard fallback");
+assert.match(page,/SpeechRecognition.*webkitSpeechRecognition/s,"voice capture must use browser speech recognition with keyboard/OS fallback");
 assert.match(page,/Dictation added.*Review before saving/s,"dictation must require review before persistence");
 assert.doesNotMatch(page,/localStorage|sessionStorage/,"owner work must not use browser storage as system of record");
 assert.doesNotMatch(page,/setInterval\([^,]+,\s*[0-9]{1,4}\)/,"page must not create a high-frequency pseudo-scheduler");
