@@ -6,19 +6,19 @@ const backlog={success:true,work_items:[{id:"hcwi_demo",workstream:"marketing",p
 const owners={success:true,current_specialist_id:"owner-1",access:[{specialist_id:"owner-1",active:true,email:"owner@example.invalid",name:"Owner",role:"Owner"}]};
 
 async function mockOwner(page:any){
-  await page.route("**/api/internal-ai/status",route=>route.fulfill(json(statusPayload)));
-  await page.route("**/api/internal-ai/tasks",route=>route.fulfill(json({success:true,tasks:[]})));
-  await page.route("**/api/internal-command-center/work-items",async route=>{
+  await page.route("**/api/internal-ai/status",(route:any)=>route.fulfill(json(statusPayload)));
+  await page.route("**/api/internal-ai/tasks",(route:any)=>route.fulfill(json({success:true,tasks:[]})));
+  await page.route("**/api/internal-command-center/work-items",async (route:any)=>{
     if(route.request().method()==="POST") return route.fulfill(json({success:true,work_item:{...backlog.work_items[0],id:"hcwi_created"}},201));
     return route.fulfill(json(backlog));
   });
-  await page.route("**/api/internal-command-center/access",route=>route.fulfill(json(owners)));
-  await page.route("**/api/hermes-connect/account",route=>route.fulfill(json({success:true,identity:{id:"owner-1",name:"Owner",email:"owner@example.invalid",role:"Owner"},owned_businesses:[],workspaces:[{key:"internal_ai",kind:"capability_workspace",href:"/services/hermes-connect/internal/ai-connect/",available:true,state:{capability:"HERMES_INTERNAL_OWNER"}}],capabilities:{internal_ai:true}})));
+  await page.route("**/api/internal-command-center/access",(route:any)=>route.fulfill(json(owners)));
+  await page.route("**/api/hermes-connect/account",(route:any)=>route.fulfill(json({success:true,identity:{id:"owner-1",name:"Owner",email:"owner@example.invalid",role:"Owner"},owned_businesses:[],workspaces:[{key:"internal_ai",kind:"capability_workspace",href:"/services/hermes-connect/internal/ai-connect/",available:true,state:{capability:"HERMES_INTERNAL_OWNER"}}],capabilities:{internal_ai:true}})));
 }
 
 test.describe("Hermes Business Command Center",()=>{
   test("fails closed for an anonymous session",async({page})=>{
-    await page.route("**/api/internal-ai/status",route=>route.fulfill(json({success:false,error:"not_authenticated"},401)));
+    await page.route("**/api/internal-ai/status",(route:any)=>route.fulfill(json({success:false,error:"not_authenticated"},401)));
     await page.goto("/services/hermes-connect/internal/command-center/");
     await expect(page).toHaveTitle(/Business Command Center/);
     await expect(page.getByText("Sign in required")).toBeVisible();
@@ -41,7 +41,7 @@ test.describe("Hermes Business Command Center",()=>{
     await mockOwner(page);
     let created:any=null;
     await page.unroute("**/api/internal-command-center/work-items");
-    await page.route("**/api/internal-command-center/work-items",async route=>{
+    await page.route("**/api/internal-command-center/work-items",async (route:any)=>{
       if(route.request().method()==="POST"){created=route.request().postDataJSON();return route.fulfill(json({success:true,work_item:{...backlog.work_items[0],id:"hcwi_created",title:created.title,details:created.details}},201))}
       return route.fulfill(json(backlog));
     });
@@ -55,7 +55,7 @@ test.describe("Hermes Business Command Center",()=>{
   });
 
   test("exposes Command Center from canonical Connect shell only after owner verification",async({page})=>{
-    await page.route("**/api/internal-ai/status",route=>route.fulfill(json(statusPayload)));
+    await page.route("**/api/internal-ai/status",(route:any)=>route.fulfill(json(statusPayload)));
     await page.goto("/services/hermes-connect/");
     await expect(page.locator("[data-hc-owner-command-link]")).toHaveText("Command Center");
     await expect(page.locator("[data-hc-owner-command-link]")).toHaveAttribute("href","/services/hermes-connect/internal/command-center/");
