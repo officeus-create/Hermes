@@ -26,7 +26,7 @@ test("evergreen Wisconsin recruiting stays indexable with a real direct applicat
   expect(jsonLd).toContain('"WebPage"');
   expect(jsonLd).toContain('"BreadcrumbList"');
   expect(jsonLd).toContain('"datePosted":"2026-10-03"');
-  expect(jsonLd).toContain('"hiringOrganization":{"@type":"Organization","@id":"https://hermeslogisticsus.com/#logistics","name":"Hermes Logistics LLC","sameAs":"https://hermeslogisticsus.com/paths/logistics/"}');
+  expect(jsonLd).toContain('"hiringOrganization":{"@type":"Organization","@id":"https://hermeslogisticsus.com/#logistics","name":"Hermes Logistics LLC","url":"https://hermeslogisticsus.com/paths/logistics/"}');
   expect(jsonLd).not.toContain('"hiringOrganization":{"@type":"Organization","@id":"https://hermeslogisticsus.com/#organization"');
   expect(jsonLd).not.toContain('"validThrough"');
   expect(jsonLd).not.toContain('"sameAs":"https://100hires.com/j/G4ek3eN"');
