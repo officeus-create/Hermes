@@ -79,3 +79,4 @@ jobs:
           node scripts/hae-github-ci-event-sensor.test.mjs
           node scripts/hae-github-ci-runtime-intake.test.mjs
           node scripts/hae-github-ci-source.test.mjs
+          node scripts/hae-github-ci-integration-sqlite.test.mjs
