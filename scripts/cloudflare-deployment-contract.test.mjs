@@ -245,8 +245,12 @@ for (const marker of [
 ]) {
   assert.ok(productionContactMode.includes(marker), `Production contact runtime activation marker is missing: ${marker}`);
 }
+assert.ok(
+  !productionContactMode.includes("playwright install --with-deps chromium"),
+  "Read-only Cloudflare production contract must not run apt/system dependency installation inside the browser-proof budget",
+);
 for (const marker of [
-  "npx playwright install --with-deps chromium",
+  "npx playwright install chromium",
   "node scripts/check-home-video-production.mjs",
   "node scripts/check-production-contact-runtime.mjs",
 ]) {

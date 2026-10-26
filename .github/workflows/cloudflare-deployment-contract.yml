@@ -74,7 +74,10 @@ jobs:
         run: node scripts/connect-subdomain-verifier.test.mjs
 
       - name: Install Chromium for read-only Home video proof
-        run: npx playwright install --with-deps chromium
+        # Keep this read-only contract inside its CI budget. GitHub-hosted runners
+        # already provide the required system browser libraries; avoid slow apt/font
+        # mirror work that can cancel the gate before browser assertions execute.
+        run: npx playwright install chromium
 
       - name: Exercise Home video proof against current public production
         env:
