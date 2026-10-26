@@ -3,7 +3,7 @@
 READ FIRST, UPDATE LAST. Every design/funnel session starts by reading this file, `TASK_QUEUE.md`,
 `DEFINITION_OF_DONE.md` and the latest `docs/AI_HANDOFF.md` entry, and ends by updating this table.
 
-Last updated: 2026-10-26 (Claude Code). Live state verified on hermeslogisticsus.com for rows marked `live ✓`.
+Last updated: 2026-10-26 evening (Claude Code). #2109 LIVE (merged c85004a4, readback 26.10). Live state verified on hermeslogisticsus.com for rows marked `live ✓`.
 
 ## Status vocabulary
 
@@ -22,8 +22,8 @@ MECHANISM → ONE primary action → measurement on an existing approved event, 
 |---|---|---|---|---|---|---|---|---|---|---|
 | 1 | Home | `/` | 385 | Claude Design v3 | approved | role router + contact | CURRENT_BASELINE | #1997–#2016 | ✓ | mobile lab LCP check (field LCP 1.3 s is good) |
 | 2 | Direction owners | `/paths/{logistics,technology,academy,marketing}/` | 135 / 18 / 9 / 9 | approved skeleton | approved | contact preselect | CURRENT_BASELINE | #1998, #2091 | ✓ | proof block per direction |
-| 3 | Marketing services (money) | `/services/seo-for-logistics-companies/`, `/services/seo/`, `/services/local-seo/` | 676 / 189 / 9 | Pearl + Marketing coral | light (#2109) | hero CTA + closing panel → form | PARTIAL | #2108, #2109 | — | **TASK 2**: proof above the fold, one primary CTA |
-| 4 | Brand-intent trust pages | `/company-information/`, `/about/`, `/contacts/` | 151 / 149 / 138 | Pearl (TrustPage) | light | directions router on two pages (#2109); contacts form | PARTIAL | #2109 | — | `/contacts/` next step |
+| 3 | Marketing services (money) | `/services/seo-for-logistics-companies/`, `/services/seo/`, `/services/local-seo/` | 676 / 189 / 9 | Pearl + Marketing coral | light (#2109) | hero CTA + closing panel → form | PARTIAL (proof rail coded) | #2108, #2109, next | #2109 ✓ | proof rail live → recheck E1 |
+| 4 | Brand-intent trust pages | `/company-information/`, `/about/`, `/contacts/` | 151 / 149 / 138 | Pearl (TrustPage) | light | directions router on two pages; contacts form | PARTIAL | #2109 | ✓ 26.10 | `/contacts/` + entity hub (E2) |
 | 5 | Logistics commercial | `/logistics/car-hauling-dispatch/`, `/logistics/appleton-wi-vehicle-transport/`, `/logistics/wisconsin-vehicle-transport/` | 62 / 75 / 28 | Pearl + Logistics blue | light (#2109) | commercial CTA, dispatch intake | PARTIAL | #2104, #2109 | — | funnel pass |
 | 6 | Logistics path results | `/paths/logistics/carriers/*`, `/customers/*` | ≤5 each | light product nav, blue | light (#2109) | recommendation → bounded panel | PARTIAL | #2104, #2109 | — | — |
 | 7 | Carrier geo markets | `/logistics/car-hauler-loads/{city}/` (25) | ≤2 each | Pearl + blue | light (#2109) | support list → CTA | HOLD (Bing IndexNow issue label) | #2109 | — | per-city evidence only if Bing label confirms quality |
