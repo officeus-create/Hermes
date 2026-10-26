@@ -139,7 +139,7 @@ assert.match(pageSource, /Hermes Logistics stays on Windsor/);
 assert.match(pageSource, /Office Threads Test/);
 assert.match(pageSource, /ProgressoPro/);
 assert.match(pageSource, /Hermes Business Academy/);
-assert.match(pageSource, /Publish Office canary/);
+assert.match(pageSource, /Publish selected brand/);
 assert.match(pageSource, /Disconnect locally/);
 assert.match(navSource, /\$\{repairShopRoot\}\/social/);
 assert.match(navSource, /href:withLocale\(`\$\{repairShopRoot\}\/social\/`\)/);
