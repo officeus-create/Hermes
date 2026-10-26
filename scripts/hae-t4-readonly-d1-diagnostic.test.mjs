@@ -21,14 +21,21 @@ for(const v of ["HAE_T4_READBACK "+sha,"HAE_T4_READBACK "+sha+" dlq:bad","HAE_T4
 }
 const normal=classifyT4DlqReceipt(db([row]),id);
 assert.equal(normal.receipt_matches_existing_verifier,true);
+const wrongItem=classifyT4DlqReceipt(db([{...row,alert_receipt_ref:"cloudflare-email://accepted/dlq:"+"a".repeat(32)}]),id);
+assert.equal(wrongItem.receipt_matches_existing_verifier,false);
+assert.equal(wrongItem.independent_inbox_verified,false);
 assert.equal(normal.alert_attempt_count,1);
 assert.equal(normal.receipt_prefix,"accepted");
 assert.equal(normal.independent_inbox_verified,false);
 assert.ok(!JSON.stringify(normal).includes(row.alert_receipt_ref),"The raw receipt must not enter the public GitHub artifact");
-const punctuation=classifyT4DlqReceipt(db([{...row,alert_receipt_ref:"cloudflare-email://message/abc+123@domain.com"}]),id);
+const punctuation=classifyT4DlqReceipt(db([{...row,alert_provider_message_id:"abc+123@domain.com",alert_receipt_ref:"cloudflare-email://message/abc+123@domain.com"}]),id);
 assert.equal(punctuation.receipt_prefix,"message");
-assert.equal(punctuation.receipt_matches_existing_verifier,false);
-assert.equal(punctuation.alert_provider_message_id_present,false);
+assert.equal(punctuation.receipt_matches_existing_verifier,true);
+assert.equal(punctuation.alert_provider_message_id_present,true);
+const mismatch=classifyT4DlqReceipt(db([{...row,alert_provider_message_id:"wrong+123@domain.com",alert_receipt_ref:"cloudflare-email://message/abc+123@domain.com"}]),id);
+assert.equal(mismatch.receipt_matches_existing_verifier,false);
+const absent=classifyT4DlqReceipt(db([{...row,alert_provider_message_id:null,alert_receipt_ref:"cloudflare-email://message/abc+123@domain.com"}]),id);
+assert.equal(absent.receipt_matches_existing_verifier,false);
 fail(()=>classifyT4DlqReceipt(db([]),id),"t4_readback_item_missing_or_ambiguous");
 fail(()=>classifyT4DlqReceipt(db([row,row]),id),"t4_readback_item_missing_or_ambiguous");
 fail(()=>classifyT4DlqReceipt(db([{...row,message_type:"publication.write"}]),id),"t4_readback_source_identity_mismatch");
@@ -44,14 +51,14 @@ const fetchImpl=async(url,request)=>{
     const body=JSON.parse(request.body);
     assert.ok(/^SELECT /.test(body.sql));
     assert.deepEqual(body.params,[id]);
-    return{ok:true,json:async()=>db([{...row,alert_receipt_ref:"cloudflare-email://message/abc+123@domain.com"}])};
+    return{ok:true,json:async()=>db([{...row,alert_provider_message_id:"abc+123@domain.com",alert_receipt_ref:"cloudflare-email://message/abc+123@domain.com"}])};
   }
   throw Error("unexpected_network_request");
 };
 const opts={ownerComment:command,accountId,githubToken:"fake-gh",cloudflareToken:"fake-cf",
   manifest:{baseline_status:"VERIFIED",canonical_database:"hermes-connect-prototype",baseline_source_sha:"f".repeat(40)},fetchImpl};
 const result=await runT4Readback(opts);
-assert.equal(result.receipt_matches_existing_verifier,false);
+assert.equal(result.receipt_matches_existing_verifier,true);
 assert.equal(result.dlq_item_id,id);
 assert.equal(result.main_sha,sha);
 assert.equal(trace.length,4);
