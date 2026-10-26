@@ -27,8 +27,9 @@ export async function onRequestPost({request,env}:{request:Request;env:Env}){
   await ensureCommandCenterSchema(env.DB);
   let payload:any; try{payload=await request.json()}catch{return jsonResponse(400,{success:false,error:"invalid_json"},headers)}
   const workstream=normalizeWorkstream(payload?.workstream), priority=normalizePriority(payload?.priority||"p2");
-  const title=normalizeWorkItemTitle(payload?.title), details=normalizeWorkItemDetails(payload?.details);
-  const source=normalizeWorkItemSource(payload?.source);
+  const details=normalizeWorkItemDetails(payload?.details);
+  const fallbackTitle=details?details.split(/\r?\n/)[0].replace(/\s+/g," ").trim().slice(0,120):"";
+  const title=normalizeWorkItemTitle(payload?.title||fallbackTitle), source=normalizeWorkItemSource(payload?.source);
   if(!workstream)return jsonResponse(400,{success:false,error:"invalid_workstream"},headers);
   if(!priority)return jsonResponse(400,{success:false,error:"invalid_priority"},headers);
   if(!title)return jsonResponse(400,{success:false,error:"invalid_title"},headers);
