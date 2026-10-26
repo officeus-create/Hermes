@@ -11,13 +11,13 @@ instruction or new provider evidence recorded in the matrix.
 Estimate: tasks 1–4 ≈ 1 working day; 5–9 ≈ 1.5 days (one family per slice, ~2 h each incl. CI); 10–12 separate.
 Ranking effects need 2–8 weeks after deploy; every slice records its recheck date in the error matrix.
 
-1. **#2109 → merge → live readback** (body sections, brand-intent routing, service CTA order, honest self-case).
+1. ~~**#2109 → merge → live readback**~~ DONE 26.10 (body sections, brand-intent routing, service CTA order, honest self-case).
    Accept: CI green on head; live 1440/390 of `/logistics/car-hauler-loads/denver-co/`, `/es/`,
    `/services/seo-for-logistics-companies/`, `/company-information/`; matrix rows 3–13 updated.
-2. **Dead clicks (E13) — whole cards become their existing link** on `/insights/`, `/businesses/`, `/opportunities/`,
+2. ~~**Dead clicks (E13)**~~ DONE in #2109 — — whole cards become their existing link** on `/insights/`, `/businesses/`, `/opportunities/`,
    `/paths/technology/` and direction hero windows; non-linked Catalog state tiles stop looking clickable.
    Accept: same hrefs, no new URLs, keyboard focus unchanged, screenshots 1440/390, Clarity recheck in 14 days.
-3. **Marketing services funnel (E1)** — `/services/seo-for-logistics-companies/` (676 impressions), `/services/seo/` (189),
+3. **Marketing services funnel (E1)** — IN PR: proof rail beside the hero CTA on 5 SEO pages; — `/services/seo-for-logistics-companies/` (676 impressions), `/services/seo/` (189),
    `/services/local-seo/`. Shared `DigitalServicePage`.
    Accept: above the fold PERSON (who it is for) → PROMISE (one line, existing approved copy) → PROOF (one real
    asset: Appleton case, logistics SEO audit sample, own-search baseline — links only, no new claims) → ONE primary
@@ -47,6 +47,8 @@ Ranking effects need 2–8 weeks after deploy; every slice records its recheck d
 - Authority (#368): real partner/client/directory links; no link schemes.
 
 ## Done (most recent first)
+
+- 2026-10-26 #2109 body sections, brand-intent routing, service CTA order, dead-click cards (E13), matrices — LIVE.
 
 - 2026-10-26 #2108 Technology/Academy/Marketing family accents — LIVE.
 - 2026-10-26 #2104 Logistics accents + light product nav — LIVE.

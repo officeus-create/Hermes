@@ -2076,3 +2076,10 @@ ai_name: Codex; role: delegated Academy owner; contribution_type: Implementation
 - Owner GSC exports (Drive folder "SEARCH PROVIDER EVIDENCE — CLAUDE", doc 04): Google impressions dropped ~90% from 29 Aug (non-brand logistics-SEO searches). Root cause not determined → HOLD on SEO code; needed: GSC Compare export by page/query. Program doc §10.2.
 - `/company-information/` and `/about/` (brand-intent landings) now end with the four direction owners before the policy contact (`TrustPage` `directionRouter`). Own-search baseline Insight gains an honest trend paragraph.
 - #2109 follow-up fix: digital-services closing panel padding + family eyebrow.
+
+## 2026-10-26 — Claude Code — #2109 LIVE; SEO service proof rail (E1)
+
+- #2109 merged as c85004a4; live readback: `/company-information/` serves the four direction links, canonical unchanged.
+- GSC compare read in the signed-in console (URL parameters): `/services/*` 951 → 40 impressions (9–28 Aug vs 29 Aug–23 Oct); brand secondary pages lost impressions; brand position 29.5 → 59. Bing IndexNow "issues" = indexed (E7 closed). All in `docs/design/SEARCH_ERROR_MATRIX.md`.
+- Slice: SEO service pages show "Proof you can open now" (3 published assets per variant) beside the single primary CTA. Build diff vs main: only 5 pages, links added. Tests: `tests/seo-service-proof-rail.spec.ts`; audit-sample spec scoped to rail + related list.
+- Next action — `/contacts/` + brand entity hub (E2); accept — four directions + form, entity facts consistent.

@@ -60,7 +60,9 @@ test("search-to-inquiry checklist exposes canonical structured data and sitemap 
 test("commercial owners link to the new and existing planning resources", async ({ page }) => {
   await page.goto("/services/seo/");
   await expect(page.locator('main a[href="/resources/search-to-inquiry-conversion-checklist/"]')).toHaveCount(1);
-  await expect(page.locator('main a[href="/resources/technical-seo-checklist/"]')).toHaveCount(1);
+  // Body resource link plus the hero proof rail (funnel PROOF) on the general SEO page.
+  await expect(page.locator('main a[href="/resources/technical-seo-checklist/"]:not(.digital-proof-rail a)')).toHaveCount(1);
+  await expect(page.locator('.digital-proof-rail a[href="/resources/technical-seo-checklist/"]')).toHaveCount(1);
 
   await page.goto("/services/website-development/");
   await expect(page.locator('main a[href="/resources/search-to-inquiry-conversion-checklist/"]')).toHaveCount(1);
