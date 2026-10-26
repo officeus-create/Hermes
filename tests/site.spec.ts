@@ -1,5 +1,17 @@
 import { expect, test, type Page } from "@playwright/test";
 
+// Each JSON-LD block is one entity object with a string @context (no top-level arrays: Microsoft
+// Clarity's parser throws on them), and at least one block is present.
+async function expectEntityJsonLd(page: Page) {
+  const blocks = await page.locator('script[type="application/ld+json"]').allTextContents();
+  expect(blocks.length).toBeGreaterThan(0);
+  for (const text of blocks) {
+    const parsed = JSON.parse(text);
+    expect(Array.isArray(parsed)).toBe(false);
+    expect(typeof parsed["@context"]).toBe("string");
+  }
+}
+
 // Approved analytics are GA4 plus consent-gated Microsoft Clarity on eligible public pages.
 // "Zero external delivery" checks still fail on any other outbound form/CRM/operational request.
 const APPROVED_ANALYTICS_HOSTS = [
@@ -206,7 +218,7 @@ test("Appleton guide routes customers, dealers, and carriers into the existing L
     "https://hermeslogisticsus.com/logistics/appleton-wi-vehicle-transport/",
   );
   await expect(page.getByRole("heading", { name: "Vehicle transport to and from Appleton, Wisconsin." })).toBeVisible();
-  await expect(page.locator('script[type="application/ld+json"]')).toHaveCount(1);
+  await expectEntityJsonLd(page);
 
   await page.getByRole("link", { name: /Dealer request/ }).click();
   await expect(page).toHaveURL(/\/load-board\/\?role=dealer&origin=Appleton%2C%20WI#post-load$/);
@@ -836,14 +848,14 @@ test("business directions expose the approved service areas and service schema",
   await page.goto("/paths/logistics/");
   await expect(page).toHaveTitle(/Wisconsin/);
   await expect(page.locator(".detail-service-area")).toContainText("Wisconsin first");
-  await expect(page.locator('script[type="application/ld+json"]')).toHaveCount(1);
+  await expectEntityJsonLd(page);
 
   for (const slug of ["marketing", "academy", "technology"]) {
     await page.goto(`/paths/${slug}/`);
     await expect(page).not.toHaveTitle(/Wisconsin/);
     await expect(page.getByText(/Email coordination only/)).toBeVisible();
     await expect(page.locator('a[href^="tel:"]')).toHaveCount(0);
-    await expect(page.locator('script[type="application/ld+json"]')).toHaveCount(1);
+    await expectEntityJsonLd(page);
   }
 });
 
