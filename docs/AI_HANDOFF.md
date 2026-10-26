@@ -2015,3 +2015,11 @@ ai_name: Codex; role: delegated Academy owner; contribution_type: Implementation
 - QA on fresh head: 0 horizontal overflow at 390/1440 on all pages; keyboard reaches all Catalog submenu links with visible focus (EN/UK, 1440/390); no running animation under reduced motion; Lighthouse mobile LCP on commercial pages equal or better than main (2.4–2.9s vs 2.9–3.2s), CLS 0.
 - Provider facts in `docs/handoffs/2026-10-23-codex-seo-owner-platform-tasks.md` now carry evidence classes; no stale Bing/GSC items re-fixed.
 - Next: CI on the fresh head → merge → live readback (car-hauling hero, `/businesses/?lang=uk`, `/ru/gb/london/` footer, canonicals) → Search Console/Bing readback by the Search owner.
+
+## 2026-10-26 (later) — Claude Code — #2027 rebased on b87ffdee; link graph identical to main
+
+- Main `b87ffdee` (includes the #2004 GA withdrawal fix, untouched here). Head `fb27090e` + this entry; 0 behind.
+- Fix: RU/UA chrome now localizes labels only (`labelLocale` in SiteHeader, `textLocale` in SiteFooter); hrefs follow the template locale. Build-to-build vs main: 0 pages with any href change, 0 lost links, 0 new pages; canonical/hreflang/robots/title/description/H1/JSON-LD/fields/hooks/consent unchanged.
+- New `tests/locale-mechanisms.spec.ts` + "Locale mechanisms" section in `docs/DESIGN_INTEGRATION_CONTRACT.md`: `/ru/` `/ua/` = server locales; Catalog `?lang=uk` = browser switch, same HTML/canonical/hrefs.
+- Local: build 0 errors; `npm test` + all #2087 Search gates pass; 605 affected-zone Playwright specs pass (3 skipped), desktop + 390.
+- Owner (2026-10-26) authorized Claude to decide and publish this design work. Next: exact-head CI green → merge → live readback.
