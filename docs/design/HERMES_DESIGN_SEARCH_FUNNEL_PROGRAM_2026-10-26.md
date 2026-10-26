@@ -1,9 +1,16 @@
-# Hermes Design × Search/GEO × Sales-Funnel Convergence Program (2026-10-26)
+# Hermes Design × Search/GEO × Sales Funnel — repository evidence companion (2026-10-26)
 
-Status: ACTIVE program. Owner: Claude (design writer) under `docs/DESIGN_INTEGRATION_CONTRACT.md` (#2087).
-Supersedes as *task definition* (not as brand rules): the "phase" lists in `DESIGN_GAP_ANALYSIS_2026-10-23.md`
-and the release sequence in `HERMES_BRAND_MIGRATION_AUDIT.md`. Brand rules stay in
-`HERMES_UNIFIED_BRAND_SYSTEM.md`; tokens stay in `src/styles/hermes-brand-system.css`.
+**Canonical execution router (CURRENT):** Drive doc "HERMES DESIGN → SEARCH/GEO → SALES FUNNEL OS — CLAUDE
+EXECUTION BRIEF — CURRENT — 2026-10-26" (`1Z5Kv2jJTkkVaypeJvBPRqgBH33BLiJtrTrRWmM0XaRY`). It owns source
+precedence, the family coverage matrix (NOT_CLASSIFIED / CURRENT_BASELINE / PARTIAL / LEGACY /
+INTENTIONAL_PRODUCT / PRIVATE / ACCEPTED_LIVE), the phase order and the ERR-DESIGN-01…18 register.
+This file does **not** compete with it: it records repository-side evidence (measured crawl, the shared
+Pearl-shell primitive, test-contract changes) and maps the waves below onto the brief's phases.
+Brand rules stay in `HERMES_UNIFIED_BRAND_SYSTEM.md`; tokens in `src/styles/hermes-brand-system.css`.
+
+Wave → brief phase mapping: waves A + B = **Phase 1 shared public primitive "Pearl shell"** (consumed by
+the Logistics, Academy, Company/Legal, Localized and resource families); C/F = Phase 1 remainder; D =
+Phase 2 Logistics; E = funnel layer applied inside each family phase (brief §8).
 
 ## 0. Why this document exists (the mistake it corrects)
 
@@ -64,7 +71,7 @@ The 185 dark heroes split into:
 |---|---|---|---|
 | 0 | Header/footer, Catalog nav, commercial template, Load Board hero, form labels, locale chrome | #2025, #2027 | LIVE |
 | A | All legacy dark heroes except photo-led locales (≈95 pages) | `src/styles/hermes-public-pearl-shell.css` (one shared layer, explicit template list, product accents excluded) | IN PROGRESS (this PR) |
-| B | Localized ES/FR/IT/RU/UA overview + direction-owner heroes (23) | Rebuild hero as Home's Pearl + live-window (image becomes media window, not background) | NEXT |
+| B | Localized ES/FR/IT/RU/UA overview + direction-owner heroes (23) | Same layer: photo background becomes a rounded live window (CSS only, markup/LCP image unchanged) | IN PROGRESS (same PR) |
 | C | Body sections below the hero: legacy navy bands, violet/gold/teal eyebrows, lavender sections, 4-colour stripe bar, gold CTA on agreement pages | Shared section/card/eyebrow primitives; bounded Focus Ink bands stay allowed | NEXT |
 | D | Logistics sub-navigation bar (dark navy product nav under header on `/paths/logistics/*`) → attached direction submenu like Catalog/directions | `SiteHeader`/direction product nav | NEXT |
 | E | Funnel layer (section 5) per direction | Content structure + CTA hierarchy, no new claims | NEXT |
@@ -138,7 +145,9 @@ existing consented events only (no new PII, no new analytics fields without the 
   (c) the next wave's measured list. That is the learning loop; lessons live here and in One Brain, not in
   chat history.
 
-## 8. Ready-to-use task prompt for Claude (copy as the next session's first message)
+## 8. Ready-to-use task prompt for Claude
+
+Use the CURRENT brief's §17 "CLAUDE START COMMAND" (Drive). The short repository version:
 
 > You are the Hermes design writer. Read `docs/design/HERMES_DESIGN_SEARCH_FUNNEL_PROGRAM_2026-10-26.md`
 > (this file) and `docs/DESIGN_INTEGRATION_CONTRACT.md`. Take the first wave in §3 that is not LIVE.

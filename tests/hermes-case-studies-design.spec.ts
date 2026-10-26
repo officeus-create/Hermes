@@ -9,7 +9,7 @@ const routes = [
     surface: ".case-grid article",
     radius: ".case-grid article",
     accent: ".case-card-top",
-    dark: ".case-hub-hero",
+    dark: null,
   },
   {
     route: "/case/appleton-vehicle-transport-seo/",
@@ -43,7 +43,7 @@ for (const config of routes) {
     expect(response?.ok()).toBeTruthy();
     await expect(page.locator(config.root)).toBeVisible();
     await expect(page.locator(config.surface).first()).toBeVisible();
-    await expect(page.locator(config.dark).first()).toBeVisible();
+    if (config.dark) await expect(page.locator(config.dark).first()).toBeVisible();
 
     const visual = await page.evaluate((selectors) => {
       const root = document.querySelector<HTMLElement>(selectors.root);
@@ -52,8 +52,8 @@ for (const config of routes) {
       const surface = document.querySelector<HTMLElement>(selectors.surface);
       const radius = document.querySelector<HTMLElement>(selectors.radius);
       const accent = document.querySelector<HTMLElement>(selectors.accent);
-      const dark = document.querySelector<HTMLElement>(selectors.dark);
-      if (!root || !hero || !primary || !surface || !radius || !accent || !dark) return null;
+      const dark = selectors.dark ? document.querySelector<HTMLElement>(selectors.dark) : null;
+      if (!root || !hero || !primary || !surface || !radius || !accent || (selectors.dark && !dark)) return null;
       const rootRect = root.getBoundingClientRect();
       return {
         rootBackground: getComputedStyle(root).backgroundColor,
@@ -64,7 +64,7 @@ for (const config of routes) {
         surfaceBackground: getComputedStyle(surface).backgroundColor,
         radiusValue: getComputedStyle(radius).borderRadius,
         accentColor: getComputedStyle(accent).color,
-        darkBackground: getComputedStyle(dark).backgroundColor,
+        darkBackground: dark ? getComputedStyle(dark).backgroundColor : null,
         overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
         rootRight: rootRect.right,
         viewportWidth: document.documentElement.clientWidth,
@@ -73,14 +73,15 @@ for (const config of routes) {
 
     expect(visual).not.toBeNull();
     expect(visual!.rootBackground).toBe("rgb(247, 246, 243)");
-    expect(visual!.heroBackground).toBe("rgb(11, 13, 18)");
-    expect(visual!.primaryBackground).toBe("rgb(255, 255, 255)");
-    expect(visual!.primaryColor).toBe("rgb(11, 13, 18)");
-    expect(visual!.primaryRadius).toBe("12px");
+    // Pearl shell (design wave A, 2026-10-26): Pearl hero, ink pill primary action.
+    expect(visual!.heroBackground).toBe("rgb(247, 246, 243)");
+    expect(visual!.primaryBackground).toBe("rgb(10, 22, 79)");
+    expect(visual!.primaryColor).toBe("rgb(255, 255, 255)");
+    expect(visual!.primaryRadius).toBe("999px");
     expect(visual!.surfaceBackground).toBe("rgb(255, 255, 255)");
     expect(visual!.radiusValue).toBe("22px");
     expect(visual!.accentColor).toBe("rgb(100, 70, 230)");
-    expect(visual!.darkBackground).toBe("rgb(11, 13, 18)");
+    if (config.dark) expect(visual!.darkBackground).toBe("rgb(11, 13, 18)");
     expect(visual!.overflow).toBe(false);
     expect(visual!.rootRight).toBeLessThanOrEqual(visual!.viewportWidth);
   });
