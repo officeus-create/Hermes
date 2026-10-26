@@ -749,3 +749,13 @@ REUSE_RULE: Never change bytes behind an existing `/media/*` URL — always ship
 - **False-fix guard:** Do not edit unrelated UI/product code merely because a long browser shard times out. Reproduce the exact failing test on clean current `main` first; if it fails identically, classify it as baseline/test-environment evidence rather than a candidate-branch regression.
 - **#2033 evidence:** KNB locale navigation, Hermes Connect locale selector, Load Board mobile journey, and both repair-public-entry interaction timeouts were independently compared against clean `main`; where compared, the same failure reproduced outside the schema-snapshot branch. One Home touch timeout did not reproduce on clean `main` and requires an isolated branch rerun before final classification.
 - **Safety:** No production, D1, secret, provider-write, or migration change is authorized by this error record.
+
+## ERR-DESIGN-2027-STALE-BRANCH-LOCALE-LINK-GRAPH-20261026 — RESOLVED_IN_BRANCH / EXACT_HEAD_CI_PENDING
+
+PROBLEM: Claude design PR #2027 (EN/RU/UA chrome, light commercial hero, Catalog submenu in the header) sat 132 commits behind `main` after a long session pause. Its first localized-footer version dropped the English footer's internal links (direction owners, money pages, trust/legal routes) from 10 RU/UA pages, and the embedded Catalog submenu stayed English on `?lang=uk` because the header passed only `en | ru` and the static build cannot see query strings.
+
+ROOT_CAUSE: Design work was validated against its own old base and by screenshots rather than by a build-to-build diff against current `main`; localization replaced a link-bearing component instead of translating its labels; query-string locales were assumed to be visible at build time.
+
+WORKING_APPROACH: Replayed only the bounded design delta onto fresh `main` (no whole-file blobs); RU/UA footers render the same hrefs with translated labels; Catalog submenu and header labels switch in the browser on `?lang=uk` without new URLs or owners; full-site build diff vs `main` proves canonical/hreflang/robots/title/description/H1/JSON-LD/form names/hooks unchanged and zero lost internal links; #2087 Search gates, 390/1440 overflow, keyboard/reduced-motion and Lighthouse LCP/CLS checked on the fresh head.
+
+REUSE_RULE: For any design PR touching shared chrome, run a build-to-build diff against current `main` (canonical, hreflang, robots, H1, schema, form names/hooks, internal links per page) before review; localize labels, never the link set; treat `?lang=` locales as runtime-only on static routes; re-replay onto fresh `main` whenever the branch falls behind instead of merging old blobs.
