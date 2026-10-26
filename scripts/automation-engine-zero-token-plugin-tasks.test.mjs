@@ -91,8 +91,8 @@ assert.equal(runZeroTokenPluginTask("hae.self.release.verify", fixtures["hae.sel
 assert.equal(runZeroTokenPluginTask("hae.self.release.verify", fixtures["hae.self.release.verify"]).next_lane, "SELF_IMPROVEMENT");
 assert.equal(ZERO_TOKEN_PLUGIN_TASK_CONTRACTS.find((item) => item.job_type === "hae.self.improvement.audit")?.runtime_config.cadence_hours, 6);
 assert.equal(ZERO_TOKEN_PLUGIN_TASK_CONTRACTS.find((item) => item.job_type === "knowledge.evidence.audit")?.role_id, "hermes-knowledge-curator");
-assert.equal(ZERO_TOKEN_PLUGIN_TASK_CONTRACTS.find((item) => item.job_type === "knowledge.evidence.audit")?.plugin_version, "0.1.77");
-assert.equal(ZERO_TOKEN_PLUGIN_TASK_CONTRACTS.find((item) => item.job_type === "technology.release.radar")?.plugin_version, "0.1.25");
+assert.equal(ZERO_TOKEN_PLUGIN_TASK_CONTRACTS.find((item) => item.job_type === "knowledge.evidence.audit")?.plugin_version, "0.1.81");
+assert.equal(ZERO_TOKEN_PLUGIN_TASK_CONTRACTS.find((item) => item.job_type === "technology.release.radar")?.plugin_version, "0.1.26");
 assert.equal(ZERO_TOKEN_PLUGIN_TASK_CONTRACTS.find((item) => item.job_type === "academy.english.practice.build")?.plugin_version, "0.1.12");
 
 assert.throws(() => validateZeroTokenPluginTaskInput("dispatch.daily.closeout.audit", { ...fixtures["dispatch.daily.closeout.audit"], coverage_complete: "yes" }), /dispatch_coverage_complete_required/);

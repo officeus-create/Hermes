@@ -112,7 +112,7 @@
       "submission_auth": "HERMES_AUTOMATION_TOKEN",
       "retention_class": "business_runtime_evidence",
       "role_id": "hermes-search-growth",
-      "plugin_version": "0.1.6",
+      "plugin_version": "0.1.8",
       "contract_version": "search-snapshot-evaluate-v1",
       "semantic_required": false,
       "free_ai_policy": "not_required"
@@ -129,7 +129,7 @@
       "submission_auth": "HERMES_AUTOMATION_TOKEN",
       "retention_class": "business_runtime_evidence",
       "role_id": "hermes-marketing-growth",
-      "plugin_version": "0.1.6",
+      "plugin_version": "0.1.7",
       "contract_version": "marketing-content-dedupe-v1",
       "semantic_required": false,
       "free_ai_policy": "not_required"
@@ -146,7 +146,7 @@
       "submission_auth": "HERMES_AUTOMATION_TOKEN",
       "retention_class": "business_runtime_evidence",
       "role_id": "hermes-dispatch-os",
-      "plugin_version": "0.1.20",
+      "plugin_version": "0.1.21",
       "contract_version": "logistics-source-freshness-v1",
       "semantic_required": false,
       "free_ai_policy": "not_required"
@@ -163,7 +163,7 @@
       "submission_auth": "HERMES_AUTOMATION_TOKEN",
       "retention_class": "business_runtime_evidence",
       "role_id": "hermes-search-growth",
-      "plugin_version": "0.1.6",
+      "plugin_version": "0.1.8",
       "contract_version": "search-defect-prioritize-v1",
       "semantic_required": true,
       "free_ai_policy": "free_only_wait_if_unavailable"
@@ -180,7 +180,7 @@
       "submission_auth": "HERMES_AUTOMATION_TOKEN",
       "retention_class": "business_runtime_evidence",
       "role_id": "hermes-agent-coordinator",
-      "plugin_version": "0.1.68",
+      "plugin_version": "0.1.71",
       "contract_version": "work-portfolio-reconcile-v1",
       "semantic_required": false,
       "free_ai_policy": "not_required"
@@ -197,7 +197,7 @@
       "submission_auth": "HERMES_AUTOMATION_TOKEN",
       "retention_class": "business_runtime_evidence",
       "role_id": "hermes-dispatch-os",
-      "plugin_version": "0.1.20",
+      "plugin_version": "0.1.21",
       "contract_version": "dispatch-daily-closeout-v1",
       "semantic_required": false,
       "free_ai_policy": "not_required"
@@ -214,7 +214,7 @@
       "submission_auth": "HERMES_AUTOMATION_TOKEN",
       "retention_class": "business_runtime_evidence",
       "role_id": "hermes-knowledge-curator",
-      "plugin_version": "0.1.77",
+      "plugin_version": "0.1.81",
       "contract_version": "knowledge-evidence-audit-v1",
       "semantic_required": false,
       "free_ai_policy": "not_required"
@@ -231,7 +231,7 @@
       "submission_auth": "HERMES_AUTOMATION_TOKEN",
       "retention_class": "business_runtime_evidence",
       "role_id": "hermes-automatic-engineer",
-      "plugin_version": "0.1.25",
+      "plugin_version": "0.1.26",
       "contract_version": "technology-release-radar-v1",
       "semantic_required": false,
       "free_ai_policy": "not_required"
@@ -248,7 +248,7 @@
       "submission_auth": "HERMES_AUTOMATION_TOKEN",
       "retention_class": "technical_runtime_evidence",
       "role_id": "hermes-automatic-engineer",
-      "plugin_version": "0.1.25",
+      "plugin_version": "0.1.26",
       "contract_version": "ai-gateway-readiness-v1",
       "semantic_required": false,
       "free_ai_policy": "not_required"
@@ -265,7 +265,7 @@
       "submission_auth": "HERMES_AUTOMATION_TOKEN",
       "retention_class": "business_runtime_evidence",
       "role_id": "hermes-marketing-growth",
-      "plugin_version": "0.1.6",
+      "plugin_version": "0.1.7",
       "contract_version": "growth-error-closure-v1",
       "semantic_required": false,
       "free_ai_policy": "not_required"
@@ -282,7 +282,7 @@
       "submission_auth": "HERMES_AUTOMATION_TOKEN",
       "retention_class": "business_runtime_evidence",
       "role_id": "hermes-dispatch-os",
-      "plugin_version": "0.1.20",
+      "plugin_version": "0.1.21",
       "contract_version": "car-hauling-market-snapshot-v1",
       "semantic_required": false,
       "free_ai_policy": "not_required"
@@ -299,7 +299,7 @@
       "submission_auth": "HERMES_AUTOMATION_TOKEN",
       "retention_class": "business_runtime_evidence",
       "role_id": "hermes-marketing-growth",
-      "plugin_version": "0.1.6",
+      "plugin_version": "0.1.7",
       "contract_version": "internet-mentions-audit-v1",
       "semantic_required": false,
       "free_ai_policy": "not_required"
@@ -333,7 +333,7 @@
       "submission_auth": "HERMES_AUTOMATION_TOKEN",
       "retention_class": "technical_runtime_evidence",
       "role_id": "hermes-automatic-engineer",
-      "plugin_version": "0.1.25",
+      "plugin_version": "0.1.26",
       "contract_version": "hae-self-improvement-audit-v1",
       "semantic_required": false,
       "free_ai_policy": "not_required"
@@ -350,7 +350,7 @@
       "submission_auth": "HERMES_AUTOMATION_TOKEN",
       "retention_class": "technical_runtime_evidence",
       "role_id": "hermes-automatic-engineer",
-      "plugin_version": "0.1.25",
+      "plugin_version": "0.1.26",
       "contract_version": "hae-self-repair-packet-v1",
       "semantic_required": false,
       "free_ai_policy": "not_required"
@@ -367,7 +367,7 @@
       "submission_auth": "HERMES_AUTOMATION_TOKEN",
       "retention_class": "technical_runtime_evidence",
       "role_id": "hermes-qa-evidence-auditor",
-      "plugin_version": "0.1.5",
+      "plugin_version": "0.1.8",
       "contract_version": "hae-self-release-verify-v1",
       "semantic_required": false,
       "free_ai_policy": "not_required"

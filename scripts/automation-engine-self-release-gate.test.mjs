@@ -29,9 +29,9 @@ assert.equal(result.self_improvement_should_pause, false);
 assert.equal(result.next_lane, "SELF_IMPROVEMENT");
 assert.equal(result.cost_usd, 0);
 assert.equal(result.verifier.role_id, "hermes-qa-evidence-auditor");
-assert.equal(result.verifier.plugin_version, "0.1.5");
+assert.equal(result.verifier.plugin_version, "0.1.8");
 assert.equal(result.repair_owner.role_id, "hermes-automatic-engineer");
-assert.equal(result.repair_owner.plugin_version, "0.1.25");
+assert.equal(result.repair_owner.plugin_version, "0.1.26");
 assert.ok(result.future_required_evidence.includes("D1_AUTHENTICATED_QA_VERIFIER_RECEIPT"));
 assert.ok(result.future_required_evidence.includes("GITHUB_AUTHENTICATED_ROLLBACK_EQUIVALENCE"));
 

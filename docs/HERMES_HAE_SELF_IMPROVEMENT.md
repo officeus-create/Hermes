@@ -1,7 +1,7 @@
 # HAE self-improvement lane
 
 Status: SOURCE IMPLEMENTATION / STACKED DRAFT
-Reviewed: 2026-10-25
+Reviewed: 2026-10-26
 
 ## Goal
 
@@ -60,11 +60,11 @@ Runtime contracts use one compiled plugin version registry sourced from authenti
 
 Current self-improvement owners:
 
-- hermes-automatic-engineer v0.1.25;
-- hermes-agent-coordinator v0.1.68;
-- hermes-qa-evidence-auditor v0.1.5;
-- hermes-knowledge-curator v0.1.77;
-- hermes-technology-developer v0.1.55.
+- hermes-automatic-engineer v0.1.26;
+- hermes-agent-coordinator v0.1.71;
+- hermes-qa-evidence-auditor v0.1.8;
+- hermes-knowledge-curator v0.1.81;
+- hermes-technology-developer v0.1.56.
 
 Domain runtime versions used by current zero-token contracts are bound from the same registry rather than repeated manually.
 
@@ -113,3 +113,10 @@ Only when those adapters exist should the gate gain a reachable `HOLD_RELEASE` p
 Stopping condition remains a future acceptance rule: after authenticated activation, self-improvement may pause and return to the business queue only when the current item is at `HOLD_RELEASE` and there are no open P0/P1 self-tasks. Remaining non-blocking P2 improvements must not monopolize the engine.
 
 SOURCE/CI success for this slice proves only that the dormant gate fails closed. It does not prove authenticated verifier execution, rollback equivalence, deployment or LIVE runtime behavior.
+
+
+## Authenticated plugin registry refresh — 2026-10-26
+
+The compiled registry below was refreshed from authenticated Plugin Creator readback after T4 was verified. Runtime-role versions are: Automatic Engineer 0.1.26; Agent Coordinator 0.1.71; Technology Developer 0.1.56; QA Evidence Auditor 0.1.8; Knowledge Curator 0.1.81; Marketing Growth 0.1.7; Search Growth 0.1.8; Academy 0.1.12; Dispatch OS 0.1.21.
+
+This refresh is source evidence only. A private plugin release is not a deployed HAE capability; jobs still freeze role/plugin/contract/SHA identities at enqueue time and must pass the existing exact-head/runtime gates.

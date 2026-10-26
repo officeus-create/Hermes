@@ -74,8 +74,8 @@ assert.equal(complete.automatic_merge_performed, false);
 assert.equal(complete.automatic_deploy_performed, false);
 assert.equal(complete.cost_usd, 0);
 assert.equal(complete.repair_owner.role_id, "hermes-automatic-engineer");
-assert.equal(complete.repair_owner.plugin_version, "0.1.25");
-assert.equal(complete.independent_review_owner.plugin_version, "0.1.5");
+assert.equal(complete.repair_owner.plugin_version, "0.1.26");
+assert.equal(complete.independent_review_owner.plugin_version, "0.1.8");
 
 const writerUnknown = evaluateHaeSelfImprovementSnapshot({
   observed_at: "2026-10-25T00:30:00Z",
@@ -118,10 +118,12 @@ assert.equal(
   ),
   false,
 );
-assert.equal(pluginRuntimeRegistryEvidenceStatus("2026-10-25T12:00:00Z").fresh, true);
-assert.equal(pluginRuntimeRegistryEvidenceStatus("2026-10-27T12:00:00Z").fresh, false);
+const registryObservedDate = pluginRuntimeRegistrySnapshot().observed_at;
+assert.equal(pluginRuntimeRegistryEvidenceStatus(`${registryObservedDate}T12:00:00Z`).fresh, true);
+const staleRegistryCheckAt = new Date(Date.parse(`${registryObservedDate}T00:00:00Z`) + 36 * 3600000).toISOString();
+assert.equal(pluginRuntimeRegistryEvidenceStatus(staleRegistryCheckAt).fresh, false);
 
-assert.equal(pluginRuntimeVersion("hermes-agent-coordinator"), "0.1.68");
+assert.equal(pluginRuntimeVersion("hermes-agent-coordinator"), "0.1.71");
 assert.equal(pluginRuntimeVersion("hermes-academy"), "0.1.12");
 assert.equal(pluginRuntimeRegistrySnapshot().source_class, "PRIVATE_PLUGIN_CREATOR_READBACK");
 assert.throws(() => pluginRuntimeVersion("hermes-unknown-role"), /plugin_runtime_version_unverified/);

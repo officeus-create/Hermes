@@ -66,15 +66,15 @@ assert.ok(roleContractForJobType("marketing.content.dedupe.audit").runtime_confi
 assert.equal(roleContractForJobType("logistics.source.freshness.audit").runtime_config.max_age_minutes, 1440);
 assert.equal(roleContractForJobType("ai.gateway.readiness.audit").runtime_config.cadence_hours, 24);
 assert.equal(roleContractForJobType("academy.english.practice.build").runtime_config.cadence_hours, 24);
-assert.equal(roleContractForJobType("work.portfolio.reconcile").plugin_version, "0.1.68");
-assert.equal(roleContractForJobType("hae.self.improvement.audit").plugin_version, "0.1.25");
+assert.equal(roleContractForJobType("work.portfolio.reconcile").plugin_version, "0.1.71");
+assert.equal(roleContractForJobType("hae.self.improvement.audit").plugin_version, "0.1.26");
 assert.equal(roleContractForJobType("hae.self.release.verify").role_id, "hermes-qa-evidence-auditor");
-assert.equal(roleContractForJobType("hae.self.release.verify").plugin_version, "0.1.5");
+assert.equal(roleContractForJobType("hae.self.release.verify").plugin_version, "0.1.8");
 assert.ok(ROLE_CONTRACT_JOB_TYPES.includes("hae.self.release.verify"), "Dormant self-release capability remains directly inspectable");
 assert.ok(!CAPABILITY_GRAPH_ROLE_CONTRACT_JOB_TYPES.includes("hae.self.release.verify"), "Dormant self-release capability must not be graph-routable before authenticated activation");
 assert.equal(CAPABILITY_GRAPH_ROLE_CONTRACT_JOB_TYPES.length, ROLE_CONTRACT_JOB_TYPES.length - 1);
 assert.equal(roleContractForJobType("knowledge.evidence.audit").role_id, "hermes-knowledge-curator");
-assert.equal(roleContractForJobType("knowledge.evidence.audit").plugin_version, "0.1.77");
+assert.equal(roleContractForJobType("knowledge.evidence.audit").plugin_version, "0.1.81");
 assert.equal(ROLE_CONTRACTS.filter((contract) => !contract.semantic_required).length, 15);
 assert.equal(ROLE_CONTRACTS.filter((contract) => contract.semantic_required).length, 1);
 
