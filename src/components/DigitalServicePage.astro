@@ -171,7 +171,12 @@ const seoProofLinks: Record<SeoProofVariant, ProofLink[]> = {
     ownBaseline,
   ],
 };
-const proofLinks = seoProofVariant ? seoProofLinks[seoProofVariant] : [];
+const websiteProofLinks: ProofLink[] = [
+  { kind: "Released case", title: "One digital front door for four businesses", href: "/case/it-development/" },
+  { kind: "Free template", title: "Website Project Brief Template", href: "/resources/website-project-brief-template/" },
+  { kind: "Free checklist", title: "Search-to-Inquiry Conversion Checklist", href: "/resources/search-to-inquiry-conversion-checklist/" },
+];
+const proofLinks = seoProofVariant ? seoProofLinks[seoProofVariant] : websiteContext ? websiteProofLinks : [];
 const websiteSocialProof = content.slug === "/services/website-development/" || content.slug === "/services/website-redesign/"
   ? {
       image: "/images/hermes-live-home-2026.jpg",
