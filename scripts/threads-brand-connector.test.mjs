@@ -107,6 +107,7 @@ const verifySource = await readFile(new URL("../functions/api/internal/social/th
 const disconnectSource = await readFile(new URL("../functions/api/internal/social/threads/disconnect.ts", import.meta.url), "utf8");
 const metricsSource = await readFile(new URL("../functions/api/internal/social/threads/metrics.ts", import.meta.url), "utf8");
 const pageSource = await readFile(new URL("../src/pages/services/hermes-connect/internal/social-connections/index.astro", import.meta.url), "utf8");
+const researchPage = await readFile(new URL("../src/pages/services/hermes-connect/internal/social-connections/threads-research.astro", import.meta.url), "utf8");
 const navSource = await readFile(new URL("../src/components/RepairShopOwnerNavEnhancer.astro", import.meta.url), "utf8");
 const vendorRegistry = await readFile(new URL("../docs/compliance/vendor-registry.json", import.meta.url), "utf8");
 const releaseDelta = await readFile(new URL("../docs/release-manifest-deltas/2026-09-29-hermes-connect-social-connections.json", import.meta.url), "utf8");
@@ -146,5 +147,12 @@ assert.doesNotMatch(navSource, /\/api\/internal\/social\/threads\/connections/);
 assert.doesNotMatch(navSource, /data-hc-social-connections-link/);
 assert.match(vendorRegistry, /meta-threads-owner-oauth/);
 assert.match(releaseDelta, /internal\/social-connections/);
+assert.match(researchPage, /data-research-form/);
+assert.match(researchPage, /noindex,nofollow,noarchive/);
+assert.match(researchPage, /api\/internal\/social\/threads\/read/);
+assert.match(researchPage, /credentials:"same-origin"/);
+assert.doesNotMatch(researchPage, /\/api\/internal\/social\/threads\/publish/);
+assert.match(pageSource, /social-connections\/threads-research/);
+await import("./threads-discovery.test.mjs");
 
 console.log("threads brand connector contract: PASS");

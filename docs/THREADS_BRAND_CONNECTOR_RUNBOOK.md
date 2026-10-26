@@ -173,3 +173,36 @@ DEPLOY CODE WITH PUBLISH OFF
 ```
 
 No code readiness claim equals production activation.
+
+
+## Read-only Threads Research
+
+Internal owner route:
+
+```text
+/services/hermes-connect/internal/social-connections/threads-research/
+```
+
+Purpose:
+- inspect the connected brand's own Threads posts;
+- run bounded keyword discovery when the exact Meta permission is approved;
+- read a bounded public conversation when the exact provider object is visible;
+- classify observations only as unverified research signals.
+
+This is an input to the existing Social Studio review flow. It is **not** a second post admin, scheduler, publisher, CRM, sales system, or autonomous reply bot.
+
+Hard boundaries:
+- no publish/reply/follow/DM actions from the research endpoint;
+- no automatic CRM lead creation from public posts;
+- no pricing/package/quote decisions in this research layer;
+- no website-price benchmarking here; commercial website pricing remains owned by its separate current source of truth;
+- no cross-tenant account or analytics reuse;
+- `complete=false` never means all public replies were collected.
+
+Provider scope gates:
+- `owned`: `threads_basic`;
+- `search`: `threads_basic + threads_keyword_search`;
+- known thread ID: `threads_basic + threads_read_replies`;
+- public permalink resolution additionally needs `threads_profile_discovery`.
+
+Only add optional scopes after owner-approved Meta app review and reconnect of the exact brand. Publishing switches remain independently fail-closed.

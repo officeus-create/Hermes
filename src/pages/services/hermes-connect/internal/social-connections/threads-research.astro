@@ -1,0 +1,100 @@
+---
+import BaseLayout from "../../../../../layouts/BaseLayout.astro";
+import SiteHeader from "../../../../../components/SiteHeader.astro";
+import SiteFooter from "../../../../../components/SiteFooter.astro";
+---
+<BaseLayout title="Threads Research | Hermes Connect" description="Private read-only Threads research." robots="noindex,nofollow,noarchive">
+<SiteHeader theme="light" activePath="/paths/technology/" />
+<main id="main-content" class="threads-research">
+<div class="shell">
+<p class="eyebrow">Hermes Connect · Growth Bridge #1018 · Read-only</p>
+<h1>Threads Research</h1>
+<p>Search public posts, inspect owned posts, and read conversations with the existing official Meta Threads connector. Browser sign-in is separate from Meta API OAuth.</p>
+<p data-auth role="status" aria-live="polite">Checking Hermes internal owner access…</p>
+<p><a href="/services/hermes-connect/internal/social-connections/">Manage brand OAuth permissions</a></p>
+<form data-research-form>
+<label>Brand <select name="brand"><option value="progressopro">ProgressoPro</option><option value="office_test">Office Test</option><option value="business_academy">Academy</option></select></label>
+<label>Read mode <select name="mode"><option value="thread">Conversation</option><option value="search">Keyword search</option><option value="owned">Brand posts</option></select></label>
+<label data-post-field>Public post URL <input name="post_url" type="url" placeholder="https://www.threads.com/@example/post/..." /></label>
+<label data-search-field hidden>Search keywords <input name="q" maxlength="180" placeholder="website design" /></label>
+<label data-order-field hidden>Search order <select name="search_type"><option value="RECENT">Recent</option><option value="TOP">Top</option></select></label>
+<button type="submit" data-read disabled>Read from Meta</button>
+</form>
+<section class="results" aria-labelledby="threads-results">
+<h2 id="threads-results">Verified provider readback</h2>
+<p data-status role="status" aria-live="polite">No results loaded.</p>
+<p data-coverage></p>
+<div data-posts></div>
+<button type="button" data-copy disabled>Copy results as TSV</button>
+</section>
+<p class="disclaimer">Public signals are unverified observations, not qualified leads. Meta permission and pagination restrict coverage. This page never publishes, replies, follows, messages users, or stores private contact data. Hermes Logistics remains on Windsor.</p>
+</div>
+</main>
+<SiteFooter/>
+</BaseLayout>
+<script>
+type Post={id?:string;username?:string;text?:string;permalink?:string;timestamp?:string};
+const f=document.querySelector<HTMLFormElement>("[data-research-form]");
+const mode=f?.elements.namedItem("mode") as HTMLSelectElement|null;
+const read=document.querySelector<HTMLButtonElement>("[data-read]");
+const auth=document.querySelector<HTMLElement>("[data-auth]");
+const status=document.querySelector<HTMLElement>("[data-status]");
+const coverage=document.querySelector<HTMLElement>("[data-coverage]");
+const posts=document.querySelector<HTMLElement>("[data-posts]");
+const copy=document.querySelector<HTMLButtonElement>("[data-copy]");
+let owner=false, rows:Post[]=[];
+function val(key:string){return String((f?.elements.namedItem(key) as HTMLInputElement|HTMLSelectElement|null)?.value||"").trim()}
+function say(el:HTMLElement|null,text:string){if(el)el.textContent=text}
+function refresh(){const m=mode?.value;say(status,"No results loaded.");const a=document.querySelector<HTMLElement>("[data-post-field]");const b=document.querySelector<HTMLElement>("[data-search-field]");const c=document.querySelector<HTMLElement>("[data-order-field]");if(a)a.hidden=m!=="thread";if(b)b.hidden=m!=="search";if(c)c.hidden=m!=="search";if(read)read.disabled=!owner}
+mode?.addEventListener("change",refresh);
+function safeLink(value:string){try{const u=new URL(value);return u.protocol==="https:"&&["threads.com","www.threads.com","threads.net","www.threads.net"].includes(u.hostname)?u.href:null}catch{return null}}
+function render(items:Post[]){
+ rows=items;if(copy)copy.disabled=!items.length;if(!posts)return;
+ posts.replaceChildren();
+ for(const post of items){
+  const article=document.createElement("article");article.className="post";
+  const h=document.createElement("strong");h.textContent=post.username?"@"+post.username:"Anonymous";
+  const p=document.createElement("p");p.textContent=post.text||"No text";
+  article.append(h,p);
+  const url=safeLink(post.permalink||"");if(url){const a=document.createElement("a");a.href=url;a.textContent=" · Open source";a.target="_blank";a.rel="noopener noreferrer";article.append(a)}
+  posts.append(article);
+ }
+}
+async function authCheck(){
+ try{
+  const r=await fetch("/api/internal/social/threads/connections",{credentials:"same-origin",cache:"no-store"});
+  if(!r.ok){say(auth,"Internal owner sign-in required (HTTP "+r.status+").");return}
+  const data=await r.json();owner=true;const account=data.connections?.find((x:{brand:string})=>x.brand==="progressopro");
+  say(auth,"Internal owner verified. ProgressoPro API OAuth: "+(account?.identity_verified?"VERIFIED":"not yet verified")+". Scopes: "+(account?.granted_scopes?.join(", ")||"none"));
+  refresh();
+ }catch{say(auth,"Internal owner API unavailable.")}
+}
+f?.addEventListener("submit",async(e)=>{
+ e.preventDefault();if(!owner)return;
+ const m=val("mode"),url=val("post_url"),q=val("q");
+ if(m==="thread"&&!/^https:\/\/(www\.)?threads\.(com|net)\/@[a-zA-Z0-9_.]+\/post\/[a-zA-Z0-9_-]+/.test(url)){say(status,"Enter a public Threads post link.");return}
+ if(m==="search"&&q.length<2){say(status,"Enter at least 2 search characters.");return}
+ const params=new URLSearchParams({brand:val("brand"),mode:m});
+ if(m==="thread")params.set("post_url",url);
+ if(m==="search"){params.set("q",q);params.set("search_type",val("search_type"))}
+ if(read)read.disabled=true;render([]);say(status,"Reading Meta Threads…");say(coverage,"");
+ try{
+  const r=await fetch("/api/internal/social/threads/read?"+params.toString(),{credentials:"same-origin",cache:"no-store"});
+  const data=await r.json().catch(()=>({}));
+  if(!r.ok){say(status,"Provider not ready (HTTP "+r.status+"): "+(data.error||"unknown")+(data.missing_scopes?" · Missing: "+data.missing_scopes.join(", "):""));return}
+  const items:Post[]=m==="thread"?[data.source_post||data.post,...(data.replies||[])].filter(Boolean):(data.posts||[]);
+  render(items);say(status,items.length+" records returned. No comments were published.");
+  say(coverage,"Complete: "+String(data.complete===true)+". Pages: "+String(data.pages||0)+". Meta may restrict third-party conversations.");
+ }catch{say(status,"API connection unavailable.")}
+ finally{if(read)read.disabled=!owner}
+});
+copy?.addEventListener("click",async()=>{
+ const clean=(v:unknown)=>String(v??"").replace(/[\t\r\n]+/g," ").slice(0,2500);
+ const lines=[["username","text","permalink","timestamp"].join("\t"),...rows.map(p=>[p.username,p.text,safeLink(p.permalink||""),p.timestamp].map(clean).join("\t"))];
+ try{await navigator.clipboard.writeText(lines.join("\n"));say(status,"Copied "+rows.length+" public records to clipboard.");}catch{say(status,"Clipboard permission unavailable.")}
+});
+refresh();authCheck();
+</script>
+<style>
+.threads-research{background:#f5f7fb;color:#172338;padding:9rem 0 5rem;min-height:100vh}.shell{max-width:1000px;width:calc(100% - 2rem);margin:auto}.eyebrow{letter-spacing:.14em;text-transform:uppercase;color:#3761aa;font-weight:800;font-size:.78rem}h1{font-size:clamp(2.4rem,6vw,4.5rem);line-height:1.1}form{background:white;border:1px solid #d7e1ed;border-radius:16px;padding:1.4rem;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem;margin:1.5rem 0}form label{display:flex;flex-direction:column;font-weight:750;gap:.4rem}input,select{padding:.65rem;border:1px solid #9aaac0;border-radius:.5rem;max-width:100%;font:inherit}button{background:#2453ba;border:0;border-radius:.55rem;padding:.75rem 1rem;color:white;font:inherit;font-weight:750;cursor:pointer}button:disabled{opacity:.5;cursor:default}.results{background:white;border:1px solid #d7e1ed;border-radius:16px;padding:1.5rem}.post{border-top:1px solid #e0e5ed;padding:1rem 0;overflow-wrap:anywhere}.post p{white-space:pre-wrap;line-height:1.6}.disclaimer{max-width:80ch;margin-top:1.8rem;color:#576983;line-height:1.7}[hidden]{display:none!important}@media(max-width:680px){form{grid-template-columns:1fr}.threads-research{padding-top:7rem}}
+</style>

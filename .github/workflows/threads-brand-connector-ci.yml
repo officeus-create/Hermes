@@ -4,10 +4,12 @@ on:
   pull_request:
     paths:
       - "functions/api/_lib/threads-brand-connector.mjs"
+      - "functions/api/_lib/threads-discovery.mjs"
       - "functions/api/internal/social/threads/**"
       - "src/pages/services/hermes-connect/internal/social-connections/**"
       - "src/components/RepairShopOwnerNavEnhancer.astro"
       - "scripts/threads-brand-connector.test.mjs"
+      - "scripts/threads-discovery.test.mjs"
       - "docs/THREADS_BRAND_CONNECTOR_RUNBOOK.md"
       - "docs/compliance/vendor-registry.json"
       - "docs/release-manifest-deltas/2026-09-29-hermes-connect-social-connections.json"

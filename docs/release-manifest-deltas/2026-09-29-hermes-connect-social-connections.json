@@ -2,7 +2,7 @@
   "schema_version": 1,
   "base_manifest": "docs/release-manifest-2026-08-01.json",
   "release_delta": "2026-09-29-hermes-connect-social-connections",
-  "generated_at": "2026-09-29T19:10:00Z",
+  "generated_at": "2026-10-26T20:29:22.766Z",
   "status": "PENDING_PRODUCTION_DEPLOYMENT",
   "additions": [
     {
@@ -20,10 +20,26 @@
         "production": "pending_deployment",
         "immutable_release": "missing"
       }
+    },
+    {
+      "route": "/services/hermes-connect/internal/social-connections/threads-research/",
+      "source_state": "current_main_candidate",
+      "indexability": "noindex",
+      "robots": "noindex,nofollow,noarchive",
+      "canonical": "https://hermeslogisticsus.com/services/hermes-connect/internal/social-connections/threads-research/",
+      "sitemap_owner": null,
+      "source_file": "src/pages/services/hermes-connect/internal/social-connections/threads-research.astro",
+      "status": "REVIEW_REQUIRED",
+      "blocker": "Owner-only read-only Threads research. Requires authorized Hermes owner session and exact Meta OAuth scopes; performs no external write.",
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
     }
   ],
   "acceptance": {
-    "route_count_added": 1,
+    "route_count_added": 2,
     "indexable_route_count_added": 0,
     "requires_green_current_head_ci": true,
     "requires_production_snapshot_reconciliation_after_deploy": true
