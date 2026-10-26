@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { threadsBrandScopes } from "../functions/api/_lib/threads-brand-connector.mjs";
 import {
-  parsePublicThreadsPostUrl, threadsConversationRead, threadsOwnedRead,
+  parsePublicThreadsPostUrl, threadsConversationRead, threadsOwnedRead, classifyThreadsResearchText,
   threadsReadMode, threadsRequiredScope, threadsResolvePublicPost, threadsSearchRead,
 } from "../functions/api/_lib/threads-discovery.mjs";
 
@@ -94,4 +94,15 @@ assert.match(routeSource, /missing_scopes/);
 assert.match(routeSource, /usableThreadsAccessToken/);
 assert.match(routeSource, /provider_write_performed: false/);
 assert.doesNotMatch(routeSource, /publishThreadsText|reply_to_id|execute.*script/i);
+
+const buyer = classifyThreadsResearchText("I have a client who needs a 3D website, budget $5000.");
+assert.equal(buyer.type, "possible_buyer_request");
+assert.equal(buyer.price_mentions[0], "$5000.");
+assert.equal(buyer.reply_authorized, false);
+assert.equal(buyer.crm_qualified, false);
+const seller = classifyThreadsResearchText("Можу зробити сайт за 80$");
+assert.equal(seller.type, "possible_supplier_offer");
+assert.equal(seller.human_review_required, true);
+assert.equal(classifyThreadsResearchText("Just say hi").type, "other");
+
 console.log("threads discovery read-only contract: PASS");
