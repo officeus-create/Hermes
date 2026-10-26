@@ -7,7 +7,7 @@
   const requestedProgram = params.get("program");
   const requestedLanguage = params.get("language");
   const requestedCountry = params.get("country");
-  const isUkrainian = requestedLanguage === "uk";
+  const isUkrainian = requestedLanguage === "uk" || window.location.pathname.startsWith("/ua/");
   const allowedPrograms = new Set(["us-logistics-operations", "marketing", "sales", "operations"]);
 
   const copy = isUkrainian

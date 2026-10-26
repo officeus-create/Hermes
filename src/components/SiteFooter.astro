@@ -13,10 +13,17 @@ interface Props {
 const { locale: requestedPropLocale = "en" } = Astro.props;
 const currentPath = Astro.url.pathname;
 const connectRequestedLocale = currentPath.startsWith("/services/hermes-connect") ? Astro.url.searchParams.get("lang") : null;
-const locale: SiteLocale = connectRequestedLocale === "ru" ? "ru" : requestedPropLocale;
-const publicLocationBoundary = locale === "ru"
-  ? "Логистика в США · международная координация по электронной почте"
-  : "U.S. logistics · International email coordination";
+const pathLocaleMatch = currentPath.match(/^\/(ru|ua|es|it|fr)\//)?.[1];
+const pathLocale = (pathLocaleMatch === "ua" ? "uk" : pathLocaleMatch) as SiteLocale | undefined;
+const locale: SiteLocale = connectRequestedLocale === "ru" ? "ru" : requestedPropLocale !== "en" ? requestedPropLocale : (pathLocale ?? "en");
+const publicLocationBoundary = {
+  en: "U.S. logistics · International email coordination",
+  ru: "Логистика в США · международная координация по электронной почте",
+  uk: "Логістика в США · міжнародна координація електронною поштою",
+  es: "Logística en EE. UU. · coordinación internacional por email",
+  it: "Logistica negli USA · coordinamento internazionale via email",
+  fr: "Logistique aux États-Unis · coordination internationale par email",
+}[locale];
 const showTransportRequestActions = currentPath === "/logistics/request-vehicle-transport/";
 const directionOrder = { logistics: 0, technology: 1, academy: 2, marketing: 3 } as const;
 const directionRank = (href: string) => {
@@ -104,6 +111,24 @@ const localized = {
   },
 }[locale];
 const localizedNav = [...localized.nav].sort((a, b) => directionRank(a.href) - directionRank(b.href));
+// RU/UA footers keep the same server-rendered link graph the English footer gave these pages
+// (direction owners, money pages, trust and legal routes); only the visible labels are translated.
+const footerOwnerLinks = {
+  ru: [
+    ["Логистика (EN)", "/paths/logistics/"], ["IT-разработка (EN)", "/paths/technology/"], ["Академия (EN)", "/paths/academy/"], ["Маркетинг (EN)", "/paths/marketing/"],
+    ["Новости", "/insights/"], ["Кейсы", "/case/"], ["Разработка сайтов", "/services/website-development/"], ["SEO-услуги", "/services/seo/"],
+    ["Каталог бизнесов", "/businesses/"], ["Перевозка авто в Висконсине", "/logistics/wisconsin-vehicle-transport/"], ["Перевозка авто для дилеров", "/logistics/dealer-vehicle-transportation/"], ["Диспетчеризация автовозов", "/logistics/car-hauling-dispatch/"],
+    ["Правовая информация", "/legal-compliance/"], ["Региональная приватность", "/regional-privacy/"], ["Настройки приватности", "/privacy-choices/"], ["О компании", "/company-information/"],
+    ["О Hermes", "/about/"], ["Доступ к Hermes Connect", "/download/"], ["Условия использования", "/terms/"], ["Редакционная политика", "/editorial-policy/"], ["Доступность", "/accessibility/"],
+  ],
+  uk: [
+    ["Логістика (EN)", "/paths/logistics/"], ["IT-розробка (EN)", "/paths/technology/"], ["Академія (EN)", "/paths/academy/"], ["Маркетинг (EN)", "/paths/marketing/"],
+    ["Новини", "/insights/"], ["Кейси", "/case/"], ["Розробка сайтів", "/services/website-development/"], ["SEO-послуги", "/services/seo/"],
+    ["Каталог бізнесів", "/businesses/"], ["Перевезення авто у Вісконсині", "/logistics/wisconsin-vehicle-transport/"], ["Перевезення авто для дилерів", "/logistics/dealer-vehicle-transportation/"], ["Диспетчеризація автовозів", "/logistics/car-hauling-dispatch/"],
+    ["Правова інформація", "/legal-compliance/"], ["Регіональна приватність", "/regional-privacy/"], ["Налаштування приватності", "/privacy-choices/"], ["Про компанію", "/company-information/"],
+    ["Про Hermes", "/about/"], ["Доступ до Hermes Connect", "/download/"], ["Умови використання", "/terms/"], ["Редакційна політика", "/editorial-policy/"], ["Доступність", "/accessibility/"],
+  ],
+}[locale as "ru" | "uk"] ?? [];
 const localePath = localeConfig[locale].path;
 const privacyHref = locale === "ru" ? "/ru/privacy/" : "/privacy/";
 const homeFooterGroups = [
@@ -229,6 +254,7 @@ const homeFooterGroups = [
             <a href="/accessibility/">Accessibility</a>
           </>
         )}
+        {footerOwnerLinks.map(([label, href]) => <a href={href}>{label}</a>)}
       </nav>
     )}
     <div class="footer-contacts" aria-label="Contact options">
