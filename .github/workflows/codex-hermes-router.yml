@@ -9,6 +9,12 @@ on:
       - "scripts/ai/patch-fcc-ollama-thinking.py"
       - "scripts/ai/hermes-internal-ai-runner.py"
       - "scripts/ai/hermes-internal-ai-sanitize.py"
+      - "scripts/ai/hermes-internal-ai-launch-wrapper.sh"
+      - "scripts/ai/install-hermes-internal-ai-launchagent.sh"
+      - "scripts/internal-ai-launchagent-contract.test.mjs"
+      - "scripts/ai/hermes-internal-ai-launch-wrapper.sh"
+      - "scripts/ai/install-hermes-internal-ai-launchagent.sh"
+      - "scripts/internal-ai-launchagent-contract.test.mjs"
       - "scripts/ai/setup-codex-hermes.sh"
       - "scripts/ai/bootstrap-hermes-openssl.sh"
       - "scripts/codex-hermes-openssl-bootstrap.test.mjs"
@@ -49,6 +55,8 @@ jobs:
           bash -n scripts/ai/codex-hermes-server
           bash -n scripts/ai/codex-hermes
           bash -n scripts/ai/codex-hermes-doctor
+          bash -n scripts/ai/hermes-internal-ai-launch-wrapper.sh
+          bash -n scripts/ai/install-hermes-internal-ai-launchagent.sh
           python3 - <<'PY'
           import ast
           from pathlib import Path
@@ -76,7 +84,7 @@ jobs:
           grep -Fq 'patch-fcc-ollama-thinking.py' scripts/ai/setup-codex-hermes.sh
           grep -Fq 'patch-fcc-ollama-thinking.py' scripts/ai/codex-hermes-server
           if grep -R -nE '(sk-[A-Za-z0-9_-]{20,}|AIza[A-Za-z0-9_-]{20,}|github_pat_[A-Za-z0-9_]{20,})' \
-            scripts/ai/codex-hermes scripts/ai/codex-hermes-doctor scripts/ai/codex-hermes-server scripts/ai/patch-fcc-ollama-thinking.py scripts/ai/hermes-internal-ai-runner.py scripts/ai/hermes-internal-ai-sanitize.py scripts/ai/setup-codex-hermes.sh scripts/ai/bootstrap-hermes-openssl.sh; then
+            scripts/ai/codex-hermes scripts/ai/codex-hermes-doctor scripts/ai/codex-hermes-server scripts/ai/patch-fcc-ollama-thinking.py scripts/ai/hermes-internal-ai-runner.py scripts/ai/hermes-internal-ai-sanitize.py scripts/ai/hermes-internal-ai-launch-wrapper.sh scripts/ai/install-hermes-internal-ai-launchagent.sh scripts/ai/setup-codex-hermes.sh scripts/ai/bootstrap-hermes-openssl.sh; then
             echo "Potential credential material detected in Hermes Codex/Internal AI router scripts" >&2
             exit 1
           fi
@@ -187,6 +195,9 @@ jobs:
           ! grep -Fq 'synthetic-doctor-token' "$tmp/doctor.out"
           test "$(git -C "$tmp/work" rev-parse HEAD)" = "$before"
           test -z "$(git -C "$tmp/work" status --porcelain --untracked-files=no)"
+
+      - name: Validate macOS Internal AI login recovery contract
+        run: node scripts/internal-ai-launchagent-contract.test.mjs
 
       - name: Validate Intel macOS OpenSSL bootstrap contract
         run: node scripts/codex-hermes-openssl-bootstrap.test.mjs
