@@ -29,7 +29,7 @@ Ranking effects need 2–8 weeks after deploy; every slice records its recheck d
    promise → requirements proof → one apply action.
 6. ~~**Logistics commercial funnel**~~ DONE #2118 LIVE 26.10 (one primary hero action, brand ink headings, Logistics blue accents) — (car-hauling dispatch, Appleton/Wisconsin vehicle transport, dealer transport).
 7. ~~**Technology services funnel**~~ DONE #2119 LIVE 26.10 — proof rail on website development / redesign / auto-repair design; (website development / redesign / auto-repair design).
-8. **Academy funnel** — IN PR: funnel structure already complete (hero CTA → audiences → curriculum → process → boundaries → FAQ → closing CTA); legacy violet boundary cards and consent links now follow the Academy accent; (`/academy/us-logistics-operations/`, apply).
+8. ~~**Academy funnel**~~ DONE #2120 LIVE 26.10 — funnel structure already complete (hero CTA → audiences → curriculum → process → boundaries → FAQ → closing CTA); legacy violet boundary cards and consent links now follow the Academy accent; (`/academy/us-logistics-operations/`, apply).
 9. **Direction owners proof block** (`/paths/*`) — only with existing approved proof.
 10. **Classify London cluster** (`/gb/london/*`) into the matrix.
 11. **Controls cleanup**: remaining 12px-radius public buttons; status chips by semantic state.
@@ -47,6 +47,8 @@ Ranking effects need 2–8 weeks after deploy; every slice records its recheck d
 - Authority (#368): real partner/client/directory links; no link schemes.
 
 ## Done (most recent first)
+
+- 2026-10-26 #2120 Academy accents (violet → family) — LIVE.
 
 - 2026-10-26 #2119 Technology services proof rail — LIVE.
 

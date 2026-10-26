@@ -22,14 +22,14 @@ MECHANISM → ONE primary action → measurement on an existing approved event, 
 |---|---|---|---|---|---|---|---|---|---|---|
 | 1 | Home | `/` | 385 | Claude Design v3 | approved | role router + contact | CURRENT_BASELINE | #1997–#2016 | ✓ | mobile lab LCP check (field LCP 1.3 s is good) |
 | 2 | Direction owners | `/paths/{logistics,technology,academy,marketing}/` | 135 / 18 / 9 / 9 | approved skeleton | approved | contact preselect | CURRENT_BASELINE | #1998, #2091 | ✓ | proof block per direction |
-| 3 | Marketing services (money) | `/services/seo-for-logistics-companies/`, `/services/seo/`, `/services/local-seo/` | 676 / 189 / 9 | Pearl + Marketing coral | light (#2109) | hero CTA + closing panel → form | PARTIAL (proof rail coded) | #2108, #2109, next | #2109 ✓ | proof rail live → recheck E1 |
-| 4 | Brand-intent trust pages | `/company-information/`, `/about/`, `/contacts/` | 151 / 149 / 138 | Pearl (TrustPage) | light | directions router on two pages; contacts form | PARTIAL | #2109 | ✓ 26.10 | `/contacts/` + entity hub (E2) |
-| 5 | Logistics commercial | `/logistics/car-hauling-dispatch/`, `/logistics/appleton-wi-vehicle-transport/`, `/logistics/wisconsin-vehicle-transport/` | 62 / 75 / 28 | Pearl + Logistics blue | light (#2109) | commercial CTA, dispatch intake | PARTIAL | #2104, #2109 | — | funnel pass |
+| 3 | Marketing services (money) | `/services/seo-for-logistics-companies/`, `/services/seo/`, `/services/local-seo/`, repair/dealer SEO | 676 / 189 / 9 | Pearl + Marketing coral | light | person → promise → proof rail (3 published assets) → one primary CTA → closing panel → form; `commercial_cta_click` | ACCEPTED_LIVE (E1 recheck 2026-11-23) | #2108, #2109, #2111 | ✓ 26.10 | GSC compare after recheck date |
+| 4 | Brand-intent trust pages | `/company-information/`, `/about/`, `/contacts/` | 151 / 149 / 138 | Pearl (TrustPage) | light | four-direction router (shared `DirectionRouter`); contacts: one primary request action + form | ACCEPTED_LIVE (E2 recheck 2026-11-23) | #2109, #2117 | ✓ 26.10 | entity facts consistency with Clutch/Facebook (owner) |
+| 5 | Logistics commercial | `/logistics/car-hauling-dispatch/`, `/logistics/appleton-wi-vehicle-transport/`, Wisconsin city pages | 62 / 75 / 28 | Pearl + Logistics blue, ink headings | light | one primary hero action (carrier link demoted), mechanism, FAQ, closing request | PARTIAL (no approved transport proof asset yet) | #2104, #2109, #2118 | ✓ 26.10 | add proof when an approved transport case exists |
 | 6 | Logistics path results | `/paths/logistics/carriers/*`, `/customers/*` | ≤5 each | light product nav, blue | light (#2109) | recommendation → bounded panel | PARTIAL | #2104, #2109 | — | — |
-| 7 | Carrier geo markets | `/logistics/car-hauler-loads/{city}/` (25) | ≤2 each | Pearl + blue | light (#2109) | support list → CTA | HOLD (Bing IndexNow issue label) | #2109 | — | per-city evidence only if Bing label confirms quality |
-| 8 | Careers | `/careers/car-hauling-dispatcher/`, `/logistics/careers/` | 72 / 22 (pos 6 / 4.6) | Pearl (wave A) | mixed | apply link | PARTIAL | #2091 | ✓ | funnel pass (real clicks) |
-| 9 | Technology services | `/services/website-development/`, `/website-redesign/`, auto-repair design | 41 / 3 | Pearl + sky | light (#2109) | brief intake | PARTIAL | #2108, #2109 | — | funnel pass |
-| 10 | Academy | `/academy/*`, `/academy/countries/*` | 31 / ≤9 | Pearl + green | light (#2109) | apply | PARTIAL | #2108, #2109 | — | funnel pass |
+| 7 | Carrier geo markets | `/logistics/car-hauler-loads/{city}/` (25) | ≤2 each | Pearl + blue | light | support list → CTA | PARTIAL (Bing E7 closed: indexed) | #2109 | ✓ | per-city evidence only with real data |
+| 8 | Careers | `/careers/car-hauling-dispatcher/`, `/logistics/careers/` | 72 / 22 (pos 6 / 4.6) | Pearl (wave A) | light | apply suppressed while vacancy awaits owner review | BLOCKED (owner hiring decision) | #2091 | ✓ | reopen apply + JobPosting when owner confirms |
+| 9 | Technology services | `/services/website-development/`, `/website-redesign/`, auto-repair design | 41 / 3 | Pearl + sky | light | proof rail (IT case, brief template, checklist) → one brief CTA → closing panel → form | ACCEPTED_LIVE | #2108, #2109, #2119 | ✓ 26.10 | — |
+| 10 | Academy | `/academy/*`, `/academy/countries/*` | 31 / ≤9 | Pearl + green | light, family-accent boundaries | hero apply → audiences → curriculum → process → boundaries → FAQ → closing apply | CURRENT_BASELINE (no external proof asset) | #2108, #2109, #2120 | ✓ 26.10 | proof when a dated learner outcome is approved |
 | 11 | Case studies | `/case/`, `/case/appleton-…/`, `/case/it-development/` | 32 / 8 / 19 | Pearl, per-route accent | light (#2109) | case CTA | PARTIAL | #2091, #2109 | — | — |
 | 12 | Resources / guides | `/resources/*`, `/logistics/resources/*` | ≤29 | Pearl | light (#2109) | resource CTA | PARTIAL | #2091, #2109 | — | — |
 | 13 | Localized overviews + owners | `/{es,fr,it,ru,ua}/`, `/{locale}/{direction}/` | 74 RU / 68 UA / 37 IT | live window (wave B) | light (#2109) | localized contact panel | PARTIAL | #2091, #2109 | — | full RU/UA translation plan (separate project) |
@@ -42,8 +42,8 @@ MECHANISM → ONE primary action → measurement on an existing approved event, 
 | 20 | Agreements / sign / onboarding | `/contracts/*`, `/sign/*` | — | Pearl (wave A) | — | — | PRIVATE | #2091 | ✓ | — |
 | 21 | 404 | `/404.html` | — | Pearl | — | home links | CURRENT_BASELINE | #2091 | ✓ | — |
 
-MACRO today: 0 of 13 commercial/content families `ACCEPTED_LIVE`; 4 `CURRENT_BASELINE`; 8 `PARTIAL`; 1 `HOLD`;
-1 `NOT_CLASSIFIED`. Product/private families (16–20) are out of the brand-shell migration by decision.
+MACRO 2026-10-26 evening: 3 of 13 commercial/content families `ACCEPTED_LIVE` (Marketing services, brand-intent trust,
+Technology services); 5 `CURRENT_BASELINE`; 3 `PARTIAL`; 1 `BLOCKED`; 1 `NOT_CLASSIFIED`. Product/private families (16–20) are out of the brand-shell migration by decision.
 
 ## Evidence anchors (do not re-derive)
 
