@@ -9,7 +9,7 @@ test("evergreen Wisconsin recruiting stays indexable with a real direct applicat
   await page.route("**/careers/wisconsin-owner-operators/", (route) => route.fulfill({ status: 200, contentType: "text/html", body: built() }));
   await page.goto(jobRoute);
   await expect(page.locator("h1")).toHaveCount(1);
-  await expect(page).toHaveTitle(/Owner-Operator Truck Drivers in Wisconsin/);
+  await expect(page).toHaveTitle(/Wisconsin Owner-Operator Recruiting/);
   await expect(page.locator("link[rel=canonical]")).toHaveAttribute("href", "https://hermeslogisticsus.com/careers/wisconsin-owner-operators/");
   await expect(page.locator("meta[name=robots]")).toHaveAttribute("content", /index,follow/);
   await expect(page.getByRole("heading", { name: "Wisconsin owner-operator recruiting at a glance" })).toBeVisible();
