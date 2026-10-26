@@ -65,7 +65,7 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
     result = await threadsSearchRead({
       token: token.access_token, query: url.searchParams.get("q"),
       searchType: url.searchParams.get("search_type") === "TOP" ? "TOP" : "RECENT",
-      limit: url.searchParams.get("limit") || 25,
+      limit: Number(url.searchParams.get("limit") || 25),
     });
   } else if (mode === "owned") {
     result = await threadsOwnedRead({ token: token.access_token });
