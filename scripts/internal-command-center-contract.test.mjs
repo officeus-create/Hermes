@@ -45,6 +45,10 @@ assert.match(item,/INSERT INTO hermes_internal_ai_tasks/,"dispatch must reuse th
 assert.match(item,/agent_role,prompt,status/,"dispatch must preserve existing AI task shape");
 assert.match(item,/workItemPrompt/,"dispatch must add bounded direction/context rather than another queue");
 assert.match(item,/cancel_linked_ai_task_first/,"work-item cancellation must not orphan a running AI task");
+assert.match(item,/status IN \('planned','ready','blocked'\) AND linked_task_id IS NULL/,"work-item linkage must be conditional so a concurrent owner action cannot be overwritten");
+assert.match(item,/DELETE FROM hermes_internal_ai_tasks[\s\S]*status='queued'[\s\S]*runner_id IS NULL/,"failed CRM linkage must compensate only the newly queued unclaimed AI task");
+assert.match(item,/work_item_dispatch_link_conflict/,"linkage race must return an explicit fail-closed conflict");
+
 assert.doesNotMatch(item,/remote shell|child_process|exec\(/i,"command-center API must not add remote execution");
 
 assert.match(access,/SELECT id,email,name,role FROM specialists WHERE lower\(email\)=\?/,"access grant must target an existing Hermes account");
