@@ -91,6 +91,7 @@ export function threadsBrandScopes(env) {
     "threads_manage_replies",
     "threads_manage_insights",
     "threads_keyword_search",
+    "threads_profile_discovery",
   ]);
   const scopes = [];
   for (const scope of raw) {
