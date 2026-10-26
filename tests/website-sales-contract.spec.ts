@@ -77,9 +77,19 @@ test("discount policy requires explicit approval", () => {
     discountClass: "CASE_STUDY",
     discountPercent: 15,
     approvalState: "CASE_STUDY_APPROVED",
+    approvalReference: "case-study:terms-1",
     caseStudyTerms: "APPROVED",
   });
   expect(caseStudy.valid).toBe(true);
+
+  const caseStudyWithoutReference = validateWebsiteSalesQuote({
+    ...baseQuote,
+    discountClass: "CASE_STUDY",
+    discountPercent: 15,
+    approvalState: "CASE_STUDY_APPROVED",
+    caseStudyTerms: "APPROVED",
+  });
+  expect(caseStudyWithoutReference.errors).toContain("case_study_approval_reference_required");
 
   const ceoWithoutReference = validateWebsiteSalesQuote({
     ...baseQuote,
