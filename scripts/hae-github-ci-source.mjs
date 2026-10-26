@@ -56,7 +56,7 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   catch{console.error("github_ci_account_config_unavailable");process.exit(1);}
   dispatchGithubCIEvent({runId,runAttempt,accountId,
     githubToken:process.env.GH_TOKEN,
-    cloudflareToken:process.env.CLOUDFLARE_HAE_RELEASE_TOKEN})
+    cloudflareToken:process.env.HAE_CI_SENSOR_QUEUE_TOKEN})
   .then(result=>console.log(JSON.stringify(result)))
   .catch(error=>{console.error(error.code||"github_ci_source_failed");process.exitCode=1;});
 }

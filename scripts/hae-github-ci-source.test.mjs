@@ -65,6 +65,9 @@ await fail({fetchImpl:async(url,request)=>{
   return mock(url,request);
 }},"github_ci_source_transport_ambiguous_no_retry");
 assert.equal(calls.length,afterValidation+2);
+const workflow=fs.readFileSync(new URL("../.github/workflows/hae-github-ci-sensor.yml",import.meta.url),"utf8");
+assert.match(workflow,/secrets\.HAE_CI_SENSOR_QUEUE_TOKEN/);
+assert.doesNotMatch(workflow,/CLOUDFLARE_HAE_RELEASE_TOKEN/);
 const src=fs.readFileSync(new URL("./hae-github-ci-source.mjs",import.meta.url),"utf8");
-assert.doesNotMatch(src,/\/v1\/tick|publication\.write|\/sendMessage|wrangler@4 deploy/);
+assert.doesNotMatch(src,/CLOUDFLARE_HAE_RELEASE_TOKEN|\/v1\/tick|publication\.write|\/sendMessage|wrangler@4 deploy/);
 console.log("HAE #2067 CI source producer PASS: one verified event -> one minimized Queue post; fail-closed no retry");

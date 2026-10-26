@@ -51,7 +51,9 @@ jobs:
       - name: Enqueue one verified minimized CI run in existing HAE Queue
         env:
           GH_TOKEN: ${{ github.token }}
-          CLOUDFLARE_HAE_RELEASE_TOKEN: ${{ secrets.CLOUDFLARE_HAE_RELEASE_TOKEN }}
+          # Dedicated Queue-only credential; never reuse deployment/release authority.
+          # Provisioning is a separate OWNER_GATE. Missing secret fails preflight closed.
+          HAE_CI_SENSOR_QUEUE_TOKEN: ${{ secrets.HAE_CI_SENSOR_QUEUE_TOKEN }}
           HAE_CI_RUN_ID: ${{ github.event.workflow_run.id }}
           HAE_CI_RUN_ATTEMPT: ${{ github.event.workflow_run.run_attempt }}
         run: node scripts/hae-github-ci-source.mjs
