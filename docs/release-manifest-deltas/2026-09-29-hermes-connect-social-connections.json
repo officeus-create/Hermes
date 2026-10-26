@@ -23,7 +23,7 @@
     },
     {
       "route": "/services/hermes-connect/internal/social-connections/threads-research/",
-      "source_state": "current_main_candidate",
+      "source_state": "current_main",
       "indexability": "noindex",
       "robots": "noindex,nofollow,noarchive",
       "canonical": "https://hermeslogisticsus.com/services/hermes-connect/internal/social-connections/threads-research/",
