@@ -46,7 +46,12 @@ export async function onRequestPatch({request,env,params}:{request:Request;env:E
       const active=await env.DB.prepare("SELECT id FROM hermes_internal_ai_tasks WHERE organization_scope=? AND status IN ('queued','running','needs_approval') ORDER BY created_at ASC LIMIT 1").bind(INTERNAL_AI_ORGANIZATION_SCOPE).first();
       return jsonResponse(409,{success:false,error:"active_task_exists",active_task_id:active?.id||null,work_item:publicWorkItem(row)},headers);
     }
-    await env.DB.prepare("UPDATE hermes_owner_work_items SET status='in_progress', linked_task_id=?, blocked_reason=NULL, completed_at=NULL, updated_at=? WHERE id=? AND organization_scope=?").bind(taskId,now,id,INTERNAL_AI_ORGANIZATION_SCOPE).run();
+    const linked=await env.DB.prepare("UPDATE hermes_owner_work_items SET status='in_progress', linked_task_id=?, blocked_reason=NULL, completed_at=NULL, updated_at=? WHERE id=? AND organization_scope=? AND status IN ('planned','ready','blocked') AND linked_task_id IS NULL").bind(taskId,now,id,INTERNAL_AI_ORGANIZATION_SCOPE).run();
+    if(!linked?.meta?.changes){
+      await env.DB.prepare("DELETE FROM hermes_internal_ai_tasks WHERE id=? AND organization_scope=? AND status='queued' AND runner_id IS NULL").bind(taskId,INTERNAL_AI_ORGANIZATION_SCOPE).run();
+      row=await getItem(env.DB,id);
+      return jsonResponse(409,{success:false,error:"work_item_dispatch_link_conflict",work_item:publicWorkItem(row)},headers);
+    }
     row=await getItem(env.DB,id);
     const task=await env.DB.prepare("SELECT * FROM hermes_internal_ai_tasks WHERE id=? AND organization_scope=?").bind(taskId,INTERNAL_AI_ORGANIZATION_SCOPE).first();
     return jsonResponse(200,{success:true,state:"dispatched",work_item:publicWorkItem(row),task:publicTask(task)},headers);
