@@ -66,7 +66,9 @@ test.describe("Hermes Business Command Center",()=>{
     await page.goto("/services/hermes-connect/internal/command-center/?direction=marketing");
     await expect(page.locator("[data-backlog-title]")).toHaveText("Work queue · Marketing");
     await expect(page.getByText("Threads website demand")).toBeVisible();
-    await page.getByRole("button",{name:"Show direction work"}).filter({has:page.locator("xpath=ancestor::article[@data-module='logistics']")}).click().catch(()=>{});
+    await page.locator('article[data-module="logistics"] button[data-focus-workstream="logistics"]').click();
+    await expect(page.locator("[data-backlog-title]")).toHaveText("Work queue · Logistics");
+    await expect(page).toHaveURL(/direction=logistics/);
   });
 
   test("keeps the owner page usable at 390px",async({page})=>{
