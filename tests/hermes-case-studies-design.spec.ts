@@ -9,6 +9,7 @@ const routes = [
     surface: ".case-grid article",
     radius: ".case-grid article",
     accent: ".case-card-top",
+    accentColor: "rgb(100, 70, 230)",
     dark: null,
   },
   {
@@ -19,6 +20,8 @@ const routes = [
     surface: ".measurement-grid article",
     radius: ".measurement-grid article",
     accent: ".measurement-grid svg",
+    // Marketing family accent (execution brief, 2026-10-26).
+    accentColor: "color(srgb 0.598118 0.298902 0.232078)",
     dark: ".case-boundaries",
   },
   {
@@ -29,6 +32,8 @@ const routes = [
     surface: ".case-study-brief",
     radius: ".case-study-product-shot > a",
     accent: ".case-stage-list li > span",
+    // Technology family accent (execution brief, 2026-10-26).
+    accentColor: "color(srgb 0.134902 0.395608 0.53349)",
     dark: ".case-study-qa",
   },
 ];
@@ -80,7 +85,7 @@ for (const config of routes) {
     expect(visual!.primaryRadius).toBe("999px");
     expect(visual!.surfaceBackground).toBe("rgb(255, 255, 255)");
     expect(visual!.radiusValue).toBe("22px");
-    expect(visual!.accentColor).toBe("rgb(100, 70, 230)");
+    expect(visual!.accentColor).toBe(config.accentColor);
     if (config.dark) expect(visual!.darkBackground).toBe("rgb(11, 13, 18)");
     expect(visual!.overflow).toBe(false);
     expect(visual!.rootRight).toBeLessThanOrEqual(visual!.viewportWidth);

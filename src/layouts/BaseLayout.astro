@@ -73,11 +73,23 @@ const {
 const isRepairShopLaunchRoute = Astro.url.pathname.startsWith("/services/hermes-connect/repair-shops");
 const isRepairShopBookingRoute = Astro.url.pathname.replace(/\/+$/, "") === "/services/hermes-connect/repair-shops/booking";
 const isHermesConnectProductHub = Astro.url.pathname === "/services/hermes-connect/";
-// Public page family for direction-tinted accents (eyebrows, numbers, active states). Load Board
-// keeps its own product surface and is deliberately not part of the Logistics family here.
-const directionFamily = /^\/(?:paths\/)?logistics\//.test(Astro.url.pathname) || /^\/carrier(?:-[a-z-]+)?\//.test(Astro.url.pathname)
-  ? "logistics"
-  : undefined;
+// Public page family for direction-tinted accents (eyebrows, numbers, active states). Product
+// surfaces keep their own accents and are not tagged: Load Board, Hermes Connect, Insights and the
+// Catalog. The approved /paths/<direction>/ owners of Technology, Academy and Marketing keep their
+// reviewed styling; their inner pages follow the family.
+const familyPath = Astro.url.pathname;
+type DirectionFamily = "logistics" | "technology" | "academy" | "marketing";
+let directionFamilyValue: DirectionFamily | undefined;
+const directionFamilyPatterns: Array<[DirectionFamily, RegExp]> = [
+  ["logistics", /^\/(?:paths\/)?logistics\/|^\/carrier(?:-[a-z-]+)?\/|^\/(?:ru|ua|es|it|fr)\/(?:logistics|logistica|logistique)\//],
+  ["academy", /^\/academy\/|^\/(?:ru|ua|es|it|fr)\/(?:academy|academia|academie)\/|^\/gb\/london\/academy\/|^\/gb\/london\/us-logistics-training\//],
+  ["technology", /^\/services\/(?:website-|auto-repair-website-design\/)|^\/case\/it-development\/|^\/resources\/website-project-brief-template\/|^\/(?:ru|ua|es|it|fr)\/(?:technology|tecnologia|technologie)\/|^\/gb\/london\/(?:it-web-development|website-development)\//],
+  ["marketing", /^\/services\/(?:seo|local-seo)|^\/(?:(?:ru|ua)\/)?business-growth\/|^\/(?:ru|ua|es|it|fr)\/marketing\/|^\/resources\/(?:technical-seo-checklist|search-to-inquiry-conversion-checklist|logistics-seo-audit-sample)\/|^\/case\/appleton-vehicle-transport-seo\/|^\/gb\/london\/(?:marketing|seo-services|local-seo|marketing-audit|guides)\//],
+];
+for (const [family, pattern] of directionFamilyPatterns) {
+  if (pattern.test(familyPath)) { directionFamilyValue = family; break; }
+}
+const directionFamily = directionFamilyValue;
 const isHermesConnectExperienceRoute = Astro.url.pathname.startsWith("/services/hermes-connect") || Astro.url.pathname.startsWith("/load-board");
 const CLARITY_BLOCKED_PATH_PREFIXES = [
   "/services/hermes-connect",

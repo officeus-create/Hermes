@@ -37,7 +37,7 @@ html body :is(
   .logistics-resource-page:not(.content-insight-page) .resource-hero,
   main.not-found
 ) {
-  --pearl-accent: var(--hermes-logistics, #2f6bf6);
+  --pearl-accent: var(--family-accent, var(--hermes-logistics, #2f6bf6));
   color: var(--pearl-shell-text);
   background:
     radial-gradient(circle at 88% 0%, color-mix(in srgb, var(--pearl-accent) 11%, transparent), transparent 34rem),
@@ -186,17 +186,32 @@ html body main:is(.localized-overview, .localized-owner) .localized-owner-hero .
   html body main :is(h1, h2) { hyphens: auto; -webkit-hyphens: auto; }
 }
 
-/* Logistics family (execution brief phase 2): direction accents — eyebrows, step numbers, active
+/* Direction families (execution brief phases 2–5): direction accents — eyebrows, step numbers, active
    states, focus rings — follow the H-mark Logistics blue instead of Intelligence violet. The
    tokens are rerouted for every var() consumer; hard-coded legacy violet is listed below. */
 body[data-direction-family="logistics"] {
   --family-accent: var(--hermes-logistics, #2f6bf6);
   --family-accent-text: color-mix(in srgb, var(--hermes-logistics, #2f6bf6) 82%, var(--hermes-ink, #0b0d12));
-  --family-accent-on-dark: color-mix(in srgb, var(--hermes-logistics, #2f6bf6) 42%, #fff);
+}
+body[data-direction-family="technology"] {
+  --family-accent: var(--hermes-technology, #38b6f5);
+  --family-accent-text: color-mix(in srgb, var(--hermes-technology, #38b6f5) 52%, var(--hermes-ink, #0b0d12));
+}
+body[data-direction-family="academy"] {
+  --family-accent: var(--hermes-academy, #12b886);
+  --family-accent-text: color-mix(in srgb, var(--hermes-academy, #12b886) 55%, var(--hermes-ink, #0b0d12));
+}
+body[data-direction-family="marketing"] {
+  --family-accent: var(--hermes-marketing, #ff7a59);
+  --family-accent-text: color-mix(in srgb, var(--hermes-marketing, #ff7a59) 58%, var(--hermes-ink, #0b0d12));
+}
+/* Same-hue readable mixes as hermes-public-division-colors.css (AA on Pearl). */
+body[data-direction-family] {
+  --family-accent-on-dark: color-mix(in srgb, var(--family-accent) 42%, #fff);
   --hermes-violet-text: var(--family-accent-text);
   --hermes-violet-on-dark: var(--family-accent-on-dark);
 }
-html body[data-direction-family="logistics"] :is(
+html body[data-direction-family] :is(
   .carrier-geo-grid article > span:first-child,
   .logistics-audience-grid span,
   .logistics-audience-steps span,
@@ -209,25 +224,25 @@ html body[data-direction-family="logistics"] :is(
 ) {
   color: var(--family-accent-text);
 }
-html body[data-direction-family="logistics"] :is(.carrier-geo-dark, .recommendation-cta, .commercial-final-card, .logistics-audience-final-card) .eyebrow,
-html body[data-direction-family="logistics"] .carrier-geo-support-list li span {
+html body[data-direction-family] :is(.carrier-geo-dark, .recommendation-cta, .commercial-final-card, .logistics-audience-final-card) .eyebrow,
+html body[data-direction-family] .carrier-geo-support-list li span {
   color: var(--family-accent-on-dark);
 }
-html body[data-direction-family="logistics"] .path-engine-progress i {
+html body[data-direction-family] .path-engine-progress i {
   background: linear-gradient(90deg, var(--family-accent), color-mix(in srgb, var(--family-accent) 70%, #fff));
 }
-html body[data-direction-family="logistics"] .recommendation-note {
+html body[data-direction-family] .recommendation-note {
   border-left-color: var(--family-accent);
   background: color-mix(in srgb, var(--family-accent) 7%, #fff);
   color: var(--hermes-ink, #0b0d12);
 }
-html body[data-direction-family="logistics"] .commercial-value-signal {
+html body[data-direction-family] .commercial-value-signal {
   box-shadow: 0 0 .9rem color-mix(in srgb, var(--family-accent) 60%, transparent);
 }
-html body[data-direction-family="logistics"] .commercial-value-section::before {
+html body[data-direction-family] .commercial-value-section::before {
   background: radial-gradient(circle, color-mix(in srgb, var(--family-accent) 10%, transparent), transparent 68%);
 }
-html body[data-direction-family="logistics"] :is(.commercial-grid article:hover, .commercial-grid article:focus-within) {
+html body[data-direction-family] :is(.commercial-grid article:hover, .commercial-grid article:focus-within) {
   border-color: color-mix(in srgb, var(--family-accent) 34%, transparent);
 }
 
