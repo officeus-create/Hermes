@@ -2040,3 +2040,10 @@ ai_name: Codex; role: delegated Academy owner; contribution_type: Implementation
 - #2091 (design waves A+B) merged as f5954dab and verified live (Pearl shell CSS served; canonicals on /case/, /ru/, /es/logistica/, /logistics/car-hauler-loads/denver-co/ unchanged; 1440/390 screenshots reviewed).
 - Evidence → fix: Clarity (90 days) showed `undefined is not an object (evaluating 'r["@context"].toLowerCase')` in 5.84% of sessions. Root cause: 315 pages emitted JSON-LD as one top-level array. BaseLayout now emits one `<script type="application/ld+json">` per entity; entity sets are identical to main on all 456 compared pages (only the wrapping changed). `validate-build` now fails any page with an array or non-string `@context`; site/insights/new-authority/Italian specs read all blocks instead of assuming exactly one.
 - Also: h1/h2 hyphenate at syllables under 480px (Spanish "concesionarios" broke mid-word at 390px).
+
+## 2026-10-26 — Claude Code — #2093 LIVE; self-case Insight with the search baseline
+
+- #2093 merged as 441b11ab; live readback: /logistics/car-hauler-loads/denver-co/ serves 3 JSON-LD blocks, 0 arrays, every block has a string @context.
+- Bing SEO/GEO report (read in Opera): one medium item — insufficient inbound links from high-quality domains; no on-page errors (#368 authority owner).
+- New standalone Insight `/insights/marketing/hermes-own-search-baseline-october-2026/` (owner directive: turn our own changes into dated, honest cases). Baseline: GSC 29.07–26.10 42 clicks / 2,173 impressions / avg pos 39.8 (prev. 1 / 11); 149 indexed; Bing 12 / 239; Clarity script error fixed. Insights sitemap, sitemap index, release-manifest delta and the Home update-glow dates updated.
+- Next readback: re-run the same windows and append a dated "Readback" paragraph to this Insight (dateModified), never inflate or extrapolate.

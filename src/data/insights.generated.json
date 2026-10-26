@@ -1,5 +1,99 @@
 [
   {
+    "id": "hermes-own-search-baseline-october-2026",
+    "direction": "marketing",
+    "slug": "hermes-own-search-baseline-october-2026",
+    "title": "Our Own Search Baseline: What Google and Bing Show | Hermes",
+    "description": "Hermes publishes its own search numbers: 42 Google clicks and 2,173 impressions in three months, 149 indexed pages, one real script error fixed. What we changed and how we will measure the next readback.",
+    "eyebrow": "Marketing / Search Evidence · Hermes on Hermes · 26 October 2026",
+    "h1": "We test our marketing on ourselves first: the Hermes search baseline, October 2026",
+    "conciseAnswer": "Between 29 July and 26 October 2026 the Hermes website earned 42 clicks and 2,173 impressions in Google Search at an average position of 39.8, up from 1 click and 11 impressions in the three months before. Google lists 149 pages as indexed. Bing shows 12 clicks and 239 impressions. We fixed a script error that affected 5.8% of recorded sessions, moved about 120 inner pages onto one visual system without changing a single URL, and will publish the next readback here.",
+    "explanation": [
+      "Hermes sells websites, search visibility and marketing systems, so our own website is the first place those claims should be tested. This page is a dated baseline, not a success story: it records what Google Search Console, Bing Webmaster Tools and our consented session analytics show today, what we changed, and what we expect to measure next. The numbers are small because the site is young; that is exactly why they are useful as a starting point.",
+      "Google Search, 29 July – 26 October 2026: 42 clicks, 2,173 impressions, 1.9% click-through rate, average position 39.8. The previous three months showed 1 click and 11 impressions. Most clicks still come from people who search for the company by name (\"hermes logistics\", \"hermes logistics llc\"), the home page, the Ukrainian and Russian home pages, and the car-hauling dispatcher role. Service searches such as car hauler dispatch, car hauling load board and auto transport in Wisconsin cities already produce impressions, but at positions 40–75, which means the pages are understood but not yet trusted enough to rank.",
+      "Indexing, as reported on 23 October 2026: 149 pages indexed and 267 not indexed. Most of the 267 are expected: 61 are language or parameter variants that correctly point to another canonical page, and 60 are private or utility routes that we deliberately mark noindex. 130 are discovered but not yet crawled, which usually reflects how much authority a young domain has rather than a page defect. Seven old addresses returning 404 and one 403 are already in Google's validation queue.",
+      "Bing, 12 August – 24 October 2026: 12 clicks and 239 impressions. Bing's SEO/GEO report lists exactly one issue, of medium severity: not enough inbound links from high-quality domains. No on-page errors are reported. That gap is closed through real partners, directories and published work, not through purchased links.",
+      "Session analytics, last 90 days, consented visitors only: 445 sessions, 3.6 pages per session, a largest-content paint of 1.3 seconds and a layout shift of 0.012, both in the good range. Interaction responsiveness sits at the 200 ms boundary, and one real defect stood out: a script error in 5.8% of sessions. The cause was how our structured data was packaged — one combined block that a third-party analytics reader could not parse. We now publish one structured-data block per entity; search engines receive exactly the same facts.",
+      "What changed in the same week: about 120 inner pages — carrier market pages, logistics paths, Academy programmes, guides, careers, case studies, legal pages and the Spanish, French, Italian, Russian and Ukrainian overviews — moved from older dark page heads onto the same light visual system as the home page. Every URL, title, heading, canonical link, language alternate and internal link stayed the same, which we verified by comparing the full site build before and after.",
+      "How we will measure: the next readback compares the same windows — clicks, impressions, average position, indexed pages and session errors — and is published on this page with its date. We do not promise rankings, traffic or leads; we show the method and the numbers, the same way we would for a client."
+    ],
+    "takeaways": [
+      "Publish a dated baseline before claiming any growth",
+      "Separate expected non-indexed pages (canonical variants, noindex) from real defects",
+      "Fix measurable runtime errors first; one script error affected 5.8% of sessions",
+      "Redesign without changing URLs, headings, canonicals or internal links, and prove it with a build comparison",
+      "Earn authority with real links and published work, not purchased links"
+    ],
+    "faq": [
+      {
+        "question": "Why publish small numbers?",
+        "answer": "Because a baseline is only useful if it is honest. The next readback is compared against these exact figures and windows."
+      },
+      {
+        "question": "Are 267 non-indexed pages a problem?",
+        "answer": "Mostly not. 121 of them are canonical variants or deliberately private pages. The 130 discovered-but-not-crawled pages depend mainly on domain authority and internal linking."
+      },
+      {
+        "question": "Did the redesign change any URLs?",
+        "answer": "No. A full build comparison showed zero changes to links, canonical URLs, language alternates, titles, headings and structured-data facts."
+      },
+      {
+        "question": "Can Hermes run the same review for my business website?",
+        "answer": "Yes. Hermes Marketing reviews search visibility, indexing, analytics and site errors and turns them into a prioritised plan. Results are measured, not guaranteed."
+      }
+    ],
+    "related": [
+      {
+        "title": "Hermes Marketing",
+        "body": "Websites, SEO/GEO, social media and sales follow-up connected into one measurable growth system.",
+        "href": "/paths/marketing/"
+      },
+      {
+        "title": "Technical SEO checklist",
+        "body": "The checks behind this baseline: indexing, canonicals, structured data and performance.",
+        "href": "/resources/technical-seo-checklist/"
+      },
+      {
+        "title": "Hermes Technology",
+        "body": "Websites and systems built with tests, performance budgets and cache-safe releases.",
+        "href": "/paths/technology/"
+      }
+    ],
+    "primaryAction": {
+      "label": "Request a search review for your site",
+      "href": "/paths/marketing/"
+    },
+    "secondaryAction": {
+      "label": "See the technical SEO checklist",
+      "href": "/resources/technical-seo-checklist/"
+    },
+    "sourceLabel": "Hermes first-party readback — Google Search Console, Bing Webmaster Tools and consented session analytics, 26 October 2026",
+    "sourceUrl": "https://search.google.com/search-console/about",
+    "sourcePublishedAt": "2026-10-26",
+    "datePublished": "2026-10-26",
+    "dateModified": "2026-10-26",
+    "authorName": "Hermes Marketing",
+    "keywords": [
+      "search console baseline",
+      "own website seo case",
+      "indexing report explained",
+      "structured data fix",
+      "website redesign without seo loss",
+      "Hermes Marketing"
+    ],
+    "contentTier": "standalone",
+    "currentMarketClaim": false,
+    "publicationScore": {
+      "score": 82,
+      "recommendation": "standalone",
+      "reasons": [
+        "First-party measured data with dates and windows",
+        "Reusable method for service businesses (baseline → fix → readback)",
+        "Links to Marketing and Technology owners without duplicating their intent"
+      ]
+    }
+  },
+  {
     "id": "hermes-automatic-engineer-2026",
     "direction": "technology",
     "slug": "hermes-automatic-engineer-business-automation",
