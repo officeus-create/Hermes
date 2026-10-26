@@ -1,0 +1,118 @@
+/* Hermes public Pearl shell — brand migration wave A (2026-10-26).
+   Moves the legacy dark public page heads (navy/obsidian heroes) onto the approved Home /
+   direction grammar: Pearl field with a quiet direction tint, ink display type, mono eyebrow
+   with a 4px direction bar, white ghost actions and white cards.
+   Product accents stay on purpose (docs/design/HERMES_UNIFIED_BRAND_SYSTEM.md §2): Insights
+   (indigo field), Load Board (night), Hermes Connect workspaces and Obsidian product panels are
+   NOT listed here. Photo-led localized heroes (.localized-hero, .localized-owner-hero) need the
+   Home live-window structure, not a colour swap, and belong to wave B. Colour/surface only: copy, links, H1, schema and form hooks are untouched. */
+
+:root {
+  --pearl-shell-text: var(--hermes-ink, #0b0d12);
+  --pearl-shell-body: #4a505c;
+  --pearl-shell-quiet: #5f6573;
+  --pearl-shell-line: rgba(10, 22, 79, .12);
+}
+
+html body :is(
+  .carrier-geo-hero,
+  .hub-hero,
+  .logistics-audience-hero,
+  .career-hero,
+  .career-job-hero,
+  .case-hub-hero,
+  .case-study-hero,
+  .seo-case-hero,
+  .legal-hero,
+  .pdf-review-hero,
+  .agreement-hero,
+  .offer-hero,
+  .onboarding-hero,
+  .transport-request-hero,
+  .dispatch-start-hero,
+  .appleton-hero,
+  .sign-hero,
+  .logistics-resource-page:not(.content-insight-page) .resource-hero,
+  main.not-found
+) {
+  --pearl-accent: var(--hermes-logistics, #2f6bf6);
+  color: var(--pearl-shell-text);
+  background:
+    radial-gradient(circle at 88% 0%, color-mix(in srgb, var(--pearl-accent) 11%, transparent), transparent 34rem),
+    var(--hermes-pearl, #f7f6f3);
+}
+
+/* Direction tint follows the page family (H mark palette). */
+html body .logistics-resource-page.academy-public-page:not(.content-insight-page) .resource-hero { --pearl-accent: var(--hermes-academy, #12b886); }
+
+/* The scope list is repeated per rule so every override outranks the template's own scoped
+   colour (class + data-astro-cid). */
+html body :is(.carrier-geo-hero, .hub-hero, .logistics-audience-hero, .career-hero, .career-job-hero, .case-hub-hero, .case-study-hero, .seo-case-hero, .legal-hero, .pdf-review-hero, .agreement-hero, .offer-hero, .onboarding-hero, .transport-request-hero, .dispatch-start-hero, .appleton-hero, .sign-hero, .logistics-resource-page:not(.content-insight-page) .resource-hero, main.not-found) :is(h1, h2, h3, h4, strong, b, dt):not(.button *) {
+  color: var(--pearl-shell-text);
+}
+
+html body :is(.carrier-geo-hero, .hub-hero, .logistics-audience-hero, .career-hero, .career-job-hero, .case-hub-hero, .case-study-hero, .seo-case-hero, .legal-hero, .pdf-review-hero, .agreement-hero, .offer-hero, .onboarding-hero, .transport-request-hero, .dispatch-start-hero, .appleton-hero, .sign-hero, .logistics-resource-page:not(.content-insight-page) .resource-hero, main.not-found) :is(p, li, dd, small, figcaption, label, td, th, time, span):not(.eyebrow, .button *, .button) {
+  color: var(--pearl-shell-body);
+}
+
+html body :is(.carrier-geo-hero, .hub-hero, .logistics-audience-hero, .career-hero, .career-job-hero, .case-hub-hero, .case-study-hero, .seo-case-hero, .legal-hero, .pdf-review-hero, .agreement-hero, .offer-hero, .onboarding-hero, .transport-request-hero, .dispatch-start-hero, .appleton-hero, .sign-hero, .logistics-resource-page:not(.content-insight-page) .resource-hero, main.not-found) :is(nav, nav *, .detail-back, a:not(.button)) {
+  color: var(--pearl-shell-quiet);
+}
+
+html body :is(.carrier-geo-hero, .hub-hero, .logistics-audience-hero, .career-hero, .career-job-hero, .case-hub-hero, .case-study-hero, .seo-case-hero, .legal-hero, .pdf-review-hero, .agreement-hero, .offer-hero, .onboarding-hero, .transport-request-hero, .dispatch-start-hero, .appleton-hero, .sign-hero, .logistics-resource-page:not(.content-insight-page) .resource-hero, main.not-found) :is(nav [aria-current], a:not(.button):hover) {
+  color: var(--pearl-shell-text);
+}
+
+/* Lines drawn for a dark field become hairlines on Pearl (border-color never adds a border). */
+html body :is(.carrier-geo-hero, .hub-hero, .logistics-audience-hero, .career-hero, .career-job-hero, .case-hub-hero, .case-study-hero, .seo-case-hero, .legal-hero, .pdf-review-hero, .agreement-hero, .offer-hero, .onboarding-hero, .transport-request-hero, .dispatch-start-hero, .appleton-hero, .sign-hero, .logistics-resource-page:not(.content-insight-page) .resource-hero, main.not-found) *:not(.button-primary) {
+  border-color: var(--pearl-shell-line);
+}
+
+/* Eyebrow: mono, letter-spaced, 4px direction bar (approved Home / direction pattern). */
+html body :is(.carrier-geo-hero, .hub-hero, .logistics-audience-hero, .career-hero, .career-job-hero, .case-hub-hero, .case-study-hero, .seo-case-hero, .legal-hero, .pdf-review-hero, .agreement-hero, .offer-hero, .onboarding-hero, .transport-request-hero, .dispatch-start-hero, .appleton-hero, .sign-hero, .logistics-resource-page:not(.content-insight-page) .resource-hero, main.not-found) .eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: .65rem;
+  color: var(--pearl-shell-body);
+}
+html body :is(.carrier-geo-hero, .hub-hero, .logistics-audience-hero, .career-hero, .career-job-hero, .case-hub-hero, .case-study-hero, .seo-case-hero, .legal-hero, .pdf-review-hero, .agreement-hero, .offer-hero, .onboarding-hero, .transport-request-hero, .dispatch-start-hero, .appleton-hero, .sign-hero, .logistics-resource-page:not(.content-insight-page) .resource-hero, main.not-found) > .shell .eyebrow:first-of-type::before,
+html body :is(.carrier-geo-hero, .hub-hero, .logistics-audience-hero, .career-hero, .career-job-hero, .case-hub-hero, .case-study-hero, .seo-case-hero, .legal-hero, .pdf-review-hero, .agreement-hero, .offer-hero, .onboarding-hero, .transport-request-hero, .dispatch-start-hero, .appleton-hero, .sign-hero, .logistics-resource-page:not(.content-insight-page) .resource-hero, main.not-found) > .shell > div > .eyebrow::before {
+  flex: none;
+  width: 4px;
+  height: 15px;
+  border-radius: 2px;
+  background: var(--pearl-accent);
+  content: "";
+}
+
+/* Actions: ink pill primary, white ghost secondary. */
+html body :is(.carrier-geo-hero, .hub-hero, .logistics-audience-hero, .career-hero, .career-job-hero, .case-hub-hero, .case-study-hero, .seo-case-hero, .legal-hero, .pdf-review-hero, .agreement-hero, .offer-hero, .onboarding-hero, .transport-request-hero, .dispatch-start-hero, .appleton-hero, .sign-hero, .logistics-resource-page:not(.content-insight-page) .resource-hero, main.not-found) .button {
+  border-radius: var(--hermes-radius-pill, 999px);
+}
+html body :is(.carrier-geo-hero, .hub-hero, .logistics-audience-hero, .career-hero, .career-job-hero, .case-hub-hero, .case-study-hero, .seo-case-hero, .legal-hero, .pdf-review-hero, .agreement-hero, .offer-hero, .onboarding-hero, .transport-request-hero, .dispatch-start-hero, .appleton-hero, .sign-hero, .logistics-resource-page:not(.content-insight-page) .resource-hero, main.not-found) .button-primary {
+  border-color: transparent;
+  background: var(--hermes-action-ink, #0a164f);
+  color: #fff;
+}
+html body :is(.carrier-geo-hero, .hub-hero, .logistics-audience-hero, .career-hero, .career-job-hero, .case-hub-hero, .case-study-hero, .seo-case-hero, .legal-hero, .pdf-review-hero, .agreement-hero, .offer-hero, .onboarding-hero, .transport-request-hero, .dispatch-start-hero, .appleton-hero, .sign-hero, .logistics-resource-page:not(.content-insight-page) .resource-hero, main.not-found) .button-primary :is(span, svg) {
+  color: #fff;
+}
+html body :is(.carrier-geo-hero, .hub-hero, .logistics-audience-hero, .career-hero, .career-job-hero, .case-hub-hero, .case-study-hero, .seo-case-hero, .legal-hero, .pdf-review-hero, .agreement-hero, .offer-hero, .onboarding-hero, .transport-request-hero, .dispatch-start-hero, .appleton-hero, .sign-hero, .logistics-resource-page:not(.content-insight-page) .resource-hero, main.not-found) .button:not(.button-primary) {
+  border-color: rgba(10, 22, 79, .16);
+  background: #fff;
+  color: var(--pearl-shell-text);
+}
+
+/* Cards and side panels that were glass on the dark field become white cards. */
+html body :is(.carrier-geo-hero, .hub-hero, .logistics-audience-hero, .career-hero, .career-job-hero, .case-hub-hero, .case-study-hero, .seo-case-hero, .legal-hero, .pdf-review-hero, .agreement-hero, .offer-hero, .onboarding-hero, .transport-request-hero, .dispatch-start-hero, .appleton-hero, .sign-hero, .logistics-resource-page:not(.content-insight-page) .resource-hero, main.not-found) :is(aside, [class*="card"], [class*="panel"], [class*="summary"], [class*="facts"]):not(.button) {
+  border-color: var(--pearl-shell-line);
+  background: #fff;
+  box-shadow: 0 1rem 2.6rem rgba(10, 22, 79, .07);
+  backdrop-filter: none;
+}
+html body :is(.carrier-geo-hero, .hub-hero, .logistics-audience-hero, .career-hero, .career-job-hero, .case-hub-hero, .case-study-hero, .seo-case-hero, .legal-hero, .pdf-review-hero, .agreement-hero, .offer-hero, .onboarding-hero, .transport-request-hero, .dispatch-start-hero, .appleton-hero, .sign-hero, .logistics-resource-page:not(.content-insight-page) .resource-hero, main.not-found) img {
+  box-shadow: 0 30px 80px rgba(10, 22, 79, .14);
+}
+
+/* Legal & Compliance: the page canvas above the hero follows the same Pearl field. */
+html body main.legal-page:has(> .legal-hero) { background: var(--hermes-pearl, #f7f6f3); }

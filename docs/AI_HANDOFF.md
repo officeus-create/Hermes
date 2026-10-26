@@ -2023,3 +2023,11 @@ ai_name: Codex; role: delegated Academy owner; contribution_type: Implementation
 - New `tests/locale-mechanisms.spec.ts` + "Locale mechanisms" section in `docs/DESIGN_INTEGRATION_CONTRACT.md`: `/ru/` `/ua/` = server locales; Catalog `?lang=uk` = browser switch, same HTML/canonical/hrefs.
 - Local: build 0 errors; `npm test` + all #2087 Search gates pass; 605 affected-zone Playwright specs pass (3 skipped), desktop + 390.
 - Owner (2026-10-26) authorized Claude to decide and publish this design work. Next: exact-head CI green → merge → live readback.
+
+## 2026-10-26 — Claude Code — design convergence program + wave A (legacy dark heroes → Pearl shell)
+
+- Trigger: owner review — #2027 was reported "done" while ~120 inner pages still used legacy dark heroes (scope error, `ERR-DESIGN-SCOPE-NARROWED-TO-OPEN-PR-20261026`).
+- Program: `docs/design/HERMES_DESIGN_SEARCH_FUNNEL_PROGRAM_2026-10-26.md` (owner intent, measured state, waves A–F with exit criteria, funnel order, errors E1–E10, token routing, ready Claude prompt). Russian copy in One Brain: Drive doc "DESIGN × SEO/GEO × ВОРОНКА ПРОДАЖ — ПРОГРАММА И ЗАДАНИЕ ДЛЯ CLAUDE — 2026-10-26".
+- Wave A: `src/styles/hermes-public-pearl-shell.css` (imported last in BaseLayout) moves car-hauler geo, logistics audience/path results, Academy public, logistics resources, careers, case, legal, contracts/agreement/offer/onboarding/sign, transport request, dispatch start, Appleton/Green Bay and 404 heads to Pearl + ink + direction-bar eyebrow + white ghost actions/cards. Insights, Load Board and Connect product accents excluded by brand rule; photo-led localized heroes deferred to wave B.
+- Gates: build 0 errors; `npm test`; SEO hygiene, GSC triage, owner clarity, hreflang, internal links, performance budget pass; build diff vs main: 0 href/canonical/hreflang/title/description/H1/JSON-LD/form changes (CSS only).
+- Next: wave B (localized live-window heroes), C (body sections), D (logistics subnav), E (funnel layer), F (controls).
