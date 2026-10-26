@@ -29,7 +29,7 @@
       "canonical": "https://hermeslogisticsus.com/services/hermes-connect/internal/social-connections/threads-research/",
       "sitemap_owner": null,
       "source_file": "src/pages/services/hermes-connect/internal/social-connections/threads-research.astro",
-      "status": "REVIEW_REQUIRED",
+      "status": "COMPLETE",
       "blocker": "Owner-only read-only Threads research. Requires authorized Hermes owner session and exact Meta OAuth scopes; performs no external write.",
       "response_status": 200,
       "comparison": {
