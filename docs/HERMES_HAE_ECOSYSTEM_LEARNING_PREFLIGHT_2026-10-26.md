@@ -1,9 +1,13 @@
 # HAE — Ecosystem learning intake, source coverage and agent conversion (preflight)
 
-**Observed:** 2026-10-26 (Kyiv)  
-**Status:** SOURCE / DRAFT_ONLY; not deployed, not autonomous ingestion.  
-**Canonical runtime owner:** [#2033](https://github.com/officeus-create/Hermes/issues/2033).  
-**Existing source contracts:** [historical learning](HERMES_AUTOMATION_ENGINE_HISTORICAL_LEARNING.md), [self-improvement](HERMES_HAE_SELF_IMPROVEMENT.md).  
+**Observed:** 2026-10-26 (Kyiv)
+
+**Status:** SOURCE / DRAFT_ONLY; not deployed, not autonomous ingestion.
+
+**Canonical runtime owner:** [#2033](https://github.com/officeus-create/Hermes/issues/2033).
+
+**Existing source contracts:** [historical learning](HERMES_AUTOMATION_ENGINE_HISTORICAL_LEARNING.md), [self-improvement](HERMES_HAE_SELF_IMPROVEMENT.md).
+
 **Non-negotiable:** reuse existing HAE Worker + D1 + Queue + Cron; One Brain is the only canonical knowledge store. No second brain, database, scheduler, control plane, or independent agent with hidden privileges.
 
 ## CEO objective
