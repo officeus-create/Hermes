@@ -147,4 +147,5 @@ assert.doesNotMatch(navSource, /data-hc-social-connections-link/);
 assert.match(vendorRegistry, /meta-threads-owner-oauth/);
 assert.match(releaseDelta, /internal\/social-connections/);
 
+await import("./threads-discovery.test.mjs");
 console.log("threads brand connector contract: PASS");
