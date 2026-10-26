@@ -8,6 +8,7 @@ on:
       - "src/pages/services/hermes-connect/internal/social-connections/**"
       - "src/components/RepairShopOwnerNavEnhancer.astro"
       - "scripts/threads-brand-connector.test.mjs"
+      - "scripts/threads-reply.test.mjs"
       - "docs/THREADS_BRAND_CONNECTOR_RUNBOOK.md"
       - "docs/compliance/vendor-registry.json"
       - "docs/release-manifest-deltas/2026-09-29-hermes-connect-social-connections.json"
@@ -28,4 +29,5 @@ jobs:
           cache: npm
       - run: npm ci
       - run: node scripts/threads-brand-connector.test.mjs
+      - run: node scripts/threads-reply.test.mjs
       - run: npm run check

@@ -502,9 +502,34 @@ export async function publishThreadsText(accessToken, userId, text) {
   return { ok: true, media_id: clean(result.data.id, 160) };
 }
 
+export async function publishThreadsReply(accessToken, userId, text, replyToId) {
+  const targetId = clean(replyToId, 160);
+  if (!/^[0-9]{6,40}$/.test(targetId)) return { ok:false, error_class:"invalid_reply_target" };
+  const url = new URL(`${clean(userId, 160)}/threads`, GRAPH_BASE);
+  const result = await providerJson(url.toString(), {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded", Accept: "application/json" },
+    body: new URLSearchParams({
+      media_type: "TEXT",
+      text,
+      reply_to_id: targetId,
+      auto_publish_text: "true",
+      access_token: String(accessToken),
+    }),
+  });
+  if (!result.ok || !result.data?.id) {
+    return {
+      ok: false,
+      error_class: result.network_error ? "provider_outcome_unknown" : "provider_rejected",
+      provider_status: result.status,
+    };
+  }
+  return { ok:true, media_id:clean(result.data.id,160), reply_to_id:targetId };
+}
+
 export async function readThreadsMedia(accessToken, mediaId) {
   const url = new URL(clean(mediaId, 160), GRAPH_BASE);
-  url.searchParams.set("fields", "id,media_product_type,media_type,permalink,username,text,timestamp,is_quote_post,is_reply,reposted_post");
+  url.searchParams.set("fields", "id,media_product_type,media_type,permalink,username,text,timestamp,is_quote_post,is_reply,reposted_post,replied_to,root_post");
   url.searchParams.set("access_token", String(accessToken));
   const result = await providerJson(url.toString(), { headers: { Accept: "application/json" } });
   if (!result.ok || !result.data?.id) {
@@ -522,6 +547,8 @@ export async function readThreadsMedia(accessToken, mediaId) {
       timestamp: clean(result.data.timestamp, 100),
       is_quote_post: Boolean(result.data.is_quote_post),
       is_reply: Boolean(result.data.is_reply),
+      replied_to: result.data.replied_to && result.data.replied_to.id ? { id: clean(result.data.replied_to.id, 160) } : null,
+      root_post: result.data.root_post && result.data.root_post.id ? { id: clean(result.data.root_post.id, 160) } : null,
       reposted_post: result.data.reposted_post || null,
     },
   };

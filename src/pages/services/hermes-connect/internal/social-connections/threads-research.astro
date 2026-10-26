@@ -3,13 +3,13 @@ import BaseLayout from "../../../../../layouts/BaseLayout.astro";
 import SiteHeader from "../../../../../components/SiteHeader.astro";
 import SiteFooter from "../../../../../components/SiteFooter.astro";
 ---
-<BaseLayout title="Threads Research | Hermes Connect" description="Private read-only Threads research." robots="noindex,nofollow,noarchive">
+<BaseLayout title="Threads Research | Hermes Connect" description="Private Threads research and bounded owner-approved replies." robots="noindex,nofollow,noarchive">
 <SiteHeader theme="light" activePath="/paths/technology/" />
 <main id="main-content" class="threads-research">
 <div class="shell">
-<p class="eyebrow">Hermes Connect · Growth Bridge #1018 · Read-only</p>
+<p class="eyebrow">Hermes Connect · Growth Bridge #1018 · Research + bounded replies</p>
 <h1>Threads Research</h1>
-<p>Search public posts, read conversations, and compare prices with the existing official Meta Threads connector. Browser sign-in is separate from Meta API OAuth.</p>
+<p>Search public posts, read conversations, compare prices, and send one owner-approved reply to an inbound comment under an owned brand post. Browser sign-in is separate from Meta API OAuth.</p>
 <p data-auth role="status" aria-live="polite">Checking Hermes internal owner access…</p>
 <p><a href="/services/hermes-connect/internal/social-connections/">Manage brand OAuth permissions</a></p>
 <form data-research-form>
@@ -27,13 +27,13 @@ import SiteFooter from "../../../../../components/SiteFooter.astro";
 <div data-posts></div>
 <button type="button" data-copy disabled>Copy results as TSV</button>
 </section>
-<p class="disclaimer">Quoted prices are unverified proposals, not comparable contracts. Meta permission and pagination restrict coverage. This page never publishes, replies, follows, messages users, or stores private contact data. Hermes Logistics remains on Windsor.</p>
+<p class="disclaimer">Quoted prices are unverified proposals, not comparable contracts. Meta permission and pagination restrict coverage. Replies require exact provider IDs, verified brand OAuth, explicit owner confirmation, idempotency, owned-root verification and provider readback. No bulk replies, DMs, follows or private-contact storage. Hermes Logistics remains on Windsor.</p>
 </div>
 </main>
 <SiteFooter/>
 </BaseLayout>
 <script>
-type Post={id?:string;username?:string;text?:string;permalink?:string;timestamp?:string};
+type Post={id?:string;username?:string;text?:string;permalink?:string;timestamp?:string;is_reply?:boolean;root_post_id?:string;replied_to_id?:string};
 const f=document.querySelector<HTMLFormElement>("[data-research-form]");
 const mode=f?.elements.namedItem("mode") as HTMLSelectElement|null;
 const read=document.querySelector<HTMLButtonElement>("[data-read]");
@@ -42,13 +42,19 @@ const status=document.querySelector<HTMLElement>("[data-status]");
 const coverage=document.querySelector<HTMLElement>("[data-coverage]");
 const posts=document.querySelector<HTMLElement>("[data-posts]");
 const copy=document.querySelector<HTMLButtonElement>("[data-copy]");
-let owner=false, rows:Post[]=[];
+let owner=false, rows:Post[]=[], connections:any[]=[];
 function val(key:string){return String((f?.elements.namedItem(key) as HTMLInputElement|HTMLSelectElement|null)?.value||"").trim()}
 function say(el:HTMLElement|null,text:string){if(el)el.textContent=text}
 function refresh(){const m=mode?.value;say(status,"No results loaded.");const a=document.querySelector<HTMLElement>("[data-post-field]");const b=document.querySelector<HTMLElement>("[data-search-field]");const c=document.querySelector<HTMLElement>("[data-order-field]");if(a)a.hidden=m!=="thread";if(b)b.hidden=m!=="search";if(c)c.hidden=m!=="search";if(read)read.disabled=!owner}
 mode?.addEventListener("change",refresh);
 const price=(text:string)=>text.match(/(?:[$€£]\s?\d[\d\s.,]*|\d[\d\s.,]*\s?(?:usd|eur|uah|грн|доларів|євро|\$|€))/i)?.[0]||"";
 function safeLink(value:string){try{const u=new URL(value);return u.protocol==="https:"&&["threads.com","www.threads.com","threads.net","www.threads.net"].includes(u.hostname)?u.href:null}catch{return null}}
+async function replyKey(target:string,text:string){const bytes=new TextEncoder().encode(target+"\n"+text);const dig=await crypto.subtle.digest("SHA-256",bytes);const hex=[...new Uint8Array(dig)].map(v=>v.toString(16).padStart(2,"0")).join("").slice(0,24);return "threads-reply:"+val("brand")+":"+target+":"+hex}
+function replyReady(){
+ const c=connections.find((x:any)=>x.brand===val("brand"));
+ const scopes=new Set(c?.granted_scopes||[]);
+ return Boolean(c?.identity_verified&&c?.publish_enabled&&scopes.has("threads_read_replies")&&scopes.has("threads_manage_replies"));
+}
 function render(items:Post[]){
  rows=items;if(copy)copy.disabled=!items.length;if(!posts)return;
  posts.replaceChildren();
@@ -59,6 +65,23 @@ function render(items:Post[]){
   article.append(h,p);
   const cost=price(post.text||"");if(cost){const small=document.createElement("strong");small.textContent="Possible price mention: "+cost;article.append(small)}
   const url=safeLink(post.permalink||"");if(url){const a=document.createElement("a");a.href=url;a.textContent=" · Open source";a.target="_blank";a.rel="noopener noreferrer";article.append(a)}
+  if(post.is_reply&&post.id&&replyReady()){
+   const btn=document.createElement("button");btn.type="button";btn.textContent="Reply";
+   btn.addEventListener("click",async()=>{
+    const text=window.prompt("Reply as "+val("brand")+" (max 500 UTF-8 bytes):","");if(!text?.trim())return;
+    if(!window.confirm("Publish this single public Threads reply now?"))return;
+    btn.disabled=true;say(status,"Publishing one reply…");
+    try{
+      const key=await replyKey(String(post.id),text.trim());
+      const resp=await fetch("/api/internal/social/threads/reply",{method:"POST",credentials:"same-origin",headers:{"Content-Type":"application/json","Idempotency-Key":key},body:JSON.stringify({brand:val("brand"),reply_to_id:String(post.id),text:text.trim(),idempotency_key:key})});
+      const data=await resp.json().catch(()=>({}));
+      if(!resp.ok){say(status,"Reply blocked (HTTP "+resp.status+"): "+(data.error||"unknown"));return}
+      say(status,data.duplicate?"Reply already existed; no duplicate sent.":"Reply published and read back."+((data.permalink)?" "+data.permalink:""));
+    }catch{say(status,"Reply API unavailable.")}
+    finally{btn.disabled=false}
+   });
+   article.append(document.createTextNode(" "),btn);
+  }
   posts.append(article);
  }
 }
@@ -66,7 +89,7 @@ async function authCheck(){
  try{
   const r=await fetch("/api/internal/social/threads/connections",{credentials:"same-origin",cache:"no-store"});
   if(!r.ok){say(auth,"Internal owner sign-in required (HTTP "+r.status+").");return}
-  const data=await r.json();owner=true;const account=data.connections?.find((x:{brand:string})=>x.brand==="progressopro");
+  const data=await r.json();owner=true;connections=Array.isArray(data.connections)?data.connections:[];const account=connections.find((x:{brand:string})=>x.brand==="progressopro");
   say(auth,"Internal owner verified. ProgressoPro API OAuth: "+(account?.identity_verified?"VERIFIED":"not yet verified")+". Scopes: "+(account?.granted_scopes?.join(", ")||"none"));
   refresh();
  }catch{say(auth,"Internal owner API unavailable.")}
