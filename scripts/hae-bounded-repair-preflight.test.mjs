@@ -51,6 +51,13 @@ const bad=[
  ["no_add",{diff:diff("@@ -1 +0,0 @@\n-a\n")}],
  ["too_big",{diff:diff()+"x".repeat(8500)+"\n"}],
  ["three_hunks",{diff:diff(hunk+"@@ -5 +5 @@\n-a\n+b\n@@ -8 +8 @@\n-a\n+b\n")}],
+ ["add_node_fs_import",{diff:diff("@@ -1 +1 @@\n-assert.equal(0, 1);\n+import fs from \"node:fs\";\n")}],
+ ["add_dynamic_import",{diff:diff("@@ -1 +1 @@\n-assert.equal(0, 1);\n+await import(\"node:fs\");\n")}],
+ ["add_require",{diff:diff("@@ -1 +1 @@\n-assert.equal(0, 1);\n+require(\"node:fs\");\n")}],
+ ["add_fs_write",{diff:diff("@@ -1 +1 @@\n-assert.equal(0, 1);\n+fs.writeFileSync(\"/tmp/x\",\"x\");\n")}],
+ ["add_process_exit",{diff:diff("@@ -1 +1 @@\n-assert.equal(0, 1);\n+process.exit(0);\n")}],
+ ["add_network_call",{diff:diff("@@ -1 +1 @@\n-assert.equal(0, 1);\n+https.request(\"https://example.com\");\n")}],
+ ["add_websocket",{diff:diff("@@ -1 +1 @@\n-assert.equal(0, 1);\n+new WebSocket(\"wss://example.com\");\n")}],
 ];
 for(const [name,variation] of bad)assert.throws(()=>check({...good,...variation}),/hae_repair_blocked:/,name);
 const two=check({...good,diff:diff(hunk+"@@ -5 +5 @@\n-a\n+b\n")});
