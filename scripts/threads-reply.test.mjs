@@ -8,6 +8,7 @@ const reply=await readFile(new URL("../functions/api/internal/social/threads/rep
 assert.equal(typeof publishThreadsReply,"function");
 assert.match(core,/reply_to_id/);
 assert.match(core,/replied_to,root_post/);
+assert.match(reply,/threads_content_publish/);
 assert.match(reply,/threads_manage_replies/);
 assert.match(reply,/threads_read_replies/);
 assert.match(reply,/reply_target_must_be_inbound_reply/);

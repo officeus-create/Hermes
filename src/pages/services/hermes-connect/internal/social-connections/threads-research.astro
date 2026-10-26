@@ -53,7 +53,7 @@ async function replyKey(target:string,text:string){const bytes=new TextEncoder()
 function replyReady(){
  const c=connections.find((x:any)=>x.brand===val("brand"));
  const scopes=new Set(c?.granted_scopes||[]);
- return Boolean(c?.identity_verified&&c?.publish_enabled&&scopes.has("threads_read_replies")&&scopes.has("threads_manage_replies"));
+ return Boolean(c?.identity_verified&&c?.publish_enabled&&scopes.has("threads_content_publish")&&scopes.has("threads_read_replies")&&scopes.has("threads_manage_replies"));
 }
 function render(items:Post[]){
  rows=items;if(copy)copy.disabled=!items.length;if(!posts)return;

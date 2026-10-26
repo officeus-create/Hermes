@@ -87,7 +87,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
   const token:any=await usableThreadsAccessToken(env.DB,env,brand);
   if (!token.ok) return jsonResponse(409,{success:false,error:token.error_class},headers);
   const scopes=scopeSet(token.connection);
-  if (!scopes.has("threads_read_replies") || !scopes.has("threads_manage_replies")) {
+  if (!scopes.has("threads_content_publish") || !scopes.has("threads_read_replies") || !scopes.has("threads_manage_replies")) {
     return jsonResponse(403,{success:false,error:"threads_reply_permissions_required"},headers);
   }
 
