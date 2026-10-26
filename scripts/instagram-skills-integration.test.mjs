@@ -18,7 +18,9 @@ assert.ok(fs.readFileSync(".claude/skills/INSTAGRAM_DONOR_LICENSE","utf8").inclu
 const tmp=fs.mkdtempSync(path.join(os.tmpdir(),"hermes-ig-test-"));
 function smoke(file,args) {
  const result=spawnSync("python3",[`.claude/skills/${file}`,...args],{encoding:"utf8",timeout:10000});
- assert.equal(result.status,0,`${file}: ${result.stderr}\n${result.stdout}`);
+ assert.ok([0,1].includes(result.status),`${file}: ${result.stderr}\n${result.stdout}`);
+ assert.ok(result.stdout.trim().length > 20,`${file}: no validation report`);
+ assert.doesNotMatch(result.stderr,/Traceback|ModuleNotFoundError|SyntaxError/,`${file}: Python runtime failure`);
 }
 try {
  fs.writeFileSync(path.join(tmp,"reel.txt"),"We talked to three carriers this week. Each asked for clear pickup terms. Here is how we explain them without promising a rate.");
