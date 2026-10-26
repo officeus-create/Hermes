@@ -62,14 +62,21 @@ import SiteFooter from "../../../../../components/SiteFooter.astro";
     <section class="section canary">
       <div class="shell canary-grid">
         <div>
-          <p class="eyebrow">Office only</p>
-          <h2>Controlled text canary</h2>
-          <p>Publishing requires the Office profile to be OAuth-connected, explicitly verified, and enabled by private runtime configuration. The same idempotency key can never create a second post.</p>
+          <p class="eyebrow">Owner-approved write path</p>
+          <h2>Threads text composer</h2>
+          <p>This reuses the existing canonical brand connector. Office remains the first canary; ProgressoPro and Academy stay disabled until exact OAuth identity, private publish flags and the Office canary gate are all satisfied. No recurring schedule is created here.</p>
         </div>
         <form data-canary-form>
-          <label>Text <span data-byte-count>0 / 500 UTF-8 bytes</span><textarea name="text" rows="7" maxlength="500" placeholder="Office connector canary — provider identity and readback test only."></textarea></label>
+          <label>Brand
+            <select name="brand" data-compose-brand>
+              <option value="office_test">Office Threads Test</option>
+              <option value="progressopro">ProgressoPro</option>
+              <option value="business_academy">Hermes Business Academy</option>
+            </select>
+          </label>
+          <label>Text <span data-byte-count>0 / 500 UTF-8 bytes</span><textarea name="text" rows="7" maxlength="500" placeholder="Owner-approved Threads text."></textarea></label>
           <label>Idempotency key <input name="idempotency_key" value="office-threads-canary-20260929-01" /></label>
-          <button type="submit">Publish Office canary</button>
+          <button type="submit" data-compose-publish disabled>Publish selected brand</button>
           <p data-canary-status role="status"></p>
         </form>
       </div>
@@ -103,6 +110,9 @@ import SiteFooter from "../../../../../components/SiteFooter.astro";
   const byteCount = document.querySelector<HTMLElement>("[data-byte-count]");
   const receipts = document.querySelector<HTMLElement>("[data-receipts]");
   const refreshMetrics = document.querySelector<HTMLButtonElement>("[data-refresh-metrics]");
+  const composeBrand = form?.elements.namedItem("brand") as HTMLSelectElement | null;
+  const composePublish = form?.querySelector<HTMLButtonElement>("[data-compose-publish]");
+  const connectionByBrand = new Map<string,Connection>();
   const healthButtons = [...document.querySelectorAll<HTMLButtonElement>("[data-health-brand]")];
   let healthBrand = "office_test";
 
@@ -129,7 +139,18 @@ import SiteFooter from "../../../../../components/SiteFooter.astro";
     status.dataset.error = error ? "true" : "false";
   }
 
+  function updateComposeGate() {
+    if (!composePublish || !composeBrand) return;
+    const selected = connectionByBrand.get(composeBrand.value);
+    const ready = Boolean(selected?.identity_verified && selected?.publish_enabled);
+    composePublish.disabled = !ready;
+    composePublish.title = ready
+      ? "Provider identity and publish gate are enabled for this brand."
+      : "Connect + verify this exact brand and enable its private publish gates first.";
+  }
+
   function renderConnection(connection:Connection) {
+    connectionByBrand.set(connection.brand, connection);
     const card = cards.find((node)=>node.dataset.brand===connection.brand);
     if (!card) return;
     card.querySelector<HTMLElement>("[data-state]")!.textContent = connection.identity_verified ? "Verified" : connection.state.replaceAll("_"," ");
@@ -142,12 +163,15 @@ import SiteFooter from "../../../../../components/SiteFooter.astro";
     if (verify) verify.disabled = !connection.username || connection.identity_verified;
     const disconnect = card.querySelector<HTMLButtonElement>("[data-disconnect]");
     if (disconnect) disconnect.disabled = !connection.username;
+    updateComposeGate();
   }
 
   async function loadConnections() {
     try {
       const payload = await api("/api/internal/social/threads/connections");
+      connectionByBrand.clear();
       for (const connection of payload.connections || []) renderConnection(connection);
+      updateComposeGate();
       setStatus(payload.runtime_configured
         ? "Internal owner access verified. Threads app configuration is present."
         : "Internal owner access verified. Threads app configuration is still required.", !payload.runtime_configured);
@@ -210,22 +234,32 @@ import SiteFooter from "../../../../../components/SiteFooter.astro";
     if (byteCount) byteCount.textContent = `${bytes} / 500 UTF-8 bytes`;
   };
   canaryText?.addEventListener("input", countBytes);
+  composeBrand?.addEventListener("change", updateComposeGate);
   countBytes();
+  updateComposeGate();
 
   form?.addEventListener("submit", async (event)=>{
     event.preventDefault();
+    const brand = (form.elements.namedItem("brand") as HTMLSelectElement).value;
     const text = (form.elements.namedItem("text") as HTMLTextAreaElement).value;
     const idempotency_key = (form.elements.namedItem("idempotency_key") as HTMLInputElement).value;
-    if (!window.confirm("Publish this single Office Threads canary now?")) return;
+    const connection = connectionByBrand.get(brand);
+    if (!connection?.identity_verified || !connection?.publish_enabled) {
+      if (canaryStatus) canaryStatus.textContent = "Selected brand is not publish-ready. Complete exact OAuth identity verification and private publish gates first.";
+      return;
+    }
+    if (!window.confirm(`Publish this single approved Threads post from ${brand} now? This is an external provider write.`)) return;
     try {
       if (canaryStatus) canaryStatus.textContent = "Publishing…";
       const payload = await api("/api/internal/social/threads/publish", {
         method:"POST",
-        body:JSON.stringify({brand:"office_test",text,idempotency_key}),
+        body:JSON.stringify({brand,text,idempotency_key}),
       });
       if (canaryStatus) canaryStatus.textContent = payload.permalink
-        ? `Published: ${payload.permalink}`
-        : `Published with media ID ${payload.media_id}; readback pending.`;
+        ? `Published ${brand}: ${payload.permalink}`
+        : `Published ${brand} with media ID ${payload.media_id}; readback pending.`;
+      healthBrand = brand;
+      for(const button of healthButtons) button.dataset.active=String(button.dataset.healthBrand===brand);
       await loadReceipts();
     } catch (error:any) {
       if (canaryStatus) canaryStatus.textContent = error?.payload?.error || "Canary publish failed.";
@@ -286,5 +320,5 @@ import SiteFooter from "../../../../../components/SiteFooter.astro";
 </script>
 
 <style>
-  .social-connections{background:#f5f7fb;color:#13203b;min-height:100vh}.hero{padding:8.2rem 0 4rem;background:#071038;color:#fff}.hero .eyebrow{color:#c8bdff}.hero h1{font-size:clamp(3rem,7vw,6rem);line-height:.95}.lead{max-width:70ch;color:rgba(255,255,255,.78);font-size:1.12rem;line-height:1.7}.boundary{display:flex;flex-wrap:wrap;gap:.55rem;margin-top:1.2rem}.boundary span{padding:.55rem .75rem;border:1px solid rgba(255,255,255,.25);border-radius:999px}.status{margin-top:1.2rem;color:#bff7d3}.status[data-error="true"]{color:#ffc6cf}.section{padding:4rem 0}.section-heading{max-width:820px}.brand-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}.brand-card{padding:1.25rem;border:1px solid #dce2ee;border-radius:16px;background:#fff}.brand-top{display:flex;justify-content:space-between;gap:1rem}.brand-top span{font-size:.78rem;font-weight:800}.brand-card dl{display:grid;gap:.55rem;margin:1.2rem 0}.brand-card dl div{display:grid;grid-template-columns:90px 1fr;gap:.65rem}.brand-card dt{color:#6b7487}.brand-card dd{margin:0;overflow-wrap:anywhere}.bio{min-height:2.5rem;color:#5d687d}.actions{display:flex;flex-wrap:wrap;gap:.6rem}.actions button,.canary button,[data-refresh-metrics],.health-tabs button{border:1px solid #cbd3e2;border-radius:9px;background:#fff;padding:.7rem .85rem;font:inherit;font-weight:750;cursor:pointer}.actions button:first-child,.canary button{background:#18265c;color:#fff;border-color:#18265c}.actions button:disabled{opacity:.45;cursor:not-allowed}.canary{background:#fff}.canary-grid{display:grid;grid-template-columns:.8fr 1.2fr;gap:2rem}.canary form{display:grid;gap:1rem}.canary label{display:grid;gap:.35rem;font-weight:750}.canary label span{font-size:.78rem;color:#687287}.canary textarea,.canary input{width:100%;box-sizing:border-box;border:1px solid #cbd3e2;border-radius:10px;padding:.8rem;font:inherit}.health-tabs{display:flex;flex-wrap:wrap;gap:.55rem;margin:.8rem 0}.health-tabs button[data-active="true"]{background:#18265c;color:#fff;border-color:#18265c}.receipts{display:grid;gap:.7rem;margin-top:1rem}.receipts article{display:flex;flex-wrap:wrap;gap:.7rem;align-items:center;padding:.9rem 1rem;border:1px solid #dce2ee;border-radius:10px;background:#fff}.receipts small{color:#687287}.receipts code{font-size:.75rem}@media(max-width:900px){.brand-grid,.canary-grid{grid-template-columns:1fr}}
+  .social-connections{background:#f5f7fb;color:#13203b;min-height:100vh}.hero{padding:8.2rem 0 4rem;background:#071038;color:#fff}.hero .eyebrow{color:#c8bdff}.hero h1{font-size:clamp(3rem,7vw,6rem);line-height:.95}.lead{max-width:70ch;color:rgba(255,255,255,.78);font-size:1.12rem;line-height:1.7}.boundary{display:flex;flex-wrap:wrap;gap:.55rem;margin-top:1.2rem}.boundary span{padding:.55rem .75rem;border:1px solid rgba(255,255,255,.25);border-radius:999px}.status{margin-top:1.2rem;color:#bff7d3}.status[data-error="true"]{color:#ffc6cf}.section{padding:4rem 0}.section-heading{max-width:820px}.brand-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}.brand-card{padding:1.25rem;border:1px solid #dce2ee;border-radius:16px;background:#fff}.brand-top{display:flex;justify-content:space-between;gap:1rem}.brand-top span{font-size:.78rem;font-weight:800}.brand-card dl{display:grid;gap:.55rem;margin:1.2rem 0}.brand-card dl div{display:grid;grid-template-columns:90px 1fr;gap:.65rem}.brand-card dt{color:#6b7487}.brand-card dd{margin:0;overflow-wrap:anywhere}.bio{min-height:2.5rem;color:#5d687d}.actions{display:flex;flex-wrap:wrap;gap:.6rem}.actions button,.canary button,[data-refresh-metrics],.health-tabs button{border:1px solid #cbd3e2;border-radius:9px;background:#fff;padding:.7rem .85rem;font:inherit;font-weight:750;cursor:pointer}.actions button:first-child,.canary button{background:#18265c;color:#fff;border-color:#18265c}.actions button:disabled{opacity:.45;cursor:not-allowed}.canary{background:#fff}.canary-grid{display:grid;grid-template-columns:.8fr 1.2fr;gap:2rem}.canary form{display:grid;gap:1rem}.canary label{display:grid;gap:.35rem;font-weight:750}.canary label span{font-size:.78rem;color:#687287}.canary textarea,.canary input,.canary select{width:100%;box-sizing:border-box;border:1px solid #cbd3e2;border-radius:10px;padding:.8rem;font:inherit}.health-tabs{display:flex;flex-wrap:wrap;gap:.55rem;margin:.8rem 0}.health-tabs button[data-active="true"]{background:#18265c;color:#fff;border-color:#18265c}.receipts{display:grid;gap:.7rem;margin-top:1rem}.receipts article{display:flex;flex-wrap:wrap;gap:.7rem;align-items:center;padding:.9rem 1rem;border:1px solid #dce2ee;border-radius:10px;background:#fff}.receipts small{color:#687287}.receipts code{font-size:.75rem}@media(max-width:900px){.brand-grid,.canary-grid{grid-template-columns:1fr}}
 </style>
