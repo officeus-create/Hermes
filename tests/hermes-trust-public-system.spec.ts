@@ -78,3 +78,12 @@ for (const route of ["/company-information/", "/about/"]) {
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   });
 }
+
+test("/contacts/ offers one primary request action and the four direction owners", async ({ page }) => {
+  await page.goto("/contacts/");
+  await expect(page.locator(".contacts-hero .button-primary")).toHaveCount(1);
+  await expect(page.locator(".contacts-hero .button-primary")).toHaveAttribute("href", "#contact");
+  await expect(page.locator(".trust-directions a.trust-direction")).toHaveCount(4);
+  await expect(page.locator("#contact form[data-contact-form]")).toHaveCount(1);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+});

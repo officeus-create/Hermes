@@ -2,6 +2,7 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import ContactBlock from "../components/ContactBlock.astro";
 import ContactCTA from "../components/ContactCTA.astro";
+import DirectionRouter from "../components/DirectionRouter.astro";
 import SiteFooter from "../components/SiteFooter.astro";
 import SiteHeader from "../components/SiteHeader.astro";
 import { site } from "../data/site";
@@ -50,10 +51,17 @@ const contactSchema = {
           For careers, Owner-Operator opportunities, agency relationships, referrals, or other collaboration, start with{" "}
           <a href="/opportunities/">Work With Hermes</a>.
         </p>
+        <p class="contacts-hero-actions"><a class="button button-primary" href="#contact">Send a structured request <span aria-hidden="true">→</span></a></p>
       </div>
     </section>
+    <div class="shell contacts-directions"><DirectionRouter /></div>
     <ContactBlock />
     <ContactCTA />
   </main>
   <SiteFooter />
 </BaseLayout>
+
+<style>
+  .contacts-hero-actions { margin: 1.5rem 0 0; }
+  .contacts-directions { margin-block: clamp(1.5rem, 4vw, 3rem); }
+</style>

@@ -17,13 +17,13 @@ Ranking effects need 2–8 weeks after deploy; every slice records its recheck d
 2. ~~**Dead clicks (E13)**~~ DONE in #2109 — — whole cards become their existing link** on `/insights/`, `/businesses/`, `/opportunities/`,
    `/paths/technology/` and direction hero windows; non-linked Catalog state tiles stop looking clickable.
    Accept: same hrefs, no new URLs, keyboard focus unchanged, screenshots 1440/390, Clarity recheck in 14 days.
-3. **Marketing services funnel (E1)** — IN PR: proof rail beside the hero CTA on 5 SEO pages; — `/services/seo-for-logistics-companies/` (676 impressions), `/services/seo/` (189),
+3. ~~**Marketing services funnel (E1)**~~ DONE #2111 LIVE 26.10 — proof rail beside the hero CTA on 5 SEO pages; — `/services/seo-for-logistics-companies/` (676 impressions), `/services/seo/` (189),
    `/services/local-seo/`. Shared `DigitalServicePage`.
    Accept: above the fold PERSON (who it is for) → PROMISE (one line, existing approved copy) → PROOF (one real
    asset: Appleton case, logistics SEO audit sample, own-search baseline — links only, no new claims) → ONE primary
    CTA; closing panel leads into the form; no URL/H1/title/canonical change; CTA uses the existing
    `commercial_cta_click`/`case_study_cta` hooks (no new analytics payload fields).
-4. **`/contacts/` + brand entity hub (E2)** (138 impressions, pos 19). Accept: visitor sees the four directions + the form; one
+4. **`/contacts/` + brand entity hub (E2)** — IN PR: primary request action + four directions (shared `DirectionRouter`); (138 impressions, pos 19). Accept: visitor sees the four directions + the form; one
    primary action per screen.
 5. **Careers funnel** (`/careers/car-hauling-dispatcher/` pos 6, real clicks; `/logistics/careers/`). Accept: role
    promise → requirements proof → one apply action.
@@ -47,6 +47,8 @@ Ranking effects need 2–8 weeks after deploy; every slice records its recheck d
 - Authority (#368): real partner/client/directory links; no link schemes.
 
 ## Done (most recent first)
+
+- 2026-10-26 #2111 SEO service proof rail (E1) — LIVE.
 
 - 2026-10-26 #2109 body sections, brand-intent routing, service CTA order, dead-click cards (E13), matrices — LIVE.
 
