@@ -37,7 +37,7 @@ for(const source of [collection,item,access]){
 }
 assert.match(collection,/csrf_origin_mismatch/,"work-item creation must reject cross-origin mutation");
 assert.match(collection,/status,'planned'|status.*planned/s,"captured work must enter backlog rather than auto-run");
-assert.doesNotMatch(collection,/hermes_internal_ai_tasks.*INSERT/s,"capture endpoint must not silently dispatch AI work");
+assert.doesNotMatch(collection,/INSERT\s+INTO\s+hermes_internal_ai_tasks/i,"capture endpoint must not silently dispatch AI work");
 
 assert.match(item,/active_task_exists/,"dispatch must preserve the existing one-active-task invariant");
 assert.match(item,/WHERE NOT EXISTS \([\s\S]*status IN \(\'queued\',\'running\',\'needs_approval\'\)/,"dispatch insert must atomically enforce the one-active-task invariant");
