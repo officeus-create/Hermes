@@ -2,6 +2,11 @@ const DEFAULT_RETRY_SECONDS = 15 * 60;
 const MAX_PROMPT_CHARS = 12000;
 const MAX_SYSTEM_CHARS = 4000;
 const MAX_OUTPUT_TOKENS = 1200;
+// A Workers Paid account can incur overage once the daily 10,000-Neuron free allocation
+// is spent. Fail closed unless the account was independently checked as Workers Free,
+// where Cloudflare hard-stops requests rather than charging for a paid fallback.
+const APPROVED_WORKERS_FREE_MODELS = new Set(["@cf/zai-org/glm-4.7-flash"]);
+const MAX_ATTESTATION_WINDOW_MS = 14 * 24 * 60 * 60 * 1000;
 
 function clean(value, max = 1000) {
   return typeof value === "string"
@@ -55,27 +60,36 @@ function cloudflareWorkersAiState(env = {}, nowMs = Date.now()) {
   const model = clean(env.HERMES_FREE_AI_CLOUDFLARE_MODEL, 200);
   const explicitlyEnabled = enabled(env.HERMES_FREE_AI_CLOUDFLARE_ENABLED);
   const bindingReady = Boolean(env?.AI && typeof env.AI.run === "function");
+  const freePlanAttested = String(env.HERMES_FREE_AI_CLOUDFLARE_PLAN_ATTESTED || "").trim().toLowerCase() === "workers_free";
+  const approvedModel = APPROVED_WORKERS_FREE_MODELS.has(model);
   const expiresAt = clean(env.HERMES_FREE_AI_CLOUDFLARE_FREE_ASSERTION_EXPIRES_AT, 80);
   const expiresMs = Date.parse(expiresAt);
   const freeAssertionFresh = Number.isFinite(expiresMs) && expiresMs > nowMs;
+  const attestationWindowValid = Number.isFinite(expiresMs) && expiresMs <= nowMs + MAX_ATTESTATION_WINDOW_MS;
   return {
     id: "cloudflare-workers-ai",
     kind: "workers_ai_binding",
-    configured: Boolean(explicitlyEnabled && model && expiresAt),
-    available: Boolean(explicitlyEnabled && model && bindingReady && freeAssertionFresh),
+    configured: Boolean(explicitlyEnabled && model && expiresAt && freePlanAttested && approvedModel),
+    available: Boolean(explicitlyEnabled && model && bindingReady && freeAssertionFresh && attestationWindowValid && freePlanAttested && approvedModel),
     model: model || null,
     free_assertion_expires_at: Number.isFinite(expiresMs) ? new Date(expiresMs).toISOString() : null,
     reason: !explicitlyEnabled
       ? "disabled"
-      : !model
-        ? "model_missing"
-        : !expiresAt || !Number.isFinite(expiresMs)
-          ? "free_assertion_missing"
-          : !freeAssertionFresh
-            ? "free_assertion_expired"
-            : !bindingReady
-              ? "binding_missing"
-              : "ready",
+      : !freePlanAttested
+        ? "workers_free_plan_not_verified"
+        : !model
+          ? "model_missing"
+          : !approvedModel
+            ? "model_not_approved_for_free_plan"
+            : !expiresAt || !Number.isFinite(expiresMs)
+              ? "free_assertion_missing"
+              : !freeAssertionFresh
+                ? "free_assertion_expired"
+                : !attestationWindowValid
+                  ? "free_assertion_horizon_invalid"
+                  : !bindingReady
+                    ? "binding_missing"
+                    : "ready",
   };
 }
 
