@@ -27,6 +27,7 @@ on:
       - "scripts/hae-migration-baseline-candidate*.mjs"
       - "scripts/hae-t4-*.mjs"
       - "scripts/hae-bounded-repair-preflight.test.mjs"
+      - "scripts/hae-evidence-lesson-preflight.test.mjs"
       - "docs/HERMES_AUTOMATION_ENGINE_*.md"
       - ".github/workflows/automation-engine-contract.yml"
       - ".github/workflows/automation-engine-release.yml"
@@ -72,3 +73,4 @@ jobs:
           node scripts/hae-t4-dlq-canary.test.mjs
           node scripts/hae-t4-readonly-d1-diagnostic.test.mjs
           node scripts/hae-bounded-repair-preflight.test.mjs
+          node scripts/hae-evidence-lesson-preflight.test.mjs
