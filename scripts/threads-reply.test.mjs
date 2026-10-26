@@ -4,6 +4,7 @@ import { publishThreadsReply } from "../functions/api/_lib/threads-brand-connect
 
 const core=await readFile(new URL("../functions/api/_lib/threads-brand-connector.mjs",import.meta.url),"utf8");
 const reply=await readFile(new URL("../functions/api/internal/social/threads/reply.ts",import.meta.url),"utf8");
+const publish=await readFile(new URL("../functions/api/internal/social/threads/publish.ts",import.meta.url),"utf8");
 
 assert.equal(typeof publishThreadsReply,"function");
 assert.match(core,/reply_to_id/);
@@ -14,6 +15,8 @@ assert.match(reply,/threads_read_replies/);
 assert.match(reply,/reply_target_must_be_inbound_reply/);
 assert.match(reply,/self_reply_not_allowed/);
 assert.match(reply,/reply_target_not_under_owned_root/);
+assert.match(reply,/brand_key='office_test' AND object_type='AUTHORED_POST' AND status='published'/);
+assert.match(publish,/brand_key='office_test' AND object_type='AUTHORED_POST' AND status='published'/);
 assert.match(reply,/INSERT OR IGNORE INTO hermes_social_threads_publications/);
 assert.match(reply,/'REPLY'/);
 assert.match(reply,/idempotency_key_already_used/);

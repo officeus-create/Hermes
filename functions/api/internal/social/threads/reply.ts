@@ -68,7 +68,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
   await ensureThreadsBrandConnectorSchema(env.DB);
   if (brand !== "office_test") {
     const officeCanary=await env.DB.prepare(`SELECT provider_media_id,permalink FROM hermes_social_threads_publications
-      WHERE brand_key='office_test' AND status='published' AND provider_media_id IS NOT NULL AND permalink IS NOT NULL
+      WHERE brand_key='office_test' AND object_type='AUTHORED_POST' AND status='published' AND provider_media_id IS NOT NULL AND permalink IS NOT NULL
       ORDER BY updated_at DESC LIMIT 1`).first();
     if (!officeCanary) return jsonResponse(403,{success:false,error:"office_canary_required_before_secondary_publish"},headers);
   }
