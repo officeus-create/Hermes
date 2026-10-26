@@ -6,7 +6,7 @@ const PRIORITIES = new Set(["p0","p1","p2","p3"]);
 const WORK_ITEM_STATES = new Set(["planned","ready","in_progress","blocked","done","cancelled"]);
 const SOURCES = new Set(["text","voice","imported"]);
 const MAX_TITLE = 160;
-const MAX_DETAILS = 12000;
+const MAX_DETAILS = 10000;
 
 export async function ensureCommandCenterSchema(db) {
   await db.prepare(`CREATE TABLE IF NOT EXISTS hermes_owner_work_items (
@@ -68,3 +68,16 @@ export function workItemPrompt(item){
   ].join("\n");
 }
 export const commandCenterNow=nowIso;
+export async function reconcileWorkItems(db) {
+  const now=nowIso();
+  await db.prepare(`UPDATE hermes_owner_work_items
+    SET status = 'done', completed_at = COALESCE(completed_at, ?), updated_at = ?
+    WHERE organization_scope = 'hermes_internal' AND status = 'in_progress' AND linked_task_id IN (
+      SELECT id FROM hermes_internal_ai_tasks WHERE organization_scope = 'hermes_internal' AND status = 'completed'
+    )`).bind(now,now).run();
+  await db.prepare(`UPDATE hermes_owner_work_items
+    SET status = 'blocked', blocked_reason = COALESCE(blocked_reason, 'Linked AI task ended without completion; review evidence.'), updated_at = ?
+    WHERE organization_scope = 'hermes_internal' AND status = 'in_progress' AND linked_task_id IN (
+      SELECT id FROM hermes_internal_ai_tasks WHERE organization_scope = 'hermes_internal' AND status IN ('failed','cancelled')
+    )`).bind(now).run();
+}
