@@ -36,6 +36,7 @@ export type WebsiteSalesQuote = {
   discountClass: WebsiteDiscountClass;
   discountPercent: number;
   approvalState: WebsiteApprovalState;
+  approvalReference: string | null;
   salesRepCode: string;
   commissionRateBps: number;
   commissionAmountCents: number;
@@ -59,6 +60,7 @@ export const privateWebsiteSalesFields = new Set<keyof WebsiteSalesQuote>([
   "discountClass",
   "discountPercent",
   "approvalState",
+  "approvalReference",
   "salesRepCode",
   "commissionRateBps",
   "commissionAmountCents",
@@ -146,6 +148,9 @@ export function validateWebsiteSalesQuote(quote: WebsiteSalesQuote) {
 
   const discountError = discountPolicyError(quote);
   if (discountError) errors.push(discountError);
+  if (quote.approvalState === "CEO_APPROVED" && !quote.approvalReference?.trim()) {
+    errors.push("ceo_approval_reference_required");
+  }
 
   if (quote.costEvidenceStatus === "VERIFIED") {
     if (quote.estimatedDeliveryCostCents === null || quote.estimatedDeliveryCostCents < 0) {
