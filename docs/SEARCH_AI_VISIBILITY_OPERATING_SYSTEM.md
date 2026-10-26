@@ -174,13 +174,13 @@ Owner-provided Bing Webmaster exports dated 2026-10-05 plus authenticated browse
 - Bing Site Scan `Hermes full technical audit 2026-10-04`: **581 pages**, **2 errors**, **22 warnings**. Aggregates: 2 missing meta descriptions, 20 missing image alt attributes, 2 overly long titles and 2 multi-H1 notices. Exact affected URLs were not included in the supplied aggregate export, so do not mass-edit canonical owners from counts alone.
 - Authority recommendation: **insufficient inbound links from high-quality domains** (medium severity). Treat this as a legitimate authority gap; pursue earned/entity-relevant citations and editorial proof, never link spam.
 - IndexNow date stats contain **5,286 submitted-URL events**, **32 indexed events**, and **38 crawled events**. Current IndexNow coverage examples include `robots.txt`, an SVG, a WOFF2 font and `/logistics/car-hauling-dispatch/`. The canonical repository submitter already rejects non-HTML assets/discovery files.
-- Authenticated Cloudflare readback on 2026-10-06 shows **Crawler Hints enabled**. Cloudflare documents that Crawler Hints can notify IndexNow from cache-change signals; combined with the non-HTML observations, this is strong evidence of over-broad/duplicate notification noise rather than a Bing penalty.
+- Historical authenticated Cloudflare readback on 2026-10-06 showed **Crawler Hints enabled**. That baseline was superseded on 2026-10-07 when the owner changed Crawler Hints to OFF and immediately read back `Value: 0`; preserve the dated baseline only as root-cause evidence.
 
 Decision:
 
 1. keep the healthy sitemap and controlled page-only IndexNow transport;
 2. change automatic money-page IndexNow notifications from fixed full-batch resubmission to **changed-cluster-only** submission;
-3. disable Cloudflare Crawler Hints when a supported Cloudflare write path is available, then compare a settled 72-hour IndexNow/crawl window;
+3. preserve Cloudflare Crawler Hints **OFF** from the authenticated 2026-10-07 receipt; only reopen the setting if a fresh authenticated readback proves regression, and measure later Bing crawl/IndexNow behavior separately;
 4. keep P0 on Car Hauling carriers and strengthen existing owners before adding URLs;
 5. triage Site Scan issues only from exact affected URLs or repository reproduction;
 6. treat authority acquisition as external-evidence P1.
