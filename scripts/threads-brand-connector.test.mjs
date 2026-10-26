@@ -155,5 +155,8 @@ assert.match(researchPage, /navigator.clipboard.writeText/);
 assert.match(researchPage, /credentials:"same-origin"/);
 assert.doesNotMatch(researchPage, /\/api\/internal\/social\/threads\/publish/);
 assert.match(pageSource, /social-connections\/threads-research/);
+assert.match(pageSource, /Threads post health/);
+assert.match(pageSource, /data-health-brand/);
+assert.match(pageSource, /metrics\?brand=/);
 await import("./threads-discovery.test.mjs");
 console.log("threads brand connector contract: PASS");
