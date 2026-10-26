@@ -82,6 +82,24 @@ These come from `docs/DESIGN_INTEGRATION_CONTRACT.md`, `docs/PUBLIC_INFORMATION_
 - Run `npm run build`, `npm test`, and `npm run test:e2e` before reporting any change complete.
 - Any historical `/Users/progressopro/...` repository path, old worktree, browser state, cache, local database, or Mac-specific runtime reference is provenance only. The owner MacBook is retired. Use fresh GitHub/current-platform evidence for current truth and local execution only when a new authorized endpoint is explicitly available for the task.
 
+## Claude design writer rule: design and Search ship together
+
+When Claude is the active design writer, do not treat SEO/GEO as a later cleanup phase.
+
+Before editing shared navigation, route templates, commercial heroes, Catalog/Insights discovery, localized chrome, forms, media loading, or global styling:
+
+1. Read `docs/DESIGN_INTEGRATION_CONTRACT.md`.
+2. Read `docs/SEARCH_GROWTH_GUARDRAIL.md` and `docs/ERROR_REGISTER.md`.
+3. Read the freshest dated handoff matching `docs/handoffs/*design*search*` when one exists.
+4. Compare the proposed design against current `main` and production; do not assume an older Claude export or screenshot is still the implementation baseline.
+5. Keep one writer on the branch. Do not overwrite a concurrent SEO/Search PR touching the same files.
+
+Provider dashboards are evidence sources, not instruction dumps. Do not attempt to "fix every Bing/GSC warning" from an old screenshot/export. First classify each item as current, stale, retired-route, provider-lag, or reproduced defect. Only reproduced/current defects become code changes.
+
+For a visual change that removes or relocates navigation/content, prove the replacement remains server-rendered and preserves canonical owner discovery, locale/hreflang ownership, analytics/consent boundaries, schema and mobile/keyboard behavior. Hero/video work must also preserve the performance budget and LCP/CLS constraints.
+
+The design is complete only when the current PR head passes the Search-aware gate in `docs/DESIGN_INTEGRATION_CONTRACT.md`; visual approval alone is not release evidence.
+
 ## Claude's standing role: technical/SEO agent alongside Codex and ChatGPT
 
 Claude Code and Claude Web/Cowork act as ongoing technical and SEO agents for Hermes, working alongside Codex and ChatGPT. When Codex is unavailable, out of quota, or has handed off a task, Claude Code becomes the primary implementation agent and should continue from the project's current state rather than redoing work already done.
