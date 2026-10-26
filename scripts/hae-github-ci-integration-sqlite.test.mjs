@@ -18,10 +18,12 @@ const record={
   pull_requests:[{number:2094,base:{sha:base}}],
 };
 const calls=[];
+let githubApiUnavailable=true;
 const originalFetch=globalThis.fetch;
 globalThis.fetch=async(url,options)=>{
   calls.push({url:String(url),method:options?.method||"GET"});
   assert.equal(String(url),"https://api.github.com/repos/"+repo+"/actions/runs/"+record.id);
+  if(githubApiUnavailable)return {ok:false,status:403};
   return {ok:true,json:async()=>structuredClone(record)};
 };
 const raw=new DatabaseSync(":memory:");
@@ -68,6 +70,18 @@ function batch(){
  }};
 }
 try{
+ // Failure-injection gate: an upstream GitHub 403/rate-limit must NOT
+ // create a D1 job or enqueue execution. Retry the source message only;
+ // the next successful read of the same immutable run may then proceed.
+ const githubUnavailable=batch();
+ await worker.queue(githubUnavailable.object,env);
+ assert.deepEqual(githubUnavailable.state,{ack:0,retry:1});
+ assert.equal(raw.prepare("SELECT COUNT(*) AS count FROM hermes_automation_jobs").get().count,0);
+ assert.equal(queueWrites.length,0);
+ assert.equal(raw.prepare(
+   "SELECT COUNT(*) AS count FROM hermes_automation_runtime_events WHERE event_type='queue.message_retry' AND error_class='github_ci_source_http_not_ok'"
+ ).get().count,1);
+ githubApiUnavailable=false;
  const first=batch();
  await worker.queue(first.object,env);
  assert.deepEqual(first.state,{ack:1,retry:0});
@@ -91,7 +105,7 @@ try{
  assert.equal(job._source.changed_paths_fingerprint,null);
  assert.ok(!rows[0].payload_json.includes("PRIVATE_SECRET"));
  assert.equal(raw.prepare("SELECT COUNT(*) AS count FROM hermes_automation_job_events WHERE event_type='job.created'").get().count,1);
- assert.equal(calls.length,2);
+ assert.equal(calls.length,3);
  assert.ok(calls.every(x=>x.method==="GET"),"Only read-only GitHub verification");
  // Same run/attempt with incompatible source snapshot must fail closed;
  // it cannot overwrite the first D1 reservation or enqueue a second job.
@@ -129,7 +143,7 @@ try{
  assert.equal(raw.prepare("SELECT COUNT(*) AS count FROM hermes_automation_jobs").get().count,2);
  assert.equal(queueWrites.length,1,"Replay must not bypass durable retry recovery");
  console.log("HAE_CI_QUEUE_D1_LOCAL_INTEGRATION_PASS",JSON.stringify({
-  duplicated_deliveries:2,d1_jobs:2,job_created_events:2,
+  duplicated_deliveries:2,github_api_403_retried_without_job:1,d1_jobs:2,job_created_events:2,
   failed_queue_send_jobs_recoverable:1,conflicting_replays_rejected:1,
   queued_executions:queueWrites.length,external_provider_writes:0,
   real_cloud_runtime_proven:false,authoritative_git_run_authenticated:false,
