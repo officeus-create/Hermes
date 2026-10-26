@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import {
   parseT4OwnerCommand, buildT4CanaryBody, d1Rows,
-  validateT4Heartbeat, validateT4Receipt,
+  validateT4Heartbeat, validateT4Receipt, validT4EmailReceipt,
 } from "./hae-t4-dlq-canary.mjs";
 
 const sourceSha = "f58eba92af8adac8bf88132c5d795d65df49df96";
@@ -34,15 +34,31 @@ fail(() => validateT4Heartbeat(response([{...heartbeat, publication_enabled:1}])
 fail(() => validateT4Heartbeat(response([{...heartbeat, observed_at:"2026-10-25T15:17:00Z"}]), sourceSha, now), "t4_heartbeat_stale_or_future");
 fail(() => validateT4Heartbeat(response([]), sourceSha, now), "t4_heartbeat_missing_or_ambiguous");
 const delivered={
-  dlq_item_id:"dlq:example-cloudflare-message-1",
+  dlq_item_id:"dlq:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
   message_type:messageType, disposition:"QUARANTINE", reason:"idempotency_key_missing",
   action_status:"QUARANTINED",alert_status:"DELIVERED",
   alert_attempt_count:1,alert_channel:"cloudflare_email",
-  alert_receipt_ref:"cloudflare-email://accepted/dlq:example-cloudflare-message-1",
+  alert_receipt_ref:"cloudflare-email://accepted/dlq:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
   redrive_count:0,
 };
 assert.deepEqual(validateT4Receipt(response([]), messageType),{status:"PENDING"});
 assert.equal(validateT4Receipt(response([delivered]), messageType).status,"PASS");
+assert.equal(validT4EmailReceipt("cloudflare-email://accepted/dlq:"+"b".repeat(32)),true);
+assert.equal(validT4EmailReceipt("cloudflare-email://message/abc+123@domain.com",null,"abc+123@domain.com"),true);
+assert.equal(validT4EmailReceipt("cloudflare-email://message/abc+123@domain.com",null,null),false);
+assert.equal(validT4EmailReceipt("cloudflare-email://message/abc+123@domain.com",null,"other+123@domain.com"),false);
+// A valid-looking accepted receipt for a DIFFERENT DLQ item is not proof of this item.
+const otherItem = "dlq:" + "a".repeat(32);
+const crossItemReceipt = "cloudflare-email://accepted/" + otherItem;
+assert.equal(validT4EmailReceipt(crossItemReceipt, delivered.dlq_item_id), false);
+assert.equal(validT4EmailReceipt(delivered.alert_receipt_ref, delivered.dlq_item_id), true);
+fail(() => validateT4Receipt(response([{...delivered,alert_receipt_ref:crossItemReceipt}]),messageType), "t4_alert_receipt_invalid");
+assert.equal(validateT4Receipt(response([{...delivered,alert_provider_message_id:"abc+123@domain.com",alert_receipt_ref:"cloudflare-email://message/abc+123@domain.com"}]), messageType).status,"PASS");
+fail(() => validateT4Receipt(response([{...delivered,alert_provider_message_id:"other+123@domain.com",alert_receipt_ref:"cloudflare-email://message/abc+123@domain.com"}]),messageType), "t4_alert_receipt_invalid");
+fail(() => validateT4Receipt(response([{...delivered,alert_provider_message_id:null,alert_receipt_ref:"cloudflare-email://message/abc+123@domain.com"}]),messageType), "t4_alert_receipt_invalid");
+for(const bad of ["cloudflare-email://message/abc", "cloudflare-email://accepted/not-a-dlq","cloudflare-email://message/abc123@domain.com?send=1","cloudflare-email://message/abc123@domain.com\nOther-Header:1","https://invalid.example", "cloudflare-email://message/"+"a".repeat(190)]){
+  assert.equal(validT4EmailReceipt(bad,null,"abc123@domain.com"),false,"invalid provider receipt must remain blocked");
+}
 assert.equal(validateT4Receipt(response([{...delivered,alert_status:"PENDING_OWNER_ALERT",alert_attempt_count:0}]), messageType).status,"PENDING");
 fail(() => validateT4Receipt(response([delivered,delivered]),messageType),"t4_duplicate_d1_items");
 fail(() => validateT4Receipt(response([{...delivered,alert_attempt_count:2}]),messageType),"t4_alert_receipt_invalid");
