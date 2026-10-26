@@ -15,8 +15,8 @@ class D1Statement {
 }
 const sqlite=new DatabaseSync(":memory:");
 const DB={prepare:(sql)=>new D1Statement(sqlite.prepare(sql))};
-sqlite.exec(\`CREATE TABLE sessions (token TEXT, specialist_id TEXT, expires_at TEXT);
-CREATE TABLE specialists (id TEXT, email TEXT, name TEXT, role TEXT, location TEXT, bio TEXT);\`);
+sqlite.exec(`CREATE TABLE sessions (token TEXT, specialist_id TEXT, expires_at TEXT);
+CREATE TABLE specialists (id TEXT, email TEXT, name TEXT, role TEXT, location TEXT, bio TEXT);`);
 const future=new Date(Date.now()+3600000).toISOString();
 for(const [id,email,name] of [["owner-1","owner1@example.invalid","Owner One"],["owner-2","owner2@example.invalid","Owner Two"],["ordinary","ordinary@example.invalid","Ordinary"]]){
   sqlite.prepare("INSERT INTO specialists VALUES (?,?,?,?,?,?)").run(id,email,name,"Owner","","");
