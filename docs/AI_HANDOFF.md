@@ -2090,3 +2090,10 @@ ai_name: Codex; role: delegated Academy owner; contribution_type: Implementation
 - `/contacts/` (138 GSC impressions, pos 19) gets one primary "Send a structured request" action and the four direction owners. The direction block is now the shared `DirectionRouter` component (TrustPage uses it too).
 - Gates green; build diff vs main: 0 href-set/fact changes (direction links already existed in chrome). Local-only H.264 video specs fail as known.
 - Next action — careers funnel (`/careers/car-hauling-dispatcher/`); accept — role promise → requirements → one apply action.
+
+## 2026-10-26 — Claude Code — #2117 and #2118 LIVE; Technology proof rail
+
+- #2117 (contacts) merged d88f2524, live readback OK. #2118 (Logistics commercial: carrier hero action as text link, `--color-navy-900` → brand ink on family pages, Appleton/Wisconsin violet → Logistics tokens) merged 8f0ae0f8, live CSS verified.
+- Careers funnel blocked: the dispatcher vacancy is intentionally held closed until the owner confirms hiring.
+- Slice: website development / redesign / auto-repair design get the proof rail (IT case, brief template, conversion checklist). Build diff: 2 pages, links added. 420 related specs green.
+- Next action — Academy funnel (`/academy/us-logistics-operations/`, apply); accept — proof + one primary apply action.

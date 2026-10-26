@@ -23,12 +23,12 @@ Ranking effects need 2–8 weeks after deploy; every slice records its recheck d
    asset: Appleton case, logistics SEO audit sample, own-search baseline — links only, no new claims) → ONE primary
    CTA; closing panel leads into the form; no URL/H1/title/canonical change; CTA uses the existing
    `commercial_cta_click`/`case_study_cta` hooks (no new analytics payload fields).
-4. **`/contacts/` + brand entity hub (E2)** — IN PR: primary request action + four directions (shared `DirectionRouter`); (138 impressions, pos 19). Accept: visitor sees the four directions + the form; one
+4. ~~**`/contacts/` + brand entity hub (E2)**~~ DONE #2117 LIVE 26.10 — primary request action + four directions (shared `DirectionRouter`); (138 impressions, pos 19). Accept: visitor sees the four directions + the form; one
    primary action per screen.
-5. **Careers funnel** (`/careers/car-hauling-dispatcher/` pos 6, real clicks; `/logistics/careers/`). Accept: role
+5. **Careers funnel** — BLOCKED on owner: the dispatcher vacancy is held closed ("awaiting fresh owner review"); reopening needs an owner hiring decision. (`/careers/car-hauling-dispatcher/` pos 6, real clicks; `/logistics/careers/`). Accept: role
    promise → requirements proof → one apply action.
-6. **Logistics commercial funnel** (car-hauling dispatch, Appleton/Wisconsin vehicle transport, dealer transport).
-7. **Technology services funnel** (website development / redesign / auto-repair design).
+6. ~~**Logistics commercial funnel**~~ DONE #2118 LIVE 26.10 (one primary hero action, brand ink headings, Logistics blue accents) — (car-hauling dispatch, Appleton/Wisconsin vehicle transport, dealer transport).
+7. **Technology services funnel** — IN PR: proof rail on website development / redesign / auto-repair design; (website development / redesign / auto-repair design).
 8. **Academy funnel** (`/academy/us-logistics-operations/`, apply).
 9. **Direction owners proof block** (`/paths/*`) — only with existing approved proof.
 10. **Classify London cluster** (`/gb/london/*`) into the matrix.
@@ -47,6 +47,9 @@ Ranking effects need 2–8 weeks after deploy; every slice records its recheck d
 - Authority (#368): real partner/client/directory links; no link schemes.
 
 ## Done (most recent first)
+
+- 2026-10-26 #2118 Logistics commercial pages: one primary hero action, ink headings, blue accents — LIVE.
+- 2026-10-26 #2117 /contacts/ primary request action + four directions (E2) — LIVE.
 
 - 2026-10-26 #2111 SEO service proof rail (E1) — LIVE.
 

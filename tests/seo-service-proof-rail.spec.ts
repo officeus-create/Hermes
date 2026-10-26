@@ -8,6 +8,9 @@ const routes = [
   "/services/local-seo/",
   "/services/seo-for-auto-repair-shops/",
   "/services/seo-for-independent-auto-dealers/",
+  "/services/website-development/",
+  "/services/website-redesign/",
+  "/services/auto-repair-website-design/",
 ];
 
 for (const route of routes) {

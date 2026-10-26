@@ -65,6 +65,7 @@ test("commercial owners link to the new and existing planning resources", async 
   await expect(page.locator('.digital-proof-rail a[href="/resources/technical-seo-checklist/"]')).toHaveCount(1);
 
   await page.goto("/services/website-development/");
-  await expect(page.locator('main a[href="/resources/search-to-inquiry-conversion-checklist/"]')).toHaveCount(1);
-  await expect(page.locator('main a[href="/resources/website-project-brief-template/"]')).toHaveCount(1);
+  await expect(page.locator('main a[href="/resources/search-to-inquiry-conversion-checklist/"]:not(.digital-proof-rail a)')).toHaveCount(1);
+  await expect(page.locator('main a[href="/resources/website-project-brief-template/"]:not(.digital-proof-rail a)')).toHaveCount(1);
+  await expect(page.locator('.digital-proof-rail a[href="/resources/website-project-brief-template/"]')).toHaveCount(1);
 });
