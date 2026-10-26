@@ -1,14 +1,18 @@
-// Request-time lifecycle for the existing Wisconsin recruiting owner only.
-// Never infer renewal from an accessible ATS URL or an extended expiry alone.
+// Request-time lifecycle: continuously open Wisconsin recruiting is owner-confirmed,
+// while any actual pause/closure still suppresses live JobPosting and apply CTAs.
+// A dated operational check must not silently expire an evergreen recruiting role.
 export function hasCurrentWisconsinReview(record, now = new Date()) {
   if (!record || !record.ownerApprovedForPublication || record.status !== "verified_open") return false;
   const review = Date.parse(`${record.reviewedAt}T00:00:00Z`);
   const posted = Date.parse(`${record.datePosted}T00:00:00Z`);
-  const expiry = Date.parse(`${record.expiresAt}T23:59:59Z`);
   const instant = new Date(now).getTime();
   const ownerReview = record.descriptionSourceIds?.some((id) => id.startsWith(`owner:${record.reviewedAt}:`));
-  return ownerReview && [review, posted, expiry, instant].every(Number.isFinite)
-    && posted <= review && review <= instant && review <= expiry
+  if (!ownerReview || ![review, posted, instant].every(Number.isFinite) || posted > review || review > instant) return false;
+  if (record.alwaysOpen === true) {
+    return !record.expiresAt && record.descriptionSourceIds.includes(`owner:${record.reviewedAt}:permanent-open-recruiting`);
+  }
+  const expiry = Date.parse(`${record.expiresAt}T23:59:59Z`);
+  return Number.isFinite(expiry) && review <= expiry
     && expiry - review < 8 * 86_400_000 && instant < expiry;
 }
 
@@ -25,6 +29,12 @@ export function expireWisconsinHtml(html) {
   // Controlled template regions cannot contain nested sections. Keep useful
   // historical content, canonical, robots and all unrelated schema unchanged.
   let output = html.replace(/<section\b[^>]*\bdata-wi-vacancy-current\b[^>]*>[\s\S]*?<\/section>/gi, "");
+  // A paused/closed owner cannot keep current source or apply links from an older cached build.
+  output = output.replace(/<article\b[^>]*\bdata-wi-vacancy-open-source\b[^>]*>[\s\S]*?<\/article>/gi, "");
+  output = output.replace(/(<article\b[^>]*\bdata-wi-vacancy-closed-source\b[^>]*?)\s+hidden(?:="[^"]*")?/gi, "$1");
+  output = output.replace(/<a\b[^>]*\bdata-owner-operator-apply-contact\b[^>]*>[\s\S]*?<\/a>/gi, "recruiting contact");
+  // Yuri interviews only for current recruiting. Remove his call CTA on an explicit pause/closure.
+  output = output.replace(/<a\b[^>]*\bdata-owner-operator-call-contact\b[^>]*>[\s\S]*?<\/a>/gi, "");
   output = output.replace(/(<section\b[^>]*\bdata-wi-vacancy-expired\b[^>]*?)\s+hidden(?:="[^"]*")?/gi, "$1");
   output = output.replace(/<script\b([^>]*\btype=["']application\/ld\+json["'][^>]*)>([\s\S]*?)<\/script>/gi, (_script, attrs, raw) => {
     try {

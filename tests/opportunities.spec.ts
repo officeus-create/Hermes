@@ -15,7 +15,7 @@ test.describe("Work With Hermes opportunities hub", () => {
     await expect(page.getByRole("heading", { name: "Expansion, Investment & Strategic Conversations" })).toBeVisible();
 
     await expect(page.getByRole("link", { name: "Explore careers" })).toHaveAttribute("href", "/logistics/careers/");
-    await expect(page.getByRole("link", { name: "Review Wisconsin Owner-Operator information" })).toHaveAttribute("href", "/careers/wisconsin-owner-operators/");
+    await expect(page.getByRole("link", { name: "Apply for Wisconsin Owner-Operator recruiting" })).toHaveAttribute("href", "/careers/wisconsin-owner-operators/");
     await expect(page.getByRole("link", { name: "Review agency-partner path" })).toHaveAttribute("href", "/paths/logistics/agency-partners/");
     await expect(page.getByRole("link", { name: "Explore agency launch" })).toHaveAttribute("href", "/logistics/agency/");
     await expect(page.getByRole("link", { name: "Contact Hermes" }).first()).toHaveAttribute("href", "/contacts/");
@@ -41,12 +41,12 @@ test.describe("Work With Hermes opportunities hub", () => {
       await expect(opportunities).toHaveAttribute("data-product", "opportunities");
     }
 
-    await expect(page.getByRole("link", { name: "+1 (414) 269-7377" })).toHaveAttribute("href", "tel:+14142697377");
+    await expect(page.locator(".opportunities-current").getByRole("link", { name: "officeus@hermeslogisticsus.com" })).toHaveAttribute("href", "mailto:officeus@hermeslogisticsus.com?subject=Wisconsin%20Owner-Operator%20Application");\n    await expect(page.locator(".opportunities-current").getByRole("link", { name: "+1 (414) 269-7377 — Call Yuri" })).toHaveAttribute("href", "tel:+14142697377");\n    await expect(page.locator(".opportunities-current")).toContainText("Monday–Friday after 2:15 PM CT");\n    await expect(page.locator(".opportunities-current")).toContainText("Saturday–Sunday 10:00 AM–9:00 PM CT");
     await expect(page.getByRole("link", { name: "officeus@hermeslogisticsus.com" }).first()).toBeVisible();
     await expect(page.getByRole("link", { name: "partnership@hermeslogisticsus.com" }).first()).toBeVisible();
 
     const bodyText = await page.locator("body").innerText();
-    expect(bodyText).toContain("The most recent Wisconsin recruiting review expired on October 15, 2026.");
+    expect(bodyText).toContain("Hermes owner-confirmed continuous Wisconsin owner-operator recruitment on October 19, 2026.");
     expect(bodyText).toContain("their own commercial truck and trailer");
     expect(bodyText).not.toContain("Current recruiting priority · Wisconsin");
     expect(bodyText).not.toContain("Power Only may be considered");

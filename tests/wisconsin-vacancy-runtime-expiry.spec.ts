@@ -2,55 +2,64 @@ import { expect, test } from "@playwright/test";
 import { readFileSync } from "node:fs";
 import { expireWisconsinHtml, expireWisconsinCareersHub } from "../functions/_lib/wisconsin-vacancy-lifecycle.mjs";
 
-test("Wisconsin expired server HTML retains mobile contact and search owner without active JobPosting", async ({ page }) => {
-  const built = readFileSync("dist/careers/wisconsin-owner-operators/index.html", "utf8");
-  await page.route("**/careers/wisconsin-owner-operators/", (route) => route.fulfill({ status: 200, contentType: "text/html", body: expireWisconsinHtml(built) }));
-  await page.goto("/careers/wisconsin-owner-operators/");
+const jobRoute = "/careers/wisconsin-owner-operators/";
+const built = () => readFileSync("dist/careers/wisconsin-owner-operators/index.html", "utf8");
+
+test("evergreen Wisconsin recruiting stays indexable with a real direct application method", async ({ page }) => {
+  await page.route("**/careers/wisconsin-owner-operators/", (route) => route.fulfill({ status: 200, contentType: "text/html", body: built() }));
+  await page.goto(jobRoute);
   await expect(page.locator("h1")).toHaveCount(1);
+  await expect(page).toHaveTitle(/Owner-Operator Truck Drivers in Wisconsin/);
   await expect(page.locator("link[rel=canonical]")).toHaveAttribute("href", "https://hermeslogisticsus.com/careers/wisconsin-owner-operators/");
   await expect(page.locator("meta[name=robots]")).toHaveAttribute("content", /index,follow/);
-  await expect(page.getByRole("heading", { name: "Publication review due", exact: true })).toBeVisible();
-  await expect(page.locator("body")).not.toContainText("continuously recruits Wisconsin owner-operators");
-  await expect(page.locator("body")).toContainText("A fresh owner review is required before the page represents a current opening.");
-  await expect(page.locator("[data-external-job-apply]")).toHaveCount(0);
-  expect((await page.locator('script[type="application/ld+json"]').allTextContents()).join(" ")).not.toContain('"JobPosting"');
-  await expect(page.locator("#apply")).toHaveCount(1);
-  const phone = page.getByRole("link", { name: "Ask recruiting about current status" });
-  await expect(phone).toHaveAttribute("href", "tel:+14142697377");
-  await phone.scrollIntoViewIfNeeded();
-  await phone.click({ trial: true });
-  const size = await phone.boundingBox();
-  expect(size?.height).toBeGreaterThanOrEqual(44);
+  await expect(page.getByRole("heading", { name: "Wisconsin owner-operator recruiting at a glance" })).toBeVisible();
+  await expect(page.getByText("Applications accepted continuously")).toBeVisible();
+  await expect(page.getByRole("link", { name: "Apply by email" })).toHaveAttribute("href", "mailto:officeus@hermeslogisticsus.com?subject=Wisconsin%20Owner-Operator%20Application");
+  await expect(page.getByRole("link", { name: "Call Yuri · interview" })).toHaveAttribute("href", "tel:+14142697377");
+  await expect(page.locator(".recruiting-section").getByRole("link", { name: "+1 (414) 269-7377" })).toHaveAttribute("href", "tel:+14142697377");
+  await expect(page.locator(".hours-card")).toContainText("Saturday–Sunday: 10:00 AM–9:00 PM CT");
+  await expect(page.locator(".recruiting-section").getByRole("link", { name: /Apply directly at officeus@hermeslogisticsus.com/ })).toHaveAttribute("href", "mailto:officeus@hermeslogisticsus.com?subject=Wisconsin%20Owner-Operator%20Application");
+  await expect(page.getByText("Markets to discuss, not confirmed local offices, dedicated freight, or guaranteed lanes.")).toBeVisible();
+  await expect(page.getByText("Which Wisconsin markets can an owner-operator ask about?")).toHaveCount(1);
+  const jsonLd = (await page.locator('script[type="application/ld+json"]').allTextContents()).join(" ");
+  expect(jsonLd).toContain('"JobPosting"');
+  expect(jsonLd).toContain('"WebPage"');
+  expect(jsonLd).toContain('"BreadcrumbList"');
+  expect(jsonLd).toContain('"datePosted":"2026-10-03"');
+  expect(jsonLd).not.toContain('"validThrough"');
+  expect(jsonLd).not.toContain('"sameAs":"https://100hires.com/j/G4ek3eN"');
+  const apply = page.getByRole("link", { name: "Apply by email" });
+  await apply.scrollIntoViewIfNeeded();
+  await apply.click({ trial: true });
+  expect((await apply.boundingBox())?.height).toBeGreaterThanOrEqual(44);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
 
-test("Careers hub expires an old cached Wisconsin vacancy and preserves its reference link", async ({ page }) => {
-  const legacyHub = `<!doctype html><html><body>
-    <h2 data-current-vacancy-heading>Verified public vacancies are open.</h2>
-    <strong data-current-vacancy-count>1</strong>
-    <article data-vacancy-slug="wisconsin-owner-operators">
-      <a data-external-vacancy-source href="https://100hires.com/j/G4ek3eN">Apply</a>
-    </article>
-    <a href="/logistics/apply/?for=career">General careers inquiry</a>
-  </body></html>`;
-  await page.route("**/logistics/careers/", (route) => route.fulfill({
-    status: 200,
-    contentType: "text/html",
-    body: expireWisconsinCareersHub(legacyHub, 0),
-  }));
-  await page.goto("/logistics/careers/");
-  await expect(page.locator("[data-current-vacancy-count]")).toHaveText("0");
-  await expect(page.getByRole("heading", { name: /No verified public vacancy is listed today/ })).toBeVisible();
-  await expect(page.locator('a[data-external-vacancy-source]')).toHaveCount(0);
-  await expect(page.getByRole("link", { name: "Review recruiting information" })).toHaveAttribute("href", "/careers/wisconsin-owner-operators/");
+test("explicitly paused Wisconsin recruiting hides an old built application's JobPosting and CTAs", async ({ page }) => {
+  await page.route("**/careers/wisconsin-owner-operators/", (route) => route.fulfill({ status: 200, contentType: "text/html", body: expireWisconsinHtml(built()) }));
+  await page.goto(jobRoute);
+  await expect(page.getByRole("heading", { name: "Recruiting temporarily unavailable" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Apply by email" })).toHaveCount(0);
+  await expect(page.locator("[data-wi-vacancy-open-source]")).toHaveCount(0);
+  await expect(page.locator("[data-wi-vacancy-closed-source] span").getByText("Not currently accepting applications", { exact: true })).toBeVisible();
+  await expect(page.locator('a[href^="tel:"]')).toHaveCount(0);
+  await expect(page.getByRole("link", { name: "Email recruiting status question" })).toHaveAttribute("href", "mailto:officeus@hermeslogisticsus.com?subject=Wisconsin%20Owner-Operator%20Recruiting%20Question");
+  const jsonLd = (await page.locator('script[type="application/ld+json"]').allTextContents()).join(" ");
+  expect(jsonLd).not.toContain('"JobPosting"');
+  expect(jsonLd).toContain('"BreadcrumbList"');
 });
 
-test("fresh careers build remains fail-closed after Wisconsin vacancy expiry", async ({ page }) => {
-  const built = readFileSync("dist/logistics/careers/index.html", "utf8");
-  await page.route("**/logistics/careers/", (route) => route.fulfill({ status: 200, contentType: "text/html", body: built }));
+test("Careers hub keeps permanent opening visible and can still honor an explicit pause", async ({ page }) => {
+  const hub = readFileSync("dist/logistics/careers/index.html", "utf8");
+  await page.route("**/logistics/careers/", (route) => route.fulfill({ status: 200, contentType: "text/html", body: hub }));
   await page.goto("/logistics/careers/");
+  await expect(page.locator("[data-current-vacancy-count]")).toHaveText("1");
+  await expect(page.getByRole("heading", { name: /Verified public vacancies are open/ })).toBeVisible();
+  await expect(page.getByRole("link", { name: "View vacancy" })).toHaveAttribute("href", jobRoute);
+  const pausedHub = expireWisconsinCareersHub(hub, 0);
+  await page.route("**/logistics/careers/", (route) => route.fulfill({ status: 200, contentType: "text/html", body: pausedHub }));
+  await page.reload();
   await expect(page.locator("[data-current-vacancy-count]")).toHaveText("0");
   await expect(page.getByRole("heading", { name: /No verified public vacancy is listed today/ })).toBeVisible();
-  await expect(page.locator('a[data-external-vacancy-source]')).toHaveCount(0);
-  await expect(page.locator('a[href="https://100hires.com/j/G4ek3eN"]')).toHaveCount(0);
+  await expect(page.getByRole("link", { name: "Review recruiting information" })).toHaveAttribute("href", jobRoute);
 });
