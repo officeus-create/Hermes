@@ -325,3 +325,7 @@ html body[data-direction-family="logistics"] main:not(#pearl-scope) .logistics-a
   text-decoration: underline;
   text-underline-offset: 4px;
 }
+
+/* Academy/Insight boundary cards and legacy violet links follow the page family (violet = Intelligence only). */
+html body[data-direction-family] { --color-violet-600: var(--family-accent-text); }
+html body[data-direction-family] main:not(#pearl-scope) .capacity-boundary-grid article { border-top-color: var(--family-accent); }
