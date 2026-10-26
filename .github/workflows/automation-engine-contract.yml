@@ -26,6 +26,7 @@ on:
       - "scripts/hae-d1-schema-snapshot*.mjs"
       - "scripts/hae-migration-baseline-candidate*.mjs"
       - "scripts/hae-t4-*.mjs"
+      - "scripts/hae-bounded-repair-preflight.test.mjs"
       - "docs/HERMES_AUTOMATION_ENGINE_*.md"
       - ".github/workflows/automation-engine-contract.yml"
       - ".github/workflows/automation-engine-release.yml"
