@@ -41,6 +41,19 @@ assert.doesNotMatch(paused, /data-owner-operator-apply-contact/);
 assert.match(paused, /data-wi-vacancy-expired(?![^>]*\bhidden)/);
 assert.match(paused, /data-wi-vacancy-closed-source(?![^>]*\bhidden)/);
 assert.match(paused, /Recruiting temporarily unavailable/);
+for (const staleClaim of [
+  "continuously recruits Wisconsin owner-operators",
+  "Ongoing recruiting",
+  "Applications remain open",
+  "Recruitment is ongoing",
+  "Applications accepted continuously",
+  "Yuri's interview call hours",
+  "Before you contact recruiting.",
+]) assert.ok(!paused.includes(staleClaim), `paused cached HTML leaked current claim: ${staleClaim}`);
+assert.doesNotMatch(paused, /"@type":"FAQPage"/);
+assert.match(paused, /"@type":"WebPage"/);
+assert.match(paused, /Applications are temporarily unavailable/);
+assert.doesNotMatch(paused, /\\n\s*<a/);
 for (const retained of ['rel="canonical" href="https://hermeslogisticsus.com/careers/wisconsin-owner-operators/"', 'index,follow', '"@type":"BreadcrumbList"', 'officeus@hermeslogisticsus.com']) assert.ok(paused.includes(retained), retained);
 assert.ok(built.includes("tel:+14142697377"), "Yuri accepts interviews for Wisconsin owner-operator recruitment");
 assert.ok(built.includes("Yuri\'s interview call hours"), "Publish approved time window with Yuri number");

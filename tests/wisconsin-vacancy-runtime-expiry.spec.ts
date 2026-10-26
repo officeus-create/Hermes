@@ -41,6 +41,11 @@ test("explicitly paused Wisconsin recruiting hides an old built application's Jo
   await page.route("**/careers/wisconsin-owner-operators/", (route) => route.fulfill({ status: 200, contentType: "text/html", body: expireWisconsinHtml(built()) }));
   await page.goto(jobRoute);
   await expect(page.getByRole("heading", { name: "Recruiting temporarily unavailable" })).toBeVisible();
+  await expect(page.locator(".career-lead")).toContainText("Applications are temporarily unavailable");
+  await expect(page.locator(".career-updated")).toContainText("Recruiting temporarily unavailable");
+  await expect(page.locator(".recruiting-section")).toHaveCount(0);
+  await expect(page.locator(".faq-section")).toHaveCount(0);
+  await expect(page.locator('meta[name="description"]')).toHaveAttribute("content", /Applications are temporarily unavailable/);
   await expect(page.getByRole("link", { name: "Apply by email" })).toHaveCount(0);
   await expect(page.locator("[data-wi-vacancy-open-source]")).toHaveCount(0);
   await expect(page.locator("[data-wi-vacancy-closed-source] span").getByText("Not currently accepting applications", { exact: true })).toBeVisible();
