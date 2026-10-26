@@ -2083,3 +2083,10 @@ ai_name: Codex; role: delegated Academy owner; contribution_type: Implementation
 - GSC compare read in the signed-in console (URL parameters): `/services/*` 951 → 40 impressions (9–28 Aug vs 29 Aug–23 Oct); brand secondary pages lost impressions; brand position 29.5 → 59. Bing IndexNow "issues" = indexed (E7 closed). All in `docs/design/SEARCH_ERROR_MATRIX.md`.
 - Slice: SEO service pages show "Proof you can open now" (3 published assets per variant) beside the single primary CTA. Build diff vs main: only 5 pages, links added. Tests: `tests/seo-service-proof-rail.spec.ts`; audit-sample spec scoped to rail + related list.
 - Next action — `/contacts/` + brand entity hub (E2); accept — four directions + form, entity facts consistent.
+
+## 2026-10-26 — Claude Code — #2111 LIVE; /contacts/ next step (E2)
+
+- #2111 merged as 21209673; live: `/services/seo-for-logistics-companies/` shows the proof rail, canonical/H1 unchanged.
+- `/contacts/` (138 GSC impressions, pos 19) gets one primary "Send a structured request" action and the four direction owners. The direction block is now the shared `DirectionRouter` component (TrustPage uses it too).
+- Gates green; build diff vs main: 0 href-set/fact changes (direction links already existed in chrome). Local-only H.264 video specs fail as known.
+- Next action — careers funnel (`/careers/car-hauling-dispatcher/`); accept — role promise → requirements → one apply action.
