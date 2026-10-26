@@ -13,6 +13,7 @@ async function mockOwner(page:any){
     return route.fulfill(json(backlog));
   });
   await page.route("**/api/internal-command-center/access",route=>route.fulfill(json(owners)));
+  await page.route("**/api/hermes-connect/account",route=>route.fulfill(json({success:true,identity:{id:"owner-1",name:"Owner",email:"owner@example.invalid",role:"Owner"},owned_businesses:[],workspaces:[{key:"internal_ai",kind:"capability_workspace",href:"/services/hermes-connect/internal/ai-connect/",available:true,state:{capability:"HERMES_INTERNAL_OWNER"}}],capabilities:{internal_ai:true}})));
 }
 
 test.describe("Hermes Business Command Center",()=>{
@@ -33,6 +34,7 @@ test.describe("Hermes Business Command Center",()=>{
     await expect(page.getByText("Threads website demand")).toBeVisible();
     await expect(page.getByText(/Cloud backlog remains safe/)).toBeVisible();
     await expect(page.getByText("Cloudflare + D1")).toBeVisible();
+    await expect(page.getByText("internal ai")).toBeVisible();
   });
 
   test("captures work into D1 before any agent dispatch",async({page})=>{
