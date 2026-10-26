@@ -10,44 +10,44 @@ const accessUrl = "https://agents.hermeslogisticsus.com/ai-agents/";
   description="Private entry point for authorized Hermes AI agent operators. Agent conversations and evidence remain behind the organization access gateway."
   robots="noindex,nofollow,noarchive,nosnippet"
 >
-  <main class="viktor-entry" id="main-content">
-    <section class="viktor-entry__body" aria-labelledby="agents-heading">
-      <div class="viktor-entry__topline"><span class="viktor-entry__dot" aria-hidden="true"></span> Hermes Technology · Internal systems</div>
-      <h1 id="agents-heading">AI Agents</h1>
-      <p class="viktor-entry__lead">An operator workspace for Hermes VIKTOR and approved AI-agent monitoring.</p>
-      <div class="viktor-entry__notice">
+  <main class="hermes-ai-entry" id="main-content">
+    <section class="hermes-ai-entry__body" aria-labelledby="agents-heading">
+      <div class="hermes-ai-entry__topline"><span class="hermes-ai-entry__dot" aria-hidden="true"></span> Hermes Technology · Internal systems</div>
+      <h1 id="agents-heading">Hermes AI</h1>
+      <p class="hermes-ai-entry__lead">An operator workspace for Hermes AI and approved AI-agent monitoring.</p>
+      <div class="hermes-ai-entry__notice">
         <strong>Private workspace — authorized users only</strong>
         <p>The actual AI console is hosted separately from this public website, behind Cloudflare Access. A valid company login is required. Availability also depends on the Mac host being online.</p>
       </div>
-      <div class="viktor-entry__actions">
-        <a class="viktor-entry__primary" href={accessUrl} rel="noopener noreferrer nofollow">Open private VIKTOR console <span aria-hidden="true">↗</span></a>
-        <a class="viktor-entry__secondary" href="/paths/technology/">Explore Hermes Technology</a>
+      <div class="hermes-ai-entry__actions">
+        <a class="hermes-ai-entry__primary" href={accessUrl} rel="noopener noreferrer nofollow">Open private Hermes AI console <span aria-hidden="true">↗</span></a>
+        <a class="hermes-ai-entry__secondary" href="/paths/technology/">Explore Hermes Technology</a>
       </div>
-      <p class="viktor-entry__fineprint">If the private address does not open, the Cloudflare Access / Tunnel connection has not been fully activated. No private records, logs or chat history are displayed on this page.</p>
+      <p class="hermes-ai-entry__fineprint">If the private address does not open, the Cloudflare Access / Tunnel connection has not been fully activated. No private records, logs or chat history are displayed on this page.</p>
     </section>
-    <aside class="viktor-entry__aside" aria-label="Access boundaries">
-      <div><span class="viktor-entry__label">01 · Identity</span><strong>Company account</strong><p>Explicit allowlist and Cloudflare Access login. No public or anonymous API.</p></div>
-      <div><span class="viktor-entry__label">02 · Connection</span><strong>Private tunnel</strong><p>The MacBook retains its local-only server. The public website does not connect to localhost.</p></div>
-      <div><span class="viktor-entry__label">03 · Evidence</span><strong>Read-only learning</strong><p>Audit exercises do not grant mail send, deployment, spending or production-change privileges.</p></div>
+    <aside class="hermes-ai-entry__aside" aria-label="Access boundaries">
+      <div><span class="hermes-ai-entry__label">01 · Identity</span><strong>Company account</strong><p>Explicit allowlist and Cloudflare Access login. No public or anonymous API.</p></div>
+      <div><span class="hermes-ai-entry__label">02 · Connection</span><strong>Private tunnel</strong><p>The MacBook retains its local-only server. The public website does not connect to localhost.</p></div>
+      <div><span class="hermes-ai-entry__label">03 · Evidence</span><strong>Read-only learning</strong><p>Audit exercises do not grant mail send, deployment, spending or production-change privileges.</p></div>
     </aside>
   </main>
   <style>
-    .viktor-entry{max-width:1180px;margin:0 auto;padding:clamp(4rem,8vw,7rem) clamp(1.2rem,4vw,3rem);display:grid;gap:clamp(2rem,5vw,5rem);grid-template-columns:minmax(0,1.45fr) minmax(260px,.75fr);color:#152238}
-    .viktor-entry__topline{text-transform:uppercase;letter-spacing:.13em;font-size:.78rem;color:#526d82;font-weight:700;display:flex;gap:.65rem;align-items:center}
-    .viktor-entry__dot{display:inline-block;background:#2467b3;border-radius:50%;width:9px;height:9px}
-    .viktor-entry h1{font-size:clamp(3rem,7vw,5.6rem);letter-spacing:-.065em;line-height:1.05;margin:.8rem 0 1rem;color:#172840}
-    .viktor-entry__lead{font-size:clamp(1.15rem,2vw,1.42rem);color:#53677e;max-width:630px;line-height:1.58;margin:0 0 2rem}
-    .viktor-entry__notice{padding:1.3rem 1.45rem;background:#f2f7fc;border:1px solid #dbe8f6;border-radius:20px;max-width:700px}
-    .viktor-entry__notice strong{font-size:1.02rem}.viktor-entry__notice p,.viktor-entry__aside p{color:#586e82;line-height:1.6;margin:.45rem 0 0}
-    .viktor-entry__actions{display:flex;gap:.8rem;flex-wrap:wrap;margin:2rem 0 1.2rem;align-items:center}
-    .viktor-entry__actions a{border-radius:12px;padding:.92rem 1.35rem;text-decoration:none;font-weight:650;min-height:48px;display:inline-flex;align-items:center;gap:.65rem}
-    .viktor-entry__primary{color:white;background:#205b96}.viktor-entry__primary:hover{background:#154570}
-    .viktor-entry__secondary{border:1px solid #d9e1eb;color:#25496c;background:#fff}.viktor-entry__secondary:hover{background:#f8fafc}
-    .viktor-entry__fineprint{font-size:.84rem;color:#738397;line-height:1.6;max-width:650px}
-    .viktor-entry__aside{border:1px solid #e0e8f0;background:#fbfdff;border-radius:24px;padding:1.7rem 1.7rem 1rem;display:flex;flex-direction:column;gap:1.35rem;align-self:start}
-    .viktor-entry__aside>div{padding-bottom:1.3rem;border-bottom:1px solid #e3e9f1}.viktor-entry__aside>div:last-child{border:0}
-    .viktor-entry__label{display:block;color:#66819d;letter-spacing:.09em;text-transform:uppercase;font-size:.7rem;font-weight:700;margin-bottom:.5rem}
-    .viktor-entry__aside strong{display:block;font-size:1.1rem}
-    @media(max-width:760px){.viktor-entry{grid-template-columns:1fr;padding-top:3rem}.viktor-entry__actions{align-items:stretch}.viktor-entry__actions a{justify-content:center}}
+    .hermes-ai-entry{max-width:1180px;margin:0 auto;padding:clamp(4rem,8vw,7rem) clamp(1.2rem,4vw,3rem);display:grid;gap:clamp(2rem,5vw,5rem);grid-template-columns:minmax(0,1.45fr) minmax(260px,.75fr);color:#152238}
+    .hermes-ai-entry__topline{text-transform:uppercase;letter-spacing:.13em;font-size:.78rem;color:#526d82;font-weight:700;display:flex;gap:.65rem;align-items:center}
+    .hermes-ai-entry__dot{display:inline-block;background:#2467b3;border-radius:50%;width:9px;height:9px}
+    .hermes-ai-entry h1{font-size:clamp(3rem,7vw,5.6rem);letter-spacing:-.065em;line-height:1.05;margin:.8rem 0 1rem;color:#172840}
+    .hermes-ai-entry__lead{font-size:clamp(1.15rem,2vw,1.42rem);color:#53677e;max-width:630px;line-height:1.58;margin:0 0 2rem}
+    .hermes-ai-entry__notice{padding:1.3rem 1.45rem;background:#f2f7fc;border:1px solid #dbe8f6;border-radius:20px;max-width:700px}
+    .hermes-ai-entry__notice strong{font-size:1.02rem}.hermes-ai-entry__notice p,.hermes-ai-entry__aside p{color:#586e82;line-height:1.6;margin:.45rem 0 0}
+    .hermes-ai-entry__actions{display:flex;gap:.8rem;flex-wrap:wrap;margin:2rem 0 1.2rem;align-items:center}
+    .hermes-ai-entry__actions a{border-radius:12px;padding:.92rem 1.35rem;text-decoration:none;font-weight:650;min-height:48px;display:inline-flex;align-items:center;gap:.65rem}
+    .hermes-ai-entry__primary{color:white;background:#205b96}.hermes-ai-entry__primary:hover{background:#154570}
+    .hermes-ai-entry__secondary{border:1px solid #d9e1eb;color:#25496c;background:#fff}.hermes-ai-entry__secondary:hover{background:#f8fafc}
+    .hermes-ai-entry__fineprint{font-size:.84rem;color:#738397;line-height:1.6;max-width:650px}
+    .hermes-ai-entry__aside{border:1px solid #e0e8f0;background:#fbfdff;border-radius:24px;padding:1.7rem 1.7rem 1rem;display:flex;flex-direction:column;gap:1.35rem;align-self:start}
+    .hermes-ai-entry__aside>div{padding-bottom:1.3rem;border-bottom:1px solid #e3e9f1}.hermes-ai-entry__aside>div:last-child{border:0}
+    .hermes-ai-entry__label{display:block;color:#66819d;letter-spacing:.09em;text-transform:uppercase;font-size:.7rem;font-weight:700;margin-bottom:.5rem}
+    .hermes-ai-entry__aside strong{display:block;font-size:1.1rem}
+    @media(max-width:760px){.hermes-ai-entry{grid-template-columns:1fr;padding-top:3rem}.hermes-ai-entry__actions{align-items:stretch}.hermes-ai-entry__actions a{justify-content:center}}
   </style>
 </BaseLayout>
