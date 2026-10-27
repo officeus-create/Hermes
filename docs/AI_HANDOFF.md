@@ -2116,3 +2116,11 @@ ai_name: Codex; role: delegated Academy owner; contribution_type: Implementation
 - E1 hypotheses table added to `SEARCH_ERROR_MATRIX.md` (robots/noindex/canonical/params excluded; ranking test + entity confusion most likely; templates contribute). Stale "root cause not determined / HOLD" line in the coverage matrix replaced.
 - E3 measured: 171 of 290 sitemap URLs had zero GSC impressions in 6 months; car-hauler city pages 86–92 % identical text. Queue: E3 consolidation ranked above controls cleanup.
 - Next action — owner decision on car-hauler city pages (per-city evidence vs `noindex,follow` + sitemap removal); accept — GSC "discovered" count falls 4 weeks after the change.
+
+## 2026-10-27 — Claude Code — search errors first (owner directive)
+
+- Owner: close every Bing/Google error first, in the brand book and funnel, then continue design.
+- Sources: owner exports on Drive (Bing CSV transcriptions 05.10, Coverage zip 26.10), Bing Site Explorer read 27.10, GSC page breakdown 16 months, live HTTP checks.
+- Fixed: 4 real 404s (`/ru/paths/*` → `/ru/{direction}/` 301); meta descriptions >160 (111 pages) via the shared limit; 8 highest-traffic descriptions rewritten as complete sentences (About keeps the canonical entity names).
+- Verified already fixed: Bing scan 04.10 issues (missing description, alt, long titles, multiple H1) = 0 on current build; IndexNow submits HTML only.
+- Next action — E3 decision (car-hauler city pages: Bing has them indexed, so de-indexing has a cost); accept — owner choice recorded in the matrix.

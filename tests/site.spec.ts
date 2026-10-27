@@ -689,8 +689,10 @@ test("public logistics contacts use the approved department routing", async ({ p
   await expect(page.locator(".contacts-hero")).not.toContainText("The structured form below remains a safe preview.");
   await expect(contacts.getByText("Milan · Berlin · Paris · Miami · California · New York · England", { exact: true })).toBeVisible();
   const telephoneTargets = await page.locator('a[href^="tel:"]').evaluateAll((links) => [...new Set(links.map((link) => link.getAttribute("href")))]);
-  expect(telephoneTargets).toEqual([]);
-  await expect(page.getByText("+1 (351) 777-5337", { exact: true })).toHaveCount(0);
+  // Owner-approved 2026-10-27: one Logistics desk line (dispatch + shipper/dealer), calls and text.
+  expect(telephoneTargets).toEqual(["tel:+13517775337"]);
+  await expect(contacts.getByText("Dispatch desk", { exact: true })).toBeVisible();
+  await expect(contacts.getByText("Shipper & dealer desk", { exact: true })).toBeVisible();
   await expect(page.getByText("+1 (717) 696-6829", { exact: true })).toHaveCount(0);
   await expect(page.getByText("Box Truck Department", { exact: true })).toHaveCount(0);
   await expect(page.getByText("General Inquiries", { exact: true })).toHaveCount(0);

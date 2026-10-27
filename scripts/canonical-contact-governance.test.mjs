@@ -10,12 +10,12 @@ const site = readFileSync("src/data/site.ts", "utf8");
 
 assert.match(
   canonicalFacts,
-  /Primary public phone \| No canonical public phone approved \| `DO_NOT_PUBLISH`/,
-  "Canonical company facts must remain the publication authority for the no-public-phone decision",
+  /Primary public phone \| `\+1 \(351\) 777-5337`.*\| `VERIFIED_PUBLIC` \| Owner directive in chat 2026-10-27/,
+  "Canonical company facts must remain the publication authority for the owner-approved Logistics desk phone",
 );
 assert.match(
   canonicalFacts,
-  /\+1 \(262\) 302-3626.*retired from public Logistics routing/s,
+  /retired `\+1 \(262\) 302-3626` stays retired/s,
   "Canonical company facts must preserve the retired-phone boundary",
 );
 
@@ -47,12 +47,14 @@ assert.doesNotMatch(
 );
 assert.match(
   claude,
-  /no canonical public phone is approved/,
-  "Agent instructions must reflect the current canonical phone boundary",
+  /the only public phone is `\+1 \(351\) 777-5337`/,
+  "Agent instructions must reflect the owner-approved Logistics desk phone",
 );
 assert.ok(
   !site.includes(retiredPhone) && !site.includes("tel:+12623023626"),
   "Current public site data must not restore the retired Logistics phone",
 );
+
+assert.ok(site.includes("tel:+13517775337"), "Approved Logistics desk phone must come from site data");
 
 console.log("Canonical contact governance contract passed.");
