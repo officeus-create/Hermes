@@ -42,6 +42,39 @@ assert.match(carrierGeoPage, /carHaulerGeoMarkets/, "related market links must r
 assert.match(carrierPage, /label: "Car Hauling Load Board", href: "\/load-board\/"/, "Dispatch owner must provide a descriptive canonical Load Board anchor");
 assert.match(carrierPage, /label: "Open the Car Hauling Load Board", href: "\/load-board\/\?role=carrier&equipment=car_hauler#available-loads"/, "Dispatch owner must preserve the filtered car-hauler Load Board handoff without demo-only labeling");
 
+
+const evidenceWave1Slugs = [
+  "denver-co",
+  "colorado-springs-co",
+  "seattle-wa",
+  "kansas-city-mo-ks",
+  "chicago-il",
+];
+const marketBlock = (slug) => {
+  const start = carrierMarkets.indexOf(`slug: "${slug}"`);
+  assert.ok(start >= 0, `evidence wave market must exist: ${slug}`);
+  const next = carrierMarkets.indexOf("\n  {\n    slug:", start + 1);
+  return carrierMarkets.slice(start, next >= 0 ? next : carrierMarkets.indexOf("\n];", start));
+};
+for (const slug of evidenceWave1Slugs) {
+  const block = marketBlock(slug);
+  assert.match(block, /localOperatingNotes:\s*\[/, `${slug} must publish distinct local operating notes`);
+  assert.match(block, /officialSources:\s*\[/, `${slug} must publish source-backed local evidence`);
+  assert.ok((block.match(/\{ label:/g) ?? []).length >= 2, `${slug} must carry at least two public source links`);
+  assert.doesNotMatch(block, /@[a-z0-9.-]+\.[a-z]{2,}/i, `${slug} must not leak an email from private operations evidence`);
+  assert.doesNotMatch(block, /\b(?:\+?1[-.\s]?)?\(?\d{3}\)?[-.\s]\d{3}[-.\s]\d{4}\b/, `${slug} must not leak a phone number from private operations evidence`);
+  assert.doesNotMatch(block, /\b(?:VIN|MC#|USDOT|customer name|cell#)\b/i, `${slug} must not expose private operations identifiers`);
+  assert.match(
+    block,
+    /(not public live inventory|not exposed as live load inventory|current availability|live availability remain private|does not represent today's inventory)/i,
+    `${slug} must explicitly separate historical/local evidence from current load availability`,
+  );
+}
+assert.match(carrierMarkets, /CDOT — I-270 freight-corridor decision, Sept\. 2026/);
+assert.match(carrierMarkets, /WSDOT — Central Puget Sound I-405 freight corridor/);
+assert.match(carrierMarkets, /MoDOT — Kansas City District Freight Plan/);
+assert.match(carrierMarkets, /CMAP — Chicago-region freight and rail network/);
+
 // Dealer/shipper acquisition remains a separate owner until that funnel is
 // intentionally migrated. This carrier launch must not silently rewrite it.
 const dealerP0Markets = [
