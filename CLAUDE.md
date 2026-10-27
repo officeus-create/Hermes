@@ -1,5 +1,26 @@
 # CLAUDE.md
 
+## EXECUTION SURFACE — IMPORTANT
+
+**Claude Design is the visual authoring/reference surface and its ordinary GitHub integration is read-only. Do not interpret that as missing Hermes repository permissions.** For any repository edit, test, branch, push, or pull request, continue the same Hermes Lead Designer role in **Claude Code Cloud** at `https://claude.ai/code` with GitHub repository `officeus-create/Hermes`.
+
+The official Claude GitHub App has been installed/approved by the repository owner. Claude Code Cloud is therefore the preferred execution runtime. Its required proof of effective write access is a successful feature-branch push and PR. Do not ask the CEO to create another GitHub account, machine user, local clone, Windows server, or to hand design implementation to Codex merely because the Claude Design surface itself cannot write.
+
+When arriving from Claude Design, preserve the approved design context, then execute through Claude Code Cloud against current `main`. The visual source of truth remains the Claude Design project + canonical Google Drive package; the code source of truth remains GitHub `main`. Production remains separately owner-gated.
+
+### Hermes cloud bootstrap
+
+For a fresh Claude Code Cloud session, the selected **Default cloud environment is sufficient**. Do not require local execution or production credentials.
+
+1. Confirm repository `officeus-create/Hermes` and start from current `main`.
+2. Run `bash scripts/claude-cloud-setup.sh` once when dependencies are not already prepared. It validates Node 22 and installs the lockfile exactly with `npm ci`.
+3. Use the repository preview definition in `.claude/launch.json`: **Hermes Website → `npm run dev` → port 4321**.
+4. Use feature branches only. Never push directly to `main`, force-push shared branches, merge a PR, deploy Cloudflare production, or handle production secrets unless the owner gives a separate explicit release instruction.
+5. Local/preview mode must remain non-production: do not inject live Cloudflare bindings, mail credentials, analytics secrets, customer data, or private tokens merely to make the preview work.
+6. Before returning a design implementation, run the smallest relevant tests plus `npm run build`; for promotion run the repository's required CI/visual evidence on the exact pushed head.
+
+If the cloud environment needs extra internet access, prefer the narrowest domain allowlist and keep common package-manager access. Do not switch to unrestricted network access merely for convenience.
+
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## What this is
