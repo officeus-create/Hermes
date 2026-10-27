@@ -133,16 +133,19 @@ export async function dispatchGithubCIIndependentQa({
      run?.html_url!=="https://github.com/"+REPO+"/actions/runs/"+runId)
     fail("github_ci_qa_source_run_invalid");
 
-  const settings=await jsonFetch(API+"/accounts/"+accountId+"/workers/scripts/hermes-automation-engine/settings",cloudflareToken,fetchImpl);
-  if(settings?.success!==true||!Array.isArray(settings?.result?.bindings))fail("github_ci_qa_source_worker_settings_invalid");
-  const value=(name)=>{
-    const b=settings.result.bindings.find(item=>item?.name===name);
-    return b?.text??b?.value??null;
+  const assertDeployedDryRunMain=async()=>{
+    const settings=await jsonFetch(API+"/accounts/"+accountId+"/workers/scripts/hermes-automation-engine/settings",cloudflareToken,fetchImpl);
+    if(settings?.success!==true||!Array.isArray(settings?.result?.bindings))fail("github_ci_qa_source_worker_settings_invalid");
+    const value=(name)=>{
+      const b=settings.result.bindings.find(item=>item?.name===name);
+      return b?.text??b?.value??null;
+    };
+    if(value("HERMES_AUTOMATION_SOURCE_SHA")!==expectedMainSha||
+       value("HERMES_AUTOMATION_MODE")!=="dry_run"||
+       value("HERMES_AUTOMATION_PUBLISH")!=="disabled")
+      fail("github_ci_qa_source_worker_not_exact_dry_run_main");
   };
-  if(value("HERMES_AUTOMATION_SOURCE_SHA")!==expectedMainSha||
-     value("HERMES_AUTOMATION_MODE")!=="dry_run"||
-     value("HERMES_AUTOMATION_PUBLISH")!=="disabled")
-    fail("github_ci_qa_source_worker_not_exact_dry_run_main");
+  await assertDeployedDryRunMain();
 
   const dbId=await canonicalD1(accountId,cloudflareToken,fetchImpl);
   const proposalRows=await d1Query(accountId,dbId,cloudflareToken,fetchImpl,
@@ -262,6 +265,8 @@ export async function dispatchGithubCIIndependentQa({
   if(queues?.success!==true||!Array.isArray(queues.result))fail("github_ci_qa_source_queue_inventory_invalid");
   const matches=queues.result.filter(q=>q.queue_name==="hermes-automation"&&UUID.test(q.queue_id||""));
   if(matches.length!==1)fail("github_ci_qa_source_canonical_queue_missing_or_ambiguous");
+  // A separate QA reproof may outlive a Worker deploy; re-check immediately before the sole Queue POST.
+  await assertDeployedDryRunMain();
   const accepted=await jsonFetch(API+"/accounts/"+accountId+"/queues/"+matches[0].queue_id+"/messages",cloudflareToken,fetchImpl,{body:qaMessage});
   if(accepted?.success!==true)fail("github_ci_qa_source_enqueue_unconfirmed_no_retry");
   const queueSent=true;

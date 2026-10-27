@@ -78,8 +78,8 @@ const settings={success:true,result:{bindings:[
 ]}};
 const d1=(results)=>({success:true,result:[{success:true,results}]});
 
-function fixture({preexisting=false,badRelease=false,badJobType=false,badQaDigest=false,badArtifactKey=false,badSourceHeadSha=false,badPatchedFileSha=false}={}){
-  const calls=[];let sent=false;let executeCalls=0;
+function fixture({preexisting=false,badRelease=false,badJobType=false,badQaDigest=false,badArtifactKey=false,badSourceHeadSha=false,badPatchedFileSha=false,driftSettingsOnRecheck=false}={}){
+  const calls=[];let sent=false;let executeCalls=0;let settingsReads=0;
   const release=()=>({
     job_id:releaseJob,job_type:badJobType?"hae.self.patch.propose":"hae.self.release.verify",state:"SUCCEEDED",last_error_class:null,
     result_json:JSON.stringify({
@@ -101,7 +101,14 @@ function fixture({preexisting=false,badRelease=false,badJobType=false,badQaDiges
     calls.push({url,method:request.method||"GET",body:request.body||null});
     if(url.endsWith("/branches/main"))return {ok:true,json:async()=>({commit:{sha:producer}})};
     if(url.endsWith("/actions/runs/"+runId))return {ok:true,json:async()=>run};
-    if(url.endsWith("/workers/scripts/hermes-automation-engine/settings"))return {ok:true,json:async()=>settings};
+    if(url.endsWith("/workers/scripts/hermes-automation-engine/settings")){
+      settingsReads+=1;
+      const drift=driftSettingsOnRecheck&&settingsReads>1;
+      return {ok:true,json:async()=>drift?{
+        success:true,result:{bindings:settings.result.bindings.map(binding=>
+          binding.name==="HERMES_AUTOMATION_MODE"?{...binding,text:"live"}:binding)}
+      }:settings};
+    }
     if(url.endsWith("/pages/projects/hermes"))return {ok:true,json:async()=>({
       success:true,result:{deployment_configs:{production:{d1_databases:{DB:{id:db,database_name:"hermes-connect-prototype"}}}}}
     })};
@@ -136,7 +143,7 @@ function fixture({preexisting=false,badRelease=false,badJobType=false,badQaDiges
       automatic_merge:false,automatic_deploy:false,paid_ai_cost_usd:0,
     };
   };
-  return {calls,fetchImpl,executeImpl,get sent(){return sent},get executeCalls(){return executeCalls}};
+  return {calls,fetchImpl,executeImpl,get sent(){return sent},get executeCalls(){return executeCalls},get settingsReads(){return settingsReads}};
 }
 
 const f=fixture();
@@ -154,6 +161,7 @@ assert.equal(result.model_cost_usd,0);
 assert.equal(result.automatic_merge,false);
 assert.equal(result.automatic_deploy,false);
 assert.equal(f.executeCalls,1);
+assert.equal(f.settingsReads,2,"must recheck deployed Worker settings before Queue");
 const sends=f.calls.filter(x=>x.url.endsWith("/queues/"+queue+"/messages"));
 assert.equal(sends.length,1);
 const sentBody=JSON.parse(sends[0].body);
@@ -163,6 +171,18 @@ assert.equal(sentBody.body.qa_verdict,"PASS");
 assert.match(sentBody.body.qa_receipt_sha256,/^sha256:[a-f0-9]{64}$/);
 assert.equal(sentBody.body.patch_sha256,patchSha);
 assert.equal(sentBody.body.patched_file_sha256,patchedFileSha);
+
+// A deploy between the first settings read and QA reproof must stop before Queue.
+const drift=fixture({driftSettingsOnRecheck:true});
+await assert.rejects(()=>dispatchGithubCIIndependentQa({
+  runId,runAttempt,expectedMainSha:producer,githubToken:"gh",cloudflareToken:"cf",accountId:account,
+  repoRoot:"/tmp/qa-source",patchReceipt,fetchImpl:drift.fetchImpl,executeImpl:drift.executeImpl,
+  sleepImpl:async()=>{},maxReadbackAttempts:1,
+}),/github_ci_qa_source_worker_not_exact_dry_run_main/);
+assert.equal(drift.settingsReads,2);
+assert.equal(drift.executeCalls,1);
+assert.equal(drift.sent,false);
+assert.equal(drift.calls.some(x=>x.url.endsWith("/queues/"+queue+"/messages")),false);
 
 const replay=fixture({preexisting:true});
 const replayResult=await dispatchGithubCIIndependentQa({
