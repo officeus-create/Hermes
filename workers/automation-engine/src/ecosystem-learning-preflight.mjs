@@ -121,7 +121,8 @@ export function proposeHistoricalLearningSourceJobs(inputs = []) {
   const coverage = evaluateEcosystemLearningCoverage(inputs);
   const normalized = inputs.map(normalizeEcosystemLearningSource);
   const eligible = normalized
-    .filter((source) => source.access_state === "READ_ONLY_READY"
+    .filter((source) => source.status === "COMPLETE"
+      && source.access_state === "READ_ONLY_READY"
       && source.scan_state === "VERIFIED_SCAN"
       && source.source_verified && source.redaction_verified
       && source.scanned_at && source.evidence_hash);
