@@ -545,3 +545,4 @@ console.log("Hermes Automation Engine V1 contract: ok");
 
 // Metadata-only ecosystem learning gates are part of the existing HAE contract CI.
 await import("./automation-engine-ecosystem-learning.test.mjs");
+await import("./hae-bounded-repair-executor.test.mjs");
