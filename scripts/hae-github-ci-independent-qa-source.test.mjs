@@ -78,14 +78,18 @@ const settings={success:true,result:{bindings:[
 ]}};
 const d1=(results)=>({success:true,result:[{success:true,results}]});
 
-function fixture({preexisting=false,badRelease=false,badJobType=false,badQaDigest=false}={}){
+function fixture({preexisting=false,badRelease=false,badJobType=false,badQaDigest=false,badArtifactKey=false,badSourceHeadSha=false}={}){
   const calls=[];let sent=false;let executeCalls=0;
   const release=()=>({
     job_id:releaseJob,job_type:badJobType?"hae.self.patch.propose":"hae.self.release.verify",state:"SUCCEEDED",last_error_class:null,
     result_json:JSON.stringify({
       external_write:false,
       result:{
-        work_id:workId,patch_sha256:badRelease?"sha256:"+"f".repeat(64):patchSha,
+        work_id:workId,finding_id:findingId,
+        artifact_key:badArtifactKey?"scripts/hae-unrelated.test.mjs":artifact,
+        repair_job_id:repairJob,proposal_job_id:proposalJob,
+        source_head_sha:badSourceHeadSha?"f".repeat(40):head,
+        patch_sha256:badRelease?"sha256:"+"f".repeat(64):patchSha,
         qa_receipt_sha256:badQaDigest?"sha256:"+"e".repeat(64):qaDigest,
         release_state:"BLOCKED",blocker:"AUTHENTICATED_RELEASE_EVIDENCE_INCOMPLETE",hold_release_reachable:false,independent_verifier_identity_ok:false,qa_identity_provenance:"SELF_ASSERTED_UNVERIFIED",
         exact_head_ci_verified:false,rollback_verified:false,automatic_merge_allowed:false,automatic_deploy_allowed:false,cost_usd:0
@@ -192,6 +196,8 @@ assert.equal(conflict.calls.some(x=>x.url.endsWith("/queues/"+queue+"/messages")
 for(const [label,options] of [
   ["wrong_job_type",{badJobType:true}],
   ["wrong_qa_digest",{badQaDigest:true}],
+  ["wrong_artifact_key",{badArtifactKey:true}],
+  ["wrong_source_head_sha",{badSourceHeadSha:true}],
 ]){
   const bad=fixture({preexisting:true,...options});
   await assert.rejects(()=>dispatchGithubCIIndependentQa({
