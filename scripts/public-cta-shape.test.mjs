@@ -10,6 +10,7 @@ const [
   logistics,
   logisticsCommercial,
   trustPage,
+  directionStory,
 ] = await Promise.all([
   read("src/styles/hermes-public-path-shell.css"),
   read("src/styles/hermes-academy-public.css"),
@@ -17,6 +18,7 @@ const [
   read("src/styles/hermes-logistics-public.css"),
   read("src/styles/hermes-logistics-commercial-polish.css"),
   read("src/components/TrustPage.astro"),
+  read("src/components/DirectionStory.astro"),
 ]);
 
 assert.match(
@@ -73,3 +75,17 @@ assert.match(
 );
 
 console.log("Public CTA shape contract passed: public actions are pill-shaped while product/form controls retain the 12px control token.");
+
+
+// Public proof/status chips are state semantics, never direction branding.
+assert.match(directionStory, /\.ds-status-live\s*\{\s*background:\s*#e3f6ec;\s*color:\s*#0b6b40;/);
+assert.match(directionStory, /\.ds-status-live-pilot\s*\{\s*background:\s*#e3f6ec;\s*color:\s*#0b6b40;/);
+assert.match(directionStory, /\.ds-status-source-gated\s*\{\s*background:\s*#e6edff;\s*color:\s*#1d3fb3;/);
+assert.match(directionStory, /\.ds-status-preview\s*\{\s*background:\s*#fff1e6;\s*color:\s*#a2470f;/);
+assert.match(directionStory, /\.ds-status-private\s*\{\s*background:\s*#ececf1;\s*color:\s*#3c4050;/);
+const statusCss = directionStory.slice(directionStory.indexOf(".ds-status {"), directionStory.indexOf(":global(.ds-connect-mark)"));
+assert.doesNotMatch(
+  statusCss,
+  /var\(--direction-accent\)|var\(--dir-/,
+  "public status chips must not use direction/department accent as their state color",
+);
