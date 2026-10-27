@@ -121,7 +121,7 @@ jobs:
 
   independent_qa:
     needs: intake
-    if: needs.intake.result == 'success' && needs.intake.outputs.patch_candidate_ready == 'true'
+    if: vars.HAE_CI_SENSOR_ENABLED == 'true' && needs.intake.result == 'success' && needs.intake.outputs.patch_candidate_ready == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 6
     environment: production

@@ -8,6 +8,11 @@ const sensorWorkflow=fs.readFileSync(new URL("../.github/workflows/hae-github-ci
 const intakeGate=sensorWorkflow.split("\n  intake:\n")[1]?.split("\n    runs-on:")[0];
 assert.ok(intakeGate,"sensor_intake_job_missing");
 assert.match(intakeGate,/^\s*if: >-\s*\n\s*vars\.HAE_CI_SENSOR_ENABLED == 'true' &&/m,"sensor_job_must_be_default_off");
+// A re-run of the dependent QA job must also fail closed after owner disables the sensor.
+const independentQaGate=sensorWorkflow.split("\n  independent_qa:\n")[1]?.split("\n    runs-on:")[0];
+assert.ok(independentQaGate,"sensor_independent_qa_job_missing");
+assert.match(independentQaGate,/vars\.HAE_CI_SENSOR_ENABLED == 'true' && needs\.intake\.result == 'success' && needs\.intake\.outputs\.patch_candidate_ready == 'true'/,"independent_qa_must_obey_current_owner_gate");
+
 
 const sha256=(v)=>"sha256:"+createHash("sha256").update(String(v),"utf8").digest("hex");
 const runId=40421315430,runAttempt=6;
