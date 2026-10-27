@@ -1,6 +1,7 @@
 ---
 import { ArrowLeft, ArrowRight, Check, ClipboardCheck, Link2, MapPin, SearchCheck, ShieldCheck } from "@lucide/astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import CaseStudyFunnelAnalytics from "../../components/CaseStudyFunnelAnalytics.astro";
 import SiteFooter from "../../components/SiteFooter.astro";
 import SiteHeader from "../../components/SiteHeader.astro";
 
@@ -220,11 +221,14 @@ import "../../styles/features/case.css";
           data-seo-service-cta
           data-seo-owner-link
           data-service-group="logistics_seo"
+          data-case-cta="final"
+          data-case-action="review_logistics_seo"
         >
           Review logistics SEO services <ArrowRight size={18} aria-hidden="true" />
         </a>
       </div>
     </section>
+    <CaseStudyFunnelAnalytics caseId="appleton_vehicle_transport_seo" />
   </main>
   <SiteFooter />
 </BaseLayout>
