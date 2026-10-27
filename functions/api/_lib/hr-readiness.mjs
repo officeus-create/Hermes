@@ -183,21 +183,31 @@ export async function appendHrBridgeEvent(db, {
 }) {
   await ensureHrReadinessSchema(db);
   if (!HR_BRIDGE_EVENT_TYPES.includes(type)) throw new Error("hr_bridge_event_type_invalid");
+  const key = cleanHrText(idempotencyKey, 180);
+  if (!key) throw new Error("hr_bridge_event_idempotency_key_required");
   const eventId = `hr-bridge-event-${crypto.randomUUID()}`;
+  const payloadJson = JSON.stringify(payload || {});
   await db.prepare(`
     INSERT OR IGNORE INTO hr_bridge_events
       (id,idempotency_key,candidate_id,type,payload_json,occurred_at,created_by_specialist_id)
     VALUES (?,?,?,?,?,?,?)
-  `).bind(
-    eventId,
-    cleanHrText(idempotencyKey, 180),
-    candidateId,
-    type,
-    JSON.stringify(payload || {}),
-    occurredAt,
-    actorSpecialistId,
-  ).run();
-  return { id: eventId, type, occurred_at: occurredAt };
+  `).bind(eventId, key, candidateId, type, payloadJson, occurredAt, actorSpecialistId).run();
+  // INSERT OR IGNORE means replay may not insert. Return the actual stored event
+  // and reject collisions instead of fabricating a receipt for an ignored row.
+  const stored = await db.prepare(
+    "SELECT id,candidate_id,type,payload_json,occurred_at FROM hr_bridge_events WHERE idempotency_key=? LIMIT 1"
+  ).bind(key).first();
+  if (!stored) throw new Error("hr_bridge_event_persistence_missing");
+  if (stored.candidate_id !== candidateId || stored.type !== type
+    || stored.payload_json !== payloadJson) {
+    throw new Error("hr_bridge_event_idempotency_conflict");
+  }
+  return {
+    id: stored.id,
+    type: stored.type,
+    occurred_at: stored.occurred_at,
+    duplicate: stored.id !== eventId,
+  };
 }
 
 export async function listHrCapabilityGaps(db, candidateId) {
@@ -492,8 +502,21 @@ export async function completeHrTeamHandoff(db, {
   const scope = cleanHrLongText(boundedScope || decision.bounded_scope, 1000);
   const key = cleanHrText(idempotencyKey, 180);
   if (!key || !destination || !scope) throw new Error("handoff_fields_required");
-  const existing = await db.prepare("SELECT id,state FROM hr_team_handoffs WHERE idempotency_key=? LIMIT 1").bind(key).first();
-  if (existing) return { id: existing.id, state: existing.state, duplicate: true };
+  const existing = await db.prepare(
+    "SELECT id,state,candidate_id,readiness_decision_id,channel,destination_ref,bounded_scope FROM hr_team_handoffs WHERE idempotency_key=? LIMIT 1"
+  ).bind(key).first();
+  if (existing) {
+    // A replay must refer to the same approved person, decision and destination.
+    // A global idempotency key collision must not return another candidate's receipt.
+    if (existing.candidate_id !== candidateId
+      || existing.readiness_decision_id !== readinessDecisionId
+      || existing.channel !== normalizedChannel
+      || existing.destination_ref !== destination
+      || existing.bounded_scope !== scope) {
+      throw new Error("handoff_idempotency_conflict");
+    }
+    return { id: existing.id, state: existing.state, duplicate: true };
+  }
   const now = new Date().toISOString();
   const id = `hr-handoff-${crypto.randomUUID()}`;
   await db.prepare(`
@@ -535,8 +558,19 @@ export async function recordHrPerformanceOutcome(db, {
     : [];
   const feedback = cleanHrLongText(managerFeedback, 2000);
   if (!key || !result) throw new Error("outcome_fields_required");
-  const existing = await db.prepare("SELECT id,marker FROM hr_performance_outcomes WHERE idempotency_key=? LIMIT 1").bind(key).first();
-  if (existing) return { id: existing.id, marker: existing.marker, duplicate: true };
+  const existing = await db.prepare(
+    "SELECT id,candidate_id,handoff_id,marker,result_class FROM hr_performance_outcomes WHERE idempotency_key=? LIMIT 1"
+  ).bind(key).first();
+  if (existing) {
+    // The same key cannot acknowledge another candidate, handoff or outcome.
+    if (existing.candidate_id !== candidateId
+      || existing.handoff_id !== handoffId
+      || existing.marker !== marker
+      || existing.result_class !== result) {
+      throw new Error("outcome_idempotency_conflict");
+    }
+    return { id: existing.id, marker: existing.marker, duplicate: true };
+  }
   const now = new Date().toISOString();
   const id = `hr-outcome-${crypto.randomUUID()}`;
   await db.prepare(`
