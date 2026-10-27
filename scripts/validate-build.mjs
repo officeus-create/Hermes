@@ -350,9 +350,7 @@ const forbidden = [
   "anastasia, logistics student",
   "+17182234736",
   "+14754414301",
-  "+13517775337",
   "+17176966829",
-  "+1 (351) 777-5337",
   "+1 (717) 696-6829",
   "Box Truck Department",
   "Public contact listed by Hermes Logistics on Instagram",
@@ -382,8 +380,10 @@ for (const claim of forbidden) {
 const publicTelephoneTargets = new Set(
   publicPages.flatMap(([, pageHtml]) => [...pageHtml.matchAll(/href="tel:([^"]+)"/g)].map((match) => match[1])),
 );
-if (publicTelephoneTargets.size !== 0) {
-  throw new Error(`Public Hermes pages must remain email/form-only until a dedicated Logistics number is approved: ${[...publicTelephoneTargets].join(", ")}`);
+// The only approved public number is the Logistics desk line (docs/CANONICAL_COMPANY_FACTS_APPROVAL.md, 2026-10-27).
+const unapprovedTelephoneTargets = [...publicTelephoneTargets].filter((target) => target !== "+13517775337");
+if (unapprovedTelephoneTargets.length !== 0) {
+  throw new Error(`Public Hermes pages may only publish the owner-approved Logistics desk phone: ${unapprovedTelephoneTargets.join(", ")}`);
 }
 
 for (const term of publicForbiddenInternalTerms) {
