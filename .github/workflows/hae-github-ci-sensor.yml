@@ -52,6 +52,8 @@ jobs:
           node scripts/hae-github-ci-event-sensor.test.mjs
           node scripts/hae-github-ci-runtime-intake.test.mjs
           node scripts/hae-github-ci-source.test.mjs
+          node scripts/hae-github-ci-patch-runtime-intake.test.mjs
+          node scripts/hae-github-ci-patch-source.test.mjs
           node scripts/hae-github-ci-integration-sqlite.test.mjs
 
       - name: Enqueue one verified minimized CI run in existing HAE Queue
@@ -70,5 +72,21 @@ jobs:
         with:
           name: hae-ci-self-work-receipt
           path: ${{ runner.temp }}/hae-ci-self-work-receipt.json
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Propose one bounded self-patch candidate or durable WAITING_FREE_AI
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CLOUDFLARE_HAE_RELEASE_TOKEN: ${{ secrets.CLOUDFLARE_HAE_RELEASE_TOKEN }}
+          HAE_CI_RUN_ID: ${{ github.event.workflow_run.id }}
+          HAE_CI_RUN_ATTEMPT: ${{ github.event.workflow_run.run_attempt }}
+        run: node scripts/hae-github-ci-patch-source.mjs
+
+      - name: Retain sanitized patch-proposal source receipt
+        uses: actions/upload-artifact@v4
+        with:
+          name: hae-ci-patch-source-receipt
+          path: ${{ runner.temp }}/hae-ci-patch-source-receipt.json
           if-no-files-found: error
           retention-days: 90
