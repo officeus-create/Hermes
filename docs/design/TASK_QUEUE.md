@@ -36,6 +36,9 @@ Ranking effects need 2–8 weeks after deploy; every slice records its recheck d
 12. **Controls cleanup**: remaining 12px-radius public buttons; status chips by semantic state.
 13. **RU/UA full-translation plan** (separate project; scope document first, no mass pages).
 
+### Independent execution — 2026-10-27
+- **Resources / Guides funnel** — IN_SLICE on `codex/resources-funnel-20261027`: 12 previously unmeasured source pages route their existing commercial CTA through the already-approved `commercial_cta_click` / `resource_to_commercial_click` measurement contract. Two resources that already own `data-commercial-primary-cta` remain on that existing owner; calculator anchors and informational links are not counted as conversions. No URL/H1/title/canonical or visible-copy rewrite.
+
 ## Blocked on owner / ChatGPT (evidence receipts go to the Drive evidence folder)
 
 - Clarity Data Export API token as environment secret `CLARITY_API_TOKEN` (direct dead-click data without clicks).
