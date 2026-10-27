@@ -11,6 +11,7 @@ import { pathToFileURL } from "node:url";
 
 const REPO="officeus-create/Hermes",API="https://api.cloudflare.com/client/v4";
 const UUID=/^[a-f0-9-]{32,36}$/,SHA=/^[a-f0-9]{40}$/;
+const PATCHABLE_TEST_PATH=/^scripts\/(?:automation-engine|hae)-[a-z0-9][a-z0-9._-]*\.test\.mjs$/;
 const wait=(ms)=>new Promise(resolve=>setTimeout(resolve,ms));
 function fail(code){const e=new Error(code);e.code=code;throw e;}
 
@@ -91,6 +92,7 @@ export async function dispatchGithubCIEvent({
   const sortedPaths=[...new Set(changedPaths)].sort();
   if(sortedPaths.length!==changedPaths.length)fail("github_ci_source_changed_path_duplicate");
   const changedFingerprint="sha256:"+createHash("sha256").update(sortedPaths.join("\n"),"utf8").digest("hex");
+  const repairArtifactKey=sortedPaths.length===1&&PATCHABLE_TEST_PATH.test(sortedPaths[0])?sortedPaths[0]:null;
   const prs=Array.isArray(run.pull_requests)?run.pull_requests:[];
   const prNumber=prs.length===1&&Number.isSafeInteger(prs[0]?.number)&&prs[0].number>0?prs[0].number:null;
   const baseSha=prs.length===1&&SHA.test(prs[0]?.base?.sha||"")?prs[0].base.sha:null;
@@ -140,6 +142,7 @@ export async function dispatchGithubCIEvent({
       updated_at:updatedAt,
       changed_paths_fingerprint:changedFingerprint,
       changed_path_count:sortedPaths.length,
+      repair_artifact_key:repairArtifactKey,
       base_sha:baseSha,
       pr_number:prNumber,
     }};
@@ -155,6 +158,25 @@ export async function dispatchGithubCIEvent({
     if(audit?.state==="FAILED")fail("github_ci_d1_audit_failed");
     if(audit?.state==="SUCCEEDED"){
       const auditResult=safeResultJson(audit.result_json);
+      if(auditResult?.result?.next_action==="NO_ACTION" &&
+         auditResult?.result?.routing_blocked_reason==="FINDING_BLOCKED"){
+        return {
+          source_ref:"github://"+REPO+"/actions/runs/"+runId,
+          run_id:runId,run_attempt:runAttempt,deployed_source_sha:expectedMainSha,
+          queue_sent:queueSent,
+          audit_job_id:String(audit.job_id||""),
+          audit_state:"SUCCEEDED",
+          work_id:null,
+          repair_job_id:null,
+          repair_state:"BLOCKED_UNPATCHABLE",
+          source_change_performed:false,
+          automatic_merge_performed:false,
+          automatic_deploy_performed:false,
+          model_cost_usd:0,
+          live_self_work_receipt:false,
+          live_audit_receipt:true,
+        };
+      }
       const workId=auditResult?.result?.next_work_id;
       if(typeof workId!=="string"||!/^HAE-SELF:[A-Za-z0-9._:-]+$/.test(workId))
         fail("github_ci_d1_self_work_missing");

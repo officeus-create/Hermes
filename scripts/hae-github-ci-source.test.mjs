@@ -11,7 +11,8 @@ const r={id:runId,run_attempt:runAttempt,repository:{full_name:repo},head_reposi
   name:"Hermes Automation Engine Contract",path:".github/workflows/automation-engine-contract.yml",workflow_id:382680939,status:"completed",conclusion:"failure",
   head_sha:headSha,html_url:"https://github.com/"+repo+"/actions/runs/"+runId,event:"pull_request",
   updated_at:"2026-10-27T03:00:00Z",pull_requests:[{number:2088,base:{sha:"f".repeat(40)}}]};
-const commit={sha:headSha,files:[{filename:"workers/automation-engine/src/index.mjs"},{filename:"scripts/hae-github-ci-runtime-intake.test.mjs"}]};
+const patchablePath="scripts/hae-github-ci-runtime-intake.test.mjs";
+const commit={sha:headSha,files:[{filename:patchablePath}]};
 const settings=(sourceSha=mainSha,mode="dry_run",publish="disabled")=>({success:true,result:{bindings:[
   {name:"HERMES_AUTOMATION_SOURCE_SHA",type:"plain_text",text:sourceSha},
   {name:"HERMES_AUTOMATION_MODE",type:"plain_text",text:mode},
@@ -24,23 +25,23 @@ const repairRow={job_id:repairJobId,state:"SUCCEEDED",last_error_class:null,resu
 }})};
 assert.equal(githubCIWorkflowIdentityVerified(r),true);
 
-function fixture({preexisting=false,settingsPayload=settings(),queueThrows=false}={}){
+function fixture({preexisting=false,settingsPayload=settings(),queueThrows=false,commitPayload=commit,auditPayload=auditRow,repairPayload=repairRow}={}){
   const calls=[]; let sent=false;
   const mock=async(url,request)=>{
     calls.push({url,request});
     if(url.endsWith("/branches/main"))return {ok:true,json:async()=>({commit:{sha:mainSha}})};
     if(url.endsWith("/actions/runs/"+runId))return {ok:true,json:async()=>r};
-    if(url.endsWith("/commits/"+headSha))return {ok:true,json:async()=>commit};
+    if(url.endsWith("/commits/"+headSha))return {ok:true,json:async()=>commitPayload};
     if(url.endsWith("/workers/scripts/hermes-automation-engine/settings"))return {ok:true,json:async()=>settingsPayload};
     if(url.endsWith("/pages/projects/hermes"))return {ok:true,json:async()=>({success:true,result:{deployment_configs:{production:{d1_databases:{DB:{id:db,database_name:"hermes-connect-prototype"}}}}}})};
     if(url.endsWith("/d1/database/"+db+"/query")){
       const q=JSON.parse(request.body);
       const key=q.params?.[0]||"";
       if(String(key).startsWith("hae:ci:audit:")){
-        return {ok:true,json:async()=>d1((preexisting||sent)?[auditRow]:[])};
+        return {ok:true,json:async()=>d1((preexisting||sent)?[auditPayload]:[])};
       }
       if(String(key).startsWith("hae:followup:self.repair:")){
-        return {ok:true,json:async()=>d1((preexisting||sent)?[repairRow]:[])};
+        return {ok:true,json:async()=>d1((preexisting||sent)?[repairPayload]:[])};
       }
       throw Error("unexpected_d1_key");
     }
@@ -78,15 +79,37 @@ assert.equal(sentBody.workflow_name,r.name);
 assert.equal(sentBody.workflow_path,r.path);
 assert.equal(sentBody.workflow_id,r.workflow_id);
 assert.equal(sentBody.head_sha,headSha);
-assert.equal(sentBody.changed_path_count,2);
+assert.equal(sentBody.changed_path_count,1);
+assert.equal(sentBody.repair_artifact_key,patchablePath);
 assert.match(sentBody.changed_paths_fingerprint,/^sha256:[a-f0-9]{64}$/);
 assert.equal(sentBody.pr_number,2088);
 assert.equal(sentBody.base_sha,"f".repeat(40));
-assert.equal(JSON.stringify(sentBody).includes("workers/automation-engine/src/index.mjs"),false,"raw changed paths must not enter Queue");
+assert.equal(Object.hasOwn(sentBody,"changed_paths"),false,"full changed-path list must not enter Queue");
+assert.equal(JSON.stringify(sentBody).includes("assert.equal("),false,"source contents must not enter Queue");
 assert.ok(fresh.calls.filter(c=>c.url.includes("api.github.com")).every(c=>c.request.headers.Authorization==="Bearer mock-gh"));
 assert.ok(fresh.calls.filter(c=>c.url.includes("api.cloudflare.com")).every(c=>c.request.headers.Authorization==="Bearer mock-cf"));
 assert.ok(!JSON.stringify(fresh.calls.filter(c=>c.url.includes("api.github.com"))).includes("mock-cf"));
 assert.ok(!JSON.stringify(fresh.calls.filter(c=>c.url.includes("api.cloudflare.com"))).includes("mock-gh"));
+
+
+
+// Authenticated multi-file failures remain durable audit evidence but must not pretend to be patchable.
+const blockedCommit={sha:headSha,files:[
+  {filename:"scripts/hae-github-ci-runtime-intake.test.mjs"},
+  {filename:"workers/automation-engine/src/index.mjs"},
+]};
+const blockedAuditRow={job_id:"job:audit:blocked",state:"SUCCEEDED",last_error_class:null,result_json:JSON.stringify({result:{
+  next_action:"NO_ACTION",routing_blocked_reason:"FINDING_BLOCKED"
+}})};
+const blockedFixture=fixture({commitPayload:blockedCommit,auditPayload:blockedAuditRow});
+const blockedGot=await dispatchGithubCIEvent({...args,fetchImpl:blockedFixture.mock});
+assert.equal(blockedGot.live_audit_receipt,true);
+assert.equal(blockedGot.live_self_work_receipt,false);
+assert.equal(blockedGot.repair_state,"BLOCKED_UNPATCHABLE");
+assert.equal(blockedGot.work_id,null);
+assert.equal(blockedGot.repair_job_id,null);
+assert.equal(blockedFixture.calls.filter(c=>c.url.endsWith("/queues/"+queue+"/messages")).length,1);
+assert.equal(blockedFixture.calls.filter(c=>String(JSON.parse(c.request?.body||"{}").params?.[0]||"").startsWith("hae:followup:self.repair:")).length,0);
 
 // If the same source was already materialized, read back the durable work and do not resend Queue.
 const replay=fixture({preexisting:true});

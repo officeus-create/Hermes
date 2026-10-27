@@ -1,10 +1,13 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
+import {createHash} from "node:crypto";
 import {verifyGithubCIQueueEnvelope,validateGithubCIQueueEnvelope} from "../workers/automation-engine/src/github-ci-runtime-intake.mjs";
 import {evaluateHaeSelfImprovementSnapshot} from "../workers/automation-engine/src/hae-self-improvement.mjs";
 
 const repo="officeus-create/Hermes",runId=40249991001,runAttempt=1;
 const sha="a".repeat(40),baseSha="b".repeat(40),producerSha="c".repeat(40);
+const patchablePath="scripts/hae-github-ci-runtime-intake.test.mjs";
+const fp=paths=>"sha256:"+createHash("sha256").update(paths.join("\n"),"utf8").digest("hex");
 const envelope={
   type:"github.ci.audit",
   run_id:runId,
@@ -20,12 +23,13 @@ const envelope={
   head_sha:sha,
   html_url:"https://github.com/"+repo+"/actions/runs/"+runId,
   updated_at:"2026-10-26T00:38:00.000Z",
-  changed_paths_fingerprint:"sha256:"+"d".repeat(64),
-  changed_path_count:2,
+  changed_paths_fingerprint:fp([patchablePath]),
+  changed_path_count:1,
+  repair_artifact_key:patchablePath,
   base_sha:baseSha,
   pr_number:2088,
 };
-const artifactKey="github-workflow:382680939";
+const artifactKey=patchablePath;
 const dbWith=(rows=[])=>({
   prepare(sql){
     assert.match(sql,/hermes_automation_jobs/);
@@ -45,8 +49,11 @@ assert.equal(obj.payload.coverage_complete,true);
 assert.equal(obj.coverage_complete,true);
 assert.equal(obj.payload._source.pr_number,2088);
 assert.equal(obj.payload._source.base_sha,baseSha);
-assert.equal(obj.payload._source.changed_path_count,2);
+assert.equal(obj.payload._source.changed_path_count,1);
 assert.equal(obj.payload._source.changed_paths_fingerprint,envelope.changed_paths_fingerprint);
+assert.equal(obj.payload._source.patchable_artifact_key,patchablePath);
+assert.equal(obj.payload.findings[0].artifact_key,patchablePath);
+assert.equal(obj.payload.findings[0].status,"OPEN");
 assert.equal(obj.payload._source.writer_state,"VERIFIED_CLEAR");
 assert.equal(obj.payload._source.producer_main_sha,producerSha);
 assert.equal(obj.payload._source.trust_class,"GITHUB_ACTIONS_EPHEMERAL_TOKEN_TO_PRIVATE_CLOUDFLARE_QUEUE");
@@ -56,6 +63,27 @@ const evaluated=evaluateHaeSelfImprovementSnapshot(obj.payload);
 assert.equal(evaluated.next_action,"HOLD_REPAIR");
 assert.equal(evaluated.next_work_id,"HAE-SELF:ci-"+runId+"-1-"+sha.slice(0,12));
 assert.equal(evaluated.routing_blocked_reason,null);
+
+
+
+const blockedPaths=["scripts/hae-github-ci-runtime-intake.test.mjs","workers/automation-engine/src/index.mjs"].sort();
+const blockedEnvelope={
+  ...envelope,
+  run_id:runId+1,
+  html_url:"https://github.com/"+repo+"/actions/runs/"+(runId+1),
+  repair_artifact_key:null,
+  changed_path_count:blockedPaths.length,
+  changed_paths_fingerprint:fp(blockedPaths),
+};
+const blocked=await verifyGithubCIQueueEnvelope(blockedEnvelope,{db:clearDb,deployedSourceSha:producerSha});
+assert.equal(blocked.payload._source.patchable_artifact_key,null);
+assert.equal(blocked.payload.findings[0].status,"BLOCKED");
+assert.equal(blocked.payload.findings[0].artifact_key,"github-workflow:382680939");
+const blockedEvaluation=evaluateHaeSelfImprovementSnapshot(blocked.payload);
+assert.equal(blockedEvaluation.next_action,"NO_ACTION");
+assert.equal(blockedEvaluation.next_work_id,null);
+assert.equal(blockedEvaluation.routing_blocked_reason,"FINDING_BLOCKED");
+assert.equal(blockedEvaluation.blocked_finding_count,1);
 
 const repeat=await verifyGithubCIQueueEnvelope({...envelope},{db:clearDb,deployedSourceSha:producerSha});
 assert.deepEqual(repeat,obj,"Replay of same minimized producer snapshot must be deterministic");
@@ -75,6 +103,8 @@ for(const payload of [
   {...envelope,changed_paths_fingerprint:"sha256:bad"},
   {...envelope,changed_path_count:0},
   {...envelope,changed_path_count:101},
+  {...envelope,repair_artifact_key:"../escape"},
+  {...envelope,repair_artifact_key:patchablePath,changed_path_count:2},
   {...envelope,updated_at:"bad"},
   {...envelope,extra:"forbidden"},
 ]) failSync(payload,"github_ci_queue_envelope_invalid");
@@ -90,6 +120,10 @@ for(const override of [
 await assert.rejects(
   ()=>verifyGithubCIQueueEnvelope(envelope,{db:clearDb,deployedSourceSha:"f".repeat(40)}),
   e=>e.code==="github_ci_producer_main_sha_mismatch"
+);
+await assert.rejects(
+  ()=>verifyGithubCIQueueEnvelope({...envelope,changed_paths_fingerprint:"sha256:"+"f".repeat(64)},{db:clearDb,deployedSourceSha:producerSha}),
+  e=>e.code==="github_ci_changed_paths_fingerprint_mismatch"
 );
 await assert.rejects(
   ()=>verifyGithubCIQueueEnvelope(envelope,{db:null,deployedSourceSha:producerSha}),
