@@ -174,13 +174,13 @@ Owner-provided Bing Webmaster exports dated 2026-10-05 plus authenticated browse
 - Bing Site Scan `Hermes full technical audit 2026-10-04`: **581 pages**, **2 errors**, **22 warnings**. Aggregates: 2 missing meta descriptions, 20 missing image alt attributes, 2 overly long titles and 2 multi-H1 notices. Exact affected URLs were not included in the supplied aggregate export, so do not mass-edit canonical owners from counts alone.
 - Authority recommendation: **insufficient inbound links from high-quality domains** (medium severity). Treat this as a legitimate authority gap; pursue earned/entity-relevant citations and editorial proof, never link spam.
 - IndexNow date stats contain **5,286 submitted-URL events**, **32 indexed events**, and **38 crawled events**. Current IndexNow coverage examples include `robots.txt`, an SVG, a WOFF2 font and `/logistics/car-hauling-dispatch/`. The canonical repository submitter already rejects non-HTML assets/discovery files.
-- Authenticated Cloudflare readback on 2026-10-06 shows **Crawler Hints enabled**. Cloudflare documents that Crawler Hints can notify IndexNow from cache-change signals; combined with the non-HTML observations, this is strong evidence of over-broad/duplicate notification noise rather than a Bing penalty.
+- Historical authenticated Cloudflare readback on 2026-10-06 showed **Crawler Hints enabled**. That baseline was superseded on 2026-10-07 when the owner changed Crawler Hints to OFF and immediately read back `Value: 0`; preserve the dated baseline only as root-cause evidence.
 
 Decision:
 
 1. keep the healthy sitemap and controlled page-only IndexNow transport;
 2. change automatic money-page IndexNow notifications from fixed full-batch resubmission to **changed-cluster-only** submission;
-3. disable Cloudflare Crawler Hints when a supported Cloudflare write path is available, then compare a settled 72-hour IndexNow/crawl window;
+3. preserve Cloudflare Crawler Hints **OFF** from the authenticated 2026-10-07 receipt; only reopen the setting if a fresh authenticated readback proves regression, and measure later Bing crawl/IndexNow behavior separately;
 4. keep P0 on Car Hauling carriers and strengthen existing owners before adding URLs;
 5. triage Site Scan issues only from exact affected URLs or repository reproduction;
 6. treat authority acquisition as external-evidence P1.
@@ -191,7 +191,7 @@ Machine-readable evidence: `data/seo/bing-owner-snapshot-2026-10-05.json`.
 
 - **1 · Healthy sitemap + controlled page-only IndexNow — PRESERVE.**
 - **2 · Changed-cluster-only IndexNow — RESOLVED IN MAIN.** Commit `5046809c97ecc1fcc4fb345ceb4a83a678d72c3e` replaced fixed full-batch money-page resubmission with changed-cluster submission; do not reopen this from old IndexNow event counts.
-- **3 · Cloudflare Crawler Hints — ACCESS_GAP.** Target remains Crawler Hints OFF while repository-controlled IndexNow stays ON. The current authorized Cloudflare surface can read but not safely mutate this setting; do not bypass with a broad token or a second deployment path.
+- **3 · Cloudflare Crawler Hints — RESOLVED 2026-10-07.** The 2026-10-06 `ON` readback above is historical evidence. The setting was changed to **OFF** in the authenticated owner UI on 2026-10-07 and immediately read back as `Value: 0`; durable receipt: `data/seo/indexnow-crawler-hints-setting-2026-10-07.json`. Repository-controlled IndexNow remains ON. Do not recreate the former access-gap task unless a fresh authenticated readback proves regression.
 - **4 · P0 Car Hauling ownership discipline — ACTIVE RULE, NOT A PAGE-EXPANSION TASK.** Strengthen existing owners and keep preview/live freight truth boundaries; new URLs still require the Search Release Gate.
 - **5 · Bing Site Scan code-side hygiene — RESOLVED IN SOURCE/RELEASE.** #1696 promoted public title/meta/H1/alt hygiene to release gates and exact-head recovery checks passed. Historical aggregate Site Scan counts are not instructions to mass-edit pages; wait for normal Bing recrawl or use exact affected URLs only if a future concrete defect is reported.
 - **6 · Authority acquisition — EXTERNAL EVIDENCE P1.** Earned/entity-relevant citations and owned profile corrections remain separate from code recovery; never substitute link spam or synthetic directory volume.
