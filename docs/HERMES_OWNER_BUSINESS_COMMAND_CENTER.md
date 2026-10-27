@@ -52,10 +52,14 @@ OWNER IDEA / DICTATION
 → outbound Mac runner
 → isolated Codex task branch
 → sanitized result / PR / evidence
-→ safe owner approval gate when required
-→ work item reconciles to done or blocked.
+→ work item enters `awaiting_acceptance`
+→ owner reviews the result and evidence
+→ explicit Accept records `accepted_by`, `accepted_at`, and completion time
+→ work item becomes done; Needs rework returns it to blocked with a reason.
 
 Multiple owner work items may exist. The current Internal AI invariant remains one active AI task at a time.
+
+`hermes_internal_ai_tasks.status = completed` proves that execution ended. It does not prove that the requested business result was accepted. Linked AI work cannot use the generic manual-completion action to bypass this boundary.
 
 ## Voice
 

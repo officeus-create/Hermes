@@ -16,7 +16,23 @@ class D1Statement {
 const sqlite=new DatabaseSync(":memory:");
 const DB={prepare:(sql)=>new D1Statement(sqlite.prepare(sql))};
 sqlite.exec(`CREATE TABLE sessions (token TEXT, specialist_id TEXT, expires_at TEXT);
-CREATE TABLE specialists (id TEXT, email TEXT, name TEXT, role TEXT, location TEXT, bio TEXT);`);
+CREATE TABLE specialists (id TEXT, email TEXT, name TEXT, role TEXT, location TEXT, bio TEXT);
+CREATE TABLE hermes_owner_work_items (
+  id TEXT PRIMARY KEY,
+  organization_scope TEXT NOT NULL CHECK (organization_scope = 'hermes_internal'),
+  workstream TEXT NOT NULL CHECK (workstream IN ('marketing','logistics','sales','technology','academy','finance','operations')),
+  priority TEXT NOT NULL DEFAULT 'p2' CHECK (priority IN ('p0','p1','p2','p3')),
+  title TEXT NOT NULL,
+  details TEXT NOT NULL,
+  source TEXT NOT NULL DEFAULT 'text' CHECK (source IN ('text','voice','imported')),
+  status TEXT NOT NULL DEFAULT 'planned' CHECK (status IN ('planned','ready','in_progress','blocked','done','cancelled')),
+  created_by TEXT NOT NULL,
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL,
+  linked_task_id TEXT,
+  completed_at TEXT,
+  blocked_reason TEXT
+);`);
 const future=new Date(Date.now()+3600000).toISOString();
 for(const [id,email,name] of [["owner-1","owner1@example.invalid","Owner One"],["owner-2","owner2@example.invalid","Owner Two"],["ordinary","ordinary@example.invalid","Ordinary"]]){
   sqlite.prepare("INSERT INTO specialists VALUES (?,?,?,?,?,?)").run(id,email,name,"Owner","","");
@@ -24,6 +40,10 @@ for(const [id,email,name] of [["owner-1","owner1@example.invalid","Owner One"],[
 }
 await ensureInternalAiSchema(DB);
 await ensureCommandCenterSchema(DB);
+const migratedColumns=new Set(sqlite.prepare("PRAGMA table_info(hermes_owner_work_items)").all().map(column=>column.name));
+assert(migratedColumns.has("acceptance_status"),"existing owner backlog must gain acceptance state without replacement");
+assert(migratedColumns.has("accepted_by"),"existing owner backlog must gain acceptance actor receipt");
+assert(migratedColumns.has("accepted_at"),"existing owner backlog must gain acceptance time receipt");
 const now="2026-10-26T16:00:00.000Z";
 await DB.prepare("INSERT INTO hermes_internal_owner_access (specialist_id,active,capability,created_at,updated_at) VALUES ('owner-1',1,'HERMES_INTERNAL_OWNER',?,?)").bind(now,now).run();
 
@@ -70,8 +90,35 @@ r=await json(await listWork({request:req("/api/internal-command-center/work-item
 assert.equal(r.status,200);
 const first=r.body.work_items.find(x=>x.id===firstId);
 const second=r.body.work_items.find(x=>x.id===secondId);
-assert.equal(first.status,"done","completed linked AI task must reconcile owner backlog to done");
+assert.equal(first.status,"awaiting_acceptance","completed linked AI task must wait for explicit owner acceptance");
+assert.equal(first.completed_at,null,"execution completion must not be recorded as owner acceptance");
+assert.equal(first.accepted_at,null,"acceptance receipt must remain empty before owner review");
 assert.equal(second.status,"planned");
+
+r=await json(await mutateWork({request:req("/api/internal-command-center/work-items/"+firstId,"PATCH",{action:"block",reason:"Evidence does not yet prove the requested business outcome."}),env:{DB},params:{id:firstId}}));
+assert.equal(r.status,200);
+assert.equal(r.body.work_item.status,"blocked");
+assert.match(r.body.work_item.blocked_reason,/does not yet prove/);
+
+r=await json(await mutateWork({request:req("/api/internal-command-center/work-items/"+firstId,"PATCH",{action:"dispatch"}),env:{DB},params:{id:firstId}}));
+assert.equal(r.status,200,"owner-requested rework must be dispatchable after a completed execution");
+assert.equal(r.body.work_item.status,"in_progress");
+assert.notEqual(r.body.task.id,firstTaskId);
+const replacementTaskId=r.body.task.id;
+await DB.prepare("UPDATE hermes_internal_ai_tasks SET status='completed',completed_at=?,updated_at=? WHERE id=?").bind(now,now,replacementTaskId).run();
+r=await json(await listWork({request:req("/api/internal-command-center/work-items"),env:{DB}}));
+assert.equal(r.body.work_items.find(x=>x.id===firstId).status,"awaiting_acceptance");
+
+r=await json(await mutateWork({request:req("/api/internal-command-center/work-items/"+firstId,"PATCH",{action:"accept"}),env:{DB},params:{id:firstId}}));
+assert.equal(r.status,200);
+assert.equal(r.body.work_item.status,"done");
+assert.equal(r.body.work_item.accepted_by,"owner-1");
+assert.ok(r.body.work_item.accepted_at);
+assert.ok(r.body.work_item.completed_at);
+
+r=await json(await mutateWork({request:req("/api/internal-command-center/work-items/"+secondId,"PATCH",{action:"accept"}),env:{DB},params:{id:secondId}}));
+assert.equal(r.status,409);
+assert.equal(r.body.error,"work_item_not_awaiting_acceptance");
 
 r=await json(await mutateWork({request:req("/api/internal-command-center/work-items/"+secondId,"PATCH",{action:"dispatch"}),env:{DB},params:{id:secondId}}));
 assert.equal(r.status,200);

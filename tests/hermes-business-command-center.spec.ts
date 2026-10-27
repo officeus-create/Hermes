@@ -71,6 +71,23 @@ test.describe("Hermes Business Command Center",()=>{
     await expect(page).toHaveURL(/direction=logistics/);
   });
 
+  test("keeps completed AI execution in owner acceptance review",async({page})=>{
+    await mockOwner(page);
+    const reviewItem={...backlog.work_items[0],id:"hcwi_review",status:"awaiting_acceptance",linked_task_id:"hit_review",linked_task_status:"completed",linked_task_output_summary:"PR and test evidence are ready for review."};
+    await page.unroute("**/api/internal-command-center/work-items");
+    await page.route("**/api/internal-command-center/work-items",(route:any)=>route.fulfill(json({success:true,work_items:[reviewItem]})));
+    let accepted=false;
+    await page.route("**/api/internal-command-center/work-items/hcwi_review",async(route:any)=>{
+      accepted=route.request().postDataJSON()?.action==="accept";
+      return route.fulfill(json({success:true,work_item:{...reviewItem,status:"done",accepted_by:"owner-1",accepted_at:"2026-10-27T12:00:00.000Z"}}));
+    });
+    await page.goto("/services/hermes-connect/internal/command-center/");
+    await expect(page.getByText("Execution finished. Review the evidence before accepting the business result.")).toBeVisible();
+    await expect(page.getByText(/PR and test evidence are ready for review/)).toBeVisible();
+    await page.getByRole("button",{name:"Accept result"}).click();
+    await expect.poll(()=>accepted).toBe(true);
+  });
+
   test("keeps the owner page usable at 390px",async({page})=>{
     await page.setViewportSize({width:390,height:844});
     await mockOwner(page);

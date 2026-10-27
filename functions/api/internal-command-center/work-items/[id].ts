@@ -35,8 +35,9 @@ export async function onRequestPatch({request,env,params}:{request:Request;env:E
     if(["done","cancelled"].includes(String(row.status)))return jsonResponse(409,{success:false,error:"work_item_terminal",work_item:publicWorkItem(row)},headers);
     const priorLinkedTaskId=row.linked_task_id?String(row.linked_task_id):null;
     const priorLinkedTaskStatus=String(row.linked_task_status||"");
+    const reviewRework=String(row.status)==="blocked"&&priorLinkedTaskStatus==="completed"&&Boolean(String(row.blocked_reason||"").trim());
     if(priorLinkedTaskId && ["queued","running","needs_approval"].includes(priorLinkedTaskStatus))return jsonResponse(409,{success:false,error:"work_item_task_active",work_item:publicWorkItem(row)},headers);
-    if(priorLinkedTaskId && !["failed","cancelled"].includes(priorLinkedTaskStatus))return jsonResponse(409,{success:false,error:"work_item_linkage_unresolved",work_item:publicWorkItem(row)},headers);
+    if(priorLinkedTaskId && !["failed","cancelled"].includes(priorLinkedTaskStatus) && !reviewRework)return jsonResponse(409,{success:false,error:"work_item_linkage_unresolved",work_item:publicWorkItem(row)},headers);
     const prompt=normalizePrompt(workItemPrompt(row)); if(!prompt)return jsonResponse(400,{success:false,error:"work_item_prompt_invalid"},headers);
     const taskId=newTaskId();
     const inserted=await env.DB.prepare(`INSERT INTO hermes_internal_ai_tasks (id,organization_scope,agent_role,prompt,status,created_by,created_at,updated_at)
@@ -49,7 +50,7 @@ export async function onRequestPatch({request,env,params}:{request:Request;env:E
       const active=await env.DB.prepare("SELECT id FROM hermes_internal_ai_tasks WHERE organization_scope=? AND status IN ('queued','running','needs_approval') ORDER BY created_at ASC LIMIT 1").bind(INTERNAL_AI_ORGANIZATION_SCOPE).first();
       return jsonResponse(409,{success:false,error:"active_task_exists",active_task_id:active?.id||null,work_item:publicWorkItem(row)},headers);
     }
-    const linked=await env.DB.prepare("UPDATE hermes_owner_work_items SET status='in_progress', linked_task_id=?, blocked_reason=NULL, completed_at=NULL, updated_at=? WHERE id=? AND organization_scope=? AND status IN ('planned','ready','blocked') AND (linked_task_id IS NULL OR linked_task_id=?)").bind(taskId,now,id,INTERNAL_AI_ORGANIZATION_SCOPE,priorLinkedTaskId).run();
+    const linked=await env.DB.prepare("UPDATE hermes_owner_work_items SET status='in_progress', linked_task_id=?, acceptance_status='not_required', blocked_reason=NULL, completed_at=NULL, accepted_by=NULL, accepted_at=NULL, updated_at=? WHERE id=? AND organization_scope=? AND status IN ('planned','ready','blocked') AND (linked_task_id IS NULL OR linked_task_id=?)").bind(taskId,now,id,INTERNAL_AI_ORGANIZATION_SCOPE,priorLinkedTaskId).run();
     if(!linked?.meta?.changes){
       await env.DB.prepare("DELETE FROM hermes_internal_ai_tasks WHERE id=? AND organization_scope=? AND status='queued' AND runner_id IS NULL").bind(taskId,INTERNAL_AI_ORGANIZATION_SCOPE).run();
       row=await getItem(env.DB,id);
@@ -64,15 +65,19 @@ export async function onRequestPatch({request,env,params}:{request:Request;env:E
     if(["done","cancelled","in_progress"].includes(String(row.status)))return jsonResponse(409,{success:false,error:"work_item_state_conflict",work_item:publicWorkItem(row)},headers);
     await env.DB.prepare("UPDATE hermes_owner_work_items SET status='ready', blocked_reason=NULL, updated_at=? WHERE id=? AND organization_scope=?").bind(now,id,INTERNAL_AI_ORGANIZATION_SCOPE).run();
   } else if(action==="block"){
-    if(String(row.status)==="in_progress")return jsonResponse(409,{success:false,error:"cancel_linked_ai_task_first",work_item:publicWorkItem(row)},headers);
+    if(String(row.status)==="in_progress"&&String(row.acceptance_status)!=="awaiting")return jsonResponse(409,{success:false,error:"cancel_linked_ai_task_first",work_item:publicWorkItem(row)},headers);
     const reason=safeReason(payload?.reason); if(!reason)return jsonResponse(400,{success:false,error:"blocked_reason_required"},headers);
-    await env.DB.prepare("UPDATE hermes_owner_work_items SET status='blocked', blocked_reason=?, updated_at=? WHERE id=? AND organization_scope=?").bind(reason,now,id,INTERNAL_AI_ORGANIZATION_SCOPE).run();
+    await env.DB.prepare("UPDATE hermes_owner_work_items SET status='blocked', acceptance_status='not_required', blocked_reason=?, completed_at=NULL, accepted_by=NULL, accepted_at=NULL, updated_at=? WHERE id=? AND organization_scope=?").bind(reason,now,id,INTERNAL_AI_ORGANIZATION_SCOPE).run();
+  } else if(action==="accept"){
+    if(String(row.status)!=="in_progress"||String(row.acceptance_status)!=="awaiting"||String(row.linked_task_status)!=="completed")return jsonResponse(409,{success:false,error:"work_item_not_awaiting_acceptance",work_item:publicWorkItem(row)},headers);
+    await env.DB.prepare("UPDATE hermes_owner_work_items SET status='done', acceptance_status='accepted', completed_at=?, accepted_by=?, accepted_at=?, blocked_reason=NULL, updated_at=? WHERE id=? AND organization_scope=? AND status='in_progress' AND acceptance_status='awaiting'").bind(now,String(owner.specialist.id),now,now,id,INTERNAL_AI_ORGANIZATION_SCOPE).run();
   } else if(action==="complete"){
+    if(row.linked_task_id)return jsonResponse(409,{success:false,error:"linked_ai_result_requires_acceptance",work_item:publicWorkItem(row)},headers);
     if(["queued","running","needs_approval"].includes(String(row.linked_task_status||"")))return jsonResponse(409,{success:false,error:"linked_ai_task_active",work_item:publicWorkItem(row)},headers);
-    await env.DB.prepare("UPDATE hermes_owner_work_items SET status='done', completed_at=?, blocked_reason=NULL, updated_at=? WHERE id=? AND organization_scope=?").bind(now,now,id,INTERNAL_AI_ORGANIZATION_SCOPE).run();
+    await env.DB.prepare("UPDATE hermes_owner_work_items SET status='done', acceptance_status='accepted', completed_at=?, accepted_by=?, accepted_at=?, blocked_reason=NULL, updated_at=? WHERE id=? AND organization_scope=?").bind(now,String(owner.specialist.id),now,now,id,INTERNAL_AI_ORGANIZATION_SCOPE).run();
   } else if(action==="cancel"){
     if(["queued","running","needs_approval"].includes(String(row.linked_task_status||"")))return jsonResponse(409,{success:false,error:"cancel_linked_ai_task_first",work_item:publicWorkItem(row)},headers);
-    await env.DB.prepare("UPDATE hermes_owner_work_items SET status='cancelled', updated_at=? WHERE id=? AND organization_scope=?").bind(now,id,INTERNAL_AI_ORGANIZATION_SCOPE).run();
+    await env.DB.prepare("UPDATE hermes_owner_work_items SET status='cancelled', acceptance_status='not_required', accepted_by=NULL, accepted_at=NULL, updated_at=? WHERE id=? AND organization_scope=?").bind(now,id,INTERNAL_AI_ORGANIZATION_SCOPE).run();
   } else {
     return jsonResponse(400,{success:false,error:"invalid_action"},headers);
   }

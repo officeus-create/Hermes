@@ -29,6 +29,9 @@ assert.match(helper,/organization_scope TEXT NOT NULL CHECK \(organization_scope
 assert.match(helper,/workstream IN \('marketing','logistics','sales','technology','academy','finance','operations'\)/,"workstream vocabulary must stay bounded");
 assert.match(helper,/linked_task_id/,"work items must link to the existing AI task queue");
 assert.match(helper,/reconcileWorkItems/,"work item state must reconcile linked task outcomes");
+assert.match(helper,/acceptance_status = 'awaiting'/,"completed execution must wait for explicit owner acceptance");
+assert.match(helper,/acceptance_status != 'awaiting'/,"reconciliation must not rewrite the review timestamp on every read");
+assert.doesNotMatch(helper,/SET status = 'done'.*linked_task_id IN/s,"linked execution must never auto-accept owner work");
 assert.match(helper,/Reuse current Hermes architecture.*do not create a second CRM/s,"dispatched prompts must preserve single-system ownership");
 assert.match(helper,/external communications.*owner approval flow/i,"dispatched prompts must preserve consequential approval gates");
 
@@ -48,8 +51,12 @@ assert.match(item,/workItemPrompt/,"dispatch must add bounded direction/context 
 assert.match(item,/cancel_linked_ai_task_first/,"work-item cancellation must not orphan a running AI task");
 assert.match(item,/status IN \('planned','ready','blocked'\) AND \(linked_task_id IS NULL OR linked_task_id=\?\)/,"work-item linkage must be optimistic so a terminal linked task can be replaced without overwriting a concurrent owner action");
 assert.match(item,/work_item_linkage_unresolved/,"retry must fail closed when a prior linked task is not a known failed/cancelled terminal task");
+assert.match(item,/reviewRework=.*blocked.*completed/s,"an owner-requested rework item may replace its reviewed completed execution");
 assert.match(item,/DELETE FROM hermes_internal_ai_tasks[\s\S]*status='queued'[\s\S]*runner_id IS NULL/,"failed CRM linkage must compensate only the newly queued unclaimed AI task");
 assert.match(item,/work_item_dispatch_link_conflict/,"linkage race must return an explicit fail-closed conflict");
+assert.match(item,/action==="accept"/,"owner must have an explicit result acceptance action");
+assert.match(item,/accepted_by=.*accepted_at=/,"accepted work must retain a durable acceptance receipt");
+assert.match(item,/linked_ai_result_requires_acceptance/,"generic completion must not bypass linked-result acceptance");
 
 assert.doesNotMatch(item,/remote shell|child_process|exec\(/i,"command-center API must not add remote execution");
 
