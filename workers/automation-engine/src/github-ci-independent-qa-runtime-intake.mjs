@@ -174,7 +174,9 @@ export async function verifyGithubCIIndependentQaEnvelope(message,{
         role_id:"hermes-qa-evidence-auditor",
         verdict:"PASS",
       }),
-      independent_verifier_identity_ok:true,
+      // A role string and unkeyed digest are not independent GitHub job/artifact attestation.
+      independent_verifier_identity_ok:false,
+      qa_identity_provenance:"SELF_ASSERTED_UNVERIFIED",
       exact_head_ci_verified:false,
       rollback_required:true,
       rollback_verified:false,

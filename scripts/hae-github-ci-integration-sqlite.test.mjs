@@ -310,7 +310,8 @@ try{
  assert.equal(releaseResult.result.release_state,"BLOCKED");
  assert.equal(releaseResult.result.blocker,"AUTHENTICATED_RELEASE_EVIDENCE_INCOMPLETE");
  assert.equal(releaseResult.result.hold_release_reachable,false);
- assert.equal(releaseResult.result.independent_verifier_identity_ok,true);
+ assert.equal(releaseResult.result.independent_verifier_identity_ok,false);
+ assert.equal(releaseResult.result.qa_identity_provenance,"SELF_ASSERTED_UNVERIFIED");
  assert.equal(releaseResult.result.exact_head_ci_verified,false);
  assert.equal(releaseResult.result.rollback_verified,false);
  assert.equal(releaseResult.result.patch_sha256,patchSha);

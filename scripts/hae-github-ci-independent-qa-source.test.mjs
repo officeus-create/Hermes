@@ -80,7 +80,7 @@ function fixture({preexisting=false,badRelease=false}={}){
       external_write:false,
       result:{
         work_id:workId,patch_sha256:badRelease?"sha256:"+"f".repeat(64):patchSha,
-        release_state:"BLOCKED",blocker:"AUTHENTICATED_RELEASE_EVIDENCE_INCOMPLETE",hold_release_reachable:false,independent_verifier_identity_ok:true,
+        release_state:"BLOCKED",blocker:"AUTHENTICATED_RELEASE_EVIDENCE_INCOMPLETE",hold_release_reachable:false,independent_verifier_identity_ok:false,qa_identity_provenance:"SELF_ASSERTED_UNVERIFIED",
         exact_head_ci_verified:false,rollback_verified:false,automatic_merge_allowed:false,automatic_deploy_allowed:false,cost_usd:0
       }
     })
@@ -133,7 +133,7 @@ const result=await dispatchGithubCIIndependentQa({
   repoRoot:"/tmp/qa-source",patchReceipt,fetchImpl:f.fetchImpl,executeImpl:f.executeImpl,
   sleepImpl:async()=>{},maxReadbackAttempts:2,
 });
-assert.equal(result.status,"INDEPENDENT_QA_VERIFIED");
+assert.equal(result.status,"INDEPENDENT_QA_EVIDENCE_ONLY");
 assert.equal(result.duplicate,false);
 assert.equal(result.queue_sent,true);
 assert.equal(result.release_job_id,releaseJob);
@@ -157,7 +157,7 @@ const replayResult=await dispatchGithubCIIndependentQa({
   repoRoot:"/tmp/qa-source",patchReceipt,fetchImpl:replay.fetchImpl,executeImpl:replay.executeImpl,
   sleepImpl:async()=>{},maxReadbackAttempts:1,
 });
-assert.equal(replayResult.status,"INDEPENDENT_QA_VERIFIED");
+assert.equal(replayResult.status,"INDEPENDENT_QA_EVIDENCE_ONLY");
 assert.equal(replayResult.duplicate,true);
 assert.equal(replayResult.queue_sent,false);
 assert.equal(replay.executeCalls,0);

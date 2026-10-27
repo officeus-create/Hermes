@@ -84,7 +84,9 @@ assert.deepEqual(verified.payload,{work_id:workId,artifact_key:artifact,repair_j
 assert.equal(verified.verified_result.release_state,"BLOCKED");
 assert.equal(verified.verified_result.blocker,"AUTHENTICATED_RELEASE_EVIDENCE_INCOMPLETE");
 assert.equal(verified.verified_result.hold_release_reachable,false);
-assert.equal(verified.verified_result.independent_verifier_identity_ok,true);
+// A self-declared QA role plus SHA-256 does not prove independent runner identity.
+assert.equal(verified.verified_result.independent_verifier_identity_ok,false);
+assert.equal(verified.verified_result.qa_identity_provenance,"SELF_ASSERTED_UNVERIFIED");
 assert.equal(verified.verified_result.exact_head_ci_verified,false);
 assert.equal(verified.verified_result.rollback_verified,false);
 assert.equal(verified.verified_result.automatic_merge_allowed,false);

@@ -94,7 +94,8 @@ function releaseReceiptMatches(row,{workId,patchSha}){
     parsed?.result?.release_state==="BLOCKED"&&
     parsed?.result?.blocker==="AUTHENTICATED_RELEASE_EVIDENCE_INCOMPLETE"&&
     parsed?.result?.hold_release_reachable===false&&
-    parsed?.result?.independent_verifier_identity_ok===true&&
+    parsed?.result?.independent_verifier_identity_ok===false&&
+    parsed?.result?.qa_identity_provenance==="SELF_ASSERTED_UNVERIFIED"&&
     parsed?.result?.exact_head_ci_verified===false&&
     parsed?.result?.rollback_verified===false&&
     parsed?.result?.automatic_merge_allowed===false&&
@@ -190,7 +191,7 @@ export async function dispatchGithubCIIndependentQa({
   if(releases.length>1)fail("github_ci_qa_source_duplicate_release_receipts");
   if(releases.length===1&&releaseReceiptMatches(releases[0],{workId:receipt.work_id,patchSha:receipt.patch_sha256})){
     return Object.freeze({
-      status:"INDEPENDENT_QA_VERIFIED",duplicate:true,queue_sent:false,
+      status:"INDEPENDENT_QA_EVIDENCE_ONLY",duplicate:true,queue_sent:false,
       release_job_id:String(releases[0].job_id||""),work_id:receipt.work_id,
       patch_sha256:receipt.patch_sha256,model_cost_usd:0,
       automatic_merge:false,automatic_deploy:false,
@@ -256,7 +257,7 @@ export async function dispatchGithubCIIndependentQa({
       if(releases[0].state==="FAILED")fail("github_ci_qa_source_release_failed");
       if(releaseReceiptMatches(releases[0],{workId:receipt.work_id,patchSha:receipt.patch_sha256})){
         return Object.freeze({
-          status:"INDEPENDENT_QA_VERIFIED",duplicate:false,queue_sent:queueSent,
+          status:"INDEPENDENT_QA_EVIDENCE_ONLY",duplicate:false,queue_sent:queueSent,
           release_job_id:String(releases[0].job_id||""),work_id:receipt.work_id,
           patch_sha256:receipt.patch_sha256,qa_receipt_sha256:qaMessage.qa_receipt_sha256,
           model_cost_usd:0,automatic_merge:false,automatic_deploy:false,
