@@ -4,12 +4,15 @@
   "repository": "officeus-create/Hermes",
   "main_commit_at_review": "49c4354e8de7547f8011d01bb31cbdc855157060",
   "freshness": {
-    "state_class": "current_governance_release_reconciliation_snapshot",
+    "state_class": "DATED_GOVERNANCE_PROVENANCE_WITH_BOUNDED_2026_10_14_SECURITY_RELEASE_REFRESH",
     "historical_handoff_is_not_current_state": true,
     "refresh_reason": "Main advanced through London conversion evidence, Connect verifier reconciliation, Cloudflare release wiring, owner registration operations, and Repair Shop auth source-truth convergence; open lanes and external blockers were re-read on exact current main.",
     "refresh_policy": "Re-fetch current main and every moving specialist PR before any material decision. PR head values in this snapshot are observations at review time, not durable current-state assertions.",
     "cloudflare_refresh_at": "2026-09-17",
-    "cloudflare_refresh_source": "GitHub #1349 + authenticated Wrangler Pages readback; generic Pages release token is not the current production blocker."
+    "cloudflare_refresh_source": "GitHub #1349 + authenticated Wrangler Pages readback; generic Pages release token is not the current production blocker.",
+    "latest_targeted_review": "2026-10-14",
+    "targeted_scope": "Drive ACL and ownership (metadata only), Canonical One Brain source, 6 Identity/MCP PRs, current business P0",
+    "warning": "reviewed_at and integration_snapshot are historical, not a completely refreshed global state. Do not promote old PR/production/gates as current without fresh independent readback."
   },
   "governance": {
     "operating_stack": "HOS_HUEG_CANONICAL",
@@ -242,5 +245,65 @@
     "Do not rerun full Codex extraction merely because main moved; re-run only when new evidence overlaps reconciled legacy candidate classes or contradicts accepted classifications.",
     "Do not spoof Partnership sender identity and do not bypass owner/admin security blockers with public or duplicate stacks.",
     "MERGED != DEPLOYED != LIVE_VERIFIED."
-  ]
+  ],
+  "latest_targeted_review": {
+    "date": "2026-10-14",
+    "observed_main_sha": "eca7f3e6872c919b63051ced8bf192262a24c414",
+    "evidence": "GITHUB_COMPARE_6_PRS_AND_GOOGLE_DRIVE_PERMISSION_METADATA",
+    "business_priority": "P0 qualified US car hauling carrier acquisition / Sales lead receiver / verified lead outcome. Other revenue owners (sites/CRM) follow measured evidence. Do not replace this P0 with MCP-only coding.",
+    "canonical_source_truth": "Private global 00_READ_ME_FIRST_FOR_ANY_AI -> private AI Master Operating Board -> department CURRENT; Hermes Connect Plugin CURRENT is only department-level, not a global master; public copies are noncanonical.",
+    "acl_security_p0": {
+      "tracker_issue": 431,
+      "state": "OWNER_ACTION_REQUIRED_ANONYMOUS_EDIT_NOT_CHANGED",
+      "scope": "TWO OCT_13_PUBLIC_SNAPSHOTS_MASTER_BOARD_AND_READ_FIRST",
+      "observation": "type=anyone role=writer on both mirrors; canonical originals owner-only. Sensitive file URLs intentionally excluded from repository; re-identify privately via Google Drive by exact titles.",
+      "owner_gate": "Per-file explicit permission to remove anonymous writer, verify owner, legitimate readers and ACL readback. Do not delete/copy/convert private docs by default.",
+      "exposure_known": "link-accessible edits; exploitation/search index unknown"
+    },
+    "merge_readiness": {
+      "status": "ALL_DRAFT_NOT_MERGED_NOT_DEPLOYED",
+      "observed_main_divergence": "6 PR heads each 18 commits behind main at 2026-10-14 review; recalc before merge",
+      "prs": {
+        "1881": {
+          "type": "Identity",
+          "base": "main",
+          "ci": "8_of_8_success_at_observed_head"
+        },
+        "1884": {
+          "type": "Public MCP",
+          "base": "main",
+          "ci": "in_progress_at_observed_head"
+        },
+        "1885": {
+          "type": "Digital employee routing policy",
+          "base": "main",
+          "ci": "in_progress_at_observed_head"
+        },
+        "1887": {
+          "type": "Public MCP handoff stacked on 1884",
+          "behind_parent_at_review": 16,
+          "ci": "prior_head_green_not_replayed"
+        },
+        "1891": {
+          "type": "Disabled private bearer tenant authorization",
+          "base": "main",
+          "ci": "5_of_5_success_at_observed_head"
+        },
+        "1895": {
+          "type": "Private whoami stacked on 1891",
+          "behind_parent_at_review": 0,
+          "ci": "4_of_4_success_at_observed_head"
+        }
+      },
+      "sequence": "Dedicated active writer replays head against fresh main, 1887 after 1884, 1895 after 1891, tests exact resulting heads. Only owner-reviewed releases can deploy.",
+      "live_gates": "No verified live external ChatGPT/Claude private OAuth or tool-user proof. Public product-feedback writer is distinct from preview-only tools. Never treat plugin skill release as running agent."
+    },
+    "historical_file_reconciliation": "Legacy One Brain attachment refers to old Mac localhost/Antigravity and older PR/main evidence; MacBook retired; do not restore legacy runner or treat old main SHA as current.",
+    "next_actions": [
+      "P0 remediate two anonymous-editor snapshots with owner authorization via existing issue #431.",
+      "Reconcile main/PR heads and revamp stale governance safely; do not overwrite domain owner working branches.",
+      "Return business-growth tasks to existing carrier Search/Sales/Load Board owners; verify receiver, genuine lead, no dispatcher/AI outbound.",
+      "After approved deployment, independent public MCP test then separately approved private OAuth and tenant user proof."
+    ]
+  }
 }
