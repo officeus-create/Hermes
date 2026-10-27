@@ -33,7 +33,10 @@ export async function onRequestPatch({request,env,params}:{request:Request;env:E
 
   if(action==="dispatch"){
     if(["done","cancelled"].includes(String(row.status)))return jsonResponse(409,{success:false,error:"work_item_terminal",work_item:publicWorkItem(row)},headers);
-    if(row.linked_task_id && ["queued","running","needs_approval"].includes(String(row.linked_task_status||"")))return jsonResponse(409,{success:false,error:"work_item_task_active",work_item:publicWorkItem(row)},headers);
+    const priorLinkedTaskId=row.linked_task_id?String(row.linked_task_id):null;
+    const priorLinkedTaskStatus=String(row.linked_task_status||"");
+    if(priorLinkedTaskId && ["queued","running","needs_approval"].includes(priorLinkedTaskStatus))return jsonResponse(409,{success:false,error:"work_item_task_active",work_item:publicWorkItem(row)},headers);
+    if(priorLinkedTaskId && !["failed","cancelled"].includes(priorLinkedTaskStatus))return jsonResponse(409,{success:false,error:"work_item_linkage_unresolved",work_item:publicWorkItem(row)},headers);
     const prompt=normalizePrompt(workItemPrompt(row)); if(!prompt)return jsonResponse(400,{success:false,error:"work_item_prompt_invalid"},headers);
     const taskId=newTaskId();
     const inserted=await env.DB.prepare(`INSERT INTO hermes_internal_ai_tasks (id,organization_scope,agent_role,prompt,status,created_by,created_at,updated_at)
@@ -46,7 +49,7 @@ export async function onRequestPatch({request,env,params}:{request:Request;env:E
       const active=await env.DB.prepare("SELECT id FROM hermes_internal_ai_tasks WHERE organization_scope=? AND status IN ('queued','running','needs_approval') ORDER BY created_at ASC LIMIT 1").bind(INTERNAL_AI_ORGANIZATION_SCOPE).first();
       return jsonResponse(409,{success:false,error:"active_task_exists",active_task_id:active?.id||null,work_item:publicWorkItem(row)},headers);
     }
-    const linked=await env.DB.prepare("UPDATE hermes_owner_work_items SET status='in_progress', linked_task_id=?, blocked_reason=NULL, completed_at=NULL, updated_at=? WHERE id=? AND organization_scope=? AND status IN ('planned','ready','blocked') AND linked_task_id IS NULL").bind(taskId,now,id,INTERNAL_AI_ORGANIZATION_SCOPE).run();
+    const linked=await env.DB.prepare("UPDATE hermes_owner_work_items SET status='in_progress', linked_task_id=?, blocked_reason=NULL, completed_at=NULL, updated_at=? WHERE id=? AND organization_scope=? AND status IN ('planned','ready','blocked') AND (linked_task_id IS NULL OR linked_task_id=?)").bind(taskId,now,id,INTERNAL_AI_ORGANIZATION_SCOPE,priorLinkedTaskId).run();
     if(!linked?.meta?.changes){
       await env.DB.prepare("DELETE FROM hermes_internal_ai_tasks WHERE id=? AND organization_scope=? AND status='queued' AND runner_id IS NULL").bind(taskId,INTERNAL_AI_ORGANIZATION_SCOPE).run();
       row=await getItem(env.DB,id);

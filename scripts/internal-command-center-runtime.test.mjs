@@ -75,6 +75,22 @@ assert.equal(secondDispatched.response.status,200);
 assert.equal(secondDispatched.payload.work_item.status,"in_progress");
 assert.notEqual(secondDispatched.payload.task.id,activeTaskId);
 
+const failedTaskId=secondDispatched.payload.task.id;
+sqlite.prepare("UPDATE hermes_internal_ai_tasks SET status='failed',updated_at=? WHERE id=?").run(now,failedTaskId);
+listResponse=await listWorkItems({request:request("/api/internal-command-center/work-items"),env:{DB:db}});
+listPayload=await listResponse.json();
+const secondBlocked=listPayload.work_items.find(item=>item.id===second.id);
+assert.equal(secondBlocked.status,"blocked");
+assert.equal(secondBlocked.linked_task_id,failedTaskId);
+assert.equal(secondBlocked.linked_task_status,"failed");
+
+const retriedSecond=await patch(second.id,"dispatch");
+assert.equal(retriedSecond.response.status,200,
+  "blocked work item with a terminal failed task must be retryable");
+assert.equal(retriedSecond.payload.work_item.status,"in_progress");
+assert.notEqual(retriedSecond.payload.task.id,failedTaskId);
+assert.equal(retriedSecond.payload.work_item.linked_task_id,retriedSecond.payload.task.id);
+
 const grant=await mutateAccess({request:request("/api/internal-command-center/access",{method:"POST",body:{action:"grant",email:"delegate@example.invalid"}}),env:{DB:db}});
 assert.equal(grant.status,200);
 assert.equal((await grant.json()).target.specialist_id,"delegate");
