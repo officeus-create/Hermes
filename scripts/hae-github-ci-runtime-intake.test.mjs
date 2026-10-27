@@ -68,7 +68,9 @@ assert.doesNotMatch(source,/github_pat_|ghp_|api\.openai\.com|\/repos\/.*\/pulls
 const worker=fs.readFileSync(new URL("../workers/automation-engine/src/index.mjs",import.meta.url),"utf8");
 assert.match(worker,/if \(messageType === "github\.ci\.audit"\)\s*\{[\s\S]*?verifyGithubCIQueueEnvelope\(payload\)[\s\S]*?createGenericJob\(env, authenticated\)[\s\S]*?item\.ack\(\)/);
 const wf=fs.readFileSync(new URL("../.github/workflows/hae-github-ci-sensor.yml",import.meta.url),"utf8");
-assert.ok(wf.includes("vars.HAE_CI_SENSOR_ENABLED == 'true'"));
+assert.ok(!wf.includes("vars.HAE_CI_SENSOR_ENABLED"));
+assert.ok(wf.includes("CLOUDFLARE_HAE_RELEASE_TOKEN"));
+assert.ok(wf.includes("HAE_CI_EXPECTED_MAIN_SHA"));
 assert.ok(wf.includes("github.event.workflow_run.head_repository.full_name == 'officeus-create/Hermes'"));
 assert.ok(wf.includes("persist-credentials: false"));
 assert.ok(!wf.includes("pull_request_target:"));
