@@ -65,6 +65,12 @@ export function planHaeSelfBacklog(input = {}) {
   }
 
   const unique = [...byId.values()];
+  const writerStateConflict = [...conflictedIds].some((findingId) => {
+    const variants = enriched.filter((item) => item.finding_id === findingId);
+    const writerStates = new Set(variants.map((item) =>
+      [item.writer_active, item.writer_state_verified, item.artifact_key].join("|")));
+    return writerStates.size > 1;
+  });
   const activeWriters = unique.filter((item) => item.status === "OPEN" && item.writer_active);
   const activeArtifacts = new Set(activeWriters.map((item) => item.artifact_key));
   const candidates = unique
@@ -112,7 +118,9 @@ export function planHaeSelfBacklog(input = {}) {
       },
     });
   }
-  const freeWriterSlots = Math.max(0, MAX_PARALLEL_WRITERS - activeWriters.length);
+  const freeWriterSlots = writerStateConflict
+    ? 0
+    : Math.max(0, MAX_PARALLEL_WRITERS - activeWriters.length);
   return {
     observed_at: snapshot.observed_at,
     coverage_status: "COMPLETE",
@@ -122,7 +130,9 @@ export function planHaeSelfBacklog(input = {}) {
     blocked_count: blocked.length,
     blocked,
     duplicate_conflict_count: conflictedIds.size,
-    next_action: proposals.length ? "HOLD_AUTHENTICATED_D1_ADMISSION" : "NO_ELIGIBLE_TASK",
+    writer_state_conflict_hold: writerStateConflict,
+    next_action: writerStateConflict ? "HOLD_CONFLICTING_WRITER_STATE"
+      : proposals.length ? "HOLD_AUTHENTICATED_D1_ADMISSION" : "NO_ELIGIBLE_TASK",
     automatic_job_submission_allowed: false,
     automatic_source_change_performed: false,
     automatic_merge_performed: false,

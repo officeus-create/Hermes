@@ -63,6 +63,15 @@ assert.equal(planHaeSelfBacklog(snapshot([
 assert.equal(planHaeSelfBacklog(snapshot([
   finding("unverified", "src/J.mjs", { writer_state_verified: false }),
 ])).proposed_count, 0);
+const writerConflict = planHaeSelfBacklog(snapshot([
+  finding("dup-writer", "src/J.mjs", { writer_active: false }),
+  finding("dup-writer", "src/J.mjs", { writer_active: true }),
+  finding("ready-after-conflict", "src/K.mjs"),
+]));
+assert.equal(writerConflict.writer_state_conflict_hold, true);
+assert.equal(writerConflict.ready_work_ids.length, 0,
+  "conflicting duplicate writer evidence must fail closed on writer capacity");
+assert.equal(writerConflict.next_action, "HOLD_CONFLICTING_WRITER_STATE");
 const many = Array.from({ length: 15 }, (_, i) => finding("many-" + i, "src/" + i + ".mjs"));
 const capped = planHaeSelfBacklog(snapshot(many));
 assert.equal(capped.proposed_count, 10);
