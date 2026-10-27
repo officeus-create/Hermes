@@ -65,9 +65,8 @@ export function planHaeSelfBacklog(input = {}) {
   }
 
   const unique = [...byId.values()];
-  const activeArtifacts = new Set(unique
-    .filter((item) => item.status === "OPEN" && item.writer_active)
-    .map((item) => item.artifact_key));
+  const activeWriters = unique.filter((item) => item.status === "OPEN" && item.writer_active);
+  const activeArtifacts = new Set(activeWriters.map((item) => item.artifact_key));
   const candidates = unique
     .filter((item) => item.verified && item.status === "OPEN")
     .sort(compareFindings);
@@ -113,7 +112,7 @@ export function planHaeSelfBacklog(input = {}) {
       },
     });
   }
-  const freeWriterSlots = Math.max(0, MAX_PARALLEL_WRITERS - activeArtifacts.size);
+  const freeWriterSlots = Math.max(0, MAX_PARALLEL_WRITERS - activeWriters.length);
   return {
     observed_at: snapshot.observed_at,
     coverage_status: "COMPLETE",

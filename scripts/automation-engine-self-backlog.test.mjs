@@ -56,6 +56,11 @@ assert.equal(planHaeSelfBacklog(snapshot([
   finding("ready", "src/L.mjs"),
 ])).ready_work_ids.length, 0, "active writer slots must cap new concurrent execution");
 assert.equal(planHaeSelfBacklog(snapshot([
+  finding("active-one", "src/J.mjs", { writer_active: true }),
+  finding("active-two", "src/J.mjs", { writer_active: true }),
+  finding("ready", "src/L.mjs"),
+])).ready_work_ids.length, 0, "two active writers on one artifact still consume both writer slots");
+assert.equal(planHaeSelfBacklog(snapshot([
   finding("unverified", "src/J.mjs", { writer_state_verified: false }),
 ])).proposed_count, 0);
 const many = Array.from({ length: 15 }, (_, i) => finding("many-" + i, "src/" + i + ".mjs"));
