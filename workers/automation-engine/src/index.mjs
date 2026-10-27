@@ -2080,9 +2080,8 @@ async function enqueueScheduledRoleContracts(env, scheduledAt) {
   const slotKey = chicagoSlotKey(scheduledAt);
   const managedJobTypes = await ownerManagedJobTypes(env.DB);
   const eligibleContracts = ROLE_CONTRACTS.filter(
-    (contract) => !contract.semantic_required
-      && !managedJobTypes.has(contract.job_type)
-      && roleContractScheduleEligible(contract, scheduledAt),
+    (contract) => !contract.semantic_required && roleContractScheduleEligible(contract, scheduledAt)
+      && !managedJobTypes.has(contract.job_type),
   );
   const outcomes = await Promise.all(eligibleContracts.map(async (contract) => {
     try {
