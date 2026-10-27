@@ -2232,9 +2232,11 @@ export default {
       try {
         if (messageType === "github.ci.audit") {
           // The Queue producer can send only a run ID and attempt. All proof is
-          // re-read from GitHub's canonical public API before creating one
-          // idempotent, read-only HAE job. Writer-state coverage stays PARTIAL.
-          const authenticated = await verifyGithubCIQueueEnvelope(payload);
+          // re-read from immutable GitHub run/commit evidence. Existing D1 jobs
+          // are the sole HAE writer-lease authority; no second lock table exists.
+          if (!env.DB) throw new Error("database_not_configured");
+          await ensureSchema(env.DB);
+          const authenticated = await verifyGithubCIQueueEnvelope(payload, { db: env.DB });
           await createGenericJob(env, authenticated);
           item.ack();
           continue;

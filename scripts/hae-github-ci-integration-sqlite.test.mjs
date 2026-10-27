@@ -1,7 +1,7 @@
 // Hermès HAE #2067: real Worker queue handler + in-memory SQLite D1 analog.
 // This is an ISOLATED LOCAL INTEGRATION TEST, never production evidence.
 // It proves 2 deliveries of the same verified CI event reserve 1 job,
-// enqueue 1 read-only execution, and cannot enable repair or paid inference.
+// enqueue 1 read-only execution, establish a D1-backed clear HAE writer lease, and create no paid inference.
 import assert from "node:assert/strict";
 import {DatabaseSync} from "node:sqlite";
 import worker from "../workers/automation-engine/src/index.mjs";
@@ -17,14 +17,25 @@ const record={
   updated_at:"2026-10-26T14:00:00Z",
   pull_requests:[{number:2094,base:{sha:base}}],
 };
+const commitRecord={
+ sha:head,
+ files:[
+  {filename:"workers/automation-engine/capability-policy.json"},
+  {filename:"scripts/automation-engine-capability-policy.test.mjs"},
+ ],
+};
 const calls=[];
 let githubApiUnavailable=true;
 const originalFetch=globalThis.fetch;
 globalThis.fetch=async(url,options)=>{
-  calls.push({url:String(url),method:options?.method||"GET"});
-  assert.equal(String(url),"https://api.github.com/repos/"+repo+"/actions/runs/"+record.id);
+  const value=String(url);
+  calls.push({url:value,method:options?.method||"GET"});
   if(githubApiUnavailable)return {ok:false,status:403};
-  return {ok:true,json:async()=>structuredClone(record)};
+  if(value==="https://api.github.com/repos/"+repo+"/actions/runs/"+record.id)
+    return {ok:true,json:async()=>structuredClone(record)};
+  if(value==="https://api.github.com/repos/"+repo+"/commits/"+head)
+    return {ok:true,json:async()=>structuredClone(commitRecord)};
+  throw Error("unexpected_github_read:"+value);
 };
 const raw=new DatabaseSync(":memory:");
 const queueWrites=[];
@@ -48,7 +59,12 @@ const db={
   raw.exec("BEGIN");
   try{
    const results=[];
-   for(const stmt of statements)results.push(await stmt.run());
+   for(const stmt of statements){
+    const result=await stmt.run();
+    // Cloudflare D1 batch returns per-statement meta.changes; SQLite's native
+    // adapter exposes changes directly. Mirror D1 so state-transition CAS is real.
+    results.push({...result,meta:{changes:Number(result?.changes||0)}});
+   }
    raw.exec("COMMIT");
    return results;
   }catch(e){raw.exec("ROLLBACK");throw e;}
@@ -135,23 +151,65 @@ try{
  assert.equal(queueWrites.length,1,"Only first reservation enqueues execution");
  assert.deepEqual(queueWrites[0],{type:"job.execute",job_id:rows[0].job_id});
  const job=JSON.parse(rows[0].payload_json);
- assert.equal(job.coverage_complete,false);
- assert.equal(job._source.writer_state,"UNVERIFIED");
+ assert.equal(job.coverage_complete,true);
+ assert.equal(job._source.writer_state,"VERIFIED_CLEAR");
  assert.equal(job._source.head_sha,head);
  assert.equal(job._source.pr_number,2094);
- assert.equal(job._source.changed_paths_fingerprint,null);
+ assert.match(job._source.changed_paths_fingerprint,/^sha256:[a-f0-9]{64}$/);
+ assert.equal(job._source.changed_path_count,2);
  assert.ok(!rows[0].payload_json.includes("PRIVATE_SECRET"));
  assert.equal(raw.prepare("SELECT COUNT(*) AS count FROM hermes_automation_job_events WHERE event_type='job.created'").get().count,1);
- assert.equal(calls.length,6);
+ assert.equal(calls.length,8);
  assert.ok(calls.every(x=>x.method==="GET"),"Only read-only GitHub verification");
+
+ // Execute the autonomously created audit job. Complete verified CI coverage +
+ // the D1-backed clear HAE writer lease must deterministically create exactly
+ // one stable HAE-SELF repair packet, still with zero source writes.
+ function executionBatch(packet,id){
+  const state={ack:0,retry:0};
+  return {state,object:{queue:"hermes-automation",messages:[{
+   body:packet,id,attempts:1,ack(){state.ack++},retry(){state.retry++}
+  }]}};
+ }
+ const auditExec=executionBatch(queueWrites[0],"audit_execute_message");
+ await worker.queue(auditExec.object,env);
+ assert.deepEqual(auditExec.state,{ack:1,retry:0});
+ const auditRow=raw.prepare("SELECT state,result_json FROM hermes_automation_jobs WHERE job_id=?").get(rows[0].job_id);
+ assert.equal(auditRow.state,"SUCCEEDED");
+ const auditResult=JSON.parse(auditRow.result_json);
+ assert.equal(auditResult.result.next_action,"HOLD_REPAIR");
+ const expectedWorkId="HAE-SELF:ci-"+runId+"-"+runAttempt+"-"+head.slice(0,12);
+ assert.equal(auditResult.result.next_work_id,expectedWorkId);
+ assert.equal(queueWrites.length,2,"Successful audit must enqueue exactly one repair packet execution");
+ const repairRow=raw.prepare(
+   "SELECT job_id,state,idempotency_key,payload_json FROM hermes_automation_jobs WHERE job_type='hae.self.repair.packet'"
+ ).get();
+ assert.ok(repairRow,"Autonomous HAE-SELF repair packet must be durable in D1");
+ assert.equal(repairRow.state,"QUEUED");
+ assert.equal(repairRow.idempotency_key,"hae:followup:self.repair:"+expectedWorkId);
+ const repairPayload=JSON.parse(repairRow.payload_json);
+ assert.equal(repairPayload.work_id,expectedWorkId);
+ assert.equal(repairPayload.artifact_key,"github-workflow:382680939");
+
+ const repairExec=executionBatch(queueWrites[1],"repair_execute_message");
+ await worker.queue(repairExec.object,env);
+ assert.deepEqual(repairExec.state,{ack:1,retry:0});
+ const repairDone=raw.prepare("SELECT state,result_json FROM hermes_automation_jobs WHERE job_id=?").get(repairRow.job_id);
+ assert.equal(repairDone.state,"SUCCEEDED");
+ const repairResult=JSON.parse(repairDone.result_json);
+ assert.equal(repairResult.result.repair_state,"HOLD_REPAIR");
+ assert.equal(repairResult.result.source_change_performed,false);
+ assert.equal(repairResult.result.automatic_merge_performed,false);
+ assert.equal(repairResult.result.automatic_deploy_performed,false);
+
  // Same run/attempt with incompatible source snapshot must fail closed;
  // it cannot overwrite the first D1 reservation or enqueue a second job.
  record.updated_at="2026-10-26T15:00:00Z";
  const conflictingReplay=batch();
  await worker.queue(conflictingReplay.object,env);
  assert.deepEqual(conflictingReplay.state,{ack:0,retry:1});
- assert.equal(queueWrites.length,1);
- assert.equal(raw.prepare("SELECT COUNT(*) AS count FROM hermes_automation_jobs").get().count,1);
+ assert.equal(queueWrites.length,2);
+ assert.equal(raw.prepare("SELECT COUNT(*) AS count FROM hermes_automation_jobs").get().count,2);
  // Independent failure injection: D1 reservation succeeds, but downstream
  // Queue send fails. The event must ACK only after durable RETRY_SCHEDULED,
  // and duplicate source delivery must not enqueue an unleased second job.
@@ -177,11 +235,11 @@ try{
  const replayAfterOutage=batch();
  await worker.queue(replayAfterOutage.object,env);
  assert.deepEqual(replayAfterOutage.state,{ack:1,retry:0});
- assert.equal(raw.prepare("SELECT COUNT(*) AS count FROM hermes_automation_jobs").get().count,2);
- assert.equal(queueWrites.length,1,"Replay must not bypass durable retry recovery");
+ assert.equal(raw.prepare("SELECT COUNT(*) AS count FROM hermes_automation_jobs").get().count,3);
+ assert.equal(queueWrites.length,2,"Replay must not bypass durable retry recovery");
  console.log("HAE_CI_QUEUE_D1_LOCAL_INTEGRATION_PASS",JSON.stringify({
   duplicated_deliveries:2,github_api_403_retried_without_job:1,spoofed_head_repo_rejected_without_job:1,spoofed_workflow_id_rejected_without_job:1,
-  d1_jobs:2,job_created_events:2,
+  d1_jobs:3,job_created_events:3,autonomous_self_work_packets:1,hold_repair_completed:1,
   failed_queue_send_jobs_recoverable:1,conflicting_replays_rejected:1,
   queued_executions:queueWrites.length,external_provider_writes:0,
   real_cloud_runtime_proven:false,authoritative_git_run_authenticated:false,
