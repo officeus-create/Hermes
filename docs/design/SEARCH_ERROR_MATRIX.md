@@ -47,7 +47,24 @@ GSC compare read directly in the signed-in console 26.10, Bing IndexNow insights
 | Ranking test ended | `/services/*` sat at avg position 55–70 on competitive queries, then dropped out | most likely for non-brand |
 | Entity confusion (brand) | many same-name "Hermes Logistics" entities; brand position 29.5 → 59 | likely for brand (E2) |
 | Site-wide quality drag from templates | 171 of 290 sitemap URLs never shown; car-hauler cities 86–92 % identical (E3) | contributes now; added after the drop |
-| Lost backlinks | only job-board links ever (E9) | no change to lose; authority gap is structural |
+| Lost backlinks | GSC Links export 26.10: the same job-board sources (staff.am, work.ua), latest crawl 07.10 — nothing lost | excluded |
+| Manual action / security | GSC "Manual actions" read 27.10: no issues | excluded |
+| hreflang | `scripts/hreflang-audit.test.mjs` green on every build | excluded |
+
+### GSC compare read 27.10 (9–28 Aug = 20 days vs 29 Aug–23 Oct = 56 days)
+
+Totals: clicks 24 → 9 (1.2/day → 0.16/day), impressions 1,640 → 383 (82/day → 6.8/day, −92 %), avg position 41.4 → 39.
+
+| Page | Impressions before → after | Avg position before → after |
+|---|---|---|
+| `/services/*` (SEO pages, E1) | 951 → 40 | 55–70 → out of results |
+| `/company-information/` | 126 → 24 | 9.9 → 9.6 |
+| `/about/` | 112 → 35 | 32.3 → 6.8 |
+| `/contacts/` | 106 → 31 | 24.3 → 3.5 |
+| `/paths/logistics/` | 87 → 20 | 38.1 → 20.2 |
+| `/` | 93 → 219 | 42.4 → 45.6 |
+
+Reading: the loss is impressions at deep positions (results pages 3–7) on non-brand SEO queries and broad brand-like queries. Where pages are still shown, they rank *higher*. This is not a penalty or a technical block (both excluded above); Google stopped testing the site on competitive queries it never earned clicks for. The levers are authority (#368) and proof/entity strength (E1/E2 slices), not more technical fixes. The 130 "discovered — not indexed" URLs (E3) are a separate problem: those pages were never shown, so they cannot explain the drop.
 
 ## Direct access (no manual clicks)
 
