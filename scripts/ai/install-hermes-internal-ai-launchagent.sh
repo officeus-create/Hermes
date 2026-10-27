@@ -61,7 +61,8 @@ CODEX_BIN="$(command -v codex || true)"
 import sys
 from urllib.parse import urlsplit
 u=urlsplit(sys.argv[1])
-assert u.scheme == "https" and u.netloc and not u.username and not u.password and u.path in ("", "/") and not u.query and not u.fragment, "API origin must be a clean https:// origin"
+assert (u.scheme == "https" and u.hostname == "hermeslogisticsus.com" and u.port is None and
+        not u.username and not u.password and u.path in ("", "/") and not u.query and not u.fragment), "API origin must be canonical https://hermeslogisticsus.com"
 PY
 
 if ! /usr/bin/security find-generic-password -s "$KEYCHAIN_SERVICE" -a "$KEYCHAIN_ACCOUNT" >/dev/null 2>&1; then

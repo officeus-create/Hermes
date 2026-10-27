@@ -14,6 +14,8 @@ assert.match(wrapper,/KEYCHAIN_ACCOUNT=.*hermes-internal-ai-runner/);
 assert.match(wrapper,/unset HERMES_INTERNAL_OWNER_BOOTSTRAP_TOKEN/,"one-time owner bootstrap secret must not survive into the runner");
 assert.match(wrapper,/codex-hermes-doctor/);
 assert.match(wrapper,/--internal-ai/);
+assert.match(wrapper,/u\.hostname != "hermeslogisticsus\.com"/,"wrapper must reject any non-canonical API host before token use");
+assert.match(installer,/u\.hostname == "hermeslogisticsus\.com"/,"installer must reject arbitrary HTTPS origins");
 assert.match(wrapper,/if ! "\$DOCTOR" --internal-ai; then[\s\S]*No task was claimed/,"failed doctor must block before runner execution");
 assert.match(wrapper,/exec \/usr\/bin\/python3 "\$RUNNER"/,"wrapper must exec only the existing Internal AI runner");
 assert.doesNotMatch(wrapper,/launchctl|StartCalendarInterval|cron|crontab/,"wrapper must not become a second scheduler");

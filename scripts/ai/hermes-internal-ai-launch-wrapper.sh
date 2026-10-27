@@ -25,8 +25,9 @@ fail() { printf "[hermes-internal-ai-launch] BLOCKED: %s\n" "$1" >&2; exit 78; }
 import sys
 from urllib.parse import urlsplit
 u=urlsplit(sys.argv[1])
-if u.scheme != "https" or not u.netloc or u.username or u.password or u.path not in ("", "/") or u.query or u.fragment:
-    print("[hermes-internal-ai-launch] BLOCKED: HERMES_INTERNAL_AI_API must be an HTTPS origin with no credentials, path, query, or fragment.", file=sys.stderr)
+if (u.scheme != "https" or u.hostname != "hermeslogisticsus.com" or u.port is not None or
+    u.username or u.password or u.path not in ("", "/") or u.query or u.fragment):
+    print("[hermes-internal-ai-launch] BLOCKED: HERMES_INTERNAL_AI_API must be the canonical https://hermeslogisticsus.com origin.", file=sys.stderr)
     raise SystemExit(1)
 PY
 
