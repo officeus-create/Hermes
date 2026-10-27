@@ -64,6 +64,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
   if (!validated.ok) return jsonResponse(400,{success:false,error:validated.error,utf8_bytes:validated.bytes},headers);
   const idempotencyKey=validThreadsIdempotencyKey(body.idempotency_key || request.headers.get("Idempotency-Key"));
   if (!idempotencyKey) return jsonResponse(400,{success:false,error:"valid_idempotency_key_required"},headers);
+  const fingerprint=await threadsTextFingerprint(`${replyToId}\n${validated.text}`);
 
   await ensureThreadsBrandConnectorSchema(env.DB);
   if (brand !== "office_test") {
@@ -73,9 +74,15 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     if (!officeCanary) return jsonResponse(403,{success:false,error:"office_canary_required_before_secondary_publish"},headers);
   }
 
-  const prior=await env.DB.prepare(`SELECT id,status,provider_media_id,permalink,provider_timestamp,last_error_class
+  const prior=await env.DB.prepare(`SELECT id,brand_key,object_type,text_fingerprint,status,provider_media_id,permalink,provider_timestamp,last_error_class
     FROM hermes_social_threads_publications WHERE idempotency_key=? LIMIT 1`).bind(idempotencyKey).first();
   if (prior) {
+    const sameScope=String(prior.brand_key || "") === brand
+      && String(prior.object_type || "") === "REPLY"
+      && String(prior.text_fingerprint || "") === fingerprint;
+    if (!sameScope) {
+      return jsonResponse(409,{success:false,error:"idempotency_key_scope_conflict",retry_allowed:false},headers);
+    }
     const status=String(prior.status || "");
     if (status === "published" || status === "published_readback_pending") {
       return jsonResponse(200,{success:true,duplicate:true,outcome:status,media_id:prior.provider_media_id || null,
@@ -110,7 +117,6 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     return jsonResponse(403,{success:false,error:"reply_target_not_under_owned_root"},headers);
   }
 
-  const fingerprint=await threadsTextFingerprint(`${replyToId}\n${validated.text}`);
   const now=new Date().toISOString();
   const id=`threads-reply-${crypto.randomUUID()}`;
   const reservation=await env.DB.prepare(`INSERT OR IGNORE INTO hermes_social_threads_publications

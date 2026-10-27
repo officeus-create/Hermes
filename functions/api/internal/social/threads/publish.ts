@@ -70,11 +70,22 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     body.idempotency_key || request.headers.get("Idempotency-Key"),
   );
   if (!idempotencyKey) return jsonResponse(400, { success: false, error: "valid_idempotency_key_required" }, headers);
+  const fingerprint = await threadsTextFingerprint(validated.text);
 
   await ensureThreadsBrandConnectorSchema(env.DB);
-  const prior = await env.DB.prepare(`SELECT id,status,provider_media_id,permalink,provider_timestamp,last_error_class
+  const prior = await env.DB.prepare(`SELECT id,brand_key,object_type,text_fingerprint,status,provider_media_id,permalink,provider_timestamp,last_error_class
     FROM hermes_social_threads_publications WHERE idempotency_key=? LIMIT 1`).bind(idempotencyKey).first();
   if (prior) {
+    const sameScope = String(prior.brand_key || "") === brand
+      && String(prior.object_type || "") === "AUTHORED_POST"
+      && String(prior.text_fingerprint || "") === fingerprint;
+    if (!sameScope) {
+      return jsonResponse(409, {
+        success: false,
+        error: "idempotency_key_scope_conflict",
+        retry_allowed: false,
+      }, headers);
+    }
     const status = String(prior.status || "");
     if (status === "published" || status === "published_readback_pending") {
       return jsonResponse(200, {
@@ -97,7 +108,6 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
   const token: any = await usableThreadsAccessToken(env.DB, env, brand);
   if (!token.ok) return jsonResponse(409, { success: false, error: token.error_class }, headers);
 
-  const fingerprint = await threadsTextFingerprint(validated.text);
   const now = new Date().toISOString();
   const id = `threads-pub-${crypto.randomUUID()}`;
   const reservation = await env.DB.prepare(`INSERT OR IGNORE INTO hermes_social_threads_publications
@@ -107,9 +117,20 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     .bind(id, brand, idempotencyKey, fingerprint, String(owner.specialist.id), now, now).run();
   const reservedByThisRequest = Number(reservation?.meta?.changes || 0) === 1;
   if (!reservedByThisRequest) {
-    const raced = await env.DB.prepare(`SELECT id,status,provider_media_id,permalink,provider_timestamp,last_error_class
+    const raced = await env.DB.prepare(`SELECT id,brand_key,object_type,text_fingerprint,status,provider_media_id,permalink,provider_timestamp,last_error_class
       FROM hermes_social_threads_publications WHERE idempotency_key=? LIMIT 1`).bind(idempotencyKey).first();
-    if (raced && ["published","published_readback_pending","publishing"].includes(String(raced.status || ""))) {
+    const sameRacedScope = raced
+      && String(raced.brand_key || "") === brand
+      && String(raced.object_type || "") === "AUTHORED_POST"
+      && String(raced.text_fingerprint || "") === fingerprint;
+    if (raced && !sameRacedScope) {
+      return jsonResponse(409, {
+        success:false,
+        error:"idempotency_key_scope_conflict",
+        retry_allowed:false,
+      }, headers);
+    }
+    if (sameRacedScope && ["published","published_readback_pending","publishing"].includes(String(raced.status || ""))) {
       return jsonResponse(200, {
         success:true,
         duplicate:true,

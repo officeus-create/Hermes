@@ -20,6 +20,12 @@ assert.match(publish,/brand_key='office_test' AND object_type='AUTHORED_POST' AN
 assert.match(reply,/INSERT OR IGNORE INTO hermes_social_threads_publications/);
 assert.match(reply,/'REPLY'/);
 assert.match(reply,/idempotency_key_already_used/);
+assert.match(reply,/idempotency_key_scope_conflict/);
+assert.match(publish,/idempotency_key_scope_conflict/);
+assert.match(reply,/object_type \|\| ""\) === "REPLY"/);
+assert.match(publish,/object_type \|\| ""\) === "AUTHORED_POST"/);
+assert.match(reply,/text_fingerprint \|\| ""\) === fingerprint/);
+assert.match(publish,/text_fingerprint \|\| ""\) === fingerprint/);
 assert.match(reply,/retry_allowed:false/);
 assert.match(reply,/reply_parent_mismatch/);
 assert.doesNotMatch(reply,/setInterval|setTimeout|cron|schedule|bulk|mass/i);
