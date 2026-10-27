@@ -2131,3 +2131,14 @@ ai_name: Codex; role: delegated Academy owner; contribution_type: Implementation
 - Brand SERP 27.10: site absent from top 75 for "hermes logistics"; own Instagram #3, Facebook #6, Clutch #9. Backlinks: 2,739 referring domains, 3 real; owner uploaded disavow (2,732 domains) 27.10.
 - This slice: Clutch and Facebook (owner-confirmed) added to `#logistics` sameAs via `public-entity-registry.ts`; canonical facts section G updated.
 - Next action — owner: Google Business Profile, Clutch description/reviews (brief given to ChatGPT), optional Facebook intro/name fix; accept — GSC position for "hermes logistics" on 2026-11-23.
+
+
+## 2026-10-27 — ChatGPT/Codex — case-study funnel measurement slice
+
+- Branch: `codex/case-funnel-20261027` from current main `e6f6cd01ca6b36e3cbbbf0192a1cdd47f222a5ff`.
+- Scope: Case Studies family only. Existing visible case content, destinations, URLs, H1/title/canonical/hreflang and proof claims remain unchanged.
+- What changed: added one reusable `CaseStudyFunnelAnalytics` helper using the already-approved `case_opened` / `case_study_cta` hooks; wired only the existing commercial next-step CTA on the case hub, Appleton SEO case and IT-development case. Product-view/internal-anchor actions are not counted as commercial conversion.
+- Governance correction: current main already contains the shared `DirectionStory` proof/status block on `/paths/*`; task 9 is narrowed to proof-fact verification + remaining off-family accent cleanup, not creation of a duplicate proof section.
+- Tests: `npm run build` PASS — 435 pages built. Focused Playwright PASS — 12/12 across desktop + mobile for existing case visual contract and new funnel analytics contract.
+- Status: SOURCE/LOCAL VERIFIED only. Keep Coverage row 11 `PARTIAL` until merge, deployment and 1440/390 production readback.
+- Next: open bounded PR; then take Resources/Guides as a separate family slice using the existing SEO/website/carrier/vehicle-transport analytics owners rather than adding a second tracker.

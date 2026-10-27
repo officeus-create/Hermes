@@ -1,6 +1,7 @@
 ---
 import { ArrowRight, Braces, SearchCheck, Truck } from "@lucide/astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import CaseStudyFunnelAnalytics from "../../components/CaseStudyFunnelAnalytics.astro";
 import SiteFooter from "../../components/SiteFooter.astro";
 import SiteHeader from "../../components/SiteHeader.astro";
 
@@ -110,9 +111,10 @@ import "../../styles/features/case.css";
             For the logistics-specific method and commercial scope, review our <a href="/services/seo-for-logistics-companies/">Logistics SEO services for trucking and transportation companies</a>.
           </p>
         </div>
-        <a class="button" href="/contacts/">Discuss a measurable project <ArrowRight size={18} aria-hidden="true" /></a>
+        <a class="button" href="/contacts/" data-case-cta="final" data-case-action="discuss_measurable_project">Discuss a measurable project <ArrowRight size={18} aria-hidden="true" /></a>
       </div>
     </section>
+    <CaseStudyFunnelAnalytics caseId="case_hub" trackOpen={false} />
   </main>
   <SiteFooter />
 </BaseLayout>
