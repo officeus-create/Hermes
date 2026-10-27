@@ -38,7 +38,7 @@ const cloudflareEnv = {
   HERMES_FREE_AI_CLOUDFLARE_ENABLED: "enabled",
   HERMES_FREE_AI_CLOUDFLARE_MODEL: "@cf/zai-org/glm-4.7-flash",
   HERMES_FREE_AI_CLOUDFLARE_PLAN_ATTESTED: "workers_free",
-  HERMES_FREE_AI_CLOUDFLARE_FREE_ASSERTION_EXPIRES_AT: new Date(Date.now() + 7 * 86400_000).toISOString(),
+  HERMES_FREE_AI_CLOUDFLARE_FREE_ASSERTION_EXPIRES_AT: new Date(Date.now() + 12 * 3600_000).toISOString(),
   AI: {
     async run(model, request) {
       assert.equal(model, "@cf/zai-org/glm-4.7-flash");
@@ -52,6 +52,9 @@ assert.equal(selectFreeAiProvider(cloudflareEnv)?.id, "cloudflare-workers-ai");
 const neverExpiring = { ...cloudflareEnv, HERMES_FREE_AI_CLOUDFLARE_FREE_ASSERTION_EXPIRES_AT: "2099-01-01T00:00:00Z" };
 assert.equal(selectFreeAiProvider(neverExpiring), null);
 assert.equal(freeAiProviderSnapshot(neverExpiring)[0].reason, "free_assertion_horizon_invalid");
+const twoDayAttestation = { ...cloudflareEnv, HERMES_FREE_AI_CLOUDFLARE_FREE_ASSERTION_EXPIRES_AT: new Date(Date.now() + 48 * 3600_000).toISOString() };
+assert.equal(selectFreeAiProvider(twoDayAttestation), null, "Workers Free plan evidence older than one day must fail closed");
+assert.equal(freeAiProviderSnapshot(twoDayAttestation)[0].reason, "free_assertion_horizon_invalid");
 const missingPlan = { ...cloudflareEnv, HERMES_FREE_AI_CLOUDFLARE_PLAN_ATTESTED: undefined };
 assert.equal(selectFreeAiProvider(missingPlan), null);
 assert.equal(freeAiProviderSnapshot(missingPlan)[0].reason, "workers_free_plan_not_verified");

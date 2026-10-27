@@ -6,7 +6,7 @@ const MAX_OUTPUT_TOKENS = 1200;
 // is spent. Fail closed unless the account was independently checked as Workers Free,
 // where Cloudflare hard-stops requests rather than charging for a paid fallback.
 const APPROVED_WORKERS_FREE_MODELS = new Set(["@cf/zai-org/glm-4.7-flash"]);
-const MAX_ATTESTATION_WINDOW_MS = 14 * 24 * 60 * 60 * 1000;
+const MAX_ATTESTATION_WINDOW_MS = 24 * 60 * 60 * 1000;
 
 function clean(value, max = 1000) {
   return typeof value === "string"
