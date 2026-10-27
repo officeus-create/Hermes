@@ -1,6 +1,36 @@
 name: HAE Migration Baseline Candidate
 
 on:
+  workflow_call:
+    inputs:
+      target_sha:
+        required: false
+        type: string
+        default: ""
+      schema_run_id:
+        required: false
+        type: string
+        default: ""
+      runtime_run_id:
+        required: false
+        type: string
+        default: ""
+      command_body:
+        required: false
+        type: string
+        default: ""
+      issue_number:
+        required: false
+        type: number
+        default: 0
+      comment_is_pr:
+        required: false
+        type: boolean
+        default: false
+      caller_actor:
+        required: false
+        type: string
+        default: ""
   workflow_dispatch:
     inputs:
       target_sha:
@@ -15,8 +45,6 @@ on:
         description: Successful run containing hae-runtime-evidence-accepted
         required: true
         type: string
-  issue_comment:
-    types: [created]
 
 permissions:
   contents: read
@@ -28,9 +56,11 @@ jobs:
     if: >-
       github.event_name == 'workflow_dispatch' ||
       (
-        github.actor == 'officeus-create' &&
-        github.event.issue.number == 2033 &&
-        startsWith(github.event.comment.body, 'HAE_BASELINE_CANDIDATE ')
+        inputs.command_body != '' &&
+        inputs.caller_actor == 'officeus-create' &&
+        inputs.issue_number == 2033 &&
+        inputs.comment_is_pr == false &&
+        startsWith(inputs.command_body, 'HAE_BASELINE_CANDIDATE ')
       )
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -46,7 +76,7 @@ jobs:
           DISPATCH_TARGET_SHA: ${{ inputs.target_sha }}
           DISPATCH_SCHEMA_RUN_ID: ${{ inputs.schema_run_id }}
           DISPATCH_RUNTIME_RUN_ID: ${{ inputs.runtime_run_id }}
-          COMMENT_BODY: ${{ github.event.comment.body }}
+          COMMENT_BODY: ${{ inputs.command_body }}
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
@@ -96,7 +126,8 @@ jobs:
               echo "baseline_${kind}_run_not_success run_id=$run_id conclusion=$conclusion"
               exit 1
             fi
-            if [[ "$run_path" != ".github/workflows/automation-engine-release.yml" ]]; then
+            if [[ "$run_path" != ".github/workflows/automation-engine-release.yml" && \
+                  "$run_path" != ".github/workflows/issue-comment-command-router.yml" ]]; then
               echo "baseline_${kind}_run_wrong_workflow run_id=$run_id path=$run_path"
               exit 1
             fi

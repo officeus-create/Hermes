@@ -1,0 +1,53 @@
+name: Hermes issue comment command router
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  hae-release:
+    if: >-
+      github.actor == 'officeus-create' &&
+      !github.event.issue.pull_request &&
+      (
+        (
+          github.event.issue.number == 1018 &&
+          (
+            startsWith(github.event.comment.body, 'HAE_VERIFY ') ||
+            startsWith(github.event.comment.body, 'HAE_PROVISION_DRY_RUN ') ||
+            startsWith(github.event.comment.body, 'HAE_RUNTIME_READONLY_PROOF ')
+          )
+        ) ||
+        (
+          github.event.issue.number == 2033 &&
+          (
+            startsWith(github.event.comment.body, 'HAE_SCHEMA_SNAPSHOT ') ||
+            startsWith(github.event.comment.body, 'HAE_T4_DLQ_CANARY ') ||
+            startsWith(github.event.comment.body, 'HAE_T4_READBACK ')
+          )
+        )
+      )
+    uses: ./.github/workflows/automation-engine-release.yml
+    with:
+      command_body: ${{ github.event.comment.body }}
+      issue_number: ${{ github.event.issue.number }}
+      comment_is_pr: false
+      caller_actor: ${{ github.actor }}
+    secrets: inherit
+
+  hae-baseline-candidate:
+    if: >-
+      github.actor == 'officeus-create' &&
+      !github.event.issue.pull_request &&
+      github.event.issue.number == 2033 &&
+      startsWith(github.event.comment.body, 'HAE_BASELINE_CANDIDATE ')
+    uses: ./.github/workflows/hae-migration-baseline-candidate.yml
+    with:
+      command_body: ${{ github.event.comment.body }}
+      issue_number: ${{ github.event.issue.number }}
+      comment_is_pr: false
+      caller_actor: ${{ github.actor }}

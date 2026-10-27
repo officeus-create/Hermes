@@ -67,6 +67,7 @@ const worker = readFileSync(new URL("../workers/automation-engine/src/index.mjs"
 const windsorAdapter = readFileSync(new URL("../workers/automation-engine/src/windsor-threads.mjs", import.meta.url), "utf8");
 const wrangler = readFileSync(new URL("../workers/automation-engine/wrangler.jsonc.example", import.meta.url), "utf8");
 const releaseWorkflow = readFileSync(new URL("../.github/workflows/automation-engine-release.yml", import.meta.url), "utf8");
+const issueCommentRouter = readFileSync(new URL("../.github/workflows/issue-comment-command-router.yml", import.meta.url), "utf8");
 
 assert.ok(worker.includes("AUTOMATION_QUEUE.send"), "Cron must enqueue work instead of doing a heavy task inline");
 assert.ok(worker.includes("unknown_outcome"), "Ambiguous provider outcome must be fail-closed");
@@ -287,7 +288,8 @@ assert.match(releaseWorkflow, /INJECT_EXACT_MAIN_SHA_AT_RELEASE/, "Release workf
 assert.match(releaseWorkflow, /TARGET_SHA: \$\{\{ steps\.request\.outputs\.target_sha \}\}/, "Release config render must receive the owner-verified exact target SHA");
 assert.match(releaseWorkflow, /invalid_HAE_release_target_sha/, "Release config render must fail closed on a malformed exact target SHA");
 assert.match(releaseWorkflow, /HAE_release_source_sha_placeholder_not_replaced/, "Release config render must fail closed if exact source SHA metadata was not injected");
-assert.match(releaseWorkflow, /github\.event\.issue\.number == 1018/, "Release command must stay attached to canonical Growth Bridge #1018");
+assert.match(issueCommentRouter, /github\.event\.issue\.number == 1018/, "Router must preserve the legacy Growth Bridge #1018 command lane");
+assert.match(releaseWorkflow, /inputs\.issue_number == 1018/, "Reusable release workflow must independently revalidate the legacy #1018 lane");
 assert.match(releaseWorkflow, /HAE_PROVISION_DRY_RUN/, "Dry-run provisioning must require an explicit owner command");
 assert.match(releaseWorkflow, /HAE_RUNTIME_READONLY_PROOF/, "Read-only runtime proof must require an explicit owner command");
 assert.match(releaseWorkflow, /runtime_readonly_proof/, "Release workflow must expose a bounded read-only proof operation");
@@ -349,20 +351,25 @@ assert.doesNotMatch(releaseWorkflow, /HERMES_AUTOMATION_MODE=live|HERMES_AUTOMAT
 assert.doesNotMatch(releaseWorkflow, /WINDSOR_API_KEY:\s*\$\{\{\s*secrets\./, "Dry-run release must not require or inject a provider write secret");
 
 assert.match(releaseWorkflow, /schema_snapshot/, "Release workflow must expose the authenticated read-only D1 schema snapshot operation");
-assert.match(releaseWorkflow, /github\.event\.issue\.number == 2033[\s\S]{0,300}HAE_SCHEMA_SNAPSHOT /, "Schema snapshot owner command must be scoped to canonical HAE issue #2033");
+assert.doesNotMatch(releaseWorkflow, /issue_comment:/, "Reusable HAE release workflow must not subscribe directly to every issue comment");
+assert.match(releaseWorkflow, /workflow_call:/, "HAE release must support the bounded command router");
+assert.match(issueCommentRouter, /issue_comment:/, "The single command router owns issue-comment wakeups for migrated HAE commands");
+assert.match(issueCommentRouter, /github\.event\.issue\.number == 2033[\s\S]{0,450}HAE_SCHEMA_SNAPSHOT /, "Router must scope schema snapshot to canonical HAE issue #2033");
 {
   const conditionStart = releaseWorkflow.indexOf("    if: >-");
   const conditionEnd = releaseWorkflow.indexOf("    runs-on:", conditionStart);
-  assert.ok(conditionStart >= 0 && conditionEnd > conditionStart, "HAE release owner-routing condition must remain inspectable");
+  assert.ok(conditionStart >= 0 && conditionEnd > conditionStart, "HAE release reusable owner-routing condition must remain inspectable");
   const ownerCondition = releaseWorkflow.slice(conditionStart, conditionEnd);
-  const legacyStart = ownerCondition.indexOf("github.event.issue.number == 1018");
-  const canonicalStart = ownerCondition.indexOf("github.event.issue.number == 2033");
-  assert.ok(legacyStart >= 0 && canonicalStart > legacyStart, "Legacy #1018 and canonical #2033 command lanes must remain explicit");
+  const legacyStart = ownerCondition.indexOf("inputs.issue_number == 1018");
+  const canonicalStart = ownerCondition.indexOf("inputs.issue_number == 2033");
+  assert.ok(legacyStart >= 0 && canonicalStart > legacyStart, "Legacy #1018 and canonical #2033 reusable command lanes must remain explicit");
   const legacyLane = ownerCondition.slice(legacyStart, canonicalStart);
   const canonicalLane = ownerCondition.slice(canonicalStart);
   assert.doesNotMatch(legacyLane, /HAE_SCHEMA_SNAPSHOT/, "Legacy social issue #1018 must not gain schema-snapshot authority");
-  assert.doesNotMatch(canonicalLane, /HAE_VERIFY|HAE_PROVISION_DRY_RUN|HAE_RUNTIME_READONLY_PROOF/, "#2033 must not silently absorb legacy HAE command authority during the snapshot change");
+  assert.doesNotMatch(canonicalLane, /HAE_VERIFY|HAE_PROVISION_DRY_RUN|HAE_RUNTIME_READONLY_PROOF/, "#2033 must not silently absorb legacy HAE command authority during routing");
 }
+assert.doesNotMatch(releaseWorkflow, /echo\s+"[^"\n]*`\$[A-Z_]+`"/, "Release summary must not place shell command-substitution backticks inside double-quoted echo");
+assert.match(releaseWorkflow, /printf '%s%s%s\\n' '- Exact main: `' "\$TARGET_SHA" '`'/, "Release summary must render Markdown code ticks as literal printf fragments");
 assert.match(releaseWorkflow, /name: Inspect or provision canonical HAE queues[\s\S]{0,160}operation != 'schema_snapshot'/, "Schema snapshot must bypass Queue inspection/provisioning");
 assert.match(releaseWorkflow, /name: Render non-versioned production config[\s\S]{0,160}operation != 'schema_snapshot'/, "Schema snapshot must bypass Worker config composition");
 assert.match(releaseWorkflow, /name: Validate composed Worker package[\s\S]{0,160}operation != 'schema_snapshot'/, "Schema snapshot must bypass Worker package/deploy preparation");
