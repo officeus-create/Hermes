@@ -85,7 +85,7 @@ function validatePatchReceipt(receipt,{runId,runAttempt}){
   }
   return receipt;
 }
-function releaseReceiptMatches(row,{workId,findingId,artifactKey,repairJobId,proposalJobId,sourceHeadSha,patchSha,qaDigest}){
+function releaseReceiptMatches(row,{workId,findingId,artifactKey,repairJobId,proposalJobId,sourceHeadSha,patchSha,patchedFileSha,qaDigest}){
   if(!row||row.job_type!=="hae.self.release.verify"||String(row.state||"")!=="SUCCEEDED")return false;
   const parsed=safeResult(row.result_json);
   return parsed?.external_write===false&&
@@ -96,6 +96,7 @@ function releaseReceiptMatches(row,{workId,findingId,artifactKey,repairJobId,pro
     parsed?.result?.proposal_job_id===proposalJobId&&
     parsed?.result?.source_head_sha===sourceHeadSha&&
     parsed?.result?.patch_sha256===patchSha&&
+    parsed?.result?.patched_file_sha256===patchedFileSha&&
     parsed?.result?.qa_receipt_sha256===qaDigest&&
     parsed?.result?.release_state==="BLOCKED"&&
     parsed?.result?.blocker==="AUTHENTICATED_RELEASE_EVIDENCE_INCOMPLETE"&&
@@ -199,6 +200,7 @@ export async function dispatchGithubCIIndependentQa({
     source_head_sha:receipt.base_sha,work_id:receipt.work_id,finding_id:receipt.finding_id,
     repair_job_id:proposalPayload.repair_job_id,proposal_job_id:receipt.proposal_job_id,
     artifact_key:receipt.artifact_key,patch_sha256:receipt.patch_sha256,
+    patched_file_sha256:receipt.patched_file_sha256,
     qa_role:"hermes-qa-evidence-auditor",qa_verdict:"PASS",
     qa_receipt_sha256:"",
   };
@@ -207,6 +209,7 @@ export async function dispatchGithubCIIndependentQa({
     workId:receipt.work_id,findingId:receipt.finding_id,artifactKey:receipt.artifact_key,
     repairJobId:proposalPayload.repair_job_id,proposalJobId:receipt.proposal_job_id,
     sourceHeadSha:receipt.base_sha,patchSha:receipt.patch_sha256,
+    patchedFileSha:receipt.patched_file_sha256,
     qaDigest:qaMessage.qa_receipt_sha256,
   };
 

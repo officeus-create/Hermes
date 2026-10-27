@@ -15,6 +15,7 @@ const proposalJob="job:proposal-12345678";
 const artifact="scripts/hae-github-ci-patch-runtime-intake.test.mjs";
 const diff='diff --git a/'+artifact+' b/'+artifact+'\n--- a/'+artifact+'\n+++ b/'+artifact+'\n@@ -1,1 +1,1 @@\n-assert.equal(0,1);\n+assert.equal(1,1);\n';
 const patchSha=sha256(diff);
+const patchedFileSha=sha256("independent-reproof-file-content");
 const base={
   type:"github.ci.qa.verify",
   run_id:runId,run_attempt:runAttempt,producer_main_sha:producer,
@@ -25,13 +26,13 @@ const base={
   source_head_sha:sourceHead,
   work_id:workId,finding_id:findingId,
   repair_job_id:repairJob,proposal_job_id:proposalJob,
-  artifact_key:artifact,patch_sha256:patchSha,
+  artifact_key:artifact,patch_sha256:patchSha,patched_file_sha256:patchedFileSha,
   qa_role:"hermes-qa-evidence-auditor",qa_verdict:"PASS",
 };
 const canonical=[
   base.run_id,base.run_attempt,base.producer_main_sha,base.source_head_sha,
   base.work_id,base.finding_id,base.repair_job_id,base.proposal_job_id,
-  base.artifact_key,base.patch_sha256,base.qa_role,base.qa_verdict,
+  base.artifact_key,base.patch_sha256,base.patched_file_sha256,base.qa_role,base.qa_verdict,
 ].join("|");
 const message={...base,qa_receipt_sha256:sha256(canonical)};
 
@@ -82,6 +83,7 @@ assert.equal(verified.job_type,"hae.self.release.verify");
 assert.equal(verified.idempotency_key,"hae:receipt:self.qa.verify:"+workId);
 assert.deepEqual(verified.payload,{work_id:workId,artifact_key:artifact,repair_job_id:repairJob});
 assert.equal(verified.verified_result.release_state,"BLOCKED");
+assert.equal(verified.verified_result.patched_file_sha256,patchedFileSha);
 assert.equal(verified.verified_result.blocker,"AUTHENTICATED_RELEASE_EVIDENCE_INCOMPLETE");
 assert.equal(verified.verified_result.hold_release_reachable,false);
 // A self-declared QA role plus SHA-256 does not prove independent runner identity.
@@ -98,6 +100,8 @@ const invalid=[
   {...message,qa_role:"hermes-automatic-engineer"},
   {...message,producer_main_sha:"c".repeat(40)},
   {...message,patch_sha256:"sha256:"+"d".repeat(64)},
+  {...message,patched_file_sha256:"sha256:"+"d".repeat(64)},
+  {...message,patched_file_sha256:"bad-digest"},
   {...message,qa_receipt_sha256:"sha256:"+"e".repeat(64)},
   {...message,artifact_key:"../secret"},
 ];

@@ -10,7 +10,7 @@ const KEYS=new Set([
   "type","run_id","run_attempt","producer_main_sha","repository",
   "workflow_name","workflow_path","workflow_id","source_head_sha",
   "work_id","finding_id","repair_job_id","proposal_job_id","artifact_key",
-  "patch_sha256","qa_role","qa_verdict","qa_receipt_sha256"
+  "patch_sha256","patched_file_sha256","qa_role","qa_verdict","qa_receipt_sha256"
 ]);
 
 function invalid(code){const error=new Error(code);error.code=code;throw error;}
@@ -35,6 +35,7 @@ export function canonicalGithubCIIndependentQaReceipt(source){
     source.proposal_job_id,
     source.artifact_key,
     source.patch_sha256,
+    source.patched_file_sha256,
     source.qa_role,
     source.qa_verdict,
   ].join("|");
@@ -60,6 +61,7 @@ export function validateGithubCIIndependentQaEnvelope(message={}){
      !PATCHABLE_TEST_PATH.test(message.artifact_key||"")||
      String(message.artifact_key).includes("..")||
      !DIGEST.test(message.patch_sha256||"")||
+     !DIGEST.test(message.patched_file_sha256||"")||
      message.qa_role!=="hermes-qa-evidence-auditor"||
      message.qa_verdict!=="PASS"||
      !DIGEST.test(message.qa_receipt_sha256||"")) {
@@ -166,6 +168,7 @@ export async function verifyGithubCIIndependentQaEnvelope(message,{
       proposal_job_id:source.proposal_job_id,
       source_head_sha:source.source_head_sha,
       patch_sha256:source.patch_sha256,
+      patched_file_sha256:source.patched_file_sha256,
       qa_receipt_sha256:source.qa_receipt_sha256,
       release_state:"BLOCKED",
       blocker:"AUTHENTICATED_RELEASE_EVIDENCE_INCOMPLETE",

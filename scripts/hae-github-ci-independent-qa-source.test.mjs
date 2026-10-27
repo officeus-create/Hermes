@@ -27,12 +27,12 @@ const proposalJob="job:proposal-qa-source-1";
 const releaseJob="job:release-qa-source-1";
 const diff='diff --git a/'+artifact+' b/'+artifact+'\n--- a/'+artifact+'\n+++ b/'+artifact+'\n@@ -1,1 +1,1 @@\n-assert.equal(0,1);\n+assert.equal(1,1);\n';
 const patchSha=sha256(diff);
+const patchedFileSha=sha256('import assert from "node:assert/strict";\nassert.equal(1,1);\n');
 const qaDigest=sha256(canonicalGithubCIIndependentQaReceipt({
   run_id:runId,run_attempt:runAttempt,producer_main_sha:producer,source_head_sha:head,
   work_id:workId,finding_id:findingId,repair_job_id:repairJob,proposal_job_id:proposalJob,
-  artifact_key:artifact,patch_sha256:patchSha,qa_role:"hermes-qa-evidence-auditor",qa_verdict:"PASS",
+  artifact_key:artifact,patch_sha256:patchSha,patched_file_sha256:patchedFileSha,qa_role:"hermes-qa-evidence-auditor",qa_verdict:"PASS",
 }));
-const patchedFileSha=sha256('import assert from "node:assert/strict";\nassert.equal(1,1);\n');
 const patchReceipt={
   status:"HOLD_INDEPENDENT_QA",candidate_status:"HOLD_INDEPENDENT_QA",
   run_id:runId,run_attempt:runAttempt,proposal_job_id:proposalJob,
@@ -78,7 +78,7 @@ const settings={success:true,result:{bindings:[
 ]}};
 const d1=(results)=>({success:true,result:[{success:true,results}]});
 
-function fixture({preexisting=false,badRelease=false,badJobType=false,badQaDigest=false,badArtifactKey=false,badSourceHeadSha=false}={}){
+function fixture({preexisting=false,badRelease=false,badJobType=false,badQaDigest=false,badArtifactKey=false,badSourceHeadSha=false,badPatchedFileSha=false}={}){
   const calls=[];let sent=false;let executeCalls=0;
   const release=()=>({
     job_id:releaseJob,job_type:badJobType?"hae.self.patch.propose":"hae.self.release.verify",state:"SUCCEEDED",last_error_class:null,
@@ -90,6 +90,7 @@ function fixture({preexisting=false,badRelease=false,badJobType=false,badQaDiges
         repair_job_id:repairJob,proposal_job_id:proposalJob,
         source_head_sha:badSourceHeadSha?"f".repeat(40):head,
         patch_sha256:badRelease?"sha256:"+"f".repeat(64):patchSha,
+        patched_file_sha256:badPatchedFileSha?"sha256:"+"d".repeat(64):patchedFileSha,
         qa_receipt_sha256:badQaDigest?"sha256:"+"e".repeat(64):qaDigest,
         release_state:"BLOCKED",blocker:"AUTHENTICATED_RELEASE_EVIDENCE_INCOMPLETE",hold_release_reachable:false,independent_verifier_identity_ok:false,qa_identity_provenance:"SELF_ASSERTED_UNVERIFIED",
         exact_head_ci_verified:false,rollback_verified:false,automatic_merge_allowed:false,automatic_deploy_allowed:false,cost_usd:0
@@ -161,6 +162,7 @@ assert.equal(sentBody.body.qa_role,"hermes-qa-evidence-auditor");
 assert.equal(sentBody.body.qa_verdict,"PASS");
 assert.match(sentBody.body.qa_receipt_sha256,/^sha256:[a-f0-9]{64}$/);
 assert.equal(sentBody.body.patch_sha256,patchSha);
+assert.equal(sentBody.body.patched_file_sha256,patchedFileSha);
 
 const replay=fixture({preexisting:true});
 const replayResult=await dispatchGithubCIIndependentQa({
@@ -198,6 +200,7 @@ for(const [label,options] of [
   ["wrong_qa_digest",{badQaDigest:true}],
   ["wrong_artifact_key",{badArtifactKey:true}],
   ["wrong_source_head_sha",{badSourceHeadSha:true}],
+  ["wrong_patched_file_sha256",{badPatchedFileSha:true}],
 ]){
   const bad=fixture({preexisting:true,...options});
   await assert.rejects(()=>dispatchGithubCIIndependentQa({
