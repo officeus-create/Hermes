@@ -162,3 +162,62 @@ test("Logistics hero title remains contained on a 1440px viewport", async ({ pag
   expect(geometry!.headingRight).toBeLessThanOrEqual(geometry!.heroRight + 1);
   expect(geometry!.headingRight).toBeLessThanOrEqual(geometry!.viewportWidth);
 });
+
+
+test("all four Direction submenus keep visible icon motion and honor reduced-motion", async ({ browser }, testInfo) => {
+  const directions = [
+    { id: "logistics", path: "/paths/logistics/", count: 9 },
+    { id: "marketing", path: "/paths/marketing/", count: 8 },
+    { id: "technology", path: "/paths/technology/", count: 8 },
+    { id: "academy", path: "/paths/academy/", count: 8 },
+  ] as const;
+
+  const inspect = async (reducedMotion: "no-preference" | "reduce") => {
+    const context = await browser.newContext({
+      baseURL: testInfo.project.use.baseURL,
+      viewport: { width: 1440, height: 1000 },
+      reducedMotion,
+      isMobile: false,
+      hasTouch: false,
+    });
+    try {
+      const page = await context.newPage();
+      for (const direction of directions) {
+        await page.goto(direction.path);
+        const submenu = page.locator(`[data-direction-product-nav="${direction.id}"]`);
+        const links = submenu.locator("[data-direction-product-link]");
+        await expect(links).toHaveCount(direction.count);
+
+        for (let index = 0; index < direction.count; index += 1) {
+          const link = links.nth(index);
+          const icons = link.locator("[data-direction-nav-icon], .direction-product-nav__generic-icon");
+          await expect(icons).toHaveCount(1);
+          await link.hover();
+
+          const motionState = await link.evaluate((node) => ({
+            item: node.getAttribute("data-direction-product-link"),
+            animationNames: [...node.querySelectorAll<HTMLElement>("[data-direction-nav-icon] [class*='motion-'], .direction-product-nav__generic-icon")]
+              .map((element) => getComputedStyle(element).animationName),
+          }));
+
+          if (reducedMotion === "reduce") {
+            expect(
+              motionState.animationNames.every((name) => name === "none"),
+              `${direction.id}:${motionState.item} must disable icon animation for reduced motion; got ${motionState.animationNames.join(",")}`,
+            ).toBe(true);
+          } else {
+            expect(
+              motionState.animationNames.some((name) => name !== "none"),
+              `${direction.id}:${motionState.item} must animate on hover; got ${motionState.animationNames.join(",")}`,
+            ).toBe(true);
+          }
+        }
+      }
+    } finally {
+      await context.close();
+    }
+  };
+
+  await inspect("no-preference");
+  await inspect("reduce");
+});
