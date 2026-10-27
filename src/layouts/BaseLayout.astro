@@ -149,7 +149,7 @@ const replaceRetiredPublicText = (value: unknown): unknown => {
   return value;
 };
 
-const conciseDescription = (value: string, maxLength = 170) => {
+const conciseDescription = (value: string, maxLength = 160) => {
   const normalized = value.replace(/\s+/g, " ").trim();
   if (normalized.length <= maxLength) return normalized;
 

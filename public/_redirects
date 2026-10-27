@@ -11,3 +11,11 @@
 /ai-command-center/ /services/hermes-connect/ai-command-center/ 301
 /unified-inbox/ /services/hermes-connect/unified-inbox/ 301
 /paths/logistics/broker-capacity/ /paths/logistics/brokers/carrier-capacity/ 301
+/ru/paths/logistics/ /ru/logistics/ 301
+/ru/paths/marketing/ /ru/marketing/ 301
+/ru/paths/technology/ /ru/technology/ 301
+/ru/paths/academy/ /ru/academy/ 301
+/ru/paths/logistics /ru/logistics/ 301
+/ru/paths/marketing /ru/marketing/ 301
+/ru/paths/technology /ru/technology/ 301
+/ru/paths/academy /ru/academy/ 301
