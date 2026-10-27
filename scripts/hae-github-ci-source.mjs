@@ -4,7 +4,6 @@
 // No untrusted PR code/logs, model call, deploy, D1 write, or blind resend.
 import fs from "node:fs";
 import { githubCIWorkflowIdentityVerified } from "../workers/automation-engine/src/github-ci-workflow-identity.mjs";
-import { validateT4Heartbeat } from "./hae-t4-dlq-canary.mjs";
 import { pathToFileURL } from "node:url";
 
 const REPO="officeus-create/Hermes",API="https://api.cloudflare.com/client/v4";
@@ -21,12 +20,6 @@ async function jsonFetch(url,token,fetchImpl,postBody){
   try{resp=await fetchImpl(url,opts);}catch{fail("github_ci_source_transport_ambiguous_no_retry");}
   if(!resp?.ok)fail("github_ci_source_http_rejected");
   try{return await resp.json();}catch{fail("github_ci_source_json_invalid");}
-}
-function d1Rows(payload){
-  if(payload?.success!==true||!Array.isArray(payload.result)||payload.result.length!==1||
-    payload.result[0]?.success===false||!Array.isArray(payload.result[0]?.results))
-    fail("github_ci_d1_response_invalid");
-  return payload.result[0].results;
 }
 export async function dispatchGithubCIEvent({
   runId,runAttempt,repo=REPO,githubToken,cloudflareToken,accountId,expectedMainSha,
@@ -48,25 +41,16 @@ export async function dispatchGithubCIEvent({
     run?.html_url!=="https://github.com/"+REPO+"/actions/runs/"+runId)
     fail("github_ci_source_run_verification_failed");
 
-  const pages=await jsonFetch(API+"/accounts/"+accountId+"/pages/projects/hermes",cloudflareToken,fetchImpl);
-  if(pages?.success!==true)fail("github_ci_pages_lookup_invalid");
-  const binding=pages.result?.deployment_configs?.production?.d1_databases?.DB;
-  if(!UUID.test(binding?.id||""))fail("github_ci_canonical_d1_id_missing");
-  const dbId=binding.id;
-  let dbName=binding.database_name||binding.name;
-  if(!dbName){
-    const detail=await jsonFetch(API+"/accounts/"+accountId+"/d1/database/"+dbId,cloudflareToken,fetchImpl);
-    if(detail?.success!==true||!detail?.result)fail("github_ci_d1_metadata_invalid");
-    if(detail.result.uuid&&detail.result.uuid!==dbId)fail("github_ci_d1_metadata_id_mismatch");
-    dbName=detail.result.name||detail.result.database_name;
-  }
-  if(dbName!=="hermes-connect-prototype")fail("github_ci_canonical_d1_name_mismatch");
-
-  const heartbeatSql="SELECT trigger_type,source_sha,automation_mode,publication_config,publication_enabled,observed_at FROM hermes_automation_heartbeats ORDER BY observed_at DESC LIMIT 1";
-  const heartbeat=await jsonFetch(API+"/accounts/"+accountId+"/d1/database/"+dbId+"/query",cloudflareToken,fetchImpl,{sql:heartbeatSql,params:[]});
-  d1Rows(heartbeat);
-  try{validateT4Heartbeat(heartbeat,expectedMainSha,now());}
-  catch{fail("github_ci_worker_not_exact_dry_run_main");}
+  const settings=await jsonFetch(API+"/accounts/"+accountId+"/workers/scripts/hermes-automation-engine/settings",cloudflareToken,fetchImpl);
+  if(settings?.success!==true||!Array.isArray(settings?.result?.bindings))fail("github_ci_worker_settings_invalid");
+  const value=(name)=>{
+    const binding=settings.result.bindings.find(item=>item?.name===name);
+    return binding?.text ?? binding?.value ?? null;
+  };
+  if(value("HERMES_AUTOMATION_SOURCE_SHA")!==expectedMainSha ||
+     value("HERMES_AUTOMATION_MODE")!=="dry_run" ||
+     value("HERMES_AUTOMATION_PUBLISH")!=="disabled")
+    fail("github_ci_worker_not_exact_dry_run_main");
 
   // Recheck main immediately before the sole external Queue write.
   const mainAgain=await jsonFetch("https://api.github.com/repos/"+REPO+"/branches/main",githubToken,fetchImpl);
