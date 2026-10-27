@@ -77,4 +77,15 @@ assert.equal(writes.some(x=>/deployments|subdomain|scripts\/hermes-automation-en
 await assert.rejects(()=>readbackGithubCIEvent({...opts,expectedMainSha:"f".repeat(40)}),e=>e.code==="github_ci_readback_main_moved");
 await assert.rejects(()=>readbackGithubCIEvent({...opts,runAttempt:0}),e=>e.code==="github_ci_readback_preflight_invalid");
 
+
+import fs from "node:fs";
+const workflow=fs.readFileSync(new URL("../.github/workflows/automation-engine-release.yml",import.meta.url),"utf8");
+const ciBlock=workflow.slice(workflow.indexOf("\n  ci_readback:\n"));
+assert.ok(ciBlock.includes("GH_TOKEN: " + "$" + "{{ github.token }}"));
+assert.ok(ciBlock.includes("CLOUDFLARE_HAE_RELEASE_TOKEN: " + "$" + "{{ secrets.CLOUDFLARE_HAE_RELEASE_TOKEN }}"));
+assert.ok(ciBlock.includes("HAE_CI_READBACK_COMMAND: " + "$" + "{{ github.event.comment.body }}"));
+assert.ok(ciBlock.includes("path: " + "$" + "{{ runner.temp }}/hae-ci-readback.json"));
+assert.equal((workflow.match(/\$\{\{[^}\n]+\}(?!\})/g)||[]).length,0,"single-closing-brace GitHub expressions must not enter release workflow");
+assert.equal((workflow.match(/\$\{\{[^}\n]+\}\}\}/g)||[]).length,0,"triple-closing-brace GitHub expressions must not enter release workflow");
+
 console.log("HAE CI readback PASS: existing source event only; D1 SELECTs; zero Queue/provider/model writes");

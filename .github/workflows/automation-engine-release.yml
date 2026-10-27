@@ -999,9 +999,9 @@ jobs:
       actions: read
       contents: read
     env:
-      GH_TOKEN: ${{ github.token }
-      CLOUDFLARE_HAE_RELEASE_TOKEN: ${{ secrets.CLOUDFLARE_HAE_RELEASE_TOKEN }
-      HAE_CI_READBACK_COMMAND: ${{ github.event.comment.body }
+      GH_TOKEN: ${{ github.token }}
+      CLOUDFLARE_HAE_RELEASE_TOKEN: ${{ secrets.CLOUDFLARE_HAE_RELEASE_TOKEN }}
+      HAE_CI_READBACK_COMMAND: ${{ github.event.comment.body }}
     steps:
       - name: Checkout exact current main
         uses: actions/checkout@v6
@@ -1024,6 +1024,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: hae-ci-readback
-          path: ${{ runner.temp }/hae-ci-readback.json
+          path: ${{ runner.temp }}/hae-ci-readback.json
           if-no-files-found: error
           retention-days: 90
