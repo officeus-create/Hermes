@@ -1,0 +1,91 @@
+name: Cloudflare app HSTS remediation
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: cloudflare-app-hsts-remediation
+  cancel-in-progress: false
+
+jobs:
+  app-hsts:
+    if: >-
+      github.event.issue.number == 1349 &&
+      github.event.comment.body == '/apply-app-hsts' &&
+      contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)
+    name: Apply bounded HSTS to legacy app hostname
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 10
+    env:
+      GH_TOKEN: ${{ github.token }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN || secrets.CF_API_TOKEN || secrets.CLOUDFLARE_TOKEN }}
+
+    steps:
+      - name: Check out current main
+        uses: actions/checkout@v6
+        with:
+          ref: main
+
+      - name: Apply hostname-only HSTS rule
+        id: hsts
+        continue-on-error: true
+        shell: bash
+        run: bash scripts/cloudflare-app-hsts.sh
+
+      - name: Publish sanitized result
+        if: always()
+        shell: bash
+        env:
+          STEP_OUTCOME: ${{ steps.hsts.outcome }}
+          CLASSIFICATION: ${{ steps.hsts.outputs.classification }}
+        run: |
+          set -euo pipefail
+          checked_sha="$(git rev-parse HEAD)"
+          safe_class="${CLASSIFICATION:-not_run}"
+          case "$safe_class" in
+            pass|already_live|blocked_cloudflare_token|blocked_zone_lookup|blocked_ruleset_read|blocked_ruleset_write|mutation_applied_live_not_observed|not_run) ;;
+            *) safe_class="unexpected_failure" ;;
+          esac
+
+          if [[ "$STEP_OUTCOME" == "success" && ( "$safe_class" == "pass" || "$safe_class" == "already_live" ) ]]; then
+            overall="PASS"
+            summary="The legacy app hostname now returns Strict-Transport-Security: max-age=31536000. No zone-wide HSTS, includeSubDomains or preload setting was enabled."
+          else
+            overall="BLOCKED"
+            summary="The bounded app-host HSTS remediation did not reach live verification. No success claim is allowed; use the privacy-safe classification below to route the blocker."
+          fi
+
+          cat > "${RUNNER_TEMP}/cloudflare-app-hsts.md" <<EOF
+          ## Cloudflare app HSTS remediation — ${overall}
+
+          ${summary}
+
+          - checked repository revision: \`${checked_sha}\`
+          - privacy-safe classification: \`${safe_class}\`
+          - workflow run: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}
+
+          Guardrails: command-gated to canonical Cloudflare issue #1349 and trusted repository actors; production environment only; exact hostname \`app.hermeslogisticsus.com\`; static HSTS value \`max-age=31536000\`; no \`includeSubDomains\`, no preload, no DNS mutation, no Pages project deletion/redirect, and no secret/zone/ruleset identifiers are published.
+          EOF
+
+          gh issue comment 1349 --repo "$GITHUB_REPOSITORY" --body-file "${RUNNER_TEMP}/cloudflare-app-hsts.md"
+
+      - name: Enforce live HSTS verification
+        if: always()
+        shell: bash
+        env:
+          STEP_OUTCOME: ${{ steps.hsts.outcome }}
+          CLASSIFICATION: ${{ steps.hsts.outputs.classification }}
+        run: |
+          if [[ "$STEP_OUTCOME" != "success" ]]; then
+            exit 1
+          fi
+          case "${CLASSIFICATION:-}" in
+            pass|already_live) ;;
+            *) exit 1 ;;
+          esac
