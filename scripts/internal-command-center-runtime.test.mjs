@@ -65,10 +65,19 @@ listResponse=await listWorkItems({request:request("/api/internal-command-center/
 listPayload=await listResponse.json();
 const firstAfter=listPayload.work_items.find(item=>item.id===first.id);
 const secondAfter=listPayload.work_items.find(item=>item.id===second.id);
-assert.equal(firstAfter.status,"done");
+assert.equal(firstAfter.status,"awaiting_acceptance");
 assert.equal(firstAfter.linked_task_status,"completed");
 assert.equal(firstAfter.linked_task_output_summary,"Synthetic completion evidence");
+assert.equal(firstAfter.completed_at,null);
+assert.equal(firstAfter.accepted_at,null);
 assert.equal(secondAfter.status,"planned");
+
+const accepted=await patch(first.id,"accept");
+assert.equal(accepted.response.status,200);
+assert.equal(accepted.payload.work_item.status,"done");
+assert.equal(accepted.payload.work_item.accepted_by,"owner");
+assert.ok(accepted.payload.work_item.accepted_at);
+assert.ok(accepted.payload.work_item.completed_at);
 
 const secondDispatched=await patch(second.id,"dispatch");
 assert.equal(secondDispatched.response.status,200);

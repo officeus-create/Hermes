@@ -27,6 +27,8 @@ It does not replace existing Hermes Connect vertical CRM records, Unified Inbox 
 
 The only new durable owner-domain record is hermes_owner_work_items: a private planning backlog that links, when dispatched, to the existing hermes_internal_ai_tasks queue.
 
+Owner-configured recurring execution remains inside the same canonical HAE data plane. `hermes_automation_processes` stores bounded process definitions and `hermes_automation_process_events` stores their immutable activation, pause, dispatch and error receipts. These tables reuse the existing Hermes Connect production D1 and the existing HAE Queue; they are not another scheduler or task registry.
+
 ## Mac / outage behavior
 
 Cloudflare Pages + D1 own command-center state. The Mac is an outbound AI runner, not the database and not the web server.
@@ -52,10 +54,36 @@ OWNER IDEA / DICTATION
 → outbound Mac runner
 → isolated Codex task branch
 → sanitized result / PR / evidence
-→ safe owner approval gate when required
-→ work item reconciles to done or blocked.
+→ work item enters `awaiting_acceptance`
+→ owner reviews the result and evidence
+→ explicit Accept records `accepted_by`, `accepted_at`, and completion time
+→ work item becomes done; Needs rework returns it to blocked with a reason.
 
 Multiple owner work items may exist. The current Internal AI invariant remains one active AI task at a time.
+
+`hermes_internal_ai_tasks.status = completed` proves that execution ended. It does not prove that the requested business result was accepted. Linked AI work cannot use the generic manual-completion action to bypass this boundary.
+
+## Autonomous HAE processes
+
+The first owner-configurable 24/7 slice is deliberately read-only and zero-cost-first:
+
+OWNER SELECTS VERIFIED CAPABILITY
+→ process is created paused
+→ owner explicitly activates it
+→ absolute UTC `next_run_at` is stored in D1
+→ the existing hourly HAE Cron claims the due process with a lease
+→ the existing HAE generic-job executor writes one idempotent Queue job
+→ job/runtime receipts update the existing HAE tables
+→ Command Center shows next run, last run, last job state and error class
+→ owner may pause future runs without deleting evidence.
+
+One owner-managed process controls one job type. When configured, it replaces that capability's built-in schedule instead of creating a duplicate run.
+
+Current allowed process templates are bounded deterministic/read-only role contracts for Logistics source freshness, AI gateway readiness, HAE self-improvement audit, Marketing content duplicate audit, Search snapshot and Academy work-English practice. Each template has an allowlisted cadence. Arbitrary prompts, arbitrary payloads, semantic/paid jobs and provider writes cannot be configured through this API.
+
+Activation means "due for the next HAE hourly tick"; it is not a promise of instant execution. The process stays useful without an open ChatGPT/Codex/browser session. Paid AI fallback remains disabled and the automatic paid cost ceiling is `$0`.
+
+External communications, publishing, CRM/customer mutations, billing and other consequential jobs require separate versioned runtime contracts and their existing owner gates before they can appear in this catalog.
 
 ## Voice
 

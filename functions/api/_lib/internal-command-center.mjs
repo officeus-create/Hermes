@@ -23,8 +23,24 @@ export async function ensureCommandCenterSchema(db) {
     updated_at TEXT NOT NULL,
     linked_task_id TEXT,
     completed_at TEXT,
+    acceptance_status TEXT NOT NULL DEFAULT 'not_required' CHECK (acceptance_status IN ('not_required','awaiting','accepted')),
+    accepted_by TEXT,
+    accepted_at TEXT,
     blocked_reason TEXT
   )`).run();
+  const columns=await db.prepare("PRAGMA table_info(hermes_owner_work_items)").all();
+  const names=new Set((columns?.results||[]).map((column)=>String(column.name)));
+  for(const [name,definition] of [
+    ["acceptance_status","TEXT NOT NULL DEFAULT 'not_required' CHECK (acceptance_status IN ('not_required','awaiting','accepted'))"],
+    ["accepted_by","TEXT"],
+    ["accepted_at","TEXT"],
+  ]) if(!names.has(name)) {
+    try { await db.prepare(`ALTER TABLE hermes_owner_work_items ADD COLUMN ${name} ${definition}`).run(); }
+    catch(error) {
+      const current=await db.prepare("PRAGMA table_info(hermes_owner_work_items)").all();
+      if(!(current?.results||[]).some((column)=>String(column.name)===name)) throw error;
+    }
+  }
   await db.prepare("CREATE INDEX IF NOT EXISTS idx_owner_work_items_scope_state_priority ON hermes_owner_work_items(organization_scope,status,priority,created_at)").run();
   await db.prepare(`CREATE TABLE IF NOT EXISTS hermes_internal_owner_access_audit (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -45,10 +61,12 @@ export function normalizeWorkItemDetails(value) { const v=String(value||"").repl
 export function newWorkItemId(){ return `hcwi_${crypto.randomUUID()}`; }
 export function publicWorkItem(row){
   if(!row)return null;
+  const status=String(row.status)==="in_progress"&&String(row.acceptance_status)==="awaiting"?"awaiting_acceptance":String(row.status);
   return {
     id:String(row.id), workstream:String(row.workstream), priority:String(row.priority), title:String(row.title), details:String(row.details),
-    source:String(row.source||"text"), status:String(row.status), created_at:row.created_at||null, updated_at:row.updated_at||null,
-    linked_task_id:row.linked_task_id||null, completed_at:row.completed_at||null, blocked_reason:row.blocked_reason||null,
+    source:String(row.source||"text"), status, acceptance_status:String(row.acceptance_status||"not_required"), created_at:row.created_at||null, updated_at:row.updated_at||null,
+    linked_task_id:row.linked_task_id||null, completed_at:row.completed_at||null,
+    accepted_by:row.accepted_by||null, accepted_at:row.accepted_at||null, blocked_reason:row.blocked_reason||null,
     linked_task_status:row.linked_task_status||null, linked_task_updated_at:row.linked_task_updated_at||null,
     linked_task_pr_url:row.linked_task_pr_url||null, linked_task_output_summary:row.linked_task_output_summary||null,
   };
@@ -71,10 +89,10 @@ export const commandCenterNow=nowIso;
 export async function reconcileWorkItems(db) {
   const now=nowIso();
   await db.prepare(`UPDATE hermes_owner_work_items
-    SET status = 'done', completed_at = COALESCE(completed_at, ?), updated_at = ?
-    WHERE organization_scope = 'hermes_internal' AND status = 'in_progress' AND linked_task_id IN (
+    SET acceptance_status = 'awaiting', completed_at = NULL, accepted_by = NULL, accepted_at = NULL, updated_at = ?
+    WHERE organization_scope = 'hermes_internal' AND status = 'in_progress' AND acceptance_status != 'awaiting' AND linked_task_id IN (
       SELECT id FROM hermes_internal_ai_tasks WHERE organization_scope = 'hermes_internal' AND status = 'completed'
-    )`).bind(now,now).run();
+    )`).bind(now).run();
   await db.prepare(`UPDATE hermes_owner_work_items
     SET status = 'blocked', blocked_reason = COALESCE(blocked_reason, 'Linked AI task ended without completion; review evidence.'), updated_at = ?
     WHERE organization_scope = 'hermes_internal' AND status = 'in_progress' AND linked_task_id IN (

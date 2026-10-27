@@ -138,6 +138,32 @@ Add or update one row with:
 - smallest safe next action;
 - verification required to close.
 
+## 2026-10-27 — Command Center AI completion was incorrectly treated as owner acceptance
+
+PROBLEM: The Business Command Center automatically changed a linked owner work item to `done` when its Internal AI task reported `completed`.
+
+ROOT_CAUSE: The first reconciliation contract collapsed execution completion and owner acceptance into one status transition.
+
+FAILED_APPROACH: Treating a runner terminal state and green technical evidence as proof that the owner's requested business outcome was accepted.
+
+WORKING_APPROACH: Preserve the existing D1 backlog and Internal AI queue, add a backward-compatible acceptance receipt, project completed execution as `awaiting_acceptance`, and require an authenticated owner to choose Accept or Needs rework. Generic manual completion fails closed for linked AI results.
+
+EVIDENCE: Focused SQLite state/runtime/contract coverage exercises legacy-schema migration, completed-to-review reconciliation, rejection of premature acceptance, durable acceptance actor/time, and the owner review UI. Exact-head full CI remains required before release.
+
+LESSON: `SUCCEEDED` is execution evidence; `ACCEPTED` is a separate owner decision.
+
+REUSE_RULE: Every HAE/plugin/agent workflow must preserve execution, independent evidence, and business acceptance as separate receipts. Never infer acceptance from a terminal worker state, PR, test, or plugin release.
+
+## ERR-E2E-INTERACTION-STABILITY-20261027 — unrelated public-page controls never become stable in local full-suite preview
+
+STATUS: OPEN / OUTSIDE COMMAND CENTER SCOPE.
+
+EVIDENCE: The required 2,544-scenario Playwright run completed with 2,518 PASS, 16 expected skips, and 10 timeouts: the same five interaction scenarios on desktop/mobile (`catalog-knb-client-strategy`, `hermes-connect-hub-locale-seo-safe`, `load-board-carrier-operating-path`, and two `repair-public-entry-context` cases). A sequential one-worker rerun reproduced all five desktop timeouts while waiting for already-visible controls to become stable. The focused Command Center browser suite passed 14/14 on the same build and preview. The autonomous-process continuation reproduced the same 10 desktop/mobile timeouts with 2,520 PASS and 16 expected skips; its expanded focused Command Center suite passed 16/16.
+
+BOUNDARY: None of the failing files, selectors, routes, or shared components changed in the Command Center acceptance slice. Do not weaken or rewrite those public/design tests in PR #2107.
+
+NEXT: The active visual owner should inspect the retained traces for perpetual layout/motion instability and repair the shared public interaction boundary on its own branch; then rerun the five files and full E2E.
+
 
 ## 2026-09-12 — Load Board source setup release reconciliation
 
