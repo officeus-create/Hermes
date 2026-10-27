@@ -2437,6 +2437,9 @@ export default {
       if (!authorized(request, env)) return json(401, { success: false, error: "unauthorized" });
       if (!env.DB || !env.AUTOMATION_QUEUE) return json(503, { success: false, error: "runtime_not_configured" });
       const body = await request.json().catch(() => ({}));
+      if (Object.hasOwn(body || {}, "internal_submission")) {
+        return json(400, { success: false, error: "internal_submission_forbidden" });
+      }
       try {
         const created = await createGenericJob(env, body);
         return json(created.created ? 202 : 200, { success: true, ...created });
