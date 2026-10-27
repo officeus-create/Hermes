@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import {createHash} from "node:crypto";
 import {dispatchGithubCIIndependentQa} from "./hae-github-ci-independent-qa-source.mjs";
+import {canonicalGithubCIIndependentQaReceipt} from "../workers/automation-engine/src/github-ci-independent-qa-runtime-intake.mjs";
 
 // Fail closed at GitHub job admission: unset/false cannot reach Queue or credentials.
 const sensorWorkflow=fs.readFileSync(new URL("../.github/workflows/hae-github-ci-sensor.yml",import.meta.url),"utf8");
@@ -26,6 +27,11 @@ const proposalJob="job:proposal-qa-source-1";
 const releaseJob="job:release-qa-source-1";
 const diff='diff --git a/'+artifact+' b/'+artifact+'\n--- a/'+artifact+'\n+++ b/'+artifact+'\n@@ -1,1 +1,1 @@\n-assert.equal(0,1);\n+assert.equal(1,1);\n';
 const patchSha=sha256(diff);
+const qaDigest=sha256(canonicalGithubCIIndependentQaReceipt({
+  run_id:runId,run_attempt:runAttempt,producer_main_sha:producer,source_head_sha:head,
+  work_id:workId,finding_id:findingId,repair_job_id:repairJob,proposal_job_id:proposalJob,
+  artifact_key:artifact,patch_sha256:patchSha,qa_role:"hermes-qa-evidence-auditor",qa_verdict:"PASS",
+}));
 const patchedFileSha=sha256('import assert from "node:assert/strict";\nassert.equal(1,1);\n');
 const patchReceipt={
   status:"HOLD_INDEPENDENT_QA",candidate_status:"HOLD_INDEPENDENT_QA",
@@ -72,14 +78,15 @@ const settings={success:true,result:{bindings:[
 ]}};
 const d1=(results)=>({success:true,result:[{success:true,results}]});
 
-function fixture({preexisting=false,badRelease=false}={}){
+function fixture({preexisting=false,badRelease=false,badJobType=false,badQaDigest=false}={}){
   const calls=[];let sent=false;let executeCalls=0;
   const release=()=>({
-    job_id:releaseJob,state:"SUCCEEDED",last_error_class:null,
+    job_id:releaseJob,job_type:badJobType?"hae.self.patch.propose":"hae.self.release.verify",state:"SUCCEEDED",last_error_class:null,
     result_json:JSON.stringify({
       external_write:false,
       result:{
         work_id:workId,patch_sha256:badRelease?"sha256:"+"f".repeat(64):patchSha,
+        qa_receipt_sha256:badQaDigest?"sha256:"+"e".repeat(64):qaDigest,
         release_state:"BLOCKED",blocker:"AUTHENTICATED_RELEASE_EVIDENCE_INCOMPLETE",hold_release_reachable:false,independent_verifier_identity_ok:false,qa_identity_provenance:"SELF_ASSERTED_UNVERIFIED",
         exact_head_ci_verified:false,rollback_verified:false,automatic_merge_allowed:false,automatic_deploy_allowed:false,cost_usd:0
       }
@@ -181,5 +188,19 @@ await assert.rejects(()=>dispatchGithubCIIndependentQa({
   sleepImpl:async()=>{},maxReadbackAttempts:1,
 }),/github_ci_qa_source_existing_release_conflict/);
 assert.equal(conflict.calls.some(x=>x.url.endsWith("/queues/"+queue+"/messages")),false);
+
+for(const [label,options] of [
+  ["wrong_job_type",{badJobType:true}],
+  ["wrong_qa_digest",{badQaDigest:true}],
+]){
+  const bad=fixture({preexisting:true,...options});
+  await assert.rejects(()=>dispatchGithubCIIndependentQa({
+    runId,runAttempt,expectedMainSha:producer,githubToken:"gh",cloudflareToken:"cf",accountId:account,
+    repoRoot:"/tmp/qa-source",patchReceipt,fetchImpl:bad.fetchImpl,executeImpl:bad.executeImpl,
+    sleepImpl:async()=>{},maxReadbackAttempts:1,
+  }),/github_ci_qa_source_existing_release_conflict/,label);
+  assert.equal(bad.executeCalls,0,label+":must_not_reproof");
+  assert.equal(bad.sent,false,label+":must_not_enqueue");
+}
 
 console.log("HAE independent QA source PASS: clean reproof -> one Queue receipt -> D1 QA receipt; HOLD_RELEASE blocked; replay no resend");

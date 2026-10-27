@@ -85,12 +85,13 @@ function validatePatchReceipt(receipt,{runId,runAttempt}){
   }
   return receipt;
 }
-function releaseReceiptMatches(row,{workId,patchSha}){
-  if(!row||String(row.state||"")!=="SUCCEEDED")return false;
+function releaseReceiptMatches(row,{workId,patchSha,qaDigest}){
+  if(!row||row.job_type!=="hae.self.release.verify"||String(row.state||"")!=="SUCCEEDED")return false;
   const parsed=safeResult(row.result_json);
   return parsed?.external_write===false&&
     parsed?.result?.work_id===workId&&
     parsed?.result?.patch_sha256===patchSha&&
+    parsed?.result?.qa_receipt_sha256===qaDigest&&
     parsed?.result?.release_state==="BLOCKED"&&
     parsed?.result?.blocker==="AUTHENTICATED_RELEASE_EVIDENCE_INCOMPLETE"&&
     parsed?.result?.hold_release_reachable===false&&
@@ -185,11 +186,24 @@ export async function dispatchGithubCIIndependentQa({
      repairResult?.result?.repair_state!=="HOLD_REPAIR")
     fail("github_ci_qa_source_repair_contract_mismatch");
 
+  // Derive replay identity before readback, without executing the repair or enqueuing.
+  const qaMessage={
+    type:"github.ci.qa.verify",
+    run_id:runId,run_attempt:runAttempt,producer_main_sha:expectedMainSha,
+    repository:REPO,workflow_name:run.name,workflow_path:run.path,workflow_id:run.workflow_id,
+    source_head_sha:receipt.base_sha,work_id:receipt.work_id,finding_id:receipt.finding_id,
+    repair_job_id:proposalPayload.repair_job_id,proposal_job_id:receipt.proposal_job_id,
+    artifact_key:receipt.artifact_key,patch_sha256:receipt.patch_sha256,
+    qa_role:"hermes-qa-evidence-auditor",qa_verdict:"PASS",
+    qa_receipt_sha256:"",
+  };
+  qaMessage.qa_receipt_sha256=hash(canonicalGithubCIIndependentQaReceipt(qaMessage));
+
   const releaseKey="hae:receipt:self.qa.verify:"+receipt.work_id;
-  const releaseSql="SELECT job_id,state,result_json,last_error_class FROM hermes_automation_jobs WHERE idempotency_key=? LIMIT 2";
+  const releaseSql="SELECT job_id,job_type,state,result_json,last_error_class FROM hermes_automation_jobs WHERE idempotency_key=? LIMIT 2";
   let releases=await d1Query(accountId,dbId,cloudflareToken,fetchImpl,releaseSql,[releaseKey]);
   if(releases.length>1)fail("github_ci_qa_source_duplicate_release_receipts");
-  if(releases.length===1&&releaseReceiptMatches(releases[0],{workId:receipt.work_id,patchSha:receipt.patch_sha256})){
+  if(releases.length===1&&releaseReceiptMatches(releases[0],{workId:receipt.work_id,patchSha:receipt.patch_sha256,qaDigest:qaMessage.qa_receipt_sha256})){
     return Object.freeze({
       status:"INDEPENDENT_QA_EVIDENCE_ONLY",duplicate:true,queue_sent:false,
       release_job_id:String(releases[0].job_id||""),work_id:receipt.work_id,
@@ -228,18 +242,6 @@ export async function dispatchGithubCIIndependentQa({
      qaProof?.paid_ai_cost_usd!==0)
     fail("github_ci_qa_source_independent_reproof_mismatch");
 
-  const qaMessage={
-    type:"github.ci.qa.verify",
-    run_id:runId,run_attempt:runAttempt,producer_main_sha:expectedMainSha,
-    repository:REPO,workflow_name:run.name,workflow_path:run.path,workflow_id:run.workflow_id,
-    source_head_sha:receipt.base_sha,work_id:receipt.work_id,finding_id:receipt.finding_id,
-    repair_job_id:proposalPayload.repair_job_id,proposal_job_id:receipt.proposal_job_id,
-    artifact_key:receipt.artifact_key,patch_sha256:receipt.patch_sha256,
-    qa_role:"hermes-qa-evidence-auditor",qa_verdict:"PASS",
-    qa_receipt_sha256:"",
-  };
-  qaMessage.qa_receipt_sha256=hash(canonicalGithubCIIndependentQaReceipt(qaMessage));
-
   const mainAgain=await jsonFetch("https://api.github.com/repos/"+REPO+"/branches/main",githubToken,fetchImpl);
   if(mainAgain?.commit?.sha!==expectedMainSha)fail("github_ci_qa_source_main_moved");
   const queues=await jsonFetch(API+"/accounts/"+accountId+"/queues",cloudflareToken,fetchImpl);
@@ -255,7 +257,7 @@ export async function dispatchGithubCIIndependentQa({
     if(releases.length>1)fail("github_ci_qa_source_duplicate_release_receipts");
     if(releases.length===1){
       if(releases[0].state==="FAILED")fail("github_ci_qa_source_release_failed");
-      if(releaseReceiptMatches(releases[0],{workId:receipt.work_id,patchSha:receipt.patch_sha256})){
+      if(releaseReceiptMatches(releases[0],{workId:receipt.work_id,patchSha:receipt.patch_sha256,qaDigest:qaMessage.qa_receipt_sha256})){
         return Object.freeze({
           status:"INDEPENDENT_QA_EVIDENCE_ONLY",duplicate:false,queue_sent:queueSent,
           release_job_id:String(releases[0].job_id||""),work_id:receipt.work_id,
