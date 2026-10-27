@@ -1,6 +1,6 @@
 import { getAuthenticatedSpecialist, jsonResponse } from "../_lib/session.mjs";
 import { ensureLoadBoardSchema } from "../_lib/load-board-schema.mjs";
-import { specialistHasLoadBoardAccess } from "../_lib/hermes-company-profiles.mjs";
+import { getSpecialistLoadBoardCompany } from "../_lib/hermes-company-profiles.mjs";
 import { finiteNumber, normalizeEquipment, scoreOpportunity } from "../_lib/load-board-opportunity.mjs";
 
 type Env = { DB?: any };
@@ -21,8 +21,9 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
 
   const specialist = await getAuthenticatedSpecialist(request, env.DB);
   if (!specialist) return jsonResponse(401, { success: false, error: "authentication_required" });
-  if (!(await specialistHasLoadBoardAccess(env.DB, specialist))) {
-    return jsonResponse(403, { success: false, error: "dispatcher_or_carrier_role_required", next_url: "/services/hermes-connect/load-board/access/" });
+  const carrierCompany = await getSpecialistLoadBoardCompany(env.DB, specialist);
+  if (!carrierCompany) {
+    return jsonResponse(403, { success: false, error: "verified_carrier_access_required", next_url: "/services/hermes-connect/load-board/access/" });
   }
 
   const url = new URL(request.url);
@@ -36,9 +37,9 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
   const conditions = [
     "r.record_type = 'load'", "r.status = 'active'", "r.expires_at > ?", "r.visibility IN ('public', 'carrier_only')", "r.equipment = ?",
     "s.status='active'", "s.read_enabled=1",
-    "((r.visibility='public' AND s.redistribution_permission='public') OR (r.visibility='carrier_only' AND s.redistribution_permission IN ('public','carrier_only')))",
+    "((r.visibility='public' AND s.redistribution_permission='public') OR (r.visibility='carrier_only' AND s.redistribution_permission IN ('public','carrier_only')) OR (r.visibility='carrier_only' AND s.redistribution_permission='carrier_scoped' AND s.authorized_carrier_company_id=?))",
   ];
-  const bindings: any[] = [new Date().toISOString(), equipment];
+  const bindings: any[] = [new Date().toISOString(), equipment, carrierCompany.id];
   if (minRpm !== null) { conditions.push("r.rate_per_mile >= ?"); bindings.push(minRpm); }
   if (maxDeadhead !== null) { conditions.push("(r.deadhead_miles IS NULL OR r.deadhead_miles <= ?)"); bindings.push(maxDeadhead); }
 

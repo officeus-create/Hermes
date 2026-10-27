@@ -29,9 +29,13 @@ export async function onRequestGet(context:Context) {
     WHERE r.status='active' AND r.record_type='load' AND r.expires_at>?
       AND r.visibility IN ('public','carrier_only')
       AND s.status='active' AND s.read_enabled=1
-      AND s.redistribution_permission IN ('public','carrier_only')
+      AND (
+        (r.visibility='public' AND s.redistribution_permission='public')
+        OR (r.visibility='carrier_only' AND s.redistribution_permission IN ('public','carrier_only'))
+        OR (r.visibility='carrier_only' AND s.redistribution_permission='carrier_scoped' AND s.authorized_carrier_company_id=?)
+      )
     ORDER BY r.observed_at DESC LIMIT 150
-  `).bind(now).all();
+  `).bind(now,company.id).all();
   const interests=await db.prepare(`
     SELECT id,load_record_id,status,carrier_message,status_note,created_at,updated_at
     FROM hermes_carrier_dispatch_interests WHERE carrier_company_id=?
@@ -68,7 +72,7 @@ export async function onRequestPost(context:Context) {
     await db.prepare("DELETE FROM hermes_carrier_saved_loads WHERE company_id=? AND load_record_id=?").bind(company.id,id).run();
     return respond(200,{success:true,saved:false});
   }
-  const load=await eligibleLoad(db,id,now);
+  const load=await eligibleLoad(db,id,company.id,now);
   if(!load)return respond(404,{success:false,error:"load_not_available"});
   if(action==="save"){
     await db.prepare(`

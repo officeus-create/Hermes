@@ -14,12 +14,21 @@ import "../../../../../styles/features/carrier-dispatch-workspaces.css";
 <h2 id="dispatcher-control-title">Control tower</h2>
 <p class="wsp-muted">Read-only operating summary from your assigned-carrier queue. Expired or withdrawn load records stay visible as review warnings and never become booking authority.</p>
 <div class="wsp-metrics" id="dispatcher-control-summary">
+<div class="wsp-metric"><span>Available loads</span><strong id="dispatcher-metric-loads">—</strong></div>
 <div class="wsp-metric"><span>Assigned carriers</span><strong id="dispatcher-metric-carriers">—</strong></div>
 <div class="wsp-metric"><span>Waiting</span><strong id="dispatcher-metric-requested">—</strong></div>
 <div class="wsp-metric"><span>In review</span><strong id="dispatcher-metric-reviewing">—</strong></div>
 <div class="wsp-metric"><span>Active open</span><strong id="dispatcher-metric-active">—</strong></div>
 <div class="wsp-metric"><span>Stale open</span><strong id="dispatcher-metric-stale">—</strong></div>
 </div>
+</section>
+<section class="wsp-panel" aria-labelledby="dispatcher-loads-title">
+<h2 id="dispatcher-loads-title">Available loads for dispatch review</h2>
+<p class="wsp-muted">Only active, unexpired records from sources whose current visibility and redistribution permissions allow carrier-side review. Source contacts stay hidden here; nothing on this screen books freight or contacts an outside party.</p>
+<div class="wsp-tabs">
+<label>Filter loads <input id="dispatcher-load-search" type="search" placeholder="Origin, destination or equipment" autocomplete="off" /></label>
+</div>
+<div id="dispatcher-loads" class="wsp-list"><p class="wsp-loader">No permissioned load feed loaded.</p></div>
 </section>
 <div class="wsp-grid"><section class="wsp-panel"><h2>Incoming carrier requests</h2>
 <p class="wsp-muted">A queued request means only that Hermes stored it. Human receipt appears when the dispatcher actually marks it seen.</p>
