@@ -94,7 +94,19 @@ try{
  assert.equal(raw.prepare(
    "SELECT COUNT(*) AS count FROM hermes_automation_runtime_events WHERE event_type='queue.message_retry' AND error_class='github_ci_source_evidence_mismatch'"
  ).get().count,1);
+ // GitHub reruns must not be substituted for a different Queue attempt.
+ // Verify the actual Worker handler retries/HOLDs without a D1 reservation.
  record.head_repository.full_name=repo;
+ record.run_attempt=runAttempt+1;
+ const mismatchedAttempt=batch();
+ await worker.queue(mismatchedAttempt.object,env);
+ assert.deepEqual(mismatchedAttempt.state,{ack:0,retry:1});
+ assert.equal(raw.prepare("SELECT COUNT(*) AS count FROM hermes_automation_jobs").get().count,0);
+ assert.equal(queueWrites.length,0);
+ assert.equal(raw.prepare(
+   "SELECT COUNT(*) AS count FROM hermes_automation_runtime_events WHERE event_type='queue.message_retry' AND error_class='github_ci_source_evidence_mismatch'"
+ ).get().count,2);
+ record.run_attempt=runAttempt;
  const first=batch();
  await worker.queue(first.object,env);
  assert.deepEqual(first.state,{ack:1,retry:0});
@@ -118,7 +130,7 @@ try{
  assert.equal(job._source.changed_paths_fingerprint,null);
  assert.ok(!rows[0].payload_json.includes("PRIVATE_SECRET"));
  assert.equal(raw.prepare("SELECT COUNT(*) AS count FROM hermes_automation_job_events WHERE event_type='job.created'").get().count,1);
- assert.equal(calls.length,4);
+ assert.equal(calls.length,5);
  assert.ok(calls.every(x=>x.method==="GET"),"Only read-only GitHub verification");
  // Same run/attempt with incompatible source snapshot must fail closed;
  // it cannot overwrite the first D1 reservation or enqueue a second job.
