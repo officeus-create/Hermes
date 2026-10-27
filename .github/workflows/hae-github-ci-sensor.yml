@@ -1,7 +1,7 @@
 name: HAE GitHub CI Sensor
 
 # GitHub Actions is a source of events, never the HAE control plane.
-# Active only for failed/timed-out trusted workflows; producer fail-closes until deployed HAE heartbeat matches exact checked-out main SHA.
+# Active only for failed/timed-out trusted workflows; producer fail-closes until deployed HAE Worker settings match exact checked-out main SHA, dry_run and publication disabled.
 on:
   workflow_run:
     workflows:
@@ -20,6 +20,7 @@ concurrency:
 jobs:
   intake:
     if: >-
+      github.run_attempt == 1 &&
       github.event.workflow_run.repository.full_name == 'officeus-create/Hermes' &&
       github.event.workflow_run.head_repository.full_name == 'officeus-create/Hermes' &&
       (github.event.workflow_run.conclusion == 'failure' ||
@@ -57,9 +58,17 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           # Existing production HAE release credential is reused only in this trusted-main
-          # source job. Read-only exact-SHA/D1 heartbeat checks happen before the only Queue POST.
+          # source job. Read-only exact-SHA deployed Worker settings and canonical D1 checks happen before the only Queue POST.
           # A dedicated queue-only token remains P1 hardening, not an activation blocker.
           CLOUDFLARE_HAE_RELEASE_TOKEN: ${{ secrets.CLOUDFLARE_HAE_RELEASE_TOKEN }}
           HAE_CI_RUN_ID: ${{ github.event.workflow_run.id }}
           HAE_CI_RUN_ATTEMPT: ${{ github.event.workflow_run.run_attempt }}
         run: node scripts/hae-github-ci-source.mjs
+
+      - name: Retain sanitized autonomous self-work receipt
+        uses: actions/upload-artifact@v4
+        with:
+          name: hae-ci-self-work-receipt
+          path: ${{ runner.temp }}/hae-ci-self-work-receipt.json
+          if-no-files-found: error
+          retention-days: 90
