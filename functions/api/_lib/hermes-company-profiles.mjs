@@ -1,3 +1,5 @@
+import { specialistHasInternalLoadBoardAccess } from "./load-board-internal-access.mjs";
+
 const CONTROL_CHARS = new RegExp("[<>" + String.fromCharCode(0) + "-" + String.fromCharCode(31) + String.fromCharCode(127) + "]", "g");
 
 async function ensureColumns(db, table, columns) {
@@ -85,6 +87,7 @@ export function roleCanUseLoadBoard(role) {
 
 export async function specialistHasLoadBoardAccess(db, specialist) {
   if (!specialist) return false;
+  if (await specialistHasInternalLoadBoardAccess(db, specialist.id)) return true;
   await ensureHermesCompanyProfilesSchema(db);
   // A self-selected company type or load_board_access registration flag is not carrier verification.
   await db.prepare(`

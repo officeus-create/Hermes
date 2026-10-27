@@ -11,6 +11,7 @@ import {
 import { ensureInternalAiSchema } from "../_lib/internal-ai.mjs";
 import { ensureAcademyBusinessProfilesSchema } from "../_lib/academy-business-profiles.mjs";
 import { getHrReviewerAccess } from "../_lib/hr.mjs";
+import { specialistHasInternalLoadBoardAccess } from "../_lib/load-board-internal-access.mjs";
 
 type Env = { DB?: any };
 
@@ -89,7 +90,7 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
 
   await ensureAcademySchema(env.DB);
 
-  const [repairShop, beautySalon, academyBusiness, hermesCompany, academyProfile, academyEnrollments, academyReviewerAccess, internalAiAccess, hrReviewerAccess] = await Promise.all([
+  const [repairShop, beautySalon, academyBusiness, hermesCompany, academyProfile, academyEnrollments, academyReviewerAccess, internalAiAccess, hrReviewerAccess, internalLoadBoardAccess] = await Promise.all([
     getOwnedRepairShop(env.DB, specialist.id),
     getOwnedBeautySalon(env.DB, specialist.id),
     getOwnedAcademyBusiness(env.DB, specialist.id),
@@ -99,6 +100,7 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
     getAcademyReviewerAccess(env.DB, specialist.id),
     getInternalAiAccess(env.DB, specialist.id),
     getHrReviewerAccess(env.DB, specialist.id),
+    specialistHasInternalLoadBoardAccess(env.DB, specialist.id),
   ]);
 
   const ownedBusinesses: OwnedBusiness[] = [];
@@ -191,6 +193,20 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
     });
   }
 
+  if (internalLoadBoardAccess && !(hermesCompany && Number(hermesCompany.load_board_access) === 1)) {
+    workspaces.push({
+      key: "load_board",
+      kind: "capability_workspace",
+      href: "/load-board/?access=internal#live-marketplace",
+      available: true,
+      state: {
+        load_board_access: true,
+        access_source: internalAiAccess ? "HERMES_INTERNAL_OWNER" : "HERMES_INTERNAL_DISPATCHER",
+        company_required: false,
+      },
+    });
+  }
+
   if (hrReviewerAccess) {
     workspaces.push({
       key: "hr",
@@ -228,7 +244,7 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
     owned_businesses: ownedBusinesses,
     workspaces,
     capabilities: {
-      load_board: Boolean(hermesCompany && Number(hermesCompany.load_board_access) === 1),
+      load_board: Boolean(internalLoadBoardAccess || (hermesCompany && Number(hermesCompany.load_board_access) === 1)),
       internal_ai: Boolean(internalAiAccess),
       hr_review: Boolean(hrReviewerAccess),
     },
