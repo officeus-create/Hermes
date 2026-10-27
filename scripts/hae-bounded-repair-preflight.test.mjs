@@ -59,6 +59,9 @@ const bad=[
  ["add_process_bracket_exit",{diff:diff("@@ -1 +1 @@\n-assert.equal(0, 1);\n+process[\"exit\"](0);\n")}],
  ["add_fs_bracket_write",{diff:diff("@@ -1 +1 @@\n-assert.equal(0, 1);\n+fs[\"writeFileSync\"](\"/tmp/x\",\"x\");\n")}],
  ["add_globalthis_bracket_fetch",{diff:diff("@@ -1 +1 @@\n-assert.equal(0, 1);\n+globalThis[\"fetch\"](\"x\");\n")}],
+ ["alias_process",{diff:diff("@@ -1 +1,2 @@\n-assert.equal(0, 1);\n+const p = process;\n+p.exit(0);\n")}],
+ ["alias_fetch",{diff:diff("@@ -1 +1,2 @@\n-assert.equal(0, 1);\n+const request = fetch;\n+request(\"https://example.com\");\n")}],
+ ["alias_fs",{diff:diff("@@ -1 +1,2 @@\n-assert.equal(0, 1);\n+const io = fs;\n+io.writeFileSync(\"/tmp/x\",\"x\");\n")}],
  ["add_network_call",{diff:diff("@@ -1 +1 @@\n-assert.equal(0, 1);\n+https.request(\"https://example.com\");\n")}],
  ["add_websocket",{diff:diff("@@ -1 +1 @@\n-assert.equal(0, 1);\n+new WebSocket(\"wss://example.com\");\n")}],
 ];
