@@ -9,6 +9,7 @@ const collection=read("functions/api/internal-command-center/work-items.ts");
 const item=read("functions/api/internal-command-center/work-items/[id].ts");
 const access=read("functions/api/internal-command-center/access.ts");
 const nav=read("src/components/HermesConnectInternalAiNav.astro");
+const docs=read("docs/HERMES_OWNER_BUSINESS_COMMAND_CENTER.md");
 
 assert.match(page,/robots="noindex,nofollow,noarchive"/,"owner command center must stay private/noindex");
 assert.match(page,/HermesConnectExperience/,"must reuse the canonical Hermes Connect shell");
