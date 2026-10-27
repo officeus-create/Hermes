@@ -49,6 +49,7 @@ import {
   pluginRuntimeRegistrySnapshot,
 } from "./plugin-runtime-registry.mjs";
 import { haeSelfRepairPacketReplayMatches } from "./hae-self-improvement.mjs";
+import { verifyGithubCIQueueEnvelope } from "./github-ci-runtime-intake.mjs";
 
 const ACCOUNT_KEY = "hermes_logistics";
 const PLATFORM = "threads";
@@ -2229,6 +2230,17 @@ export default {
       const payload = item.body || {};
       const messageType = clean(payload?.type, 80) || "UNKNOWN";
       try {
+        if (messageType === "github.ci.audit") {
+          // The Queue producer can send only a run ID and attempt. All proof is
+          // re-read from immutable GitHub run/commit evidence. Existing D1 jobs
+          // are the sole HAE writer-lease authority; no second lock table exists.
+          if (!env.DB) throw new Error("database_not_configured");
+          await ensureSchema(env.DB);
+          const authenticated = await verifyGithubCIQueueEnvelope(payload, { db: env.DB });
+          await createGenericJob(env, authenticated);
+          item.ack();
+          continue;
+        }
         if (messageType === "job.submit.runtime_proof") {
           await submitRuntimeProofJob(env, payload);
           item.ack();
