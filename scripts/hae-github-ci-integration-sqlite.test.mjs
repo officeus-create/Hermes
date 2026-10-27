@@ -76,6 +76,7 @@ const db={
 const env={
  DB:db,
  HERMES_AUTOMATION_SOURCE_SHA:producerMain,
+ HERMES_AUTOMATION_TOKEN:"test-owner-token-1234567890",
  AUTOMATION_QUEUE:{send:async packet=>queueWrites.push(packet)}
 };
 function batch(overrides={}){
@@ -90,6 +91,20 @@ function batch(overrides={}){
  }};
 }
 try{
+ // Even an authenticated HTTP caller cannot forge HAE-internal semantic submission.
+ const forgedInternal=await worker.fetch(new Request("https://hae.example/v1/jobs",{
+  method:"POST",
+  headers:{
+   Authorization:"Bearer test-owner-token-1234567890",
+   "Content-Type":"application/json"
+  },
+  body:JSON.stringify({job_type:"hae.self.patch.propose",internal_submission:true})
+ }),env);
+ assert.equal(forgedInternal.status,400);
+ assert.deepEqual(await forgedInternal.json(),{success:false,error:"internal_submission_forbidden"});
+ assert.equal(raw.prepare("SELECT COUNT(*) AS count FROM sqlite_master WHERE type='table' AND name='hermes_automation_jobs'").get().count,0);
+ assert.equal(queueWrites.length,0);
+
  // Malformed Queue evidence cannot reserve D1 work.
  const malformed=batch({extra:"PRIVATE_SECRET"});
  await worker.queue(malformed.object,env);
@@ -188,12 +203,67 @@ try{
  assert.equal(repairResult.result.automatic_merge_performed,false);
  assert.equal(repairResult.result.automatic_deploy_performed,false);
 
+ // Authenticated exact-test source may create exactly one internal semantic patch proposal.
+ const findingId="ci-"+runId+"-"+runAttempt+"-"+head.slice(0,12);
+ const patchSource='import assert from "node:assert/strict";\nassert.equal(0, 1);\n';
+ const patchSourceDigest="sha256:"+createHash("sha256").update(patchSource,"utf8").digest("hex");
+ const patchState={ack:0,retry:0};
+ const patchMessage={
+  queue:"hermes-automation",
+  messages:[{
+   body:{
+    type:"github.ci.patch.propose",
+    run_id:runId,
+    run_attempt:runAttempt,
+    producer_main_sha:producerMain,
+    repository:repo,
+    workflow_name:"Hermes Automation Engine Contract",
+    workflow_path:".github/workflows/automation-engine-contract.yml",
+    workflow_id:382680939,
+    head_sha:head,
+    repair_job_id:repairRow.job_id,
+    work_id:expectedWorkId,
+    finding_id:findingId,
+    artifact_key:patchablePath,
+    source_excerpt:patchSource,
+    source_excerpt_sha256:patchSourceDigest,
+    failure_summary:"The exact-head deterministic contract failed in the single changed test file."
+   },
+   id:"patch_source_message",attempts:1,
+   ack(){patchState.ack++},retry(){patchState.retry++}
+  }]
+ };
+ await worker.queue(patchMessage,env);
+ assert.deepEqual(patchState,{ack:1,retry:0});
+ const patchJob=raw.prepare(
+  "SELECT job_id,state,idempotency_key,payload_json,attempt_count FROM hermes_automation_jobs WHERE job_type='hae.self.patch.propose'"
+ ).get();
+ assert.ok(patchJob,"Patch proposal semantic job must be durable in D1");
+ assert.equal(patchJob.state,"QUEUED");
+ assert.equal(patchJob.idempotency_key,"hae:followup:self.patch.propose:"+expectedWorkId);
+ const patchPayload=JSON.parse(patchJob.payload_json);
+ assert.equal(patchPayload.work_id,expectedWorkId);
+ assert.equal(patchPayload.repair_job_id,repairRow.job_id);
+ assert.equal(patchPayload.artifact_key,patchablePath);
+ assert.equal(patchPayload.base_sha,head);
+ assert.equal(patchPayload.source_excerpt_sha256,patchSourceDigest);
+ assert.equal(queueWrites.length,3,"Patch proposal admission must enqueue exactly one semantic execution");
+ const patchExec=executionBatch(queueWrites[2],"patch_execute_message");
+ await worker.queue(patchExec.object,env);
+ assert.deepEqual(patchExec.state,{ack:1,retry:0});
+ const patchWaiting=raw.prepare(
+  "SELECT state,attempt_count,last_error_class FROM hermes_automation_jobs WHERE job_id=?"
+ ).get(patchJob.job_id);
+ assert.equal(patchWaiting.state,"WAITING_FREE_AI");
+ assert.equal(patchWaiting.attempt_count,0,"WAITING_FREE_AI must not consume a retry");
+ assert.ok(patchWaiting.last_error_class,"WAITING_FREE_AI must retain a bounded provider reason");
+
  // Same run/attempt with incompatible authenticated snapshot cannot overwrite the reservation.
  const conflictingReplay=batch({updated_at:"2026-10-26T15:00:00.000Z"});
  await worker.queue(conflictingReplay.object,env);
  assert.deepEqual(conflictingReplay.state,{ack:0,retry:1});
- assert.equal(queueWrites.length,2);
- assert.equal(raw.prepare("SELECT COUNT(*) AS count FROM hermes_automation_jobs").get().count,2);
+ assert.equal(queueWrites.length,3);
+ assert.equal(raw.prepare("SELECT COUNT(*) AS count FROM hermes_automation_jobs").get().count,3);
 
  // D1 reservation survives downstream Queue outage and retains existing recovery semantics.
  const newRun=runId+1;
@@ -216,14 +286,14 @@ try{
  const replayAfterOutage=batch({run_id:newRun,html_url:"https://github.com/"+repo+"/actions/runs/"+newRun,updated_at:"2026-10-26T15:10:00.000Z"});
  await worker.queue(replayAfterOutage.object,env);
  assert.deepEqual(replayAfterOutage.state,{ack:1,retry:0});
- assert.equal(raw.prepare("SELECT COUNT(*) AS count FROM hermes_automation_jobs").get().count,3);
- assert.equal(queueWrites.length,2,"Replay must not bypass durable retry recovery");
+ assert.equal(raw.prepare("SELECT COUNT(*) AS count FROM hermes_automation_jobs").get().count,4);
+ assert.equal(queueWrites.length,3,"Replay must not bypass durable retry recovery");
 
  console.log("HAE_CI_QUEUE_D1_LOCAL_INTEGRATION_PASS",JSON.stringify({
-  duplicated_deliveries:2,malformed_source_rejected_without_job:1,
+  http_internal_submission_rejected:1,duplicated_deliveries:2,malformed_source_rejected_without_job:1,
   spoofed_workflow_id_rejected_without_job:1,producer_sha_mismatch_rejected_without_job:1,
-  worker_github_fetches:unexpectedFetches,d1_jobs:3,job_created_events:3,
-  autonomous_self_work_packets:1,hold_repair_completed:1,
+  worker_github_fetches:unexpectedFetches,d1_jobs:4,job_created_events:4,
+  autonomous_self_work_packets:1,hold_repair_completed:1,patch_proposal_waiting_free_ai:1,
   failed_queue_send_jobs_recoverable:1,conflicting_replays_rejected:1,
   queued_executions:queueWrites.length,external_provider_writes:0,
   real_cloud_runtime_proven:false,producer_snapshot_live_authenticated:false,
