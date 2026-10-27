@@ -75,14 +75,14 @@ const isRepairShopBookingRoute = Astro.url.pathname.replace(/\/+$/, "") === "/se
 const isHermesConnectProductHub = Astro.url.pathname === "/services/hermes-connect/";
 // Public page family for direction-tinted accents (eyebrows, numbers, active states). Product
 // surfaces keep their own accents and are not tagged: Load Board, Hermes Connect, Insights and the
-// Catalog. The approved /paths/<direction>/ owners of Technology, Academy and Marketing keep their
-// reviewed styling; their inner pages follow the family.
+// Catalog. Technology and Marketing direction owners keep their reviewed styling. Academy's exact
+// direction owner now follows the approved Academy-green family accent; its inner pages do too.
 const familyPath = Astro.url.pathname;
 type DirectionFamily = "logistics" | "technology" | "academy" | "marketing";
 let directionFamilyValue: DirectionFamily | undefined;
 const directionFamilyPatterns: Array<[DirectionFamily, RegExp]> = [
   ["logistics", /^\/(?:paths\/)?logistics\/|^\/carrier(?:-[a-z-]+)?\/|^\/(?:ru|ua|es|it|fr)\/(?:logistics|logistica|logistique)\//],
-  ["academy", /^\/academy\/|^\/(?:ru|ua|es|it|fr)\/(?:academy|academia|academie)\/|^\/(?:(?:ru|ua)\/)?gb\/london\/(?:academy|us-logistics-training|guides\/(?:b2-english-us-logistics|dispatcher-vs-load-planner|training-curriculum|us-logistics-roles))\//],
+  ["academy", /^\/paths\/academy\/$|^\/academy\/|^\/(?:ru|ua|es|it|fr)\/(?:academy|academia|academie)\/|^\/(?:(?:ru|ua)\/)?gb\/london\/(?:academy|us-logistics-training|guides\/(?:b2-english-us-logistics|dispatcher-vs-load-planner|training-curriculum|us-logistics-roles))\//],
   ["technology", /^\/services\/(?:website-|auto-repair-website-design\/)|^\/case\/it-development\/|^\/resources\/website-project-brief-template\/|^\/(?:ru|ua|es|it|fr)\/(?:technology|tecnologia|technologie)\/|^\/(?:(?:ru|ua)\/)?gb\/london\/(?:it-web-development|website-development|landing-page-development|crm-automation|guides\/small-business-website-guide)\//],
   ["marketing", /^\/services\/(?:seo|local-seo)|^\/(?:(?:ru|ua)\/)?business-growth\/|^\/(?:ru|ua|es|it|fr)\/marketing\/|^\/resources\/(?:technical-seo-checklist|search-to-inquiry-conversion-checklist|logistics-seo-audit-sample)\/|^\/case\/appleton-vehicle-transport-seo\/|^\/(?:(?:ru|ua)\/)?gb\/london\/(?:marketing|seo-services|local-seo|marketing-audit|guides|meta-ads|social-media-management|google-business-profile|content-reels-scripts|[a-z-]+-marketing)\//],
 ];
