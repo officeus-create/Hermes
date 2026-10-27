@@ -3,11 +3,14 @@
 // The GitHub Action producer has already authenticated/minimized source evidence;
 // the Worker must perform zero GitHub network reads.
 import assert from "node:assert/strict";
+import {createHash} from "node:crypto";
 import {DatabaseSync} from "node:sqlite";
 import worker from "../workers/automation-engine/src/index.mjs";
 
 const runId=40888881234,runAttempt=1;
 const repo="officeus-create/Hermes",head="a".repeat(40),base="b".repeat(40),producerMain="c".repeat(40);
+const patchablePath="scripts/hae-github-ci-integration-sqlite.test.mjs";
+const pathFingerprint=paths=>"sha256:"+createHash("sha256").update(paths.join("\n"),"utf8").digest("hex");
 function sourcePacket(overrides={}){
  const id=overrides.run_id??runId;
  const attempt=overrides.run_attempt??runAttempt;
@@ -26,8 +29,9 @@ function sourcePacket(overrides={}){
   head_sha:head,
   html_url:"https://github.com/"+repo+"/actions/runs/"+id,
   updated_at:"2026-10-26T14:00:00.000Z",
-  changed_paths_fingerprint:"sha256:"+"d".repeat(64),
-  changed_path_count:2,
+  changed_paths_fingerprint:pathFingerprint([patchablePath]),
+  changed_path_count:1,
+  repair_artifact_key:patchablePath,
   base_sha:base,
   pr_number:2094,
   ...overrides,
@@ -139,7 +143,10 @@ try{
  assert.equal(job._source.producer_main_sha,producerMain);
  assert.equal(job._source.trust_class,"GITHUB_ACTIONS_EPHEMERAL_TOKEN_TO_PRIVATE_CLOUDFLARE_QUEUE");
  assert.match(job._source.changed_paths_fingerprint,/^sha256:[a-f0-9]{64}$/);
- assert.equal(job._source.changed_path_count,2);
+ assert.equal(job._source.changed_path_count,1);
+ assert.equal(job._source.patchable_artifact_key,patchablePath);
+ assert.equal(job.findings[0].artifact_key,patchablePath);
+ assert.equal(job.findings[0].status,"OPEN");
  assert.equal(rows[0].payload_json.includes("PRIVATE_SECRET"),false);
  assert.equal(raw.prepare("SELECT COUNT(*) AS count FROM hermes_automation_job_events WHERE event_type='job.created'").get().count,1);
  assert.equal(unexpectedFetches,0,"Worker runtime CI intake must perform zero GitHub/network fetches");
@@ -168,7 +175,7 @@ try{
  assert.equal(repairRow.idempotency_key,"hae:followup:self.repair:"+expectedWorkId);
  const repairPayload=JSON.parse(repairRow.payload_json);
  assert.equal(repairPayload.work_id,expectedWorkId);
- assert.equal(repairPayload.artifact_key,"github-workflow:382680939");
+ assert.equal(repairPayload.artifact_key,patchablePath);
 
  const repairExec=executionBatch(queueWrites[1],"repair_execute_message");
  await worker.queue(repairExec.object,env);

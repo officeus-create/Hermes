@@ -10,11 +10,12 @@ const SHA=/^[a-f0-9]{40}$/;
 const FINGERPRINT=/^sha256:[a-f0-9]{64}$/;
 const MAX_CHANGED_PATHS=100;
 const MAX_ACTIVE_REPAIR_JOBS=100;
+const PATCHABLE_TEST_PATH=/^scripts\/(?:automation-engine|hae)-[a-z0-9][a-z0-9._-]*\.test\.mjs$/;
 const KEYS=new Set([
   "type","run_id","run_attempt","producer_main_sha","repository",
   "workflow_name","workflow_path","workflow_id","event","status","conclusion",
   "head_sha","html_url","updated_at","changed_paths_fingerprint",
-  "changed_path_count","base_sha","pr_number"
+  "changed_path_count","repair_artifact_key","base_sha","pr_number"
 ]);
 
 function invalid(code){const e=new Error(code);e.code=code;throw e;}
@@ -25,6 +26,11 @@ function exactKeys(message){
 }
 function validIso(value){
   return typeof value==="string"&&Number.isFinite(Date.parse(value))&&new Date(value).toISOString()===value;
+}
+async function repairArtifactFingerprint(path){
+  const bytes=new TextEncoder().encode(path);
+  const digest=await crypto.subtle.digest("SHA-256",bytes);
+  return "sha256:"+[...new Uint8Array(digest)].map(x=>x.toString(16).padStart(2,"0")).join("");
 }
 
 export function validateGithubCIQueueEnvelope(message={}){
@@ -40,6 +46,8 @@ export function validateGithubCIQueueEnvelope(message={}){
      !FINGERPRINT.test(message.changed_paths_fingerprint||"") ||
      !positiveSafe(message.changed_path_count) ||
      message.changed_path_count>MAX_CHANGED_PATHS ||
+     !(message.repair_artifact_key===null||PATCHABLE_TEST_PATH.test(message.repair_artifact_key||"")) ||
+     (message.repair_artifact_key!==null&&message.changed_path_count!==1) ||
      !validIso(message.updated_at) ||
      message.html_url!=="https://github.com/"+REPO+"/actions/runs/"+message.run_id ||
      !(message.base_sha===null||SHA.test(message.base_sha||"")) ||
@@ -80,8 +88,14 @@ export async function verifyGithubCIQueueEnvelope(message,{db=null,deployedSourc
   const source=validateGithubCIQueueEnvelope(message);
   if(!SHA.test(deployedSourceSha||"")||source.producer_main_sha!==deployedSourceSha)
     invalid("github_ci_producer_main_sha_mismatch");
+  if(source.repair_artifact_key!==null &&
+     await repairArtifactFingerprint(source.repair_artifact_key)!==source.changed_paths_fingerprint)
+    invalid("github_ci_changed_paths_fingerprint_mismatch");
 
-  const artifactKey="github-workflow:"+String(source.workflow_id);
+  // #2068 may mutate only one authenticated allowlisted deterministic test file.
+  // Multi-file and non-test failures remain durable findings but cannot become patch packets.
+  const patchableArtifact=source.repair_artifact_key;
+  const artifactKey=patchableArtifact||("github-workflow:"+String(source.workflow_id));
   const writerState=await verifyNoActiveHaeWriter(db,artifactKey);
   const run={
     id:source.run_id,
@@ -110,6 +124,14 @@ export async function verifyGithubCIQueueEnvelope(message,{db=null,deployedSourc
     baseSha:source.base_sha,
     changedPathsFingerprint:source.changed_paths_fingerprint,
   });
+  const selfImprovementInput={
+    ...normalized.self_improvement_input,
+    findings:normalized.self_improvement_input.findings.map(finding=>({
+      ...finding,
+      artifact_key:artifactKey,
+      status:patchableArtifact?finding.status:"BLOCKED",
+    })),
+  };
   return {
     job_type:"hae.self.improvement.audit",
     business_lane:"automation",
@@ -121,7 +143,7 @@ export async function verifyGithubCIQueueEnvelope(message,{db=null,deployedSourc
     idempotency_key:"hae:ci:audit:"+normalized.intake_key,
     policy_version:"hae-ci-intake-v2",
     payload:{
-      ...normalized.self_improvement_input,
+      ...selfImprovementInput,
       _source:{
         event_id:normalized.intake_key,
         source_ref:normalized.source_ref,
@@ -136,6 +158,7 @@ export async function verifyGithubCIQueueEnvelope(message,{db=null,deployedSourc
         writer_state:writerState.active?"ACTIVE":"VERIFIED_CLEAR",
         changed_paths_fingerprint:source.changed_paths_fingerprint,
         changed_path_count:source.changed_path_count,
+        patchable_artifact_key:patchableArtifact,
         producer_main_sha:source.producer_main_sha,
         trust_class:"GITHUB_ACTIONS_EPHEMERAL_TOKEN_TO_PRIVATE_CLOUDFLARE_QUEUE",
       },
