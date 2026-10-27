@@ -47,7 +47,7 @@ Technology services); 6 `CURRENT_BASELINE`; 3 `PARTIAL`; 1 `BLOCKED`; 0 `NOT_CLA
 
 ## Evidence anchors (do not re-derive)
 
-- GSC 28.07–23.10: impressions peaked 9–28 Aug (60–110/day) and fell ~90% from 29 Aug. Root cause not determined —
-  program doc §10.2, Drive "SEARCH PROVIDER EVIDENCE — CLAUDE" doc 04. HOLD on SEO code until the GSC Compare export.
+- GSC 28.07–23.10: impressions peaked 9–28 Aug (60–110/day) and fell ~90% from 29 Aug. Compare read 26.10 and hypotheses checked 27.10 —
+  see `SEARCH_ERROR_MATRIX.md` E1 (hypothesis table), E2, E3. Not a technical block; fixes shipped (#2111, #2117), recheck 2026-11-23.
 - Clarity: 88% of sessions are internal/Ukraine; behaviour rates are not buyer behaviour. Field LCP 1.3 s, CLS 0.012.
 - Backlinks: job boards only (staff.am, work.ua, victra.careers) — authority owner #368.
