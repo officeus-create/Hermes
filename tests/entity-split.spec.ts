@@ -61,7 +61,11 @@ test("homepage publishes one stable Hermes Logistics LLC Organization node", asy
   expect(logistics.foundingDate).toBe("2018-11-01");
   expect(logistics.url).toBe("https://hermeslogisticsus.com/paths/logistics/");
   expect(logistics.mainEntityOfPage).toBe("https://hermeslogisticsus.com/company-information/");
-  expect(logistics.sameAs).toEqual(["https://staff.am/en/company/hermes-logistics-llc"]);
+  expect(logistics.sameAs).toEqual([
+    "https://staff.am/en/company/hermes-logistics-llc",
+    "https://clutch.co/profile/hermes-logistics",
+    "https://www.facebook.com/profile.php?id=61558767681287",
+  ]);
 });
 
 test("canonical Logistics hub binds Service provider to the stable Logistics entity", async ({ page }) => {

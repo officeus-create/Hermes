@@ -25,7 +25,7 @@ export interface PublicEntityRecord {
   relationshipStatus: EntityRelationshipStatus;
   schemaPublication: "approved" | "hold";
   socialProfiles: Array<{
-    platform: "instagram" | "threads" | "facebook" | "telegram" | "x" | "youtube" | "staff_am";
+    platform: "instagram" | "threads" | "facebook" | "telegram" | "x" | "youtube" | "staff_am" | "clutch";
     url: string;
     status: SocialProfileStatus;
     evidence: string;
@@ -89,6 +89,18 @@ export const publicEntityRegistry: Record<PublicEntityId, PublicEntityRecord> = 
         url: "https://staff.am/en/company/hermes-logistics-llc",
         status: "approved_same_entity",
         evidence: "Owner-controlled employer profile corrected through Staff.am support and independently read back 2026-10-06: exact Hermes Logistics LLC name, U.S. logistics description, and canonical hermeslogisticsus.com website link.",
+      },
+      {
+        platform: "clutch",
+        url: "https://clutch.co/profile/hermes-logistics",
+        status: "approved_same_entity",
+        evidence: "Owner confirmed in chat 2026-10-27 that this profile is theirs; public profile reads \"Hermes Logistics, LLC\" with Hermes ecosystem services (Google SERP read 2026-10-27, position 9 for \"hermes logistics\").",
+      },
+      {
+        platform: "facebook",
+        url: "https://www.facebook.com/profile.php?id=61558767681287",
+        status: "approved_same_entity",
+        evidence: "Owner confirmed in chat 2026-10-27 that the page, its phone, email and website are theirs; the page links hermeslogisticsus.com and lists the approved Logistics desk phone +1 (351) 777-5337.",
       },
     ],
     notes:
