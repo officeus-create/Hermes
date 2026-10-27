@@ -55,14 +55,14 @@ assert.ok(careers.includes(wisconsinIsCurrent ? "Verified public vacancies are o
 assert.ok(careers.includes(`${verifiedOpenVacancies.length}</strong>`));
 assert.ok(!careers.includes('href="/careers/car-hauling-dispatcher/"'));
 assert.equal(careers.includes('href="/careers/wisconsin-owner-operators/"'), wisconsinIsCurrent);
-assert.equal(careers.includes('href="https://100hires.com/j/G4ek3eN"'), wisconsinIsCurrent);
-assert.equal(careers.includes("View on 100Hires"), wisconsinIsCurrent);
+assert.ok(!careers.includes('href="https://100hires.com/j/G4ek3eN"'), "Careers hub must not send applicants to an unlisted ATS job");
+assert.ok(!careers.includes("View on 100Hires"));
 assert.ok(careers.includes('href="/logistics/apply/?for=career"'));
 assert.ok(careers.includes("does not guarantee review timing, interview, training access, team placement, employment"));
 assert.ok(!careers.includes('"@type":"JobPosting"'));
 assert.ok(!careers.includes('"@type": "JobPosting"'));
 assert.ok(careerPublicBoundaries.length >= 5);
-assert.ok(careerPublicBoundaries.some((item) => /real submission URL/i.test(item)));
+assert.ok(careerPublicBoundaries.some((item) => /real application method/i.test(item)));
 
 const jobSchemas = [...carHaulingDispatcher.matchAll(/<script[^>]+type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi)]
   .flatMap((match) => {
@@ -91,36 +91,33 @@ const ownerOperatorSchemas = [...wisconsinOwnerOperators.matchAll(/<script[^>]+t
     return Array.isArray(parsed) ? parsed : [parsed];
   });
 const ownerOperatorJobPostings = ownerOperatorSchemas.filter((entity) => entity?.["@type"] === "JobPosting");
-assert.equal(ownerOperatorJobPostings.length, wisconsinIsCurrent ? 1 : 0);
-if (wisconsinIsCurrent) {
-assert.equal(ownerOperatorJobPostings[0].employmentType, "CONTRACTOR");
-assert.equal(ownerOperatorJobPostings[0].directApply, false);
-assert.equal(ownerOperatorJobPostings[0].sameAs, "https://100hires.com/j/G4ek3eN");
-} else {
-  assert.ok(wisconsinOwnerOperators.includes("awaiting a fresh recruiting review"));
-  assert.ok(!wisconsinOwnerOperators.includes("data-external-job-apply"));
-}
-assert.ok(wisconsinOwnerOperators.includes("Source reviewed October 8, 2026"));
-assert.ok(wisconsinOwnerOperators.includes("exact 100Hires vacancy remains accessible with status Unlisted"));
-assert.ok(wisconsinOwnerOperators.includes("The separate 100Hires employer page reported no active postings on October 3"));
-assert.ok(!wisconsinOwnerOperators.includes("only external source verified live"));
-assert.ok(wisconsinOwnerOperators.includes('href="https://100hires.com/j/G4ek3eN"'));
-assert.ok(wisconsinOwnerOperators.includes('href="https://100hires.com/c/hermeslogisticsus-com"'));
-assert.ok(wisconsinOwnerOperators.includes("employer-profile reference rather than a complete vacancy directory"));
-assert.ok(wisconsinOwnerOperators.includes("There are no active job postings right now"));
-assert.ok(wisconsinOwnerOperators.includes("After expiry, this page is a recruiting reference"));
-assert.ok(wisconsinOwnerOperators.includes('href="tel:+14142697377"'));
-assert.ok(wisconsinOwnerOperators.includes("+1 (414) 269-7377"));
-assert.deepEqual(
-  [...wisconsinOwnerOperators.matchAll(/href="tel:([^"]+)"/g)].map((match) => match[1]),
-  Array(wisconsinIsCurrent ? 3 : 2).fill("+14142697377"),
-);
+assert.equal(ownerOperatorJobPostings.length, 1, "Owner confirmed perpetual Wisconsin hiring");
+const posting = ownerOperatorJobPostings[0];
+assert.equal(posting.title, "Owner-Operator");
+assert.equal(posting.identifier?.value, "WI-OO-2026-10-03", "Genuine stable job identifier should not churn with SEO revisions");
+assert.equal(posting.applicantLocationRequirements, undefined, "This is physical trucking, not a remote-from-home role");
+assert.equal(posting.employmentType, "CONTRACTOR");
+assert.equal(posting.directApply, false);
+assert.equal(posting.datePosted, "2026-10-03", "Original posting date is not rewritten for freshness");
+assert.equal(posting.validThrough, undefined, "Never-expiring position must omit validThrough");
+assert.equal(posting.sameAs, undefined, "Do not designate an unlisted ATS listing as the active canonical application");
+assert.match(posting.description, /mailto|officeus@hermeslogisticsus\.com/);
+assert.ok(wisconsinOwnerOperators.includes("Owner-confirmed October 19, 2026"));
+assert.ok(wisconsinOwnerOperators.includes("Applications accepted continuously"));
+assert.ok(wisconsinOwnerOperators.includes("Apply directly to Hermes, not through an unlisted job board."));
+assert.ok(wisconsinOwnerOperators.includes('href="mailto:officeus@hermeslogisticsus.com?subject=Wisconsin%20Owner-Operator%20Application"'));
+assert.ok(wisconsinOwnerOperators.includes('href="https://100hires.com/j/G4ek3eN"'), "Historical ATS evidence stays explicitly marked unlisted");
+assert.ok(!wisconsinOwnerOperators.includes("View and apply on 100Hires"));
+assert.ok(wisconsinOwnerOperators.includes('href="tel:+14142697377"'), "Yuri is the designated interview contact for owner-operator candidates");
+assert.ok(wisconsinOwnerOperators.includes("+1 (414) 269-7377"), "Yuri interview number must remain published");
+assert.ok(wisconsinOwnerOperators.includes("Yuri\'s interview call hours"), "Interview schedule must remain visible");
+assert.ok(wisconsinOwnerOperators.includes("after 2:15 PM CT") && wisconsinOwnerOperators.includes("10:00 AM–9:00 PM CT"), "Keep the approved Central Time interview hours");
+assert.ok(wisconsinOwnerOperators.includes("officeus@hermeslogisticsus.com"), "Verified company recruiting email stays accessible");
 assert.ok(wisconsinOwnerOperators.includes("No forced dispatch"));
 assert.ok(!wisconsinOwnerOperators.includes("Power Only — trailer and operating arrangement reviewed individually"));
-assert.ok(wisconsinOwnerOperators.includes("Hermes Logistics LLC works as an agent with multiple transportation companies"));
+assert.ok(wisconsinOwnerOperators.includes("Hermes Logistics LLC"));
 assert.ok(wisconsinOwnerOperators.includes("No. This recruiting page is for Wisconsin owner-operators with their own commercial truck and trailer. Equipment, operating fit, experience, and safety history are reviewed individually before onboarding."));
-assert.ok(wisconsinOwnerOperators.includes("The publication review expires on October 15, 2026 at 23:59:59 UTC."));
-assert.ok(wisconsinOwnerOperators.includes("does not guarantee"));
+assert.ok(!wisconsinOwnerOperators.includes("The publication review expires on October 15, 2026 at 23:59:59 UTC."));
 assert.ok(!wisconsinOwnerOperators.includes("guaranteed loads"));
 assert.ok(!wisconsinOwnerOperators.includes("guaranteed income"));
 
