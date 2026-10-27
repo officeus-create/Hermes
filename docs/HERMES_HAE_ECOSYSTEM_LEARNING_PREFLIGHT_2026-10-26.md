@@ -64,6 +64,14 @@ Do **not** treat email addresses, message bodies, attached files, private Drive 
 
 For each role, qualify `ROLE_ID → capability_id → source_scope → tool_allowlist → READ_ONLY/DRAFT_WRITE/LIVE_WRITE → evaluation → KPI → rollback → owner/QA`. A plugin update alone is `KNOWLEDGE_RELEASED`, never `AGENT_LIVE`.
 
+### Digital-employee routing invariants carried forward
+
+- One accountable plugin/role and one active implementation writer per task/file scope. Reviewers may verify, but they do not become parallel writers.
+- If the current host cannot actually invoke the selected plugin/tool, record `ROUTED_NOT_EXECUTED`; never impersonate another plugin or claim autonomous inter-plugin communication.
+- A new private plugin is allowed only after a **durable capability gap** is evidenced across the current role/capability inventory and skill extension of an existing owner has been ruled out. An individual task, chat, or temporary access failure is not a plugin gap.
+- Every accepted lesson/skill change remains versioned evidence: source → bounded delta → independent eval → release/readback. A note, handoff or registry row alone is not learning.
+- Search the current plugin directory/registry and canonical One Brain/GitHub owner before creating or routing anything new; historical plugin IDs/versions are evidence only and must not be copied into current authorization policy.
+
 ## Learning ladder (requires evidence at every step)
 
 `SOURCE_INDEXED → SOURCE_READ_AUTHORIZED → COVERAGE_RECORDED → EXTRACTED_CANDIDATE → DEDUPED → CURRENT_VERIFIED → OWNER/DOMAIN REVIEW → SKILL_DELTA → EVAL_PASS → RELEASE_CREATED → RELEASE_READBACK → AGENT_CAPABILITY_ACCEPTED → LIVE_RECEIPT → KPI_MEASURED`

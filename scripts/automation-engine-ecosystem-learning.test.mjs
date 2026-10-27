@@ -1,5 +1,6 @@
 import { normalizeHistoricalSource } from "../workers/automation-engine/src/historical-learning.mjs";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import {
   ECOSYSTEM_SOURCE_FAMILIES,
   normalizeEcosystemLearningSource,
@@ -69,5 +70,10 @@ const boundedProposals = proposeHistoricalLearningSourceJobs(tenPlus);
 assert.equal(boundedProposals.proposals.length, 10);
 assert.equal(boundedProposals.unmaterialized_count, 2);
 assert.ok(boundedProposals.proposals.every(p=>p.automatic_submit_allowed === false));
+
+const preflightDoc=readFileSync(new URL("../docs/HERMES_HAE_ECOSYSTEM_LEARNING_PREFLIGHT_2026-10-26.md",import.meta.url),"utf8");
+assert.match(preflightDoc,/ROUTED_NOT_EXECUTED/,"unavailable plugin invocation must remain truthfully routed-not-executed");
+assert.match(preflightDoc,/durable capability gap/i,"new plugin creation must require a durable uncovered capability");
+assert.match(preflightDoc,/one active implementation writer/i,"one-writer rule must remain explicit");
 
 console.log("ecosystem learning preflight: PASS");
