@@ -41,7 +41,10 @@ jobs:
         run: npm ci
 
       - name: Install Chromium
-        run: npx playwright install --with-deps chromium
+        # GitHub hosted runners already provide the system browser libraries used by this
+        # smoke. Avoid apt/font downloads here: the 12-minute production gate must be
+        # reserved for the actual deployed consent assertions, not package-mirror latency.
+        run: npx playwright install chromium
 
       - name: Verify deployed consent behavior
         run: npx playwright test tests/tracking-consent.spec.ts --config=playwright.production.config.ts

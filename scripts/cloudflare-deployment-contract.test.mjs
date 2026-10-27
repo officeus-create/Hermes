@@ -146,6 +146,7 @@ assert.doesNotMatch(
 );
 
 const productionWorkflow = read(".github/workflows/cloudflare-pages-production-v2.yml");
+const deploymentContractWorkflow = read(".github/workflows/cloudflare-deployment-contract.yml");
 const productionContactMode = read("src/components/ProductionContactMode.astro");
 const productionContactRuntimeCheck = read("scripts/check-production-contact-runtime.mjs");
 const productionHomeVideoRuntimeCheck = read("scripts/check-home-video-production.mjs");
@@ -252,6 +253,15 @@ for (const marker of [
 ]) {
   assert.ok(productionWorkflow.includes(marker), `Production browser runtime verification is missing from the release workflow: ${marker}`);
 }
+
+assert.ok(
+  deploymentContractWorkflow.includes("npx playwright install chromium"),
+  "Read-only Cloudflare deployment contract must install the Playwright browser without apt/system packages",
+);
+assert.ok(
+  !deploymentContractWorkflow.includes("playwright install --with-deps chromium"),
+  "Read-only Cloudflare deployment contract must not spend its browser-proof budget on apt/system dependency installation",
+);
 for (const marker of [
   'APPROVED_HOSTS = new Set(["hermeslogisticsus.com", "www.hermeslogisticsus.com"])',
   'assert.equal(parsed.protocol, "https:"',
