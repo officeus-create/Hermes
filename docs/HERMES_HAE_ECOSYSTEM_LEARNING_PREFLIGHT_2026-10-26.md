@@ -20,12 +20,18 @@ A ChatGPT private plugin is a knowledge/skill surface. It does **not** become a 
 
 - Private Plugin Creator readback: **28** owned personal plugins accessible, including **27 Hermes-named roles plus one personal-health plugin that must remain outside Hermes business ingestion**.
 - Compiled HAE plugin runtime registry currently contains **9** allowed roles, not all 28.
-- Authenticated-version drift observed on 2026-10-26:
-  - hermes-automatic-engineer: registry 0.1.25 vs private release 0.1.26;
-  - hermes-agent-coordinator: registry 0.1.68 vs private release 0.1.69;
-  - hermes-qa-evidence-auditor: registry 0.1.5 vs private release 0.1.6;
-  - hermes-knowledge-curator: registry 0.1.77 vs private release 0.1.78.
-- This is an **independent readback observation**. Do not change live compiled registry versions until protected review, updated contract tests and accepted exact-SHA gate. Plugin version != autonomous execution proof.
+- Historical authenticated-version drift was observed on 2026-10-26. It is **superseded by the 2026-10-27 provider readback** in `docs/HERMES_HAE_PLUGIN_RELEASE_READBACK_2026-10-27.md`.
+- Current reconciled HAE registry versions from that read-only Plugin Creator readback are:
+  - hermes-automatic-engineer 0.1.26;
+  - hermes-agent-coordinator 0.1.71;
+  - hermes-technology-developer 0.1.56;
+  - hermes-qa-evidence-auditor 0.1.8;
+  - hermes-knowledge-curator 0.1.81;
+  - hermes-marketing-growth 0.1.8;
+  - hermes-search-growth 0.1.8;
+  - hermes-academy 0.1.12;
+  - hermes-dispatch-os 0.1.21.
+- This reconciliation updates HAE source truth only. Plugin version equality still does **not** prove runtime compatibility, autonomous execution, or permission to dispatch/write; those remain separate protected gates.
 - Google Drive search found "00 — HAE CURRENT STATE + ONE BRAIN AUDIT" (updated 2026-10-25), "CHAT ROUTING REGISTRY — HERMES ONE BRAIN — CURRENT", and "ONE BRAIN CONTROL LOOP"; a sample of CURRENT documents was read. This is not a complete Drive inventory.
 - Existing historical evidence lake recorded in CURRENT HAE doc: 2,001 extracted items from 376 ChatGPT conversations / 1,229 structured decisions; Claude Wave 1 partial. These are historical claims to reconcile through source receipt and coverage, **not** proof of complete chat history.
 - Gmail and additional communications are not automatically HAE-ingested merely because a ChatGPT connector exists.
