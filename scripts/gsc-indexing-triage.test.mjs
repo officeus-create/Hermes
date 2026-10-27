@@ -15,6 +15,9 @@ for (const [legacy, canonical] of [
 ]) {
   assert.ok(redirects.includes(`${legacy} ${canonical} 301`), `retired public owner must redirect: ${legacy}`);
 }
+for (const slug of ["logistics", "marketing", "technology", "academy"]) {
+  assert.ok(redirects.includes(`/ru/paths/${slug}/ /ru/${slug}/ 301`), `removed RU direction hub must redirect: /ru/paths/${slug}/`);
+}
 for (const gone of ["/dashboard", "/month", "/месяц", "/ rel=nofollow", "/\\uFFFC"]) {
   assert.ok(middleware.includes(`"${gone}"`), `stale crawl artifact must be explicitly retired: ${gone}`);
 }
