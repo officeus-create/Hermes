@@ -25,8 +25,7 @@ Ranking effects need 2–8 weeks after deploy; every slice records its recheck d
    `commercial_cta_click`/`case_study_cta` hooks (no new analytics payload fields).
 4. ~~**`/contacts/` + brand entity hub (E2)**~~ DONE #2117 LIVE 26.10 — primary request action + four directions (shared `DirectionRouter`); (138 impressions, pos 19). Accept: visitor sees the four directions + the form; one
    primary action per screen.
-5. **Careers funnel** — BLOCKED on owner: the dispatcher vacancy is held closed ("awaiting fresh owner review"); reopening needs an owner hiring decision. (`/careers/car-hauling-dispatcher/` pos 6, real clicks; `/logistics/careers/`). Accept: role
-   promise → requirements proof → one apply action.
+5. **Careers funnel** — **HOLD_CLOSED 27.10**. Fresh public Work.ua search did not surface an active Car Hauling Dispatcher vacancy, while the current Careers contract requires a genuine open role and truthful submission path. Keep apply/JobPosting suppressed; reopen only after Recruiting/owner provides a fresh active-role source and real intake route. (`/careers/car-hauling-dispatcher/` historical search visibility remains evidence, not permission to advertise an opening). Accept when reopened: role promise → requirements proof → one real apply action.
 6. ~~**Logistics commercial funnel**~~ DONE #2118 LIVE 26.10 (one primary hero action, brand ink headings, Logistics blue accents) — (car-hauling dispatch, Appleton/Wisconsin vehicle transport, dealer transport).
 7. ~~**Technology services funnel**~~ DONE #2119 LIVE 26.10 — proof rail on website development / redesign / auto-repair design; (website development / redesign / auto-repair design).
 8. ~~**Academy funnel**~~ DONE #2120 LIVE 26.10 — funnel structure already complete (hero CTA → audiences → curriculum → process → boundaries → FAQ → closing CTA); legacy violet boundary cards and consent links now follow the Academy accent; (`/academy/us-logistics-operations/`, apply).
