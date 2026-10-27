@@ -65,6 +65,7 @@ function verifyDiff(diff,expected){
       if(ch==="+" && (
         /(?:\b(?:token|api_key|private_key|password|secret)\b\s*[=:])|(?:sk-proj-|ghp_|BEGIN [A-Z ]*PRIVATE KEY)/i.test(line)||
         /(?:child_process|execSync|spawnSync|(?:process|globalThis)\s*(?:\.|\[)|fetch\s*\(|WebSocket\b|https?:\/\/|eval\s*\(|Function\s*\(|import\s*\(|\brequire\s*\(|from\s+["']node:|import\s+.*["']node:)/i.test(line)||
+        /\b(?:const|let|var)\s+[A-Za-z_$][A-Za-z0-9_$]*\s*=\s*(?:process|globalThis|fetch|WebSocket|eval|Function|fs|http|https|net|tls|dns|dgram|vm|worker_threads)\b/i.test(line)||
         /(?:\b(?:fs|http|https|net|tls|dns|dgram|vm|worker_threads)\s*(?:\.|\[)|\b(?:writeFile|writeFileSync|appendFile|appendFileSync|rm|rmSync|unlink|unlinkSync|rename|renameSync|chmod|chmodSync|chown|chownSync|mkdir|mkdirSync|symlink|symlinkSync|copyFile|copyFileSync|truncate|truncateSync)\s*\()/i.test(line)
       ))deny("unsafe_added_code");
     }
