@@ -142,6 +142,12 @@ const schema: any[] = [];
   function safeError(data: any, fallback: string, status = 0) {
     const message = typeof data?.error === "string" ? data.error.trim() : "";
     if (message && !/^[a-z0-9]+(?:[_-][a-z0-9]+)+$/i.test(message) && !/internal|database|stack|exception|undefined|null/i.test(message)) return message;
+    if (message === "email_verification_required") {
+      return "Email verification is required. Open /services/hermes-connect/email-access/ to request a secure confirmation link.";
+    }
+    if (message === "verified_signup_unavailable") {
+      return "Verified email registration is temporarily unavailable. Existing account sign-in still works.";
+    }
     if (status === 409) return "An account with this email already exists. Try signing in instead.";
     return fallback;
   }
