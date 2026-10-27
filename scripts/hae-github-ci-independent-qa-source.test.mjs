@@ -12,7 +12,7 @@ assert.match(intakeGate,/^\s*if: >-\s*\n\s*vars\.HAE_CI_SENSOR_ENABLED == 'true'
 // A re-run of the dependent QA job must also fail closed after owner disables the sensor.
 const independentQaGate=sensorWorkflow.split("\n  independent_qa:\n")[1]?.split("\n    runs-on:")[0];
 assert.ok(independentQaGate,"sensor_independent_qa_job_missing");
-assert.match(independentQaGate,/vars\.HAE_CI_SENSOR_ENABLED == 'true' && needs\.intake\.result == 'success' && needs\.intake\.outputs\.patch_candidate_ready == 'true'/,"independent_qa_must_obey_current_owner_gate");
+assert.match(independentQaGate,/github\.run_attempt == 1 && vars\.HAE_CI_SENSOR_ENABLED == 'true' && needs\.intake\.result == 'success' && needs\.intake\.outputs\.patch_candidate_ready == 'true'/,"independent_qa_must_obey_current_owner_gate_and_block_reruns");
 
 
 const sha256=(v)=>"sha256:"+createHash("sha256").update(String(v),"utf8").digest("hex");
