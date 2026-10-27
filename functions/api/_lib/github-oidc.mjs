@@ -33,6 +33,12 @@ const MZM_REVIEWER_ACCESS_IDENTITY = {
   allowedEvents: new Set(["issue_comment"]),
 };
 
+const LOAD_BOARD_STAFF_PROVISION_IDENTITY = {
+  audience: "hermes-connect-load-board-staff-provision",
+  workflowRef: "officeus-create/Hermes/.github/workflows/load-board-staff-provision.yml@refs/heads/main",
+  allowedEvents: new Set(["issue_comment"]),
+};
+
 function decodeBase64Url(value) {
   const normalized = String(value || "").replace(/-/g, "+").replace(/_/g, "/");
   const padded = normalized + "=".repeat((4 - (normalized.length % 4 || 4)) % 4);
@@ -82,6 +88,10 @@ export function validateGitHubMzmManagedClientOidcClaims(claims, now = new Date(
 
 export function validateGitHubMzmReviewerAccessOidcClaims(claims, now = new Date()) {
   return validateClaimsForIdentity(claims, MZM_REVIEWER_ACCESS_IDENTITY, now);
+}
+
+export function validateGitHubLoadBoardStaffProvisionOidcClaims(claims, now = new Date()) {
+  return validateClaimsForIdentity(claims, LOAD_BOARD_STAFF_PROVISION_IDENTITY, now);
 }
 
 async function fetchSigningKey(kid) {
@@ -140,6 +150,10 @@ export async function verifyGitHubMzmManagedClientOidcToken(token, now = new Dat
 
 export async function verifyGitHubMzmReviewerAccessOidcToken(token, now = new Date()) {
   return verifyGitHubOidcToken(token, validateGitHubMzmReviewerAccessOidcClaims, now);
+}
+
+export async function verifyGitHubLoadBoardStaffProvisionOidcToken(token, now = new Date()) {
+  return verifyGitHubOidcToken(token, validateGitHubLoadBoardStaffProvisionOidcClaims, now);
 }
 
 export function bearerToken(request) {
