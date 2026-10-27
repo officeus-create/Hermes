@@ -2109,3 +2109,10 @@ ai_name: Codex; role: delegated Academy owner; contribution_type: Implementation
 - London audit on the live site: all 45 London pages are Pearl, index/follow, self-canonical. 23 pages had no direction family (industry `*-marketing`, Meta Ads, SMM, GBP, content, CRM, landing pages, Academy guides, all `/ru|ua/gb/london/{section}/`), so their eyebrows stayed violet and their headings navy. `BaseLayout` family patterns now cover them; the three multi-direction hubs stay untagged with neutral eyebrows, and the EN hub direction cards carry the direction accent and open their owner page from anywhere on the card.
 - Gates: build, `npm test`, SEO hygiene, GSC triage, owner clarity, hreflang, internal links, performance budget all green. Build diff vs main 46168a03: 0 href/fact changes. New `tests/london-family-accents.spec.ts`; London and locale specs: 58 passed.
 - Next action — task 11 (controls cleanup); accept — no 12px-radius public primary buttons, status chips coloured by semantic state.
+
+## 2026-10-27 — Claude Code — #2122 LIVE; search drop hypotheses + E3 measured
+
+- #2122 (London families) merged cd2e44a1; live readback: `/gb/london/meta-ads/` marketing, `/gb/london/crm-automation/` technology, canonical unchanged.
+- E1 hypotheses table added to `SEARCH_ERROR_MATRIX.md` (robots/noindex/canonical/params excluded; ranking test + entity confusion most likely; templates contribute). Stale "root cause not determined / HOLD" line in the coverage matrix replaced.
+- E3 measured: 171 of 290 sitemap URLs had zero GSC impressions in 6 months; car-hauler city pages 86–92 % identical text. Queue: E3 consolidation ranked above controls cleanup.
+- Next action — owner decision on car-hauler city pages (per-city evidence vs `noindex,follow` + sitemap removal); accept — GSC "discovered" count falls 4 weeks after the change.
