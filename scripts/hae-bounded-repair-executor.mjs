@@ -15,6 +15,10 @@ const SAFE_TEST_SOURCE_BLOCKLIST = [
   /(?:from\s+|import\s*\(|require\s*\()\s*["'](?:node:)?(?:http|https|net|tls|dns|dgram|child_process)/,
   /https?:\/\//i,
   /\bprocess\s*\.\s*(?:kill|exit|abort)\s*\(/,
+  // Fail closed on process aliases, destructuring, bracket access and indirect references.
+  // The only supported process reference in a deterministic test is a direct env read.
+  /\bprocess\b(?!\s*\.\s*env\s*\.\s*[A-Za-z_$][\w$]*)/,
+  /\b(?:globalThis|global|Reflect)\b/,
   /\b(?:eval|Function)\s*\(/,
 ];
 

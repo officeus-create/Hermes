@@ -130,6 +130,28 @@ try {
   rmSync(unsafe.repo, { recursive: true, force: true });
 }
 
+// Regression: passing by terminating Node is not a repaired assertion.
+for (const [label, replacement] of [
+  ["process_alias", "const p = process;\n+p.exit(0);"],
+  ["process_destructure", "const { exit } = process;\n+exit(0);"],
+  ["global_alias", "const g = globalThis;\n+g.process.exit(0);"],
+]) {
+  const aliasFixture = fixture();
+  try {
+    const input = candidate(aliasFixture);
+    input.diff = input.diff.replace("@@ -3 +3 @@", "@@ -3 +3,2 @@")
+      .replace("+assert.equal(1, 1);", "+" + replacement);
+    assert.throws(
+      () => executeBoundedRepair({ repoRoot: aliasFixture.repo, input }),
+      /(?:hae_repair_blocked:unsafe_added_code|hae_repair_executor_blocked:unsafe_base_test_source)/,
+      label,
+    );
+    assert.equal(run(aliasFixture.repo, "git", ["status", "--porcelain"]), "");
+  } finally {
+    rmSync(aliasFixture.repo, { recursive: true, force: true });
+  }
+}
+
 const missingBase = fixture();
 try {
   const input = candidate(missingBase);
