@@ -13,6 +13,8 @@ const findingId="ci-"+runId+"-"+runAttempt+"-"+headSha.slice(0,12);
 const workId="HAE-SELF:"+findingId;
 const repairJob="job:12345678-1234-1234-1234-123456789abc";
 const proposalJob="job:87654321-4321-4321-4321-cba987654321";
+const defectEvidenceRef="HAE-EVIDENCE:github_ci_"+runId+"_"+runAttempt+"_"+headSha.slice(0,12);
+const patchDiff="diff --git a/"+artifact+" b/"+artifact+"\n--- a/"+artifact+"\n+++ b/"+artifact+"\n@@ -1,2 +1,2 @@\n import assert from \"node:assert/strict\";\n-assert.equal(0, 1);\n+assert.equal(1, 1);\n";
 const run={
   id:runId,run_attempt:runAttempt,status:"completed",conclusion:"failure",
   head_sha:headSha,name:"Hermes Automation Engine Contract",
@@ -38,13 +40,23 @@ const d1=(results)=>({success:true,result:[{success:true,results}]});
 function fixture({proposalState="WAITING_FREE_AI",preexisting=false,commitFiles=[{filename:artifact}],fileText=source}={}){
   const calls=[];
   let sent=false;
+  const proposalPayload={
+    work_id:workId,finding_id:findingId,repair_job_id:repairJob,artifact_key:artifact,
+    base_sha:headSha,observed_base_sha:headSha,defect_evidence_ref:defectEvidenceRef,
+    source_status:"HOLD_REPAIR",source_coverage_complete:true,finding_verified:true,
+    writer_state_verified:true,writer_active:false,source_excerpt:source,
+    source_excerpt_sha256:sourceDigest,failure_summary:"Verified deterministic regression failure metadata."
+  };
   const proposalRow=()=>proposalState==="SUCCEEDED"?{
     job_id:proposalJob,state:"SUCCEEDED",last_error_class:null,
+    payload_json:JSON.stringify(proposalPayload),
     result_json:JSON.stringify({
       external_write:false,
       semantic_execution:{provider_id:"cloudflare-workers-ai",cost_usd:0,usage_id:"usage:1"},
       result:{
+        work_id:workId,finding_id:findingId,repair_job_id:repairJob,
         proposal_status:"HOLD_BOUNDED_REPAIR_PREFLIGHT",artifact_key:artifact,
+        base_sha:headSha,defect_evidence_ref:defectEvidenceRef,diff:patchDiff,
         automatic_git_write:false,automatic_merge:false,automatic_deploy:false
       }
     })
