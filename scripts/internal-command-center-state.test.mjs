@@ -95,6 +95,9 @@ assert.equal(r.body.error,"cannot_revoke_current_owner");
 r=await json(await mutateAccess({request:req("/api/internal-command-center/access","POST",{action:"revoke",email:"owner2@example.invalid"}),env:{DB}}));
 assert.equal(r.status,200);
 assert.equal(r.body.action,"revoke");
+r=await json(await mutateAccess({request:req("/api/internal-command-center/access","POST",{action:"revoke",email:"owner2@example.invalid"}),env:{DB}}));
+assert.equal(r.status,409);
+assert.equal(r.body.error,"cannot_remove_last_owner_or_inactive_owner","repeated/inactive revoke must fail closed and never create another audit event");
 const audit=await DB.prepare("SELECT action,target_specialist_id FROM hermes_internal_owner_access_audit ORDER BY id").all();
 assert.deepEqual(audit.results.map(x=>[x.action,x.target_specialist_id]),[["grant","owner-2"],["revoke","owner-2"]]);
 

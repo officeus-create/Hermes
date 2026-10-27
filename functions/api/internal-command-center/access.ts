@@ -30,9 +30,14 @@ export async function onRequestPost({request,env}:{request:Request;env:Env}){
  const now=nowIso();
  if(action==="revoke"){
    if(String(target.id)===String(owner.specialist.id))return jsonResponse(409,{success:false,error:"cannot_revoke_current_owner"},headers);
-   const activeCount=await env.DB.prepare("SELECT COUNT(*) AS c FROM hermes_internal_owner_access WHERE active=1 AND capability='HERMES_INTERNAL_OWNER'").first();
-   if(Number(activeCount?.c||0)<=1)return jsonResponse(409,{success:false,error:"cannot_remove_last_owner"},headers);
-   await env.DB.prepare("UPDATE hermes_internal_owner_access SET active=0,updated_at=? WHERE specialist_id=? AND capability='HERMES_INTERNAL_OWNER'").bind(now,String(target.id)).run();
+   const revoked=await env.DB.prepare(`UPDATE hermes_internal_owner_access
+     SET active=0,updated_at=?
+     WHERE specialist_id=? AND capability='HERMES_INTERNAL_OWNER' AND active=1
+       AND EXISTS (
+         SELECT 1 FROM hermes_internal_owner_access other
+         WHERE other.active=1 AND other.capability='HERMES_INTERNAL_OWNER' AND other.specialist_id<>?
+       )`).bind(now,String(target.id),String(target.id)).run();
+   if(Number(revoked?.meta?.changes||0)!==1)return jsonResponse(409,{success:false,error:"cannot_remove_last_owner_or_inactive_owner"},headers);
  } else {
    await env.DB.prepare(`INSERT INTO hermes_internal_owner_access (specialist_id,active,capability,created_at,updated_at)
      VALUES (?,1,'HERMES_INTERNAL_OWNER',?,?)
