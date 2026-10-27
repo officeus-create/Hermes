@@ -72,7 +72,7 @@ export function proposeHaeEvidenceLesson(input={}){
   ).slice(7);
   const same=i.prior_lessons.filter(x=>x.contract_key===i.contract_key&&
     x.contract_version===i.contract_version&&x.defect_class===i.defect_class);
-  if(same.some(x=>x.work_id===i.work_id||x.rule_fingerprint===rule_fingerprint)){
+  if(same.some(x=>x.rule_fingerprint===rule_fingerprint)){
     return Object.freeze({lesson_id,status:"DUPLICATE_REPLAY",next_action:"NO_ACTION",
       knowledge_promotion_allowed:false,external_writes:0});
   }
