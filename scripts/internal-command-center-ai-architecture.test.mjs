@@ -20,7 +20,7 @@ assert.match(owner, /runtime\.last_seen_at/, "actual runner time derives from ow
 assert.match(contract, /internal-command-center-ai-architecture\.test\.mjs/, "architecture QA must be in the existing canonical contract suite");
 
 // Topology, roles, and links are explicit and maintainable.
-for (const name of ["HAE · Worker + Queue + D1","Hermes AI · Mac","One Brain","GLM-4.7-Flash","Clef-flash","Clairic","Whisper Large V3 Turbo","WAITING_FREE_AI","Agent Coordinator","Automatic Engineer","QA Auditor","Knowledge Curator"]) {
+for (const name of ["HAE · Worker + Queue + D1","Hermes AI · Mac","One Brain","GLM-4.7-Flash","Clef-flash","Clairic","Whisper Large V3 Turbo","WAITING_FREE_AI","Agent Coordinator","Technology Developer","Automatic Engineer","QA Auditor","Access Governor","Knowledge Curator","COO"]) {
   assert.ok(arch.includes(name), "missing documented role: " + name);
 }
 for (const section of ["flow","models","connections","rollout"]) {
@@ -52,3 +52,10 @@ assert.match(docs, /one new \*\*AI System Architecture\*\* section/);
 assert.match(docs, /no new planner, Worker, D1 database/i);
 assert.match(docs, /no automatic production release/i);
 console.log("Hermes AI owner architecture: existing owner gate, models, route diagram, real settings links, draft-only task controls, source proof PASS");
+
+// Current release owners must replace historical merged PRs in the owner UI.
+assert.match(arch, /officeus-create\/Hermes\/pull\/2137/);
+assert.match(arch, /officeus-create\/Hermes\/pull\/2138/);
+assert.doesNotMatch(arch, /officeus-create\/Hermes\/pull\/(2090|2123)/);
+assert.match(docs, /#2090 source merged/);
+assert.match(docs, /source safety gate #2123 is merged/);

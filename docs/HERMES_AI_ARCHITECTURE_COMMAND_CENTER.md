@@ -24,13 +24,13 @@ The Mac is allowed to be offline; it does **not** own a second cloud queue. Loca
 | Local Hermes AI | Read-only website/CI QA, Ollama, controlled preparation | Local Mac cockpit was reachable; online status fetched only from authenticated `/api/internal-ai/status` |
 | Cloudflare Access | Exact-identity gate for `agents.hermeslogisticsus.com` | Self-hosted app + owner-only allowlist created; end-to-end external proof pending |
 | Cloudflare Tunnel | Tunnel -> localhost signed-JWT bridge at 8766, never raw 8765 | Named tunnel created; live connector/destination not accepted |
-| GLM-4.7-Flash `@cf/zai-org/glm-4.7-flash` | Reasoning and narrow drafts | AI binding observed; #2123 provider safety PR; **no accepted inference receipt** |
+| GLM-4.7-Flash `@cf/zai-org/glm-4.7-flash` | Reasoning and narrow drafts | #2123 source safety gate merged; #2137 runtime Free-plan readback active; **no accepted inference receipt** |
 | Clef-flash `@cf/cloudflare/clef-flash` | Typed choice, classification/agent routing | Candidate, no benchmark or production activation |
 | Clairic `@cf/cloudflare/clairic` | Typed numeric/document extraction | Candidate, preview; no benchmark or activation |
 | Whisper Large V3 Turbo | Permitted audio transcription | Deferred; consent, provider and spend gate |
 | One Brain Google Drive | Canonical approved instructions/lessons | Existing single knowledge owner; not directly modified by model output |
 | ClickUp | Canonical human/team work | Do not mirror human tasks to Hermes Connect D1 |
-| GitHub #2090 and HAE #2068/#2069 | Event intake, bounded repair, lessons | Source/review owners; no automatic production activation |
+| GitHub CI sensor + HAE #2138/#2068/#2069 | Event intake, independent QA activation, bounded repair and lessons | #2090 source merged; #2138 is the active QA-sensor release lane; no automatic production activation |
 
 ## What the UI actually does
 
@@ -56,8 +56,8 @@ The Mac is allowed to be offline; it does **not** own a second cloud queue. Loca
 - Owner admin: [Command Center #2107](https://github.com/officeus-create/Hermes/pull/2107)
 - Private Mac gateway (separate): [#2088](https://github.com/officeus-create/Hermes/pull/2088)
 - HAE canonical runtime and learning: [#2033](https://github.com/officeus-create/Hermes/issues/2033)
-- Cloud model spend gate: [#2123](https://github.com/officeus-create/Hermes/pull/2123)
-- CI sensor: [#2090](https://github.com/officeus-create/Hermes/pull/2090)
+- Workers Free runtime readback: [#2137](https://github.com/officeus-create/Hermes/pull/2137) — source safety gate #2123 is merged
+- Independent-QA sensor activation: [#2138](https://github.com/officeus-create/Hermes/pull/2138) — source sensor #2090 is merged
 - One Brain knowledge document: https://docs.google.com/document/d/1ZhhySXskA7EdC40bWNNzSeMbvVKn7J1FPQOLNE-D98Y/edit
 
 **Rule:** Do not duplicate the Command Center, Cloudflare Worker, Hermes Connect CRM, ClickUp task store, or One Brain.
