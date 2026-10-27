@@ -3,6 +3,7 @@ import { expect, test } from "@playwright/test";
 const json=(body:unknown,status=200)=>({status,contentType:"application/json",body:JSON.stringify(body)});
 const statusPayload={success:true,runtime:{online:false,last_seen_at:"2026-10-26T12:00:00.000Z",repo_sha:"abc123",runtime_version:"owner-runner-v1"},active_task:null,latest_task:null};
 const backlog={success:true,work_items:[{id:"hcwi_demo",workstream:"marketing",priority:"p1",title:"Threads website demand",details:"Review buyer-intent posts and prepare a bounded outreach plan.",source:"voice",status:"planned",created_at:"2026-10-26T12:01:00.000Z",updated_at:"2026-10-26T12:01:00.000Z",linked_task_id:null,linked_task_status:null}]};
+const processPayload={id:"haep_demo",name:"AI gateway readiness",job_type:"ai.gateway.readiness.audit",business_lane:"automation",workstream:"technology",role_id:"hermes-automatic-engineer",cadence_hours:6,status:"paused",next_run_at:null,last_run_at:null,last_job_id:null,last_job_state:null,last_error_class:null,template_label:"AI gateway readiness",template_label_ru:"Готовность AI gateway"};
 const owners={success:true,current_specialist_id:"owner-1",access:[{specialist_id:"owner-1",active:true,email:"owner@example.invalid",name:"Owner",role:"Owner"}]};
 
 async function mockOwner(page:any){
@@ -13,6 +14,7 @@ async function mockOwner(page:any){
     return route.fulfill(json(backlog));
   });
   await page.route("**/api/internal-command-center/access",(route:any)=>route.fulfill(json(owners)));
+  await page.route("**/api/internal-command-center/processes",(route:any)=>route.fulfill(json({success:true,processes:[]})));
   await page.route("**/api/hermes-connect/account",(route:any)=>route.fulfill(json({success:true,identity:{id:"owner-1",name:"Owner",email:"owner@example.invalid",role:"Owner"},owned_businesses:[],workspaces:[{key:"internal_ai",kind:"capability_workspace",href:"/services/hermes-connect/internal/ai-connect/",available:true,state:{capability:"HERMES_INTERNAL_OWNER"}}],capabilities:{internal_ai:true}})));
 }
 
@@ -86,6 +88,34 @@ test.describe("Hermes Business Command Center",()=>{
     await expect(page.getByText(/PR and test evidence are ready for review/)).toBeVisible();
     await page.getByRole("button",{name:"Accept result"}).click();
     await expect.poll(()=>accepted).toBe(true);
+  });
+
+  test("configures and activates one zero-cost HAE process without a chat runtime",async({page})=>{
+    await mockOwner(page);
+    let created:any=null,activated=false;
+    await page.unroute("**/api/internal-command-center/processes");
+    await page.route("**/api/internal-command-center/processes",async(route:any)=>{
+      if(route.request().method()==="POST"){
+        created=route.request().postDataJSON();
+        return route.fulfill(json({success:true,process:{...processPayload,name:created.name||processPayload.name,job_type:created.job_type,cadence_hours:created.cadence_hours}},201));
+      }
+      return route.fulfill(json({success:true,processes:[processPayload]}));
+    });
+    await page.route("**/api/internal-command-center/processes/haep_demo",async(route:any)=>{
+      activated=route.request().postDataJSON()?.action==="activate";
+      return route.fulfill(json({success:true,process:{...processPayload,status:"active",next_run_at:"2026-10-28T12:00:00.000Z"}}));
+    });
+    await page.goto("/services/hermes-connect/internal/command-center/");
+    await expect(page.getByRole("heading",{name:"HAE 24/7 processes"})).toBeVisible();
+    await expect(page.locator("[data-process-list]").getByText("AI gateway readiness",{exact:true})).toBeVisible();
+    await page.getByRole("button",{name:"Activate"}).click();
+    await expect.poll(()=>activated).toBe(true);
+    const form=page.locator("[data-process-form]");
+    await form.locator('select[name="job_type"]').selectOption("academy.english.practice.build");
+    await form.locator('input[name="name"]').fill("Daily English practice");
+    await form.getByRole("button",{name:"Create paused"}).click();
+    await expect.poll(()=>created?.cadence_hours).toBe(24);
+    expect(created?.job_type).toBe("academy.english.practice.build");
   });
 
   test("keeps the owner page usable at 390px",async({page})=>{

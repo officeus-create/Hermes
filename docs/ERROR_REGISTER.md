@@ -158,7 +158,7 @@ REUSE_RULE: Every HAE/plugin/agent workflow must preserve execution, independent
 
 STATUS: OPEN / OUTSIDE COMMAND CENTER SCOPE.
 
-EVIDENCE: The required 2,544-scenario Playwright run completed with 2,518 PASS, 16 expected skips, and 10 timeouts: the same five interaction scenarios on desktop/mobile (`catalog-knb-client-strategy`, `hermes-connect-hub-locale-seo-safe`, `load-board-carrier-operating-path`, and two `repair-public-entry-context` cases). A sequential one-worker rerun reproduced all five desktop timeouts while waiting for already-visible controls to become stable. The focused Command Center browser suite passed 14/14 on the same build and preview.
+EVIDENCE: The required 2,544-scenario Playwright run completed with 2,518 PASS, 16 expected skips, and 10 timeouts: the same five interaction scenarios on desktop/mobile (`catalog-knb-client-strategy`, `hermes-connect-hub-locale-seo-safe`, `load-board-carrier-operating-path`, and two `repair-public-entry-context` cases). A sequential one-worker rerun reproduced all five desktop timeouts while waiting for already-visible controls to become stable. The focused Command Center browser suite passed 14/14 on the same build and preview. The autonomous-process continuation reproduced the same 10 desktop/mobile timeouts with 2,520 PASS and 16 expected skips; its expanded focused Command Center suite passed 16/16.
 
 BOUNDARY: None of the failing files, selectors, routes, or shared components changed in the Command Center acceptance slice. Do not weaken or rewrite those public/design tests in PR #2107.
 
