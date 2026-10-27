@@ -102,7 +102,7 @@ try{
  }),env);
  assert.equal(forgedInternal.status,400);
  assert.deepEqual(await forgedInternal.json(),{success:false,error:"internal_submission_forbidden"});
- assert.equal(raw.prepare("SELECT COUNT(*) AS count FROM hermes_automation_jobs").get().count,0);
+ assert.equal(raw.prepare("SELECT COUNT(*) AS count FROM sqlite_master WHERE type='table' AND name='hermes_automation_jobs'").get().count,0);
  assert.equal(queueWrites.length,0);
 
  // Malformed Queue evidence cannot reserve D1 work.
