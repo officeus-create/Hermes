@@ -22,6 +22,7 @@ jobs:
     outputs:
       patch_candidate_ready: ${{ steps.patch_source.outputs.patch_candidate_ready }}
     if: >-
+      vars.HAE_CI_SENSOR_ENABLED == 'true' &&
       github.run_attempt == 1 &&
       github.event.workflow_run.repository.full_name == 'officeus-create/Hermes' &&
       github.event.workflow_run.head_repository.full_name == 'officeus-create/Hermes' &&

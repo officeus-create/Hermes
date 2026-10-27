@@ -1,6 +1,13 @@
 import assert from "node:assert/strict";
+import fs from "node:fs";
 import {createHash} from "node:crypto";
 import {dispatchGithubCIIndependentQa} from "./hae-github-ci-independent-qa-source.mjs";
+
+// Fail closed at GitHub job admission: unset/false cannot reach Queue or credentials.
+const sensorWorkflow=fs.readFileSync(new URL("../.github/workflows/hae-github-ci-sensor.yml",import.meta.url),"utf8");
+const intakeGate=sensorWorkflow.split("\n  intake:\n")[1]?.split("\n    runs-on:")[0];
+assert.ok(intakeGate,"sensor_intake_job_missing");
+assert.match(intakeGate,/^\s*if: >-\s*\n\s*vars\.HAE_CI_SENSOR_ENABLED == 'true' &&/m,"sensor_job_must_be_default_off");
 
 const sha256=(v)=>"sha256:"+createHash("sha256").update(String(v),"utf8").digest("hex");
 const runId=40421315430,runAttempt=6;
