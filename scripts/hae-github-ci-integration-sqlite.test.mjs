@@ -82,6 +82,19 @@ try{
    "SELECT COUNT(*) AS count FROM hermes_automation_runtime_events WHERE event_type='queue.message_retry' AND error_class='github_ci_source_http_not_ok'"
  ).get().count,1);
  githubApiUnavailable=false;
+ // A GitHub HTTP 200 response is not sufficient evidence: a run whose
+ // head repository differs from the allowlisted repository must retry/HOLD
+ // without reserving a D1 job or sending a downstream Queue message.
+ record.head_repository.full_name="untrusted/fork";
+ const spoofedSource=batch();
+ await worker.queue(spoofedSource.object,env);
+ assert.deepEqual(spoofedSource.state,{ack:0,retry:1});
+ assert.equal(raw.prepare("SELECT COUNT(*) AS count FROM hermes_automation_jobs").get().count,0);
+ assert.equal(queueWrites.length,0);
+ assert.equal(raw.prepare(
+   "SELECT COUNT(*) AS count FROM hermes_automation_runtime_events WHERE event_type='queue.message_retry' AND error_class='github_ci_source_evidence_mismatch'"
+ ).get().count,1);
+ record.head_repository.full_name=repo;
  const first=batch();
  await worker.queue(first.object,env);
  assert.deepEqual(first.state,{ack:1,retry:0});
@@ -105,7 +118,7 @@ try{
  assert.equal(job._source.changed_paths_fingerprint,null);
  assert.ok(!rows[0].payload_json.includes("PRIVATE_SECRET"));
  assert.equal(raw.prepare("SELECT COUNT(*) AS count FROM hermes_automation_job_events WHERE event_type='job.created'").get().count,1);
- assert.equal(calls.length,3);
+ assert.equal(calls.length,4);
  assert.ok(calls.every(x=>x.method==="GET"),"Only read-only GitHub verification");
  // Same run/attempt with incompatible source snapshot must fail closed;
  // it cannot overwrite the first D1 reservation or enqueue a second job.
@@ -143,7 +156,8 @@ try{
  assert.equal(raw.prepare("SELECT COUNT(*) AS count FROM hermes_automation_jobs").get().count,2);
  assert.equal(queueWrites.length,1,"Replay must not bypass durable retry recovery");
  console.log("HAE_CI_QUEUE_D1_LOCAL_INTEGRATION_PASS",JSON.stringify({
-  duplicated_deliveries:2,github_api_403_retried_without_job:1,d1_jobs:2,job_created_events:2,
+  duplicated_deliveries:2,github_api_403_retried_without_job:1,spoofed_head_repo_rejected_without_job:1,
+  d1_jobs:2,job_created_events:2,
   failed_queue_send_jobs_recoverable:1,conflicting_replays_rejected:1,
   queued_executions:queueWrites.length,external_provider_writes:0,
   real_cloud_runtime_proven:false,authoritative_git_run_authenticated:false,
