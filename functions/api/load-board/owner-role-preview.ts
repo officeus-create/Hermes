@@ -16,7 +16,9 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
   }
   const sourceRows = reviewAccess.owner ? await env.DB.prepare(`
     SELECT id, provider, source_name, source_type, read_enabled, ingest_enabled,
-      redistribution_permission, contact_reveal_permission, status, last_successful_sync
+      redistribution_permission, contact_reveal_permission,
+      trust_status, trust_tier, verification_kind, authority_identifier, trust_verified_at,
+      status, last_successful_sync
     FROM hermes_load_sources ORDER BY updated_at DESC LIMIT 60
   `).all() : {results:[]};
   const sources = (sourceRows?.results || []).map((item: any) => ({
@@ -30,6 +32,11 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
     ingestEnabled: Number(item.ingest_enabled) === 1,
     redistributionPermission: String(item.redistribution_permission || "internal_only"),
     contactRevealPermission: String(item.contact_reveal_permission || "hidden"),
+    trustStatus: String(item.trust_status || "review_required"),
+    trustTier: Number(item.trust_tier || 3),
+    verificationKind: item.verification_kind || null,
+    authorityIdentifierRecorded: Boolean(item.authority_identifier),
+    trustVerifiedAt: item.trust_verified_at || null,
     lastSuccessfulSync: item.last_successful_sync || null,
     // A registered source is not proof of OAuth/API entitlement or current freight inventory.
     liveConnectionVerified: false,
