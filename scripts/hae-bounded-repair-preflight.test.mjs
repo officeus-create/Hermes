@@ -56,6 +56,9 @@ const bad=[
  ["add_require",{diff:diff("@@ -1 +1 @@\n-assert.equal(0, 1);\n+require(\"node:fs\");\n")}],
  ["add_fs_write",{diff:diff("@@ -1 +1 @@\n-assert.equal(0, 1);\n+fs.writeFileSync(\"/tmp/x\",\"x\");\n")}],
  ["add_process_exit",{diff:diff("@@ -1 +1 @@\n-assert.equal(0, 1);\n+process.exit(0);\n")}],
+ ["add_process_bracket_exit",{diff:diff("@@ -1 +1 @@\n-assert.equal(0, 1);\n+process[\"exit\"](0);\n")}],
+ ["add_fs_bracket_write",{diff:diff("@@ -1 +1 @@\n-assert.equal(0, 1);\n+fs[\"writeFileSync\"](\"/tmp/x\",\"x\");\n")}],
+ ["add_globalthis_bracket_fetch",{diff:diff("@@ -1 +1 @@\n-assert.equal(0, 1);\n+globalThis[\"fetch\"](\"x\");\n")}],
  ["add_network_call",{diff:diff("@@ -1 +1 @@\n-assert.equal(0, 1);\n+https.request(\"https://example.com\");\n")}],
  ["add_websocket",{diff:diff("@@ -1 +1 @@\n-assert.equal(0, 1);\n+new WebSocket(\"wss://example.com\");\n")}],
 ];
