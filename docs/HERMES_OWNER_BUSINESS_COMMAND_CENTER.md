@@ -1,6 +1,6 @@
 # Hermes Owner Business Command Center — canonical contract
 
-Status: IMPLEMENTATION DRAFT in PR #2096.
+Status: RELEASE CANDIDATE in canonical PR #2107; #2096 and #2105 are superseded historical implementations.
 Route: /services/hermes-connect/internal/command-center/
 Access: server-verified HERMES_INTERNAL_OWNER only.
 Public discovery: noindex, nofollow, noarchive.

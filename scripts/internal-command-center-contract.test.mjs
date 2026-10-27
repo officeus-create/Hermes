@@ -9,6 +9,7 @@ const collection=read("functions/api/internal-command-center/work-items.ts");
 const item=read("functions/api/internal-command-center/work-items/[id].ts");
 const access=read("functions/api/internal-command-center/access.ts");
 const nav=read("src/components/HermesConnectInternalAiNav.astro");
+const docs=read("docs/HERMES_OWNER_BUSINESS_COMMAND_CENTER.md");
 
 assert.match(page,/robots="noindex,nofollow,noarchive"/,"owner command center must stay private/noindex");
 assert.match(page,/HermesConnectExperience/,"must reuse the canonical Hermes Connect shell");
@@ -58,6 +59,8 @@ assert.match(access,/cannot_remove_last_owner/,"access flow must preserve at lea
 assert.match(access,/hermes_internal_owner_access_audit/,"access changes must be auditable");
 assert.doesNotMatch(access,/volkogon|officeus@|HERMES_OWNER_EMAIL/i,"private people/emails must not be hardcoded as authorization policy");
 assert.match(nav,/internal\/command-center/,"existing owner navigation must expose the unified command center only behind its current server gate");
+assert.match(docs,/canonical PR #2107/,"durable Command Center docs must point at the current canonical implementation");
+assert.doesNotMatch(docs,/IMPLEMENTATION DRAFT in PR #2096/,"superseded #2096 must never return as the current implementation");
 
 await import("./internal-command-center-ai-architecture.test.mjs");
 await import("./internal-command-center-runtime.test.mjs");
