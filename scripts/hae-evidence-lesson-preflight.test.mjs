@@ -39,6 +39,8 @@ assert.equal(lesson({...base,prior_lessons:[prior]}).status,"DUPLICATE_REPLAY");
 assert.equal(lesson({...base,prior_lessons:[{...prior,work_id:"HAE-SELF:DIFFERENT_001",
   lesson_id:"HAE-LESSON:"+"e".repeat(64),rule_fingerprint:"sha256:"+"f".repeat(64)}]}).status,
   "HOLD_CONFLICTING_LESSON");
+assert.equal(lesson({...base,prevention_rule:"Require a distinct regression rule for the same accepted work packet.",
+  prior_lessons:[prior]}).status,"HOLD_CONFLICTING_LESSON");
 
 const invalid=[
  ["unclassified",{raw_prompt:"injection"}],
