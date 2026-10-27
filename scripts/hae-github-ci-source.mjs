@@ -5,6 +5,7 @@
 // No untrusted PR code/logs, model call, deploy, D1 write, or blind resend.
 import fs from "node:fs";
 import path from "node:path";
+import { createHash } from "node:crypto";
 import { githubCIWorkflowIdentityVerified } from "../workers/automation-engine/src/github-ci-workflow-identity.mjs";
 import { pathToFileURL } from "node:url";
 
@@ -74,8 +75,26 @@ export async function dispatchGithubCIEvent({
     run?.repository?.full_name!==REPO || run?.head_repository?.full_name!==REPO ||
     !githubCIWorkflowIdentityVerified(run) || run?.status!=="completed"||
     !["failure","timed_out"].includes(run?.conclusion)||!SHA.test(run?.head_sha||"")||
-    run?.html_url!=="https://github.com/"+REPO+"/actions/runs/"+runId)
+    run?.html_url!=="https://github.com/"+REPO+"/actions/runs/"+runId ||
+    typeof run?.event!=="string" || run.event.length<1 || run.event.length>80 ||
+    !Number.isFinite(Date.parse(run?.updated_at||"")))
     fail("github_ci_source_run_verification_failed");
+
+  // GitHub Actions owns the authenticated GitHub API read. The Worker receives only
+  // this minimized immutable fingerprint through the private Cloudflare Queue.
+  const commit=await jsonFetch("https://api.github.com/repos/"+REPO+"/commits/"+run.head_sha,githubToken,fetchImpl);
+  if(commit?.sha!==run.head_sha||!Array.isArray(commit.files)||commit.files.length<1||commit.files.length>100)
+    fail("github_ci_source_changed_paths_incomplete");
+  const changedPaths=commit.files.map(item=>item?.filename);
+  if(changedPaths.some(name=>typeof name!=="string"||!name||name.length>240||name.startsWith("/")||name.includes("..")||name.includes("\\")))
+    fail("github_ci_source_changed_path_invalid");
+  const sortedPaths=[...new Set(changedPaths)].sort();
+  if(sortedPaths.length!==changedPaths.length)fail("github_ci_source_changed_path_duplicate");
+  const changedFingerprint="sha256:"+createHash("sha256").update(sortedPaths.join("\n"),"utf8").digest("hex");
+  const prs=Array.isArray(run.pull_requests)?run.pull_requests:[];
+  const prNumber=prs.length===1&&Number.isSafeInteger(prs[0]?.number)&&prs[0].number>0?prs[0].number:null;
+  const baseSha=prs.length===1&&SHA.test(prs[0]?.base?.sha||"")?prs[0].base.sha:null;
+  const updatedAt=new Date(run.updated_at).toISOString();
 
   const settings=await jsonFetch(API+"/accounts/"+accountId+"/workers/scripts/hermes-automation-engine/settings",cloudflareToken,fetchImpl);
   if(settings?.success!==true||!Array.isArray(settings?.result?.bindings))fail("github_ci_worker_settings_invalid");
@@ -104,7 +123,26 @@ export async function dispatchGithubCIEvent({
     if(queues?.success!==true||!Array.isArray(queues.result))fail("github_ci_cloudflare_queue_inventory_invalid");
     const matches=queues.result.filter(q=>q.queue_name==="hermes-automation"&&UUID.test(q.queue_id||""));
     if(matches.length!==1)fail("github_ci_canonical_queue_missing_or_ambiguous");
-    const packet={body:{type:"github.ci.audit",run_id:runId,run_attempt:runAttempt}};
+    const packet={body:{
+      type:"github.ci.audit",
+      run_id:runId,
+      run_attempt:runAttempt,
+      producer_main_sha:expectedMainSha,
+      repository:REPO,
+      workflow_name:run.name,
+      workflow_path:run.path,
+      workflow_id:run.workflow_id,
+      event:run.event,
+      status:run.status,
+      conclusion:run.conclusion,
+      head_sha:run.head_sha,
+      html_url:run.html_url,
+      updated_at:updatedAt,
+      changed_paths_fingerprint:changedFingerprint,
+      changed_path_count:sortedPaths.length,
+      base_sha:baseSha,
+      pr_number:prNumber,
+    }};
     const accepted=await jsonFetch(API+"/accounts/"+accountId+"/queues/"+matches[0].queue_id+"/messages",cloudflareToken,fetchImpl,packet);
     if(accepted?.success!==true)fail("github_ci_enqueue_unconfirmed_no_retry");
     queueSent=true;

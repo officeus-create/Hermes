@@ -2231,12 +2231,16 @@ export default {
       const messageType = clean(payload?.type, 80) || "UNKNOWN";
       try {
         if (messageType === "github.ci.audit") {
-          // The Queue producer can send only a run ID and attempt. All proof is
-          // re-read from immutable GitHub run/commit evidence. Existing D1 jobs
-          // are the sole HAE writer-lease authority; no second lock table exists.
+          // The canonical GitHub Actions producer authenticates the exact run and
+          // commit with its ephemeral token, then sends only a minimized snapshot
+          // through the private Cloudflare Queue. The Worker receives no GitHub
+          // credential and independently enforces deployed-main + D1 writer lease.
           if (!env.DB) throw new Error("database_not_configured");
           await ensureSchema(env.DB);
-          const authenticated = await verifyGithubCIQueueEnvelope(payload, { db: env.DB });
+          const authenticated = await verifyGithubCIQueueEnvelope(payload, {
+            db: env.DB,
+            deployedSourceSha: clean(env.HERMES_AUTOMATION_SOURCE_SHA, 80),
+          });
           await createGenericJob(env, authenticated);
           item.ack();
           continue;
