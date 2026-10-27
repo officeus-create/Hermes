@@ -76,6 +76,7 @@ const db={
 const env={
  DB:db,
  HERMES_AUTOMATION_SOURCE_SHA:producerMain,
+ HERMES_AUTOMATION_TOKEN:"test-owner-token-1234567890",
  AUTOMATION_QUEUE:{send:async packet=>queueWrites.push(packet)}
 };
 function batch(overrides={}){
@@ -90,6 +91,20 @@ function batch(overrides={}){
  }};
 }
 try{
+ // Even an authenticated HTTP caller cannot forge HAE-internal semantic submission.
+ const forgedInternal=await worker.fetch(new Request("https://hae.example/v1/jobs",{
+  method:"POST",
+  headers:{
+   Authorization:"Bearer test-owner-token-1234567890",
+   "Content-Type":"application/json"
+  },
+  body:JSON.stringify({job_type:"hae.self.patch.propose",internal_submission:true})
+ }),env);
+ assert.equal(forgedInternal.status,400);
+ assert.deepEqual(await forgedInternal.json(),{success:false,error:"internal_submission_forbidden"});
+ assert.equal(raw.prepare("SELECT COUNT(*) AS count FROM hermes_automation_jobs").get().count,0);
+ assert.equal(queueWrites.length,0);
+
  // Malformed Queue evidence cannot reserve D1 work.
  const malformed=batch({extra:"PRIVATE_SECRET"});
  await worker.queue(malformed.object,env);
@@ -275,7 +290,7 @@ try{
  assert.equal(queueWrites.length,3,"Replay must not bypass durable retry recovery");
 
  console.log("HAE_CI_QUEUE_D1_LOCAL_INTEGRATION_PASS",JSON.stringify({
-  duplicated_deliveries:2,malformed_source_rejected_without_job:1,
+  http_internal_submission_rejected:1,duplicated_deliveries:2,malformed_source_rejected_without_job:1,
   spoofed_workflow_id_rejected_without_job:1,producer_sha_mismatch_rejected_without_job:1,
   worker_github_fetches:unexpectedFetches,d1_jobs:4,job_created_events:4,
   autonomous_self_work_packets:1,hold_repair_completed:1,patch_proposal_waiting_free_ai:1,
