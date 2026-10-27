@@ -65,6 +65,17 @@ assert (u.scheme == "https" and u.hostname == "hermeslogisticsus.com" and u.port
         not u.username and not u.password and u.path in ("", "/") and not u.query and not u.fragment), "API origin must be canonical https://hermeslogisticsus.com"
 PY
 
+# Never create a second local poller alongside a manually started runner.
+# If this exact LaunchAgent already owns the runner, reinstall/check remains safe.
+if ! launchctl print "gui/$UID_VALUE/$LABEL" >/dev/null 2>&1; then
+  RUNNER_PATH="$REPO_ROOT/scripts/ai/hermes-internal-ai-runner.py"
+  if /bin/ps ax -o command= | /usr/bin/grep -F "$RUNNER_PATH" | /usr/bin/grep -v '[g]rep' >/dev/null 2>&1; then
+    printf "UNMANAGED_RUNNER_ACTIVE=BLOCKED\n" >&2
+    printf "Stop or reconcile the existing manual Internal AI runner before installing this LaunchAgent.\n" >&2
+    exit 78
+  fi
+fi
+
 if ! /usr/bin/security find-generic-password -s "$KEYCHAIN_SERVICE" -a "$KEYCHAIN_ACCOUNT" >/dev/null 2>&1; then
   printf "KEYCHAIN_ITEM=PENDING\n"
   printf "Install is blocked until the scoped runner token is provisioned in the login Keychain.\n" >&2

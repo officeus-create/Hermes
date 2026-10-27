@@ -27,6 +27,12 @@ assert.match(installer,/KeepAlive.*SuccessfulExit.*False/);
 assert.match(installer,/ThrottleInterval.*60/);
 assert.match(installer,/ProgramArguments.*\/bin\/bash/);
 assert.match(installer,/HERMES_INTERNAL_AI_CODEX_BIN/,"installer must pin the discovered Codex binary path for sparse launchd PATH");
+assert.match(installer,/UNMANAGED_RUNNER_ACTIVE=BLOCKED/,"installer must fail closed instead of creating a second unmanaged local runner");
+assert.match(installer,/launchctl print "gui\/\$UID_VALUE\/\$LABEL"/,"existing managed LaunchAgent ownership must be distinguished from an unmanaged runner");
+assert.match(installer,/RUNNER_PATH="\$REPO_ROOT\/scripts\/ai\/hermes-internal-ai-runner\.py"/,"installer must identify the canonical runner path");
+assert.match(installer,/ps ax -o command=.*grep -F "\$RUNNER_PATH"/s,"installer must inspect for an already-running manual Internal AI poller");
+assert.ok(installer.indexOf("UNMANAGED_RUNNER_ACTIVE=BLOCKED") < installer.indexOf("find-generic-password"),
+  "duplicate-runner guard must execute before Keychain credential access");
 assert.match(installer,/security find-generic-password/,"install must fail closed if Keychain token is absent");
 assert.doesNotMatch(installer,/add-generic-password/,"installer must never create or mutate credential material");
 assert.doesNotMatch(installer,/HERMES_INTERNAL_AI_RUNNER_TOKEN["']?\s*:/,"plist generator must not embed the scoped token");
