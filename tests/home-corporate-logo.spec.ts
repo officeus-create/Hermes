@@ -27,7 +27,8 @@ test("Home and approved Directions share Hermes H v1.1 while product surfaces ke
   await expect(page.locator('.desktop-nav a[href="/paths/technology/"]')).toHaveText("Technology");
 
   await page.goto("/services/hermes-connect/");
-  await expect(page.locator(".site-header .wordmark-mark-corporate")).toHaveCount(0);
+  // Connect product pages carry the same Hermes brand mark (owner directive 2026-10-27), next to the Connect launcher.
+  await expect(page.locator(".site-header .wordmark-mark-corporate img")).toBeVisible();
   await expect(page.locator(".site-header .hermes-connect-header-launcher")).toHaveCount(1);
 });
 
