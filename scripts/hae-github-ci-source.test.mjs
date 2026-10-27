@@ -28,6 +28,13 @@ assert.equal(got.queue_receipt,"CLOUDFLARE_ACCEPTED_NOT_YET_D1_VERIFIED");
 assert.equal(got.automatic_repair_allowed,false);
 assert.equal(got.model_cost_usd,0);
 assert.equal(calls.length,3);
+assert.equal(calls[0].request.headers.Authorization,"Bearer mock-gh");
+assert.equal(calls[1].request.headers.Authorization,"Bearer mock-cf");
+assert.equal(calls[2].request.headers.Authorization,"Bearer mock-cf");
+assert.ok(!JSON.stringify(calls[0].request).includes("mock-cf"),
+  "Cloudflare Queue credential must never reach GitHub");
+assert.ok(!JSON.stringify(calls.slice(1).map(c=>c.request)).includes("mock-gh"),
+  "GitHub token must never reach Cloudflare");
 const writes=calls.filter(c=>c.request.method==="POST");
 assert.equal(writes.length,1);
 assert.equal(writes[0].url,"https://api.cloudflare.com/client/v4/accounts/"+account+"/queues/"+queue+"/messages");
