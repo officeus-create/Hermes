@@ -1,59 +1,61 @@
-// HAE #2067: independently verify a minimal GitHub Actions run ID against
-// GitHub's authoritative read-only API, then reuse the existing HAE audit job.
-// A Queue message never supplies "verified", writer state, diffs or raw logs.
+// HAE #2067: verify a minimized GitHub Actions snapshot that was authenticated
+// by the canonical GitHub Actions producer before it entered the private
+// Cloudflare Queue. The Worker never receives a GitHub token and performs no
+// outbound GitHub fetch. D1 remains the sole writer-lease authority.
 import { normalizeGithubCIEvent } from "./github-ci-event-sensor.mjs";
 import { githubCIWorkflowIdentityVerified } from "./github-ci-workflow-identity.mjs";
 
 const REPO="officeus-create/Hermes";
-const API="https://api.github.com/repos/"+REPO;
 const SHA=/^[a-f0-9]{40}$/;
+const FINGERPRINT=/^sha256:[a-f0-9]{64}$/;
 const MAX_CHANGED_PATHS=100;
 const MAX_ACTIVE_REPAIR_JOBS=100;
+const KEYS=new Set([
+  "type","run_id","run_attempt","producer_main_sha","repository",
+  "workflow_name","workflow_path","workflow_id","event","status","conclusion",
+  "head_sha","html_url","updated_at","changed_paths_fingerprint",
+  "changed_path_count","base_sha","pr_number"
+]);
 
 function invalid(code){const e=new Error(code);e.code=code;throw e;}
 function positiveSafe(v){return Number.isSafeInteger(v)&&v>0;}
+function exactKeys(message){
+  const keys=Object.keys(message||{});
+  return keys.length===KEYS.size&&keys.every(k=>KEYS.has(k));
+}
+function validIso(value){
+  return typeof value==="string"&&Number.isFinite(Date.parse(value))&&new Date(value).toISOString()===value;
+}
 
 export function validateGithubCIQueueEnvelope(message={}){
-  if(message?.type!=="github.ci.audit" ||
+  if(!exactKeys(message) ||
+     message.type!=="github.ci.audit" ||
+     message.repository!==REPO ||
      !positiveSafe(message.run_id) ||
      !positiveSafe(message.run_attempt) ||
-     Object.keys(message).some(k=>!["type","run_id","run_attempt"].includes(k))) {
+     !SHA.test(message.producer_main_sha||"") ||
+     !SHA.test(message.head_sha||"") ||
+     message.status!=="completed" ||
+     !["failure","timed_out"].includes(message.conclusion) ||
+     !FINGERPRINT.test(message.changed_paths_fingerprint||"") ||
+     !positiveSafe(message.changed_path_count) ||
+     message.changed_path_count>MAX_CHANGED_PATHS ||
+     !validIso(message.updated_at) ||
+     message.html_url!=="https://github.com/"+REPO+"/actions/runs/"+message.run_id ||
+     !(message.base_sha===null||SHA.test(message.base_sha||"")) ||
+     !(message.pr_number===null||positiveSafe(message.pr_number))) {
     invalid("github_ci_queue_envelope_invalid");
   }
-  return {run_id:message.run_id,run_attempt:message.run_attempt};
-}
-
-async function githubGet(path,fetchImpl){
-  const url=API+path;
-  let response;
-  try{response=await fetchImpl(url,{headers:{
-    Accept:"application/vnd.github+json",
-    "User-Agent":"hermes-automation-engine-ci-readonly",
-  },redirect:"error",signal:AbortSignal.timeout(10000)});}
-  catch{invalid("github_ci_source_fetch_failed");}
-  if(!response?.ok)invalid("github_ci_source_http_not_ok");
-  try{return await response.json();}catch{invalid("github_ci_source_json_invalid");}
-}
-
-async function sha256Text(value){
-  const bytes=new TextEncoder().encode(String(value));
-  const digest=await crypto.subtle.digest("SHA-256",bytes);
-  return [...new Uint8Array(digest)].map(x=>x.toString(16).padStart(2,"0")).join("");
-}
-
-async function changedPathsEvidence(headSha,fetchImpl){
-  const commit=await githubGet("/commits/"+headSha,fetchImpl);
-  if(commit?.sha!==headSha||!Array.isArray(commit.files)||commit.files.length<1||
-     commit.files.length>MAX_CHANGED_PATHS) invalid("github_ci_changed_paths_incomplete");
-  const paths=commit.files.map(item=>item?.filename).filter(x=>typeof x==="string"&&x.length>0);
-  if(paths.length!==commit.files.length||paths.some(p=>p.length>240||p.startsWith("/")||p.includes("..")||p.includes("\\")))
-    invalid("github_ci_changed_path_invalid");
-  const sorted=[...new Set(paths)].sort();
-  if(sorted.length!==paths.length)invalid("github_ci_changed_path_duplicate");
-  return {
-    paths:sorted,
-    fingerprint:"sha256:"+await sha256Text(sorted.join("\n")),
+  const workflowProbe={
+    name:message.workflow_name,
+    path:message.workflow_path,
+    workflow_id:message.workflow_id,
   };
+  if(!githubCIWorkflowIdentityVerified(workflowProbe))
+    invalid("github_ci_workflow_identity_invalid");
+  if(typeof message.event!=="string"||message.event.length<1||message.event.length>80)
+    invalid("github_ci_event_name_invalid");
+  return Object.freeze({...message});
 }
 
 async function verifyNoActiveHaeWriter(db,artifactKey){
@@ -74,32 +76,28 @@ async function verifyNoActiveHaeWriter(db,artifactKey){
   return {verified:true,active:false};
 }
 
-export async function verifyGithubCIQueueEnvelope(message,{fetchImpl=fetch,db=null}={}){
-  const {run_id,run_attempt}=validateGithubCIQueueEnvelope(message);
-  const run=await githubGet("/actions/runs/"+run_id,fetchImpl);
-  if(run?.id!==run_id||run?.run_attempt!==run_attempt ||
-     run?.repository?.full_name!==REPO ||
-     run?.head_repository?.full_name!==REPO ||
-     !githubCIWorkflowIdentityVerified(run)||run?.status!=="completed" ||
-     !["failure","timed_out"].includes(run?.conclusion)||!SHA.test(run?.head_sha||"") ||
-     run?.html_url!=="https://github.com/"+REPO+"/actions/runs/"+run_id) {
-    invalid("github_ci_source_evidence_mismatch");
-  }
-  let prNumber=null,baseSha=null;
-  const runPrs=Array.isArray(run.pull_requests)?run.pull_requests:[];
-  if(runPrs.length===1&&positiveSafe(runPrs[0]?.number)){
-    prNumber=runPrs[0].number;
-    if(SHA.test(runPrs[0]?.base?.sha||""))baseSha=runPrs[0].base.sha;
-  }
+export async function verifyGithubCIQueueEnvelope(message,{db=null,deployedSourceSha=null}={}){
+  const source=validateGithubCIQueueEnvelope(message);
+  if(!SHA.test(deployedSourceSha||"")||source.producer_main_sha!==deployedSourceSha)
+    invalid("github_ci_producer_main_sha_mismatch");
 
-  // Commit paths are immutable evidence for the observed head. They provide
-  // bounded coverage without persisting diffs or source contents.
-  const changed=await changedPathsEvidence(run.head_sha,fetchImpl);
-  const artifactKey="github-workflow:"+String(run.workflow_id||run.name).slice(0,100);
-  // D1 is the sole HAE writer coordination surface: only absence of an active
-  // HAE repair packet for this exact artifact establishes a clear writer lease.
+  const artifactKey="github-workflow:"+String(source.workflow_id);
   const writerState=await verifyNoActiveHaeWriter(db,artifactKey);
-
+  const run={
+    id:source.run_id,
+    run_attempt:source.run_attempt,
+    status:source.status,
+    conclusion:source.conclusion,
+    repository:{full_name:REPO},
+    head_repository:{full_name:REPO},
+    name:source.workflow_name,
+    path:source.workflow_path,
+    workflow_id:source.workflow_id,
+    head_sha:source.head_sha,
+    html_url:source.html_url,
+    event:source.event,
+    updated_at:source.updated_at,
+  };
   const normalized=normalizeGithubCIEvent({
     action:"completed",
     repository:{full_name:REPO},
@@ -109,8 +107,8 @@ export async function verifyGithubCIQueueEnvelope(message,{fetchImpl=fetch,db=nu
     workflowIdentityVerified:true,
     writerStateVerified:writerState.verified,
     writerActive:writerState.active,
-    baseSha,
-    changedPathsFingerprint:changed.fingerprint,
+    baseSha:source.base_sha,
+    changedPathsFingerprint:source.changed_paths_fingerprint,
   });
   return {
     job_type:"hae.self.improvement.audit",
@@ -121,21 +119,25 @@ export async function verifyGithubCIQueueEnvelope(message,{fetchImpl=fetch,db=nu
     max_attempts:2,
     internal_submission:true,
     idempotency_key:"hae:ci:audit:"+normalized.intake_key,
-    policy_version:"hae-ci-intake-v1",
+    policy_version:"hae-ci-intake-v2",
     payload:{
       ...normalized.self_improvement_input,
       _source:{
         event_id:normalized.intake_key,
         source_ref:normalized.source_ref,
         repository:REPO,
-        head_sha:run.head_sha,
-        base_sha:baseSha,
-        pr_number:prNumber,
+        head_sha:source.head_sha,
+        base_sha:source.base_sha,
+        pr_number:source.pr_number,
         workflow_name:normalized.workflow_name,
+        workflow_path:source.workflow_path,
+        workflow_id:source.workflow_id,
         conclusion:normalized.conclusion,
         writer_state:writerState.active?"ACTIVE":"VERIFIED_CLEAR",
-        changed_paths_fingerprint:changed.fingerprint,
-        changed_path_count:changed.paths.length,
+        changed_paths_fingerprint:source.changed_paths_fingerprint,
+        changed_path_count:source.changed_path_count,
+        producer_main_sha:source.producer_main_sha,
+        trust_class:"GITHUB_ACTIONS_EPHEMERAL_TOKEN_TO_PRIVATE_CLOUDFLARE_QUEUE",
       },
     },
     source_verified:true,
