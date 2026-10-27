@@ -165,7 +165,7 @@ export async function dispatchGithubCIPatchProposal({
     fail("github_ci_patch_repair_contract_mismatch");
 
   const proposalKey="hae:followup:self.patch.propose:"+workId;
-  const proposalSql="SELECT job_id,state,result_json,last_error_class FROM hermes_automation_jobs WHERE idempotency_key=? LIMIT 2";
+  const proposalSql="SELECT job_id,state,payload_json,result_json,last_error_class FROM hermes_automation_jobs WHERE idempotency_key=? LIMIT 2";
   let proposals=await d1Query(accountId,dbId,cloudflareToken,fetchImpl,proposalSql,[proposalKey]);
   if(proposals.length>1)fail("github_ci_patch_duplicate_proposal_jobs");
 
@@ -210,26 +210,70 @@ export async function dispatchGithubCIPatchProposal({
         status:"WAITING_FREE_AI",queue_sent:queueSent,run_id:runId,run_attempt:runAttempt,
         work_id:workId,repair_job_id:String(repair.job_id||""),proposal_job_id:String(proposal.job_id||""),
         artifact_key:artifactKey,source_excerpt_sha256:sourceDigest,model_cost_usd:0,
+        patch_candidate_ready:false,
         automatic_git_write:false,automatic_merge:false,automatic_deploy:false,
       };
     }
     if(proposal?.state==="SUCCEEDED"){
+      const proposalPayload=safeResult(proposal.payload_json);
       const parsed=safeResult(proposal.result_json);
       if(parsed?.external_write!==false||
          parsed?.semantic_execution?.cost_usd!==0||
          parsed?.result?.proposal_status!=="HOLD_BOUNDED_REPAIR_PREFLIGHT"||
+         parsed?.result?.work_id!==workId||
+         parsed?.result?.finding_id!==findingId||
+         parsed?.result?.repair_job_id!==String(repair.job_id||"")||
          parsed?.result?.artifact_key!==artifactKey||
+         parsed?.result?.base_sha!==run.head_sha||
+         parsed?.result?.defect_evidence_ref!==proposalPayload?.defect_evidence_ref||
          parsed?.result?.automatic_git_write!==false||
          parsed?.result?.automatic_merge!==false||
-         parsed?.result?.automatic_deploy!==false)
+         parsed?.result?.automatic_deploy!==false||
+         proposalPayload?.work_id!==workId||
+         proposalPayload?.finding_id!==findingId||
+         proposalPayload?.repair_job_id!==String(repair.job_id||"")||
+         proposalPayload?.artifact_key!==artifactKey||
+         proposalPayload?.base_sha!==run.head_sha||
+         proposalPayload?.observed_base_sha!==run.head_sha||
+         proposalPayload?.source_status!=="HOLD_REPAIR"||
+         proposalPayload?.source_coverage_complete!==true||
+         proposalPayload?.finding_verified!==true||
+         proposalPayload?.writer_state_verified!==true||
+         proposalPayload?.writer_active!==false)
         fail("github_ci_patch_proposal_contract_mismatch");
+      const executorInput={
+        job_type:"hae.self.repair.packet",
+        work_id:workId,
+        finding_id:findingId,
+        source_status:"HOLD_REPAIR",
+        source_coverage_complete:true,
+        finding_verified:true,
+        writer_state_verified:true,
+        writer_active:false,
+        base_sha:run.head_sha,
+        observed_base_sha:run.head_sha,
+        artifact_key:artifactKey,
+        allowed_paths:[artifactKey],
+        diff:parsed.result.diff,
+        writer_role:"hermes-automatic-engineer",
+        independent_verifier_role:"hermes-qa-evidence-auditor",
+        defect_evidence_ref:proposalPayload.defect_evidence_ref,
+      };
+      if(process.env.RUNNER_TEMP){
+        fs.writeFileSync(
+          path.join(process.env.RUNNER_TEMP,"hae-ci-patch-candidate.json"),
+          JSON.stringify({run_id:runId,run_attempt:runAttempt,proposal_job_id:String(proposal.job_id||""),input:executorInput})+"\n",
+          {mode:0o600}
+        );
+      }
       return {
         status:"HOLD_BOUNDED_REPAIR_PREFLIGHT",queue_sent:queueSent,
         run_id:runId,run_attempt:runAttempt,work_id:workId,
         repair_job_id:String(repair.job_id||""),proposal_job_id:String(proposal.job_id||""),
         artifact_key:artifactKey,source_excerpt_sha256:sourceDigest,
         usage_id:parsed.semantic_execution.usage_id||null,
-        model_cost_usd:0,automatic_git_write:false,automatic_merge:false,automatic_deploy:false,
+        model_cost_usd:0,patch_candidate_ready:true,
+        automatic_git_write:false,automatic_merge:false,automatic_deploy:false,
       };
     }
     if(attempt+1<maxReadbackAttempts)await sleepImpl(2000);
@@ -240,6 +284,9 @@ export async function dispatchGithubCIPatchProposal({
 export async function main(){
   let cfg;
   try{cfg=JSON.parse(fs.readFileSync("workers/lead-email/wrangler.production.jsonc","utf8"));}catch{fail("github_ci_patch_account_config_invalid");}
+  if(process.env.RUNNER_TEMP){
+    try{fs.rmSync(path.join(process.env.RUNNER_TEMP,"hae-ci-patch-candidate.json"),{force:true});}catch{}
+  }
   const result=await dispatchGithubCIPatchProposal({
     runId:Number(process.env.HAE_CI_RUN_ID),
     runAttempt:Number(process.env.HAE_CI_RUN_ATTEMPT),
@@ -250,6 +297,9 @@ export async function main(){
   });
   const out=JSON.stringify(result,null,2)+"\n";
   if(process.env.RUNNER_TEMP)fs.writeFileSync(path.join(process.env.RUNNER_TEMP,"hae-ci-patch-source-receipt.json"),out);
+  if(process.env.GITHUB_OUTPUT){
+    fs.appendFileSync(process.env.GITHUB_OUTPUT,"patch_candidate_ready="+(result.patch_candidate_ready===true?"true":"false")+"\n");
+  }
   process.stdout.write(out);
 }
 

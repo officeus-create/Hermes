@@ -76,6 +76,7 @@ jobs:
           retention-days: 90
 
       - name: Propose one bounded self-patch candidate or durable WAITING_FREE_AI
+        id: patch_source
         env:
           GH_TOKEN: ${{ github.token }}
           CLOUDFLARE_HAE_RELEASE_TOKEN: ${{ secrets.CLOUDFLARE_HAE_RELEASE_TOKEN }}
@@ -88,5 +89,29 @@ jobs:
         with:
           name: hae-ci-patch-source-receipt
           path: ${{ runner.temp }}/hae-ci-patch-source-receipt.json
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Checkout exact failed source head for PATCH_ONLY proof
+        if: steps.patch_source.outputs.patch_candidate_ready == 'true'
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          path: .hae-repair-source
+          persist-credentials: false
+
+      - name: Execute bounded patch in ephemeral detached worktree only
+        if: steps.patch_source.outputs.patch_candidate_ready == 'true'
+        env:
+          HAE_REPAIR_SOURCE_REPO: ${{ github.workspace }}/.hae-repair-source
+          HAE_CI_SOURCE_HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: node scripts/hae-github-ci-patch-execute.mjs
+
+      - name: Retain sanitized PATCH_ONLY verifier receipt
+        if: steps.patch_source.outputs.patch_candidate_ready == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: hae-ci-bounded-repair-receipt
+          path: ${{ runner.temp }}/hae-ci-bounded-repair-receipt.json
           if-no-files-found: error
           retention-days: 90
