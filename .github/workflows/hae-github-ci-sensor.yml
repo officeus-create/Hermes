@@ -19,6 +19,8 @@ concurrency:
 
 jobs:
   intake:
+    outputs:
+      patch_candidate_ready: ${{ steps.patch_source.outputs.patch_candidate_ready }}
     if: >-
       github.run_attempt == 1 &&
       github.event.workflow_run.repository.full_name == 'officeus-create/Hermes' &&
@@ -113,5 +115,67 @@ jobs:
         with:
           name: hae-ci-bounded-repair-receipt
           path: ${{ runner.temp }}/hae-ci-bounded-repair-receipt.json
+          if-no-files-found: error
+          retention-days: 90
+
+  independent_qa:
+    needs: intake
+    if: needs.intake.result == 'success' && needs.intake.outputs.patch_candidate_ready == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    environment: production
+    steps:
+      - name: Checkout trusted current main only
+        uses: actions/checkout@v6
+        with:
+          ref: main
+          persist-credentials: false
+
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+
+      - name: Capture exact trusted main SHA
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "HAE_CI_EXPECTED_MAIN_SHA=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+
+      - name: Download sanitized PATCH_ONLY receipt from writer job
+        uses: actions/download-artifact@v4
+        with:
+          name: hae-ci-bounded-repair-receipt
+          path: ${{ runner.temp }}/hae-qa-input
+
+      - name: Checkout exact failed source head for independent reproof
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          path: .hae-qa-source
+          persist-credentials: false
+
+      - name: Validate independent QA contracts
+        run: |
+          set -euo pipefail
+          node scripts/hae-github-ci-independent-qa-source.test.mjs
+          node scripts/hae-github-ci-independent-qa-runtime-intake.test.mjs
+          node scripts/hae-github-ci-integration-sqlite.test.mjs
+
+      - name: Reprove patch independently and persist QA receipt
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CLOUDFLARE_HAE_RELEASE_TOKEN: ${{ secrets.CLOUDFLARE_HAE_RELEASE_TOKEN }}
+          HAE_CI_RUN_ID: ${{ github.event.workflow_run.id }}
+          HAE_CI_RUN_ATTEMPT: ${{ github.event.workflow_run.run_attempt }}
+          HAE_QA_PATCH_RECEIPT_PATH: ${{ runner.temp }}/hae-qa-input/hae-ci-bounded-repair-receipt.json
+          HAE_QA_SOURCE_REPO: ${{ github.workspace }}/.hae-qa-source
+        run: node scripts/hae-github-ci-independent-qa-source.mjs
+
+      - name: Retain sanitized independent QA receipt
+        uses: actions/upload-artifact@v4
+        with:
+          name: hae-ci-independent-qa-receipt
+          path: ${{ runner.temp }}/hae-ci-independent-qa-receipt.json
           if-no-files-found: error
           retention-days: 90
