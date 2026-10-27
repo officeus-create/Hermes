@@ -258,12 +258,83 @@ try{
  assert.equal(patchWaiting.attempt_count,0,"WAITING_FREE_AI must not consume a retry");
  assert.ok(patchWaiting.last_error_class,"WAITING_FREE_AI must retain a bounded provider reason");
 
+ // Synthetic provider-success fixture: this is still local-only and preserves $0.
+ // It allows the real Worker QA intake to persist independent QA evidence while HOLD_RELEASE stays blocked.
+ const patchDiff="diff --git a/"+patchablePath+" b/"+patchablePath+"\n--- a/"+patchablePath+"\n+++ b/"+patchablePath+"\n@@ -1,1 +1,1 @@\n-assert.equal(0,1);\n+assert.equal(1,1);\n";
+ const patchSha="sha256:"+createHash("sha256").update(patchDiff,"utf8").digest("hex");
+ raw.prepare(
+  "UPDATE hermes_automation_jobs SET state='SUCCEEDED',current_step='complete',available_at=NULL,attempt_count=1,last_error_class=NULL,result_json=? WHERE job_id=?"
+ ).run(JSON.stringify({
+  capability:"hae.self.patch.propose",
+  external_write:false,
+  semantic_execution:{provider_id:"synthetic-free-fixture",cost_usd:0,usage_id:"usage:local-fixture"},
+  result:{
+   work_id:expectedWorkId,finding_id:findingId,repair_job_id:repairRow.job_id,
+   artifact_key:patchablePath,base_sha:head,proposal_status:"HOLD_BOUNDED_REPAIR_PREFLIGHT",
+   diff:patchDiff,automatic_git_write:false,automatic_merge:false,automatic_deploy:false
+  }
+ }),patchJob.job_id);
+
+ const qaBase={
+  type:"github.ci.qa.verify",
+  run_id:runId,run_attempt:runAttempt,producer_main_sha:producerMain,
+  repository:repo,workflow_name:"Hermes Automation Engine Contract",
+  workflow_path:".github/workflows/automation-engine-contract.yml",workflow_id:382680939,
+  source_head_sha:head,work_id:expectedWorkId,finding_id:findingId,
+  repair_job_id:repairRow.job_id,proposal_job_id:patchJob.job_id,
+  artifact_key:patchablePath,patch_sha256:patchSha,
+  qa_role:"hermes-qa-evidence-auditor",qa_verdict:"PASS"
+ };
+ const qaCanonical=[
+  qaBase.run_id,qaBase.run_attempt,qaBase.producer_main_sha,qaBase.source_head_sha,
+  qaBase.work_id,qaBase.finding_id,qaBase.repair_job_id,qaBase.proposal_job_id,
+  qaBase.artifact_key,qaBase.patch_sha256,qaBase.qa_role,qaBase.qa_verdict
+ ].join("|");
+ const qaMessage={...qaBase,qa_receipt_sha256:"sha256:"+createHash("sha256").update(qaCanonical,"utf8").digest("hex")};
+ const qaFirst=executionBatch(qaMessage,"qa_verify_message");
+ await worker.queue(qaFirst.object,env);
+ assert.deepEqual(qaFirst.state,{ack:1,retry:0});
+ const releaseRow=raw.prepare(
+  "SELECT job_id,state,idempotency_key,payload_json,result_json FROM hermes_automation_jobs WHERE job_type='hae.self.release.verify'"
+ ).get();
+ assert.ok(releaseRow,"Independent QA must persist one release verification receipt in D1");
+ assert.equal(releaseRow.state,"SUCCEEDED");
+ assert.equal(releaseRow.idempotency_key,"hae:receipt:self.qa.verify:"+expectedWorkId);
+ const releasePayload=JSON.parse(releaseRow.payload_json);
+ assert.equal(releasePayload.work_id,expectedWorkId);
+ assert.equal(releasePayload.artifact_key,patchablePath);
+ assert.equal(releasePayload.repair_job_id,repairRow.job_id);
+ assert.equal(releasePayload._role_contract.role_id,"hermes-qa-evidence-auditor");
+ const releaseResult=JSON.parse(releaseRow.result_json);
+ assert.equal(releaseResult.external_write,false);
+ assert.equal(releaseResult.result.release_state,"BLOCKED");
+ assert.equal(releaseResult.result.blocker,"AUTHENTICATED_RELEASE_EVIDENCE_INCOMPLETE");
+ assert.equal(releaseResult.result.hold_release_reachable,false);
+ assert.equal(releaseResult.result.independent_verifier_identity_ok,true);
+ assert.equal(releaseResult.result.exact_head_ci_verified,false);
+ assert.equal(releaseResult.result.rollback_verified,false);
+ assert.equal(releaseResult.result.patch_sha256,patchSha);
+ assert.equal(releaseResult.result.automatic_merge_allowed,false);
+ assert.equal(releaseResult.result.automatic_deploy_allowed,false);
+ assert.equal(releaseResult.result.cost_usd,0);
+ assert.equal(queueWrites.length,3,"QA receipt materialization must not enqueue another job");
+
+ const qaReplay=executionBatch(qaMessage,"qa_verify_replay");
+ await worker.queue(qaReplay.object,env);
+ assert.deepEqual(qaReplay.state,{ack:1,retry:0});
+ assert.equal(raw.prepare("SELECT COUNT(*) AS count FROM hermes_automation_jobs WHERE job_type='hae.self.release.verify'").get().count,1);
+
+ const forgedQa=executionBatch({...qaMessage,qa_role:"hermes-automatic-engineer"},"qa_verify_forged");
+ await worker.queue(forgedQa.object,env);
+ assert.deepEqual(forgedQa.state,{ack:0,retry:1});
+ assert.equal(raw.prepare("SELECT COUNT(*) AS count FROM hermes_automation_jobs WHERE job_type='hae.self.release.verify'").get().count,1);
+
  // Same run/attempt with incompatible authenticated snapshot cannot overwrite the reservation.
  const conflictingReplay=batch({updated_at:"2026-10-26T15:00:00.000Z"});
  await worker.queue(conflictingReplay.object,env);
  assert.deepEqual(conflictingReplay.state,{ack:0,retry:1});
  assert.equal(queueWrites.length,3);
- assert.equal(raw.prepare("SELECT COUNT(*) AS count FROM hermes_automation_jobs").get().count,3);
+ assert.equal(raw.prepare("SELECT COUNT(*) AS count FROM hermes_automation_jobs").get().count,4);
 
  // D1 reservation survives downstream Queue outage and retains existing recovery semantics.
  const newRun=runId+1;
@@ -286,14 +357,14 @@ try{
  const replayAfterOutage=batch({run_id:newRun,html_url:"https://github.com/"+repo+"/actions/runs/"+newRun,updated_at:"2026-10-26T15:10:00.000Z"});
  await worker.queue(replayAfterOutage.object,env);
  assert.deepEqual(replayAfterOutage.state,{ack:1,retry:0});
- assert.equal(raw.prepare("SELECT COUNT(*) AS count FROM hermes_automation_jobs").get().count,4);
+ assert.equal(raw.prepare("SELECT COUNT(*) AS count FROM hermes_automation_jobs").get().count,5);
  assert.equal(queueWrites.length,3,"Replay must not bypass durable retry recovery");
 
  console.log("HAE_CI_QUEUE_D1_LOCAL_INTEGRATION_PASS",JSON.stringify({
   http_internal_submission_rejected:1,duplicated_deliveries:2,malformed_source_rejected_without_job:1,
   spoofed_workflow_id_rejected_without_job:1,producer_sha_mismatch_rejected_without_job:1,
-  worker_github_fetches:unexpectedFetches,d1_jobs:4,job_created_events:4,
-  autonomous_self_work_packets:1,hold_repair_completed:1,patch_proposal_waiting_free_ai:1,
+  worker_github_fetches:unexpectedFetches,d1_jobs:5,job_created_events:5,
+  autonomous_self_work_packets:1,hold_repair_completed:1,patch_proposal_waiting_free_ai:1,independent_qa_verified_release_blocked:1,
   failed_queue_send_jobs_recoverable:1,conflicting_replays_rejected:1,
   queued_executions:queueWrites.length,external_provider_writes:0,
   real_cloud_runtime_proven:false,producer_snapshot_live_authenticated:false,

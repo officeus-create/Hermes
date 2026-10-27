@@ -51,6 +51,8 @@ import {
 import { haeSelfRepairPacketReplayMatches } from "./hae-self-improvement.mjs";
 import { verifyGithubCIQueueEnvelope } from "./github-ci-runtime-intake.mjs";
 import { verifyGithubCIPatchProposalEnvelope } from "./github-ci-patch-runtime-intake.mjs";
+import { verifyGithubCIIndependentQaEnvelope } from "./github-ci-independent-qa-runtime-intake.mjs";
+import { materializeIndependentQaReceipt } from "./hae-independent-qa-receipt.mjs";
 
 const ACCOUNT_KEY = "hermes_logistics";
 const PLATFORM = "threads";
@@ -2257,6 +2259,20 @@ export default {
             deployedSourceSha: clean(env.HERMES_AUTOMATION_SOURCE_SHA, 80),
           });
           await createGenericJob(env, authenticated);
+          item.ack();
+          continue;
+        }
+        if (messageType === "github.ci.qa.verify") {
+          // Independent GitHub Actions QA runs in a separate job/context. The
+          // Worker trusts no caller verdict until exact deployed-main, repair,
+          // proposal, patch digest and QA identity all reconcile against D1.
+          if (!env.DB) throw new Error("database_not_configured");
+          await ensureSchema(env.DB);
+          const authenticated = await verifyGithubCIIndependentQaEnvelope(payload, {
+            db: env.DB,
+            deployedSourceSha: clean(env.HERMES_AUTOMATION_SOURCE_SHA, 80),
+          });
+          await materializeIndependentQaReceipt(env.DB, authenticated);
           item.ack();
           continue;
         }
