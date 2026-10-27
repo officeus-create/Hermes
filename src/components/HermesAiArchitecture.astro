@@ -5,7 +5,8 @@
  * Runtime details are read only after the existing owner gate authorizes loadAll().
  */
 const { ru = false } = Astro.props;
-const l = (en: string, local: string) => (ru ? local : en);
+const translations: Record<string, string> = {};
+const l = (en: string, local: string) => { translations[en] = local; return ru ? local : en; };
 const steps = [
   { id: "01", name: l("Owner request / inbound event", "Задание владельца / событие"), note: l("Typed task, CI event, CRM or approved connector", "Ввод, CI, CRM либо разрешённый коннектор") },
   { id: "02", name: "HAE · Worker + Queue + D1", note: l("One WORK_ID, owner of state, cost and permissions", "Единый WORK_ID, состояние, права и бюджет") },
@@ -99,11 +100,35 @@ const roles = [
     </div>
     <p class="ai-map__footnote">{l("Preparing an item fills the existing owner form below; it does NOT dispatch an agent or create a cloud task until you save it.", "Подготовка задачи заполняет существующую форму ниже; она НЕ запускает агента и НЕ создаёт запись, пока вы не нажмёте «Сохранить».")}</p>
   </div>
+  <script is:inline type="application/json" data-ai-map-translations set:html={JSON.stringify(translations).replace(/</g, "\\u003c")}></script>
 </section>
 
 <script>
 const root = document.querySelector<HTMLElement>("[data-ai-architecture]");
 if (root) {
+  // The site is statically generated: URL ?lang=ru must be applied client-side.
+  // All visible translations are defined alongside source strings, not remote data.
+  const locale = new URLSearchParams(location.search).get("lang");
+  const localMessages = root.querySelector<HTMLScriptElement>("[data-ai-map-translations]");
+  if (locale === "ru" && localMessages) {
+    let translations: Record<string, string> = {};
+    try { translations = JSON.parse(localMessages.textContent || "{}"); } catch { /* Keep source English; never invent localized content. */ }
+    const pairs = Object.entries(translations).sort((a, b) => b[0].length - a[0].length);
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    let node: Node | null;
+    while ((node = walker.nextNode())) {
+      if (node.parentElement?.closest("script,style")) continue;
+      let value = node.textContent || "";
+      for (const [en, local] of pairs) {
+        if (en && value.includes(en)) value = value.replace(en, local);
+      }
+      node.textContent = value;
+    }
+    root.querySelectorAll<HTMLElement>("[aria-label]").forEach((el) => {
+      const label = el.getAttribute("aria-label") || "";
+      if (translations[label]) el.setAttribute("aria-label", translations[label]);
+    });
+  }
   const buttons = Array.from(root.querySelectorAll<HTMLButtonElement>("[data-ai-map-tab]"));
   const panels = Array.from(root.querySelectorAll<HTMLElement>("[data-ai-map-panel]"));
   const activate = (name: string) => {
@@ -158,7 +183,7 @@ if (root) {
 </script>
 
 <style>
-.ai-map{margin:1.75rem 0 2rem;color:#142039;border:1px solid #dce4ed;border-radius:24px;background:#fff;box-shadow:0 22px 54px rgba(35,54,85,.07);overflow:hidden;font-size:1rem}
+.ai-map{scroll-margin-top:11rem;margin:1.75rem 0 2rem;color:#142039;border:1px solid #dce4ed;border-radius:24px;background:#fff;box-shadow:0 22px 54px rgba(35,54,85,.07);overflow:hidden;font-size:1rem}
 .ai-map__header{display:flex;align-items:start;justify-content:space-between;gap:1.5rem;padding:clamp(1.25rem,3vw,2rem) clamp(1.25rem,3vw,2rem) 1.3rem;background:linear-gradient(125deg,#f4f8ff 0%,#fff 54%,#f5fbfa 100%)}
 .ai-map__header h2{font-size:clamp(1.5rem,3vw,2.15rem);letter-spacing:-.045em;margin:.45rem 0;color:#142039}
 .ai-map__header p:not(.ai-map__kicker){line-height:1.55;max-width:740px;color:#5a6a82;margin:0}
