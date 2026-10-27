@@ -2124,3 +2124,10 @@ ai_name: Codex; role: delegated Academy owner; contribution_type: Implementation
 - Fixed: 4 real 404s (`/ru/paths/*` → `/ru/{direction}/` 301); meta descriptions >160 (111 pages) via the shared limit; 8 highest-traffic descriptions rewritten as complete sentences (About keeps the canonical entity names).
 - Verified already fixed: Bing scan 04.10 issues (missing description, alt, long titles, multiple H1) = 0 on current build; IndexNow submits HTML only.
 - Next action — E3 decision (car-hauler city pages: Bing has them indexed, so de-indexing has a cost); accept — owner choice recorded in the matrix.
+
+## 2026-10-27 — Claude Code — #2134 LIVE; entity: Clutch + Facebook sameAs
+
+- #2134 merged 213e125a: RU direction 404 redirects, meta descriptions ≤160, owner-approved Logistics desk phone +1 (351) 777-5337 (calls/text, Mon–Sat 6–18 CT) on dispatch and vehicle-transport pages and /contacts/ (ContactPoint). Live readback OK.
+- Brand SERP 27.10: site absent from top 75 for "hermes logistics"; own Instagram #3, Facebook #6, Clutch #9. Backlinks: 2,739 referring domains, 3 real; owner uploaded disavow (2,732 domains) 27.10.
+- This slice: Clutch and Facebook (owner-confirmed) added to `#logistics` sameAs via `public-entity-registry.ts`; canonical facts section G updated.
+- Next action — owner: Google Business Profile, Clutch description/reviews (brief given to ChatGPT), optional Facebook intro/name fix; accept — GSC position for "hermes logistics" on 2026-11-23.
