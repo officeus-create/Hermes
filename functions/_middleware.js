@@ -13,6 +13,11 @@ const HSTS_HEADER_VALUE = "max-age=31536000";
 const MAIN_LEGACY_REDIRECTS = new Map([
   ["/academy", "/paths/academy/"],
   ["/academy/", "/paths/academy/"],
+  ["/logistics", "/paths/logistics/"],
+  ["/logistics/", "/paths/logistics/"],
+  // The carrier audience page merged into the car-hauling dispatch service page (owner decision 2026-10-28).
+  ["/logistics/carrier", "/logistics/car-hauling-dispatch/"],
+  ["/logistics/carrier/", "/logistics/car-hauling-dispatch/"],
   ["/resources/rpm-calculator", "/logistics/resources/rpm-calculator/"],
   ["/resources/rpm-calculator/", "/logistics/resources/rpm-calculator/"],
   ["/tools/load-analyzer", "/services/hermes-connect/load-analyzer/"],
@@ -349,6 +354,12 @@ function goneSearchArtifactResponse() {
   });
 }
 
+function withLoadBoardVariantNoindex(response) {
+  const variant = new Response(response.body, response);
+  variant.headers.set("X-Robots-Tag", "noindex, follow");
+  return variant;
+}
+
 async function routeMainAndCompatibilityHosts(context) {
   const publicHostRedirect = canonicalPublicHostRedirect(context.request);
   if (publicHostRedirect) return withTransportSecurity(publicHostRedirect);
@@ -379,6 +390,12 @@ async function routeMainAndCompatibilityHosts(context) {
         contentLocation: "/llms.txt",
       });
     }
+  }
+
+  // Role/prefill links (?role=carrier, ?role=dealer, ...) keep working for visitors,
+  // but only the bare /load-board/ URL is indexed so search signals stay on one page.
+  if (incomingUrl.pathname === "/load-board/" && incomingUrl.search) {
+    return withLoadBoardVariantNoindex(await context.next());
   }
 
   // Ordinary main-domain pages are static Astro output. Return the upstream

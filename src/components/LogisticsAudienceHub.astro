@@ -38,7 +38,7 @@ import "../styles/hermes-logistics-public.css";
     </div>
     <div class="logistics-audience-grid">
       {logisticsAudiences.map((audience) => (
-        <a href={`/logistics/${audience.slug}/`}>
+        <a href={audience.ownerHref ?? `/logistics/${audience.slug}/`}>
           <span>{audience.eyebrow}</span>
           <h3>{audience.label}</h3>
           <p>{audience.summary}</p>

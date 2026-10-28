@@ -59,14 +59,14 @@ test("shipper, broker, and carrier audience pages use direct role-specific comme
     "/load-board/?role=broker#post-load",
   );
 
-  await page.goto("/logistics/carrier/");
+  await page.goto("/logistics/car-hauling-dispatch/");
   await expect(page.getByRole("link", { name: "Start dispatch review" }).first()).toHaveAttribute(
     "href",
     "/logistics/start-car-hauling-dispatch/",
   );
-  await expect(page.getByRole("link", { name: /Open Load Board/i }).first()).toHaveAttribute(
+  await expect(page.getByRole("link", { name: /Open the Car Hauling Load Board/i }).first()).toHaveAttribute(
     "href",
-    "/load-board/?role=carrier#available-loads",
+    "/load-board/?role=carrier&equipment=car_hauler#available-loads",
   );
 });
 
