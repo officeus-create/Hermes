@@ -183,7 +183,8 @@ assert.equal(sendCount,1);
 
 const workflow=fs.readFileSync(new URL("../.github/workflows/hae-github-ci-sensor.yml",import.meta.url),"utf8");
 assert.match(workflow,/github\.run_attempt == 1/);
-assert.doesNotMatch(workflow,/HAE_CI_SENSOR_QUEUE_TOKEN|vars\.HAE_CI_SENSOR_ENABLED/);
+assert.doesNotMatch(workflow,/HAE_CI_SENSOR_QUEUE_TOKEN/);
+assert.match(workflow,/vars\.HAE_CI_SENSOR_ENABLED == 'true'/);
 assert.match(workflow,/secrets\.CLOUDFLARE_HAE_RELEASE_TOKEN/);
 assert.match(workflow,/HAE_CI_EXPECTED_MAIN_SHA/);
 assert.match(workflow,/hae-ci-self-work-receipt/);

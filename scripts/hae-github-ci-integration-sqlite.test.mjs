@@ -283,12 +283,13 @@ try{
   source_head_sha:head,work_id:expectedWorkId,finding_id:findingId,
   repair_job_id:repairRow.job_id,proposal_job_id:patchJob.job_id,
   artifact_key:patchablePath,patch_sha256:patchSha,
+  patched_file_sha256:"sha256:"+createHash("sha256").update("synthetic-patched-file").digest("hex"),
   qa_role:"hermes-qa-evidence-auditor",qa_verdict:"PASS"
  };
  const qaCanonical=[
   qaBase.run_id,qaBase.run_attempt,qaBase.producer_main_sha,qaBase.source_head_sha,
   qaBase.work_id,qaBase.finding_id,qaBase.repair_job_id,qaBase.proposal_job_id,
-  qaBase.artifact_key,qaBase.patch_sha256,qaBase.qa_role,qaBase.qa_verdict
+  qaBase.artifact_key,qaBase.patch_sha256,qaBase.patched_file_sha256,qaBase.qa_role,qaBase.qa_verdict
  ].join("|");
  const qaMessage={...qaBase,qa_receipt_sha256:"sha256:"+createHash("sha256").update(qaCanonical,"utf8").digest("hex")};
  const qaFirst=executionBatch(qaMessage,"qa_verify_message");
@@ -308,9 +309,11 @@ try{
  const releaseResult=JSON.parse(releaseRow.result_json);
  assert.equal(releaseResult.external_write,false);
  assert.equal(releaseResult.result.release_state,"BLOCKED");
+ assert.equal(releaseResult.result.patched_file_sha256,qaBase.patched_file_sha256);
  assert.equal(releaseResult.result.blocker,"AUTHENTICATED_RELEASE_EVIDENCE_INCOMPLETE");
  assert.equal(releaseResult.result.hold_release_reachable,false);
- assert.equal(releaseResult.result.independent_verifier_identity_ok,true);
+ assert.equal(releaseResult.result.independent_verifier_identity_ok,false);
+ assert.equal(releaseResult.result.qa_identity_provenance,"SELF_ASSERTED_UNVERIFIED");
  assert.equal(releaseResult.result.exact_head_ci_verified,false);
  assert.equal(releaseResult.result.rollback_verified,false);
  assert.equal(releaseResult.result.patch_sha256,patchSha);
