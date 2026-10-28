@@ -1,12 +1,14 @@
 import { jsonResponse } from "../../_lib/session.mjs";
-import { ensureInternalAiSchema, INTERNAL_AI_ORGANIZATION_SCOPE, normalizeApprovalGate, nowIso, runnerTask, requireInternalAiRunner, sanitizeExecutionText } from "../../_lib/internal-ai.mjs";
+import { ensureInternalAiSchema, INTERNAL_AI_ORGANIZATION_SCOPE, normalizeApprovalGate, nowIso, runnerTask, requireInternalAiRunner, sanitizeExecutionText, sanitizeRunnerTelemetry } from "../../_lib/internal-ai.mjs";
 type Env = { DB?: any; HERMES_INTERNAL_AI_RUNNER_TOKEN?: string };
 export async function onRequestPost({ request, env }: { request: Request; env: Env }) {
   const auth = requireInternalAiRunner(request, env); if (auth.response) return auth.response; if (!env.DB) return jsonResponse(503, { success: false, error: "database_not_configured" });
   await ensureInternalAiSchema(env.DB);
   let payload: any = {}; try { payload = await request.json(); } catch {}
   const now = nowIso(); const repoSha = sanitizeExecutionText(payload?.repo_sha, 80) || null; const runtimeVersion = sanitizeExecutionText(payload?.runtime_version, 120) || null;
-  await env.DB.prepare(`INSERT INTO hermes_internal_ai_runner_state (id, organization_scope, last_seen_at, repo_sha, runtime_version) VALUES ('internal-ai-mac-runner', ?, ?, ?, ?) ON CONFLICT(id) DO UPDATE SET last_seen_at = excluded.last_seen_at, repo_sha = excluded.repo_sha, runtime_version = excluded.runtime_version`).bind(INTERNAL_AI_ORGANIZATION_SCOPE, now, repoSha, runtimeVersion).run();
+  const telemetry = sanitizeRunnerTelemetry(payload?.telemetry);
+  const telemetryJson = telemetry ? JSON.stringify(telemetry) : null;
+  await env.DB.prepare(`INSERT INTO hermes_internal_ai_runner_state (id, organization_scope, last_seen_at, repo_sha, runtime_version, telemetry_json) VALUES ('internal-ai-mac-runner', ?, ?, ?, ?, ?) ON CONFLICT(id) DO UPDATE SET last_seen_at = excluded.last_seen_at, repo_sha = excluded.repo_sha, runtime_version = excluded.runtime_version, telemetry_json = excluded.telemetry_json`).bind(INTERNAL_AI_ORGANIZATION_SCOPE, now, repoSha, runtimeVersion, telemetryJson).run();
   const running = await env.DB.prepare("SELECT * FROM hermes_internal_ai_tasks WHERE organization_scope = ? AND status = 'running' AND runner_id = 'internal-ai-mac-runner' ORDER BY started_at ASC LIMIT 1").bind(INTERNAL_AI_ORGANIZATION_SCOPE).first();
   if (running) {
     if (running.cancel_requested) { await env.DB.prepare("UPDATE hermes_internal_ai_tasks SET status = 'cancelled', completed_at = ?, updated_at = ? WHERE id = ? AND organization_scope = ? AND status = 'running' AND cancel_requested = 1").bind(now, now, running.id, INTERNAL_AI_ORGANIZATION_SCOPE).run(); return jsonResponse(200, { success: true, task: null, reconciled_task_id: running.id, reconciliation: "cancelled_after_runner_restart" }); }

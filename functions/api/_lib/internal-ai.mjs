@@ -63,8 +63,12 @@ export async function ensureInternalAiSchema(db) {
     organization_scope TEXT NOT NULL CHECK (organization_scope = 'hermes_internal'),
     last_seen_at TEXT NOT NULL,
     repo_sha TEXT,
-    runtime_version TEXT
+    runtime_version TEXT,
+    telemetry_json TEXT
   )`).run();
+  const runnerColumns = await db.prepare("PRAGMA table_info(hermes_internal_ai_runner_state)").all();
+  const runnerColumnNames = new Set((runnerColumns.results || []).map((column) => column.name));
+  if (!runnerColumnNames.has("telemetry_json")) await db.prepare("ALTER TABLE hermes_internal_ai_runner_state ADD COLUMN telemetry_json TEXT").run();
 }
 
 export async function requireInternalOwner(request, env) {
@@ -110,6 +114,43 @@ export function sanitizeExecutionText(value, maxLength = MAX_EVENT_LENGTH) {
     .replace(/((?:api[_-]?key|authorization|bearer|token|secret|password)\s*[:=]\s*)[^\s,;]+/gi, "$1[REDACTED]")
     .slice(0, Math.max(1, maxLength));
 }
+function boundedRunnerCount(value) {
+  const number = Number(value);
+  return Number.isInteger(number) && number >= 0 && number <= 1000000000 ? number : null;
+}
+export function sanitizeRunnerTelemetry(value = {}) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+  const autonomySource = value.autonomy && typeof value.autonomy === "object" && !Array.isArray(value.autonomy) ? value.autonomy : {};
+  const autonomy = {
+    cooldown_skipped: boundedRunnerCount(autonomySource.cooldown_skipped),
+    manifest_scanned: boundedRunnerCount(autonomySource.manifest_scanned),
+    external_actions: boundedRunnerCount(autonomySource.external_actions),
+    provider_writes: boundedRunnerCount(autonomySource.provider_writes),
+  };
+  const telemetry = {
+    status: sanitizeExecutionText(value.status, 48) || null,
+    phase: sanitizeExecutionText(value.phase, 120) || null,
+    cycle: boundedRunnerCount(value.cycle),
+    current_task: sanitizeExecutionText(value.current_task, 700) || null,
+    next_action: sanitizeExecutionText(value.next_action, 900) || null,
+    model: sanitizeExecutionText(value.model, 120) || null,
+    last_training_phase: sanitizeExecutionText(value.last_training_phase, 120) || null,
+    last_training_task: sanitizeExecutionText(value.last_training_task, 700) || null,
+    autonomy,
+  };
+  const hasAutonomy = Object.values(autonomy).some((entry) => entry !== null);
+  const hasValue = Object.entries(telemetry).some(([key, entry]) => key !== "autonomy" && entry !== null);
+  return hasValue || hasAutonomy ? telemetry : null;
+}
+export function parseRunnerTelemetry(value) {
+  if (!value) return null;
+  try {
+    return sanitizeRunnerTelemetry(JSON.parse(String(value)));
+  } catch {
+    return null;
+  }
+}
+
 export function sanitizeTaskResult(payload = {}) {
   const status = TASK_STATES.has(payload.status) ? payload.status : "failed";
   return {
