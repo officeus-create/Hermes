@@ -8,6 +8,7 @@ import {
   stageChainForWorkItem,
 } from "../functions/api/_lib/command-center-execution-map.mjs";
 import { clickupAuthorization, normalizeClickUpTask, readClickUpHumanTasks } from "../functions/api/_lib/command-center-clickup.mjs";
+import { normalizeGithubPull, parseAgentWorkPassport, readGithubDevelopments } from "../functions/api/_lib/command-center-github.mjs";
 
 const registry=[
   {role_id:"hermes-agent-coordinator",plugin_version:"0.1.71",observed_at:"2026-10-27"},
@@ -96,5 +97,53 @@ const authFailed=await readClickUpHumanTasks(
 );
 assert.equal(authFailed.source_state,"AUTH_FAILED");
 assert.deepEqual(authFailed.tasks,[]);
+
+const passport=parseAgentWorkPassport(`## Agent Work Passport
+- **Agent / environment:** ChatGPT (connected GitHub)
+- **Work ID:** #2106 execution-map continuation
+- **Scope:** owner-only read model
+- **Owner approval required:** YES for merge/deploy`);
+assert.equal(passport.agent_family,"CHATGPT");
+assert.equal(passport.work_id,"#2106 execution-map continuation");
+assert.equal(passport.scope,"owner-only read model");
+
+const normalizedPull=normalizeGithubPull({
+  number:2170,title:"Execution map",state:"open",draft:true,html_url:"https://github.com/officeus-create/Hermes/pull/2170",
+  user:{login:"officeus-create"},head:{ref:"chatgpt/test",sha:"a".repeat(40)},base:{ref:"main"},
+  updated_at:"2026-10-29T00:00:00Z",body:"**Agent / environment:** Codex\\n**Work ID:** TEST-1",
+});
+assert.equal(normalizedPull.passport.agent_family,"CODEX");
+assert.equal(normalizedPull.review_state,"DRAFT");
+assert.equal(normalizedPull.ci_state,"UNKNOWN");
+assert.equal(normalizedPull.head_sha,"a".repeat(40));
+
+let githubRequest=null;
+const github=await readGithubDevelopments({},async(url,options)=>{
+  githubRequest={url,options};
+  return {
+    ok:true,status:200,
+    headers:{get:(name)=>name.toLowerCase()==="x-ratelimit-remaining"?"59":null},
+    json:async()=>[{
+      number:2170,title:"Execution map",state:"open",draft:true,html_url:"https://github.com/officeus-create/Hermes/pull/2170",
+      user:{login:"officeus-create"},head:{ref:"chatgpt/test",sha:"b".repeat(40)},base:{ref:"main"},
+      updated_at:"2026-10-29T00:00:00Z",body:"**Agent / environment:** ChatGPT",
+    }],
+  };
+});
+assert.equal(github.source_state,"CONNECTED_PUBLIC");
+assert.equal(github.pulls.length,1);
+assert.equal(github.rate_limit_remaining,59);
+assert.match(githubRequest.url,/\/repos\/officeus-create\/Hermes\/pulls/);
+assert.equal("Authorization" in githubRequest.options.headers,false);
+assert.equal(github.pulls[0].passport.agent_family,"CHATGPT");
+
+let githubAuthHeader=null;
+const githubPrivate=await readGithubDevelopments({HERMES_GITHUB_READ_TOKEN:"read-token"},async(_url,options)=>{
+  githubAuthHeader=options.headers.Authorization;
+  return {ok:false,status:404,headers:{get:()=>null},json:async()=>({})};
+});
+assert.equal(githubAuthHeader,"Bearer read-token");
+assert.equal(githubPrivate.source_state,"REPOSITORY_NOT_FOUND");
+assert.deepEqual(githubPrivate.pulls,[]);
 
 console.log("INTERNAL_COMMAND_CENTER_EXECUTION_MAP_PASS");
