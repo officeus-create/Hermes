@@ -212,7 +212,11 @@ import SiteHeader from "../../../../../components/SiteHeader.astro";
                 message(authMessage, payload.state === 'created' ? 'Google account verified. Add your company to continue.' : 'Google identity verified.');
                 await showCompany(payload.specialist);
               } catch (error) {
-                message(authMessage, `Google sign-in could not be completed: ${error.message}`, true);
+                const googleErrors = {
+                  existing_account_signin_required: 'This email already has a Hermes account. Sign in with your password or email below first; then you can connect Google.',
+                  provider_identity_conflict: 'This Google account is already connected to a different Hermes account. Use your email below or contact support.',
+                };
+                message(authMessage, googleErrors[error.message] || `Google sign-in could not be completed: ${error.message}`, true);
               }
             },
           });
