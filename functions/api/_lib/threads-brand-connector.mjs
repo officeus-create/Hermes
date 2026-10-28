@@ -90,6 +90,7 @@ export function threadsBrandScopes(env) {
     "threads_content_publish",
     "threads_read_replies",
     "threads_manage_replies",
+    "threads_manage_mentions",
     "threads_manage_insights",
     "threads_keyword_search",
     "threads_profile_discovery",
