@@ -6,6 +6,7 @@ import SiteFooter from "../../../../../components/SiteFooter.astro";
 import HermesConnectExperience from "../../../../../components/HermesConnectExperience.astro";
 import HermesConnectInternalAiNav from "../../../../../components/HermesConnectInternalAiNav.astro";
 import HermesLocalAgentsLink from "../../../../../components/HermesLocalAgentsLink.astro";
+import HermesOwnerProjectPortfolio from "../../../../../components/HermesOwnerProjectPortfolio.astro";
 import { HAE_OWNER_PROCESS_TEMPLATES } from "../../../../../lib/hae-process-control.mjs";
 const ru=Astro.url.searchParams.get("lang")==="ru";
 const modules=[
@@ -40,6 +41,8 @@ const modules=[
         </section>
 
         <section class="section panel account-portfolio"><div class="section-head"><div><p class="kicker"><Building2 size={14}/>{ru?"Мой Hermes":"My Hermes"}</p><h2>{ru?"Подключённые рабочие пространства":"Connected workspaces"}</h2></div><span data-account-identity class="cloud-note">—</span></div><div class="workspace-grid" data-account-workspaces><p class="muted">{ru?"Загружаем доступы…":"Loading access…"}</p></div></section>
+
+        <HermesOwnerProjectPortfolio ru={ru}/>
 
         <section class="section">
           <div class="section-head"><div><p class="kicker"><Building2 size={14}/>{ru?"Направления":"Business directions"}</p><h2>{ru?"Что сейчас есть в системе":"What is already connected"}</h2></div></div>

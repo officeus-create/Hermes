@@ -87,6 +87,16 @@ External communications, publishing, CRM/customer mutations, billing and other c
 
 The Command Center also provides a loopback-only link to the existing Hermes AI Agents interface at `127.0.0.1:8765`. It opens in a separate tab, so a phone or another computer can return to the unchanged Command Center and use the canonical cloud AI status/queue fallback. The online page does not probe localhost, weaken CSP, expose port 8765 through a tunnel, or make the local Cockpit the HAE runtime.
 
+## Project portfolio and public preview
+
+The owner-only project portfolio is a projection inside this same Command Center. Its canonical bounded registry is returned only by `/api/internal-command-center/projects` after `HERMES_INTERNAL_OWNER` verification; real project names, relationships, agents, plugin roles, blockers and GitHub evidence are never embedded in the public static HTML.
+
+Every project record states its department, purpose, accountable role, execution agent, plugin roles, parent, dependencies, related projects, blockers and dated evidence. Progress is derived only from completed milestones divided by total milestones. It is not a subjective confidence score. ETA remains `UNKNOWN` until comparable completed work provides an auditable basis; the UI must label any future ETA as an estimate and show that basis.
+
+The existing public `/services/hermes-connect/ai-command-center/` reference page contains a synthetic, read-only product preview. It uses demo companies/projects only, exposes no internal project or authorization data, and routes interest into the existing scoped contact path. It is a product explanation, not a live customer account, internal system, or second admin.
+
+The current registry records the unresolved AI Operations architecture collision between stacked PRs #2125 and #2159 as a blocker. Neither branch is silently selected as canonical. Owner/maintainer review must choose the surviving delta before merge.
+
 ## Voice
 
 Browser speech recognition is only an input helper:
