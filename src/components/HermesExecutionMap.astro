@@ -1,0 +1,115 @@
+---
+const { ru = false } = Astro.props;
+---
+
+<section class="section panel execution-map" data-execution-map data-locale={ru ? "ru" : "en"}>
+  <div class="section-head">
+    <div>
+      <p class="kicker">{ru ? "Карта исполнения" : "Execution map"}</p>
+      <h2>{ru ? "Задачи → исполнители → разработки → доказательства" : "Tasks → executors → capabilities → evidence"}</h2>
+    </div>
+    <span class="cloud-note" data-execution-checked>{ru ? "Загружаем…" : "Loading…"}</span>
+  </div>
+  <p class="muted">{ru
+    ? "Это read model поверх существующих источников. Он не создаёт второй task DB: owner backlog остаётся в D1, HAE — runtime, plugin registry — реестр возможностей."
+    : "This is a read model over existing canonical sources. It creates no second task DB: owner backlog stays in D1, HAE stays the runtime, and the plugin registry stays the capability registry."}</p>
+  <div class="execution-summary" data-execution-summary></div>
+  <div class="execution-layout">
+    <div>
+      <div class="execution-toolbar">
+        <strong>{ru ? "Задачи" : "Tasks"}</strong>
+        <select data-execution-filter aria-label={ru ? "Фильтр карты исполнения" : "Execution map filter"}>
+          <option value="open">{ru ? "Открытые" : "Open"}</option>
+          <option value="all">{ru ? "Все" : "All"}</option>
+          <option value="technology">Technology</option>
+          <option value="marketing">Marketing</option>
+          <option value="logistics">Logistics</option>
+          <option value="sales">Sales</option>
+          <option value="academy">Academy</option>
+          <option value="finance">Finance</option>
+          <option value="operations">Operations</option>
+        </select>
+      </div>
+      <div class="execution-list" data-execution-list><p class="muted">{ru ? "Загружаем задачи…" : "Loading tasks…"}</p></div>
+    </div>
+    <aside>
+      <h3>{ru ? "Разработки и возможности" : "Capabilities and systems"}</h3>
+      <div class="development-list" data-development-list><p class="muted">{ru ? "Загружаем реестр…" : "Loading registry…"}</p></div>
+    </aside>
+  </div>
+</section>
+
+<script>
+const roots=[...document.querySelectorAll<HTMLElement>("[data-execution-map]")];
+const safeGithub=(value:unknown)=>{try{const u=new URL(String(value||""));return u.protocol==="https:"&&u.hostname==="github.com"&&/^\/officeus-create\/Hermes\/(pull|issues)\/\d+\/?$/.test(u.pathname)?u.href:null}catch{return null}};
+roots.forEach(async(root)=>{
+  const ru=root.dataset.locale==="ru";
+  const t=(en:string,ruText:string)=>ru?ruText:en;
+  const list=root.querySelector<HTMLElement>("[data-execution-list]")!;
+  const devs=root.querySelector<HTMLElement>("[data-development-list]")!;
+  const summary=root.querySelector<HTMLElement>("[data-execution-summary]")!;
+  const checked=root.querySelector<HTMLElement>("[data-execution-checked]")!;
+  const filter=root.querySelector<HTMLSelectElement>("[data-execution-filter]")!;
+  let tasks:any[]=[];
+  const text=(tag:string,value:string,cls?:string)=>{const node=document.createElement(tag);node.textContent=value;if(cls)node.className=cls;return node};
+
+  const renderTasks=()=>{
+    const mode=filter.value;
+    const visible=tasks.filter(task=>mode==="all"||(mode==="open"&&task.owner_status!=="done"&&task.owner_status!=="cancelled")||task.workstream===mode);
+    list.replaceChildren();
+    if(!visible.length){list.append(text("p",t("No tasks in this view.","В этом представлении задач нет."),"muted"));return}
+    visible.forEach(task=>{
+      const card=document.createElement("article");card.className="execution-card";
+      const head=document.createElement("div");head.className="execution-head";
+      const identity=document.createElement("div");identity.append(text("small",`${String(task.workstream).toUpperCase()} · ${String(task.priority).toUpperCase()}`),text("strong",task.title));
+      const stage=text("span",task.current_stage,"execution-stage");head.append(identity,stage);card.append(head);
+
+      const path=document.createElement("div");path.className="stage-chain";
+      (task.stage_chain||[]).forEach((step:any)=>{const s=text("span",step.stage);s.dataset.state=step.state;path.append(s)});card.append(path);
+
+      const facts=document.createElement("dl");facts.className="execution-facts";
+      const rows=[
+        [t("WORK_ID","WORK_ID"),task.work_id||"UNKNOWN"],
+        [t("Executor","Исполнитель"),task.executor?.surface==="INTERNAL_AI"?"Internal AI · "+(task.executor.agent_role||"UNKNOWN"):"UNASSIGNED"],
+        [t("Plugin assignment","Назначение плагина"),task.executor?.plugin_role_id||"UNKNOWN"],
+        [t("LIVE","LIVE"),task.live_state||"UNKNOWN"],
+        [t("Business result","Бизнес-результат"),task.business_result_state||"UNKNOWN"],
+      ];
+      rows.forEach(([label,value])=>{const row=document.createElement("div");row.append(text("dt",label),text("dd",String(value)));facts.append(row)});card.append(facts);
+
+      if(task.eligible_capabilities?.length){const caps=document.createElement("div");caps.className="capabilities";caps.append(text("small",t("Eligible existing capabilities · not assigned automatically","Доступные существующие возможности · автоматически не назначены")));const wrap=document.createElement("div");task.eligible_capabilities.forEach((cap:any)=>wrap.append(text("span",cap.role_id+(cap.plugin_version?" · v"+cap.plugin_version:" · version UNKNOWN"))));caps.append(wrap);card.append(caps)}
+      if(task.blocker){const blocker=text("p",task.blocker,"execution-blocker");card.append(blocker)}
+      const next=document.createElement("div");next.className="next-action";next.append(text("small","NEXT_ACTION"),text("strong",task.next_action));card.append(next);
+
+      const links=document.createElement("div");links.className="execution-links";
+      const pr=safeGithub(task.evidence?.pr_url);if(pr){const a=document.createElement("a");a.href=pr;a.target="_blank";a.rel="noopener noreferrer";a.textContent="PR / evidence ↗";links.append(a)}
+      if(task.evidence?.repo_sha)links.append(text("span","SHA "+String(task.evidence.repo_sha).slice(0,12)));
+      if(task.evidence?.evidence_class)links.append(text("span",task.evidence.evidence_class));
+      if(links.childElementCount)card.append(links);
+      list.append(card);
+    });
+  };
+
+  try{
+    const response=await fetch("/api/internal-command-center/execution-map",{credentials:"same-origin",cache:"no-store",headers:{Accept:"application/json"}});
+    const data=await response.json();if(!response.ok||!data.success)throw new Error(String(data.error||"execution_map_unavailable"));
+    tasks=data.tasks||[];
+    const blocked=tasks.filter((task:any)=>task.current_stage==="BLOCKED").length;
+    const active=tasks.filter((task:any)=>["ASSIGNED","STARTED","OWNER_GATE","EXECUTED"].includes(task.current_stage)).length;
+    summary.replaceChildren();
+    [[t("Tasks","Задачи"),tasks.length],[t("Active","В работе"),active],[t("Blocked","Блокеры"),blocked],[t("Plugin registry","Реестр плагинов"),data.registry_evidence?.fresh?t("Fresh","Свежий"):t("Stale snapshot","Устаревший срез")]].forEach(([label,value])=>{const a=document.createElement("article");a.append(text("span",String(label)),text("strong",String(value)));summary.append(a)});
+    checked.textContent=new Date(data.checked_at).toLocaleString(ru?"ru-RU":"en-US",{dateStyle:"medium",timeStyle:"short"});
+
+    devs.replaceChildren();
+    const systems=data.developments?.systems||[];const plugins=data.developments?.plugins||[];const automation=data.developments?.automation||[];
+    systems.forEach((item:any)=>{const a=document.createElement("article");a.className="development-card system";a.append(text("small",item.kind),text("strong",item.label),text("span",item.status+(item.model?" · "+item.model:"")));devs.append(a)});
+    automation.forEach((item:any)=>{const a=document.createElement("article");a.className="development-card";a.append(text("small","HAE PROCESS"),text("strong",item.label),text("span",item.status+" · "+item.role_id+(item.last_job_state?" · "+item.last_job_state:"")));devs.append(a)});
+    plugins.forEach((item:any)=>{const a=document.createElement("article");a.className="development-card";a.append(text("small","PLUGIN ROLE"),text("strong",item.id),text("span",(item.version?"v"+item.version:"version UNKNOWN")+" · "+item.evidence_state));devs.append(a)});
+    filter.addEventListener("change",renderTasks);renderTasks();
+  }catch(error){checked.textContent=t("Unavailable","Недоступно");list.replaceChildren(text("p",t("Execution map could not be loaded; no status was inferred.","Карта исполнения не загрузилась; статусы не были придуманы."),"muted"));devs.replaceChildren(text("p",t("Capability registry unavailable.","Реестр возможностей недоступен."),"muted"))}
+});
+</script>
+
+<style>
+.execution-map{overflow:hidden}.execution-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.55rem;margin:1rem 0}.execution-summary article{display:grid;gap:.18rem;padding:.65rem;border:1px solid #dfe5ed;border-radius:.8rem;background:#f8faff}.execution-summary span,.development-card small,.execution-head small,.next-action small,.capabilities>small{font-size:.66rem;color:#7a8494;text-transform:uppercase;letter-spacing:.055em}.execution-summary strong{font-size:1.05rem}.execution-layout{display:grid;grid-template-columns:minmax(0,1.8fr) minmax(260px,.8fr);gap:.8rem}.execution-toolbar{display:flex;align-items:center;justify-content:space-between;gap:.6rem;margin-bottom:.55rem}.execution-toolbar select{max-width:210px;border:1px solid #d3dae5;border-radius:.65rem;background:#fff;padding:.5rem}.execution-list,.development-list{display:grid;gap:.55rem}.execution-card,.development-card{border:1px solid #dfe5ed;border-radius:.85rem;background:#fff;padding:.75rem}.execution-head{display:flex;justify-content:space-between;gap:.8rem}.execution-head>div{display:grid;gap:.18rem}.execution-stage{align-self:start;border-radius:999px;background:#edf3ff;color:#2458b8;padding:.28rem .48rem;font-size:.65rem;font-weight:850}.stage-chain{display:flex;gap:.28rem;overflow:auto;margin:.6rem 0}.stage-chain span{white-space:nowrap;border-radius:999px;background:#f0f3f7;color:#7a8494;padding:.25rem .42rem;font-size:.58rem;font-weight:850}.stage-chain span[data-state="done"]{background:#eaf8f1;color:#147553}.stage-chain span[data-state="pending"]{background:#edf3ff;color:#2458b8}.stage-chain span[data-state="not_passed"]{background:#fff0eb;color:#9d482c}.execution-facts{display:grid;gap:.22rem;margin:.6rem 0}.execution-facts div{display:grid;grid-template-columns:115px 1fr;gap:.5rem}.execution-facts dt{font-size:.69rem;color:#7a8494}.execution-facts dd{margin:0;font-size:.72rem;color:#34435a;overflow-wrap:anywhere}.capabilities{border-top:1px solid #edf0f4;padding-top:.55rem}.capabilities>div{display:flex;flex-wrap:wrap;gap:.3rem;margin-top:.3rem}.capabilities span,.execution-links span{border:1px solid #dfe5ed;border-radius:999px;padding:.24rem .4rem;font-size:.64rem;color:#52627a}.next-action{display:grid;gap:.16rem;margin-top:.6rem;padding:.55rem .65rem;border-left:3px solid #2f6bf6;background:#f7f9ff}.next-action strong{font-size:.73rem;line-height:1.4}.execution-blocker{margin:.55rem 0 0;padding:.5rem .6rem;background:#fff8f5;color:#87503d;border-left:3px solid #d85d3e;font-size:.72rem}.execution-links{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.55rem;align-items:center}.execution-links a{font-size:.69rem;font-weight:800;text-decoration:none;color:#2458b8}.development-list{max-height:720px;overflow:auto}.development-card{display:grid;gap:.18rem}.development-card strong{font-size:.78rem;overflow-wrap:anywhere}.development-card span{font-size:.68rem;color:#687487}.development-card.system{border-color:#bcd0ff;background:#f7f9ff}@media(max-width:900px){.execution-layout{grid-template-columns:1fr}.development-list{max-height:none}.execution-summary{grid-template-columns:repeat(2,1fr)}}@media(max-width:520px){.execution-summary{grid-template-columns:1fr 1fr}.execution-head{flex-direction:column}.execution-facts div{grid-template-columns:95px 1fr}.execution-toolbar{align-items:flex-start;flex-direction:column}.execution-toolbar select{width:100%;max-width:none}}
+</style>
