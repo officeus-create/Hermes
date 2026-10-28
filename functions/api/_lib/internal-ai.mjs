@@ -15,6 +15,20 @@ export async function ensureInternalAiSchema(db) {
     created_at TEXT NOT NULL,
     updated_at TEXT NOT NULL
   )`).run();
+  await db.prepare(`CREATE TABLE IF NOT EXISTS hermes_internal_team_view_access (
+    specialist_id TEXT PRIMARY KEY,
+    active INTEGER NOT NULL DEFAULT 0 CHECK (active IN (0,1)),
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL
+  )`).run();
+  await db.prepare(`CREATE TABLE IF NOT EXISTS hermes_internal_team_view_access_audit (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    organization_scope TEXT NOT NULL CHECK (organization_scope = 'hermes_internal'),
+    actor_specialist_id TEXT NOT NULL,
+    target_specialist_id TEXT NOT NULL,
+    action TEXT NOT NULL CHECK (action IN ('grant','revoke')),
+    created_at TEXT NOT NULL
+  )`).run();
   await db.prepare(`CREATE TABLE IF NOT EXISTS hermes_internal_ai_tasks (
     id TEXT PRIMARY KEY,
     organization_scope TEXT NOT NULL CHECK (organization_scope = 'hermes_internal'),
@@ -79,6 +93,18 @@ export async function requireInternalOwner(request, env) {
   const access = await env.DB.prepare(`SELECT specialist_id, capability FROM hermes_internal_owner_access WHERE specialist_id = ? AND active = 1 AND capability = 'HERMES_INTERNAL_OWNER' LIMIT 1`).bind(specialist.id).first();
   if (!access) return { response: jsonResponse(403, { success: false, error: "hermes_internal_owner_required" }) };
   return { specialist, access };
+}
+
+export async function requireInternalAiViewer(request, env) {
+  if (!env.DB) return { response: jsonResponse(503, { success: false, error: "database_not_configured" }) };
+  const specialist = await getAuthenticatedSpecialist(request, env.DB);
+  if (!specialist) return { response: jsonResponse(401, { success: false, error: "not_authenticated" }) };
+  await ensureInternalAiSchema(env.DB);
+  const ownerAccess = await env.DB.prepare("SELECT specialist_id FROM hermes_internal_owner_access WHERE specialist_id = ? AND active = 1 AND capability = 'HERMES_INTERNAL_OWNER' LIMIT 1").bind(specialist.id).first();
+  if (ownerAccess) return { specialist, access_level: "owner" };
+  const teamAccess = await env.DB.prepare("SELECT specialist_id FROM hermes_internal_team_view_access WHERE specialist_id = ? AND active = 1 LIMIT 1").bind(specialist.id).first();
+  if (!teamAccess) return { response: jsonResponse(403, { success: false, error: "hermes_internal_view_required" }) };
+  return { specialist, access_level: "team" };
 }
 
 function timingSafeEqualText(left, right) {
