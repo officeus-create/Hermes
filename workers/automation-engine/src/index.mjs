@@ -1627,7 +1627,7 @@ async function processPlanMessage(env, message) {
     const unresolved = await env.DB.prepare(
       "SELECT COUNT(*) AS n FROM hermes_automation_publications WHERE account_key=? AND platform=? AND status IN ('provider_accepted_readback_pending','unknown_outcome_readback_pending','unknown_outcome_unresolved','readback_unverified')"
     ).bind(ACCOUNT_KEY, PLATFORM).first();
-    if (!unresolved || !Number.isFinite(Number(unresolved.n)) || Number(unresolved.n) > 0) {
+    if (!Number.isSafeInteger(unresolved?.n) || unresolved.n !== 0) {
       const now = new Date().toISOString();
       await env.DB.prepare("UPDATE hermes_automation_runs SET status='preflight_blocked',last_error_class='unresolved_previous_publication',updated_at=? WHERE id=?")
         .bind(now, runIdForSlot(slotKey)).run();
