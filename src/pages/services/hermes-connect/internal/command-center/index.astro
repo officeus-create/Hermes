@@ -47,6 +47,15 @@ const modules=[
             <h3 data-team-page-current>—</h3>
             <p class="muted">{ru?"Последний heartbeat: ":"Last heartbeat: "}<span data-team-page-heartbeat>—</span></p>
           </article>
+          <div class="section-head team-progress-head"><div><p class="kicker"><Route size={14}/>{ru?"Прогресс":"Progress"}</p><h2>{ru?"AI-задачи без раскрытия деталей":"AI task counts without private task details"}</h2></div></div>
+          <section class="status-grid team-progress-grid">
+            <article><span>{ru?"Всего":"Total"}</span><strong data-team-task-total>—</strong><small>{ru?"задач в AI-контуре":"tasks in AI lane"}</small></article>
+            <article><span>{ru?"В очереди":"Queued"}</span><strong data-team-task-queued>—</strong><small>{ru?"ожидают исполнения":"waiting to run"}</small></article>
+            <article><span>{ru?"В работе":"Running"}</span><strong data-team-task-running>—</strong><small>{ru?"исполняются сейчас":"executing now"}</small></article>
+            <article><span>{ru?"На проверке":"Review"}</span><strong data-team-task-review>—</strong><small>{ru?"ждут owner gate":"waiting owner gate"}</small></article>
+            <article><span>{ru?"Завершено":"Completed"}</span><strong data-team-task-completed>—</strong><small>{ru?"закрытые AI-задачи":"closed AI tasks"}</small></article>
+            <article><span>{ru?"Ошибки":"Failed"}</span><strong data-team-task-failed>—</strong><small>{ru?"требуют разбора":"need investigation"}</small></article>
+          </section>
         </section>
       </div>
 
@@ -153,7 +162,8 @@ async function loadAll(){
   runtime=status.d.runtime||{};const active=status.d.active_task||null;
   const operations=runtime.operations&&typeof runtime.operations==="object"?runtime.operations:{};const autonomy=operations.autonomy&&typeof operations.autonomy==="object"?operations.autonomy:{};const unknown=t("UNKNOWN","НЕИЗВЕСТНО");
   const known=(value:any)=>value===null||value===undefined||value===""?unknown:String(value);const runnerLabel=runtime.online?t("Online","Онлайн"):t("Offline","Офлайн");
-  const fillTeam=()=>{setText("[data-team-page-status]",operations.status?known(operations.status):runnerLabel);setText("[data-team-page-phase]",known(operations.phase));setText("[data-team-page-model]",known(operations.model));setText("[data-team-page-cycle]",known(operations.cycle));setText("[data-team-page-current]",known(operations.current_task));setText("[data-team-page-heartbeat]",runtime.last_seen_at?stamp(runtime.last_seen_at):unknown)};
+  const taskSummary=status.d.task_summary&&typeof status.d.task_summary==="object"?status.d.task_summary:{};
+  const fillTeam=()=>{setText("[data-team-page-status]",operations.status?known(operations.status):runnerLabel);setText("[data-team-page-phase]",known(operations.phase));setText("[data-team-page-model]",known(operations.model));setText("[data-team-page-cycle]",known(operations.cycle));setText("[data-team-page-current]",known(operations.current_task));setText("[data-team-page-heartbeat]",runtime.last_seen_at?stamp(runtime.last_seen_at):unknown);setText("[data-team-task-total]",known(taskSummary.total));setText("[data-team-task-queued]",known(taskSummary.queued));setText("[data-team-task-running]",known(taskSummary.running));setText("[data-team-task-review]",known(taskSummary.needs_approval));setText("[data-team-task-completed]",known(taskSummary.completed));setText("[data-team-task-failed]",known(taskSummary.failed))};
   if(status.d.access_level==="team"){
     access.hidden=true;privateView.hidden=true;teamView.hidden=false;setText("[data-role-pill]",t("TEAM VIEW · READ ONLY","TEAM VIEW · ТОЛЬКО ЧТЕНИЕ"));fillTeam();return;
   }
