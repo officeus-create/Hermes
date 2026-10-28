@@ -132,6 +132,7 @@ export async function ensureHaeProcessSchema(db) {
  *   jobId?: string | null,
  *   errorClass?: string | null,
  *   createdAt?: string,
+ *   onlyIfPreviousStatementChanged?: boolean,
  * }} input
  */
 export function haeProcessEventStatement(db, {
@@ -143,10 +144,9 @@ export function haeProcessEventStatement(db, {
   jobId = null,
   errorClass = null,
   createdAt = new Date().toISOString(),
+  onlyIfPreviousStatementChanged = false,
 }) {
-  return db.prepare(`INSERT INTO hermes_automation_process_events
-    (event_id,process_id,event_type,actor_specialist_id,from_status,to_status,job_id,error_class,created_at)
-    VALUES (?,?,?,?,?,?,?,?,?)`).bind(
+  const values = [
     `haepe_${crypto.randomUUID()}`,
     processId,
     eventType,
@@ -156,7 +156,15 @@ export function haeProcessEventStatement(db, {
     jobId,
     errorClass,
     createdAt,
-  );
+  ];
+  if (onlyIfPreviousStatementChanged) {
+    return db.prepare(`INSERT INTO hermes_automation_process_events
+      (event_id,process_id,event_type,actor_specialist_id,from_status,to_status,job_id,error_class,created_at)
+      SELECT ?,?,?,?,?,?,?,?,? WHERE changes() = 1`).bind(...values);
+  }
+  return db.prepare(`INSERT INTO hermes_automation_process_events
+    (event_id,process_id,event_type,actor_specialist_id,from_status,to_status,job_id,error_class,created_at)
+    VALUES (?,?,?,?,?,?,?,?,?)`).bind(...values);
 }
 
 export function publicHaeProcess(row) {

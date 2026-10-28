@@ -33,17 +33,21 @@ export async function onRequestPatch({ request, env, params }: { request: Reques
   let update: any;
 
   if (action === "activate") {
+    if (row.lease_until && Date.parse(String(row.lease_until)) > Date.parse(now)) {
+      return jsonResponse(409, { success: false, error: "process_run_in_flight", process: publicHaeProcess(row) }, headers);
+    }
     nextStatus = "active"; eventType = "process.activated";
     update = env.DB.prepare(`UPDATE hermes_automation_processes
       SET status='active',next_run_at=?,lease_until=NULL,last_error_class=NULL,updated_at=?
-      WHERE process_id=? AND organization_scope=?`).bind(now, now, id, SCOPE);
+      WHERE process_id=? AND organization_scope=? AND (lease_until IS NULL OR lease_until<=?)`).bind(now, now, id, SCOPE, now);
   } else if (action === "pause") {
     if (row.lease_until && Date.parse(String(row.lease_until)) > Date.parse(now)) {
       return jsonResponse(409, { success: false, error: "process_run_in_flight", process: publicHaeProcess(row) }, headers);
     }
     nextStatus = "paused"; eventType = "process.paused";
     update = env.DB.prepare(`UPDATE hermes_automation_processes
-      SET status='paused',lease_until=NULL,updated_at=? WHERE process_id=? AND organization_scope=?`).bind(now, id, SCOPE);
+      SET status='paused',lease_until=NULL,updated_at=?
+      WHERE process_id=? AND organization_scope=? AND (lease_until IS NULL OR lease_until<=?)`).bind(now, id, SCOPE, now);
   } else if (action === "run_next_tick") {
     if (String(row.status) !== "active") {
       return jsonResponse(409, { success: false, error: "process_not_active", process: publicHaeProcess(row) }, headers);
@@ -53,7 +57,9 @@ export async function onRequestPatch({ request, env, params }: { request: Reques
     }
     eventType = "process.run_requested";
     update = env.DB.prepare(`UPDATE hermes_automation_processes
-      SET next_run_at=?,last_error_class=NULL,updated_at=? WHERE process_id=? AND organization_scope=? AND status='active'`).bind(now, now, id, SCOPE);
+      SET next_run_at=?,last_error_class=NULL,updated_at=?
+      WHERE process_id=? AND organization_scope=? AND status='active'
+        AND (lease_until IS NULL OR lease_until<=?)`).bind(now, now, id, SCOPE, now);
   } else {
     return jsonResponse(400, { success: false, error: "invalid_action" }, headers);
   }
@@ -67,6 +73,7 @@ export async function onRequestPatch({ request, env, params }: { request: Reques
       fromStatus: String(row.status),
       toStatus: nextStatus,
       createdAt: now,
+      onlyIfPreviousStatementChanged: true,
     }),
   ]);
   if (Number(changed?.meta?.changes || 0) !== 1) {
