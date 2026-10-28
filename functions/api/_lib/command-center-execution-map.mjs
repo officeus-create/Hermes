@@ -107,7 +107,7 @@ export function executionProjection(item = {}, registryEntries = []) {
   };
 }
 
-export function developmentCatalog({ registrySnapshot = {}, registryEvidence = {}, processes = [], runner = null } = {}) {
+export function developmentCatalog({ registrySnapshot = {}, registryEvidence = {}, processes = [], runner = {} } = {}) {
   const plugins = (registrySnapshot.entries || []).map((entry) => ({
     kind: "PLUGIN_ROLE",
     id: String(entry.role_id),
