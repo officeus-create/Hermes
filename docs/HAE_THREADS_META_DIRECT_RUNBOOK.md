@@ -32,10 +32,10 @@ HERMES_AUTOMATION_PUBLISH=disabled
 
 ## Exact semantics
 
-- Before a provider write, HAE calls `GET /me?fields=id,username` and `GET /me/threads?fields=id,text,permalink,timestamp,media_type&limit=50` against the Meta Threads Graph API. Any wrong identity, malformed feed, token error, identical recent content, future timestamp or 3h15m recent own-post cooldown blocks the slot **before** the D1 provider claim.
-- A successful preflight is not enough by itself. Existing D1 claim and same-slot idempotency are mandatory. Any unresolved prior D1 provider write blocks switching provider.
+- Before a provider write, HAE calls `GET /me?fields=id,username` and `GET /me/threads?fields=id,text,permalink,timestamp,media_type&limit=50` against the Meta Threads Graph API. Any wrong identity, malformed feed, token error, identical recent content, future timestamp or 3h15m recent own-post cooldown blocks the slot **before** the D1 provider claim. For the established `@hermes.logistics` account, fewer than 30 valid recent objects is `meta_threads_history_incomplete` and fails closed; an empty/short provider response can never count as reconciliation evidence.
+- A successful preflight is not enough by itself. Existing D1 claim and same-slot idempotency are mandatory. At the successful `reserved → publishing` claim boundary, HAE persists one immutable `publication.provider_claimed` evidence event in the existing runtime-event ledger with the exact transport (`meta_direct` or `windsor`) **before** any provider network write. Any unresolved prior D1 provider write blocks switching provider.
 - Successful provider dispatch uses the documented 2-step Meta Threads API `/{user_id}/threads` TEXT media container then `/{user_id}/threads_publish`. Provider publication is **never blindly retried**, including 5xx/connection uncertainty.
-- Existing D1 lifecycle schedules bounded `publication.readback` rechecks using native authenticated feed; only exact post text + numeric provider ID + valid Threads permalink can mark `published_verified`.
+- Existing D1 lifecycle schedules bounded `publication.readback` rechecks. Readback is routed by the immutable provider claim stored for that publication, never by the provider currently selected in environment configuration. Missing, ambiguous or legacy provenance fails closed to operator review and can never write `published_verified`. Only exact post text + provider ID + valid Threads permalink from the claimed provider can mark `published_verified`.
 - Readback of REPOST_FACADE may have null text; valid ID and timestamp are still required and its recency still blocks a new authored post.
 - All errors return bounded error classes, never tokens or raw OAuth responses.
 
@@ -45,12 +45,13 @@ HERMES_AUTOMATION_PUBLISH=disabled
 node --check workers/automation-engine/src/meta-threads.mjs
 node --check workers/automation-engine/src/index.mjs
 node scripts/hae-meta-threads-transport.test.mjs
+node scripts/hae-threads-provider-provenance.test.mjs
 node scripts/hae-windsor-plan-gate.test.mjs
 node scripts/hae-threads-schedule-contract.test.mjs
 node scripts/automation-engine-contract.test.mjs
 ```
 
-Recorded Mac tests: native **19 mocked cases PASS**, Windsor plan-limit **7 cases PASS**, cadence **20 hourly Chicago slots with 4 quiet slots PASS**, HAE base contract PASS. No actual Threads provider post, no Cloudflare secret changes, no deployment. A controlled production canary remains an independent owner-gated step.
+Required source tests now include the native Meta transport suite plus an explicit immutable-provider-provenance/provider-switch regression. These tests use fake network/provider responses only. No actual Threads provider post, no Cloudflare secret changes, no deployment. A controlled production canary remains an independent owner-gated step.
 
 ## Roles and ownership
 
