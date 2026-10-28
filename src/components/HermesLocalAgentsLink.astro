@@ -1,0 +1,31 @@
+---
+const { ru = false } = Astro.props;
+const agentsUrl = "http://127.0.0.1:8765/ai-agents/?utm_source=chatgpt.com";
+---
+
+<section class="local-agents" data-local-agents aria-labelledby="local-agents-title">
+  <div>
+    <p class="local-agents__kicker">Hermes AI · local workspace</p>
+    <h2 id="local-agents-title">{ru ? "AI-агенты на этом компьютере" : "AI agents on this computer"}</h2>
+    <p>{ru
+      ? "Открывает локальный интерфейс только на устройстве, где запущен Hermes AI Cockpit. HAE и облачная очередь продолжают работать независимо от этой вкладки."
+      : "Opens the local interface only on the device running Hermes AI Cockpit. HAE and the cloud queue continue independently of this tab."}</p>
+  </div>
+  <div class="local-agents__actions">
+    <a class="local-agents__primary" href={agentsUrl} target="_blank" rel="noopener noreferrer" data-local-agents-open>
+      {ru ? "Открыть AI Agents на этом устройстве ↗" : "Open AI Agents on this device ↗"}
+    </a>
+    <a href="/services/hermes-connect/internal/ai-connect/" data-local-agents-fallback>
+      {ru ? "Облачный статус и очередь" : "Cloud status and queue"}
+    </a>
+  </div>
+  <p class="local-agents__status" data-local-agents-status role="status">
+    {ru
+      ? "Ссылка откроется в новой вкладке. Если localhost недоступен на этом устройстве, вернись сюда и используй облачный статус — процессы HAE продолжат работу."
+      : "The link opens in a new tab. If localhost is unavailable on this device, return here and use cloud status — HAE processes keep running."}
+  </p>
+</section>
+
+<style>
+.local-agents{margin-top:1.4rem;border:1px solid rgba(19,24,33,.1);border-radius:1.15rem;background:rgba(255,255,255,.92);box-shadow:0 16px 38px rgba(31,42,62,.055);padding:1.15rem;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:.8rem 1.2rem;align-items:center;color:#131821}.local-agents__kicker{margin:0;color:#2f6bf6;text-transform:uppercase;letter-spacing:.1em;font-size:.72rem;font-weight:850}.local-agents h2{margin:.35rem 0 .4rem;font-size:1.45rem}.local-agents p{color:#687487;line-height:1.55}.local-agents__actions{display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:.65rem}.local-agents__actions a{font-size:.8rem;font-weight:800;color:#2458b8;text-decoration:none}.local-agents__actions .local-agents__primary{min-height:42px;box-sizing:border-box;display:inline-flex;align-items:center;border:1px solid #1f4fb0;border-radius:.7rem;background:#2458c7;color:#fff;padding:.65rem .78rem}.local-agents__status{grid-column:1/-1;margin:0!important;font-size:.78rem;color:#6d7788}@media(max-width:720px){.local-agents{grid-template-columns:1fr}.local-agents__actions{justify-content:flex-start}.local-agents__primary{width:100%;justify-content:center}}
+</style>

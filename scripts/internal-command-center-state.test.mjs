@@ -14,7 +14,10 @@ class D1Statement {
   async all(){return{results:this.statement.all(...this.args)}}
 }
 const sqlite=new DatabaseSync(":memory:");
-const DB={prepare:(sql)=>new D1Statement(sqlite.prepare(sql))};
+const DB={prepare:(sql)=>new D1Statement(sqlite.prepare(sql)),batch:async statements=>{
+  sqlite.exec("BEGIN IMMEDIATE");try{const results=[];for(const stmt of statements)results.push(await stmt.run());sqlite.exec("COMMIT");return results}
+  catch(error){sqlite.exec("ROLLBACK");throw error}
+}};
 sqlite.exec(`CREATE TABLE sessions (token TEXT, specialist_id TEXT, expires_at TEXT);
 CREATE TABLE specialists (id TEXT, email TEXT, name TEXT, role TEXT, location TEXT, bio TEXT);
 CREATE TABLE hermes_owner_work_items (
@@ -100,6 +103,11 @@ assert.equal(r.status,200);
 assert.equal(r.body.work_item.status,"blocked");
 assert.match(r.body.work_item.blocked_reason,/does not yet prove/);
 
+const reworkReason=r.body.work_item.blocked_reason;
+r=await json(await mutateWork({request:req("/api/internal-command-center/work-items/"+firstId,"PATCH",{action:"ready"}),env:{DB},params:{id:firstId}}));
+assert.equal(r.status,409,"completed linked AI task must not be cleared by ready");
+assert.equal((await DB.prepare("SELECT blocked_reason FROM hermes_owner_work_items WHERE id=?").bind(firstId).first()).blocked_reason,reworkReason);
+
 r=await json(await mutateWork({request:req("/api/internal-command-center/work-items/"+firstId,"PATCH",{action:"dispatch"}),env:{DB},params:{id:firstId}}));
 assert.equal(r.status,200,"owner-requested rework must be dispatchable after a completed execution");
 assert.equal(r.body.work_item.status,"in_progress");
@@ -116,6 +124,12 @@ assert.equal(r.body.work_item.accepted_by,"owner-1");
 assert.ok(r.body.work_item.accepted_at);
 assert.ok(r.body.work_item.completed_at);
 
+for(const action of ["ready","block","complete","cancel","dispatch","accept"]){
+  const attempt=await json(await mutateWork({request:req("/api/internal-command-center/work-items/"+firstId,"PATCH",{action,reason:"Must remain accepted."}),env:{DB},params:{id:firstId}}));
+  assert.equal(attempt.status,409,"accepted terminal item must reject "+action);
+  assert.equal(attempt.body.work_item.status,"done","accepted item must remain done after "+action);
+}
+
 r=await json(await mutateWork({request:req("/api/internal-command-center/work-items/"+secondId,"PATCH",{action:"accept"}),env:{DB},params:{id:secondId}}));
 assert.equal(r.status,409);
 assert.equal(r.body.error,"work_item_not_awaiting_acceptance");
@@ -123,6 +137,28 @@ assert.equal(r.body.error,"work_item_not_awaiting_acceptance");
 r=await json(await mutateWork({request:req("/api/internal-command-center/work-items/"+secondId,"PATCH",{action:"dispatch"}),env:{DB},params:{id:secondId}}));
 assert.equal(r.status,200);
 assert.equal(r.body.work_item.status,"in_progress","next work item may dispatch after the first task is terminal");
+
+// Atomic dispatch regression: cancellation immediately before D1 batch must not leave an orphan.
+await DB.prepare("UPDATE hermes_internal_ai_tasks SET status='completed',completed_at=?,updated_at=? WHERE organization_scope=? AND status='queued'").bind(now,now,"hermes_internal").run();
+r=await json(await createWork({request:req("/api/internal-command-center/work-items","POST",{workstream:"technology",priority:"p0",title:"Atomic race",details:"Test cancellation before batch."}),env:{DB}}));
+assert.equal(r.status,201);
+const raceId=r.body.work_item.id;
+const originalBatch=DB.batch;
+let raceInjected=false;
+DB.batch=async statements=>{
+  if(!raceInjected){raceInjected=true;await DB.prepare("UPDATE hermes_owner_work_items SET status='cancelled' WHERE id=?").bind(raceId).run();}
+  return originalBatch(statements);
+};
+r=await json(await mutateWork({request:req("/api/internal-command-center/work-items/"+raceId,"PATCH",{action:"dispatch"}),env:{DB},params:{id:raceId}}));
+DB.batch=originalBatch;
+assert.equal(r.status,409,"cancellation before atomic batch must conflict");
+assert.equal((await DB.prepare("SELECT status FROM hermes_owner_work_items WHERE id=?").bind(raceId).first()).status,"cancelled");
+assert.equal((await DB.prepare("SELECT COUNT(*) AS n FROM hermes_internal_ai_tasks WHERE status IN ('queued','running') AND id NOT IN (SELECT linked_task_id FROM hermes_owner_work_items WHERE linked_task_id IS NOT NULL)").first()).n,0,"no orphan task after atomic cancellation");
+for(const action of ["ready","block","complete","cancel","dispatch","accept"]){
+  const attempt=await json(await mutateWork({request:req("/api/internal-command-center/work-items/"+raceId,"PATCH",{action,reason:"No terminal reopen"}),env:{DB},params:{id:raceId}}));
+  assert.equal(attempt.status,409,"cancelled terminal item must reject "+action);
+  assert.equal(attempt.body.work_item.status,"cancelled");
+}
 
 r=await json(await mutateAccess({request:req("/api/internal-command-center/access","POST",{action:"grant",email:"owner2@example.invalid"}),env:{DB}}));
 assert.equal(r.status,200);

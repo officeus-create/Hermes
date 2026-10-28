@@ -14,7 +14,10 @@ class Statement {
   async all(){return{results:this.statement.all(...this.args)}}
 }
 const sqlite=new DatabaseSync(":memory:");
-const db={prepare:sql=>new Statement(sqlite.prepare(sql))};
+const db={prepare:sql=>new Statement(sqlite.prepare(sql)),batch:async statements=>{
+  sqlite.exec("BEGIN IMMEDIATE");try{const results=[];for(const stmt of statements)results.push(await stmt.run());sqlite.exec("COMMIT");return results}
+  catch(error){sqlite.exec("ROLLBACK");throw error}
+}};
 sqlite.exec("CREATE TABLE sessions (token TEXT, specialist_id TEXT, expires_at TEXT); CREATE TABLE specialists (id TEXT, email TEXT, name TEXT, role TEXT, location TEXT, bio TEXT);");
 for(const [id,email,name] of [["owner","owner@example.invalid","Synthetic Owner"],["delegate","delegate@example.invalid","Synthetic Delegate"]]){
   sqlite.prepare("INSERT INTO specialists VALUES (?,?,?,?,?,?)").run(id,email,name,"Owner","","");

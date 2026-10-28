@@ -118,6 +118,15 @@ test.describe("Hermes Business Command Center",()=>{
     expect(created?.job_type).toBe("academy.english.practice.build");
   });
 
+  test("offers the local AI Agents UI with a cloud fallback",async({page})=>{
+    await mockOwner(page);
+    await page.goto("/services/hermes-connect/internal/command-center/");
+    const local=page.locator("[data-local-agents-open]");
+    await expect(local).toHaveAttribute("href","http://127.0.0.1:8765/ai-agents/?utm_source=chatgpt.com");
+    await expect(local).toHaveAttribute("target","_blank");
+    await expect(page.locator("[data-local-agents-fallback]")).toHaveAttribute("href","/services/hermes-connect/internal/ai-connect/");
+  });
+
   test("keeps the owner page usable at 390px",async({page})=>{
     await page.setViewportSize({width:390,height:844});
     await mockOwner(page);

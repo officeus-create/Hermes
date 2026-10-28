@@ -6,6 +6,7 @@ import SiteFooter from "../../../../../components/SiteFooter.astro";
 import HermesConnectExperience from "../../../../../components/HermesConnectExperience.astro";
 import HermesConnectInternalAiNav from "../../../../../components/HermesConnectInternalAiNav.astro";
 import HermesAiArchitecture from "../../../../../components/HermesAiArchitecture.astro";
+import HermesLocalAgentsLink from "../../../../../components/HermesLocalAgentsLink.astro";
 import { HAE_OWNER_PROCESS_TEMPLATES } from "../../../../../lib/hae-process-control.mjs";
 const ru=Astro.url.searchParams.get("lang")==="ru";
 const modules=[
@@ -70,6 +71,8 @@ const modules=[
             <a class="text-link" href="/services/hermes-connect/internal/ai-connect/">{ru?"Открыть AI Control Center →":"Open AI Control Center →"}</a>
           </article>
         </section>
+
+        <HermesLocalAgentsLink ru={ru}/>
 
         <section class="section panel process-control" data-process-control>
           <div class="section-head"><div><p class="kicker"><Activity size={14}/>{ru?"Автономная работа":"Autonomous work"}</p><h2>{ru?"Процессы HAE 24/7":"HAE 24/7 processes"}</h2></div><span class="cloud-note">D1 · Queue · $0 default</span></div>

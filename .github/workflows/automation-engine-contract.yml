@@ -84,3 +84,5 @@ jobs:
           node scripts/hae-github-ci-patch-execute.test.mjs
           node scripts/hae-github-ci-readback.test.mjs
           node scripts/hae-github-ci-integration-sqlite.test.mjs
+          node scripts/hae-github-ci-independent-qa-source.test.mjs
+          node scripts/hae-github-ci-independent-qa-runtime-intake.test.mjs
