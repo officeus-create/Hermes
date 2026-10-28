@@ -149,7 +149,7 @@ export const carrierProblemHubLinks: CarrierProblemHubLink[] = [
     problemCluster: "rate_negotiation_support",
     links: [
       { label: "Carrier-controlled car hauling dispatch", href: "/logistics/car-hauling-dispatch/" },
-      { label: "Carrier logistics path", href: "/logistics/carrier/" },
+      { label: "Car hauling dispatch service", href: "/logistics/car-hauling-dispatch/" },
     ],
   },
   {

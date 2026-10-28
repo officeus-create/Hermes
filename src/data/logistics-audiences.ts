@@ -10,6 +10,8 @@ export type LogisticsAudience = {
   primary: { label: string; href: string };
   secondary?: { label: string; href: string };
   demo?: { label: string; href: string };
+  /** Set when another page owns this audience; no separate audience page is built. */
+  ownerHref?: string;
 };
 
 export const logisticsAudiences: LogisticsAudience[] = [
@@ -60,6 +62,7 @@ export const logisticsAudiences: LogisticsAudience[] = [
   },
   {
     slug: "carrier",
+    ownerHref: "/logistics/car-hauling-dispatch/",
     label: "Carrier or owner-operator",
     eyebrow: "Find work and support",
     title: "Request car-hauling dispatch support for your operation.",

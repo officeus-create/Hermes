@@ -8,7 +8,71 @@ import {
   specialistHasLoadBoardAccess,
 } from "../_lib/hermes-company-profiles.mjs";
 
-type Env = { DB?: any };
+type Env = {
+  DB?: any;
+  LEAD_EMAIL_SERVICE?: { fetch: (input: string, init?: RequestInit) => Promise<Response> };
+  LEAD_SERVICE_TOKEN?: string;
+};
+
+const EMAIL_SERVICE_URL = "https://lead-email.internal/v1/send";
+const CARRIER_SIDE_TYPES = new Set(["carrier", "owner_operator", "fleet", "dispatcher"]);
+
+// Owner decision 2026-10-28: a new Load Board company registration reaches Logistics Sales, and
+// carrier-side registrations also reach the dispatch department so a dispatcher can call the
+// company. The text speaks for the department, never for a named person. The callback phone is
+// used only in this notice: it is not stored on the company profile, which can become public.
+async function notifyNewRegistration(env: Env, data: {
+  companyId: string; companyName: string; companyType: string; city: string; state: string;
+  website: string; authorityNumber: string; callbackPhone: string; contactName: string; contactEmail: string; registeredAt: string;
+}) {
+  if (!env.LEAD_EMAIL_SERVICE || !env.LEAD_SERVICE_TOKEN) return "not_configured";
+  const carrierSide = CARRIER_SIDE_TYPES.has(data.companyType);
+  const subject = carrierSide ? "[HERMES SALES] [LOAD BOARD ACCESS] [CARRIER]" : "[HERMES INQUIRY] [LOGISTICS]";
+  const line = (label: string, value: string) => `${label}: ${value || "not provided"}`;
+  const text = [
+    "Hermes Logistics — Load Board registration",
+    carrierSide
+      ? "A carrier-side company just registered on the Hermes Load Board. Please call the contact, explain access and the dispatch service, and log the outcome with Logistics Sales."
+      : "A dealer, shipper or broker company just registered on the Hermes Load Board. Logistics Sales follows up to confirm what they need moved.",
+    "",
+    "Direction: Logistics",
+    line("Company", data.companyName),
+    line("Company type", data.companyType),
+    line("Location", [data.city, data.state].filter(Boolean).join(", ")),
+    line("MC / USDOT", data.authorityNumber),
+    line("Website", data.website),
+    "",
+    line("Name", data.contactName),
+    line("Email", data.contactEmail),
+    line("Callback phone", data.callbackPhone),
+    "",
+    "Server record",
+    `Request ID: reg-${data.companyId}`,
+    `Registered at: ${data.registeredAt}`,
+    "Page: /services/hermes-connect/load-board/access/",
+  ].join("\n");
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 5000);
+  try {
+    const response = await env.LEAD_EMAIL_SERVICE.fetch(EMAIL_SERVICE_URL, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${env.LEAD_SERVICE_TOKEN}`, "Content-Type": "application/json", "Cache-Control": "no-store" },
+      body: JSON.stringify({
+        request_id: `reg-${data.companyId}`,
+        subject,
+        text,
+        ...(data.contactEmail ? { reply_to: data.contactEmail } : {}),
+      }),
+      signal: controller.signal,
+    });
+    return response.ok ? "sent" : "rejected";
+  } catch {
+    // A notification problem must never block the visitor's registration.
+    return "unavailable";
+  } finally {
+    clearTimeout(timer);
+  }
+}
 
 function safeCompany(row: any) {
   if (!row) return null;
@@ -74,6 +138,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
   const websiteRaw = cleanCompanyText(body.website, 240);
   const authorityNumber = cleanCompanyText(body.authorityNumber, 40);
   const phone = cleanCompanyText(body.phone, 40);
+  const callbackPhone = cleanCompanyText(body.callbackPhone, 40);
   const addressLine1 = cleanCompanyText(body.addressLine1, 180);
   const postalCode = cleanCompanyText(body.postalCode, 24);
   const countryCode = cleanCompanyText(body.countryCode || "US", 2).toUpperCase();
@@ -89,6 +154,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
   if (!/^[A-Z]{2}$/.test(countryCode)) errors.push("country_code_invalid");
   if (timezone && !validTimezone(timezone)) errors.push("timezone_invalid");
   if (phone && phone.length < 7) errors.push("phone_invalid");
+  if (callbackPhone && callbackPhone.length < 7) errors.push("callback_phone_invalid");
 
   let website = "";
   if (websiteRaw) {
@@ -197,6 +263,14 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
   if (row?.company_type !== companyType &&
       (row?.company_type === "home_service" || companyType === "home_service")) {
     return jsonResponse(409, { success: false, error: "existing_company_type_locked" }, { "Cache-Control": "private, no-store" });
+  }
+
+  const registrationNotice = existing ? "not_applicable" : await notifyNewRegistration(env, {
+    companyId: id, companyName, companyType, city, state, website, authorityNumber, callbackPhone,
+    contactName: String(specialist.name || ""), contactEmail: String(specialist.email || ""), registeredAt: now,
+  });
+  if (registrationNotice === "rejected" || registrationNotice === "unavailable") {
+    console.error("company_registration_notice_pending", { category: registrationNotice });
   }
 
   return jsonResponse(200, {

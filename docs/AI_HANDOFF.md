@@ -2142,3 +2142,11 @@ ai_name: Codex; role: delegated Academy owner; contribution_type: Implementation
 - Tests: `npm run build` PASS — 435 pages built. Focused Playwright PASS — 12/12 across desktop + mobile for existing case visual contract and new funnel analytics contract.
 - Status: SOURCE/LOCAL VERIFIED only. Keep Coverage row 11 `PARTIAL` until merge, deployment and 1440/390 production readback.
 - Next: open bounded PR; then take Resources/Guides as a separate family slice using the existing SEO/website/carrier/vehicle-transport analytics owners rather than adding a second tracker.
+
+## 2026-10-28 — Claude Code — carrier (car hauling) SEO audit slice
+
+- Branch: `claude/beautiful-mendel-lknlyq` from current main.
+- Audit evidence (GSC via connector, 2026-07-31 → 2026-10-28): carrier queries ("car hauler dispatch", "car hauler load board", "car hauling loads") rank at positions ~40–80 with 0 clicks; the only carrier clicks come from `/careers/car-hauling-dispatcher/` (pos 6) and the capacity checklist (pos 8). Google AI Overview citations: hermeslogisticsus.com 0, resolute-logistics.com 212.
+- Fixed in this slice: 33 carrier-cluster meta descriptions no longer cut off with "…" (25 car-hauler-loads markets via `CarHaulerGeoPage.astro`, the markets hub, owner-operator / new-authority / fleet-owner dispatch support, two carrier resources); `/logistics/` (parent of every carrier URL) now 301s to `/paths/logistics/` instead of 404; the Logistics hub service-guide list now leads with carrier pages and links the car-hauler-loads markets hub.
+- Owner decisions open: markets hub title/H1 still "Car Hauler Operating Markets & Route-Fit Research" (proposed "Car Hauler Loads by Market"); `/load-board/?role=*` variants are indexed as separate URLs despite the canonical; thin `/logistics/carrier/` overlaps `/logistics/car-hauling-dispatch/`; recruiting phone +1 (414) 269-7377 vs the one-public-phone rule.
+- Next: re-read GSC positions for the carrier query set on 2026-11-23.

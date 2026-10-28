@@ -43,6 +43,30 @@ function contextFor(url, { body = "asset", contentType = "", headers = {} } = {}
   );
 }
 
+for (const [legacyPath, target] of [
+  ["/logistics", "/paths/logistics/"],
+  ["/logistics/", "/paths/logistics/"],
+  ["/logistics/carrier", "/logistics/car-hauling-dispatch/"],
+  ["/logistics/carrier/", "/logistics/car-hauling-dispatch/"],
+]) {
+  const { context, observed } = contextFor(`https://hermeslogisticsus.com${legacyPath}`);
+  const response = await routeMiddleware(context);
+  assert.equal(response.status, 301, `${legacyPath} must 301`);
+  assert.equal(response.headers.get("location"), `https://hermeslogisticsus.com${target}`);
+  assert.equal(observed.nextCalls, 0);
+}
+
+for (const search of ["?role=carrier", "?role=dealer&origin=Milwaukee%2C%20WI"]) {
+  const { context } = contextFor(`https://hermeslogisticsus.com/load-board/${search}`);
+  const response = await routeMiddleware(context);
+  assert.equal(response.headers.get("x-robots-tag"), "noindex, follow", `Load Board variant ${search} must not compete with /load-board/`);
+}
+{
+  const { context } = contextFor("https://hermeslogisticsus.com/load-board/");
+  const response = await routeMiddleware(context);
+  assert.equal(response.headers.get("x-robots-tag"), null, "the canonical Load Board stays indexable");
+}
+
 for (const legacyPath of ["/academy", "/academy/"]) {
   const { context, observed } = contextFor(`https://hermeslogisticsus.com${legacyPath}?utm_source=gsc`);
   const response = await routeMiddleware(context);
