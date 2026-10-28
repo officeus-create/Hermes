@@ -2,7 +2,7 @@ import { validateThreadsText, readThreadsMedia } from "./threads-brand-connector
 
 const clean = (value, max = 240) => String(value ?? "").trim().slice(0, max);
 const META_VERSION_FALLBACK = "v26.0";
-const THREADS_GRAPH_BASE = "https://graph.threads.com/v1.0/";
+const THREADS_GRAPH_BASE = "https://graph.threads.net/v1.0/";
 
 function metaGraphVersion(env) {
   const value = clean(env?.HERMES_META_GRAPH_VERSION, 24);
