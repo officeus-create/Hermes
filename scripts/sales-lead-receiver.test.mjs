@@ -560,7 +560,7 @@ const directCarrierPayload = {
   submitted_at: "2026-09-15T01:30:00.000Z",
 };
 const carrierLimits = new MemoryKv();
-const carrierWorkerEnv = { ...workerEnv, OWNER_LEAD_ALERT_RECIPIENT: "volkogon.v@gmail.com" };
+const carrierWorkerEnv = { ...workerEnv, OWNER_LEAD_ALERT_RECIPIENT: "volkogon.v@gmail.com", CARRIER_DISPATCH_RECIPIENTS: "dispatchtruck107@gmail.com" };
 const carrierEnv = { ...env, LEAD_LIMITS: carrierLimits, LEAD_EMAIL_SERVICE: serviceBinding(carrierWorkerEnv) };
 const emailsBeforeCarrier = emailMessages.length;
 const serviceCallsBeforeCarrier = serviceCalls.length;
@@ -586,13 +586,18 @@ assert.equal(realCarrier.status, 200);
 assert.deepEqual(await realCarrier.json(), { success: true, request_id: "carrier_real_1296_12345" });
 assert.equal(serviceCalls.length, serviceCallsBeforeCarrier + 1);
 assert.equal(serviceCalls.at(-1).payload.subject, "[HERMES INQUIRY] [LOGISTICS]");
-assert.match(serviceCalls.at(-1).payload.text, /Sales\/owner only — do not notify Dispatch Truck 107 or dispatcher inboxes/);
+assert.match(serviceCalls.at(-1).payload.text, /Routing policy: Logistics Sales and the dispatch department inbox/);
 const carrierEmails = emailMessages.slice(emailsBeforeCarrier);
+// Owner decision 2026-10-28: the dispatch department inbox gets a copy so a dispatcher can call the carrier.
 assert.deepEqual(
   carrierEmails.map((message) => message.to).sort(),
-  ["officeus@hermeslogisticsus.com", "volkogon.v@gmail.com"].sort(),
+  ["dispatchtruck107@gmail.com", "officeus@hermeslogisticsus.com", "volkogon.v@gmail.com"].sort(),
 );
-assert.ok(carrierEmails.every((message) => !/^dispatchtruck\d+@gmail\.com$/i.test(message.to)), "Dispatcher inboxes must never receive Car Hauling lead notifications.");
+const dispatchCopy = carrierEmails.find((message) => message.to === "dispatchtruck107@gmail.com");
+assert.match(dispatchCopy?.text || "", /^Hermes Logistics — Dispatch Department\n/, "Dispatch copy must speak for the department.");
+assert.equal(dispatchCopy?.from, "website@hermeslogisticsus.com", "Dispatch copy must come from the website system address, not a person.");
+assert.doesNotMatch(dispatchCopy?.text || "", /volkogon|vladimir/i, "Dispatch copy must never carry the owner's personal identity.");
+assert.ok(carrierEmails.every((message) => !/^dispatchtruck(?!107@)\d+@gmail\.com$/i.test(message.to)), "Only the configured dispatch department inbox may receive carrier leads.");
 assert.equal(carrierEmails.find((message) => message.to === "officeus@hermeslogisticsus.com")?.subject, "!!! LEAD !!! [HERMES INQUIRY] [LOGISTICS] [ID:carrier_real_1296_12345]");
 assert.match(carrierEmails.find((message) => message.to === "volkogon.v@gmail.com")?.subject || "", /!!! LEAD !!! LOGISTICS/);
 assert.equal(telegramMessages.length, telegramBeforeCarrier, "Sales-only compatibility route must not call the old Car Hauling Telegram fan-out.");
@@ -603,9 +608,22 @@ const duplicateCarrier = await onRequest({
 });
 assert.equal(duplicateCarrier.status, 200);
 assert.equal((await duplicateCarrier.json()).duplicate, true);
-assert.equal(emailMessages.length, emailsBeforeCarrier + 2);
+assert.equal(emailMessages.length, emailsBeforeCarrier + 3, "duplicate request must not resend Sales, owner or dispatch copies");
 assert.equal(serviceCalls.length, serviceCallsBeforeCarrier + 1);
 assert.equal(telegramMessages.length, telegramBeforeCarrier);
+
+// Load Board carrier registration (owner decision 2026-10-28): Logistics Sales plus the dispatch department inbox.
+const loadBoardCarrierPayload = { ...directCarrierPayload, request_id: "carrier_board_1296_12345", page_path: "/load-board/" };
+const emailsBeforeBoard = emailMessages.length;
+const loadBoardCarrier = await onRequest({
+  request: leadRequest(loadBoardCarrierPayload, { "CF-Connecting-IP": "203.0.113.131" }),
+  env: carrierEnv,
+});
+assert.equal(loadBoardCarrier.status, 200);
+assert.equal(serviceCalls.at(-1).payload.subject, "[HERMES SALES] [LOAD BOARD ACCESS] [CARRIER]");
+const boardEmails = emailMessages.slice(emailsBeforeBoard);
+assert.deepEqual(boardEmails.map((message) => message.to).sort(), ["dispatchtruck107@gmail.com", "officeus@hermeslogisticsus.com"].sort());
+assert.match(boardEmails.find((message) => message.to === "dispatchtruck107@gmail.com")?.text || "", /^Hermes Logistics — Dispatch Department\n/);
 
 const syntheticCarrierPayload = {
   ...directCarrierPayload,
