@@ -40,7 +40,7 @@ jobs:
       - name: Validate static output
         run: npm test
 
-      - name: Validate 30 lightweight backlog closures
+      - name: Validate 230 lightweight backlog closures (30 + 200)
         run: node scripts/hermes-lightweight-backlog-closure.test.mjs
 
       - name: Validate Hermes Connect registration operations
