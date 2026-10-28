@@ -85,6 +85,8 @@ Activation means "due for the next HAE hourly tick"; it is not a promise of inst
 
 External communications, publishing, CRM/customer mutations, billing and other consequential jobs require separate versioned runtime contracts and their existing owner gates before they can appear in this catalog.
 
+The Command Center also provides a loopback-only link to the existing Hermes AI Agents interface at `127.0.0.1:8765`. It opens in a separate tab, so a phone or another computer can return to the unchanged Command Center and use the canonical cloud AI status/queue fallback. The online page does not probe localhost, weaken CSP, expose port 8765 through a tunnel, or make the local Cockpit the HAE runtime.
+
 ## Voice
 
 Browser speech recognition is only an input helper:
