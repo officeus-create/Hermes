@@ -37,6 +37,7 @@ assert.match(page,/next hourly tick/i,"activation must describe the real HAE tic
 assert.match(page,/External sends and paid AI are disabled here/,"first autonomous slice must expose its safe execution boundary");
 assert.match(page,/data-execution-history/,"owner Command Center must include recent canonical AI execution evidence");
 assert.match(page,/started_at\/completed_at/,"execution timing must disclose its timestamp-only basis");
+assert.match(page,/t\("Completed","Завершено"\).*stamp\(task\.completed_at\)/s,"completed executions must show the stored completed_at timestamp");
 assert.match(page,/Progress and ETA stay UNKNOWN/,"unmeasured progress and ETA must remain unknown");
 assert.match(page,/data-execution-list/,"recent executions must render inside the existing Command Center");
 
