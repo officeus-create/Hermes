@@ -17,7 +17,8 @@ assert.match(reply,/reply_target_must_be_inbound_reply/);
 assert.match(reply,/self_reply_not_allowed/);
 assert.match(reply,/reply_target_not_under_owned_root/);
 assert.match(reply,/brand_key='office_test' AND object_type='AUTHORED_POST' AND status='published'/);
-assert.match(publish,/brand_key='office_test' AND object_type='AUTHORED_POST' AND status='published'/);
+assert.match(publish,/legacy_threads_brand_direct_publish_disabled/);
+assert.match(publish,/provider_write_performed:false/);
 
 assert.match(reply,/HERMES_AUTOMATION_BASE_URL/);
 assert.match(reply,/HERMES_AUTOMATION_TOKEN/);
@@ -39,9 +40,10 @@ assert.doesNotMatch(reply,/UPDATE hermes_social_threads_publications/);
 assert.doesNotMatch(reply,/status='published_readback_pending'/);
 assert.doesNotMatch(reply,/setInterval|setTimeout|cron|schedule|bulk|mass/i);
 
-// Legacy direct authored-post endpoint remains a separate donor surface and still
-// has its own idempotency protections; this test does not authorize it for HAE.
-assert.match(publish,/idempotency_key_scope_conflict/);
-assert.match(publish,/object_type \|\| ""\) === "AUTHORED_POST"/);
+// Legacy authored-post endpoint is disabled so the brand connector cannot become
+// a second writer beside Social Studio / HAE.
+assert.match(publish,/runtime_owner:"hae_2033"/);
+assert.match(publish,/next_action:"use_owner_social_studio_or_approved_hae_job"/);
+assert.doesNotMatch(publish,/publishThreadsText|readThreadsMedia|INSERT OR IGNORE INTO hermes_social_threads_publications|UPDATE hermes_social_threads_publications/);
 
 console.log("threads reply handoff contract: PASS — owner proof -> HAE only, no direct Meta write");
