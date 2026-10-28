@@ -2,11 +2,12 @@ import { jsonResponse } from "../_lib/session.mjs";
 import { ensureCommandCenterSchema, reconcileWorkItems } from "../_lib/internal-command-center.mjs";
 import { developmentCatalog, executionProjection } from "../_lib/command-center-execution-map.mjs";
 import { readClickUpHumanTasks } from "../_lib/command-center-clickup.mjs";
+import { readGithubDevelopments } from "../_lib/command-center-github.mjs";
 import { parseRunnerTelemetry, requireInternalOwner } from "../_lib/internal-ai.mjs";
 import { ensureHaeProcessSchema, publicHaeProcess } from "../../../src/lib/hae-process-control.mjs";
 import { pluginRuntimeRegistryEvidenceStatus, pluginRuntimeRegistrySnapshot } from "../../../workers/automation-engine/src/plugin-runtime-registry.mjs";
 
-type Env = { DB?: any; CLICKUP_API_TOKEN?: string; HERMES_CLICKUP_COMPLETION_LIST_ID?: string };
+type Env = { DB?: any; CLICKUP_API_TOKEN?: string; HERMES_CLICKUP_COMPLETION_LIST_ID?: string; HERMES_GITHUB_READ_TOKEN?: string; GITHUB_READ_TOKEN?: string };
 const headers = { "Cache-Control": "private, no-store", "X-Robots-Tag": "noindex, nofollow" };
 
 export async function onRequestGet({ request, env }: { request: Request; env: Env }) {
@@ -50,7 +51,7 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
   const processes = (processRows.results || []).map(publicHaeProcess);
   const tasks = (work.results || []).map((item) => executionProjection(item, registrySnapshot.entries));
   const developments = developmentCatalog({ registrySnapshot, registryEvidence, processes, runner });
-  const human_work = await readClickUpHumanTasks(env);
+  const [human_work, github_developments] = await Promise.all([readClickUpHumanTasks(env), readGithubDevelopments(env)]);
 
   return jsonResponse(200, {
     success: true,
@@ -61,6 +62,7 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
     tasks,
     developments,
     human_work,
+    github_developments,
     registry_evidence: registryEvidence,
   }, headers);
 }
