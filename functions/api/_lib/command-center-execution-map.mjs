@@ -145,3 +145,29 @@ export function developmentCatalog({ registrySnapshot = {}, registryEvidence = {
   }];
   return { plugins, automation, systems };
 }
+
+
+export function linkHumanWorkDevelopments(humanWork = {}, githubDevelopments = {}) {
+  const pulls = Array.isArray(githubDevelopments.pulls) ? githubDevelopments.pulls : [];
+  const tasks = Array.isArray(humanWork.tasks) ? humanWork.tasks : [];
+  const linkedTasks = tasks.map((task) => {
+    const ids = [task.id, task.custom_id].filter(Boolean).map((value) => String(value));
+    const developments = pulls.filter((pull) => {
+      const workId = String(pull?.passport?.work_id || "");
+      return ids.some((id) => {
+        const escaped = id.replace(/[.*+?^$()|[\]\\{}]/g, "\\$&");
+        return new RegExp("(^|[^A-Za-z0-9_-])" + escaped + "([^A-Za-z0-9_-]|$)", "i").test(workId) || workId.trim().toLowerCase() === id.toLowerCase();
+      });
+    }).map((pull) => ({
+      number: pull.number || null,
+      title: pull.title || null,
+      url: pull.url || null,
+      agent_family: pull?.passport?.agent_family || "UNKNOWN",
+      head_sha: pull.head_sha || null,
+      ci_state: pull.ci_state || "UNKNOWN",
+      review_state: pull.review_state || "UNKNOWN",
+    }));
+    return { ...task, developments };
+  });
+  return { ...humanWork, tasks: linkedTasks };
+}
