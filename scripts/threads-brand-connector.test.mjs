@@ -116,7 +116,7 @@ const releaseDelta = await readFile(new URL("../docs/release-manifest-deltas/202
 
 assert.match(coreSource, /auto_publish_text/);
 assert.match(coreSource, /threads\.com\/oauth\/authorize/);
-assert.match(coreSource, /graph\.threads\.com\/oauth\/access_token/);
+assert.match(coreSource, /graph\.threads\.net\/oauth\/access_token/);
 assert.match(coreSource, /th_exchange_token/);
 assert.match(coreSource, /th_refresh_token/);
 assert.match(coreSource, /AES-GCM/);
@@ -124,7 +124,7 @@ assert.match(coreSource, /hermes_social_threads_oauth_states/);
 assert.match(startSource, /requireInternalOwner/);
 assert.match(callbackSource, /requireInternalOwner/);
 assert.match(callbackSource, /internal\/social-connections/);
-assert.match(connectionsSource, /hermes_logistics_provider:\s*"windsor_only"/);
+assert.match(connectionsSource, /hermes_logistics_provider:\s*"shared_meta_via_hae_pending"/);\nassert.match(connectionsSource, /social_business_lanes:\s*\["HERMES_LOGISTICS",\s*"PROGRESSOPRO"\]/);\nassert.match(connectionsSource, /legacy_direct_publish_enabled:\s*false/);
 
 assert.match(publishSource, /INSERT OR IGNORE INTO hermes_social_threads_publications/);
 assert.match(publishSource, /office_canary_required_before_secondary_publish/);
@@ -137,11 +137,11 @@ assert.match(disconnectSource, /provider_access_revoked:\s*false/);
 assert.match(metricsSource, /readThreadsMediaInsights/);
 
 assert.match(pageSource, /noindex,nofollow,noarchive/);
-assert.match(pageSource, /Hermes Logistics stays on Windsor/);
+assert.match(pageSource, /Hermes Logistics → shared Meta provider via HAE/);
 assert.match(pageSource, /Office Threads Test/);
 assert.match(pageSource, /ProgressoPro/);
-assert.match(pageSource, /Hermes Business Academy/);
-assert.match(pageSource, /Publish selected brand/);
+assert.match(pageSource, /Academy \/ Training/);
+assert.match(pageSource, /Publishing moved to the canonical social path/);\nassert.match(pageSource, /Business Social \/ Social Studio/);\nassert.match(pageSource, /HAE #2033/);\nassert.doesNotMatch(pageSource, /Publish selected brand|data-compose-publish/);\nassert.doesNotMatch(pageSource, /fetch\("\/api\/internal\/social\/threads\/publish"/);
 assert.match(pageSource, /Disconnect locally/);
 assert.match(navSource, /\$\{repairShopRoot\}\/social/);
 assert.match(navSource, /href:withLocale\(`\$\{repairShopRoot\}\/social\/`\)/);
