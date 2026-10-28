@@ -39,6 +39,10 @@ HERMES_AUTOMATION_PUBLISH=disabled
 - Readback of REPOST_FACADE may have null text; valid ID and timestamp are still required and its recency still blocks a new authored post.
 - All errors return bounded error classes, never tokens or raw OAuth responses.
 
+## Branch synchronization gate
+
+Before independent review, refresh the PR against current `main` and require `behind=0`; after every synchronization run the exact-head HAE contract again. A previously green pre-sync SHA is historical evidence only.
+
 ## Test instructions
 
 ```bash
