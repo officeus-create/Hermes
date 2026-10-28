@@ -47,6 +47,8 @@ const { dividerLabel = "or continue with email" } = Astro.props;
     google_identity_invalid: "Google could not confirm this account. Use a Google account with a verified email.",
     google_login_not_configured: "Google sign-in is temporarily unavailable. Use your email below.",
     rate_limited: "Too many attempts. Wait a minute and try again.",
+    existing_account_signin_required: "This email already has a Hermes account. Sign in with your password or email below first; then you can connect Google.",
+    provider_identity_conflict: "This Google account is already connected to a different Hermes account. Use your email below or contact support.",
   };
 
   async function setup() {
