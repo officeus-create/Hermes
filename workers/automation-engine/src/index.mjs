@@ -4,6 +4,13 @@ import {
   windsorThreadsConfig,
 } from "./windsor-threads.mjs";
 import {
+  metaThreadsConfig,
+  metaThreadsMode,
+  metaThreadsPreflight,
+  publishThreadsTextViaMeta,
+  readbackThreadsTextViaMeta,
+} from "./meta-threads.mjs";
+import {
   HISTORICAL_READ_ONLY_JOB_TYPES,
   runHistoricalLearningPrimitive,
 } from "./historical-learning.mjs";
@@ -1615,6 +1622,27 @@ async function processPlanMessage(env, message) {
     };
   }
 
+  if (metaThreadsMode(env)) {
+    // Do not cross providers while an earlier delivery remains ambiguous.
+    const unresolved = await env.DB.prepare(
+      "SELECT COUNT(*) AS n FROM hermes_automation_publications WHERE account_key=? AND platform=? AND status IN ('provider_accepted_readback_pending','unknown_outcome_readback_pending','unknown_outcome_unresolved','readback_unverified')"
+    ).bind(ACCOUNT_KEY, PLATFORM).first();
+    if (!unresolved || !Number.isFinite(Number(unresolved.n)) || Number(unresolved.n) > 0) {
+      const now = new Date().toISOString();
+      await env.DB.prepare("UPDATE hermes_automation_runs SET status='preflight_blocked',last_error_class='unresolved_previous_publication',updated_at=? WHERE id=?")
+        .bind(now, runIdForSlot(slotKey)).run();
+      return { status: "preflight_blocked", error_class: "unresolved_previous_publication" };
+    }
+    // Fresh authenticated /me identity + recent 50; independent of Windsor's FREE gate.
+    // No reservation / provider POST if access, identity, duplicate or 3h15 cooldown fails.
+    const preflight = await metaThreadsPreflight(env, candidate.body);
+    if (!preflight.ok) {
+      const now = new Date().toISOString();
+      await env.DB.prepare("UPDATE hermes_automation_runs SET status='preflight_blocked',last_error_class=?,updated_at=? WHERE id=?")
+        .bind(preflight.error_class, now, runIdForSlot(slotKey)).run();
+      return { status: "preflight_blocked", error_class: preflight.error_class };
+    }
+  }
   const claimed = await claimPublicationForProvider(env.DB, candidate);
   if (!claimed) {
     const existingPublication = await env.DB.prepare(
@@ -1627,7 +1655,9 @@ async function processPlanMessage(env, message) {
     };
   }
 
-  const published = await publishThreadsTextViaWindsor(env, candidate.body);
+  const published = metaThreadsMode(env)
+    ? await publishThreadsTextViaMeta(env, candidate.body)
+    : await publishThreadsTextViaWindsor(env, candidate.body);
   const now = new Date().toISOString();
   if (!published.ok) {
     if (published.error_class === "provider_outcome_unknown") {
@@ -1708,7 +1738,9 @@ async function processReadbackMessage(env, message) {
   if (!row) return { status: "readback_missing_content" };
   if (String(row.state) === "published_verified") return { status: "published_verified", duplicate: true };
 
-  const readback = await readbackThreadsTextViaWindsor(env, String(row.body || ""));
+  const readback = metaThreadsMode(env)
+    ? await readbackThreadsTextViaMeta(env, String(row.body || ""))
+    : await readbackThreadsTextViaWindsor(env, String(row.body || ""));
   const now = new Date().toISOString();
   if (readback.ok && readback.found) {
     await env.DB.batch([
@@ -2360,8 +2392,8 @@ export default {
         free_ai_providers: freeAiProviderSnapshot(env).map(({ id, available, configured, model, reason }) => ({
           id, available, configured, model, reason,
         })),
-        provider_transport: "windsor_connectors_api",
-        provider_configured: Boolean(windsorThreadsConfig(env)),
+        provider_transport: metaThreadsMode(env) ? "meta_threads_graph_direct" : "windsor_connectors_api",
+        provider_configured: metaThreadsMode(env) ? Boolean(metaThreadsConfig(env)) : Boolean(windsorThreadsConfig(env)),
         publication_enabled: publicationEnabled(env),
       });
     }
