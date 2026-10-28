@@ -15,7 +15,8 @@ This is the vendor-neutral entry point for every AI agent working on the Hermes 
 7. The relevant department `ai-collaboration/<department>/CURRENT_STATE.md` and approved decision log when present.
 8. `docs/ECOSYSTEM_COMPOUNDING_STANDARD.md` — required scan for safe multi-direction value, reuse, and deferred opportunities.
 9. `docs/ERROR_REGISTER.md` — active, owner-required, resolved, and obsolete errors.
-10. Only the domain documents relevant to the task.
+10. `docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md` — the machine-checked closure index for 30 recovered low-risk August–October backlog contracts; it is not a new control plane.
+11. Only the domain documents relevant to the task.
 
 Do **not** read the complete `docs/AI_HANDOFF.md` from the beginning unless a historical decision is disputed. It is an append-only audit journal, not the current project dashboard.
 
