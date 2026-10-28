@@ -89,6 +89,7 @@ assert.equal(connected.source_state,"CONNECTED");
 assert.equal(connected.tasks.length,1);
 assert.match(requestSnapshot.url,/\/api\/v2\/list\/901526433657\/task/);
 assert.match(requestSnapshot.url,/include_closed=false/);
+assert.match(requestSnapshot.url,/reverse=false/);
 assert.equal(requestSnapshot.options.method,"GET");
 assert.equal(requestSnapshot.options.headers.Authorization,"pk_test_readonly");
 
