@@ -1,14 +1,15 @@
 const AUTH_ENDPOINT = "https://threads.com/oauth/authorize";
-const SHORT_TOKEN_ENDPOINT = "https://graph.threads.com/oauth/access_token";
-const LONG_TOKEN_ENDPOINT = "https://graph.threads.com/access_token";
-const REFRESH_TOKEN_ENDPOINT = "https://graph.threads.com/refresh_access_token";
-const GRAPH_BASE = "https://graph.threads.com/v1.0/";
+const SHORT_TOKEN_ENDPOINT = "https://graph.threads.net/oauth/access_token";
+const LONG_TOKEN_ENDPOINT = "https://graph.threads.net/access_token";
+const REFRESH_TOKEN_ENDPOINT = "https://graph.threads.net/refresh_access_token";
+const GRAPH_BASE = "https://graph.threads.net/v1.0/";
 const STATE_TTL_MS = 10 * 60 * 1000;
 const DEFAULT_SCOPES = [
   "threads_basic",
   "threads_content_publish",
   "threads_read_replies",
   "threads_manage_replies",
+  "threads_manage_mentions",
   "threads_manage_insights",
 ];
 
