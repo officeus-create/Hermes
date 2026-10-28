@@ -87,13 +87,13 @@ const { vertical, backHref, backLabel } = Astro.props;
           <p class="eyebrow">Destinations</p>
           <label class="mirror-preset">
             <input type="checkbox" data-mirror-instagram checked />
-            <span><strong>Smart mirror</strong><small>Instagram Feed → Instagram Story + Threads Feed + Facebook Page when those channels are connected.</small></span>
+            <span><strong>Destination fan-out</strong><small>Select Instagram, Threads and Facebook from one approved package. Each destination publishes independently and keeps its own provider receipt.</small></span>
           </label>
           <label class="target-row"><input type="checkbox" value="instagram_feed" data-target data-target-provider="instagram" checked /><span><strong>Instagram Feed</strong><small>Single image or carousel</small></span></label>
           <label class="target-row"><input type="checkbox" value="instagram_story" data-target data-target-provider="instagram" checked /><span><strong>Instagram Story</strong><small>Uses the first image · eligible Business accounts</small></span></label>
           <label class="target-row"><input type="checkbox" value="threads_feed" data-target data-target-provider="threads" checked /><span><strong>Threads Feed</strong><small>Text, image or carousel</small></span></label>
           <label class="target-row"><input type="checkbox" value="facebook_feed" data-target data-target-provider="facebook" checked /><span><strong>Facebook Page</strong><small>Text, image or multi-image post</small></span></label>
-          <div class="platform-boundary"><strong>Stories boundary</strong><span>Instagram Story is supported. Threads has no Instagram-style Story surface, so the same creative mirrors to the native Threads feed/carousel instead. Facebook remains a Page-feed destination until a separately verified Story publishing path exists.</span></div>
+          <div class="platform-boundary"><strong>Stories boundary</strong><span>Instagram Story is supported. Threads has no Instagram-style Story surface; use a separate native Threads feed/carousel action from the same approved content object. Facebook remains a Page-feed destination until a separately verified Story publishing path exists.</span></div>
           <button type="submit" class="publish-button">Publish selected</button>
           <div class="publish-results" data-bundle-results aria-live="polite"></div>
         </aside>
@@ -159,7 +159,7 @@ const { vertical, backHref, backLabel } = Astro.props;
 
     <section class="safety-note">
       <strong>Connection and publishing boundary</strong>
-      <p>A public profile link is not OAuth. A channel becomes writable only after provider authorization and provider readback. Tokens stay encrypted server-side. Recurring scheduling remains owned by the canonical Hermes Social Publisher rather than this CRM creating a second scheduler.</p>
+      <p>A public profile link is not OAuth. A channel becomes writable only after provider authorization and provider readback. Tokens stay encrypted server-side. Recurring and autonomous social execution remains owned by HAE #2033; this owner UI must not create a second scheduler.</p>
     </section>
   </div>
 </main>
