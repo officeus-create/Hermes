@@ -12,6 +12,8 @@ on:
       - "workers/automation-engine/src/work-portfolio.mjs"
       - "scripts/automation-engine-zero-token-plugin-tasks.test.mjs"
       - "scripts/automation-engine-self-improvement.test.mjs"
+      - "scripts/hae-plugin-release-drift-preflight.test.mjs"
+      - "scripts/automation-engine-self-backlog.test.mjs"
       - "scripts/automation-engine-self-release-gate.test.mjs"
       - "workers/automation-engine/src/zero-token-plugin-tasks.mjs"
       - "workers/automation-engine/src/hae-self-release-gate.mjs"
@@ -24,6 +26,10 @@ on:
       - "scripts/hae-d1-schema-snapshot*.mjs"
       - "scripts/hae-migration-baseline-candidate*.mjs"
       - "scripts/hae-t4-*.mjs"
+      - "scripts/hae-bounded-repair-preflight.test.mjs"
+      - "scripts/hae-evidence-lesson-preflight.test.mjs"
+      - "scripts/hae-github-ci-*.mjs"
+      - ".github/workflows/hae-github-ci-sensor.yml"
       - "docs/HERMES_AUTOMATION_ENGINE_*.md"
       - ".github/workflows/automation-engine-contract.yml"
       - ".github/workflows/automation-engine-release.yml"
@@ -51,6 +57,8 @@ jobs:
           node scripts/automation-engine-work-portfolio.test.mjs
           node scripts/automation-engine-zero-token-plugin-tasks.test.mjs
           node scripts/automation-engine-self-improvement.test.mjs
+          node scripts/hae-plugin-release-drift-preflight.test.mjs
+          node scripts/automation-engine-self-backlog.test.mjs
           node scripts/automation-engine-self-release-gate.test.mjs
           node scripts/automation-engine-capability-policy.test.mjs
           node scripts/automation-engine-state-freshness.test.mjs
@@ -66,3 +74,15 @@ jobs:
           node scripts/hae-migration-baseline-candidate.test.mjs
           node scripts/hae-t4-dlq-canary.test.mjs
           node scripts/hae-t4-readonly-d1-diagnostic.test.mjs
+          node scripts/hae-bounded-repair-preflight.test.mjs
+          node scripts/hae-evidence-lesson-preflight.test.mjs
+          node scripts/hae-github-ci-event-sensor.test.mjs
+          node scripts/hae-github-ci-runtime-intake.test.mjs
+          node scripts/hae-github-ci-source.test.mjs
+          node scripts/hae-github-ci-patch-runtime-intake.test.mjs
+          node scripts/hae-github-ci-patch-source.test.mjs
+          node scripts/hae-github-ci-patch-execute.test.mjs
+          node scripts/hae-github-ci-readback.test.mjs
+          node scripts/hae-github-ci-integration-sqlite.test.mjs
+          node scripts/hae-github-ci-independent-qa-source.test.mjs
+          node scripts/hae-github-ci-independent-qa-runtime-intake.test.mjs

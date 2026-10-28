@@ -2109,3 +2109,44 @@ ai_name: Codex; role: delegated Academy owner; contribution_type: Implementation
 - London audit on the live site: all 45 London pages are Pearl, index/follow, self-canonical. 23 pages had no direction family (industry `*-marketing`, Meta Ads, SMM, GBP, content, CRM, landing pages, Academy guides, all `/ru|ua/gb/london/{section}/`), so their eyebrows stayed violet and their headings navy. `BaseLayout` family patterns now cover them; the three multi-direction hubs stay untagged with neutral eyebrows, and the EN hub direction cards carry the direction accent and open their owner page from anywhere on the card.
 - Gates: build, `npm test`, SEO hygiene, GSC triage, owner clarity, hreflang, internal links, performance budget all green. Build diff vs main 46168a03: 0 href/fact changes. New `tests/london-family-accents.spec.ts`; London and locale specs: 58 passed.
 - Next action — task 11 (controls cleanup); accept — no 12px-radius public primary buttons, status chips coloured by semantic state.
+
+## 2026-10-27 — Claude Code — #2122 LIVE; search drop hypotheses + E3 measured
+
+- #2122 (London families) merged cd2e44a1; live readback: `/gb/london/meta-ads/` marketing, `/gb/london/crm-automation/` technology, canonical unchanged.
+- E1 hypotheses table added to `SEARCH_ERROR_MATRIX.md` (robots/noindex/canonical/params excluded; ranking test + entity confusion most likely; templates contribute). Stale "root cause not determined / HOLD" line in the coverage matrix replaced.
+- E3 measured: 171 of 290 sitemap URLs had zero GSC impressions in 6 months; car-hauler city pages 86–92 % identical text. Queue: E3 consolidation ranked above controls cleanup.
+- Next action — owner decision on car-hauler city pages (per-city evidence vs `noindex,follow` + sitemap removal); accept — GSC "discovered" count falls 4 weeks after the change.
+
+## 2026-10-27 — Claude Code — search errors first (owner directive)
+
+- Owner: close every Bing/Google error first, in the brand book and funnel, then continue design.
+- Sources: owner exports on Drive (Bing CSV transcriptions 05.10, Coverage zip 26.10), Bing Site Explorer read 27.10, GSC page breakdown 16 months, live HTTP checks.
+- Fixed: 4 real 404s (`/ru/paths/*` → `/ru/{direction}/` 301); meta descriptions >160 (111 pages) via the shared limit; 8 highest-traffic descriptions rewritten as complete sentences (About keeps the canonical entity names).
+- Verified already fixed: Bing scan 04.10 issues (missing description, alt, long titles, multiple H1) = 0 on current build; IndexNow submits HTML only.
+- Next action — E3 decision (car-hauler city pages: Bing has them indexed, so de-indexing has a cost); accept — owner choice recorded in the matrix.
+
+## 2026-10-27 — Claude Code — #2134 LIVE; entity: Clutch + Facebook sameAs
+
+- #2134 merged 213e125a: RU direction 404 redirects, meta descriptions ≤160, owner-approved Logistics desk phone +1 (351) 777-5337 (calls/text, Mon–Sat 6–18 CT) on dispatch and vehicle-transport pages and /contacts/ (ContactPoint). Live readback OK.
+- Brand SERP 27.10: site absent from top 75 for "hermes logistics"; own Instagram #3, Facebook #6, Clutch #9. Backlinks: 2,739 referring domains, 3 real; owner uploaded disavow (2,732 domains) 27.10.
+- This slice: Clutch and Facebook (owner-confirmed) added to `#logistics` sameAs via `public-entity-registry.ts`; canonical facts section G updated.
+- Next action — owner: Google Business Profile, Clutch description/reviews (brief given to ChatGPT), optional Facebook intro/name fix; accept — GSC position for "hermes logistics" on 2026-11-23.
+
+
+## 2026-10-27 — ChatGPT/Codex — case-study funnel measurement slice
+
+- Branch: `codex/case-funnel-20261027` from current main `e6f6cd01ca6b36e3cbbbf0192a1cdd47f222a5ff`.
+- Scope: Case Studies family only. Existing visible case content, destinations, URLs, H1/title/canonical/hreflang and proof claims remain unchanged.
+- What changed: added one reusable `CaseStudyFunnelAnalytics` helper using the already-approved `case_opened` / `case_study_cta` hooks; wired only the existing commercial next-step CTA on the case hub, Appleton SEO case and IT-development case. Product-view/internal-anchor actions are not counted as commercial conversion.
+- Governance correction: current main already contains the shared `DirectionStory` proof/status block on `/paths/*`; task 9 is narrowed to proof-fact verification + remaining off-family accent cleanup, not creation of a duplicate proof section.
+- Tests: `npm run build` PASS — 435 pages built. Focused Playwright PASS — 12/12 across desktop + mobile for existing case visual contract and new funnel analytics contract.
+- Status: SOURCE/LOCAL VERIFIED only. Keep Coverage row 11 `PARTIAL` until merge, deployment and 1440/390 production readback.
+- Next: open bounded PR; then take Resources/Guides as a separate family slice using the existing SEO/website/carrier/vehicle-transport analytics owners rather than adding a second tracker.
+
+## 2026-10-28 — Claude Code — carrier (car hauling) SEO audit slice
+
+- Branch: `claude/beautiful-mendel-lknlyq` from current main.
+- Audit evidence (GSC via connector, 2026-07-31 → 2026-10-28): carrier queries ("car hauler dispatch", "car hauler load board", "car hauling loads") rank at positions ~40–80 with 0 clicks; the only carrier clicks come from `/careers/car-hauling-dispatcher/` (pos 6) and the capacity checklist (pos 8). Google AI Overview citations: hermeslogisticsus.com 0, resolute-logistics.com 212.
+- Fixed in this slice: 33 carrier-cluster meta descriptions no longer cut off with "…" (25 car-hauler-loads markets via `CarHaulerGeoPage.astro`, the markets hub, owner-operator / new-authority / fleet-owner dispatch support, two carrier resources); `/logistics/` (parent of every carrier URL) now 301s to `/paths/logistics/` instead of 404; the Logistics hub service-guide list now leads with carrier pages and links the car-hauler-loads markets hub.
+- Owner decisions open: markets hub title/H1 still "Car Hauler Operating Markets & Route-Fit Research" (proposed "Car Hauler Loads by Market"); `/load-board/?role=*` variants are indexed as separate URLs despite the canonical; thin `/logistics/carrier/` overlaps `/logistics/car-hauling-dispatch/`; recruiting phone +1 (414) 269-7377 vs the one-public-phone rule.
+- Next: re-read GSC positions for the carrier query set on 2026-11-23.

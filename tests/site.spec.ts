@@ -536,7 +536,7 @@ test("logistics page routes each visitor type to a dedicated path", async ({ pag
   const hub = page.locator("#choose-your-path");
   await expect(hub.getByRole("link", { name: /Shipper or dealer/ })).toHaveAttribute("href", "/logistics/shipper-dealer/");
   await expect(hub.getByRole("link", { name: /Broker/ })).toHaveAttribute("href", "/logistics/broker/");
-  await expect(hub.getByRole("link", { name: /Carrier or owner-operator/ })).toHaveAttribute("href", "/logistics/carrier/");
+  await expect(hub.getByRole("link", { name: /Carrier or owner-operator/ })).toHaveAttribute("href", "/logistics/car-hauling-dispatch/");
   await expect(hub.getByRole("link", { name: /Open an agency/ })).toHaveAttribute("href", "/logistics/agency/");
   await expect(hub.getByRole("link", { name: /Work with us/ })).toHaveAttribute("href", "/logistics/careers/");
   await expect(hub.getByRole("link", { name: /Training/ })).toHaveAttribute("href", "/paths/academy/");
@@ -550,8 +550,9 @@ test("logistics audience pages open role-specific Load Board workspaces", async 
   await page.goto("/logistics/broker/");
   await expect(page.getByRole("link", { name: "Open broker Load Board" })).toHaveAttribute("href", "/load-board/?role=broker#post-load");
 
-  await page.goto("/logistics/carrier/");
-  await expect(page.getByRole("link", { name: "Open Load Board" })).toHaveAttribute("href", "/load-board/?role=carrier#available-loads");
+  // The carrier audience page merged into the car-hauling dispatch service page (owner decision 2026-10-28).
+  await page.goto("/logistics/car-hauling-dispatch/");
+  await expect(page.getByRole("link", { name: "Open the Car Hauling Load Board" }).first()).toHaveAttribute("href", "/load-board/?role=carrier&equipment=car_hauler#available-loads");
 });
 
 test("agency and career applications create local previews without sending", async ({ page }) => {
@@ -689,8 +690,10 @@ test("public logistics contacts use the approved department routing", async ({ p
   await expect(page.locator(".contacts-hero")).not.toContainText("The structured form below remains a safe preview.");
   await expect(contacts.getByText("Milan · Berlin · Paris · Miami · California · New York · England", { exact: true })).toBeVisible();
   const telephoneTargets = await page.locator('a[href^="tel:"]').evaluateAll((links) => [...new Set(links.map((link) => link.getAttribute("href")))]);
-  expect(telephoneTargets).toEqual([]);
-  await expect(page.getByText("+1 (351) 777-5337", { exact: true })).toHaveCount(0);
+  // Owner-approved 2026-10-27: one Logistics desk line (dispatch + shipper/dealer), calls and text.
+  expect(telephoneTargets).toEqual(["tel:+13517775337"]);
+  await expect(contacts.getByText("Dispatch desk", { exact: true })).toBeVisible();
+  await expect(contacts.getByText("Shipper & dealer desk", { exact: true })).toBeVisible();
   await expect(page.getByText("+1 (717) 696-6829", { exact: true })).toHaveCount(0);
   await expect(page.getByText("Box Truck Department", { exact: true })).toHaveCount(0);
   await expect(page.getByText("General Inquiries", { exact: true })).toHaveCount(0);

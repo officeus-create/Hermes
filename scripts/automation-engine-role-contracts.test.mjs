@@ -11,8 +11,9 @@ import {
   validateRoleContractInput,
   validateRoleContractSemanticResult,
 } from "../workers/automation-engine/src/role-contracts.mjs";
+import { pluginRuntimeVersion } from "../workers/automation-engine/src/plugin-runtime-registry.mjs";
 
-assert.equal(ROLE_CONTRACTS.length, 16, "Runtime must expose fifteen deterministic contracts plus one free-only semantic contract");
+assert.equal(ROLE_CONTRACTS.length, 17, "Runtime must expose fifteen deterministic contracts plus two free-only semantic contracts");
 assert.deepEqual(
   [...ROLE_CONTRACT_JOB_TYPES].sort(),
   [
@@ -22,6 +23,7 @@ assert.deepEqual(
     "growth.error.closure.audit",
     "hae.self.improvement.audit",
     "hae.self.repair.packet",
+    "hae.self.patch.propose",
     "hae.self.release.verify",
     "knowledge.evidence.audit",
     "logistics.source.freshness.audit",
@@ -45,7 +47,7 @@ for (const contract of ROLE_CONTRACTS) {
   }
   assert.equal(contract.permission_class, "READ_ONLY");
   if (contract.semantic_required) {
-    assert.equal(contract.job_type, "search.defect.prioritize");
+    assert.ok(["search.defect.prioritize", "hae.self.patch.propose"].includes(contract.job_type));
     assert.equal(contract.free_ai_policy, "free_only_wait_if_unavailable");
     assert.equal(contract.runtime_config.retry_seconds, 900);
     assert.equal(contract.runtime_config.max_cost_usd, 0, "Semantic contract must be zero-dollar by default");
@@ -66,17 +68,20 @@ assert.ok(roleContractForJobType("marketing.content.dedupe.audit").runtime_confi
 assert.equal(roleContractForJobType("logistics.source.freshness.audit").runtime_config.max_age_minutes, 1440);
 assert.equal(roleContractForJobType("ai.gateway.readiness.audit").runtime_config.cadence_hours, 24);
 assert.equal(roleContractForJobType("academy.english.practice.build").runtime_config.cadence_hours, 24);
-assert.equal(roleContractForJobType("work.portfolio.reconcile").plugin_version, "0.1.68");
-assert.equal(roleContractForJobType("hae.self.improvement.audit").plugin_version, "0.1.25");
+assert.equal(roleContractForJobType("work.portfolio.reconcile").plugin_version, pluginRuntimeVersion("hermes-agent-coordinator"));
+assert.equal(roleContractForJobType("hae.self.improvement.audit").plugin_version, pluginRuntimeVersion("hermes-automatic-engineer"));
 assert.equal(roleContractForJobType("hae.self.release.verify").role_id, "hermes-qa-evidence-auditor");
-assert.equal(roleContractForJobType("hae.self.release.verify").plugin_version, "0.1.5");
+assert.equal(roleContractForJobType("hae.self.release.verify").plugin_version, pluginRuntimeVersion("hermes-qa-evidence-auditor"));
 assert.ok(ROLE_CONTRACT_JOB_TYPES.includes("hae.self.release.verify"), "Dormant self-release capability remains directly inspectable");
 assert.ok(!CAPABILITY_GRAPH_ROLE_CONTRACT_JOB_TYPES.includes("hae.self.release.verify"), "Dormant self-release capability must not be graph-routable before authenticated activation");
-assert.equal(CAPABILITY_GRAPH_ROLE_CONTRACT_JOB_TYPES.length, ROLE_CONTRACT_JOB_TYPES.length - 1);
+assert.ok(!CAPABILITY_GRAPH_ROLE_CONTRACT_JOB_TYPES.includes("hae.self.patch.propose"), "Patch proposal must not be graph-routable before authenticated source adapter activation");
+assert.equal(roleContractForJobType("hae.self.patch.propose").role_id, "hermes-automatic-engineer");
+assert.equal(roleContractForJobType("hae.self.patch.propose").runtime_config.max_cost_usd, 0);
+assert.equal(CAPABILITY_GRAPH_ROLE_CONTRACT_JOB_TYPES.length, ROLE_CONTRACT_JOB_TYPES.length - 2);
 assert.equal(roleContractForJobType("knowledge.evidence.audit").role_id, "hermes-knowledge-curator");
-assert.equal(roleContractForJobType("knowledge.evidence.audit").plugin_version, "0.1.77");
+assert.equal(roleContractForJobType("knowledge.evidence.audit").plugin_version, pluginRuntimeVersion("hermes-knowledge-curator"));
 assert.equal(ROLE_CONTRACTS.filter((contract) => !contract.semantic_required).length, 15);
-assert.equal(ROLE_CONTRACTS.filter((contract) => contract.semantic_required).length, 1);
+assert.equal(ROLE_CONTRACTS.filter((contract) => contract.semantic_required).length, 2);
 
 const searchInput = {
   pages: [
@@ -166,4 +171,61 @@ assert.throws(() => validateRoleContractSemanticResult("search.defect.prioritize
 }), /semantic_result_item_not_in_input/);
 assert.throws(() => runRoleContractPrimitive("search.defect.prioritize", semanticPayload), /semantic_job_requires_free_ai/);
 
-console.log("HAE plugin role contracts PASS: 15 zero-model + 1 free-only semantic contract");
+const patchArtifact="scripts/hae-self-patch-proposal-contract.test.mjs";
+const patchPayload={
+  work_id:"HAE-SELF:ci-40421315430-4-abcdef123456",
+  finding_id:"ci-40421315430-4-abcdef123456",
+  repair_job_id:"job:12345678-1234-1234-1234-123456789abc",
+  artifact_key:patchArtifact,
+  base_sha:"a".repeat(40),
+  observed_base_sha:"a".repeat(40),
+  defect_evidence_ref:"HAE-EVIDENCE:ci_failure_40421315430_4",
+  source_status:"HOLD_REPAIR",
+  source_coverage_complete:true,
+  finding_verified:true,
+  writer_state_verified:true,
+  writer_active:false,
+  source_excerpt:"import assert from \"node:assert/strict\";\nassert.equal(0, 1);\n",
+  source_excerpt_sha256:"sha256:"+"b".repeat(64),
+  failure_summary:"Exact-head deterministic test failed because the fixture expected zero instead of one."
+};
+validateRoleContractInput("hae.self.patch.propose",patchPayload);
+const patchRequest=buildRoleContractSemanticRequest("hae.self.patch.propose",patchPayload);
+assert.match(patchRequest.system_prompt,/PATCH_PROPOSAL_ONLY/);
+assert.ok(patchRequest.user_prompt.includes(patchArtifact));
+assert.ok(patchRequest.max_output_tokens<=1200);
+const patchDiff=[
+  "diff --git a/"+patchArtifact+" b/"+patchArtifact,
+  "--- a/"+patchArtifact,
+  "+++ b/"+patchArtifact,
+  "@@ -2 +2 @@",
+  "-assert.equal(0, 1);",
+  "+assert.equal(1, 1);",
+  ""
+].join("\n");
+const patchResult=validateRoleContractSemanticResult("hae.self.patch.propose",patchPayload,{
+  diff:patchDiff,
+  rationale:"The deterministic assertion should match the verified expected value."
+});
+assert.equal(patchResult.proposal_status,"HOLD_BOUNDED_REPAIR_PREFLIGHT");
+assert.equal(patchResult.artifact_key,patchArtifact);
+assert.equal(patchResult.changed_line_count,2);
+assert.equal(patchResult.hunk_count,1);
+for(const field of ["automatic_git_write","automatic_branch_creation","automatic_merge","automatic_deploy","knowledge_auto_promotion"]){
+  assert.equal(patchResult[field],false,field);
+}
+assert.equal(patchResult.paid_inference_cost_usd,0);
+assert.throws(()=>validateRoleContractInput("hae.self.patch.propose",{...patchPayload,artifact_key:"workers/automation-engine/src/index.mjs"}),/hae_patch_artifact_invalid/);
+assert.throws(()=>validateRoleContractInput("hae.self.patch.propose",{...patchPayload,observed_base_sha:"c".repeat(40)}),/hae_patch_base_sha_invalid/);
+assert.throws(()=>validateRoleContractInput("hae.self.patch.propose",{...patchPayload,source_excerpt:"const token=\"ghp_12345678901234567890\";"}),/hae_patch_source_excerpt_secret_like/);
+assert.throws(()=>validateRoleContractSemanticResult("hae.self.patch.propose",patchPayload,{
+  diff:patchDiff.replaceAll(patchArtifact,"workers/automation-engine/src/index.mjs"),
+  rationale:"Attempt another file."
+}),/hae_patch_diff_file_invalid/);
+assert.throws(()=>validateRoleContractSemanticResult("hae.self.patch.propose",patchPayload,{
+  diff:patchDiff.replace("+assert.equal(1, 1);","+fetch(\"https://example.com\");"),
+  rationale:"Unsafe network addition."
+}),/hae_patch_diff_unsafe_added_code/);
+assert.throws(()=>runRoleContractPrimitive("hae.self.patch.propose",patchPayload),/semantic_job_requires_free_ai/);
+
+console.log("HAE plugin role contracts PASS: 15 zero-model + 2 free-only semantic contracts");

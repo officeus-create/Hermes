@@ -1,5 +1,7 @@
 /it-development /paths/technology/ 301
 /academy/ /paths/academy/ 301
+/logistics/ /paths/logistics/ 301
+/logistics/carrier/ /logistics/car-hauling-dispatch/ 301
 /downloads/hermes-connect-beta.apk /download/ 302
 /contracts/Hermes_Carrier_Agreement_EXECUTION_v2026-08-06.pdf /contracts/carrier-agreement-v3/ 302
 /uk/london/ /gb/london/ 301
@@ -11,3 +13,11 @@
 /ai-command-center/ /services/hermes-connect/ai-command-center/ 301
 /unified-inbox/ /services/hermes-connect/unified-inbox/ 301
 /paths/logistics/broker-capacity/ /paths/logistics/brokers/carrier-capacity/ 301
+/ru/paths/logistics/ /ru/logistics/ 301
+/ru/paths/marketing/ /ru/marketing/ 301
+/ru/paths/technology/ /ru/technology/ 301
+/ru/paths/academy/ /ru/academy/ 301
+/ru/paths/logistics /ru/logistics/ 301
+/ru/paths/marketing /ru/marketing/ 301
+/ru/paths/technology /ru/technology/ 301
+/ru/paths/academy /ru/academy/ 301

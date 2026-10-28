@@ -49,6 +49,10 @@ import {
   pluginRuntimeRegistrySnapshot,
 } from "./plugin-runtime-registry.mjs";
 import { haeSelfRepairPacketReplayMatches } from "./hae-self-improvement.mjs";
+import { verifyGithubCIQueueEnvelope } from "./github-ci-runtime-intake.mjs";
+import { verifyGithubCIPatchProposalEnvelope } from "./github-ci-patch-runtime-intake.mjs";
+import { verifyGithubCIIndependentQaEnvelope } from "./github-ci-independent-qa-runtime-intake.mjs";
+import { materializeIndependentQaReceipt } from "./hae-independent-qa-receipt.mjs";
 
 const ACCOUNT_KEY = "hermes_logistics";
 const PLATFORM = "threads";
@@ -2229,6 +2233,49 @@ export default {
       const payload = item.body || {};
       const messageType = clean(payload?.type, 80) || "UNKNOWN";
       try {
+        if (messageType === "github.ci.audit") {
+          // The canonical GitHub Actions producer authenticates the exact run and
+          // commit with its ephemeral token, then sends only a minimized snapshot
+          // through the private Cloudflare Queue. The Worker receives no GitHub
+          // credential and independently enforces deployed-main + D1 writer lease.
+          if (!env.DB) throw new Error("database_not_configured");
+          await ensureSchema(env.DB);
+          const authenticated = await verifyGithubCIQueueEnvelope(payload, {
+            db: env.DB,
+            deployedSourceSha: clean(env.HERMES_AUTOMATION_SOURCE_SHA, 80),
+          });
+          await createGenericJob(env, authenticated);
+          item.ack();
+          continue;
+        }
+        if (messageType === "github.ci.patch.propose") {
+          // READ_ONLY patch proposal intake. The source must bind to a persisted
+          // successful HOLD_REPAIR packet and the exact deployed HAE source SHA.
+          // This can create only an internal semantic candidate job in D1/Queue.
+          if (!env.DB) throw new Error("database_not_configured");
+          await ensureSchema(env.DB);
+          const authenticated = await verifyGithubCIPatchProposalEnvelope(payload, {
+            db: env.DB,
+            deployedSourceSha: clean(env.HERMES_AUTOMATION_SOURCE_SHA, 80),
+          });
+          await createGenericJob(env, authenticated);
+          item.ack();
+          continue;
+        }
+        if (messageType === "github.ci.qa.verify") {
+          // Independent GitHub Actions QA runs in a separate job/context. The
+          // Worker trusts no caller verdict until exact deployed-main, repair,
+          // proposal, patch digest and QA identity all reconcile against D1.
+          if (!env.DB) throw new Error("database_not_configured");
+          await ensureSchema(env.DB);
+          const authenticated = await verifyGithubCIIndependentQaEnvelope(payload, {
+            db: env.DB,
+            deployedSourceSha: clean(env.HERMES_AUTOMATION_SOURCE_SHA, 80),
+          });
+          await materializeIndependentQaReceipt(env.DB, authenticated);
+          item.ack();
+          continue;
+        }
         if (messageType === "job.submit.runtime_proof") {
           await submitRuntimeProofJob(env, payload);
           item.ack();
@@ -2406,6 +2453,9 @@ export default {
       if (!authorized(request, env)) return json(401, { success: false, error: "unauthorized" });
       if (!env.DB || !env.AUTOMATION_QUEUE) return json(503, { success: false, error: "runtime_not_configured" });
       const body = await request.json().catch(() => ({}));
+      if (Object.hasOwn(body || {}, "internal_submission")) {
+        return json(400, { success: false, error: "internal_submission_forbidden" });
+      }
       try {
         const created = await createGenericJob(env, body);
         return json(created.created ? 202 : 200, { success: true, ...created });

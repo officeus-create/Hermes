@@ -6,7 +6,7 @@ import SiteHeader from "../../../../components/SiteHeader.astro";
 
 const title = "New Authority Car Hauler Readiness Checklist | Hermes Logistics";
 const description =
-  "Use this new-authority car hauler checklist to review MC/DOT status, insurance, equipment, broker setup, paperwork, operating area, dispatch control, and first-load readiness.";
+  "New-authority car hauler checklist: MC/DOT status, insurance, equipment, broker setup, paperwork, operating area and first-load readiness.";
 const canonicalUrl = new URL("/logistics/resources/new-authority-car-hauler-readiness-checklist/", Astro.site).toString();
 const intakeHref = "/logistics/start-car-hauling-dispatch/";
 const faq = [
@@ -102,7 +102,7 @@ const schema = [
                   before requesting dispatch support or reviewing a first load.
                 </p>
                 <div class="logistics-audience-actions">
-                  <a class="button button-primary" href={intakeHref}>
+                  <a class="button button-primary" href={intakeHref} data-resource-commercial-cta data-service-group="new_authority_car_hauler" data-audience-type="carrier">
                     Start carrier readiness review <ArrowRight size={18} aria-hidden="true" />
                   </a>
                   <a class="button" href="/logistics/new-authority-car-hauler-support/">Review new-authority support</a>
@@ -235,7 +235,7 @@ const schema = [
               <h2>Prepare authority, insurance, equipment, fleet, dispatch, and availability details.</h2>
               <p>The carrier intake creates a local review preview and explicit handoff. It does not automatically approve an authority, create an account, assign a dispatcher, or book a load.</p>
             </div>
-            <a class="button button-primary" href={intakeHref}>Open carrier intake <ArrowRight size={18} aria-hidden="true" /></a>
+            <a class="button button-primary" href={intakeHref} data-resource-commercial-cta data-service-group="new_authority_car_hauler" data-audience-type="carrier">Open carrier intake <ArrowRight size={18} aria-hidden="true" /></a>
           </div>
         </section>
       </article>
