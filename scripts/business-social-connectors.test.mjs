@@ -250,7 +250,7 @@ assert.match(component, /72 hours/);
 assert.match(component, /image_urls/);
 assert.match(component, /api\/hermes-connect\/social\/drive\/start/);
 assert.match(component, /api\/hermes-connect\/social\/creative-generate/);
-assert.match(component, /canonical Hermes Social Publisher/);
+assert.match(component, /HAE #2033/);
 assert.doesNotMatch(component, /setInterval\(/);
 assert.match(repairRoute, /noindex,nofollow,noarchive/);
 assert.match(dealerRoute, /noindex,nofollow,noarchive/);
