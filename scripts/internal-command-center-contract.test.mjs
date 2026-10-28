@@ -35,6 +35,10 @@ assert.match(page,/TEAM VIEW · READ ONLY/,"team surface must declare read-only 
 assert.match(page,/HAE 24\/7 processes/,"owner must have one visible autonomous-process control surface");
 assert.match(page,/next hourly tick/i,"activation must describe the real HAE tick rather than promise instant execution");
 assert.match(page,/External sends and paid AI are disabled here/,"first autonomous slice must expose its safe execution boundary");
+assert.match(page,/data-execution-history/,"owner Command Center must include recent canonical AI execution evidence");
+assert.match(page,/started_at\/completed_at/,"execution timing must disclose its timestamp-only basis");
+assert.match(page,/Progress and ETA stay UNKNOWN/,"unmeasured progress and ETA must remain unknown");
+assert.match(page,/data-execution-list/,"recent executions must render inside the existing Command Center");
 
 assert.match(helper,/hermes_owner_work_items/,"work items need a durable D1 table");
 assert.match(helper,/organization_scope TEXT NOT NULL CHECK \(organization_scope = 'hermes_internal'\)/,"owner backlog must remain internal-tenant scoped");

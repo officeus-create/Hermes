@@ -95,7 +95,7 @@ Every project record states its department, purpose, accountable role, execution
 
 The existing public `/services/hermes-connect/ai-command-center/` reference page contains a synthetic, read-only product preview. It uses demo companies/projects only, exposes no internal project or authorization data, and routes interest into the existing scoped contact path. It is a product explanation, not a live customer account, internal system, or second admin.
 
-The current registry records the unresolved AI Operations architecture collision between stacked PRs #2125 and #2159 as a blocker. Neither branch is silently selected as canonical. Owner/maintainer review must choose the surviving delta before merge.
+The owner selected PR #2159 as the only canonical AI Operations continuation of Command Center #2107. PR #2125 is closed and superseded: its branch must not be revived, replayed as a second implementation, or used to create another PR. The project registry therefore tracks #2159 as active and keeps exact-head CI, independent QA, owner-authorized release, and authenticated production readback as the remaining evidence gates.
 
 ## Voice
 

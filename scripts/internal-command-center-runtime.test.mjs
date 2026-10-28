@@ -4,6 +4,7 @@ import { onRequestGet as listWorkItems, onRequestPost as createWorkItem } from "
 import { onRequestPatch as mutateWorkItem } from "../functions/api/internal-command-center/work-items/[id].ts";
 import { onRequestGet as listAccess, onRequestPost as mutateAccess } from "../functions/api/internal-command-center/access.ts";
 import { onRequestGet as aiStatus } from "../functions/api/internal-ai/status.ts";
+import { onRequestGet as listAiTasks } from "../functions/api/internal-ai/tasks.ts";
 import { ensureInternalAiSchema } from "../functions/api/_lib/internal-ai.mjs";
 import { ensureCommandCenterSchema } from "../functions/api/_lib/internal-command-center.mjs";
 
@@ -108,6 +109,22 @@ sqlite.prepare("INSERT INTO hermes_internal_ai_runner_state (id,organization_sco
   "internal-ai-mac-runner","hermes_internal",new Date().toISOString(),"synthetic-sha","synthetic-runtime",
   JSON.stringify({status:"RUNNING",phase:"AUTONOMOUS_OPERATIONS_AND_LEARNING",cycle:563,current_task:"Synthetic safe work",next_action:"Owner-only next action",model:"qwen3.5:4b",last_training_phase:"DOCUMENTARY_REVIEW",autonomy:{external_actions:0,provider_writes:0}})
 );
+sqlite.prepare("INSERT INTO hermes_internal_ai_events (organization_scope,task_id,event_type,message,created_at) VALUES (?,?,?,?,?)").run(
+  "hermes_internal",retriedSecond.payload.task.id,"output","Synthetic latest log event",now
+);
+const taskHistoryResponse=await listAiTasks({request:request("/api/internal-ai/tasks"),env:{DB:db}});
+assert.equal(taskHistoryResponse.status,200);
+const taskHistory=await taskHistoryResponse.json();
+assert.equal(taskHistory.timing_policy,"timestamps_only");
+assert.equal(taskHistory.progress_policy,"UNKNOWN_without_measured_steps");
+assert.equal(taskHistory.eta_policy,"UNKNOWN_without_deterministic_history");
+const currentExecution=taskHistory.tasks.find(task=>task.id===retriedSecond.payload.task.id);
+assert.equal(currentExecution.last_event.type,"output");
+assert.equal(currentExecution.last_event.message,"Synthetic latest log event");
+assert.equal(currentExecution.progress_percent,null);
+assert.equal(currentExecution.eta,null);
+assert.equal(currentExecution.eta_label,"UNKNOWN");
+assert.equal(currentExecution.elapsed_seconds,null,"queued work without started_at must not receive invented elapsed time");
 
 let viewerStatus=await aiStatus({request:request("/api/internal-ai/status",{owner:"delegate"}),env:{DB:db}});
 assert.equal(viewerStatus.status,403,"generic Hermes account must not inherit Team View");

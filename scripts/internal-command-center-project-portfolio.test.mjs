@@ -16,7 +16,12 @@ assert.equal(new Set(portfolio.map((project) => project.id)).size, portfolio.len
 assert.ok(portfolio.every((project) => Number.isInteger(project.progress.percent) && project.progress.percent >= 0 && project.progress.percent <= 100));
 assert.ok(portfolio.every((project) => project.eta === null && project.eta_label === "UNKNOWN"), "unproven ETA must stay UNKNOWN");
 assert.ok(portfolio.some((project) => project.id === "investor-intelligence" && project.evidence_level === "HOLD_EVENT_TRIGGER_ONLY"));
-assert.ok(portfolio.some((project) => project.id === "ai-operations" && project.status === "blocked"), "the #2125/#2159 ownership conflict must remain visible");
+const aiOperations = portfolio.find((project) => project.id === "ai-operations");
+assert.equal(aiOperations?.status, "in_progress", "canonical #2159 must remain active until release evidence is accepted");
+assert.equal(aiOperations?.links.length, 1);
+assert.equal(aiOperations?.links[0]?.label, "PR #2159");
+assert.ok(aiOperations?.milestones.some((item) => item.id === "canonicalize" && item.state === "done"));
+assert.doesNotMatch(JSON.stringify(aiOperations), /#2125|pull\/2125/, "superseded #2125 must not remain in the current project contract");
 
 assert.match(api, /requireInternalOwner/);
 assert.match(api, /Cache-Control.*private, no-store/);

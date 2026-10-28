@@ -4,6 +4,8 @@
 
 **Scope:** one new **AI System Architecture** section **inside the existing owner-gated Command Center** at `/services/hermes-connect/internal/command-center/?lang=ru`. No new planner, Worker, D1 database, second admin, credentials store, or public LLM endpoint.
 
+**Canonical implementation:** PR [#2159](https://github.com/officeus-create/Hermes/pull/2159), stacked on Command Center #2107. The owner closed and superseded #2125; do not restore it, replay it into another branch, or create a competing AI Operations layer.
+
 ## The actual control flow
 
 1. Owner instruction or authorized event enters the existing Hermes Connect owner backlog / HAE event intake.
@@ -54,6 +56,7 @@ The Mac is allowed to be offline; it does **not** own a second cloud queue. Loca
 ## Implementation ownership
 
 - Owner admin: [Command Center #2107](https://github.com/officeus-create/Hermes/pull/2107)
+- AI Operations layer: [#2159](https://github.com/officeus-create/Hermes/pull/2159) — the only canonical continuation; #2125 is superseded
 - Private Mac gateway (separate): [#2088](https://github.com/officeus-create/Hermes/pull/2088)
 - HAE canonical runtime and learning: [#2033](https://github.com/officeus-create/Hermes/issues/2033)
 - Workers Free runtime readback: [#2137](https://github.com/officeus-create/Hermes/pull/2137) — source safety gate #2123 is merged
