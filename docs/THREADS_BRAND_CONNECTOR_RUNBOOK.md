@@ -6,17 +6,20 @@ Canonical owner: GitHub #1018 — Growth Bridge.
 
 ## Architecture
 
-Hermes Logistics stays on the verified Windsor.ai connection. This adapter exists only for:
+This connector is now a **donor/read surface**, not a production writer owner.
 
-- `office_test` — first live canary;
-- `progressopro` — secondary Marketing / Technology lane;
-- `business_academy` — secondary Academy lane.
+Current commercial social lanes are:
+- **HERMES_LOGISTICS** — all logistics activity, including carriers, owner-operators, small fleets, dispatch/load-board, shippers/dealers and car hauling. Logistics writes converge through HAE + the shared Meta provider; this legacy connector must not become a second Hermes Logistics publisher.
+- **PROGRESSOPRO** — marketing, IT/software/Hermes Connect and Academy/training. Existing `progressopro` and `business_academy` connector keys remain compatibility identities inside this one business lane.
+- `office_test` remains a technical canary identity only.
 
-`hermes_logistics` is deliberately not an allowed brand key, so this adapter cannot become a second publisher for the logistics account.
+The connector adds no scheduler. **HAE #2033 is the only recurring/autonomous orchestration runtime.**
 
-The adapter adds no scheduler. The existing `Hermes Social Publisher` remains the orchestration surface.
+## Official Threads contracts
 
-## Official Threads contracts checked 2026-09-29
+Fresh 2026-10-29 verification uses Meta’s current official Threads workspace with `api_host=https://graph.threads.net`; repository `.com` constants are provider-drift candidates and must not be copied into new shared-provider code.
+
+### Historical contracts checked 2026-09-29
 
 - OAuth authorization: https://developers.facebook.com/documentation/threads/get-started/get-access-tokens-and-permissions
 - Long-lived tokens: https://developers.facebook.com/documentation/threads/get-started/long-lived-tokens
@@ -194,6 +197,11 @@ Draft endpoint (internal owner only, noindex/no-store):
 
 **One-post acceptance target:** \`https://www.threads.com/@tsapushel_olena/post/De6z1w-iAC5\`. Do not claim competitors' prices were collected until provider returns the author's post, accessible comment pages, stable IDs, and a bounded coverage record. There is no third-party cookie/anti-bot bypass.
 
-**Commercial follow-up:** Treat raw quotes as proposals (not verified prices). Human review -> compare scope/currency/delivery/hosting/SEO/design -> optional approved reply -> tracked CTA -> human-qualified CRM opportunity -> revenue receipt. The native bounded reply endpoint is `POST /api/internal/social/threads/reply` and requires a verified brand connection with `threads_content_publish`, `threads_read_replies`, and `threads_manage_replies`; it accepts one provider-verified inbound `reply_to_id` under an owned root, reserves idempotency before the provider write, and verifies the exact parent on readback. Never bulk unsolicited comments, scraped-profile messaging, automated posting on outside discussions, or blind retries after ambiguous provider outcomes.
+**Commercial follow-up:** Treat raw quotes as proposals (not verified prices). Human review -> compare scope/currency/delivery/hosting/SEO/design -> optional approved reply -> tracked CTA -> human-qualified CRM opportunity -> revenue receipt. The private reply endpoint `POST /api/internal/social/threads/reply` now performs owner/scopes/target/owned-root proof only and then submits an idempotent `social.reply` job to HAE. It does **not** write Meta directly and does not maintain a second publication lifecycle. Until HAE independently enables and accepts `social.reply`, the endpoint fails closed with `hae_social_reply_capability_not_ready`. Never bulk unsolicited comments, scraped-profile messaging, automated posting on outside discussions, or blind retries after ambiguous provider outcomes.
 
 **Status gates:** CODED \`#2092\` does not mean CI_GREEN, MERGED, LIVE_VERIFIED, META_SCOPE_APPROVED, or SOURCE_COMPLETE. The Threads contract unit tests run inside \`scripts/threads-brand-connector.test.mjs\`; owner and release gates are unchanged.
+
+
+## 2026-10-29 — Social Acquisition supersession
+
+This runbook is no longer authority for an independent brand publisher. The canonical execution model is `VIKTOR/content policy -> HAE #2033 -> shared Meta provider -> provider receipt/readback -> Unified Inbox/Command Center`. Current read modes include owned posts, conversations, keyword-search candidates and mentions. Keyword results never authorize replies. Threads DMs remain manual until an official API endpoint and exact app/account entitlement are freshly proven.
