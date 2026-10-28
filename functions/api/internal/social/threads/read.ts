@@ -9,6 +9,7 @@ import {
 import {
   parsePublicThreadsPostUrl,
   threadsConversationRead,
+  threadsMentionsRead,
   threadsOwnedRead,
   threadsReadMode,
   threadsRequiredScope,
@@ -69,6 +70,8 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
     });
   } else if (mode === "owned") {
     result = await threadsOwnedRead({ token: token.access_token });
+  } else if (mode === "mentions") {
+    result = await threadsMentionsRead({ token: token.access_token });
   } else {
     let realId = threadId;
     let resolvedPost = null;
