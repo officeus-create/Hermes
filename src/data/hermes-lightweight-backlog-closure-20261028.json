@@ -1,0 +1,413 @@
+{
+  "schema_version": "1.0.0",
+  "as_of": "2026-10-28",
+  "purpose": "Machine-readable closure contract for 30 bounded lightweight backlog items recovered from August-October 2026.",
+  "canonical_runtime": "HAE #2033",
+  "canonical_coordination": "One Brain",
+  "no_live_write": true,
+  "no_second_control_plane": true,
+  "no_paid_fallback": true,
+  "allowed_status": [
+    "IMPLEMENTED"
+  ],
+  "allowed_categories": [
+    "automation_registry",
+    "one_brain_plugins",
+    "search_entity_registry",
+    "content_lanes",
+    "command_center_metrics",
+    "ci_work_intake"
+  ],
+  "tasks": [
+    {
+      "id": "L01",
+      "category": "automation_registry",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Agent Coordinator",
+      "implementation": "Canonical automation registry fields are fixed and named.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/HERMES_HAE_ZERO_TOKEN_SCHEDULE_MIGRATION.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L02",
+      "category": "automation_registry",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Agent Coordinator",
+      "implementation": "Automation disposition enum is fixed to AUTOMATE/KEEP_MANUAL/MERGE/OBSOLETE/BLOCKED/NEEDS_BUSINESS_DECISION.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/HERMES_HAE_ZERO_TOKEN_SCHEDULE_MIGRATION.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L03",
+      "category": "automation_registry",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "QA Evidence Auditor",
+      "implementation": "Schedule metadata is explicitly separated from execution-success evidence.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/HERMES_HAE_SELF_IMPROVEMENT.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L04",
+      "category": "automation_registry",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Agent Coordinator",
+      "implementation": "Duplicate scheduled work must reuse/update/merge the current owner before a new automation is created.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/HERMES_HAE_ZERO_TOKEN_SCHEDULE_MIGRATION.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L05",
+      "category": "automation_registry",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Agent Coordinator",
+      "implementation": "Business owner, trigger, provider, adapter and scheduler are separate registry dimensions.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/AI_START_HERE.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L06",
+      "category": "one_brain_plugins",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Knowledge Curator",
+      "implementation": "Canonical truth precedence is fixed to current code/task owner/fresh evidence/One Brain before historical handoffs.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/AI_START_HERE.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L07",
+      "category": "one_brain_plugins",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Knowledge Curator",
+      "implementation": "Stale artifacts use KEEP/FIX/MERGE_INTO/SUPERSEDED/CLOSE and one NEXT_ACTION.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/AI_START_HERE.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L08",
+      "category": "one_brain_plugins",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Agent Coordinator",
+      "implementation": "Plugins are explicitly knowledge/contract packages, not daemons or runtime proof.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/HERMES_HAE_ECOSYSTEM_LEARNING_PREFLIGHT_2026-10-26.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L09",
+      "category": "one_brain_plugins",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Hermes Automatic Engineer",
+      "implementation": "HAE #2033 remains the single persistent runtime; parallel brains/queues/admins are forbidden.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/HERMES_HAE_SELF_IMPROVEMENT.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L10",
+      "category": "one_brain_plugins",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Hermes Automatic Engineer",
+      "implementation": "Executable role work binds role/plugin/contract/source/tool/write/eval/KPI/rollback/owner/QA metadata.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/HERMES_HAE_ECOSYSTEM_LEARNING_PREFLIGHT_2026-10-26.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L11",
+      "category": "search_entity_registry",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Search Growth",
+      "implementation": "Business profile/citation records have a canonical minimum field set.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/SEARCH_GROWTH_GUARDRAIL.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L12",
+      "category": "search_entity_registry",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Search Growth",
+      "implementation": "Profile links use canonical deep links and governed UTM attribution.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/SEARCH_GROWTH_GUARDRAIL.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L13",
+      "category": "search_entity_registry",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Search Growth",
+      "implementation": "Entity names/descriptions/site/contact facts must match approved facts or remain UNKNOWN/open.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/GEO_CURRENT_STATE.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L14",
+      "category": "search_entity_registry",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "QA Evidence Auditor",
+      "implementation": "Profiles are classified by discoverability/indexability/quality/spam-risk/duplication/ownership rather than directory count.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/SEARCH_GROWTH_GUARDRAIL.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L15",
+      "category": "search_entity_registry",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Analytics / QA",
+      "implementation": "Profile traffic, qualified actions, indexing and AI visibility are measured as separate evidence stages.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/SEARCH_GROWTH_GUARDRAIL.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L16",
+      "category": "content_lanes",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Marketing Growth",
+      "implementation": "ProgressoPro content items require audience/offer/proof/canonical destination/CTA/publish/attribution/outcome fields.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/HERMES_WEBSITE_DECISION_REGISTER.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L17",
+      "category": "content_lanes",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Academy",
+      "implementation": "Academy content follows Awareness -> Understanding -> Application with program/outcome ownership.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/HERMES_WEBSITE_DECISION_REGISTER.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L18",
+      "category": "content_lanes",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Marketing Growth",
+      "implementation": "Threads/X research, reply, engagement and publishing are separate capabilities with no autonomous mass replies.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/SEARCH_GROWTH_GUARDRAIL.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L19",
+      "category": "content_lanes",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Marketing Growth",
+      "implementation": "Instagram task skills remain under the existing Marketing owner with Design/QA handoffs instead of new agents.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/marketing/INSTAGRAM_AGENT_SKILLS_ADOPTION_2026-10-26.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L20",
+      "category": "content_lanes",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Analytics / QA",
+      "implementation": "Social evidence uses VIEW -> SESSION -> LEAD -> QUALIFIED_LEAD -> OPPORTUNITY -> REVENUE without collapsing stages.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/PRODUCTION_ANALYTICS_EVENT_REGISTRY.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L21",
+      "category": "command_center_metrics",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Agent Coordinator",
+      "implementation": "Progress derives from accepted checklist/gate completion, not narrative claims.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/HAE_POST_GATE_HARDENING.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L22",
+      "category": "command_center_metrics",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Agent Coordinator",
+      "implementation": "Elapsed/duration uses started_at/updated_at/completed_at timestamps.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/HAE_POST_GATE_HARDENING.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L23",
+      "category": "command_center_metrics",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Agent Coordinator",
+      "implementation": "ETA has explicit KNOWN/ESTIMATED/WAITING_DEPENDENCY/UNKNOWN states.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/HAE_POST_GATE_HARDENING.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L24",
+      "category": "command_center_metrics",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Agent Coordinator",
+      "implementation": "Execution state vocabulary covers RUNNING/BLOCKED/DEGRADED/WAITING_FREE_AI/WAITING_OWNER/FAILED/COMPLETE with evidence and next action.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/HAE_POST_GATE_HARDENING.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L25",
+      "category": "command_center_metrics",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Command Center navigation contract links Admin/HAE/Agents/Plugins/One Brain and exposes local-agent online/offline without equating localhost to cloud runtime.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/HAE_POST_GATE_HARDENING.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L26",
+      "category": "ci_work_intake",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "QA Evidence Auditor",
+      "implementation": "CI triage records exact repo/PR/head/workflow/job/step/reproduction/owner before a fix.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/ERROR_REGISTER.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L27",
+      "category": "ci_work_intake",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "QA Evidence Auditor",
+      "implementation": "Failure evidence has observed_at/source_ref/exact_sha/class/evidence/reproduced/impact/safe_next/rollback/owner/qa.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/ERROR_REGISTER.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L28",
+      "category": "ci_work_intake",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Hermes Automatic Engineer",
+      "implementation": "Unknown failures are read first; blind rerun/redrive/provider mutation is forbidden and idempotency evidence is preserved.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/HERMES_HAE_SELF_IMPROVEMENT.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L29",
+      "category": "ci_work_intake",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Agent Coordinator",
+      "implementation": "Every unresolved defect has one smallest executable NEXT_ACTION.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/ERROR_REGISTER.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L30",
+      "category": "ci_work_intake",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Access / Identity Governor",
+      "implementation": "Public evidence excludes secrets/raw PII/private health data; personal-health remains outside business ingestion.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/HERMES_HAE_ECOSYSTEM_LEARNING_PREFLIGHT_2026-10-26.md"
+      ],
+      "no_live_write": true
+    }
+  ]
+}
