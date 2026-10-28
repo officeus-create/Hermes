@@ -133,6 +133,11 @@ assert.equal(teamStatusPayload.runtime.operations.phase,"AUTONOMOUS_OPERATIONS_A
 assert.equal(teamStatusPayload.runtime.operations.cycle,563);
 assert.equal(teamStatusPayload.runtime.operations.current_task,"Synthetic safe work");
 assert.equal(teamStatusPayload.runtime.operations.model,"qwen3.5:4b");
+const expectedTeamSummary={total:0,queued:0,running:0,needs_approval:0,completed:0,failed:0,cancelled:0};
+for(const row of sqlite.prepare("SELECT status,COUNT(*) AS count FROM hermes_internal_ai_tasks WHERE organization_scope='hermes_internal' GROUP BY status").all()){
+  expectedTeamSummary[row.status]=Number(row.count);expectedTeamSummary.total+=Number(row.count);
+}
+assert.deepEqual(teamStatusPayload.task_summary,expectedTeamSummary,"Team View may expose only aggregate canonical task counts");
 assert.equal("repo_sha" in teamStatusPayload.runtime,false,"Team View must hide repo metadata");
 assert.equal("runtime_version" in teamStatusPayload.runtime,false,"Team View must hide runtime metadata");
 assert.equal("remote_browser_to_codex" in teamStatusPayload.runtime,false,"Team View must hide owner runtime flags");
@@ -141,6 +146,7 @@ assert.equal("last_training_phase" in teamStatusPayload.runtime.operations,false
 assert.equal("autonomy" in teamStatusPayload.runtime.operations,false,"Team View must hide owner autonomy counters");
 assert.equal("active_task" in teamStatusPayload,false,"Team View must hide owner AI task queue");
 assert.equal("latest_task" in teamStatusPayload,false,"Team View must hide latest owner AI task");
+assert.equal("work_items" in teamStatusPayload,false,"Team View must not expose owner work-item details");
 
 const ownerStatus=await aiStatus({request:request("/api/internal-ai/status"),env:{DB:db}});
 assert.equal(ownerStatus.status,200);
