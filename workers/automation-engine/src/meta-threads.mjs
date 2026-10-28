@@ -5,6 +5,7 @@ const META_BASE = "https://graph.threads.net/v1.0/";
 export const HERMES_THREADS_ID = "28419597014385166";
 const HERMES_USERNAME = "hermes.logistics";
 const COOLDOWN_MS = (3 * 60 + 15) * 60_000;
+const MIN_PREFLIGHT_HISTORY = 30;
 
 function text(value, max = 500) {
   return typeof value === "string" ? value
@@ -23,13 +24,16 @@ function httpsThreadsPermalink(value) {
 export function metaThreadsMode(env) {
   return String(env?.HERMES_THREADS_PROVIDER || "").trim() === "meta_direct";
 }
-export function metaThreadsConfig(env) {
-  if (!metaThreadsMode(env)) return null;
+export function metaThreadsCredentials(env) {
   const accessToken = typeof env?.HERMES_THREADS_ACCESS_TOKEN === "string"
     ? env.HERMES_THREADS_ACCESS_TOKEN.trim() : "";
   const accountId = String(env?.HERMES_THREADS_META_ACCOUNT_ID || "");
   if (accountId !== HERMES_THREADS_ID || accessToken.length < 20 || accessToken.length > 4096) return null;
   return { accessToken, accountId };
+}
+export function metaThreadsConfig(env) {
+  if (!metaThreadsMode(env)) return null;
+  return metaThreadsCredentials(env);
 }
 function auth(config) { return { "authorization": `Bearer ${config.accessToken}`, "accept": "application/json" }; }
 async function graph(config, path, { params = {}, post = false } = {}) {
@@ -101,6 +105,17 @@ export async function metaThreadsPreflight(env, body, nowMs = Date.now()) {
     if (age < 0) return { ok: false, error_class: "meta_threads_future_provider_timestamp" };
     if (age < COOLDOWN_MS) return { ok: false, error_class: "meta_threads_recent_authored_cooldown" };
   }
+  // @hermes.logistics is an established account with a large authored history.
+  // A short/empty first page is not sufficient freshness evidence and must never
+  // silently satisfy the pre-publish reconciliation gate.
+  if (feed.rows.length < MIN_PREFLIGHT_HISTORY) {
+    return {
+      ok: false,
+      error_class: "meta_threads_history_incomplete",
+      observed_rows: feed.rows.length,
+      minimum_required_rows: MIN_PREFLIGHT_HISTORY,
+    };
+  }
   return { ok: true, account_id_verified: true, last_50_checked: feed.rows.length, safe_to_reserve: true };
 }
 export async function publishThreadsTextViaMeta(env, body) {
@@ -123,7 +138,9 @@ export async function publishThreadsTextViaMeta(env, body) {
   return { ok: true, accepted: true, provider_result: "meta_direct", provider_post_id: providerId };
 }
 export async function readbackThreadsTextViaMeta(env, body) {
-  const config = metaThreadsConfig(env);
+  // Readback follows immutable publication provenance, not the provider that is
+  // currently selected for new writes. Keep credentials usable after a switch.
+  const config = metaThreadsCredentials(env);
   if (!config) return { ok: false, error_class: "meta_threads_not_configured" };
   const who = await identity(config);
   if (!who.ok) return who;
