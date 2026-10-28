@@ -8,8 +8,8 @@ The merged Social Studio already supports:
 
 - Facebook / Instagram / Threads connection state on one screen;
 - live cross-channel readback;
-- one unified composer with Smart Mirror;
-- Instagram Feed + Instagram Story + Threads Feed + Facebook Page distribution;
+- one unified composer with an owner-approved destination fan-out preset;
+- independent Instagram Feed / Instagram Story / Threads Feed / Facebook Page provider actions with separate receipts;
 - Google Drive owner OAuth and source ingestion;
 - Workers AI source analysis;
 - source-bounded captions, Threads/Facebook variants, Story direction, destination choice and carousel storyboard.
@@ -71,7 +71,7 @@ Future optional visual-media generation can sit behind the same review/upload in
 
 ## Acceptance
 
-- Social Studio must keep one-screen channel overview and Smart Mirror.
+- Social Studio must keep one-screen channel overview and a destination fan-out preset. The preset never makes Instagram a transport hop; every selected platform is an independent provider action.
 - Social icon remains distinct from Product Hub grid.
 - CRM compact sizing stays unchanged.
 - Existing Drive/AI draft flow stays source-bounded.
@@ -81,3 +81,8 @@ Future optional visual-media generation can sit behind the same review/upload in
 - Media route never returns credentials.
 - Rendered public media expires automatically.
 - Final publish still requires owner confirmation.
+
+
+## 2026-10-29 architecture clarification
+
+The renderer is a reusable creative layer only. One approved content object may fan out to Instagram, Threads and Facebook, but each platform keeps its own native copy, idempotency key, provider object ID, permalink/readback and failure state. Recurring or autonomous execution belongs to HAE #2033; owner/manual Social Studio remains a review/control surface and uses the same shared provider contract rather than creating another scheduler or writer implementation.
