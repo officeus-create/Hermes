@@ -5,6 +5,7 @@ const statusPayload={success:true,runtime:{online:false,last_seen_at:"2026-10-26
 const backlog={success:true,work_items:[{id:"hcwi_demo",workstream:"marketing",priority:"p1",title:"Threads website demand",details:"Review buyer-intent posts and prepare a bounded outreach plan.",source:"voice",status:"planned",created_at:"2026-10-26T12:01:00.000Z",updated_at:"2026-10-26T12:01:00.000Z",linked_task_id:null,linked_task_status:null}]};
 const processPayload={id:"haep_demo",name:"AI gateway readiness",job_type:"ai.gateway.readiness.audit",business_lane:"automation",workstream:"technology",role_id:"hermes-automatic-engineer",cadence_hours:6,status:"paused",next_run_at:null,last_run_at:null,last_job_id:null,last_job_state:null,last_error_class:null,template_label:"AI gateway readiness",template_label_ru:"Готовность AI gateway"};
 const owners={success:true,current_specialist_id:"owner-1",access:[{specialist_id:"owner-1",active:true,email:"owner@example.invalid",name:"Owner",role:"Owner"}]};
+const projectRegistry={success:true,source_class:"BOUNDED_CANONICAL_SNAPSHOT",checked_at:"2026-10-28T15:30:00+02:00",projects:[{id:"hermes-command-center",title:"Hermes Business Command Center",department:"technology",purpose:"One owner workspace for projects, CRM work, HAE processes, AI execution and evidence.",owner_role:"hermes-technology-developer",agent_role:"Hermes Technology Developer",plugin_roles:["hermes-agent-coordinator"],dependency_ids:[],related_ids:["hae-runtime"],status:"blocked",evidence_level:"EXACT_HEAD_CI_GREEN",progress:{completed:6,total:9,percent:67},eta:null,eta_label:"UNKNOWN",eta_basis:"No deterministic completion history is available yet.",blockers:["Independent review remains."],milestones:[{id:"owner-backlog",label:"Owner backlog and D1 capture",state:"done"},{id:"production",label:"Authenticated production owner readback",state:"planned"}],links:[{label:"PR #2107",href:"https://github.com/officeus-create/Hermes/pull/2107"}]}]};
 
 async function mockOwner(page:any){
   await page.route("**/api/internal-ai/status",(route:any)=>route.fulfill(json(statusPayload)));
@@ -15,6 +16,7 @@ async function mockOwner(page:any){
   });
   await page.route("**/api/internal-command-center/access",(route:any)=>route.fulfill(json(owners)));
   await page.route("**/api/internal-command-center/processes",(route:any)=>route.fulfill(json({success:true,processes:[]})));
+  await page.route("**/api/internal-command-center/projects",(route:any)=>route.fulfill(json(projectRegistry)));
   await page.route("**/api/hermes-connect/account",(route:any)=>route.fulfill(json({success:true,identity:{id:"owner-1",name:"Owner",email:"owner@example.invalid",role:"Owner"},owned_businesses:[],workspaces:[{key:"internal_ai",kind:"capability_workspace",href:"/services/hermes-connect/internal/ai-connect/",available:true,state:{capability:"HERMES_INTERNAL_OWNER"}}],capabilities:{internal_ai:true}})));
 }
 
@@ -30,7 +32,7 @@ test.describe("Hermes Business Command Center",()=>{
   test("shows cloud backlog and offline runner without losing the owner workspace",async({page})=>{
     await mockOwner(page);
     await page.goto("/services/hermes-connect/internal/command-center/");
-    await expect(page.getByRole("heading",{name:"Business Command Center"})).toBeVisible();
+    await expect(page.getByRole("heading",{name:"Business Command Center",exact:true})).toBeVisible();
     await expect(page.locator("[data-runner-state]")).toHaveText("Offline");
     await expect(page.locator("[data-backlog-count]")).toHaveText("1");
     await expect(page.getByText("Threads website demand")).toBeVisible();
@@ -127,11 +129,32 @@ test.describe("Hermes Business Command Center",()=>{
     await expect(page.locator("[data-local-agents-fallback]")).toHaveAttribute("href","/services/hermes-connect/internal/ai-connect/");
   });
 
+  test("shows the owner project map with evidence-derived progress and unknown ETA",async({page})=>{
+    await mockOwner(page);
+    await page.goto("/services/hermes-connect/internal/command-center/");
+    const project=page.locator('[data-project-id="hermes-command-center"]');
+    await expect(page.getByRole("heading",{name:"Every Hermes initiative in one structure"})).toBeVisible();
+    await expect(project.getByRole("heading",{name:"Hermes Business Command Center"})).toBeVisible();
+    await expect(project.getByRole("progressbar",{name:"Project progress"})).toHaveAttribute("aria-valuenow","67");
+    await expect(project).toContainText("UNKNOWN");
+    await expect(project.getByRole("link",{name:/PR #2107/})).toHaveAttribute("href","https://github.com/officeus-create/Hermes/pull/2107");
+  });
+
+  test("keeps the public Command Center preview synthetic and routes to a scoped request",async({page})=>{
+    await page.goto("/services/hermes-connect/ai-command-center/");
+    const demo=page.locator("[data-command-center-demo]");
+    await expect(demo.getByText("Demo data only")).toBeVisible();
+    await expect(demo.getByRole("heading",{name:"See projects, ownership and progress together"})).toBeVisible();
+    await expect(demo.getByRole("link",{name:/Request a Command Center/})).toHaveAttribute("href","/contacts/?path=technology&utm_source=command_center_demo");
+    await expect(demo).not.toContainText("HERMES_INTERNAL_OWNER");
+    await expect(demo).not.toContainText("#2107");
+  });
+
   test("keeps the owner page usable at 390px",async({page})=>{
     await page.setViewportSize({width:390,height:844});
     await mockOwner(page);
     await page.goto("/services/hermes-connect/internal/command-center/");
-    await expect(page.getByRole("heading",{name:"Business Command Center"})).toBeVisible();
+    await expect(page.getByRole("heading",{name:"Business Command Center",exact:true})).toBeVisible();
     await expect(page.locator("body")).not.toHaveCSS("overflow-x","scroll");
     await expect(page.locator("[data-work-form]")).toBeVisible();
   });

@@ -1,5 +1,6 @@
 ---
 import HermesConnectCapabilityPage from "../../../components/HermesConnectCapabilityPage.astro";
+import HermesCommandCenterDemo from "../../../components/HermesCommandCenterDemo.astro";
 
 const faqs = [
   {
@@ -28,4 +29,6 @@ const capabilities = [
   capabilities={capabilities}
   boundary="This capability is not presented as a current public beta or production runtime. External ERP/CRM synchronization and autonomous operational actions are not claimed as live. Use the Repair Shop product for the current pilot flow."
   faqs={faqs}
-/>
+>
+  <HermesCommandCenterDemo slot="demo" />
+</HermesConnectCapabilityPage>
