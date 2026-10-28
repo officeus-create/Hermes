@@ -27,6 +27,10 @@ assert.match(arch, /Missing values stay UNKNOWN/, "unknown telemetry must not be
 assert.match(arch, /Employee access is a separate read-only authorization step/, "team view remains a separately gated rollout");
 assert.doesNotMatch(arch, /TeamViewer|AnyDesk|Windows executor online/i, "deferred Windows must not look live");
 assert.match(contract, /internal-command-center-ai-architecture\.test\.mjs/, "architecture QA must be in the existing canonical contract suite");
+assert.match(arch, /pluginRuntimeRegistrySnapshot/, "AI Center must reuse the canonical HAE plugin registry");
+assert.match(arch, /data-plugin-registry/, "AI Center must render plugin registry entries");
+assert.match(arch, /PRIVATE_PLUGIN_CREATOR_READBACK|source_class/, "plugin registry must disclose its evidence class");
+assert.match(arch, /snapshot, not live provider status/, "plugin registry must not imply live provider connectivity");
 
 // Topology, roles, and links are explicit and maintainable.
 for (const name of ["HAE · Worker + Queue + D1","Hermes AI · Mac","One Brain","GLM-4.7-Flash","Clef-flash","Clairic","Whisper Large V3 Turbo","WAITING_FREE_AI","Agent Coordinator","Technology Developer","Automatic Engineer","QA Auditor","Access Governor","Knowledge Curator","COO"]) {
