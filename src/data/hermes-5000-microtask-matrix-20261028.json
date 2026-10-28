@@ -1,0 +1,1378 @@
+{
+  "schema_version": "1.0.0",
+  "as_of": "2026-10-28",
+  "source_head": "ea9afa2f755a01d50cdd2e6ad4ad91bd0f6d00cf",
+  "purpose": "Deterministic 5000-microtask repository hygiene matrix: 200 real Markdown artifacts x 25 bounded integrity/safety checks.",
+  "artifact_count": 200,
+  "checks_per_artifact": 25,
+  "expected_microtasks": 5000,
+  "task_id_range": "M0001..M5000",
+  "no_live_write": true,
+  "no_second_control_plane": true,
+  "no_paid_fallback": true,
+  "selection": {
+    "roots": [
+      "docs/",
+      "ai-collaboration/"
+    ],
+    "extension": ".md",
+    "max_bytes": 200000,
+    "ordering": "lexicographic path",
+    "selected": "first 200 matching blobs from source_head"
+  },
+  "task_id_formula": "M + zeroPad(((artifact.rank - 1) * 25) + check.rank, 4)",
+  "checks": [
+    {
+      "rank": 1,
+      "id": "C01",
+      "key": "manifest_path_present",
+      "description": "Manifest path is a non-empty string."
+    },
+    {
+      "rank": 2,
+      "id": "C02",
+      "key": "posix_separators",
+      "description": "Path uses repository POSIX separators only."
+    },
+    {
+      "rank": 3,
+      "id": "C03",
+      "key": "relative_path",
+      "description": "Path is repository-relative, not absolute."
+    },
+    {
+      "rank": 4,
+      "id": "C04",
+      "key": "normalized_path",
+      "description": "POSIX normalization does not change the path."
+    },
+    {
+      "rank": 5,
+      "id": "C05",
+      "key": "no_traversal",
+      "description": "Path contains no parent traversal segment."
+    },
+    {
+      "rank": 6,
+      "id": "C06",
+      "key": "allowed_root",
+      "description": "Path is under docs/ or ai-collaboration/."
+    },
+    {
+      "rank": 7,
+      "id": "C07",
+      "key": "markdown_extension",
+      "description": "Artifact has .md extension."
+    },
+    {
+      "rank": 8,
+      "id": "C08",
+      "key": "valid_basename",
+      "description": "Basename is a non-empty Markdown filename."
+    },
+    {
+      "rank": 9,
+      "id": "C09",
+      "key": "trimmed_path",
+      "description": "Path has no leading or trailing whitespace."
+    },
+    {
+      "rank": 10,
+      "id": "C10",
+      "key": "valid_blob_sha",
+      "description": "Manifest blob SHA is 40 lowercase hex characters."
+    },
+    {
+      "rank": 11,
+      "id": "C11",
+      "key": "integer_size",
+      "description": "Manifest size is an integer."
+    },
+    {
+      "rank": 12,
+      "id": "C12",
+      "key": "positive_size",
+      "description": "Manifest size is greater than zero."
+    },
+    {
+      "rank": 13,
+      "id": "C13",
+      "key": "bounded_size",
+      "description": "Manifest size is at most 200000 bytes."
+    },
+    {
+      "rank": 14,
+      "id": "C14",
+      "key": "valid_rank",
+      "description": "Manifest rank is within 1..200."
+    },
+    {
+      "rank": 15,
+      "id": "C15",
+      "key": "unique_path",
+      "description": "Artifact path is unique in the 200-file manifest."
+    },
+    {
+      "rank": 16,
+      "id": "C16",
+      "key": "unique_rank",
+      "description": "Artifact rank is unique in the 200-file manifest."
+    },
+    {
+      "rank": 17,
+      "id": "C17",
+      "key": "file_exists",
+      "description": "Artifact exists in the checked-out repository."
+    },
+    {
+      "rank": 18,
+      "id": "C18",
+      "key": "regular_file",
+      "description": "Artifact is a regular file."
+    },
+    {
+      "rank": 19,
+      "id": "C19",
+      "key": "size_matches",
+      "description": "Actual byte length matches the snapshot manifest."
+    },
+    {
+      "rank": 20,
+      "id": "C20",
+      "key": "git_blob_sha_matches",
+      "description": "Computed Git blob SHA-1 matches the snapshot manifest."
+    },
+    {
+      "rank": 21,
+      "id": "C21",
+      "key": "no_nul_bytes",
+      "description": "Artifact contains no NUL bytes."
+    },
+    {
+      "rank": 22,
+      "id": "C22",
+      "key": "valid_utf8_roundtrip",
+      "description": "UTF-8 decoding and re-encoding is lossless."
+    },
+    {
+      "rank": 23,
+      "id": "C23",
+      "key": "non_whitespace_content",
+      "description": "Artifact contains non-whitespace content."
+    },
+    {
+      "rank": 24,
+      "id": "C24",
+      "key": "no_replacement_character",
+      "description": "Artifact contains no Unicode replacement character."
+    },
+    {
+      "rank": 25,
+      "id": "C25",
+      "key": "no_conflict_markers",
+      "description": "Artifact contains no unresolved Git conflict markers."
+    }
+  ],
+  "artifacts": [
+    {
+      "rank": 1,
+      "path": "ai-collaboration/00_READ_FIRST/AI_COLLABORATION_PROTOCOL.md",
+      "blob_sha": "7b3fda8378ff9ab70b05e5515ae1d0dc4a581229",
+      "size": 7040
+    },
+    {
+      "rank": 2,
+      "path": "ai-collaboration/00_READ_FIRST/CURRENT_STATE.md",
+      "blob_sha": "9d233c5e3ab515ae65a94873ee31149b1450f3ad",
+      "size": 6290
+    },
+    {
+      "rank": 3,
+      "path": "ai-collaboration/00_READ_FIRST/DECISIONS.md",
+      "blob_sha": "e723e6be97d45a8fd10af43cd398a82c27713db5",
+      "size": 8183
+    },
+    {
+      "rank": 4,
+      "path": "ai-collaboration/00_READ_FIRST/GOVERNANCE_DONOR_MECHANISMS.md",
+      "blob_sha": "13901655bbce3a6745e0271559246825aa879177",
+      "size": 11674
+    },
+    {
+      "rank": 5,
+      "path": "ai-collaboration/00_READ_FIRST/HERMES_OPERATING_STACK.md",
+      "blob_sha": "560d8cc319425cc173c348aae48c4c3117830958",
+      "size": 7460
+    },
+    {
+      "rank": 6,
+      "path": "ai-collaboration/00_READ_FIRST/LOCAL_AI_WORKSPACE.md",
+      "blob_sha": "c860f56d8cf92eb53fd92a511025995ac7cfdc8b",
+      "size": 3950
+    },
+    {
+      "rank": 7,
+      "path": "ai-collaboration/00_READ_FIRST/UNIVERSAL_AI_ONBOARDING_PROMPT.md",
+      "blob_sha": "897b8afc941b26cc0d0b807905ac326c939e8efd",
+      "size": 2755
+    },
+    {
+      "rank": 8,
+      "path": "ai-collaboration/01_DESIGN/ACCESSIBILITY_INTERACTION_AUDIT_2026-09-01.md",
+      "blob_sha": "1215796fa5f72a43b7214cbc19bf9d9405c5fdb4",
+      "size": 4537
+    },
+    {
+      "rank": 9,
+      "path": "ai-collaboration/01_DESIGN/DESIGN_CLOSURE_2026-09-04.md",
+      "blob_sha": "3696a26f2fbfd3f224331053556e48b337219c45",
+      "size": 3272
+    },
+    {
+      "rank": 10,
+      "path": "ai-collaboration/01_DESIGN/DESIGN_MASTER_BACKLOG.md",
+      "blob_sha": "0dc00b0fe33155f19ea39d009662b1e5af5319c1",
+      "size": 9390
+    },
+    {
+      "rank": 11,
+      "path": "ai-collaboration/01_DESIGN/DESIGN_REGRESSION_CHECKLIST.md",
+      "blob_sha": "a7bcee99743be3fc32243618bdb37d7554556521",
+      "size": 3038
+    },
+    {
+      "rank": 12,
+      "path": "ai-collaboration/01_DESIGN/DESIGN_TOKEN_AUDIT_2026-09-01.md",
+      "blob_sha": "28ad3b92c95fd3cc602b73d27b33acfcf3e204dd",
+      "size": 2123
+    },
+    {
+      "rank": 13,
+      "path": "ai-collaboration/01_DESIGN/DIVISION_COLOR_CONTRACT_2026-09-01.md",
+      "blob_sha": "9017303aed5dcc5b0970a918a7c0ac7fe4d563b1",
+      "size": 2135
+    },
+    {
+      "rank": 14,
+      "path": "ai-collaboration/01_DESIGN/FINAL_DESIGN_RELEASE_2026-09-01.md",
+      "blob_sha": "2bb688be70670c1a0fdb4902430057d4ae86f65e",
+      "size": 5337
+    },
+    {
+      "rank": 15,
+      "path": "ai-collaboration/01_DESIGN/HERMES_BRAND_SYSTEM_2_0.md",
+      "blob_sha": "d63d7cfefa9c6a2d467a4b34ee723be40e3b4a19",
+      "size": 13102
+    },
+    {
+      "rank": 16,
+      "path": "ai-collaboration/01_DESIGN/hermes-connect/APPROVED_BRAND_SYSTEM_V1.md",
+      "blob_sha": "96b37d6ec261d7df01b7d88e64b3ed705c85d32e",
+      "size": 11418
+    },
+    {
+      "rank": 17,
+      "path": "ai-collaboration/01_DESIGN/hermes-connect/CURRENT_STATE.md",
+      "blob_sha": "5cd2696d3008314b3b094f43ce00f37440f6dcbe",
+      "size": 8689
+    },
+    {
+      "rank": 18,
+      "path": "ai-collaboration/01_DESIGN/hermes-connect/ITERATION_QUALITY_LOOP.md",
+      "blob_sha": "cc20128c1d1d4e08b0a8e0d3d1aee0fe0ed14688",
+      "size": 3925
+    },
+    {
+      "rank": 19,
+      "path": "ai-collaboration/01_DESIGN/hermes-connect/LEARNING_BRANCH_ARTIFACT_DISCIPLINE_2026-08-31.md",
+      "blob_sha": "9e0c353da056763bc180a8d59f292aa9fd1205f0",
+      "size": 964
+    },
+    {
+      "rank": 20,
+      "path": "ai-collaboration/01_DESIGN/hermes-connect/LEARNING_OPTION02_PNG_PROVENANCE_2026-08-31.md",
+      "blob_sha": "db6f6c93d3bc3a7095407d5a5f166aa08345fbdd",
+      "size": 1360
+    },
+    {
+      "rank": 21,
+      "path": "ai-collaboration/01_DESIGN/hermes-connect/LEARNING_OPTION02_SURFACE_AND_VISUAL_EVIDENCE_2026-08-31.md",
+      "blob_sha": "dd76a5e5c1a8008e12fc7bf4e510bf6ecdff3acf",
+      "size": 3841
+    },
+    {
+      "rank": 22,
+      "path": "ai-collaboration/01_DESIGN/hermes-connect/MASTER_AI_BRAND_PROMPT.md",
+      "blob_sha": "e7f63c267334645546baa63a4baee0b9c5cd2dbd",
+      "size": 6331
+    },
+    {
+      "rank": 23,
+      "path": "ai-collaboration/01_DESIGN/hermes-connect/OWNER_DECISION_OPTION02_2026-08-31.md",
+      "blob_sha": "4da826329f1b6370c9bd79fbc7809fd7e45ec4fc",
+      "size": 2338
+    },
+    {
+      "rank": 24,
+      "path": "ai-collaboration/01_DESIGN/hermes-connect/PEARL_PRIVATE_REPLAY_STATE_2026-08-31.md",
+      "blob_sha": "bb3ec250cf86d753c99fa9fe2d891804f170196e",
+      "size": 696
+    },
+    {
+      "rank": 25,
+      "path": "ai-collaboration/01_DESIGN/hermes-connect/PROTOTYPE_INTEGRATION_STATUS.md",
+      "blob_sha": "33f173f28f8cb7638a3d259b83f36603253ee886",
+      "size": 2353
+    },
+    {
+      "rank": 26,
+      "path": "ai-collaboration/01_DESIGN/hermes-connect/SHORT_MASTER_AI_BRAND_PROMPT.md",
+      "blob_sha": "83068b6842369bbffb1179860c724a84bb568d9f",
+      "size": 1628
+    },
+    {
+      "rank": 27,
+      "path": "ai-collaboration/01_DESIGN/hermes-connect/SOCIAL_CARD_P4_EVIDENCE.md",
+      "blob_sha": "98a784c1de1d69222e5276634a7e9a875bee7807",
+      "size": 850
+    },
+    {
+      "rank": 28,
+      "path": "ai-collaboration/01_DESIGN/LOCALIZATION_LAYOUT_AUDIT_2026-09-01.md",
+      "blob_sha": "9bb4e8f4dff6021170f3f5c82cf8ea5d3564d06e",
+      "size": 1723
+    },
+    {
+      "rank": 29,
+      "path": "ai-collaboration/01_DESIGN/LOGISTICS_DIRECTORY_AUDIT_2026-09-01.md",
+      "blob_sha": "c7700b27fc1f27b3d1a7dcdde8a496720b6dcf1a",
+      "size": 1769
+    },
+    {
+      "rank": 30,
+      "path": "ai-collaboration/01_DESIGN/README.md",
+      "blob_sha": "0dc7e1d58e4c4e4e4d322ec90e96d63960d47c7b",
+      "size": 4025
+    },
+    {
+      "rank": 31,
+      "path": "ai-collaboration/02_SEO/CURRENT_STATE.md",
+      "blob_sha": "f2ec119a8ff8b8e009221a6d9fa9f51739c5ab36",
+      "size": 12963
+    },
+    {
+      "rank": 32,
+      "path": "ai-collaboration/02_SEO/SEO_AGENT_ROUTING_2026-08-14.md",
+      "blob_sha": "f2646bde8d848f989b229caab37f7cb339540c1a",
+      "size": 12016
+    },
+    {
+      "rank": 33,
+      "path": "ai-collaboration/README.md",
+      "blob_sha": "a61487a1cd25546e8ec78605b284eff807a7bb4b",
+      "size": 2767
+    },
+    {
+      "rank": 34,
+      "path": "ai-collaboration/templates/AI_IDENTITY_TEMPLATE.md",
+      "blob_sha": "22d763016152ad774340cd44dcfeab7583354b6e",
+      "size": 436
+    },
+    {
+      "rank": 35,
+      "path": "ai-collaboration/templates/PROPOSAL_TEMPLATE.md",
+      "blob_sha": "7c5b78475bfc780bdf484358d70cd83424cea2df",
+      "size": 1428
+    },
+    {
+      "rank": 36,
+      "path": "ai-collaboration/workstreams/01_HERMES_CORE/README.md",
+      "blob_sha": "576b1d81cb4f3380aee595e5c8fcaff602f6c1d5",
+      "size": 411
+    },
+    {
+      "rank": 37,
+      "path": "ai-collaboration/workstreams/02_WEB/README.md",
+      "blob_sha": "a79401618398cb1b8706683762d6df868ba523f1",
+      "size": 451
+    },
+    {
+      "rank": 38,
+      "path": "ai-collaboration/workstreams/03_HERMES_CONNECT/README.md",
+      "blob_sha": "57ee4030f19984b85a7f095cbbaee2659c09af22",
+      "size": 562
+    },
+    {
+      "rank": 39,
+      "path": "ai-collaboration/workstreams/04_SEO/README.md",
+      "blob_sha": "870644bf0c87284937a6e570862b9ce8552867e1",
+      "size": 495
+    },
+    {
+      "rank": 40,
+      "path": "ai-collaboration/workstreams/05_GEO/README.md",
+      "blob_sha": "402eb730443130fcb50137838c6ba362b049a19f",
+      "size": 515
+    },
+    {
+      "rank": 41,
+      "path": "ai-collaboration/workstreams/06_AUDIT/README.md",
+      "blob_sha": "f800d8f59e984f26936635efe6afd1f5215cf586",
+      "size": 500
+    },
+    {
+      "rank": 42,
+      "path": "ai-collaboration/workstreams/README.md",
+      "blob_sha": "1ec44b65947ca850a24c9257b6505c9a435f567b",
+      "size": 1892
+    },
+    {
+      "rank": 43,
+      "path": "docs/ACADEMY_CAREERS_GROWTH_GOVERNANCE_2026-07-31.md",
+      "blob_sha": "8fbbe909d77a43d5ef94d36d5d7cfc8e4ba260bf",
+      "size": 5084
+    },
+    {
+      "rank": 44,
+      "path": "docs/ACADEMY_ELIGIBILITY_POLICY_2026-08-18.md",
+      "blob_sha": "bb9d3fe823fdc48c1b2ce602252c5f54ac6fe7b4",
+      "size": 1449
+    },
+    {
+      "rank": 45,
+      "path": "docs/ACADEMY_MONETIZATION_BACKLOG_2026-08-16.md",
+      "blob_sha": "d8d9d2a240e7e5f6cda1a61c25380c91499bf73a",
+      "size": 3695
+    },
+    {
+      "rank": 46,
+      "path": "docs/ACADEMY_REVIEWER_MANUAL_PROVISIONING.md",
+      "blob_sha": "6c8b469ab9a2e0e9f9eda4f8fcafe0c3fa9cbd48",
+      "size": 3355
+    },
+    {
+      "rank": 47,
+      "path": "docs/academy/ACADEMY_ASSET_INVENTORY.md",
+      "blob_sha": "8798fba82bc027ba1c018750ae5de265c3afe00d",
+      "size": 19532
+    },
+    {
+      "rank": 48,
+      "path": "docs/AI_ENTITY_MONITOR_2026-09-17.md",
+      "blob_sha": "7cea2572edef929d9ac8fbdd25f8101a0b2382e5",
+      "size": 8346
+    },
+    {
+      "rank": 49,
+      "path": "docs/AI_HANDOFF_REPAIR_GROWTH_2026-08-15.md",
+      "blob_sha": "35c3fd884fe43597b4087ef7a93e09119e0e6d1b",
+      "size": 1534
+    },
+    {
+      "rank": 50,
+      "path": "docs/AI_ROLES.md",
+      "blob_sha": "fd79801dc544dc3cfc2a0fdde6979cdc50207605",
+      "size": 14796
+    },
+    {
+      "rank": 51,
+      "path": "docs/AI_START_HERE.md",
+      "blob_sha": "1124e3b088c32133cb065023f856c224db1dd182",
+      "size": 9321
+    },
+    {
+      "rank": 52,
+      "path": "docs/AI_VIDEO_FACTORY_2026-09-06.md",
+      "blob_sha": "1d67a7b48270e5fdbdac91edee9f7612bdf02978",
+      "size": 12003
+    },
+    {
+      "rank": 53,
+      "path": "docs/analytics-registry-deltas/2026-08-06-carrier-contract.md",
+      "blob_sha": "2ea512de57204e8333c398f9d16d36169f56f37b",
+      "size": 5313
+    },
+    {
+      "rank": 54,
+      "path": "docs/analytics-registry-deltas/2026-08-19-academy-application.md",
+      "blob_sha": "8a2555cb036122c7a320ff0b2857fe37811c4f84",
+      "size": 3148
+    },
+    {
+      "rank": 55,
+      "path": "docs/ANTIGRAVITY_ROLE_AND_REVENUE_ACTION_PLAN_2026-08-13.md",
+      "blob_sha": "9d1a9ed3e59d39f16e7db1728d3ca44b54ff4bd4",
+      "size": 7436
+    },
+    {
+      "rank": 56,
+      "path": "docs/AUDIENCE_MEANING_MATRIX_2026-08-04.md",
+      "blob_sha": "6f15dde57f9c23253586c625a6ac04dce8fbe5e5",
+      "size": 13040
+    },
+    {
+      "rank": 57,
+      "path": "docs/audits/WEB_REDESIGN_CHATGPT_AUDIT_2026-10-22.md",
+      "blob_sha": "f7c72b0f3c564de3c05951029d1ce15b0dfaa125",
+      "size": 50603
+    },
+    {
+      "rank": 58,
+      "path": "docs/BRANDED_ENTITY_RECHECK_QUERYSET_2026-08-07.md",
+      "blob_sha": "6c6b3c7ecdad5f9ba9003a40e61d116da9dc3048",
+      "size": 5818
+    },
+    {
+      "rank": 59,
+      "path": "docs/CANONICAL_COMPANY_FACTS_APPROVAL.md",
+      "blob_sha": "ca2cb7a2c139e85fab44a84bd943de80484b65b0",
+      "size": 18878
+    },
+    {
+      "rank": 60,
+      "path": "docs/CANONICAL_PUBLIC_FACTS_DELTA_2026-08-07.md",
+      "blob_sha": "49d5b6846ab74b638cec51adff35fc59fd3d8d0b",
+      "size": 5837
+    },
+    {
+      "rank": 61,
+      "path": "docs/CARRIER_AGREEMENT_EXECUTION_READINESS.md",
+      "blob_sha": "c417f643564a2199f00df310374b88dfff27cb88",
+      "size": 5999
+    },
+    {
+      "rank": 62,
+      "path": "docs/CARRIER_AGREEMENT_OWNER_REVISIONS_2026-08-06.md",
+      "blob_sha": "c377edf62b7ecfacba36aea0607359c9db716f60",
+      "size": 6231
+    },
+    {
+      "rank": 63,
+      "path": "docs/CARRIER_CLAIMS_AND_VALUE_BOUNDARY.md",
+      "blob_sha": "9654f406dec1663ffcc6f19e8a8260f402f96e4e",
+      "size": 7154
+    },
+    {
+      "rank": 64,
+      "path": "docs/CARRIER_CONTENT_OPERATIONS_2026-07-31.md",
+      "blob_sha": "de5fda1b6f0e648fccfac34b85cf9ae2bfcd5550",
+      "size": 3139
+    },
+    {
+      "rank": 65,
+      "path": "docs/CARRIER_CONTRACT_ANALYTICS_2026-08-06.md",
+      "blob_sha": "dc1413645480749a5f0626ce17f89f1235ef5c99",
+      "size": 5931
+    },
+    {
+      "rank": 66,
+      "path": "docs/CARRIER_CONTRACT_ENGINE_ACTIVATION.md",
+      "blob_sha": "c690093b3c510a619a426e4f0aa7b8940eac1753",
+      "size": 8249
+    },
+    {
+      "rank": 67,
+      "path": "docs/CARRIER_CONTRACT_LIVE_ACTIVATION_2026-08-14.md",
+      "blob_sha": "737cd8d6edae544484525f4c52f32da3bb59c46c",
+      "size": 3895
+    },
+    {
+      "rank": 68,
+      "path": "docs/CARRIER_LANGUAGE_RESEARCH_2026-07-31.md",
+      "blob_sha": "7898e34cc3ff66e63929141e360b1c88d6ccd849",
+      "size": 2869
+    },
+    {
+      "rank": 69,
+      "path": "docs/CARRIER_PROTECTED_ACCOUNT_WORKFLOW.md",
+      "blob_sha": "2214ce57ae443aaa1744372fdea83c442997da5c",
+      "size": 4656
+    },
+    {
+      "rank": 70,
+      "path": "docs/CARRIER_RESEARCH_REGISTRY_2026-07-31.md",
+      "blob_sha": "03ab654158618215dc3cfa91be91f908f8b26fc2",
+      "size": 2927
+    },
+    {
+      "rank": 71,
+      "path": "docs/CARRIER_SALES_HANDOFF_PLAYBOOK.md",
+      "blob_sha": "cf128d6b610c2ef3886f229e126556108d646766",
+      "size": 7207
+    },
+    {
+      "rank": 72,
+      "path": "docs/CATALOG_RUNTIME_DISCOVERY_2026-10-07.md",
+      "blob_sha": "16bb3d515c2348086e5f70de5baa2fdb38968592",
+      "size": 6635
+    },
+    {
+      "rank": 73,
+      "path": "docs/CLAUDE_CONVERSION_REVIEW_ACTIONS_2026-07-13.md",
+      "blob_sha": "a78c0abe785697f45466bd763abe0005d65603a6",
+      "size": 1288
+    },
+    {
+      "rank": 74,
+      "path": "docs/CLIENT_INGESTION_PIPELINE.md",
+      "blob_sha": "1de308af2dda38c74fd81621a377487e2586578a",
+      "size": 4545
+    },
+    {
+      "rank": 75,
+      "path": "docs/CLOUDFLARE_AI_CONTROL_PLANE_2026-09-17.md",
+      "blob_sha": "e578c9246b81da47ce221a2c5d2aaaa1a411916b",
+      "size": 5097
+    },
+    {
+      "rank": 76,
+      "path": "docs/CLOUDFLARE_DEPLOYMENT_OWNERSHIP.md",
+      "blob_sha": "ce737c34bdf4af745034d5c4dd273606dc13c738",
+      "size": 15482
+    },
+    {
+      "rank": 77,
+      "path": "docs/CLOUDFLARE_LEAD_DELIVERY_ACTIVATION.md",
+      "blob_sha": "cd48b7d07dbce06e14a2d37771dc266e8b0cb739",
+      "size": 6146
+    },
+    {
+      "rank": 78,
+      "path": "docs/CODEX_200_TASK_STACK_RELEASE_PLAN_2026-07-31.md",
+      "blob_sha": "c278d3bb620dfe2151a526fd0558abd01aebe8cd",
+      "size": 4331
+    },
+    {
+      "rank": 79,
+      "path": "docs/CODEX_HERMES_RUNTIME.md",
+      "blob_sha": "bf73298f403d4ab4e7415ad4e2bad09e3dd89d4e",
+      "size": 8220
+    },
+    {
+      "rank": 80,
+      "path": "docs/CODEX_QUEUE_1_110_CURRENT_MAIN_STATUS_2026-08-01.md",
+      "blob_sha": "e47abcd611f25152c9fbf60aefa78d4ddaf1b73c",
+      "size": 6560
+    },
+    {
+      "rank": 81,
+      "path": "docs/CODEX_WEBSITE_HANDOFF.md",
+      "blob_sha": "4ec574583bb4aeb200533173cc42126c92c6076a",
+      "size": 2835
+    },
+    {
+      "rank": 82,
+      "path": "docs/COMPETITOR_SERP_MEANING_MATRIX_2026-08-04.md",
+      "blob_sha": "1096cb6942d5155bcb981fd0e7d9679c1ebef461",
+      "size": 17073
+    },
+    {
+      "rank": 83,
+      "path": "docs/COMPLIANCE_ACCEPTANCE_CRITERIA.md",
+      "blob_sha": "23beddcc4851879aba0da8c1b1f109c5d4f79df1",
+      "size": 891
+    },
+    {
+      "rank": 84,
+      "path": "docs/COMPLIANCE_BRANCH_NOTE.md",
+      "blob_sha": "d73c5a3238f34bc2f647e1d136cafdde62291617",
+      "size": 204
+    },
+    {
+      "rank": 85,
+      "path": "docs/COMPLIANCE_CHANGELOG_2026-08-10.md",
+      "blob_sha": "b75a18c40956e250dd1cef7fcf715d5d073f58d5",
+      "size": 430
+    },
+    {
+      "rank": 86,
+      "path": "docs/COMPLIANCE_CI_NEXT.md",
+      "blob_sha": "c0578b453f0d1fa94e32e33ca7c05ddb6af47460",
+      "size": 137
+    },
+    {
+      "rank": 87,
+      "path": "docs/COMPLIANCE_DATA_GOVERNANCE.md",
+      "blob_sha": "8c629e2dc763965c2a367cfedc9e71ecf3c71ea5",
+      "size": 4669
+    },
+    {
+      "rank": 88,
+      "path": "docs/COMPLIANCE_FINAL_SCOPE.md",
+      "blob_sha": "01ee5d3b10f9da1fc1609bcd07b566157341760f",
+      "size": 391
+    },
+    {
+      "rank": 89,
+      "path": "docs/COMPLIANCE_FINAL.md",
+      "blob_sha": "fbe621a70303df1319fc2151aaad44c3d43839fd",
+      "size": 88
+    },
+    {
+      "rank": 90,
+      "path": "docs/COMPLIANCE_IMPLEMENTATION_STATUS.md",
+      "blob_sha": "b0b254a2fb44a6e6dabc8c5304b4658a7409db22",
+      "size": 860
+    },
+    {
+      "rank": 91,
+      "path": "docs/COMPLIANCE_NEXT_SPRINT.md",
+      "blob_sha": "b21504a250c3fbf4b8aee8eeca29f1fb4fa1e358",
+      "size": 969
+    },
+    {
+      "rank": 92,
+      "path": "docs/COMPLIANCE_NO_MORE_SCOPE.md",
+      "blob_sha": "d114a636589ead82c22f24b035b29d638308ab24",
+      "size": 145
+    },
+    {
+      "rank": 93,
+      "path": "docs/COMPLIANCE_PR_BODY.md",
+      "blob_sha": "c2a0e07fcd7107951af512b8c959dcd5bcbd3190",
+      "size": 552
+    },
+    {
+      "rank": 94,
+      "path": "docs/COMPLIANCE_PR_SUMMARY.md",
+      "blob_sha": "f6cd286bd384de31f2bd08121b1b68de545dfd40",
+      "size": 1479
+    },
+    {
+      "rank": 95,
+      "path": "docs/COMPLIANCE_READY_FOR_REVIEW.md",
+      "blob_sha": "d5e9a17253cc81f5f8562b8e0d3e9edd397ebde2",
+      "size": 253
+    },
+    {
+      "rank": 96,
+      "path": "docs/COMPLIANCE_REGIONAL_LAUNCH_GATES_2026-08-11.md",
+      "blob_sha": "b6033fbb5d8065850800f3728a69c4dfae9b147f",
+      "size": 12137
+    },
+    {
+      "rank": 97,
+      "path": "docs/COMPLIANCE_REVIEW_NOTE.md",
+      "blob_sha": "ddf750a9ed8dbf6bf1c334a0c1d8474d30da6c4f",
+      "size": 215
+    },
+    {
+      "rank": 98,
+      "path": "docs/COMPLIANCE_RISK_NOTES.md",
+      "blob_sha": "15712154301ea77a83760de9d5d85a26bca09128",
+      "size": 608
+    },
+    {
+      "rank": 99,
+      "path": "docs/COMPLIANCE_SOURCE_BOUNDARY.md",
+      "blob_sha": "6fef4e909043ca0aabaa4fe9ed9a3592c94c34d0",
+      "size": 287
+    },
+    {
+      "rank": 100,
+      "path": "docs/COMPLIANCE_SOURCE_NOTES.md",
+      "blob_sha": "3eee8d4c24125e276413d409a5d251bc901716f3",
+      "size": 1826
+    },
+    {
+      "rank": 101,
+      "path": "docs/COMPLIANCE_SPRINT_1.md",
+      "blob_sha": "c1219fad6a3555972f1c944ac6e41e8d7c0d46bd",
+      "size": 2298
+    },
+    {
+      "rank": 102,
+      "path": "docs/COMPLIANCE_STOP_HERE.md",
+      "blob_sha": "26603b7c74ec0012e3610f63a9a592f669c8fb78",
+      "size": 166
+    },
+    {
+      "rank": 103,
+      "path": "docs/CURSOR_FIRST_MISSION_REVENUE_SPRINT_01.md",
+      "blob_sha": "3c1a80271207da04e9db91ef06c4993b5a46c6b9",
+      "size": 3846
+    },
+    {
+      "rank": 104,
+      "path": "docs/CURSOR_SECOND_MISSION_DIVISION_INTAKE_02.md",
+      "blob_sha": "946f845ba13b8673bdc446ab184734885d5a0a0f",
+      "size": 3069
+    },
+    {
+      "rank": 105,
+      "path": "docs/CURSOR_THIRD_MISSION_CONVERSION_EVENTS_03.md",
+      "blob_sha": "d35c12752a9080d652fa9a726ec3d52f8ff59110",
+      "size": 3858
+    },
+    {
+      "rank": 106,
+      "path": "docs/CURSOR_WORK_LOG.md",
+      "blob_sha": "928636189880076247b364ac16b38b5a0cb6a0b6",
+      "size": 34894
+    },
+    {
+      "rank": 107,
+      "path": "docs/DAT_CERTIFICATION_OPERATOR_RUNBOOK_2026-09-14.md",
+      "blob_sha": "7778a47c9d5d1823541eb3d403693c60fa489510",
+      "size": 6164
+    },
+    {
+      "rank": 108,
+      "path": "docs/DAT_INTEGRATION_READINESS_2026-09-14.md",
+      "blob_sha": "2c0625bad15e7b2ac5768cb2cb874aac2ed64256",
+      "size": 5023
+    },
+    {
+      "rank": 109,
+      "path": "docs/DEPLOYMENT_RECORD.md",
+      "blob_sha": "83fe91782751f4c88b3a0276e3e1f43ef8f2c7ec",
+      "size": 4699
+    },
+    {
+      "rank": 110,
+      "path": "docs/DESIGN_INTEGRATION_CONTRACT.md",
+      "blob_sha": "bac60e225694681cf316f7a65cf66031bb5ac1a9",
+      "size": 5816
+    },
+    {
+      "rank": 111,
+      "path": "docs/design/COVERAGE_MATRIX.md",
+      "blob_sha": "febdcd0f52a55ce547757340b0e51b44b93b0f6e",
+      "size": 7546
+    },
+    {
+      "rank": 112,
+      "path": "docs/design/DEFINITION_OF_DONE.md",
+      "blob_sha": "2fd4f5ce893b2dd9909b3eb9d60cf48f7bb6e1cd",
+      "size": 2474
+    },
+    {
+      "rank": 113,
+      "path": "docs/design/DESIGN_GAP_ANALYSIS_2026-10-23.md",
+      "blob_sha": "c75ba204d812172674251286a6eba70a09772024",
+      "size": 7359
+    },
+    {
+      "rank": 114,
+      "path": "docs/design/HERMES_BRAND_MIGRATION_AUDIT.md",
+      "blob_sha": "44ea1f7eabed279f5e8a2d5c6457995981a87224",
+      "size": 10841
+    },
+    {
+      "rank": 115,
+      "path": "docs/design/HERMES_DESIGN_SEARCH_FUNNEL_PROGRAM_2026-10-26.md",
+      "blob_sha": "b7446bb865bda5b5862a6a57b605b9a7f083330f",
+      "size": 18586
+    },
+    {
+      "rank": 116,
+      "path": "docs/design/HERMES_DIGITAL_INTERFACE_LAYER.md",
+      "blob_sha": "ebc990ab147dac3c82740388f43be8671dcb4d6b",
+      "size": 19751
+    },
+    {
+      "rank": 117,
+      "path": "docs/design/HERMES_UNIFIED_BRAND_SYSTEM.md",
+      "blob_sha": "1228898fbdb129ddbaeb88f2442c5bc289fe02c5",
+      "size": 31311
+    },
+    {
+      "rank": 118,
+      "path": "docs/design/HOME_CLAUDE_V3_MEDIA_SOURCE_LOCK_2026-10-20.md",
+      "blob_sha": "260be4236b88e8c094b22498be2fa66dd8366826",
+      "size": 4933
+    },
+    {
+      "rank": 119,
+      "path": "docs/design/HOME_CONTENT_RETENTION_AND_INSIGHTS_HANDOFF_2026-10-21.md",
+      "blob_sha": "853eca91ce86b1ce80456cb03ba7be56b0d7fa6d",
+      "size": 4670
+    },
+    {
+      "rank": 120,
+      "path": "docs/design/HOME_LIVING_REALITY_SCENE_RECIPES_2026-10-16.md",
+      "blob_sha": "d188caf1679d66b95f52764428114029b5c847ba",
+      "size": 7806
+    },
+    {
+      "rank": 121,
+      "path": "docs/design/HOME_MARKETING_CINEMATIC_PHASE1_2026-10-20.md",
+      "blob_sha": "1b33daa7b80e3ce108884bfb01db9f21059139e4",
+      "size": 2164
+    },
+    {
+      "rank": 122,
+      "path": "docs/design/reviews/2026-10-20-home-v3/README.md",
+      "blob_sha": "d904ec054723c2da41443b1b522210f030b4b318",
+      "size": 2888
+    },
+    {
+      "rank": 123,
+      "path": "docs/design/SEARCH_ERROR_MATRIX.md",
+      "blob_sha": "977e2c0e39a6b859c9b1aa090888773dcab32eee",
+      "size": 12316
+    },
+    {
+      "rank": 124,
+      "path": "docs/design/TASK_QUEUE.md",
+      "blob_sha": "795e6ff8fd13b6f29a66b2363045c8e5dba64e8a",
+      "size": 7007
+    },
+    {
+      "rank": 125,
+      "path": "docs/DIGITAL_NICHE_SEO_RELEASE_2026-07-31.md",
+      "blob_sha": "be515762cb28408e5fdcefcb32db5c6d164885a6",
+      "size": 2711
+    },
+    {
+      "rank": 126,
+      "path": "docs/DIRECT_DEMAND_NETWORK_SALES_UPDATE_2026-08-12.md",
+      "blob_sha": "53d49c4236d27463f8522a487ff27b5c164f0999",
+      "size": 9712
+    },
+    {
+      "rank": 127,
+      "path": "docs/ECOSYSTEM_COMPOUNDING_STANDARD.md",
+      "blob_sha": "5159183b69041d38e82279e50fb0c3f01b291982",
+      "size": 9671
+    },
+    {
+      "rank": 128,
+      "path": "docs/email-signatures/README.md",
+      "blob_sha": "db58537a83349af60391068f4782578e9225d0e4",
+      "size": 3284
+    },
+    {
+      "rank": 129,
+      "path": "docs/email-signatures/WORKSPACE_API_ROLLOUT.md",
+      "blob_sha": "cc44acb890ba7b56fdc6238e1c7f5f83bd79da22",
+      "size": 2823
+    },
+    {
+      "rank": 130,
+      "path": "docs/ERROR_REGISTER.md",
+      "blob_sha": "9c06307079d7f6e1925d3bf699fa6e6b50873d08",
+      "size": 134360
+    },
+    {
+      "rank": 131,
+      "path": "docs/evidence/carrier-submission-receipt-2026-10-08.md",
+      "blob_sha": "2b7aa29eb28fd08f2f564db147dbd1af8062edfb",
+      "size": 4022
+    },
+    {
+      "rank": 132,
+      "path": "docs/evidence/tr-058-broker-weight-contract-2026-10-08.md",
+      "blob_sha": "916bfc85d9d790cbad1dae91a42c98bace4458a4",
+      "size": 6904
+    },
+    {
+      "rank": 133,
+      "path": "docs/EXTERNAL_PROFILE_CORRECTION_MATRIX_2026-08-07.md",
+      "blob_sha": "edf36735e0f0f5d828b26aa1c91945fb0559795c",
+      "size": 6195
+    },
+    {
+      "rank": 134,
+      "path": "docs/EXTERNAL_PROFILE_INVENTORY_2026-08-05.md",
+      "blob_sha": "9cfdb8bef71d152d730d4afd1f124f2590624cd8",
+      "size": 9945
+    },
+    {
+      "rank": 135,
+      "path": "docs/GEMINI_GLOBAL_DISCOVERY_DIRECTIVE.md",
+      "blob_sha": "ff52502902ee07e168cfa7b905bf140feb54d9d9",
+      "size": 2397
+    },
+    {
+      "rank": 136,
+      "path": "docs/GEO_AI_OBSERVATION_WAVE_01_2026-08-22.md",
+      "blob_sha": "a6e7f49213afbc4b7d064af9485b77e2f13f9fce",
+      "size": 5187
+    },
+    {
+      "rank": 137,
+      "path": "docs/GEO_CURRENT_STATE.md",
+      "blob_sha": "46e4309998bc2e6f5ffcd33e01bf74cc938750f6",
+      "size": 16526
+    },
+    {
+      "rank": 138,
+      "path": "docs/GOOGLE_ACCESS_GOVERNOR.md",
+      "blob_sha": "d9017e50f8eff28408042403d84b9915906c5e90",
+      "size": 5389
+    },
+    {
+      "rank": 139,
+      "path": "docs/GROK_SITE_AUDIT_REVIEW_2026-08-03.md",
+      "blob_sha": "c3d88f0791029ddf6e57fb587e9ce399f0f5bc3e",
+      "size": 8337
+    },
+    {
+      "rank": 140,
+      "path": "docs/growth/FOUNDER_OUTREACH_AND_15MIN_AUDIT.md",
+      "blob_sha": "37feac2ea4c235ff999f49be3160cc5e3af3b9dc",
+      "size": 6882
+    },
+    {
+      "rank": 141,
+      "path": "docs/HAE_POST_GATE_HARDENING.md",
+      "blob_sha": "dddc8f0c1305332e13d352b1cfc97d1176d5e997",
+      "size": 11183
+    },
+    {
+      "rank": 142,
+      "path": "docs/HAE_RUNTIME_EVIDENCE_ACCEPTANCE.md",
+      "blob_sha": "bca9702759e997ef0873f94da3b99d692808b051",
+      "size": 4430
+    },
+    {
+      "rank": 143,
+      "path": "docs/handoffs/2026-10-23-codex-seo-owner-platform-tasks.md",
+      "blob_sha": "7d6a88a83012572eb0112513ad77a1548cd107d5",
+      "size": 4711
+    },
+    {
+      "rank": 144,
+      "path": "docs/handoffs/2026-10-26-claude-design-search-guardrails.md",
+      "blob_sha": "d613b3d9cff1435298188b07bdec7c80edb98bda",
+      "size": 4108
+    },
+    {
+      "rank": 145,
+      "path": "docs/HC_PRODUCT_TO_REVENUE_DOD.md",
+      "blob_sha": "a6a112b0128277bc2fd24635fe8d27ccdf9dcd3d",
+      "size": 1900
+    },
+    {
+      "rank": 146,
+      "path": "docs/HC_REPAIR_SHOP_ACTIVATION_GAP_2026-08-16.md",
+      "blob_sha": "0d5659bcd1661a40dfb542d748c48fec9bd85475",
+      "size": 2258
+    },
+    {
+      "rank": 147,
+      "path": "docs/HC_REPAIR_SHOP_FIRST_5_SCORECARD.md",
+      "blob_sha": "fd3dc2203eec9461aa0fe6295764a2951d2befd8",
+      "size": 14910
+    },
+    {
+      "rank": 148,
+      "path": "docs/HC_REPAIR_SHOP_MANUAL_ACCESS_RUNBOOK.md",
+      "blob_sha": "fa763e8a923485cc398ceeb03244aa47b80ccdf3",
+      "size": 3097
+    },
+    {
+      "rank": 149,
+      "path": "docs/HERMES_ACADEMY_SUPPORT_ACCESS_RUNBOOK.md",
+      "blob_sha": "c1b7f5327e67280771b430bb54910e9ac5ecc3a1",
+      "size": 3405
+    },
+    {
+      "rank": 150,
+      "path": "docs/HERMES_AI_BENCHMARK.md",
+      "blob_sha": "50534a402bae953f241f4d409a45cd70b1842dd5",
+      "size": 4229
+    },
+    {
+      "rank": 151,
+      "path": "docs/HERMES_AI_CONTROL_CENTER_RUNBOOK.md",
+      "blob_sha": "fa2dc5b2d84ee4be1579651c91f6760f5730b490",
+      "size": 5822
+    },
+    {
+      "rank": 152,
+      "path": "docs/HERMES_AI_SALES_ASSISTANT_PLAYBOOK_2026-08-12.md",
+      "blob_sha": "b1dbeb22a3c09b90c2ea449b3faacb6e7dbaabd0",
+      "size": 11912
+    },
+    {
+      "rank": 153,
+      "path": "docs/HERMES_AUTOMATION_ENGINE_BENCHMARK.md",
+      "blob_sha": "178724aafba30e4a31fa273cad503f03643de61f",
+      "size": 13220
+    },
+    {
+      "rank": 154,
+      "path": "docs/HERMES_AUTOMATION_ENGINE_HISTORICAL_LEARNING.md",
+      "blob_sha": "dc722fe391e84797b523ebfb7eada84a96c5eb66",
+      "size": 8194
+    },
+    {
+      "rank": 155,
+      "path": "docs/HERMES_AUTOMATION_ENGINE_TASK_MODEL.md",
+      "blob_sha": "645ddd11708fd61ce8f145a594ce2d7553ebde47",
+      "size": 6623
+    },
+    {
+      "rank": 156,
+      "path": "docs/HERMES_AUTOMATION_ENGINE_V1.md",
+      "blob_sha": "6b94315001a41ee9f5a553e5187a7bb382714e18",
+      "size": 12204
+    },
+    {
+      "rank": 157,
+      "path": "docs/HERMES_COMMERCIAL_WEBSITE_REBUILD_CASE_DRAFT.md",
+      "blob_sha": "be8fc69b63052813869fcd781a5ec1c465744598",
+      "size": 13752
+    },
+    {
+      "rank": 158,
+      "path": "docs/HERMES_CONNECT_AGENT_READINESS_2026-08-11.md",
+      "blob_sha": "5d9adab1b1bd704349d84841c95e5ddba23cbc07",
+      "size": 11247
+    },
+    {
+      "rank": 159,
+      "path": "docs/HERMES_CONNECT_AI_INTERNAL_OWNER_BOOTSTRAP.md",
+      "blob_sha": "8e0a131c669395d117d32ae72c9f04f062a23ea7",
+      "size": 3729
+    },
+    {
+      "rank": 160,
+      "path": "docs/HERMES_CONNECT_AI_INTERNAL_RUNNER.md",
+      "blob_sha": "99bd5ac941e78114de9d77deafd3eb4dbaebf2f8",
+      "size": 8659
+    },
+    {
+      "rank": 161,
+      "path": "docs/HERMES_CONNECT_API_INVENTORY_2026-08-11.md",
+      "blob_sha": "922f2705b7c63e8f9e62efbdfdab91e457cde538",
+      "size": 5300
+    },
+    {
+      "rank": 162,
+      "path": "docs/HERMES_CONNECT_CANONICAL_STRUCTURE.md",
+      "blob_sha": "659e098e397c4c4d8f8fd68a06307b64082129fd",
+      "size": 2553
+    },
+    {
+      "rank": 163,
+      "path": "docs/HERMES_CONNECT_CODEX_HANDOFF.md",
+      "blob_sha": "46398e8d01bd0b2a1823eda0b5f028f16945dc78",
+      "size": 5890
+    },
+    {
+      "rank": 164,
+      "path": "docs/HERMES_CONNECT_CUSTOMER_MCP_CONTRACT.md",
+      "blob_sha": "57056cebbbccd8ac9de2f1b38c5c0070945d9a2a",
+      "size": 15656
+    },
+    {
+      "rank": 165,
+      "path": "docs/HERMES_CONNECT_DISTRIBUTION_POLICY.md",
+      "blob_sha": "0663213c006ef5ae2854a88faa9876286fff89b1",
+      "size": 5134
+    },
+    {
+      "rank": 166,
+      "path": "docs/HERMES_CONNECT_GSC_MODULE_REGISTRY_2026-08-13.md",
+      "blob_sha": "b5540e02dba2a675e78eaa33f5944eb40897f473",
+      "size": 5499
+    },
+    {
+      "rank": 167,
+      "path": "docs/HERMES_CONNECT_HR_PILOT_V1.md",
+      "blob_sha": "b7c0d0578cfe60b51375f1e223a15793ab253783",
+      "size": 6022
+    },
+    {
+      "rank": 168,
+      "path": "docs/HERMES_CONNECT_PLUGIN_SUITE_V1.md",
+      "blob_sha": "579c057bb4f57653fff5fed92443534dcf4ccf90",
+      "size": 19029
+    },
+    {
+      "rank": 169,
+      "path": "docs/HERMES_CONNECT_PRODUCT_IMPLEMENTATION_ROADMAP_V1.md",
+      "blob_sha": "8891289cf2262fcfca12d3c9f5ecbbbc982ff21f",
+      "size": 9594
+    },
+    {
+      "rank": 170,
+      "path": "docs/HERMES_CONNECT_PUBLIC_PLUGIN_SUBMISSION_V1_4.md",
+      "blob_sha": "116d67abdda1acef98ffaa99fcc211cae12222bb",
+      "size": 8708
+    },
+    {
+      "rank": 171,
+      "path": "docs/HERMES_CONNECT_REPAIR_SHOPS_AUDIT_2026-09-06.md",
+      "blob_sha": "7f46d78eb414769730e835a453d7f349a1fad95c",
+      "size": 6605
+    },
+    {
+      "rank": 172,
+      "path": "docs/HERMES_CONNECT_RUNTIME_STATUS_2026-08-16.md",
+      "blob_sha": "2a0205c82a11bdfccaafec140b77972745c71576",
+      "size": 11479
+    },
+    {
+      "rank": 173,
+      "path": "docs/HERMES_CONNECT_SALES_TEST_PACKAGE.md",
+      "blob_sha": "05f29331621ff3e61e91440ae619192bfb65b9a1",
+      "size": 9389
+    },
+    {
+      "rank": 174,
+      "path": "docs/HERMES_CONNECT_VISUAL_MOTION_DIRECTIVE_V1.md",
+      "blob_sha": "3900060e55bfdcdc1bd50f4b6bc2b4d106b70bfa",
+      "size": 3590
+    },
+    {
+      "rank": 175,
+      "path": "docs/HERMES_CONNECT_VISUAL_PREVIEW.md",
+      "blob_sha": "b46f8fe97175a91f08aa89a5fd5e74117af9210c",
+      "size": 32
+    },
+    {
+      "rank": 176,
+      "path": "docs/HERMES_FREELLMAPI_INTERNAL_PILOT.md",
+      "blob_sha": "9534f8d12ef589f196abff568760b279e8cc52f4",
+      "size": 10115
+    },
+    {
+      "rank": 177,
+      "path": "docs/HERMES_HAE_BOUNDED_REPAIR_EXECUTOR.md",
+      "blob_sha": "af76005e435ced98f39d6afd2645723d7b57de28",
+      "size": 3230
+    },
+    {
+      "rank": 178,
+      "path": "docs/HERMES_HAE_ECOSYSTEM_LEARNING_PREFLIGHT_2026-10-26.md",
+      "blob_sha": "d80e67a44d8dc1e0f0b5e3e09857afc1d4a0206f",
+      "size": 11022
+    },
+    {
+      "rank": 179,
+      "path": "docs/HERMES_HAE_PLUGIN_RELEASE_READBACK_2026-10-27.md",
+      "blob_sha": "f4b8a9684893041ce923dc9c2bd8bb27e79b7c46",
+      "size": 2773
+    },
+    {
+      "rank": 180,
+      "path": "docs/HERMES_HAE_SELF_IMPROVEMENT.md",
+      "blob_sha": "ee8cb488140f0a0f5e018eca67f8c1f7b4b87be8",
+      "size": 6903
+    },
+    {
+      "rank": 181,
+      "path": "docs/HERMES_HAE_ZERO_TOKEN_SCHEDULE_MIGRATION.md",
+      "blob_sha": "a07775423f2778d2471dfdc9bbf3943f6b96b312",
+      "size": 3764
+    },
+    {
+      "rank": 182,
+      "path": "docs/HERMES_HR_TELEGRAM_RESPONSE_TAXONOMY_V0.md",
+      "blob_sha": "304eeada03b75f1657668afd733ca9754e8194c2",
+      "size": 7146
+    },
+    {
+      "rank": 183,
+      "path": "docs/HERMES_INSIGHTS_INTELLIGENCE_ENGINE_2026-09-17.md",
+      "blob_sha": "fcaf738785800e0043ed283d94b28f7b1fe68f55",
+      "size": 10657
+    },
+    {
+      "rank": 184,
+      "path": "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+      "blob_sha": "0d2e8b5013d666b6896b74980f455dd7d0a30b38",
+      "size": 59804
+    },
+    {
+      "rank": 185,
+      "path": "docs/HERMES_LOGISTICS_CONTACT_AND_DIVISION_PLAN.md",
+      "blob_sha": "34490e89c4341f550ef8b2067479c75625a8df42",
+      "size": 2470
+    },
+    {
+      "rank": 186,
+      "path": "docs/HERMES_SEO_FRAMEWORK.md",
+      "blob_sha": "35fceecaf3195c72cb9b6012e5ae13aab97cacc9",
+      "size": 8755
+    },
+    {
+      "rank": 187,
+      "path": "docs/HERMES_WEBSITE_DECISION_REGISTER.md",
+      "blob_sha": "8aed37ebc4515e2eddebd71fa0f768c4fed245a8",
+      "size": 24472
+    },
+    {
+      "rank": 188,
+      "path": "docs/HOSTING_COMPARISON.md",
+      "blob_sha": "0b401d3b505e8b0fc69f6161c8c96a84c29001b2",
+      "size": 2724
+    },
+    {
+      "rank": 189,
+      "path": "docs/hr/INTERNATIONAL_DIGITAL_SALES_RECRUITING_2026-10-09.md",
+      "blob_sha": "828fb579cc27dd083b0e49ce59d1ecd6721e3495",
+      "size": 4042
+    },
+    {
+      "rank": 190,
+      "path": "docs/HUNT_LADDER_MAP_2026-08-04.md",
+      "blob_sha": "707f68cbb696c076db126891ce4f4eb24a19fefc",
+      "size": 16625
+    },
+    {
+      "rank": 191,
+      "path": "docs/INCIDENT_SITE_DATA_OVERWRITE_2026-07-14.md",
+      "blob_sha": "e99dcf64047fc95d2019840022f54cfb1e07672a",
+      "size": 1653
+    },
+    {
+      "rank": 192,
+      "path": "docs/integrations/AWS_SAMPLE_AI_SALES_ROLEPLAY_ADOPTION.md",
+      "blob_sha": "f5bb6e83e6e7dfd1db1de348da65c79994e3e633",
+      "size": 4208
+    },
+    {
+      "rank": 193,
+      "path": "docs/ISSUE_510_REPAIR_SHOP_PILOT.md",
+      "blob_sha": "02646fbe85439bd972758c4af0e43ef796cecaa3",
+      "size": 8320
+    },
+    {
+      "rank": 194,
+      "path": "docs/ISSUE_511_MOBILE_RELEASE.md",
+      "blob_sha": "ea4d44d12efa18af76f7c2ba47de19026597e8ce",
+      "size": 10385
+    },
+    {
+      "rank": 195,
+      "path": "docs/ISSUE_88_PILOT_GATE_ILLINOIS_TEXAS_2026-08-02.md",
+      "blob_sha": "51775dc8a8016de966fb4c591ccb179d0b606c23",
+      "size": 10659
+    },
+    {
+      "rank": 196,
+      "path": "docs/ISSUE_HC_REPAIR_BETA_TRUCK_REPAIR_PARTNER.md",
+      "blob_sha": "ad3a912e2e88d3d4385ab66e370ad03d9386d526",
+      "size": 19369
+    },
+    {
+      "rank": 197,
+      "path": "docs/IT_DEVELOPMENT_SERVICE_AND_PRICING_RATIONALE.md",
+      "blob_sha": "0c295194ef6e15e204f4946d18e28c12d72e4c6a",
+      "size": 4581
+    },
+    {
+      "rank": 198,
+      "path": "docs/KITTLES_CONCEPT_RELEASE_2026-09-30.md",
+      "blob_sha": "8b310eb0cc8862bb0911046872bf0f60487cb732",
+      "size": 3258
+    },
+    {
+      "rank": 199,
+      "path": "docs/LANE_INTELLIGENCE_AUTHORIZATION_BOUNDARY.md",
+      "blob_sha": "76c8bdc073ea5cea4b5baaabc438df5d54023ee9",
+      "size": 3162
+    },
+    {
+      "rank": 200,
+      "path": "docs/LANE_PUBLICATION_SCORECARD_2026-07-31.md",
+      "blob_sha": "01b249c08f73c94c0ddc2233f4b0fae3089f8544",
+      "size": 3301
+    }
+  ]
+}
