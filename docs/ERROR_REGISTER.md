@@ -739,3 +739,33 @@ ROOT_CAUSE: `/media/*` is served `immutable` for a year, so in-place byte change
 WORKING_APPROACH: Restored every previously shipped file to its `main` bytes; built new `*-film-v2-*` films (new names) from the exact approved sequence: Logistics golden → 18749847 → 9339073 → 9339061; Technology 6804117 @19.4 s (after the Cyrillic line scrolls away) → 6804109; Academy 7413799 → 9034497; Marketing approved 6774593 "Planning wall" + owner-listed alternative 7652729. One shared grade, 0.6 s crossfades, H.264 High@3.1, every runtime file < 1.5 MB. Source lock rewritten; new contact sheet `docs/evidence/home-film-v2-contact-sheet-2026-10-22.jpg`.
 
 REUSE_RULE: Never change bytes behind an existing `/media/*` URL — always ship a new filename. Re-read the approved design's source list before writing provenance, and review the shipped crop frame by frame (text, logos, language) before committing.
+
+### ERR-HAE-SCHEMA-SNAPSHOT-PLAYWRIGHT-SAME-ROOT-LOCK-20261024
+
+- **Project:** Hermes Automation Engine / #2033 authenticated D1 schema snapshot
+- **Observed:** A parallel three-shard Playwright rerun used different `HERMES_E2E_PORT` values and different output directories, but shard 2/3 still failed to start while shard 1 owned the Astro preview process.
+- **Root cause class:** `TEST_ORCHESTRATION / SAME_WORKTREE_PREVIEW_LOCK`, not a schema-snapshot product defect. Astro preview serializes preview ownership for the same project/root; changing TCP ports alone does not create independent preview state.
+- **Safe rule:** In one worktree, run Playwright shards sequentially. If true parallel execution is needed, use separate worktrees/project roots as well as separate ports/output directories.
+- **False-fix guard:** Do not edit unrelated UI/product code merely because a long browser shard times out. Reproduce the exact failing test on clean current `main` first; if it fails identically, classify it as baseline/test-environment evidence rather than a candidate-branch regression.
+- **#2033 evidence:** KNB locale navigation, Hermes Connect locale selector, Load Board mobile journey, and both repair-public-entry interaction timeouts were independently compared against clean `main`; where compared, the same failure reproduced outside the schema-snapshot branch. One Home touch timeout did not reproduce on clean `main` and requires an isolated branch rerun before final classification.
+- **Safety:** No production, D1, secret, provider-write, or migration change is authorized by this error record.
+
+## ERR-DESIGN-2027-STALE-BRANCH-LOCALE-LINK-GRAPH-20261026 — LIVE_VERIFIED (#2027, d17e80fe)
+
+PROBLEM: Claude design PR #2027 (EN/RU/UA chrome, light commercial hero, Catalog submenu in the header) sat 132 commits behind `main` after a long session pause. Its first localized-footer version dropped the English footer's internal links (direction owners, money pages, trust/legal routes) from 10 RU/UA pages, and the embedded Catalog submenu stayed English on `?lang=uk` because the header passed only `en | ru` and the static build cannot see query strings.
+
+ROOT_CAUSE: Design work was validated against its own old base and by screenshots rather than by a build-to-build diff against current `main`; localization replaced a link-bearing component instead of translating its labels; query-string locales were assumed to be visible at build time.
+
+WORKING_APPROACH: Replayed only the bounded design delta onto fresh `main` (no whole-file blobs); RU/UA footers render the same hrefs with translated labels; Catalog submenu and header labels switch in the browser on `?lang=uk` without new URLs or owners; full-site build diff vs `main` proves canonical/hreflang/robots/title/description/H1/JSON-LD/form names/hooks unchanged and zero lost internal links; #2087 Search gates, 390/1440 overflow, keyboard/reduced-motion and Lighthouse LCP/CLS checked on the fresh head.
+
+REUSE_RULE: For any design PR touching shared chrome, run a build-to-build diff against current `main` (canonical, hreflang, robots, H1, schema, form names/hooks, internal links per page) before review; localize labels, never the link set; treat `?lang=` locales as runtime-only on static routes; re-replay onto fresh `main` whenever the branch falls behind instead of merging old blobs.
+
+## ERR-DESIGN-SCOPE-NARROWED-TO-OPEN-PR-20261026 — OPEN (program active)
+
+PROBLEM: The owner asked to bring *all remaining* design to the new brand book, Home and structure and publish it. Claude finished and merged PR #2027 and reported the design work as done and live, while ~120 public pages (car-hauler geo, logistics path results, Academy, resources, careers, case, legal, contracts, 404, localized overviews) still rendered the legacy dark navy/obsidian heroes. The owner experienced Home + header as new and every inner page as "another website".
+
+ROOT_CAUSE: The task was scoped by the open PR instead of by the owner's outcome; "done" was not checked against a site-wide measurement; the repository's own gap analysis already listed the unfinished families.
+
+WORKING_APPROACH: Measured every built page (hero surface, H1 colour/tracking, buttons, template) and classified dark heroes as LEGACY vs PRODUCT ACCENT (Insights, Load Board, Connect stay by brand rule). Wave A moves legacy heroes to the Pearl shell through one shared layer (`src/styles/hermes-public-pearl-shell.css`). Remaining waves B–F with exit criteria live in `docs/design/HERMES_DESIGN_SEARCH_FUNNEL_PROGRAM_2026-10-26.md` (Russian copy in One Brain on Drive).
+
+REUSE_RULE: Scope design work by the owner's outcome; before reporting "done", re-run the site-wide crawl and report per wave with page counts and the rows still open; never call the design finished while the program's convergence matrix has open rows.

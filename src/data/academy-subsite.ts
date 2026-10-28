@@ -37,7 +37,7 @@ export const academySubsitePages: Record<string, AcademySubsitePage> = {
     slug: "us-logistics-operations",
     title: "U.S. Logistics Operations Training | Hermes Business Academy",
     description:
-      "Practical U.S. logistics education covering dispatch foundations, carrier and broker communication, documents, equipment logic, negotiation practice, and operating routines.",
+      "Practical U.S. logistics education: dispatch foundations, carrier and broker communication, documents, equipment logic, negotiation and daily routines.",
     eyebrow: "Hermes Business Academy · U.S. Logistics Operations",
     h1: "Learn how U.S. logistics work moves from first conversation to completed load.",
     intro:

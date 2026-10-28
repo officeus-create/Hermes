@@ -49,18 +49,20 @@ for (const route of routes) {
     });
 
     expect(visual).not.toBeNull();
-    expect(visual!.heroBackground).toBe("rgb(11, 13, 18)");
-    expect(visual!.heroPrimaryBackground).toBe("rgb(255, 255, 255)");
-    expect(visual!.heroPrimaryColor).toBe("rgb(11, 13, 18)");
-    expect(visual!.heroPrimaryRadius).toBe("12px");
+    // Pearl shell + live window (design wave B, 2026-10-26): Pearl hero, ink pill primary action.
+    expect(visual!.heroBackground).toBe("rgb(247, 246, 243)");
+    expect(visual!.heroPrimaryBackground).toBe("rgb(10, 22, 79)");
+    expect(visual!.heroPrimaryColor).toBe("rgb(255, 255, 255)");
+    expect(visual!.heroPrimaryRadius).toBe("999px");
     expect(visual!.directionBackground).toBe("rgb(255, 255, 255)");
     expect(visual!.mediaRadius).toBe("22px");
     expect(visual!.eyebrowColor).toBe("rgb(100, 70, 230)");
-    expect(visual!.partnershipBackground).toBe("rgb(11, 13, 18)");
+    // Body sections (2026-10-26): reading surfaces are light; Focus Ink stays on one bounded closing panel.
+    expect(visual!.partnershipBackground).toBe("rgb(255, 255, 255)");
     expect(visual!.partnershipRadius).toBe("22px");
     expect(visual!.capabilityBackground).toBe("rgb(255, 255, 255)");
     expect(visual!.capabilityRadius).toBe("22px");
-    expect(visual!.contactBackground).toBe("rgb(11, 13, 18)");
+    expect(visual!.contactBackground).toBe("rgba(0, 0, 0, 0)");
     expect(visual!.contactPrimaryBackground).toBe("rgb(255, 255, 255)");
     expect(visual!.contactPrimaryColor).toBe("rgb(11, 13, 18)");
     expect(visual!.contactPrimaryRadius).toBe("12px");

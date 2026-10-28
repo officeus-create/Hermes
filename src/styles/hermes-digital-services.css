@@ -86,3 +86,17 @@ body:has(.digital-service-page) .digital-service-page :is(h1,h2,h3,p,a,summary,l
 @media(max-width:900px){body:has(.digital-service-page) .digital-card-grid{grid-template-columns:repeat(2,minmax(0,1fr))}body:has(.digital-service-page) .digital-two-column,body:has(.digital-service-page) .digital-boundary-layout,body:has(.digital-service-page) .digital-faq-layout,body:has(.digital-service-page) .digital-project-cta-card{grid-template-columns:1fr}}
 @media(max-width:640px){body:has(.digital-service-page) .digital-service-hero{padding:7.5rem 0 4rem}body:has(.digital-service-page) .digital-card-grid,body:has(.digital-service-page) .digital-related-links{grid-template-columns:1fr}body:has(.digital-service-page) .digital-service-actions .button,body:has(.digital-service-page) .digital-project-cta .button{width:100%;justify-content:center}}
 @media(forced-colors:active){body:has(.digital-service-page) .digital-check-list li,body:has(.digital-service-page) .digital-card-grid article,body:has(.digital-service-page) .digital-boundary-layout li,body:has(.digital-service-page) .digital-faq-list details,body:has(.digital-service-page) .digital-related-links a{border:1px solid CanvasText}}
+/* Funnel PROOF beside the hero call to action (SEO service pages): real published assets, one primary CTA stays in the copy column. */
+body:has(.digital-service-page) .digital-hero-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,380px);gap:clamp(2rem,4vw,4rem);align-items:end}
+body:has(.digital-service-page) .digital-proof-rail{padding:clamp(1.25rem,2.4vw,1.75rem);border:1px solid var(--hermes-line-light);border-radius:var(--hermes-radius-card);background:#fff;box-shadow:var(--hermes-shadow-card)}
+body:has(.digital-service-page) .digital-proof-rail .eyebrow{margin:0;color:var(--family-accent-text,var(--hermes-muted))}
+body:has(.digital-service-page) .digital-proof-rail h2{margin:.35rem 0 1rem;color:var(--hermes-ink);font-size:clamp(1.25rem,2vw,1.5rem);letter-spacing:-.02em}
+body:has(.digital-service-page) .digital-proof-rail ol{display:grid;gap:.6rem;margin:0;padding:0;list-style:none}
+body:has(.digital-service-page) .digital-proof-rail a{position:relative;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:.15rem .75rem;align-items:center;padding:.85rem 1rem .85rem 1.1rem;border:1px solid var(--hermes-line-light);border-radius:16px;color:var(--hermes-ink);background:var(--hermes-pearl);text-decoration:none;transition:border-color .2s ease}
+body:has(.digital-service-page) .digital-proof-rail a::before{content:"";position:absolute;left:0;top:.85rem;bottom:.85rem;width:3px;border-radius:0 3px 3px 0;background:var(--family-accent,var(--hermes-marketing))}
+body:has(.digital-service-page) .digital-proof-rail small{grid-column:1;color:var(--hermes-muted);font-family:var(--font-mono);font-size:.7rem;letter-spacing:.04em;text-transform:uppercase}
+body:has(.digital-service-page) .digital-proof-rail strong{grid-column:1;font-size:.95rem;line-height:1.35}
+body:has(.digital-service-page) .digital-proof-rail svg{grid-column:2;grid-row:1/span 2}
+body:has(.digital-service-page) .digital-proof-rail a:hover,body:has(.digital-service-page) .digital-proof-rail a:focus-visible{border-color:var(--family-accent,var(--hermes-marketing))}
+body:has(.digital-service-page) .digital-proof-note{margin:.9rem 0 0;color:var(--hermes-muted);font-size:.82rem;line-height:1.5}
+@media(max-width:1023px){body:has(.digital-service-page) .digital-hero-grid{grid-template-columns:1fr}}

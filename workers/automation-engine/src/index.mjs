@@ -7,6 +7,52 @@ import {
   HISTORICAL_READ_ONLY_JOB_TYPES,
   runHistoricalLearningPrimitive,
 } from "./historical-learning.mjs";
+import {
+  CAPABILITY_GRAPH_ROLE_CONTRACT_JOB_TYPES,
+  ROLE_CONTRACTS,
+  ROLE_CONTRACT_JOB_TYPES,
+  buildRoleContractSemanticRequest,
+  roleContractForJobType,
+  roleContractSha256,
+  runRoleContractPrimitive,
+  validateRoleContractInput,
+  validateRoleContractSemanticResult,
+} from "./role-contracts.mjs";
+import {
+  FreeAiUnavailableError,
+  freeAiProviderSnapshot,
+  runFreeSemanticJson,
+} from "./free-ai-runtime.mjs";
+import {
+  dlqRuntimeSnapshot,
+  processDlqMessage,
+  recoverPendingDlqOwnerAlerts,
+} from "./dlq-runtime.mjs";
+import {
+  aiUsageLedgerSnapshot,
+  recordAiUsage,
+} from "./ai-usage-ledger.mjs";
+import {
+  CAPABILITY_GRAPH_LIMITS,
+  bindCapabilityGraphNodeJob,
+  createCapabilityGraph,
+  getCapabilityGraph,
+  listActiveCapabilityGraphIds,
+  listCapabilityGraphJobBindings,
+  markCapabilityGraphNodeDispatchFailure,
+  readyCapabilityGraphNodes,
+  settleCapabilityGraphNodeForJob,
+} from "./capability-graph.mjs";
+import { taskMigrationSnapshot } from "./schedule-migrations.mjs";
+import {
+  pluginRuntimeRegistryEvidenceStatus,
+  pluginRuntimeRegistrySnapshot,
+} from "./plugin-runtime-registry.mjs";
+import { haeSelfRepairPacketReplayMatches } from "./hae-self-improvement.mjs";
+import { verifyGithubCIQueueEnvelope } from "./github-ci-runtime-intake.mjs";
+import { verifyGithubCIPatchProposalEnvelope } from "./github-ci-patch-runtime-intake.mjs";
+import { verifyGithubCIIndependentQaEnvelope } from "./github-ci-independent-qa-runtime-intake.mjs";
+import { materializeIndependentQaReceipt } from "./hae-independent-qa-receipt.mjs";
 
 const ACCOUNT_KEY = "hermes_logistics";
 const PLATFORM = "threads";
@@ -200,6 +246,12 @@ export function isEligibleChicagoSlot(date = new Date()) {
 export function chicagoSlotKey(date = new Date()) {
   const parts = chicagoParts(date);
   return `${parts.year}-${parts.month}-${parts.day}T${String(parts.hour).padStart(2, "0")}`;
+}
+
+async function sha256HexText(value) {
+  const bytes = new TextEncoder().encode(String(value ?? ""));
+  const digest = await crypto.subtle.digest("SHA-256", bytes);
+  return [...new Uint8Array(digest)].map((item) => item.toString(16).padStart(2, "0")).join("");
 }
 
 function fnv1a(value) {
@@ -489,6 +541,7 @@ const READ_ONLY_GENERIC_JOB_TYPES = new Set([
   "system.health.snapshot",
   "history.coverage.audit",
   ...HISTORICAL_READ_ONLY_JOB_TYPES,
+  ...ROLE_CONTRACT_JOB_TYPES,
 ]);
 
 function genericJobEventId(jobId, eventType) {
@@ -617,7 +670,9 @@ async function createGenericJob(env, input) {
   if (!env.DB || !env.AUTOMATION_QUEUE) throw new Error("runtime_not_configured");
   await ensureSchema(env.DB);
   const jobType = clean(input?.job_type, 120);
-  const businessLane = clean(input?.business_lane, 120);
+  const roleContract = roleContractForJobType(jobType);
+  const requestedBusinessLane = clean(input?.business_lane, 120);
+  const businessLane = requestedBusinessLane || clean(roleContract?.business_lane, 120);
   const idempotencyKey = clean(input?.idempotency_key, 240);
   const accountKey = clean(input?.account_key, 120) || null;
   const projectKey = clean(input?.project_key, 120) || null;
@@ -628,10 +683,27 @@ async function createGenericJob(env, input) {
   const maxAttempts = rawMaxAttempts === null ? 3 : Math.max(1, Math.min(5, Math.trunc(rawMaxAttempts)));
   if (!READ_ONLY_GENERIC_JOB_TYPES.has(jobType)) throw new Error("job_type_not_allowed");
   if (!businessLane) throw new Error("business_lane_required");
+  if (roleContract && businessLane !== roleContract.business_lane) throw new Error("role_contract_business_lane_mismatch");
+  if (roleContract?.semantic_required && input?.internal_submission !== true) throw new Error("semantic_job_internal_only");
   if (!idempotencyKey) throw new Error("idempotency_key_required");
-  const payload = input?.payload ?? {};
+  let payload = input?.payload ?? {};
   if (HISTORICAL_READ_ONLY_JOB_TYPES.includes(jobType)) {
     runHistoricalLearningPrimitive(jobType, payload);
+  }
+  if (ROLE_CONTRACT_JOB_TYPES.includes(jobType)) {
+    validateRoleContractInput(jobType, payload);
+    const contract = roleContract;
+    if (!contract) throw new Error("role_contract_missing");
+    const roleContractSha = await roleContractSha256(contract);
+    payload = {
+      ...payload,
+      _role_contract: {
+        role_id: contract.role_id,
+        plugin_version: contract.plugin_version,
+        contract_version: contract.contract_version,
+        sha256: roleContractSha,
+      },
+    };
   }
   let payloadJson = "{}";
   try {
@@ -719,6 +791,108 @@ async function createGenericJob(env, input) {
   return { created: true, duplicate: false, job };
 }
 
+async function dispatchCapabilityGraphReadyNodes(env, graphId) {
+  const ready = await readyCapabilityGraphNodes(env, graphId);
+  const outcomes = await Promise.all(ready.map(async (node) => {
+    try {
+      const created = await createGenericJob(env, {
+        job_type: node.job_type,
+        account_key: ACCOUNT_KEY,
+        project_key: `hae-graph:${graphId}`,
+        priority: 50,
+        max_attempts: 3,
+        internal_submission: true,
+        idempotency_key: `hae:graph:${graphId}:node:${node.node_id}`,
+        policy_version: "hae-capability-graph-v1",
+        payload: {
+          ...node.payload,
+          _graph: {
+            graph_id: graphId,
+            node_id: node.node_id,
+          },
+        },
+      });
+      const jobId = clean(created?.job?.job_id, 160);
+      if (!jobId) throw new Error("graph_node_job_missing");
+      await bindCapabilityGraphNodeJob(env, graphId, node.node_id, jobId);
+      return 1;
+    } catch (error) {
+      await markCapabilityGraphNodeDispatchFailure(
+        env,
+        graphId,
+        node.node_id,
+        safeRuntimeErrorClass(error, "graph_node_dispatch_failed"),
+      );
+      return 0;
+    }
+  }));
+  return outcomes.reduce((sum, value) => sum + value, 0);
+}
+
+async function syncCapabilityGraphJobBestEffort(env, {
+  jobId,
+  jobState,
+  result = null,
+  errorClass = null,
+}) {
+  try {
+    const settled = await settleCapabilityGraphNodeForJob(env, {
+      job_id: jobId,
+      job_state: jobState,
+      result,
+      error_class: errorClass,
+    });
+    if (settled?.graph_id && ["SUCCEEDED", "FAILED"].includes(jobState)) {
+      await dispatchCapabilityGraphReadyNodes(env, settled.graph_id);
+    }
+  } catch (error) {
+    await recordRuntimeEvent(env, {
+      eventType: "graph.job_sync_failed",
+      messageType: "job.execute",
+      jobId,
+      errorClass: safeRuntimeErrorClass(error, "graph_job_sync_failed"),
+    });
+  }
+}
+
+async function recoverCapabilityGraphs(env, limit = 20) {
+  if (!env?.DB || !env?.AUTOMATION_QUEUE) return 0;
+  const graphIds = await listActiveCapabilityGraphIds(env, limit);
+  let touched = 0;
+  for (const graphId of graphIds) {
+    const bindings = await listCapabilityGraphJobBindings(env, graphId);
+    for (const binding of bindings) {
+      if (binding.job_state === "SUCCEEDED") {
+        let result = null;
+        try {
+          result = binding.result_json ? JSON.parse(String(binding.result_json)) : null;
+        } catch {
+          result = null;
+        }
+        await settleCapabilityGraphNodeForJob(env, {
+          job_id: binding.job_id,
+          job_state: "SUCCEEDED",
+          result,
+        });
+      } else if (binding.job_state === "FAILED") {
+        await settleCapabilityGraphNodeForJob(env, {
+          job_id: binding.job_id,
+          job_state: "FAILED",
+          error_class: binding.last_error_class,
+        });
+      } else if (binding.job_state === "WAITING_FREE_AI") {
+        await settleCapabilityGraphNodeForJob(env, {
+          job_id: binding.job_id,
+          job_state: "WAITING_FREE_AI",
+          error_class: binding.last_error_class,
+        });
+      }
+    }
+    touched += await dispatchCapabilityGraphReadyNodes(env, graphId);
+  }
+  return touched;
+}
+
 async function submitRuntimeProofJob(env, message) {
   if (!env.DB || !env.AUTOMATION_QUEUE) throw new Error("runtime_not_configured");
   const automationMode = clean(env.HERMES_AUTOMATION_MODE, 40) || "UNKNOWN";
@@ -744,6 +918,83 @@ async function submitRuntimeProofJob(env, message) {
 }
 
 async function runReadOnlyGenericCapability(env, job) {
+  if (ROLE_CONTRACT_JOB_TYPES.includes(job.job_type)) {
+    let payload = {};
+    try {
+      payload = JSON.parse(String(job.payload_json || "{}"));
+    } catch {
+      throw new Error("generic_job_payload_invalid");
+    }
+    const contract = roleContractForJobType(job.job_type);
+    if (!contract) throw new Error("role_contract_missing");
+    const currentRoleContractSha = await roleContractSha256(contract);
+    const bound = payload?._role_contract;
+    if (
+      !bound ||
+      bound.role_id !== contract.role_id ||
+      bound.plugin_version !== contract.plugin_version ||
+      bound.contract_version !== contract.contract_version ||
+      bound.sha256 !== currentRoleContractSha
+    ) {
+      throw new Error("role_contract_stale");
+    }
+    const executionPayload = { ...payload };
+    delete executionPayload._role_contract;
+    const observedAt = new Date().toISOString();
+    let result;
+    let semanticExecution = null;
+    if (contract.semantic_required) {
+      const semanticRequest = buildRoleContractSemanticRequest(job.job_type, executionPayload);
+      const budgetUsd = Number(contract?.runtime_config?.max_cost_usd);
+      if (!Number.isFinite(budgetUsd) || budgetUsd < 0) throw new Error("semantic_budget_invalid");
+      const freeResult = await runFreeSemanticJson(env, semanticRequest);
+      const actualCostUsd = Number(freeResult.cost_usd || 0);
+      if (!Number.isFinite(actualCostUsd) || actualCostUsd < 0) throw new Error("ai_usage_cost_invalid");
+      if (actualCostUsd > budgetUsd + 1e-9) throw new Error("ai_budget_exceeded");
+      const usageReceipt = await recordAiUsage(env, {
+        job_id: job.job_id,
+        role_id: contract.role_id,
+        contract_version: contract.contract_version,
+        contract_sha256: currentRoleContractSha,
+        provider_id: freeResult.provider_id,
+        model: freeResult.model,
+        budget_usd: budgetUsd,
+        cost_usd: actualCostUsd,
+        usage: freeResult.usage,
+        status: "PROVIDER_RETURNED",
+      });
+      if (actualCostUsd !== 0) throw new Error("paid_inference_forbidden");
+      result = validateRoleContractSemanticResult(job.job_type, executionPayload, freeResult.result);
+      semanticExecution = {
+        provider_id: clean(freeResult.provider_id, 120),
+        model: clean(freeResult.model, 200),
+        budget_usd: budgetUsd,
+        cost_usd: actualCostUsd,
+        usage_id: usageReceipt.usage_id,
+        input_tokens: usageReceipt.input_tokens,
+        output_tokens: usageReceipt.output_tokens,
+        input_chars: usageReceipt.input_chars,
+        output_chars: usageReceipt.output_chars,
+      };
+    } else {
+      result = runRoleContractPrimitive(job.job_type, executionPayload, observedAt);
+    }
+    return {
+      capability: job.job_type,
+      observed_at: observedAt,
+      external_write: false,
+      role_contract: {
+        role_id: contract.role_id,
+        plugin_version: contract.plugin_version,
+        contract_version: contract.contract_version,
+        sha256: currentRoleContractSha,
+        semantic_required: contract.semantic_required,
+        free_ai_policy: contract.free_ai_policy,
+      },
+      semantic_execution: semanticExecution,
+      result,
+    };
+  }
   if (HISTORICAL_READ_ONLY_JOB_TYPES.includes(job.job_type)) {
     let payload = {};
     try {
@@ -827,7 +1078,7 @@ async function processGenericJob(env, message) {
       SET state='RUNNING',current_step='execute',attempt_count=attempt_count+1,last_error_class=NULL,updated_at=?
       WHERE job_id=? AND (
         state='QUEUED' OR
-        (state='RETRY_SCHEDULED' AND (available_at IS NULL OR available_at<=?))
+        (state IN ('RETRY_SCHEDULED','WAITING_FREE_AI') AND (available_at IS NULL OR available_at<=?))
       )
     `).bind(now, jobId, now),
     jobId,
@@ -842,8 +1093,100 @@ async function processGenericJob(env, message) {
     const current = await env.DB.prepare("SELECT state,available_at,last_error_class FROM hermes_automation_jobs WHERE job_id=? LIMIT 1").bind(jobId).first();
     return { status: String(current?.state || "not_claimed"), duplicate: true, job_id: jobId };
   }
+function searchDefectsFromSnapshotResult(result) {
+  if (result?.capability !== "search.snapshot.evaluate") return [];
+  const defects = result?.result?.defects || {};
+  const output = [];
+  for (const [defectType, urls] of [
+    ["http_error", defects.http_errors],
+    ["missing_canonical", defects.missing_canonical],
+    ["canonical_mismatch", defects.canonical_mismatch],
+    ["sitemap_indexability_conflict", defects.sitemap_indexability_conflict],
+  ]) {
+    for (const url of Array.isArray(urls) ? urls : []) {
+      if (output.length >= 20) break;
+      output.push({ defect_type: defectType, url });
+    }
+    if (output.length >= 20) break;
+  }
+  return output;
+}
+
+async function ensureSearchSemanticFollowup(env, parentJob, result) {
+  if (parentJob?.job_type !== "search.snapshot.evaluate") return null;
+  const defects = searchDefectsFromSnapshotResult(result);
+  if (!defects.length) return null;
+  return createGenericJob(env, {
+    job_type: "search.defect.prioritize",
+    account_key: parentJob.account_key || ACCOUNT_KEY,
+    project_key: "hae-search-semantic-followup",
+    priority: Math.min(100, Math.max(0, Number(parentJob.priority || 50) + 5)),
+    max_attempts: 1,
+    internal_submission: true,
+    idempotency_key: `hae:followup:search.defect.prioritize:${parentJob.job_id}`,
+    policy_version: "hae-free-ai-v1",
+    payload: {
+      parent_job_id: parentJob.job_id,
+      defects,
+    },
+  });
+}
+
+async function existingHaeSelfRepairFollowup(env, idempotencyKey, audit) {
+  const existing = await env.DB.prepare(
+    "SELECT job_id,job_type,business_lane,account_key,project_key,priority,state,max_attempts,idempotency_key,policy_version,payload_json,result_json,last_error_class FROM hermes_automation_jobs WHERE idempotency_key=? LIMIT 1"
+  ).bind(idempotencyKey).first();
+  if (!existing) return null;
+  let payload = null;
+  try {
+    payload = JSON.parse(String(existing.payload_json || "{}"));
+  } catch {
+    throw new Error("hae_self_repair_idempotency_conflict");
+  }
+  if (
+    String(existing.job_type || "") !== "hae.self.repair.packet"
+    || !haeSelfRepairPacketReplayMatches(payload, audit)
+  ) {
+    throw new Error("hae_self_repair_idempotency_conflict");
+  }
+  return { created: false, duplicate: true, frozen_contract_reused: true, job: existing };
+}
+
+async function ensureHaeSelfRepairFollowup(env, parentJob, result) {
+  if (parentJob?.job_type !== "hae.self.improvement.audit") return null;
+  const audit = result?.result;
+  if (
+    audit?.next_action !== "HOLD_REPAIR"
+    || !audit?.next_work_id
+    || !audit?.next_finding_id
+    || !audit?.next_artifact_key
+  ) {
+    return null;
+  }
+  const idempotencyKey = `hae:followup:self.repair:${audit.next_work_id}`;
+  const frozen = await existingHaeSelfRepairFollowup(env, idempotencyKey, audit);
+  if (frozen) return frozen;
+  return createGenericJob(env, {
+    job_type: "hae.self.repair.packet",
+    account_key: parentJob.account_key || ACCOUNT_KEY,
+    project_key: "hae-self-repair",
+    priority: Math.min(100, Math.max(80, Number(parentJob.priority || 80) + 5)),
+    max_attempts: 1,
+    internal_submission: true,
+    idempotency_key: idempotencyKey,
+    policy_version: "hae-self-improvement-v1",
+    payload: {
+      work_id: audit.next_work_id,
+      finding_id: audit.next_finding_id,
+      artifact_key: audit.next_artifact_key,
+    },
+  });
+}
+
   try {
     const result = await runReadOnlyGenericCapability(env, before);
+    await ensureSearchSemanticFollowup(env, before, result);
+    await ensureHaeSelfRepairFollowup(env, before, result);
     const completedAt = new Date().toISOString();
     const succeeded = await transitionGenericJobWithEvent(env.DB, {
       updateStatement: env.DB.prepare(
@@ -858,10 +1201,46 @@ async function processGenericJob(env, message) {
       expectedAttemptCount: currentAttempt,
     });
     if (!succeeded) throw new Error("job_transition_conflict");
+    await syncCapabilityGraphJobBestEffort(env, {
+      jobId,
+      jobState: "SUCCEEDED",
+      result,
+    });
     return { status: "SUCCEEDED", job_id: jobId, result };
   } catch (error) {
-    const errorClass = safeRuntimeErrorClass(error, "generic_job_failed");
     const failedAt = new Date().toISOString();
+    if (error instanceof FreeAiUnavailableError || error?.code === "free_ai_unavailable") {
+      const waitSeconds = Math.max(60, Math.min(24 * 60 * 60, Number(error?.retrySeconds || 900)));
+      const waitUntil = addSecondsIso(failedAt, waitSeconds);
+      const waitReason = clean(error?.reason, 160) || "free_ai_unavailable";
+      const waiting = await transitionGenericJobWithEvent(env.DB, {
+        updateStatement: env.DB.prepare(
+          "UPDATE hermes_automation_jobs SET state='WAITING_FREE_AI',current_step='free_ai',available_at=?,attempt_count=MAX(0,attempt_count-1),last_error_class=?,updated_at=? WHERE job_id=? AND state='RUNNING' AND attempt_count=?"
+        ).bind(waitUntil, waitReason, failedAt, jobId, currentAttempt),
+        jobId,
+        eventType: "job.waiting_free_ai",
+        fromState: "RUNNING",
+        toState: "WAITING_FREE_AI",
+        step: "free_ai",
+        errorClass: waitReason,
+        createdAt: failedAt,
+        expectedAttemptCount: Math.max(0, currentAttempt - 1),
+      });
+      if (!waiting) return { status: "transition_conflict", job_id: jobId, error_class: "job_transition_conflict" };
+      await syncCapabilityGraphJobBestEffort(env, {
+        jobId,
+        jobState: "WAITING_FREE_AI",
+        errorClass: waitReason,
+      });
+      return {
+        status: "WAITING_FREE_AI",
+        job_id: jobId,
+        available_at: waitUntil,
+        error_class: waitReason,
+        attempt_consumed: false,
+      };
+    }
+    const errorClass = safeRuntimeErrorClass(error, "generic_job_failed");
     if (currentAttempt < Number(before.max_attempts || 3)) {
       const retryAt = addSecondsIso(failedAt, genericJobBackoffSeconds(currentAttempt));
       const retryScheduled = await transitionGenericJobWithEvent(env.DB, {
@@ -900,6 +1279,11 @@ async function processGenericJob(env, message) {
       expectedAttemptCount: currentAttempt,
     });
     if (!failed) return { status: "transition_conflict", job_id: jobId, error_class: "job_transition_conflict" };
+    await syncCapabilityGraphJobBestEffort(env, {
+      jobId,
+      jobState: "FAILED",
+      errorClass,
+    });
     return { status: "FAILED", job_id: jobId, error_class: errorClass };
   }
 }
@@ -969,7 +1353,7 @@ async function recoverPendingGenericJobs(env, limit = 20) {
 
   const rows = await env.DB.prepare(`
     SELECT job_id,state,attempt_count FROM hermes_automation_jobs
-    WHERE state IN ('QUEUED','RETRY_SCHEDULED')
+    WHERE state IN ('QUEUED','RETRY_SCHEDULED','WAITING_FREE_AI')
       AND (available_at IS NULL OR available_at<=?)
     ORDER BY priority DESC, created_at ASC
     LIMIT ?
@@ -985,14 +1369,14 @@ async function recoverPendingGenericJobs(env, limit = 20) {
       // are harmless because the D1 state transition is the execution lock.
       await enqueueGenericJobMessage(env, jobId);
       await env.DB.prepare(
-        "UPDATE hermes_automation_jobs SET last_error_class=NULL,updated_at=? WHERE job_id=? AND state IN ('QUEUED','RETRY_SCHEDULED')"
+        "UPDATE hermes_automation_jobs SET last_error_class=NULL,updated_at=? WHERE job_id=? AND state IN ('QUEUED','RETRY_SCHEDULED','WAITING_FREE_AI')"
       ).bind(now, jobId).run();
       recovered += 1;
     } catch {
       const retryAt = addSecondsIso(now, 5 * 60);
       await transitionGenericJobWithEvent(env.DB, {
         updateStatement: env.DB.prepare(
-          "UPDATE hermes_automation_jobs SET state='RETRY_SCHEDULED',available_at=?,last_error_class='job_enqueue_failed',updated_at=? WHERE job_id=? AND state IN ('QUEUED','RETRY_SCHEDULED')"
+          "UPDATE hermes_automation_jobs SET state='RETRY_SCHEDULED',available_at=?,last_error_class='job_enqueue_failed',updated_at=? WHERE job_id=? AND state IN ('QUEUED','RETRY_SCHEDULED','WAITING_FREE_AI')"
         ).bind(retryAt, now, jobId),
         jobId,
         eventType: "job.enqueue_failed",
@@ -1471,6 +1855,259 @@ async function health(env) {
   };
 }
 
+
+function scheduledHealthSnapshotIdempotencyKey(scheduledAt) {
+  return `hae:system.health.snapshot:${scheduledAt.toISOString().slice(0, 16)}`;
+}
+
+async function enqueueScheduledHealthSnapshot(env, scheduledAt) {
+  return createGenericJob(env, {
+    job_type: "system.health.snapshot",
+    business_lane: "automation",
+    account_key: ACCOUNT_KEY,
+    project_key: "hae-hourly-health",
+    priority: 40,
+    max_attempts: 3,
+    idempotency_key: scheduledHealthSnapshotIdempotencyKey(scheduledAt),
+    policy_version: "hae-readonly-v1",
+    payload: {
+      trigger_type: "cron",
+      scheduled_at: scheduledAt.toISOString(),
+    },
+  });
+}
+
+function roleContractScheduleEligible(contract, scheduledAt) {
+  const cadence = Number(contract?.runtime_config?.cadence_hours || 0);
+  if (!Number.isInteger(cadence) || cadence < 1 || cadence > 24) return false;
+  return chicagoParts(scheduledAt).hour % cadence === 0;
+}
+
+function extractCanonicalFromHtml(html, pageUrl) {
+  for (const tag of String(html || "").match(/<link\b[^>]*>/gi) || []) {
+    if (!/\brel\s*=\s*["'][^"']*\bcanonical\b[^"']*["']/i.test(tag)) continue;
+    const href = tag.match(/\bhref\s*=\s*["']([^"']+)["']/i)?.[1] || "";
+    if (!href) continue;
+    try {
+      return new URL(href, pageUrl).toString();
+    } catch {
+      return "";
+    }
+  }
+  return "";
+}
+
+function htmlNoindex(html) {
+  for (const tag of String(html || "").match(/<meta\b[^>]*>/gi) || []) {
+    const name = tag.match(/\bname\s*=\s*["']([^"']+)["']/i)?.[1]?.toLowerCase() || "";
+    if (name !== "robots") continue;
+    const content = tag.match(/\bcontent\s*=\s*["']([^"']+)["']/i)?.[1]?.toLowerCase() || "";
+    if (/(^|[,\s])noindex([,\s]|$)/.test(content)) return true;
+  }
+  return false;
+}
+
+async function buildScheduledSearchPayload(contract) {
+  const targets = Array.isArray(contract?.runtime_config?.target_urls)
+    ? contract.runtime_config.target_urls.slice(0, 20)
+    : [];
+  if (!targets.length) throw new Error("search_contract_targets_missing");
+  const pages = await Promise.all(targets.map(async (url) => {
+    try {
+      const response = await fetch(url, {
+        method: "GET",
+        redirect: "follow",
+        headers: { "user-agent": "HermesAutomationEngine/1.0 search-readonly" },
+      });
+      const contentType = response.headers.get("content-type") || "";
+      const html = contentType.toLowerCase().includes("text/html") ? await response.text() : "";
+      const xRobots = String(response.headers.get("x-robots-tag") || "").toLowerCase();
+      const canonical = extractCanonicalFromHtml(html, url);
+      const indexable = response.status >= 200
+        && response.status < 400
+        && !/(^|[,\s])noindex([,\s]|$)/.test(xRobots)
+        && !htmlNoindex(html);
+      return {
+        url,
+        status: response.status,
+        canonical,
+        indexable,
+        in_sitemap: null,
+      };
+    } catch {
+      return {
+        url,
+        status: 599,
+        canonical: "",
+        indexable: false,
+        in_sitemap: null,
+      };
+    }
+  }));
+  return { pages };
+}
+
+async function buildScheduledMarketingPayload(env, contract) {
+  const requestedLimit = Number(contract?.runtime_config?.lookback_limit || 200);
+  const limit = Math.max(1, Math.min(500, Number.isInteger(requestedLimit) ? requestedLimit : 200));
+  const rows = await env.DB.prepare(
+    "SELECT content_id,slot_key,body FROM hermes_automation_content ORDER BY updated_at DESC LIMIT ?"
+  ).bind(limit).all();
+  const items = [];
+  for (const row of rows?.results || []) {
+    const contentId = clean(row?.content_id, 200);
+    const slotKey = clean(row?.slot_key, 200);
+    if (!contentId || !slotKey || typeof row?.body !== "string" || !row.body.trim()) continue;
+    items.push({
+      content_id: contentId,
+      slot_key: slotKey,
+      body_fingerprint: await sha256HexText(row.body.replace(/\s+/g, " ").trim().toLowerCase()),
+    });
+  }
+  return { items };
+}
+
+async function requiredTablesPresent(db, tableNames) {
+  const names = tableNames.map((name) => clean(name, 120)).filter(Boolean);
+  if (!names.length) return true;
+  const placeholders = names.map(() => "?").join(",");
+  const rows = await db.prepare(
+    `SELECT name FROM sqlite_master WHERE type='table' AND name IN (${placeholders})`
+  ).bind(...names).all();
+  const present = new Set((rows?.results || []).map((row) => String(row.name || "")));
+  return names.every((name) => present.has(name));
+}
+
+async function buildScheduledLogisticsPayload(env, contract) {
+  if (!await requiredTablesPresent(env.DB, ["hermes_load_sources", "hermes_load_records"])) {
+    throw new Error("logistics_source_tables_missing");
+  }
+  const rows = await env.DB.prepare(`
+    SELECT
+      s.id AS source_id,
+      COALESCE(MAX(r.last_seen_at), s.last_successful_sync) AS last_seen_at,
+      MAX(r.expires_at) AS expires_at
+    FROM hermes_load_sources s
+    LEFT JOIN hermes_load_records r
+      ON r.source_id = s.id AND r.status = 'active'
+    WHERE s.read_enabled = 1
+      AND s.ingest_enabled = 1
+      AND s.status != 'revoked'
+    GROUP BY s.id, s.last_successful_sync
+    ORDER BY MAX(s.updated_at) DESC
+    LIMIT 500
+  `).all();
+  return {
+    sources: (rows?.results || []).map((row) => ({
+      source_id: clean(row?.source_id, 200),
+      last_seen_at: row?.last_seen_at || null,
+      expires_at: row?.expires_at || null,
+    })),
+    max_age_minutes: Number(contract?.runtime_config?.max_age_minutes || 1440),
+  };
+}
+
+function buildScheduledHaeSelfImprovementPayload(scheduledAt) {
+  const observedAt = scheduledAt.toISOString();
+  const registryEvidence = pluginRuntimeRegistryEvidenceStatus(observedAt, 24);
+  const findings = [];
+  const seenJobTypes = new Set();
+
+  for (const contract of ROLE_CONTRACTS) {
+    const sourceRef = `github://officeus-create/Hermes/runtime/role-contract/${contract.job_type}`;
+    if (seenJobTypes.has(contract.job_type)) {
+      findings.push({ finding_id: `duplicate-job-type:${contract.job_type}`, source_ref: sourceRef, category: "CONTRACT_DRIFT", severity: "P0", status: "OPEN", artifact_key: "workers/automation-engine/src/role-contracts.mjs", verified: true, writer_active: false, writer_state_verified: false, observed_at: observedAt });
+    }
+    seenJobTypes.add(contract.job_type);
+    if (contract.permission_class !== "READ_ONLY") {
+      findings.push({ finding_id: `permission-drift:${contract.job_type}`, source_ref: sourceRef, category: "CONTRACT_DRIFT", severity: "P0", status: "OPEN", artifact_key: "workers/automation-engine/src/role-contracts.mjs", verified: true, writer_active: false, writer_state_verified: false, observed_at: observedAt });
+    }
+    if (contract.semantic_required && Number(contract?.runtime_config?.max_cost_usd) !== 0) {
+      findings.push({ finding_id: `semantic-budget-drift:${contract.job_type}`, source_ref: sourceRef, category: "CONTRACT_DRIFT", severity: "P0", status: "OPEN", artifact_key: "workers/automation-engine/src/role-contracts.mjs", verified: true, writer_active: false, writer_state_verified: false, observed_at: observedAt });
+    }
+  }
+
+  if (!registryEvidence.fresh) {
+    findings.push({
+      finding_id: "plugin-runtime-registry-evidence-stale",
+      source_ref: "github://officeus-create/Hermes/runtime/plugin-runtime-registry",
+      category: "EVIDENCE_OVERCLAIM",
+      severity: "P1",
+      status: "OPEN",
+      artifact_key: "workers/automation-engine/src/plugin-runtime-registry.mjs",
+      verified: true,
+      writer_active: false,
+      writer_state_verified: false,
+      observed_at: observedAt,
+    });
+  }
+
+  return { observed_at: observedAt, coverage_complete: true, findings };
+}
+
+async function buildScheduledRoleContractPayload(env, contract, scheduledAt) {
+  if (contract.job_type === "search.snapshot.evaluate") return buildScheduledSearchPayload(contract);
+  if (contract.job_type === "marketing.content.dedupe.audit") return buildScheduledMarketingPayload(env, contract);
+  if (contract.job_type === "logistics.source.freshness.audit") return buildScheduledLogisticsPayload(env, contract);
+  if (contract.job_type === "ai.gateway.readiness.audit") {
+    const providers = freeAiProviderSnapshot(env);
+    return {
+      binding_ready: Boolean(env?.AI && typeof env.AI.run === "function"),
+      gateway_id_present: Boolean(clean(env?.AI_GATEWAY_ID, 200)),
+      free_provider_ready: providers.some((provider) => provider.available),
+      paid_fallback_enabled: false,
+      budget_usd: 0,
+    };
+  }
+  if (contract.job_type === "academy.english.practice.build") {
+    const parts = chicagoParts(scheduledAt);
+    return {
+      lesson_date: `${parts.year}-${parts.month}-${parts.day}`,
+      track: "LOGISTICS",
+    };
+  }
+  if (contract.job_type === "hae.self.improvement.audit") {
+    return buildScheduledHaeSelfImprovementPayload(scheduledAt);
+  }
+  throw new Error("scheduled_role_contract_not_supported");
+}
+
+async function enqueueScheduledRoleContracts(env, scheduledAt) {
+  const slotKey = chicagoSlotKey(scheduledAt);
+  const eligibleContracts = ROLE_CONTRACTS.filter(
+    (contract) => !contract.semantic_required && roleContractScheduleEligible(contract, scheduledAt),
+  );
+  const outcomes = await Promise.all(eligibleContracts.map(async (contract) => {
+    try {
+      const payload = await buildScheduledRoleContractPayload(env, contract, scheduledAt);
+      await createGenericJob(env, {
+        job_type: contract.job_type,
+        account_key: ACCOUNT_KEY,
+        project_key: "hae-plugin-role-runtime",
+        priority: 45,
+        max_attempts: 3,
+        idempotency_key: `hae:role:${contract.job_type}:${slotKey}`,
+        policy_version: "hae-role-contract-v1",
+        payload: {
+          ...payload,
+          trigger_type: "cron",
+          scheduled_at: scheduledAt.toISOString(),
+        },
+      });
+      return 1;
+    } catch (error) {
+      await recordRuntimeEvent(env, {
+        eventType: "cron.role_contract_submit_failed",
+        messageType: `role:${contract.job_type}`,
+        slotKey,
+        errorClass: safeRuntimeErrorClass(error, "role_contract_submit_failed"),
+      });
+      return 0;
+    }
+  }));
+  return outcomes.reduce((sum, value) => sum + value, 0);
+}
+
 export default {
   async scheduled(controller, env, ctx) {
     if (!env.DB || !env.AUTOMATION_QUEUE) return;
@@ -1488,6 +2125,27 @@ export default {
         eventType: "cron.heartbeat_write_failed",
         slotKey: chicagoSlotKey(scheduledAt),
         errorClass: safeRuntimeErrorClass(error, "heartbeat_write_failed"),
+      });
+    }
+
+    try {
+      await enqueueScheduledHealthSnapshot(env, scheduledAt);
+    } catch (error) {
+      await recordRuntimeEvent(env, {
+        eventType: "cron.system_health_snapshot_failed",
+        messageType: "job.execute",
+        slotKey: chicagoSlotKey(scheduledAt),
+        errorClass: safeRuntimeErrorClass(error, "scheduled_health_snapshot_failed"),
+      });
+    }
+
+    try {
+      await enqueueScheduledRoleContracts(env, scheduledAt);
+    } catch (error) {
+      await recordRuntimeEvent(env, {
+        eventType: "cron.role_contract_batch_failed",
+        slotKey: chicagoSlotKey(scheduledAt),
+        errorClass: safeRuntimeErrorClass(error, "scheduled_role_contract_batch_failed"),
       });
     }
 
@@ -1520,6 +2178,8 @@ export default {
       ["cron.recover_readbacks_failed", enqueueDueReadbacks],
       ["cron.recover_plan_runs_failed", recoverPendingPlanRuns],
       ["cron.recover_generic_jobs_failed", recoverPendingGenericJobs],
+      ["cron.recover_capability_graphs_failed", recoverCapabilityGraphs],
+      ["cron.recover_dlq_owner_alerts_failed", recoverPendingDlqOwnerAlerts],
     ]) {
       try {
         await maintenance(env);
@@ -1533,10 +2193,89 @@ export default {
   },
 
   async queue(batch, env) {
+    if (batch?.queue === "hermes-automation-dlq") {
+      for (const item of batch.messages) {
+        try {
+          const outcome = await processDlqMessage(env, item);
+          await recordRuntimeEvent(env, {
+            eventType: "dlq.processed",
+            queueName: batch?.queue,
+            queueMessageId: item?.id,
+            messageSentAt: item?.timestamp,
+            messageType: item?.body?.type,
+            jobId: item?.body?.job_id,
+            contentId: item?.body?.content_id,
+            attemptCount: item?.attempts,
+            errorClass: outcome?.disposition === "OWNER_ACTION" || outcome?.disposition === "QUARANTINE"
+              ? `dlq_${String(outcome.disposition || "").toLowerCase()}`
+              : null,
+          });
+          item.ack();
+        } catch (error) {
+          await recordRuntimeEvent(env, {
+            eventType: "dlq.process_retry",
+            queueName: batch?.queue,
+            queueMessageId: item?.id,
+            messageSentAt: item?.timestamp,
+            messageType: item?.body?.type,
+            jobId: item?.body?.job_id,
+            contentId: item?.body?.content_id,
+            attemptCount: item?.attempts,
+            errorClass: safeRuntimeErrorClass(error, "dlq_runtime_failed"),
+          });
+          item.retry();
+        }
+      }
+      return;
+    }
+
     for (const item of batch.messages) {
       const payload = item.body || {};
       const messageType = clean(payload?.type, 80) || "UNKNOWN";
       try {
+        if (messageType === "github.ci.audit") {
+          // The canonical GitHub Actions producer authenticates the exact run and
+          // commit with its ephemeral token, then sends only a minimized snapshot
+          // through the private Cloudflare Queue. The Worker receives no GitHub
+          // credential and independently enforces deployed-main + D1 writer lease.
+          if (!env.DB) throw new Error("database_not_configured");
+          await ensureSchema(env.DB);
+          const authenticated = await verifyGithubCIQueueEnvelope(payload, {
+            db: env.DB,
+            deployedSourceSha: clean(env.HERMES_AUTOMATION_SOURCE_SHA, 80),
+          });
+          await createGenericJob(env, authenticated);
+          item.ack();
+          continue;
+        }
+        if (messageType === "github.ci.patch.propose") {
+          // READ_ONLY patch proposal intake. The source must bind to a persisted
+          // successful HOLD_REPAIR packet and the exact deployed HAE source SHA.
+          // This can create only an internal semantic candidate job in D1/Queue.
+          if (!env.DB) throw new Error("database_not_configured");
+          await ensureSchema(env.DB);
+          const authenticated = await verifyGithubCIPatchProposalEnvelope(payload, {
+            db: env.DB,
+            deployedSourceSha: clean(env.HERMES_AUTOMATION_SOURCE_SHA, 80),
+          });
+          await createGenericJob(env, authenticated);
+          item.ack();
+          continue;
+        }
+        if (messageType === "github.ci.qa.verify") {
+          // Independent GitHub Actions QA runs in a separate job/context. The
+          // Worker trusts no caller verdict until exact deployed-main, repair,
+          // proposal, patch digest and QA identity all reconcile against D1.
+          if (!env.DB) throw new Error("database_not_configured");
+          await ensureSchema(env.DB);
+          const authenticated = await verifyGithubCIIndependentQaEnvelope(payload, {
+            db: env.DB,
+            deployedSourceSha: clean(env.HERMES_AUTOMATION_SOURCE_SHA, 80),
+          });
+          await materializeIndependentQaReceipt(env.DB, authenticated);
+          item.ack();
+          continue;
+        }
         if (messageType === "job.submit.runtime_proof") {
           await submitRuntimeProofJob(env, payload);
           item.ack();
@@ -1600,10 +2339,111 @@ export default {
         generation_mode: "deterministic_templates",
         generic_job_executor: true,
         read_only_job_types: Array.from(READ_ONLY_GENERIC_JOB_TYPES),
+        role_contract_job_types: Array.from(ROLE_CONTRACT_JOB_TYPES),
+        normal_loop_requires_paid_ai: false,
+        scheduled_role_contracts: true,
+        role_contract_cadence: "per-contract; current deterministic slice every 6 hours",
+        free_semantic_only: true,
+        paid_ai_fallback_enabled: false,
+        dlq_runtime_consumer: true,
+        dlq_external_alert_delivery_verified: false,
+        ai_cost_ledger: true,
+        default_semantic_budget_usd: 0,
+        capability_graphs: true,
+        capability_graph_permission_class: CAPABILITY_GRAPH_LIMITS.permission_class,
+        capability_graph_max_nodes: CAPABILITY_GRAPH_LIMITS.max_nodes,
+        structured_kpi_completion: true,
+        self_improvement_audit: true,
+        self_improvement_automatic_source_changes: false,
+        self_improvement_automatic_merge: false,
+        self_improvement_automatic_deploy: false,
+        free_ai_providers: freeAiProviderSnapshot(env).map(({ id, available, configured, model, reason }) => ({
+          id, available, configured, model, reason,
+        })),
         provider_transport: "windsor_connectors_api",
         provider_configured: Boolean(windsorThreadsConfig(env)),
         publication_enabled: publicationEnabled(env),
       });
+    }
+    if (request.method === "GET" && url.pathname === "/v1/plugin-runtime-registry") {
+      if (!authorized(request, env)) return json(401, { success: false, error: "unauthorized" });
+      return json(200, { success: true, ...pluginRuntimeRegistrySnapshot() });
+    }
+
+    if (request.method === "POST" && url.pathname === "/v1/capability-graphs") {
+      if (!authorized(request, env)) return json(401, { success: false, error: "unauthorized" });
+      if (!env.DB || !env.AUTOMATION_QUEUE) return json(503, { success: false, error: "runtime_not_configured" });
+      const body = await request.json().catch(() => ({}));
+      try {
+        const created = await createCapabilityGraph(env, body, CAPABILITY_GRAPH_ROLE_CONTRACT_JOB_TYPES);
+        await dispatchCapabilityGraphReadyNodes(env, created.graph_id);
+        const snapshot = await getCapabilityGraph(env, created.graph_id);
+        return json(created.created ? 202 : 200, {
+          success: true,
+          ...created,
+          snapshot,
+        });
+      } catch (error) {
+        const code = safeRuntimeErrorClass(error, "graph_create_failed");
+        const status = code === "graph_idempotency_conflict" ? 409 : code.startsWith("graph_") ? 400 : 500;
+        return json(status, { success: false, error: code });
+      }
+    }
+
+    if (request.method === "GET" && url.pathname.startsWith("/v1/capability-graphs/")) {
+      if (!authorized(request, env)) return json(401, { success: false, error: "unauthorized" });
+      if (!env.DB) return json(503, { success: false, error: "runtime_not_configured" });
+      let graphId = "";
+      try {
+        graphId = clean(decodeURIComponent(url.pathname.slice("/v1/capability-graphs/".length)), 160);
+      } catch {
+        return json(400, { success: false, error: "graph_id_invalid" });
+      }
+      if (!graphId) return json(400, { success: false, error: "graph_id_invalid" });
+      const snapshot = await getCapabilityGraph(env, graphId);
+      if (!snapshot) return json(404, { success: false, error: "graph_not_found" });
+      return json(200, { success: true, ...snapshot });
+    }
+
+    if (request.method === "GET" && url.pathname === "/v1/role-contracts") {
+      if (!authorized(request, env)) return json(401, { success: false, error: "unauthorized" });
+      const contracts = await Promise.all(ROLE_CONTRACTS.map(async (contract) => ({
+        role_id: contract.role_id,
+        plugin_version: contract.plugin_version,
+        contract_version: contract.contract_version,
+        job_type: contract.job_type,
+        business_lane: contract.business_lane,
+        permission_class: contract.permission_class,
+        semantic_required: contract.semantic_required,
+        free_ai_policy: contract.free_ai_policy,
+        sha256: await roleContractSha256(contract),
+      })));
+      return json(200, {
+        success: true,
+        engine: "hermes-automation-engine",
+        paid_fallback_enabled: false,
+        contracts,
+      });
+    }
+    if (request.method === "GET" && url.pathname === "/v1/schedule-migrations") {
+      if (!authorized(request, env)) return json(401, { success: false, error: "unauthorized" });
+      return json(200, {
+        success: true,
+        engine: "hermes-automation-engine",
+        ...taskMigrationSnapshot(ROLE_CONTRACT_JOB_TYPES),
+      });
+    }
+    if (request.method === "GET" && url.pathname === "/v1/ai-usage") {
+      if (!authorized(request, env)) return json(401, { success: false, error: "unauthorized" });
+      if (!env.DB) return json(503, { success: false, error: "runtime_not_configured" });
+      const limit = Math.max(1, Math.min(100, Number(url.searchParams.get("limit") || 50) || 50));
+      return json(200, { success: true, ...(await aiUsageLedgerSnapshot(env, limit)) });
+    }
+    if (request.method === "GET" && url.pathname === "/v1/dlq-runtime") {
+      if (!authorized(request, env)) return json(401, { success: false, error: "unauthorized" });
+      if (!env.DB) return json(503, { success: false, error: "runtime_not_configured" });
+      const limit = Math.max(1, Math.min(100, Number(url.searchParams.get("limit") || 50) || 50));
+      return json(200, { success: true, ...(await dlqRuntimeSnapshot(env, limit)) });
     }
     if (request.method === "GET" && url.pathname === "/v1/health") {
       if (!authorized(request, env)) return json(401, { success: false, error: "unauthorized" });
@@ -1613,6 +2453,9 @@ export default {
       if (!authorized(request, env)) return json(401, { success: false, error: "unauthorized" });
       if (!env.DB || !env.AUTOMATION_QUEUE) return json(503, { success: false, error: "runtime_not_configured" });
       const body = await request.json().catch(() => ({}));
+      if (Object.hasOwn(body || {}, "internal_submission")) {
+        return json(400, { success: false, error: "internal_submission_forbidden" });
+      }
       try {
         const created = await createGenericJob(env, body);
         return json(created.created ? 202 : 200, { success: true, ...created });
@@ -1620,7 +2463,7 @@ export default {
         const code = safeRuntimeErrorClass(error, "job_create_failed");
         const status = code === "idempotency_key_conflict"
           ? 409
-          : code.startsWith("historical_") || ["job_type_not_allowed", "business_lane_required", "idempotency_key_required", "payload_not_serializable", "payload_too_large"].includes(code) ? 400 : 500;
+          : ["historical_", "search_", "marketing_", "source_", "work_", "dispatch_", "knowledge_", "technology_", "gateway_", "growth_", "market_", "mention_", "academy_"].some((prefix) => code.startsWith(prefix)) || ["job_type_not_allowed", "business_lane_required", "role_contract_business_lane_mismatch", "semantic_job_internal_only", "idempotency_key_required", "payload_not_serializable", "payload_too_large", "max_age_minutes_invalid"].includes(code) ? 400 : 500;
         return json(status, { success: false, error: code });
       }
     }

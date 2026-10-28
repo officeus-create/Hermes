@@ -1,0 +1,182 @@
+name: HAE GitHub CI Sensor
+
+# GitHub Actions is a source of events, never the HAE control plane.
+# Active only for failed/timed-out trusted workflows; producer fail-closes until deployed HAE Worker settings match exact checked-out main SHA, dry_run and publication disabled.
+on:
+  workflow_run:
+    workflows:
+      - Website checks
+      - Hermes Automation Engine Contract
+    types: [completed]
+
+permissions:
+  actions: read
+  contents: read
+
+concurrency:
+  group: hae-ci-event-sensor-${{ github.event.workflow_run.id }}-${{ github.event.workflow_run.run_attempt }}
+  cancel-in-progress: false
+
+jobs:
+  intake:
+    outputs:
+      patch_candidate_ready: ${{ steps.patch_source.outputs.patch_candidate_ready }}
+    if: >-
+      vars.HAE_CI_SENSOR_ENABLED == 'true' &&
+      github.run_attempt == 1 &&
+      github.event.workflow_run.repository.full_name == 'officeus-create/Hermes' &&
+      github.event.workflow_run.head_repository.full_name == 'officeus-create/Hermes' &&
+      (github.event.workflow_run.conclusion == 'failure' ||
+       github.event.workflow_run.conclusion == 'timed_out')
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    environment: production
+    steps:
+      - name: Checkout trusted current main only
+        uses: actions/checkout@v6
+        with:
+          ref: main
+          persist-credentials: false
+
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+
+      - name: Capture exact trusted main SHA
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "HAE_CI_EXPECTED_MAIN_SHA=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+
+      - name: Validate CI sensor contracts
+        run: |
+          set -euo pipefail
+          node scripts/hae-github-ci-event-sensor.test.mjs
+          node scripts/hae-github-ci-runtime-intake.test.mjs
+          node scripts/hae-github-ci-source.test.mjs
+          node scripts/hae-github-ci-patch-runtime-intake.test.mjs
+          node scripts/hae-github-ci-patch-source.test.mjs
+          node scripts/hae-github-ci-integration-sqlite.test.mjs
+
+      - name: Enqueue one verified minimized CI run in existing HAE Queue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          # Existing production HAE release credential is reused only in this trusted-main
+          # source job. Read-only exact-SHA deployed Worker settings and canonical D1 checks happen before the only Queue POST.
+          # A dedicated queue-only token remains P1 hardening, not an activation blocker.
+          CLOUDFLARE_HAE_RELEASE_TOKEN: ${{ secrets.CLOUDFLARE_HAE_RELEASE_TOKEN }}
+          HAE_CI_RUN_ID: ${{ github.event.workflow_run.id }}
+          HAE_CI_RUN_ATTEMPT: ${{ github.event.workflow_run.run_attempt }}
+        run: node scripts/hae-github-ci-source.mjs
+
+      - name: Retain sanitized autonomous self-work receipt
+        uses: actions/upload-artifact@v4
+        with:
+          name: hae-ci-self-work-receipt
+          path: ${{ runner.temp }}/hae-ci-self-work-receipt.json
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Propose one bounded self-patch candidate or durable WAITING_FREE_AI
+        id: patch_source
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CLOUDFLARE_HAE_RELEASE_TOKEN: ${{ secrets.CLOUDFLARE_HAE_RELEASE_TOKEN }}
+          HAE_CI_RUN_ID: ${{ github.event.workflow_run.id }}
+          HAE_CI_RUN_ATTEMPT: ${{ github.event.workflow_run.run_attempt }}
+        run: node scripts/hae-github-ci-patch-source.mjs
+
+      - name: Retain sanitized patch-proposal source receipt
+        uses: actions/upload-artifact@v4
+        with:
+          name: hae-ci-patch-source-receipt
+          path: ${{ runner.temp }}/hae-ci-patch-source-receipt.json
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Checkout exact failed source head for PATCH_ONLY proof
+        if: steps.patch_source.outputs.patch_candidate_ready == 'true'
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          path: .hae-repair-source
+          persist-credentials: false
+
+      - name: Execute bounded patch in ephemeral detached worktree only
+        if: steps.patch_source.outputs.patch_candidate_ready == 'true'
+        env:
+          HAE_REPAIR_SOURCE_REPO: ${{ github.workspace }}/.hae-repair-source
+          HAE_CI_SOURCE_HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: node scripts/hae-github-ci-patch-execute.mjs
+
+      - name: Retain sanitized PATCH_ONLY verifier receipt
+        if: steps.patch_source.outputs.patch_candidate_ready == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: hae-ci-bounded-repair-receipt
+          path: ${{ runner.temp }}/hae-ci-bounded-repair-receipt.json
+          if-no-files-found: error
+          retention-days: 90
+
+  independent_qa:
+    needs: intake
+    if: github.run_attempt == 1 && vars.HAE_CI_SENSOR_ENABLED == 'true' && needs.intake.result == 'success' && needs.intake.outputs.patch_candidate_ready == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    environment: production
+    steps:
+      - name: Checkout trusted current main only
+        uses: actions/checkout@v6
+        with:
+          ref: main
+          persist-credentials: false
+
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+
+      - name: Capture exact trusted main SHA
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "HAE_CI_EXPECTED_MAIN_SHA=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+
+      - name: Download sanitized PATCH_ONLY receipt from writer job
+        uses: actions/download-artifact@v4
+        with:
+          name: hae-ci-bounded-repair-receipt
+          path: ${{ runner.temp }}/hae-qa-input
+
+      - name: Checkout exact failed source head for independent reproof
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          path: .hae-qa-source
+          persist-credentials: false
+
+      - name: Validate independent QA contracts
+        run: |
+          set -euo pipefail
+          node scripts/hae-github-ci-independent-qa-source.test.mjs
+          node scripts/hae-github-ci-independent-qa-runtime-intake.test.mjs
+          node scripts/hae-github-ci-integration-sqlite.test.mjs
+
+      - name: Reprove patch independently and persist QA receipt
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CLOUDFLARE_HAE_RELEASE_TOKEN: ${{ secrets.CLOUDFLARE_HAE_RELEASE_TOKEN }}
+          HAE_CI_RUN_ID: ${{ github.event.workflow_run.id }}
+          HAE_CI_RUN_ATTEMPT: ${{ github.event.workflow_run.run_attempt }}
+          HAE_QA_PATCH_RECEIPT_PATH: ${{ runner.temp }}/hae-qa-input/hae-ci-bounded-repair-receipt.json
+          HAE_QA_SOURCE_REPO: ${{ github.workspace }}/.hae-qa-source
+        run: node scripts/hae-github-ci-independent-qa-source.mjs
+
+      - name: Retain sanitized independent QA receipt
+        uses: actions/upload-artifact@v4
+        with:
+          name: hae-ci-independent-qa-receipt
+          path: ${{ runner.temp }}/hae-ci-independent-qa-receipt.json
+          if-no-files-found: error
+          retention-days: 90

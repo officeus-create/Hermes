@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "base_manifest": "docs/release-manifest-2026-08-01.json",
+  "release_delta": "2026-10-28-carrier-audience-merge",
+  "scope": "Owner decision 2026-10-28: the thin carrier audience page competed with the car-hauling dispatch service page for the same carrier queries; it is merged into the dispatch service page with a permanent redirect.",
+  "acceptance": {
+    "route_count_added": 0,
+    "route_count_removed": 1,
+    "indexable_route_count_added": 0,
+    "requires_green_current_head_ci": true,
+    "requires_production_snapshot_reconciliation_after_deploy": true
+  },
+  "additions": [],
+  "removals": [
+    {
+      "route": "/logistics/carrier/",
+      "replacement": "https://hermeslogisticsus.com/logistics/car-hauling-dispatch/",
+      "reason": "Carrier audience page merged into the car-hauling dispatch service page (301) so carrier search signals consolidate on one owner."
+    }
+  ]
+}

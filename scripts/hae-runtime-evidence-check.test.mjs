@@ -21,6 +21,7 @@ assert.deepEqual(
 const sha = "a".repeat(40);
 const good = {
   target_sha: sha,
+  database_binding_fingerprint: "sha256:" + "1".repeat(64),
   deployment: {
     evidence_ref: "cloudflare://workers/hermes-automation-engine/deployments/latest",
     source_sha: sha,
@@ -107,6 +108,8 @@ assert.equal(
 );
 
 for (const mutate of [
+  (x) => { delete x.database_binding_fingerprint; },
+  (x) => { x.database_binding_fingerprint = "bad"; },
   (x) => { x.deployment.source_sha = "b".repeat(40); },
   (x) => { delete x.deployment.evidence_ref; },
   (x) => { x.runtime.publication_enabled = true; },

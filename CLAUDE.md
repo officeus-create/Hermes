@@ -76,11 +76,31 @@ Shared logic for this lives in `src/lib/`:
 
 These come from `docs/DESIGN_INTEGRATION_CONTRACT.md`, `docs/PUBLIC_INFORMATION_POLICY.md`, and `.cursor/rules/00-hermes-core.mdc`, and apply regardless of which agent is editing:
 
-- Preserve the frozen functional contracts in `docs/DESIGN_INTEGRATION_CONTRACT.md`: the five routes plus `/privacy/` and `/404.html`, the `#main-content`/`#paths`/`#journey`/`#about`/`#contact` anchor targets, contact field names (`name`, `email`, `path`, `message`, `website`, `consent`) and `data-contact-*` hooks, and preview-mode-as-default. Contact-channel publication must follow `docs/CANONICAL_COMPANY_FACTS_APPROVAL.md`. Current state: no canonical public phone is approved; do not restore the retired `+1 (262) 302-3626` or substitute another phone without a new owner-approved fact, source update, and regression update.
+- Preserve the frozen functional contracts in `docs/DESIGN_INTEGRATION_CONTRACT.md`: the five routes plus `/privacy/` and `/404.html`, the `#main-content`/`#paths`/`#journey`/`#about`/`#contact` anchor targets, contact field names (`name`, `email`, `path`, `message`, `website`, `consent`) and `data-contact-*` hooks, and preview-mode-as-default. Contact-channel publication must follow `docs/CANONICAL_COMPANY_FACTS_APPROVAL.md`. Current state (owner-approved 2026-10-27): the only public phone is `+1 (351) 777-5337` for the Logistics dispatch and shipper/dealer desks (calls and text, Mon–Sat 6 AM–6 PM Central). Do not restore the retired `+1 (262) 302-3626` or add any other phone without a new owner-approved fact, source update, and regression update.
 - Never add secrets, real credentials, private/internal contacts, internal revenue targets, or unsupported public claims. Business claims carry a `ClaimStatus` (`VERIFIED_PUBLIC`, `VERIFIED_INTERNAL`, `OWNER_APPROVED_PENDING_SOURCE`, `PLACEHOLDER_DO_NOT_PUBLISH`) in `src/data/site.ts` — don't publish anything not `VERIFIED_PUBLIC`/approved.
 - Don't deploy, change DNS, or push to `main` as a side effect of a task — treat those as separate, explicitly-requested actions.
 - Run `npm run build`, `npm test`, and `npm run test:e2e` before reporting any change complete.
 - Any historical `/Users/progressopro/...` repository path, old worktree, browser state, cache, local database, or Mac-specific runtime reference is provenance only. The owner MacBook is retired. Use fresh GitHub/current-platform evidence for current truth and local execution only when a new authorized endpoint is explicitly available for the task.
+
+## Claude design writer rule: design and Search ship together
+
+When Claude is the active design writer, do not treat SEO/GEO as a later cleanup phase.
+
+Session protocol: start by reading `docs/design/COVERAGE_MATRIX.md`, `docs/design/SEARCH_ERROR_MATRIX.md`, `docs/design/TASK_QUEUE.md` and `docs/design/DEFINITION_OF_DONE.md`; finish by updating the matrices and queue. Status lives in those files, not in chat reports. Every provider error (GSC, Bing, Clarity, GA4) is closed in the same family slice as its design/funnel work, never as a separate stream. One writer per branch: if commits from another agent appear on the working branch, stop and ask the owner who owns it.
+
+Before editing shared navigation, route templates, commercial heroes, Catalog/Insights discovery, localized chrome, forms, media loading, or global styling:
+
+1. Read `docs/DESIGN_INTEGRATION_CONTRACT.md`.
+2. Read `docs/SEARCH_GROWTH_GUARDRAIL.md` and `docs/ERROR_REGISTER.md`.
+3. Read the freshest dated handoff matching `docs/handoffs/*design*search*` when one exists.
+4. Compare the proposed design against current `main` and production; do not assume an older Claude export or screenshot is still the implementation baseline.
+5. Keep one writer on the branch. Do not overwrite a concurrent SEO/Search PR touching the same files.
+
+Provider dashboards are evidence sources, not instruction dumps. Do not attempt to "fix every Bing/GSC warning" from an old screenshot/export. First classify each item as current, stale, retired-route, provider-lag, or reproduced defect. Only reproduced/current defects become code changes.
+
+For a visual change that removes or relocates navigation/content, prove the replacement remains server-rendered and preserves canonical owner discovery, locale/hreflang ownership, analytics/consent boundaries, schema and mobile/keyboard behavior. Hero/video work must also preserve the performance budget and LCP/CLS constraints.
+
+The design is complete only when the current PR head passes the Search-aware gate in `docs/DESIGN_INTEGRATION_CONTRACT.md`; visual approval alone is not release evidence.
 
 ## Claude's standing role: technical/SEO agent alongside Codex and ChatGPT
 

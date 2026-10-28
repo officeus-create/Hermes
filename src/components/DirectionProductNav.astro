@@ -23,7 +23,7 @@ export type DirectionId = "logistics" | "marketing" | "technology" | "academy" |
 interface Props {
   direction: DirectionId;
   theme?: "light" | "dark";
-  locale?: "en" | "ru";
+  locale?: "en" | "ru" | "uk";
 }
 
 const { direction, theme = "light", locale = "en" } = Astro.props;
@@ -190,8 +190,16 @@ const ruOverrides: Partial<Record<DirectionId, {
   },
 };
 
+// Catalog labels only: hrefs and canonical owners stay identical across languages.
+const catalogLabelOverrides: Record<"ru" | "uk", { home?: string; subtitle?: string; items?: Record<string, { label?: string; href?: string }> }> = {
+  ru: { subtitle: "Бизнесы · услуги · локации · Connect", items: { search: { label: "Поиск" }, categories: { label: "Категории" }, locations: { label: "Локации" }, owners: { label: "Владельцам бизнеса" }, ecosystem: { label: "Услуги Hermes" } } },
+  uk: { subtitle: "Бізнеси · послуги · локації · Connect", items: { search: { label: "Пошук" }, categories: { label: "Категорії" }, locations: { label: "Локації" }, owners: { label: "Власникам бізнесу" }, ecosystem: { label: "Послуги Hermes" } } },
+};
+
 const config = configs[direction];
-const localeOverride = locale === "ru" ? ruOverrides[direction] : undefined;
+const localeOverride = direction === "catalog" && locale !== "en"
+  ? catalogLabelOverrides[locale]
+  : locale === "ru" ? ruOverrides[direction] : undefined;
 const home = localeOverride?.home ?? config.home;
 const subtitle = localeOverride?.subtitle ?? config.subtitle;
 const items = config.items.map((item) => {
@@ -235,7 +243,7 @@ const livingKind = (id: string) => (id === "start-company" ? "agreement" : direc
   <div class="shell direction-product-nav__inner">
     <a class="direction-product-nav__brand" href={home} aria-current={currentPath === home ? "page" : undefined}>
       <span>{config.brand}</span>
-      <small>{subtitle}</small>
+      <small data-catalog-label-uk={direction === "catalog" ? catalogLabelOverrides.uk.subtitle : undefined} data-catalog-label-ru={direction === "catalog" ? catalogLabelOverrides.ru.subtitle : undefined}>{subtitle}</small>
     </a>
     <div class="direction-product-nav__links">
       {items.map((item) => {
@@ -243,13 +251,29 @@ const livingKind = (id: string) => (id === "start-company" ? "agreement" : direc
         return (
           <a href={item.href} aria-current={isActive(item.href) ? "page" : undefined} data-direction-product-link={item.id}>
             {item.id === "connect" ? <HermesConnectMark size={13} class="direction-product-nav__connect-mark" /> : livingKind(item.id) ? <DirectionNavIcon kind={livingKind(item.id)!} /> : <span class="direction-product-nav__generic-icon" aria-hidden="true"><Icon size={15} /></span>}
-            <span>{item.label}</span>
+            <span data-catalog-label-uk={direction === "catalog" ? catalogLabelOverrides.uk.items?.[item.id]?.label : undefined} data-catalog-label-ru={direction === "catalog" ? catalogLabelOverrides.ru.items?.[item.id]?.label : undefined}>{item.label}</span>
           </a>
         );
       })}
     </div>
   </div>
 </nav>
+
+{direction === "catalog" && (
+  <script is:inline>
+    // Catalog pages switch language in the browser (?lang=uk / html lang); keep the submenu
+    // labels in the same language. Hrefs never change.
+    (() => {
+      const requested = new URLSearchParams(location.search).get("lang") || document.documentElement.lang || "";
+      const lang = requested.slice(0, 2) === "ua" ? "uk" : requested.slice(0, 2);
+      if (lang !== "uk" && lang !== "ru") return;
+      document.querySelectorAll(`[data-direction-product-nav="catalog"] [data-catalog-label-${lang}]`).forEach((node) => {
+        const label = node.getAttribute(`data-catalog-label-${lang}`);
+        if (label) node.textContent = label;
+      });
+    })();
+  </script>
+)}
 
 <style>
   .direction-product-nav{position:sticky;top:96px;z-index:35;border-bottom:1px solid rgba(17,19,36,.1);backdrop-filter:blur(18px) saturate(1.04)}

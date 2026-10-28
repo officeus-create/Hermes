@@ -2,10 +2,10 @@
   "schema_version": 1,
   "canonical_database": "hermes-connect-prototype",
   "authority": "existing Hermes Connect production D1 discovered from the canonical hermes Pages binding",
-  "baseline_status": "PENDING_RUNTIME_SNAPSHOT",
-  "baseline_source_sha": null,
+  "baseline_status": "VERIFIED",
+  "baseline_source_sha": "f58eba92af8adac8bf88132c5d795d65df49df96",
   "destructive_migration_requires_owner_confirmation": true,
   "migration_files": [],
-  "baseline_evidence_ref": null,
-  "baseline_schema_fingerprint": null
+  "baseline_evidence_ref": "repo://workers/automation-engine/migrations/baseline-evidence/69582113f64b251b54a264ea762f58b8bc6ebba7b28071af8b2b4586e6a6a082.json#sha256:69582113f64b251b54a264ea762f58b8bc6ebba7b28071af8b2b4586e6a6a082",
+  "baseline_schema_fingerprint": "sha256:3e0f99969ae3806010a9ab67f7c1bc81c5ecad6d24fce4411198f20e26b30f7b"
 }

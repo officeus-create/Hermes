@@ -10,13 +10,13 @@ async function analyticsEvents(page: Page, eventName: string) {
 test("car-hauler GEO hub exposes exactly 25 indexable market links with one commercial owner", async ({ page }) => {
   await page.goto("/logistics/car-hauler-loads/");
 
-  await expect(page).toHaveTitle(/Car Hauler Operating Markets & Route-Fit Research/);
+  await expect(page).toHaveTitle(/Car Hauler Loads & Dispatch Service by Market/);
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", /index,follow/);
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
     "href",
     "https://hermeslogisticsus.com/logistics/car-hauler-loads/",
   );
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Car Hauler Operating Markets & Route-Fit Research");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Car Hauler Loads and Dispatch Service by Market");
 
   const marketLinks = page.locator('a[href^="/logistics/car-hauler-loads/"][data-carrier-geo-cta="market_select"]');
   await expect(marketLinks).toHaveCount(25);
@@ -63,8 +63,9 @@ test("Colorado Springs GEO page answers carrier load-search intent without publi
 
   const supportItems = page.locator(".carrier-geo-support-list > li");
   await expect(supportItems).toHaveCount(20);
-  await expect(page.getByRole("link", { name: /Preview Load Board/i })).toHaveAttribute("href", "/load-board/#available-loads");
-  await expect(page.getByText(/illustrative\/demo surface/i)).toBeVisible();
+  await expect(page.getByRole("link", { name: /Open Load Board/i })).toHaveAttribute("href", "/load-board/#available-loads");
+  await expect(page.getByText(/source-gated and may be zero/i)).toBeVisible();
+  await expect(page.getByText(/preview examples remain separate and non-bookable/i)).toBeVisible();
   await expect(page.getByText(/discounts, parts offers, or partner benefits are shown only/i)).toBeVisible();
 
   const body = await page.locator("main").innerText();

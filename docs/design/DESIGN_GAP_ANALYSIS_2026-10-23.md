@@ -10,6 +10,9 @@ in this pass; everything else is a proposal.
 
 ## 1. Two direction palettes are live at the same time (main finding)
 
+> **STALE 2026-10-26:** resolved by #2025 — `--hermes-*` direction tokens now equal the H-mark palette and
+> only ~5 stray legacy hex values remain. Current status and next waves: `HERMES_DESIGN_SEARCH_FUNNEL_PROGRAM_2026-10-26.md`.
+
 | Direction | Brand System V4 doc + most pages (`--hermes-*`) | Claude Design / H mark v1.1 (`--dir-*`) |
 |---|---|---|
 | Logistics | `#1E88FF` blue | `#2F6BF6` blue (tile of the mark) |

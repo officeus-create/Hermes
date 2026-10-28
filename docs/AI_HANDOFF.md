@@ -1995,3 +1995,158 @@ ai_name: Codex; role: delegated Academy owner; contribution_type: Implementation
 - Connect hub `/services/hermes-connect/` keeps the product header (home-corporate-logo contract); the other four public Connect pages use the approved header.
 - SEO baseline (OpenRush, 2026-10-23): 8 indexed keywords, no top-30 for core car-hauling dispatch terms, 0 Google AI Overview citations; ~2,370 spam referring domains (anchor "Premium Link Building Experts…") appeared this week — negative-SEO noise, usually ignored by Google.
 - Owner-side next steps: verify GSC and submit sitemap; Google Business Profile; align Facebook "About" (says 2018 / telecommunication services) and retire the old phone in social posts; honest directory listings and reviews.
+
+## 2026-10-24 — HAE #2033 authenticated read-only D1 schema snapshot
+
+- Owner/task: Hermes Automation Engine #2033. Canonical writer lane: `codex/hae-d1-schema-snapshot`, base `8901fd655e7b92c33e3be96ff3db82229a15f35e`. This slice adds evidence tooling only; no merge, deploy, production D1 mutation, provider write or migration promotion is authorized by source/CI.
+- Delivery: existing `.github/workflows/automation-engine-release.yml` gains bounded `schema_snapshot` / `HAE_SCHEMA_SNAPSHOT <exact-main-sha>` mode. It reuses the current production Pages D1 binding, requires exact current main, issues one read-only `sqlite_master` query, removes the raw Cloudflare response, uploads one sanitized normalized artifact, and runs a separate artifact QA job that rechecks exact SHA/database identity/object count/safety and recomputes the SHA-256 fingerprint.
+- Safety boundary: schema-snapshot mode skips Queue provisioning, Worker config composition/deploy, D1 writes, provider writes and migration mutation. `workers/automation-engine/migrations/manifest.json` remains `PENDING_RUNTIME_SNAPSHOT`; accepted evidence is not permission to promote it.
+- New deterministic normalizer/tests: `scripts/hae-d1-schema-snapshot.mjs` and `.test.mjs`. Coverage includes malformed/empty responses, internal SQLite objects, duplicate objects, deterministic Unicode ordering, DDL/fingerprint changes, target-SHA/database mismatch, object-count mismatch, artifact-field leakage and every forbidden safety flag.
+- Local gates on this worktree before commit: schema-snapshot contract PASS; HAE contract PASS; YAML parse PASS; `npm ci` PASS; `npm run build` PASS (434 pages); `npm test` PASS; `git diff --check` PASS.
+- Browser evidence: three full Playwright shards were run sequentially because Astro enforces a same-project preview lock. Full browser runs exposed unrelated existing UI timing/element-stability failures outside the #2033 file scope. Shard 3 completed 792 passed / 4 skipped / 18 failed; rerunning only those 18 produced 12 PASS / 6 timeout failures. The previously failed mobile consent case separately passed 1/1. Do not modify unrelated UI in this HAE evidence PR; exact-head GitHub CI remains the release gate.
+- Generated Playwright result directories and the test-generated `docs/screenshots/intake02-marketing-desktop.png` change were removed/restored before commit; no test artifact is part of the PR.
+- Next: bounded commit + push + one PR tied to #2033. Independent QA must review the new exact PR head. After merge, schema snapshot execution still requires a separate owner-authorized exact-main invocation; only accepted artifact readback can open a separate migration-baseline review.
+
+## 2026-10-26 — Claude Code — #2027 replayed on fresh main under the Design × Search/GEO contract
+
+- Branch `claude/beautiful-mendel-lknlyq`, PR #2027: one bounded delta on current `main` (e26e13db), 0 behind; the stale 132-behind branch was used only as the design source.
+- Delta: RU/UA/ES/IT/FR chrome via path locale; Products menu localized; RU/UA footers keep the English footer's link graph (same hrefs); Catalog submenu in the approved header with RU/UK labels (browser switch on `?lang=uk`, no new owner); light commercial hero; 1101–1360px header fixes; contact/lead forms localize labels only.
+- Search/GEO gate (#2087): SEO hygiene, GSC triage, owner clarity, hreflang, internal-link, performance budget, `npm test` — pass. Full build diff vs main: canonical/hreflang/robots/title/description/H1/JSON-LD/form names/hooks unchanged, no pages added/removed, no internal link lost.
+- QA on fresh head: 0 horizontal overflow at 390/1440 on all pages; keyboard reaches all Catalog submenu links with visible focus (EN/UK, 1440/390); no running animation under reduced motion; Lighthouse mobile LCP on commercial pages equal or better than main (2.4–2.9s vs 2.9–3.2s), CLS 0.
+- Provider facts in `docs/handoffs/2026-10-23-codex-seo-owner-platform-tasks.md` now carry evidence classes; no stale Bing/GSC items re-fixed.
+- Next: CI on the fresh head → merge → live readback (car-hauling hero, `/businesses/?lang=uk`, `/ru/gb/london/` footer, canonicals) → Search Console/Bing readback by the Search owner.
+
+## 2026-10-26 (later) — Claude Code — #2027 rebased on b87ffdee; link graph identical to main
+
+- Main `b87ffdee` (includes the #2004 GA withdrawal fix, untouched here). Head `fb27090e` + this entry; 0 behind.
+- Fix: RU/UA chrome now localizes labels only (`labelLocale` in SiteHeader, `textLocale` in SiteFooter); hrefs follow the template locale. Build-to-build vs main: 0 pages with any href change, 0 lost links, 0 new pages; canonical/hreflang/robots/title/description/H1/JSON-LD/fields/hooks/consent unchanged.
+- New `tests/locale-mechanisms.spec.ts` + "Locale mechanisms" section in `docs/DESIGN_INTEGRATION_CONTRACT.md`: `/ru/` `/ua/` = server locales; Catalog `?lang=uk` = browser switch, same HTML/canonical/hrefs.
+- Local: build 0 errors; `npm test` + all #2087 Search gates pass; 605 affected-zone Playwright specs pass (3 skipped), desktop + 390.
+- Owner (2026-10-26) authorized Claude to decide and publish this design work. Next: exact-head CI green → merge → live readback.
+
+## 2026-10-26 — Claude Code — design convergence program + wave A (legacy dark heroes → Pearl shell)
+
+- Trigger: owner review — #2027 was reported "done" while ~120 inner pages still used legacy dark heroes (scope error, `ERR-DESIGN-SCOPE-NARROWED-TO-OPEN-PR-20261026`).
+- Program: `docs/design/HERMES_DESIGN_SEARCH_FUNNEL_PROGRAM_2026-10-26.md` (owner intent, measured state, waves A–F with exit criteria, funnel order, errors E1–E10, token routing, ready Claude prompt). Russian copy in One Brain: Drive doc "DESIGN × SEO/GEO × ВОРОНКА ПРОДАЖ — ПРОГРАММА И ЗАДАНИЕ ДЛЯ CLAUDE — 2026-10-26".
+- Wave A: `src/styles/hermes-public-pearl-shell.css` (imported last in BaseLayout) moves car-hauler geo, logistics audience/path results, Academy public, logistics resources, careers, case, legal, contracts/agreement/offer/onboarding/sign, transport request, dispatch start, Appleton/Green Bay and 404 heads to Pearl + ink + direction-bar eyebrow + white ghost actions/cards. Insights, Load Board and Connect product accents excluded by brand rule; photo-led localized heroes deferred to wave B.
+- Gates: build 0 errors; `npm test`; SEO hygiene, GSC triage, owner clarity, hreflang, internal links, performance budget pass; build diff vs main: 0 href/canonical/hreflang/title/description/H1/JSON-LD/form changes (CSS only).
+- Next: wave B (localized live-window heroes), C (body sections), D (logistics subnav), E (funnel layer), F (controls).
+- Wave B (same PR): localized ES/FR/IT/RU/UA overview + direction-owner heroes — photo background becomes a rounded live window on Pearl (CSS only; markup and LCP image unchanged); owner-page hero text regained its shell gutter (was full-bleed at x=0). Test contracts updated by decision, not to accept a regression: `hermes-case-studies-design`, `hermes-shared-resource-design`, `hermes-localized-overview-design` now pin Pearl hero + ink pill primary.
+- Canon: owner/ChatGPT brief "HERMES DESIGN → SEARCH/GEO → SALES FUNNEL OS — CLAUDE EXECUTION BRIEF — CURRENT" (Drive `1Z5Kv2jJTkkVaypeJvBPRqgBH33BLiJtrTrRWmM0XaRY`) is the single router; the repo program file is its evidence companion; Claude's own Drive doc is marked SUPERSEDED → POINTER.
+- Provider evidence (OpenRush audit 2026-10-26, score 98.3): `/ua/academy/` "thin 95 words" = NOT_REPRODUCED (main content 414 words); "no alt" on ES/FR/IT Academy = BY DESIGN (decorative aria-hidden hero image); `/ru/privacy/` thin = utility page, expected. No code task.
+
+## 2026-10-26 — Claude Code — #2091 LIVE; schema fix for the Clarity JS error
+
+- #2091 (design waves A+B) merged as f5954dab and verified live (Pearl shell CSS served; canonicals on /case/, /ru/, /es/logistica/, /logistics/car-hauler-loads/denver-co/ unchanged; 1440/390 screenshots reviewed).
+- Evidence → fix: Clarity (90 days) showed `undefined is not an object (evaluating 'r["@context"].toLowerCase')` in 5.84% of sessions. Root cause: 315 pages emitted JSON-LD as one top-level array. BaseLayout now emits one `<script type="application/ld+json">` per entity; entity sets are identical to main on all 456 compared pages (only the wrapping changed). `validate-build` now fails any page with an array or non-string `@context`; site/insights/new-authority/Italian specs read all blocks instead of assuming exactly one.
+- Also: h1/h2 hyphenate at syllables under 480px (Spanish "concesionarios" broke mid-word at 390px).
+
+## 2026-10-26 — Claude Code — #2093 LIVE; self-case Insight with the search baseline
+
+- #2093 merged as 441b11ab; live readback: /logistics/car-hauler-loads/denver-co/ serves 3 JSON-LD blocks, 0 arrays, every block has a string @context.
+- Bing SEO/GEO report (read in Opera): one medium item — insufficient inbound links from high-quality domains; no on-page errors (#368 authority owner).
+- New standalone Insight `/insights/marketing/hermes-own-search-baseline-october-2026/` (owner directive: turn our own changes into dated, honest cases). Baseline: GSC 29.07–26.10 42 clicks / 2,173 impressions / avg pos 39.8 (prev. 1 / 11); 149 indexed; Bing 12 / 239; Clarity script error fixed. Insights sitemap, sitemap index, release-manifest delta and the Home update-glow dates updated.
+- Next readback: re-run the same windows and append a dated "Readback" paragraph to this Insight (dateModified), never inflate or extrapolate.
+
+## 2026-10-26 — Claude Code — #2100 LIVE; Logistics family accents + light product sub-navigation
+
+- #2100 (own-search baseline Insight) merged as e8fcfb90 and live (200, canonical, listed in sitemap-insights.xml).
+- Owner said yes to three account actions; prepared, not executed by Claude (no click capability, owner sends): GA4 key events `contact_request_delivered`, `carrier_handoff_ready`, `load_board_qualified_action` + GA4↔Search Console link; Telegram @WebpageBot refresh; Clutch review — Gmail draft to the documented client MZM Junk Removal created in officeus@ drafts (not sent), plus Clutch "Submit References".
+- Logistics family (brief phase 2): BaseLayout marks `/logistics/*`, `/paths/logistics/*` and `/carrier*` with `data-direction-family="logistics"` (Load Board excluded on purpose). On those pages Intelligence-violet tokens reroute to the H-mark Logistics blue (eyebrows, step numbers, active states, value signals, progress bar, notes); hard-coded #6446e6 selectors overridden; dark proof bands keep bounded Focus Ink with Logistics-tinted eyebrows. The path-result product sub-navigation keeps its 8 links but renders light with a Logistics active state (live-pilot Load Board untouched).
+- Build diff vs current main e8fcfb90: 0 fact/href/canonical/H1/JSON-LD/form changes. `hermes-shared-resource-design` accent contract now pins the Logistics token (decision, not regression).
+
+## 2026-10-26 — Claude Code — #2104 LIVE; family accents for Technology, Academy, Marketing
+
+- #2104 merged as d6f4680f; live: Logistics pages carry `data-direction-family="logistics"`, Load Board none, canonicals unchanged.
+- Role split agreed with the owner/ChatGPT: Claude = design, shared templates, funnel UX, code, tests, visual QA, Search/GEO non-regression, PRs. ChatGPT/owner = GA4/GSC/Bing/Clarity/Clutch/Gmail readbacks and actions, competitor research, reviews and links (evidence receipts delivered to Claude). MZM review draft is owned by ChatGPT now (updated, unsent).
+- BaseLayout family tagging extended: Technology (`/services/website-*`, auto-repair website design, IT case, brief template, locale technology owners, London IT/web), Academy (`/academy/*`, locale academy owners, London academy/training), Marketing (`/services/seo*`, local SEO, business-growth incl. RU/UA, locale marketing, SEO resources and case, London marketing/SEO/guides). Not tagged: Hermes Connect, Load Board, Insights, Catalog, and the approved `/paths/{technology,academy,marketing}/` owners.
+- Pearl-shell family tokens use the same readable same-hue mixes as hermes-public-division-colors.css; hero eyebrow bars follow `--family-accent`.
+- Build diff vs main: 0 changes. 668 family/design specs pass; local-only H.264 video specs excluded; `hermes-case-studies-design` pins per-route accents (hub keeps violet; Appleton SEO = Marketing; IT case = Technology).
+
+## 2026-10-26 — Claude Code — body sections: dark reading bands → light; one bounded Focus Ink closing panel
+
+- #2108 (Technology/Academy/Marketing accents) merged as 5aeb40fc and live.
+- Body scan of all public pages found full-bleed dark reading sections left after the hero waves (carrier geo support list, capacity/process examples, localized owner process + partnership, digital boundary/FAQ, resource submit, case boundaries/Q&A, Appleton planning/carrier note, recommendation case, Academy country "next"). They now use the light reading grammar (paper section, ink headings, white cards, family-accent eyebrows/links). Closing CTAs (`recommendation-cta`, `localized-contact`, `digital-project-cta`) become one rounded Focus Ink panel inside the content width instead of a dark band. Connect, Catalog, Load Board and the approved `/paths/*` owners are not touched.
+- Lesson: the first attempt lost to Astro scoped styles (`.x[data-astro-cid]` beats `html body main :is(section.x)`); the block now scopes with `main:not(#pearl-scope)`.
+- Build diff vs main 5aeb40fc: 0 changes to facts, hrefs, canonicals, H1, JSON-LD, forms. Gates green. Contracts updated by decision: case-studies, shared-resource, localized-overview, digital-services, academy-fr-it-process.
+- Owner Bing/Clarity exports classified (program doc §10.1; Drive doc 03). No new code defect; Bing IndexNow geo issue = HOLD pending the issue label; owner to exclude internal traffic in Clarity/GA4.
+
+## 2026-10-26 — Claude Code — GSC trend classified; brand-intent pages get a next step
+
+- Owner GSC exports (Drive folder "SEARCH PROVIDER EVIDENCE — CLAUDE", doc 04): Google impressions dropped ~90% from 29 Aug (non-brand logistics-SEO searches). Root cause not determined → HOLD on SEO code; needed: GSC Compare export by page/query. Program doc §10.2.
+- `/company-information/` and `/about/` (brand-intent landings) now end with the four direction owners before the policy contact (`TrustPage` `directionRouter`). Own-search baseline Insight gains an honest trend paragraph.
+- #2109 follow-up fix: digital-services closing panel padding + family eyebrow.
+
+## 2026-10-26 — Claude Code — #2109 LIVE; SEO service proof rail (E1)
+
+- #2109 merged as c85004a4; live readback: `/company-information/` serves the four direction links, canonical unchanged.
+- GSC compare read in the signed-in console (URL parameters): `/services/*` 951 → 40 impressions (9–28 Aug vs 29 Aug–23 Oct); brand secondary pages lost impressions; brand position 29.5 → 59. Bing IndexNow "issues" = indexed (E7 closed). All in `docs/design/SEARCH_ERROR_MATRIX.md`.
+- Slice: SEO service pages show "Proof you can open now" (3 published assets per variant) beside the single primary CTA. Build diff vs main: only 5 pages, links added. Tests: `tests/seo-service-proof-rail.spec.ts`; audit-sample spec scoped to rail + related list.
+- Next action — `/contacts/` + brand entity hub (E2); accept — four directions + form, entity facts consistent.
+
+## 2026-10-26 — Claude Code — #2111 LIVE; /contacts/ next step (E2)
+
+- #2111 merged as 21209673; live: `/services/seo-for-logistics-companies/` shows the proof rail, canonical/H1 unchanged.
+- `/contacts/` (138 GSC impressions, pos 19) gets one primary "Send a structured request" action and the four direction owners. The direction block is now the shared `DirectionRouter` component (TrustPage uses it too).
+- Gates green; build diff vs main: 0 href-set/fact changes (direction links already existed in chrome). Local-only H.264 video specs fail as known.
+- Next action — careers funnel (`/careers/car-hauling-dispatcher/`); accept — role promise → requirements → one apply action.
+
+## 2026-10-26 — Claude Code — #2117 and #2118 LIVE; Technology proof rail
+
+- #2117 (contacts) merged d88f2524, live readback OK. #2118 (Logistics commercial: carrier hero action as text link, `--color-navy-900` → brand ink on family pages, Appleton/Wisconsin violet → Logistics tokens) merged 8f0ae0f8, live CSS verified.
+- Careers funnel blocked: the dispatcher vacancy is intentionally held closed until the owner confirms hiring.
+- Slice: website development / redesign / auto-repair design get the proof rail (IT case, brief template, conversion checklist). Build diff: 2 pages, links added. 420 related specs green.
+- Next action — Academy funnel (`/academy/us-logistics-operations/`, apply); accept — proof + one primary apply action.
+
+## 2026-10-26 — Claude Code — #2119 LIVE; Academy accents
+
+- #2119 merged d7ebd170; live: website development shows the proof rail, canonical unchanged.
+- Academy owner page already follows the funnel order; slice reroutes `--color-violet-600` to the family accent on family pages and gives `.capacity-boundary-grid` cards the family top border. `/paths/academy/` (approved direction owner, untagged) still has violet eyebrows → task 9.
+
+## 2026-10-26 — Claude Code — #2121 merged; London cluster classified (task 10)
+
+- #2121 (coverage matrix docs) merged 46168a03.
+- London audit on the live site: all 45 London pages are Pearl, index/follow, self-canonical. 23 pages had no direction family (industry `*-marketing`, Meta Ads, SMM, GBP, content, CRM, landing pages, Academy guides, all `/ru|ua/gb/london/{section}/`), so their eyebrows stayed violet and their headings navy. `BaseLayout` family patterns now cover them; the three multi-direction hubs stay untagged with neutral eyebrows, and the EN hub direction cards carry the direction accent and open their owner page from anywhere on the card.
+- Gates: build, `npm test`, SEO hygiene, GSC triage, owner clarity, hreflang, internal links, performance budget all green. Build diff vs main 46168a03: 0 href/fact changes. New `tests/london-family-accents.spec.ts`; London and locale specs: 58 passed.
+- Next action — task 11 (controls cleanup); accept — no 12px-radius public primary buttons, status chips coloured by semantic state.
+
+## 2026-10-27 — Claude Code — #2122 LIVE; search drop hypotheses + E3 measured
+
+- #2122 (London families) merged cd2e44a1; live readback: `/gb/london/meta-ads/` marketing, `/gb/london/crm-automation/` technology, canonical unchanged.
+- E1 hypotheses table added to `SEARCH_ERROR_MATRIX.md` (robots/noindex/canonical/params excluded; ranking test + entity confusion most likely; templates contribute). Stale "root cause not determined / HOLD" line in the coverage matrix replaced.
+- E3 measured: 171 of 290 sitemap URLs had zero GSC impressions in 6 months; car-hauler city pages 86–92 % identical text. Queue: E3 consolidation ranked above controls cleanup.
+- Next action — owner decision on car-hauler city pages (per-city evidence vs `noindex,follow` + sitemap removal); accept — GSC "discovered" count falls 4 weeks after the change.
+
+## 2026-10-27 — Claude Code — search errors first (owner directive)
+
+- Owner: close every Bing/Google error first, in the brand book and funnel, then continue design.
+- Sources: owner exports on Drive (Bing CSV transcriptions 05.10, Coverage zip 26.10), Bing Site Explorer read 27.10, GSC page breakdown 16 months, live HTTP checks.
+- Fixed: 4 real 404s (`/ru/paths/*` → `/ru/{direction}/` 301); meta descriptions >160 (111 pages) via the shared limit; 8 highest-traffic descriptions rewritten as complete sentences (About keeps the canonical entity names).
+- Verified already fixed: Bing scan 04.10 issues (missing description, alt, long titles, multiple H1) = 0 on current build; IndexNow submits HTML only.
+- Next action — E3 decision (car-hauler city pages: Bing has them indexed, so de-indexing has a cost); accept — owner choice recorded in the matrix.
+
+## 2026-10-27 — Claude Code — #2134 LIVE; entity: Clutch + Facebook sameAs
+
+- #2134 merged 213e125a: RU direction 404 redirects, meta descriptions ≤160, owner-approved Logistics desk phone +1 (351) 777-5337 (calls/text, Mon–Sat 6–18 CT) on dispatch and vehicle-transport pages and /contacts/ (ContactPoint). Live readback OK.
+- Brand SERP 27.10: site absent from top 75 for "hermes logistics"; own Instagram #3, Facebook #6, Clutch #9. Backlinks: 2,739 referring domains, 3 real; owner uploaded disavow (2,732 domains) 27.10.
+- This slice: Clutch and Facebook (owner-confirmed) added to `#logistics` sameAs via `public-entity-registry.ts`; canonical facts section G updated.
+- Next action — owner: Google Business Profile, Clutch description/reviews (brief given to ChatGPT), optional Facebook intro/name fix; accept — GSC position for "hermes logistics" on 2026-11-23.
+
+
+## 2026-10-27 — ChatGPT/Codex — case-study funnel measurement slice
+
+- Branch: `codex/case-funnel-20261027` from current main `e6f6cd01ca6b36e3cbbbf0192a1cdd47f222a5ff`.
+- Scope: Case Studies family only. Existing visible case content, destinations, URLs, H1/title/canonical/hreflang and proof claims remain unchanged.
+- What changed: added one reusable `CaseStudyFunnelAnalytics` helper using the already-approved `case_opened` / `case_study_cta` hooks; wired only the existing commercial next-step CTA on the case hub, Appleton SEO case and IT-development case. Product-view/internal-anchor actions are not counted as commercial conversion.
+- Governance correction: current main already contains the shared `DirectionStory` proof/status block on `/paths/*`; task 9 is narrowed to proof-fact verification + remaining off-family accent cleanup, not creation of a duplicate proof section.
+- Tests: `npm run build` PASS — 435 pages built. Focused Playwright PASS — 12/12 across desktop + mobile for existing case visual contract and new funnel analytics contract.
+- Status: SOURCE/LOCAL VERIFIED only. Keep Coverage row 11 `PARTIAL` until merge, deployment and 1440/390 production readback.
+- Next: open bounded PR; then take Resources/Guides as a separate family slice using the existing SEO/website/carrier/vehicle-transport analytics owners rather than adding a second tracker.
+
+## 2026-10-28 — Claude Code — carrier (car hauling) SEO audit slice
+
+- Branch: `claude/beautiful-mendel-lknlyq` from current main.
+- Audit evidence (GSC via connector, 2026-07-31 → 2026-10-28): carrier queries ("car hauler dispatch", "car hauler load board", "car hauling loads") rank at positions ~40–80 with 0 clicks; the only carrier clicks come from `/careers/car-hauling-dispatcher/` (pos 6) and the capacity checklist (pos 8). Google AI Overview citations: hermeslogisticsus.com 0, resolute-logistics.com 212.
+- Fixed in this slice: 33 carrier-cluster meta descriptions no longer cut off with "…" (25 car-hauler-loads markets via `CarHaulerGeoPage.astro`, the markets hub, owner-operator / new-authority / fleet-owner dispatch support, two carrier resources); `/logistics/` (parent of every carrier URL) now 301s to `/paths/logistics/` instead of 404; the Logistics hub service-guide list now leads with carrier pages and links the car-hauler-loads markets hub.
+- Owner decisions open: markets hub title/H1 still "Car Hauler Operating Markets & Route-Fit Research" (proposed "Car Hauler Loads by Market"); `/load-board/?role=*` variants are indexed as separate URLs despite the canonical; thin `/logistics/carrier/` overlaps `/logistics/car-hauling-dispatch/`; recruiting phone +1 (414) 269-7377 vs the one-public-phone rule.
+- Next: re-read GSC positions for the carrier query set on 2026-11-23.

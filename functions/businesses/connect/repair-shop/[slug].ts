@@ -1,4 +1,5 @@
 import { repairCatalogPublication, REPAIR_CATALOG_CACHE_CONTROL } from "../../../api/_lib/repair-catalog-publication.mjs";
+import { conciseDescription, HERMES_MARK_IMG } from "../../../api/_lib/catalog-profile-chrome.mjs";
 import { ensureRepairShopProfileSchema } from "../../../api/_lib/repair-shop-schema.mjs";
 import { ensureRepairShopAvailabilitySchema } from "../../../api/_lib/repair-shop-availability-schema.mjs";
 import { ensureServiceContextSchema, listServicesForContext } from "../../../api/_lib/service-context.mjs";
@@ -204,7 +205,7 @@ export async function onRequestGet({ env, params }: { env: Env; params: { slug?:
     .site-top-inner{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:72px}
     .brand{display:inline-flex;align-items:center;gap:10px;text-decoration:none;font-size:18px;font-weight:850;letter-spacing:-.03em}
     .brand em{font-size:12px;font-style:normal;font-weight:750;color:#5e7188;letter-spacing:0}
-    .mark{display:inline-grid;place-items:center;width:34px;height:34px;border:1px solid #ced9e5;border-radius:9px;color:#1763a8}
+    .hermes-mark{display:block;width:34px;height:34px;border-radius:9px;flex:none}
     .top-link{font-size:13px;font-weight:750;color:#235f9b;text-underline-offset:3px}
     .shell{padding:26px 0 72px}.crumb{margin:0 0 24px;color:#61748a;font-size:13px}.crumb a{color:#235f9b;text-decoration:none;font-weight:750}
     .hero{position:relative;overflow:hidden;padding:clamp(26px,5vw,58px);border:1px solid #dce7f1;border-radius:24px;background:linear-gradient(125deg,#fff 55%,#eef6ff);box-shadow:0 18px 48px rgba(24,62,107,.07)}
@@ -230,10 +231,10 @@ export async function onRequestGet({ env, params }: { env: Env; params: { slug?:
   const html = `<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>${esc(row.name)} | Auto Repair in ${esc(location)} | Hermes Catalog</title>
-<meta name="description" content="${esc(description)}"><link rel="canonical" href="${canonical}">
+<meta name="description" content="${esc(conciseDescription(description))}"><link rel="canonical" href="${canonical}">
 <meta name="robots" content="index,follow"><meta property="og:type" content="website"><meta property="og:title" content="${esc(row.name)} | Auto Repair in ${esc(location)}"><meta property="og:description" content="${esc(description)}"><meta property="og:url" content="${canonical}"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="${esc(row.name)} | Auto Repair in ${esc(location)}"><meta name="twitter:description" content="${esc(description)}"><script type="application/ld+json">${jsonLd(schema)}</script><style>${css}</style></head>
 <body><a class="skip" href="#main-content">Skip to content</a>
-<header class="site-top"><div class="site-top-inner"><a class="brand" href="/businesses/"><span class="mark" aria-hidden="true">H</span>Hermes <em>Catalog</em></a><a class="top-link" href="/businesses/">Browse businesses</a></div></header>
+<header class="site-top"><div class="site-top-inner"><a class="brand" href="/businesses/">${HERMES_MARK_IMG}Hermes <em>Catalog</em></a><a class="top-link" href="/businesses/">Browse businesses</a></div></header>
 <main class="shell" id="main-content"><nav class="crumb" aria-label="Breadcrumb"><a href="/businesses/">Hermes Catalog</a> / ${esc(location)} / ${esc(row.name)}</nav>
 <article><header class="hero"><p class="eyebrow">Auto repair · ${esc(location)}</p><span class="status">Profile details awaiting owner review</span>
 <h1>${esc(row.name)}</h1><p class="location">${esc(addressText || location)}</p>
@@ -256,5 +257,16 @@ export async function onRequestGet({ env, params }: { env: Env; params: { slug?:
       "Content-Type": "text/html; charset=utf-8",
       "Cache-Control": REPAIR_CATALOG_CACHE_CONTROL,
     },
+  });
+}
+
+
+export async function onRequestHead(context: any) {
+  const response = await onRequestGet(context);
+  try { await response.body?.cancel(); } catch {}
+  return new Response(null, {
+    status: response.status,
+    statusText: response.statusText,
+    headers: response.headers,
   });
 }

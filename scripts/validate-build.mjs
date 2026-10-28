@@ -79,7 +79,8 @@ const routes = [
   },
   { path: "logistics/shipper-dealer/index.html", required: ["Shipper or dealer", "Post a load", "Automatic review", "Email Logistics Sales", "mailto:officeus@hermeslogisticsus.com"] },
   { path: "logistics/broker/index.html", required: ["Broker", "Open broker Load Board", "Carrier capacity", "Email Logistics Sales", "mailto:officeus@hermeslogisticsus.com"] },
-  { path: "logistics/carrier/index.html", required: ["Carrier or owner-operator", "Open Load Board", "Email Logistics Sales", "mailto:officeus@hermeslogisticsus.com"] },
+  // /logistics/carrier/ merged into the dispatch service page on 2026-10-28; the carrier journey lives there now.
+  { path: "logistics/car-hauling-dispatch/index.html", required: ["Start dispatch review", "Review plans and carrier packet", "Open the Car Hauling Load Board", "mailto:officeus@hermeslogisticsus.com"] },
   { path: "logistics/agency/index.html", required: ["Open an agency", "Start agency application", "remote logistics agency"] },
   { path: "logistics/careers/index.html", required: ["Work with us", "Start job application", "Explore training first"] },
   { path: "logistics/apply/index.html", required: ["Logistics Application", "Application type", "data-logistics-application", "data-application-result-copy"] },
@@ -128,7 +129,7 @@ const routes = [
       "No guaranteed load",
       "No guaranteed rate or revenue",
       "does not create an account, approve a carrier",
-      "/logistics/carrier/",
+      "/logistics/car-hauling-dispatch/",
       "/logistics/start-car-hauling-dispatch/",
       "/carrier/",
     ],
@@ -170,7 +171,13 @@ if (!html.includes('hreflang="it"')) {
 function validateStructuredData(pageHtml, pageName) {
   const matches = [...pageHtml.matchAll(/<script[^>]+type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/g)];
   if (matches.length === 0) throw new Error(`Structured data missing in ${pageName}`);
-  for (const match of matches) JSON.parse(match[1]);
+  for (const match of matches) {
+    const parsed = JSON.parse(match[1]);
+    // One entity per block: a top-level array crashes Microsoft Clarity's JSON-LD reader.
+    if (Array.isArray(parsed) || typeof parsed?.["@context"] !== "string") {
+      throw new Error(`Structured data in ${pageName} must be one entity object with a string @context per block`);
+    }
+  }
 }
 
 // The homepage is deliberately an entrance, not a catalogue. Rich service/product/contact
@@ -323,15 +330,21 @@ for (const localePath of ["/ua/", "/ru/", "/es/", "/it/", "/fr/"]) {
 if (!html.includes("/contacts/") && !html.includes("contacts/")) throw new Error("Homepage/footer contacts link missing");
 if (!sitemap.includes("/contacts/")) throw new Error("Sitemap entry missing for contacts");
 if (!sitemap.includes("/load-board/")) throw new Error("Sitemap entry missing for Load Board");
-for (const path of ["shipper-dealer", "broker", "carrier", "agency", "careers"]) {
+for (const path of ["shipper-dealer", "broker", "agency", "careers"]) {
   if (!sitemap.includes(`/logistics/${path}/`)) throw new Error(`Sitemap entry missing for logistics audience: ${path}`);
 }
+// The carrier audience merged into the dispatch service page; it must not come back as a second sitemap owner.
+if (sitemap.includes("/logistics/carrier/")) throw new Error("Merged /logistics/carrier/ must not return to the sitemap");
 if (!sitemap.includes("/logistics/apply/")) throw new Error("Sitemap entry missing for logistics application");
 if (!sitemap.includes("/logistics/appleton-wi-vehicle-transport/")) throw new Error("Sitemap entry missing for Appleton vehicle transport");
 if (!sitemap.includes("/logistics/resources/auction-vehicle-pickup-checklist/")) throw new Error("Sitemap entry missing for auction pickup checklist");
 if (!sitemap.includes("/logistics/resources/car-hauler-capacity-checklist/")) throw new Error("Sitemap entry missing for car hauler capacity checklist");
 
 const forbidden = [
+  // Internal engineering jargon that must never reach customers (owner review 2026-10-28).
+  "truthful states",
+  "connect ≠ writable",
+  "deploy ≠ live",
   "guaranteed income",
   "guaranteed employment",
   "10,000+ students",
@@ -344,9 +357,7 @@ const forbidden = [
   "anastasia, logistics student",
   "+17182234736",
   "+14754414301",
-  "+13517775337",
   "+17176966829",
-  "+1 (351) 777-5337",
   "+1 (717) 696-6829",
   "Box Truck Department",
   "Public contact listed by Hermes Logistics on Instagram",
@@ -376,8 +387,10 @@ for (const claim of forbidden) {
 const publicTelephoneTargets = new Set(
   publicPages.flatMap(([, pageHtml]) => [...pageHtml.matchAll(/href="tel:([^"]+)"/g)].map((match) => match[1])),
 );
-if (publicTelephoneTargets.size !== 0) {
-  throw new Error(`Public Hermes pages must remain email/form-only until a dedicated Logistics number is approved: ${[...publicTelephoneTargets].join(", ")}`);
+// The only approved public number is the Logistics desk line (docs/CANONICAL_COMPANY_FACTS_APPROVAL.md, 2026-10-27).
+const unapprovedTelephoneTargets = [...publicTelephoneTargets].filter((target) => target !== "+13517775337");
+if (unapprovedTelephoneTargets.length !== 0) {
+  throw new Error(`Public Hermes pages may only publish the owner-approved Logistics desk phone: ${unapprovedTelephoneTargets.join(", ")}`);
 }
 
 for (const term of publicForbiddenInternalTerms) {
@@ -421,6 +434,9 @@ const allHtmlFiles = await collectHtmlFiles(dist);
 const generatedPages = await Promise.all(
   allHtmlFiles.map(async (path) => [path, await readFile(join(dist, path), "utf8")]),
 );
+for (const [path, pageHtml] of generatedPages) {
+  if (pageHtml.includes('type="application/ld+json"')) validateStructuredData(pageHtml, path);
+}
 
 for (const [pageName, pageHtml] of generatedPages) {
   if (pageHtml.includes("/cdn-cgi/l/email-protection")) {

@@ -1,5 +1,17 @@
 # Hermes website decision register
 
+## Current commercial pricing override — 2026-10-26
+
+Website commercial pricing is owned by the CEO-approved Drive source `WEB PRICING & SALES SYSTEM — CURRENT — 2026-10-26` and its quote calculator.
+
+Current ladder: **Launch $990 · Business Growth Website $2,790 (hero/default) · Growth Website System $5,490 · Signature from $9,990 · Platform / Custom from $15,000–$25,000+**.
+
+Recurring is separate: Website Care $99/mo; Care+ $249/mo; Local SEO $690/mo; SEO + GEO Growth $1,290/mo; Multi-Location SEO/GEO from $2,490/mo.
+
+The July entries below describing a public `$25-$45/hour` delivery rate, `$3k` entry point, or earlier package ranges are **HISTORICAL / SUPERSEDED** and must not be reused as current public/customer quote language. They remain in this register only as dated provenance.
+
+No package or redesign may promise rankings, traffic, leads, revenue, ROI, or a fixed delivery date before discovery. Platform/software scope remains separate from ordinary website packages.
+
 ## Current production override — 2026-10-18
 
 Use current `main` and production readback before any historical snapshot below. The following slices are already implemented and must not be rebuilt from older branches:

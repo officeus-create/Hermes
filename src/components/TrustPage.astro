@@ -2,6 +2,7 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import SiteFooter from "./SiteFooter.astro";
 import SiteHeader from "./SiteHeader.astro";
+import DirectionRouter from "./DirectionRouter.astro";
 
 type TrustSection = {
   title: string;
@@ -20,9 +21,10 @@ interface Props {
   actionLabel?: string;
   actionHref?: string;
   extraSchema?: Record<string, unknown>[];
+  directionRouter?: boolean;
 }
 
-const { title, description, eyebrow, h1, intro, reviewedAt, sections, actionLabel, actionHref, extraSchema = [] } = Astro.props;
+const { title, description, eyebrow, h1, intro, reviewedAt, sections, actionLabel, actionHref, extraSchema = [], directionRouter = false } = Astro.props;
 const canonical = `https://hermeslogisticsus.com${Astro.url.pathname}`;
 const schema = [
   {
@@ -77,6 +79,7 @@ const schema = [
             </div>
           </article>
         ))}
+        {directionRouter && <DirectionRouter />}
         <aside class="trust-contact" aria-label="Trust and policy contact">
           <div>
             <p class="eyebrow">Questions or corrections</p>

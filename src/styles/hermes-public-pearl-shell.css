@@ -1,0 +1,331 @@
+/* Hermes public Pearl shell — brand migration wave A (2026-10-26).
+   Moves the legacy dark public page heads (navy/obsidian heroes) onto the approved Home /
+   direction grammar: Pearl field with a quiet direction tint, ink display type, mono eyebrow
+   with a 4px direction bar, white ghost actions and white cards.
+   Product accents stay on purpose (docs/design/HERMES_UNIFIED_BRAND_SYSTEM.md §2): Insights
+   (indigo field), Load Board (night), Hermes Connect workspaces and Obsidian product panels are
+   NOT listed here. Photo-led localized heroes (.localized-hero, .localized-owner-hero) get the
+   Home live-window structure below (wave B): the photo becomes a rounded media window. Colour/surface only: copy, links, H1, schema and form hooks are untouched. */
+
+:root {
+  --pearl-shell-text: var(--hermes-ink, #0b0d12);
+  --pearl-shell-body: #4a505c;
+  --pearl-shell-quiet: #5f6573;
+  --pearl-shell-line: rgba(10, 22, 79, .12);
+}
+
+html body :is(
+  .carrier-geo-hero,
+  .hub-hero,
+  .logistics-audience-hero,
+  .career-hero,
+  .career-job-hero,
+  .case-hub-hero,
+  .case-study-hero,
+  .seo-case-hero,
+  .legal-hero,
+  .pdf-review-hero,
+  .agreement-hero,
+  .offer-hero,
+  .onboarding-hero,
+  .transport-request-hero,
+  .dispatch-start-hero,
+  .appleton-hero,
+  .sign-hero,
+  .localized-hero,
+  .localized-owner-hero,
+  .logistics-resource-page:not(.content-insight-page) .resource-hero,
+  main.not-found
+) {
+  --pearl-accent: var(--family-accent, var(--hermes-logistics, #2f6bf6));
+  color: var(--pearl-shell-text);
+  background:
+    radial-gradient(circle at 88% 0%, color-mix(in srgb, var(--pearl-accent) 11%, transparent), transparent 34rem),
+    var(--hermes-pearl, #f7f6f3);
+}
+
+/* Direction tint follows the page family (H mark palette). */
+html body .logistics-resource-page.academy-public-page:not(.content-insight-page) .resource-hero { --pearl-accent: var(--hermes-academy, #12b886); }
+
+/* The scope list is repeated per rule so every override outranks the template's own scoped
+   colour (class + data-astro-cid). */
+html body :is(.carrier-geo-hero, .hub-hero, .logistics-audience-hero, .career-hero, .career-job-hero, .case-hub-hero, .case-study-hero, .seo-case-hero, .legal-hero, .pdf-review-hero, .agreement-hero, .offer-hero, .onboarding-hero, .transport-request-hero, .dispatch-start-hero, .appleton-hero, .sign-hero, .localized-hero, .localized-owner-hero, .logistics-resource-page:not(.content-insight-page) .resource-hero, main.not-found) :is(h1, h2, h3, h4, strong, b, dt):not(.button *) {
+  color: var(--pearl-shell-text);
+}
+
+html body :is(.carrier-geo-hero, .hub-hero, .logistics-audience-hero, .career-hero, .career-job-hero, .case-hub-hero, .case-study-hero, .seo-case-hero, .legal-hero, .pdf-review-hero, .agreement-hero, .offer-hero, .onboarding-hero, .transport-request-hero, .dispatch-start-hero, .appleton-hero, .sign-hero, .localized-hero, .localized-owner-hero, .logistics-resource-page:not(.content-insight-page) .resource-hero, main.not-found) :is(p, li, dd, small, figcaption, label, td, th, time, span):not(.eyebrow, .button *, .button) {
+  color: var(--pearl-shell-body);
+}
+
+html body :is(.carrier-geo-hero, .hub-hero, .logistics-audience-hero, .career-hero, .career-job-hero, .case-hub-hero, .case-study-hero, .seo-case-hero, .legal-hero, .pdf-review-hero, .agreement-hero, .offer-hero, .onboarding-hero, .transport-request-hero, .dispatch-start-hero, .appleton-hero, .sign-hero, .localized-hero, .localized-owner-hero, .logistics-resource-page:not(.content-insight-page) .resource-hero, main.not-found) :is(nav, nav *, .detail-back, a:not(.button)) {
+  color: var(--pearl-shell-quiet);
+}
+
+html body :is(.carrier-geo-hero, .hub-hero, .logistics-audience-hero, .career-hero, .career-job-hero, .case-hub-hero, .case-study-hero, .seo-case-hero, .legal-hero, .pdf-review-hero, .agreement-hero, .offer-hero, .onboarding-hero, .transport-request-hero, .dispatch-start-hero, .appleton-hero, .sign-hero, .localized-hero, .localized-owner-hero, .logistics-resource-page:not(.content-insight-page) .resource-hero, main.not-found) :is(nav [aria-current], a:not(.button):hover) {
+  color: var(--pearl-shell-text);
+}
+
+/* Lines drawn for a dark field become hairlines on Pearl (border-color never adds a border). */
+html body :is(.carrier-geo-hero, .hub-hero, .logistics-audience-hero, .career-hero, .career-job-hero, .case-hub-hero, .case-study-hero, .seo-case-hero, .legal-hero, .pdf-review-hero, .agreement-hero, .offer-hero, .onboarding-hero, .transport-request-hero, .dispatch-start-hero, .appleton-hero, .sign-hero, .localized-hero, .localized-owner-hero, .logistics-resource-page:not(.content-insight-page) .resource-hero, main.not-found) *:not(.button-primary) {
+  border-color: var(--pearl-shell-line);
+}
+
+/* Eyebrow: mono, letter-spaced, 4px direction bar (approved Home / direction pattern). */
+html body :is(.carrier-geo-hero, .hub-hero, .logistics-audience-hero, .career-hero, .career-job-hero, .case-hub-hero, .case-study-hero, .seo-case-hero, .legal-hero, .pdf-review-hero, .agreement-hero, .offer-hero, .onboarding-hero, .transport-request-hero, .dispatch-start-hero, .appleton-hero, .sign-hero, .localized-hero, .localized-owner-hero, .logistics-resource-page:not(.content-insight-page) .resource-hero, main.not-found) .eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: .65rem;
+  color: var(--pearl-shell-body);
+}
+html body :is(.carrier-geo-hero, .hub-hero, .logistics-audience-hero, .career-hero, .career-job-hero, .case-hub-hero, .case-study-hero, .seo-case-hero, .legal-hero, .pdf-review-hero, .agreement-hero, .offer-hero, .onboarding-hero, .transport-request-hero, .dispatch-start-hero, .appleton-hero, .sign-hero, .localized-hero, .localized-owner-hero, .logistics-resource-page:not(.content-insight-page) .resource-hero, main.not-found) > .shell .eyebrow:first-of-type::before,
+html body :is(.carrier-geo-hero, .hub-hero, .logistics-audience-hero, .career-hero, .career-job-hero, .case-hub-hero, .case-study-hero, .seo-case-hero, .legal-hero, .pdf-review-hero, .agreement-hero, .offer-hero, .onboarding-hero, .transport-request-hero, .dispatch-start-hero, .appleton-hero, .sign-hero, .localized-hero, .localized-owner-hero, .logistics-resource-page:not(.content-insight-page) .resource-hero, main.not-found) > .shell > div > .eyebrow::before {
+  flex: none;
+  width: 4px;
+  height: 15px;
+  border-radius: 2px;
+  background: var(--pearl-accent);
+  content: "";
+}
+
+/* Actions: ink pill primary, white ghost secondary. */
+html body :is(.carrier-geo-hero, .hub-hero, .logistics-audience-hero, .career-hero, .career-job-hero, .case-hub-hero, .case-study-hero, .seo-case-hero, .legal-hero, .pdf-review-hero, .agreement-hero, .offer-hero, .onboarding-hero, .transport-request-hero, .dispatch-start-hero, .appleton-hero, .sign-hero, .localized-hero, .localized-owner-hero, .logistics-resource-page:not(.content-insight-page) .resource-hero, main.not-found) .button {
+  border-radius: var(--hermes-radius-pill, 999px);
+}
+html body :is(.carrier-geo-hero, .hub-hero, .logistics-audience-hero, .career-hero, .career-job-hero, .case-hub-hero, .case-study-hero, .seo-case-hero, .legal-hero, .pdf-review-hero, .agreement-hero, .offer-hero, .onboarding-hero, .transport-request-hero, .dispatch-start-hero, .appleton-hero, .sign-hero, .localized-hero, .localized-owner-hero, .logistics-resource-page:not(.content-insight-page) .resource-hero, main.not-found) .button-primary {
+  border-color: transparent;
+  background: var(--hermes-action-ink, #0a164f);
+  color: #fff;
+}
+html body :is(.carrier-geo-hero, .hub-hero, .logistics-audience-hero, .career-hero, .career-job-hero, .case-hub-hero, .case-study-hero, .seo-case-hero, .legal-hero, .pdf-review-hero, .agreement-hero, .offer-hero, .onboarding-hero, .transport-request-hero, .dispatch-start-hero, .appleton-hero, .sign-hero, .localized-hero, .localized-owner-hero, .logistics-resource-page:not(.content-insight-page) .resource-hero, main.not-found) .button-primary :is(span, svg) {
+  color: #fff;
+}
+html body :is(.carrier-geo-hero, .hub-hero, .logistics-audience-hero, .career-hero, .career-job-hero, .case-hub-hero, .case-study-hero, .seo-case-hero, .legal-hero, .pdf-review-hero, .agreement-hero, .offer-hero, .onboarding-hero, .transport-request-hero, .dispatch-start-hero, .appleton-hero, .sign-hero, .localized-hero, .localized-owner-hero, .logistics-resource-page:not(.content-insight-page) .resource-hero, main.not-found) .button:not(.button-primary) {
+  border-color: rgba(10, 22, 79, .16);
+  background: #fff;
+  color: var(--pearl-shell-text);
+}
+
+/* Cards and side panels that were glass on the dark field become white cards. */
+html body :is(.carrier-geo-hero, .hub-hero, .logistics-audience-hero, .career-hero, .career-job-hero, .case-hub-hero, .case-study-hero, .seo-case-hero, .legal-hero, .pdf-review-hero, .agreement-hero, .offer-hero, .onboarding-hero, .transport-request-hero, .dispatch-start-hero, .appleton-hero, .sign-hero, .localized-hero, .localized-owner-hero, .logistics-resource-page:not(.content-insight-page) .resource-hero, main.not-found) :is(aside, [class*="card"], [class*="panel"], [class*="summary"], [class*="facts"]):not(.button) {
+  border-color: var(--pearl-shell-line);
+  background: #fff;
+  box-shadow: 0 1rem 2.6rem rgba(10, 22, 79, .07);
+  backdrop-filter: none;
+}
+html body :is(.carrier-geo-hero, .hub-hero, .logistics-audience-hero, .career-hero, .career-job-hero, .case-hub-hero, .case-study-hero, .seo-case-hero, .legal-hero, .pdf-review-hero, .agreement-hero, .offer-hero, .onboarding-hero, .transport-request-hero, .dispatch-start-hero, .appleton-hero, .sign-hero, .localized-hero, .localized-owner-hero, .logistics-resource-page:not(.content-insight-page) .resource-hero, main.not-found) img {
+  box-shadow: 0 30px 80px rgba(10, 22, 79, .14);
+}
+
+/* Legal & Compliance: the page canvas above the hero follows the same Pearl field. */
+html body main.legal-page:has(> .legal-hero) { background: var(--hermes-pearl, #f7f6f3); }
+
+/* Wave B — localized overview + direction-owner heroes: photo background → live window. */
+html body main.localized-owner.localized-owner--academy .localized-owner-hero { --pearl-accent: var(--hermes-academy, #12b886); }
+html body main.localized-owner.localized-owner--marketing .localized-owner-hero { --pearl-accent: var(--hermes-marketing, #ff7a59); }
+html body main.localized-owner.localized-owner--technology .localized-owner-hero { --pearl-accent: var(--hermes-technology, #38b6f5); }
+
+html body main:is(.localized-overview, .localized-owner) :is(.localized-hero, .localized-owner-hero) {
+  display: block;
+  min-height: 680px;
+  padding: 8.5rem 0 4.5rem;
+}
+html body main:is(.localized-overview, .localized-owner) :is(.localized-hero-shade, .localized-owner-hero-media::after) { display: none; }
+html body main:is(.localized-overview, .localized-owner) .localized-owner-hero-media::after { content: none; }
+html body main:is(.localized-overview, .localized-owner) :is(.localized-hero > picture, .localized-owner-hero-media) {
+  position: absolute;
+  inset: 8.5rem max(24px, calc((100vw - var(--content-max-width, 1280px)) / 2 + 24px)) 4.5rem auto;
+  width: min(40vw, 620px);
+  height: auto;
+  overflow: hidden;
+  border-radius: 28px;
+  box-shadow: 0 30px 80px rgba(10, 22, 79, .14);
+}
+html body main:is(.localized-overview, .localized-owner) :is(.localized-hero > picture img, .localized-owner-hero-media img) {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  box-shadow: none;
+}
+html body main:is(.localized-overview, .localized-owner) :is(.localized-hero-content, .localized-owner-hero-grid) {
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 0;
+  padding-right: calc(min(40vw, 620px) + 3rem);
+}
+/* The owner grid was full-bleed (width:100%), so its text touched the screen edge; restore the shell gutter. */
+html body main.localized-owner .localized-owner-hero-grid { width: min(calc(100% - 3rem), var(--content-max-width)); }
+html body main:is(.localized-overview, .localized-owner) :is(.localized-hero .hero-actions .button, .localized-owner-hero .hero-actions .button) { min-height: 50px; }
+html body main:is(.localized-overview, .localized-owner) .localized-hero .button-ghost,
+html body main:is(.localized-overview, .localized-owner) .localized-owner-hero .button-ghost {
+  border-color: rgba(10, 22, 79, .16);
+  background: #fff;
+  color: var(--pearl-shell-text);
+}
+
+@media (max-width: 900px) {
+  html body main:is(.localized-overview, .localized-owner) :is(.localized-hero, .localized-owner-hero) {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    padding: 7.5rem 0 2.5rem;
+  }
+  html body main:is(.localized-overview, .localized-owner) :is(.localized-hero > picture, .localized-owner-hero-media) {
+    position: relative;
+    inset: auto;
+    order: 2;
+    width: auto;
+    margin: 2rem 16px 0;
+    aspect-ratio: 4 / 3;
+  }
+  html body main:is(.localized-overview, .localized-owner) :is(.localized-hero-content, .localized-owner-hero-grid) { padding-left: 0; padding-right: 0; }
+}
+
+/* Narrow screens: long words in display headings break at syllables (lang-aware) instead of
+   mid-word, e.g. Spanish "concesionarios" at 390px. */
+@media (max-width: 480px) {
+  html body main :is(h1, h2) { hyphens: auto; -webkit-hyphens: auto; }
+}
+
+/* Direction families (execution brief phases 2–5): direction accents — eyebrows, step numbers, active
+   states, focus rings — follow the H-mark Logistics blue instead of Intelligence violet. The
+   tokens are rerouted for every var() consumer; hard-coded legacy violet is listed below. */
+body[data-direction-family="logistics"] {
+  --family-accent: var(--hermes-logistics, #2f6bf6);
+  --family-accent-text: color-mix(in srgb, var(--hermes-logistics, #2f6bf6) 82%, var(--hermes-ink, #0b0d12));
+}
+body[data-direction-family="technology"] {
+  --family-accent: var(--hermes-technology, #38b6f5);
+  --family-accent-text: color-mix(in srgb, var(--hermes-technology, #38b6f5) 52%, var(--hermes-ink, #0b0d12));
+}
+body[data-direction-family="academy"] {
+  --family-accent: var(--hermes-academy, #12b886);
+  --family-accent-text: color-mix(in srgb, var(--hermes-academy, #12b886) 55%, var(--hermes-ink, #0b0d12));
+}
+body[data-direction-family="marketing"] {
+  --family-accent: var(--hermes-marketing, #ff7a59);
+  --family-accent-text: color-mix(in srgb, var(--hermes-marketing, #ff7a59) 58%, var(--hermes-ink, #0b0d12));
+}
+/* Same-hue readable mixes as hermes-public-division-colors.css (AA on Pearl). */
+body[data-direction-family] {
+  --family-accent-on-dark: color-mix(in srgb, var(--family-accent) 42%, #fff);
+  --hermes-violet-text: var(--family-accent-text);
+  --hermes-violet-on-dark: var(--family-accent-on-dark);
+}
+html body[data-direction-family] :is(
+  .carrier-geo-grid article > span:first-child,
+  .logistics-audience-grid span,
+  .logistics-audience-steps span,
+  .recommendation-explanation li svg,
+  .recommendation-case li svg,
+  .recommendation-included-grid span,
+  .recommendation-next ol span,
+  .path-engine-toolbar button:hover,
+  .path-engine-toolbar button:focus-visible
+) {
+  color: var(--family-accent-text);
+}
+html body[data-direction-family] :is(.carrier-geo-dark, .recommendation-cta, .commercial-final-card, .logistics-audience-final-card) .eyebrow,
+html body[data-direction-family] .carrier-geo-support-list li span {
+  color: var(--family-accent-on-dark);
+}
+html body[data-direction-family] .path-engine-progress i {
+  background: linear-gradient(90deg, var(--family-accent), color-mix(in srgb, var(--family-accent) 70%, #fff));
+}
+html body[data-direction-family] .recommendation-note {
+  border-left-color: var(--family-accent);
+  background: color-mix(in srgb, var(--family-accent) 7%, #fff);
+  color: var(--hermes-ink, #0b0d12);
+}
+html body[data-direction-family] .commercial-value-signal {
+  box-shadow: 0 0 .9rem color-mix(in srgb, var(--family-accent) 60%, transparent);
+}
+html body[data-direction-family] .commercial-value-section::before {
+  background: radial-gradient(circle, color-mix(in srgb, var(--family-accent) 10%, transparent), transparent 68%);
+}
+html body[data-direction-family] :is(.commercial-grid article:hover, .commercial-grid article:focus-within) {
+  border-color: color-mix(in srgb, var(--family-accent) 34%, transparent);
+}
+
+/* Logistics audience/path pages: the product sub-navigation keeps its links but uses the light,
+   attached direction-submenu grammar with a Logistics-blue active state. */
+html body[data-direction-family="logistics"] .logistics-product-nav {
+  background: rgba(255, 255, 255, .95);
+  color: #111324;
+  border-bottom-color: rgba(17, 19, 36, .1);
+}
+html body[data-direction-family="logistics"] .logistics-product-nav__links a:is(:hover, :focus-visible, [aria-current="page"]) {
+  border-color: color-mix(in srgb, var(--family-accent) 30%, transparent);
+  background: color-mix(in srgb, var(--family-accent) 9%, transparent);
+}
+html body[data-direction-family="logistics"] .logistics-product-nav__brand {
+  border-right-color: rgba(17, 19, 36, .16);
+}
+html body[data-direction-family="logistics"] .logistics-product-nav__brand span::before {
+  content: "";
+  display: inline-block;
+  width: 4px;
+  height: 12px;
+  margin-right: .45rem;
+  border-radius: 2px;
+  background: var(--family-accent);
+  vertical-align: -1px;
+}
+
+
+/* Body sections (execution brief phase 1 remainder; Brand System §1 "Bounded Focus Ink"): dark
+   reading surfaces — process lists, FAQs, boundaries, support lists, worked examples, partnership
+   copy — return to the light reading grammar. Focus Ink is kept for one bounded closing panel.
+   `main:not(#pearl-scope)` lifts specificity above Astro scoped rules (`.x[data-astro-cid-*]`). */
+html body main:not(#pearl-scope) :is(section.carrier-geo-dark, section.capacity-example, section.localized-owner-process, section.digital-boundary-section, section.localized-partnership, section.it-commercial-process, section.it-commercial-faq, section.resource-submit, section.case-study-qa, section.case-boundaries, section.appleton-planning, section.appleton-carrier-note, section.recommendation-case, body[data-direction-family] section.next) {
+  color: var(--pearl-shell-text);
+  background: var(--hermes-paper, #fbfaf8);
+}
+html body main:not(#pearl-scope) :is(section.carrier-geo-dark, section.capacity-example, section.localized-owner-process, section.digital-boundary-section, section.localized-partnership, section.it-commercial-process, section.it-commercial-faq, section.resource-submit, section.case-study-qa, section.case-boundaries, section.appleton-planning, section.appleton-carrier-note, section.recommendation-case, body[data-direction-family] section.next) :is(h2, h3, h4, strong, b, dt, summary):not(.button *) { color: var(--pearl-shell-text); }
+html body main:not(#pearl-scope) :is(section.carrier-geo-dark, section.capacity-example, section.localized-owner-process, section.digital-boundary-section, section.localized-partnership, section.it-commercial-process, section.it-commercial-faq, section.resource-submit, section.case-study-qa, section.case-boundaries, section.appleton-planning, section.appleton-carrier-note, section.recommendation-case, body[data-direction-family] section.next) :is(p, li, dd, small, figcaption, label, td, th, span):not(.eyebrow, .button, .button *) { color: var(--pearl-shell-body); }
+html body main:not(#pearl-scope) :is(section.carrier-geo-dark, section.capacity-example, section.localized-owner-process, section.digital-boundary-section, section.localized-partnership, section.it-commercial-process, section.it-commercial-faq, section.resource-submit, section.case-study-qa, section.case-boundaries, section.appleton-planning, section.appleton-carrier-note, section.recommendation-case, body[data-direction-family] section.next) a:not(.button) { color: var(--family-accent-text, var(--pearl-shell-body)); }
+html body main:not(#pearl-scope) :is(section.carrier-geo-dark, section.capacity-example, section.localized-owner-process, section.digital-boundary-section, section.localized-partnership, section.it-commercial-process, section.it-commercial-faq, section.resource-submit, section.case-study-qa, section.case-boundaries, section.appleton-planning, section.appleton-carrier-note, section.recommendation-case, body[data-direction-family] section.next) .eyebrow { color: var(--family-accent-text, var(--pearl-shell-body)); }
+html body main:not(#pearl-scope) :is(section.carrier-geo-dark, section.capacity-example, section.localized-owner-process, section.digital-boundary-section, section.localized-partnership, section.it-commercial-process, section.it-commercial-faq, section.resource-submit, section.case-study-qa, section.case-boundaries, section.appleton-planning, section.appleton-carrier-note, section.recommendation-case, body[data-direction-family] section.next) *:not(.button-primary) { border-color: var(--pearl-shell-line); }
+html body main:not(#pearl-scope) :is(section.carrier-geo-dark, section.capacity-example, section.localized-owner-process, section.digital-boundary-section, section.localized-partnership, section.it-commercial-process, section.it-commercial-faq, section.resource-submit, section.case-study-qa, section.case-boundaries, section.appleton-planning, section.appleton-carrier-note, section.recommendation-case, body[data-direction-family] section.next) :is(article, li, details, dl > div, [class*="card"], [class*="panel"], [class*="item"]):not(.button) {
+  background: #fff;
+  box-shadow: 0 .6rem 1.8rem rgba(10, 22, 79, .05);
+}
+html body main:not(#pearl-scope) :is(section.carrier-geo-dark, section.capacity-example, section.localized-owner-process, section.digital-boundary-section, section.localized-partnership, section.it-commercial-process, section.it-commercial-faq, section.resource-submit, section.case-study-qa, section.case-boundaries, section.appleton-planning, section.appleton-carrier-note, section.recommendation-case, body[data-direction-family] section.next) svg { color: var(--family-accent-text, var(--pearl-shell-body)); }
+html body main:not(#pearl-scope) :is(section.carrier-geo-dark, section.capacity-example, section.localized-owner-process, section.digital-boundary-section, section.localized-partnership, section.it-commercial-process, section.it-commercial-faq, section.resource-submit, section.case-study-qa, section.case-boundaries, section.appleton-planning, section.appleton-carrier-note, section.recommendation-case, body[data-direction-family] section.next) .button:not(.button-primary) { border-color: rgba(10, 22, 79, .16); background: #fff; color: var(--pearl-shell-text); }
+html body main:not(#pearl-scope) :is(section.carrier-geo-dark, section.capacity-example, section.localized-owner-process, section.digital-boundary-section, section.localized-partnership, section.it-commercial-process, section.it-commercial-faq, section.resource-submit, section.case-study-qa, section.case-boundaries, section.appleton-planning, section.appleton-carrier-note, section.recommendation-case, body[data-direction-family] section.next) .button-primary { background: var(--hermes-action-ink, #0a164f); color: #fff; }
+
+/* Closing calls to action: one bounded Focus Ink panel inside the content width instead of a
+   full-bleed dark band (same grammar as the approved commercial final card). */
+html body main:not(#pearl-scope) :is(section.recommendation-cta, section.localized-contact) { background: transparent; }
+html body main:not(#pearl-scope) :is(section.recommendation-cta, section.localized-contact) > .shell {
+  padding: clamp(1.75rem, 4vw, 3.25rem);
+  border-radius: var(--hermes-radius-panel, 30px);
+  background: #172033;
+  color: #fff;
+}
+html body main:not(#pearl-scope) section.digital-project-cta { background: transparent; }
+html body main:not(#pearl-scope) section.digital-project-cta > .digital-project-cta-card { padding: clamp(1.75rem, 4vw, 3.25rem); border-radius: var(--hermes-radius-panel, 30px); background: #172033; }
+html body main:not(#pearl-scope) section.digital-project-cta .eyebrow { color: var(--family-accent-on-dark, #c8bdff); }
+
+/* Dead clicks (search error matrix E13): these cards look clickable but only a small inner link worked.
+   The card now follows its single existing link (same href; the link stays the only focus stop). */
+html body main :is(article.insight-card, article.business-card, article.service-card, article.opportunity-card, article.technology-solution-card, article.technology-proof-item) { position: relative; cursor: pointer; }
+html body main :is(article.insight-card, article.business-card, article.service-card, article.opportunity-card, article.technology-solution-card, article.technology-proof-item) a[href] { position: static; }
+html body main :is(article.insight-card, article.business-card, article.service-card, article.opportunity-card, article.technology-solution-card, article.technology-proof-item) a[href]::after { content: ""; position: absolute; inset: 0; z-index: 1; border-radius: inherit; }
+
+/* Logistics family funnel: one primary action per hero. The third hero action (carrier capacity) stays, but reads as a
+   text link instead of a third button; legacy navy headings take the brand ink. */
+html body[data-direction-family] { --color-navy-900: var(--pearl-shell-text); }
+html body[data-direction-family="logistics"] main:not(#pearl-scope) .logistics-audience-actions > a.button:not(.button-primary):nth-of-type(n+3) {
+  min-height: 0;
+  padding: .35rem .15rem;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  color: var(--family-accent-text);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+/* Academy/Insight boundary cards and legacy violet links follow the page family (violet = Intelligence only). */
+html body[data-direction-family] { --color-violet-600: var(--family-accent-text); }
+html body[data-direction-family] main:not(#pearl-scope) .capacity-boundary-grid article { border-top-color: var(--family-accent); }

@@ -13,7 +13,7 @@ const insightUrl = (post: { direction: string; slug: string }) =>
 test("Insights discovery exposes URLs only for standalone articles", async ({ page }) => {
   await page.goto("/insights/");
 
-  const schemas = JSON.parse(await page.locator('script[type="application/ld+json"]').textContent() ?? "null");
+  const schemas = (await page.locator('script[type="application/ld+json"]').allTextContents()).map((text) => JSON.parse(text));
   const itemList = schemas.find((schema: { "@type": string }) => schema["@type"] === "ItemList");
   expect(itemList).toBeTruthy();
 

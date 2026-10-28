@@ -4,6 +4,7 @@ import "../styles/hermes-brand-system.css";
 import "../styles/hermes-connect-workspace.css";
 import "../styles/shared-resource.css";
 import "../styles/repair-company-schedule-polish.css";
+import "../styles/hermes-public-pearl-shell.css";
 import socialCardImage from "../assets/hermes-social-card.jpg";
 import CarrierContractJourney from "../components/CarrierContractJourney.astro";
 import CarrierContractSafetyEnhancer from "../components/CarrierContractSafetyEnhancer.astro";
@@ -72,6 +73,23 @@ const {
 const isRepairShopLaunchRoute = Astro.url.pathname.startsWith("/services/hermes-connect/repair-shops");
 const isRepairShopBookingRoute = Astro.url.pathname.replace(/\/+$/, "") === "/services/hermes-connect/repair-shops/booking";
 const isHermesConnectProductHub = Astro.url.pathname === "/services/hermes-connect/";
+// Public page family for direction-tinted accents (eyebrows, numbers, active states). Product
+// surfaces keep their own accents and are not tagged: Load Board, Hermes Connect, Insights and the
+// Catalog. The approved /paths/<direction>/ owners of Technology, Academy and Marketing keep their
+// reviewed styling; their inner pages follow the family.
+const familyPath = Astro.url.pathname;
+type DirectionFamily = "logistics" | "technology" | "academy" | "marketing";
+let directionFamilyValue: DirectionFamily | undefined;
+const directionFamilyPatterns: Array<[DirectionFamily, RegExp]> = [
+  ["logistics", /^\/(?:paths\/)?logistics\/|^\/carrier(?:-[a-z-]+)?\/|^\/(?:ru|ua|es|it|fr)\/(?:logistics|logistica|logistique)\//],
+  ["academy", /^\/academy\/|^\/(?:ru|ua|es|it|fr)\/(?:academy|academia|academie)\/|^\/(?:(?:ru|ua)\/)?gb\/london\/(?:academy|us-logistics-training|guides\/(?:b2-english-us-logistics|dispatcher-vs-load-planner|training-curriculum|us-logistics-roles))\//],
+  ["technology", /^\/services\/(?:website-|auto-repair-website-design\/)|^\/case\/it-development\/|^\/resources\/website-project-brief-template\/|^\/(?:ru|ua|es|it|fr)\/(?:technology|tecnologia|technologie)\/|^\/(?:(?:ru|ua)\/)?gb\/london\/(?:it-web-development|website-development|landing-page-development|crm-automation|guides\/small-business-website-guide)\//],
+  ["marketing", /^\/services\/(?:seo|local-seo)|^\/(?:(?:ru|ua)\/)?business-growth\/|^\/(?:ru|ua|es|it|fr)\/marketing\/|^\/resources\/(?:technical-seo-checklist|search-to-inquiry-conversion-checklist|logistics-seo-audit-sample)\/|^\/case\/appleton-vehicle-transport-seo\/|^\/(?:(?:ru|ua)\/)?gb\/london\/(?:marketing|seo-services|local-seo|marketing-audit|guides|meta-ads|social-media-management|google-business-profile|content-reels-scripts|[a-z-]+-marketing)\//],
+];
+for (const [family, pattern] of directionFamilyPatterns) {
+  if (pattern.test(familyPath)) { directionFamilyValue = family; break; }
+}
+const directionFamily = directionFamilyValue;
 const isHermesConnectExperienceRoute = Astro.url.pathname.startsWith("/services/hermes-connect") || Astro.url.pathname.startsWith("/load-board");
 const CLARITY_BLOCKED_PATH_PREFIXES = [
   "/services/hermes-connect",
@@ -131,7 +149,7 @@ const replaceRetiredPublicText = (value: unknown): unknown => {
   return value;
 };
 
-const conciseDescription = (value: string, maxLength = 170) => {
+const conciseDescription = (value: string, maxLength = 160) => {
   const normalized = value.replace(/\s+/g, " ").trim();
   if (normalized.length <= maxLength) return normalized;
 
@@ -160,6 +178,7 @@ const alternateOgLocales = alternates
 const safeSchema = schema
   ? replaceRetiredPublicText(schema) as Record<string, unknown> | Record<string, unknown>[]
   : undefined;
+const schemaEntities = safeSchema ? (Array.isArray(safeSchema) ? safeSchema : [safeSchema]) : [];
 ---
 
 <!doctype html>
@@ -270,12 +289,14 @@ const safeSchema = schema
         }
       }
     </script>
-    {safeSchema && <script is:inline type="application/ld+json" set:html={JSON.stringify(safeSchema)} />}
+    {/* One JSON-LD block per entity: a top-level array is valid JSON-LD, but third-party parsers
+        (Microsoft Clarity) read `["@context"]` on the parsed root and throw on arrays. */}
+    {schemaEntities.map((entity) => <script is:inline type="application/ld+json" set:html={JSON.stringify(entity)} />)}
     {isRepairShopBookingRoute && <script is:inline src="/repair-shop-public-read-dedupe.js"></script>}
     {isRepairShopLaunchRoute && <script is:inline src="/repair-shop-local-demo.js"></script>}
     <title>{title}</title>
   </head>
-  <body>
+  <body data-direction-family={directionFamily}>
     <!--email_off-->
     <a class="skip-link" href="#main-content">Skip to content</a>
     <slot />

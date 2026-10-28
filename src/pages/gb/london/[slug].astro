@@ -15,6 +15,10 @@ const {page}=Astro.props;
 const service=serviceBySlug[page.slug] ?? "marketing";
 const url=`https://hermeslogisticsus.com/gb/london/${page.slug}/`;
 const leadHref=`/business-growth/?utm_source=london&utm_medium=organic&utm_campaign=london-services&utm_content=${page.slug}&service=${service}`;
+const isIndustryPage=page.slug.endsWith("-marketing");
+const relatedPool=londonCommercialPages.filter((candidate)=>candidate.slug.endsWith("-marketing")===isIndustryPage);
+const relatedIndex=relatedPool.findIndex((candidate)=>candidate.slug===page.slug);
+const relatedPages=[1,2,3].map((offset)=>relatedPool[(relatedIndex+offset)%relatedPool.length]);
 const faq=[
  page.faq,
  {question:"What does the first London growth audit cover?",answer:"It reviews the current offer, website or landing path, search visibility, social and paid acquisition signals, tracking and follow-up, then identifies the smallest useful first test."},
@@ -53,6 +57,10 @@ const schema=[
       <p>{page.measurement}</p>
     </div></section>
 
+    <section class="section related-section" aria-labelledby="related-title"><div class="shell">
+      <div class="section-heading"><p class="eyebrow">Related London services</p><h2 id="related-title">Continue with the next capability that fits the same growth path.</h2></div>
+      <div class="related-grid">{relatedPages.map((related)=><a data-london-related href={`/gb/london/${related.slug}/`}><span>{related.eyebrow}</span><strong>{related.title.replace(" | Hermes","")}</strong></a>)}</div>
+    </div></section>
     <section class="section"><div class="shell faq"><h2>Questions before starting</h2>{faq.map(item=><details><summary>{item.question}</summary><p>{item.answer}</p></details>)}</div></section>
     <section class="section"><div class="shell boundary"><p><strong>Commercial boundary:</strong> platform spend, third-party fees and production costs are separate unless explicitly included. Search rankings, leads, sales and revenue are not guaranteed.</p></div></section>
   </main>
@@ -66,8 +74,12 @@ const schema=[
   .fit-card p:last-child,.measurement-card p:last-child{color:#55627d;line-height:1.75}
   .grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}
   .grid article{padding:1.35rem;border:1px solid #dce3f3;border-radius:12px}
+  .related-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}
+  .related-grid a{display:grid;gap:.45rem;padding:1.1rem;border:1px solid #dce3f3;border-radius:12px;color:#172033;text-decoration:none;background:#fff}
+  .related-grid span{color:#64718f;font-size:.8rem}
+  .related-grid strong{line-height:1.35}
   .grid h3{margin:.1rem 0 .65rem}
   .grid p,.faq p{color:#64718f;line-height:1.65}
   .faq{max-width:850px}.faq details{padding:1rem 0;border-bottom:1px solid #dce3f3}.faq summary{font-weight:800;cursor:pointer}
-  @media(max-width:800px){.grid{grid-template-columns:1fr}}
+  @media(max-width:800px){.grid,.related-grid{grid-template-columns:1fr}}
 </style>

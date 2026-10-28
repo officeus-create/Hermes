@@ -7,6 +7,7 @@ const redirects = await readFile(new URL("../public/_redirects", import.meta.url
 const middleware = await readFile(new URL("../functions/_middleware.js", import.meta.url), "utf8");
 const robots = await readFile(new URL("../public/robots.txt", import.meta.url), "utf8");
 assert.match(redirects, /^\/academy\/ \/paths\/academy\/ 301$/m, "retired /academy/ hub must redirect to canonical Academy direction");
+assert.match(redirects, /^\/logistics\/ \/paths\/logistics\/ 301$/m, "/logistics/ parent of every carrier page must reach the canonical Logistics direction, not 404");
 for (const [legacy, canonical] of [
   ["/resources/rpm-calculator/", "/logistics/resources/rpm-calculator/"],
   ["/tools/load-analyzer/", "/services/hermes-connect/load-analyzer/"],
@@ -14,6 +15,9 @@ for (const [legacy, canonical] of [
   ["/unified-inbox/", "/services/hermes-connect/unified-inbox/"],
 ]) {
   assert.ok(redirects.includes(`${legacy} ${canonical} 301`), `retired public owner must redirect: ${legacy}`);
+}
+for (const slug of ["logistics", "marketing", "technology", "academy"]) {
+  assert.ok(redirects.includes(`/ru/paths/${slug}/ /ru/${slug}/ 301`), `removed RU direction hub must redirect: /ru/paths/${slug}/`);
 }
 for (const gone of ["/dashboard", "/month", "/месяц", "/ rel=nofollow", "/\\uFFFC"]) {
   assert.ok(middleware.includes(`"${gone}"`), `stale crawl artifact must be explicitly retired: ${gone}`);
@@ -72,3 +76,5 @@ assert.deepEqual(extracted.sort(), [
 ].sort());
 
 console.log(`GSC indexing triage contract passed with ${sitemaps.size} current sitemap URL(s).`);
+
+assert.match(redirects, /^\/paths\/logistics\/broker-capacity\/ \/paths\/logistics\/brokers\/carrier-capacity\/ 301$/m, "retired broker-capacity path must redirect to the current broker carrier-capacity owner");

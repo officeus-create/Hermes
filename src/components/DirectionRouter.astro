@@ -1,0 +1,28 @@
+---
+import { site } from "../data/site";
+
+// Next step for brand-intent visitors (company-name searches): the four direction owners, server-rendered.
+const directionOrder = ["logistics", "technology", "academy", "marketing"];
+const directions = directionOrder.map((id) => site.paths.find((path) => path.id === id)).filter((path) => path !== undefined);
+---
+
+<section class="trust-directions" aria-labelledby="trust-directions-title">
+  <p class="eyebrow">Next step</p>
+  <h2 id="trust-directions-title">Choose the Hermes direction you need.</h2>
+  <div class="trust-direction-grid">
+    {directions.map((path) => (
+      <a class="trust-direction" data-direction={path.id} href={`/paths/${path.id}/`}>
+        <strong>{path.category}</strong>
+        <span>{path.title}</span>
+        <span class="trust-direction-cta">{path.cta} <span aria-hidden="true">→</span></span>
+      </a>
+    ))}
+  </div>
+</section>
+
+<style>
+  .trust-directions{margin-top:10px;padding:clamp(1.5rem,3vw,2.35rem);border:1px solid var(--hermes-line-light);border-radius:var(--hermes-radius-card);background:var(--hermes-paper);box-shadow:var(--hermes-shadow-card)}.trust-directions .eyebrow{color:var(--hermes-muted)}.trust-directions h2{margin:.45rem 0 1.25rem;color:var(--hermes-ink);font-size:clamp(1.45rem,3vw,2.1rem);line-height:1.1;letter-spacing:-.025em}.trust-direction-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.trust-direction{--tone:var(--hermes-logistics);position:relative;display:grid;align-content:start;gap:.45rem;min-height:100%;padding:1.15rem 1.15rem 1.1rem 1.35rem;border:1px solid var(--hermes-line-light);border-radius:18px;color:var(--hermes-ink);background:#fff;text-decoration:none;transition:border-color .2s ease,transform .2s ease}.trust-direction::before{content:"";position:absolute;left:0;top:1.15rem;bottom:1.15rem;width:3px;border-radius:0 3px 3px 0;background:var(--tone)}.trust-direction[data-direction="technology"]{--tone:var(--hermes-technology)}.trust-direction[data-direction="academy"]{--tone:var(--hermes-academy)}.trust-direction[data-direction="marketing"]{--tone:var(--hermes-marketing)}.trust-direction strong{font-size:1.05rem}.trust-direction span{color:var(--hermes-muted);font-size:.92rem;line-height:1.5}.trust-direction .trust-direction-cta{margin-top:auto;padding-top:.35rem;color:var(--hermes-ink);font-weight:700}.trust-direction:hover,.trust-direction:focus-visible{border-color:var(--tone);transform:translateY(-2px)}
+  @media(max-width:960px){.trust-direction-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  @media(max-width:520px){.trust-direction-grid{grid-template-columns:1fr}}
+  @media(prefers-reduced-motion:reduce){.trust-direction{transition:none}.trust-direction:hover,.trust-direction:focus-visible{transform:none}}
+</style>
