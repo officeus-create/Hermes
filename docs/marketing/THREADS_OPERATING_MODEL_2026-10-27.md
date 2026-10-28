@@ -8,8 +8,8 @@ This workstream owns Threads infrastructure and operating quality:
 - brand/account authorization and identity verification;
 - owner-only research and public-signal review;
 - Social Studio draft/review/composer flow;
-- bounded owner-approved replies to inbound comments under owned posts;
-- canonical Social Publisher scheduling;
+- bounded owner-approved reply **handoff** for inbound comments under owned posts;
+- HAE #2033 scheduling/execution as the only recurring/autonomous runtime;
 - idempotency, provider receipts, readback and metrics;
 - attribution into Hermes Connect only after a real consented/qualified action;
 - post-mortem learning into Marketing Growth / One Brain.
@@ -20,23 +20,21 @@ in the separate Website Pricing source of truth.
 
 ## Existing admin surfaces — do not duplicate
 1. Internal Threads Connections — brand OAuth/identity/status/publish switches and Post Health.
-2. Threads Research — official read-only discovery/conversation review plus one explicit bounded
-   reply action when exact OAuth scopes and owned-root proof are present.
-3. Hermes Connect Social Studio — live channel overview, gated brand composer, Smart Mirror,
+2. Threads Research — official read-only discovery/conversation/mentions review plus one explicit bounded
+   owner approval that hands the reply to HAE; the page never writes Meta directly.
+3. Hermes Connect Social Studio — live channel overview, gated brand composer, destination fan-out,
    Drive/AI creative intake, Creative Review and explicit human publish confirmation.
-4. Hermes Social Publisher / HAE — the only recurring scheduler/runtime.
+4. HAE #2033 — the only recurring/autonomous scheduler/runtime.
 
 ## Canonical flow
-RESEARCH -> SOURCE/RIGHTS REVIEW -> DRAFT -> CREATIVE REVIEW -> HUMAN APPROVAL ->
-CANONICAL PUBLISHER/BOUNDED REPLY -> PROVIDER RECEIPT/READBACK -> METRICS ->
+RESEARCH -> SOURCE/RIGHTS REVIEW -> VIKTOR DRAFT/CLASSIFICATION -> CREATIVE/REPLY REVIEW -> APPROVAL ->
+HAE JOB -> SHARED PROVIDER -> PROVIDER RECEIPT/READBACK -> METRICS ->
 QUALIFIED OUTCOME -> VERIFIED LESSON.
 
 ## Brand boundaries
-- Hermes Logistics: existing Windsor transport + canonical Hermes Social Publisher only; no duplicate Meta publisher.
-- ProgressoPro: primary Threads research/testing lane after exact owner OAuth and scope readback.
-- Business Academy: secondary lane after exact identity authorization.
-- office_test: canary lane for new provider-write behavior. A secondary brand is unlocked only by
-  a successfully read-back Office AUTHORED_POST canary, never by an Office reply.
+- **HERMES_LOGISTICS**: all logistics social work. Provider execution converges through HAE + one shared Meta implementation; no second logistics publisher.
+- **PROGRESSOPRO**: marketing, IT/software/Hermes Connect and Academy/training. Existing ProgressoPro/Academy account keys are compatibility identities inside this one business lane.
+- `office_test`: technical canary identity only; it is not a third commercial lane.
 
 ## Reply boundary
 - No auto-reply loop, bulk commenting, unsolicited comments on outside discussions, DMs or follows.
@@ -44,7 +42,9 @@ QUALIFIED OUTCOME -> VERIFIED LESSON.
 - Root post must provider-read as owned by the connected brand.
 - Self-replies are rejected.
 - Required scopes: threads_content_publish + threads_read_replies + threads_manage_replies.
-- One explicit target + explicit owner confirmation + idempotency reservation before write.
+- One explicit target + explicit owner confirmation + HAE idempotency before any provider action.
+- The owner UI/API does not call the Threads reply provider directly.
+- HAE `social.reply` is fail-closed until the capability is independently approved.
 - Ambiguous provider outcomes are never blindly retried.
 - Provider readback must prove the exact parent reply ID before status becomes published.
 
@@ -59,3 +59,7 @@ QUALIFIED OUTCOME -> VERIFIED LESSON.
 No stage advances from CODED to LIVE without exact-head CI, production deployment/readback,
 exact account identity, provider receipt and the required human approval evidence.
 UNKNOWN != 0; public signal != qualified lead; local/SQLite simulation != provider proof.
+
+
+## 2026-10-29 supersession note
+Current official Threads API verification uses `graph.threads.net` and includes read/manage replies, mentions and keyword-search capabilities subject to exact app/account permissions. Keyword search is opportunity discovery only; no mass auto-reply. Threads DMs are `MANUAL_PROVIDER_SURFACE` until an official API capability is independently proven.
