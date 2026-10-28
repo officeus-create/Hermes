@@ -69,6 +69,14 @@ assert.match(claim, /sanitizeRunnerTelemetry\(payload\?\.telemetry\)/, "runner c
 assert.match(statusEndpoint, /parseRunnerTelemetry/, "owner status must re-sanitize stored telemetry on read");
 assert.match(statusEndpoint, /primary_executor: "mac"/, "Mac must remain the declared primary executor while Windows is deferred");
 assert.match(statusEndpoint, /operations/, "owner status must expose bounded operational telemetry");
+assert.match(helper, /hermes_internal_team_view_access/, "team viewing must use an explicit server-side capability");
+assert.match(helper, /requireInternalAiViewer/, "status must distinguish owner from explicit team viewers");
+assert.match(statusEndpoint, /access_level === "team"/, "team status must have a distinct scrubbed branch");
+assert.match(statusEndpoint, /teamOperations/, "team status must use an allowlisted operational projection");
+assert.match(statusEndpoint, /access_level: "owner"/, "owner status must remain explicit");
+assert.match(statusEndpoint, /remote_browser_to_codex/, "owner status field spelling must remain canonical");
+assert.doesNotMatch(statusEndpoint, /rimote_browser_to_codex/, "misspelled runtime field must not survive");
+assert.doesNotMatch(statusEndpoint, /specialist\.role|email.*@/i, "team authorization must never derive from account role or email domain");
 assert.match(runner, /HERMES_AI_STATUS_FILE/, "local runner may read the explicit Hermes AI status receipt");
 assert.match(runner, /def hermes_ai_telemetry\(\)/, "local runner must use a bounded telemetry reader");
 assert.match(runnerTaskEndpoint, /runnerTask\(/, "runner state polling may receive the private prompt-bearing DTO");
