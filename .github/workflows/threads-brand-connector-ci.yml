@@ -9,6 +9,10 @@ on:
       - "src/components/RepairShopOwnerNavEnhancer.astro"
       - "scripts/threads-brand-connector.test.mjs"
       - "scripts/threads-reply.test.mjs"
+      - "scripts/threads-discovery.test.mjs"
+      - "scripts/social-inbox-policy.test.mjs"
+      - "functions/api/_lib/threads-discovery.mjs"
+      - "functions/api/_lib/social-inbox-policy.mjs"
       - "docs/THREADS_BRAND_CONNECTOR_RUNBOOK.md"
       - "docs/compliance/vendor-registry.json"
       - "docs/release-manifest-deltas/2026-09-29-hermes-connect-social-connections.json"
@@ -29,5 +33,7 @@ jobs:
           cache: npm
       - run: npm ci
       - run: node scripts/threads-brand-connector.test.mjs
+      - run: node scripts/threads-discovery.test.mjs
+      - run: node scripts/social-inbox-policy.test.mjs
       - run: node scripts/threads-reply.test.mjs
       - run: npm run check
