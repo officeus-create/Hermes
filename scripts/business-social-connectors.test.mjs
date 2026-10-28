@@ -157,6 +157,8 @@ assert.match(publish, /publishFacebookPagePost\(env, credential\.payload, text, 
 assert.match(studioCore, /media_type: "STORIES"/);
 assert.match(studioCore, /media_type: "CAROUSEL"/);
 assert.match(studioCore, /threads_publish/);
+assert.match(studioCore, /https:\/\/graph\.threads\.net\/v1\.0\//);
+assert.doesNotMatch(studioCore, /graph\.threads\.com/);
 assert.match(feed, /readRecentSocialMedia/);
 assert.match(creativeIntake, /google_drive_source_url_required/);
 assert.match(creativeIntake, /readBusinessSocialDriveConnection/);
