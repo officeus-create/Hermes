@@ -47,6 +47,7 @@ threads_basic
 threads_content_publish
 threads_read_replies
 threads_manage_replies
+threads_manage_mentions
 threads_manage_insights
 ```
 
@@ -205,3 +206,14 @@ Draft endpoint (internal owner only, noindex/no-store):
 ## 2026-10-29 — Social Acquisition supersession
 
 This runbook is no longer authority for an independent brand publisher. The canonical execution model is `VIKTOR/content policy -> HAE #2033 -> shared Meta provider -> provider receipt/readback -> Unified Inbox/Command Center`. Current read modes include owned posts, conversations, keyword-search candidates and mentions. Keyword results never authorize replies. Threads DMs remain manual until an official API endpoint and exact app/account entitlement are freshly proven.
+
+
+### HAE reply handoff configuration
+The owner-only reply gateway requires server-side Pages/Worker secrets/variables:
+
+```text
+HERMES_AUTOMATION_BASE_URL=https://<authorized-hae-host>
+HERMES_AUTOMATION_TOKEN=<server-side bearer secret; never exposed to browser>
+```
+
+The endpoint submits `POST /v1/jobs` with `job_type=social.reply` and `max_attempts=1`. Missing configuration, an unavailable HAE endpoint, or `job_type_not_allowed` all fail closed with `provider_write_performed=false`.
