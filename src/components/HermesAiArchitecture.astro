@@ -1,10 +1,12 @@
 ---
+import { pluginRuntimeRegistrySnapshot } from "../../workers/automation-engine/src/plugin-runtime-registry.mjs";
 /**
  * Internal owner control room: architecture and integration roadmap.
  * No provider secrets, private evidence or account data live in this component.
  * Runtime details are read only after the existing owner gate authorizes loadAll().
  */
 const { ru = false } = Astro.props;
+const pluginRegistry = pluginRuntimeRegistrySnapshot();
 const translations: Record<string, string> = {};
 const l = (en: string, local: string) => { translations[en] = local; return ru ? local : en; };
 const steps = [
@@ -114,6 +116,12 @@ const roles = [
     </div>
     <h3 class="ai-map__minor">{l("Planned work roles", "Роли рабочих агентов")}</h3>
     <div class="ai-map__roles">{roles.map((role) => <div><strong>{role.name}</strong><small>{role.detail}</small></div>)}</div>
+    <h3 class="ai-map__minor">{l("HAE plugin runtime registry", "Реестр runtime-плагинов HAE")}</h3>
+    <p class="ai-map__section-copy">{l("Canonical compiled registry from the latest accepted private Plugin Creator readback. Versions are source evidence, not proof that a provider session is online now.", "Канонический compiled registry из последнего принятого приватного Plugin Creator readback. Версии — evidence по источнику, а не доказательство, что provider-сессия сейчас онлайн.")}</p>
+    <div class="ai-map__roles" data-plugin-registry>
+      {pluginRegistry.entries.map((entry) => <div data-plugin-role={entry.role_id}><strong>{entry.role_id}</strong><small>v{entry.plugin_version} · {entry.observed_at}</small></div>)}
+    </div>
+    <p class="ai-map__footnote" data-plugin-registry-source>{pluginRegistry.source_class} · {l("snapshot, not live provider status", "снимок, не live-статус провайдера")}</p>
   </div>
   <div id="ai-panel-connections" data-ai-map-panel="connections" role="tabpanel" aria-labelledby="ai-tab-connections" hidden>
     <p class="ai-map__section-copy">{l("Each status identifies a source-level observation or a pending gate. Links open the existing provider/admin; no credential is stored here.", "Каждый статус — наблюдение по источнику или ожидаемая проверка. Ссылки открывают действующую админку провайдера; секреты здесь не хранятся.")}</p>
