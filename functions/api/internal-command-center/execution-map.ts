@@ -1,6 +1,6 @@
 import { jsonResponse } from "../_lib/session.mjs";
 import { ensureCommandCenterSchema, reconcileWorkItems } from "../_lib/internal-command-center.mjs";
-import { developmentCatalog, executionProjection } from "../_lib/command-center-execution-map.mjs";
+import { developmentCatalog, executionProjection, linkHumanWorkDevelopments } from "../_lib/command-center-execution-map.mjs";
 import { readClickUpHumanTasks } from "../_lib/command-center-clickup.mjs";
 import { readGithubDevelopments } from "../_lib/command-center-github.mjs";
 import { parseRunnerTelemetry, requireInternalOwner } from "../_lib/internal-ai.mjs";
@@ -51,7 +51,8 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
   const processes = (processRows.results || []).map(publicHaeProcess);
   const tasks = (work.results || []).map((item) => executionProjection(item, registrySnapshot.entries));
   const developments = developmentCatalog({ registrySnapshot, registryEvidence, processes, runner });
-  const [human_work, github_developments] = await Promise.all([readClickUpHumanTasks(env), readGithubDevelopments(env)]);
+  const [human_work_raw, github_developments] = await Promise.all([readClickUpHumanTasks(env), readGithubDevelopments(env)]);
+  const human_work = linkHumanWorkDevelopments(human_work_raw, github_developments);
 
   return jsonResponse(200, {
     success: true,
