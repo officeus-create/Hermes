@@ -1,7 +1,7 @@
 // Read-only Threads discovery adapter for the existing Hermes owner-authenticated connector.
 // Never crawl private endpoints, execute browser sessions, follow provider-supplied URLs,
 // or include an access token in a URL, audit record, error message or client response.
-const GRAPH = "https://graph.threads.com/v1.0/";
+const GRAPH = "https://graph.threads.net/v1.0/";
 const POST_FIELDS = "id,text,username,permalink,shortcode,timestamp,media_type,has_replies,is_reply,is_quote_post";
 const REPLY_FIELDS = "id,text,username,permalink,shortcode,timestamp,media_type,has_replies,is_reply,replied_to,root_post";
 const MAX_PAGES = 5;
@@ -24,7 +24,7 @@ export function parsePublicThreadsPostUrl(value) {
 }
 
 export function threadsReadMode(value) {
-  return ["search", "thread", "owned"].includes(value) ? value : null;
+  return ["search", "thread", "owned", "mentions"].includes(value) ? value : null;
 }
 
 export function threadsRequiredScope(mode, postUrl) {
@@ -33,6 +33,7 @@ export function threadsRequiredScope(mode, postUrl) {
     ? ["threads_basic", "threads_read_replies", "threads_profile_discovery"]
     : ["threads_basic", "threads_read_replies"];
   if (mode === "owned") return ["threads_basic"];
+  if (mode === "mentions") return ["threads_basic", "threads_manage_mentions"];
   return [];
 }
 
@@ -135,6 +136,14 @@ export async function threadsOwnedRead({ token, transport = fetch }) {
   const result = await collectPages("me/threads", { fields: POST_FIELDS, limit: 50 }, token, transport, 2);
   return result.ok
     ? { ok: true, mode: "owned", posts: result.rows, pages: result.pages, complete: result.complete }
+    : result;
+}
+
+export async function threadsMentionsRead({ token, transport = fetch }) {
+  const result = await collectPages("me/mentions", { fields: POST_FIELDS, limit: 50 }, token, transport, 2);
+  return result.ok
+    ? { ok: true, mode: "mentions", posts: result.rows, pages: result.pages, complete: result.complete,
+        provider: "meta_threads_official" }
     : result;
 }
 
