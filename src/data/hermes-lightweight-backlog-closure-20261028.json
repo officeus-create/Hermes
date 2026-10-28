@@ -1,7 +1,7 @@
 {
-  "schema_version": "1.0.0",
+  "schema_version": "2.0.0",
   "as_of": "2026-10-28",
-  "purpose": "Machine-readable closure contract for 30 bounded lightweight backlog items recovered from August-October 2026.",
+  "purpose": "Machine-readable closure contract for 230 bounded lightweight backlog items: the original 30 plus 200 additional low-risk August-October 2026 governance, quality, privacy and product-contract microtasks.",
   "canonical_runtime": "HAE #2033",
   "canonical_coordination": "One Brain",
   "no_live_write": true,
@@ -16,7 +16,17 @@
     "search_entity_registry",
     "content_lanes",
     "command_center_metrics",
-    "ci_work_intake"
+    "ci_work_intake",
+    "analytics_privacy",
+    "seo_owner_hygiene",
+    "geo_evidence",
+    "hermes_connect_ops",
+    "repair_shop_contracts",
+    "load_board_contracts",
+    "carrier_contracts",
+    "website_quality",
+    "ai_handoff",
+    "security_release"
   ],
   "tasks": [
     {
@@ -408,6 +418,2609 @@
         "docs/HERMES_HAE_ECOSYSTEM_LEARNING_PREFLIGHT_2026-10-26.md"
       ],
       "no_live_write": true
+    },
+    {
+      "id": "L31",
+      "category": "analytics_privacy",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Analytics / QA",
+      "implementation": "Canonical analytics event names are fixed and reusable instead of ad-hoc per page.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/PRODUCTION_ANALYTICS_EVENT_REGISTRY.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L32",
+      "category": "analytics_privacy",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Analytics / QA",
+      "implementation": "Analytics payloads explicitly forbid names, email addresses, phone numbers and free-text personal messages.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/PRODUCTION_ANALYTICS_EVENT_REGISTRY.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L33",
+      "category": "analytics_privacy",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Analytics / QA",
+      "implementation": "MC/USDOT, contract identifiers and customer identifiers stay out of public analytics payloads.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/PRODUCTION_ANALYTICS_EVENT_REGISTRY.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L34",
+      "category": "analytics_privacy",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Analytics / QA",
+      "implementation": "Synthetic and internal traffic are classified separately from real visitor activity.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/PRODUCTION_ANALYTICS_EVENT_REGISTRY.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L35",
+      "category": "analytics_privacy",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Analytics / QA",
+      "implementation": "VIEW, SESSION, LEAD, QUALIFIED_LEAD, OPPORTUNITY and REVENUE remain distinct funnel stages.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/PRODUCTION_ANALYTICS_EVENT_REGISTRY.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L36",
+      "category": "analytics_privacy",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Analytics / QA",
+      "implementation": "Source, medium and campaign attribution use governed fields rather than arbitrary query-string copying.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/PRODUCTION_ANALYTICS_EVENT_REGISTRY.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L37",
+      "category": "analytics_privacy",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Analytics / QA",
+      "implementation": "Consent state is represented explicitly instead of being inferred from the presence of an event.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/PRODUCTION_ANALYTICS_EVENT_REGISTRY.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L38",
+      "category": "analytics_privacy",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Analytics / QA",
+      "implementation": "Analytics event schemas are versioned so field changes cannot silently redefine historical data.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/PRODUCTION_ANALYTICS_EVENT_REGISTRY.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L39",
+      "category": "analytics_privacy",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Analytics / QA",
+      "implementation": "Client-side and server-side event origins are distinguishable in evidence.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/PRODUCTION_ANALYTICS_EVENT_REGISTRY.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L40",
+      "category": "analytics_privacy",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Analytics / QA",
+      "implementation": "Duplicate conversion events require a deterministic deduplication key or equivalent guard.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/PRODUCTION_ANALYTICS_EVENT_REGISTRY.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L41",
+      "category": "analytics_privacy",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Analytics / QA",
+      "implementation": "Event evidence records route/page owner and observation time when those dimensions are material.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/PRODUCTION_ANALYTICS_EVENT_REGISTRY.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L42",
+      "category": "analytics_privacy",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Analytics / QA",
+      "implementation": "Conversion definitions are documented before a metric is treated as a KPI.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/PRODUCTION_ANALYTICS_EVENT_REGISTRY.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L43",
+      "category": "analytics_privacy",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Analytics / QA",
+      "implementation": "Revenue is never inferred from clicks, leads or proposal events.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/PRODUCTION_ANALYTICS_EVENT_REGISTRY.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L44",
+      "category": "analytics_privacy",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Analytics / QA",
+      "implementation": "Unknown attribution remains UNKNOWN instead of being rewritten as organic/direct by assumption.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/PRODUCTION_ANALYTICS_EVENT_REGISTRY.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L45",
+      "category": "analytics_privacy",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Analytics / QA",
+      "implementation": "Test and synthetic events are visibly flagged and excluded from business outcome claims.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/PRODUCTION_ANALYTICS_EVENT_REGISTRY.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L46",
+      "category": "analytics_privacy",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Analytics / QA",
+      "implementation": "Error telemetry must be privacy-safe and must not include raw form payloads.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/PRODUCTION_ANALYTICS_EVENT_REGISTRY.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L47",
+      "category": "analytics_privacy",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Analytics / QA",
+      "implementation": "Retention or historical completeness is not claimed without provider evidence.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/PRODUCTION_ANALYTICS_EVENT_REGISTRY.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L48",
+      "category": "analytics_privacy",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Analytics / QA",
+      "implementation": "Screenshots and exported analytics evidence must be redacted before public repository use.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/PRODUCTION_ANALYTICS_EVENT_REGISTRY.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L49",
+      "category": "analytics_privacy",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Analytics / QA",
+      "implementation": "Measurement availability is separated from measurement correctness in QA state.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/PRODUCTION_ANALYTICS_EVENT_REGISTRY.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L50",
+      "category": "analytics_privacy",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Analytics / QA",
+      "implementation": "Analytics evidence never substitutes for proof that a business outcome actually occurred.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/PRODUCTION_ANALYTICS_EVENT_REGISTRY.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L51",
+      "category": "seo_owner_hygiene",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Search Growth",
+      "implementation": "Each commercial search intent has one canonical owner page.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/SEARCH_GROWTH_GUARDRAIL.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L52",
+      "category": "seo_owner_hygiene",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Search Growth",
+      "implementation": "Thin wording-variant doorway pages are forbidden even when they target different keyword permutations.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/SEARCH_GROWTH_GUARDRAIL.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L53",
+      "category": "seo_owner_hygiene",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Search Growth",
+      "implementation": "Canonical URLs are normalized and do not compete with alternate protocol, host or slash variants.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/SEARCH_GROWTH_GUARDRAIL.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L54",
+      "category": "seo_owner_hygiene",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Search Growth",
+      "implementation": "Only approved indexable owners belong in sitemap output.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/SEARCH_GROWTH_GUARDRAIL.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L55",
+      "category": "seo_owner_hygiene",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Search Growth",
+      "implementation": "Robots directives must not accidentally block approved commercial owners.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/SEARCH_GROWTH_GUARDRAIL.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L56",
+      "category": "seo_owner_hygiene",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Search Growth",
+      "implementation": "Hreflang alternates must reference equivalent approved pages rather than unrelated language destinations.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/SEARCH_GROWTH_GUARDRAIL.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L57",
+      "category": "seo_owner_hygiene",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Search Growth",
+      "implementation": "Title and primary heading semantics remain distinct enough to avoid accidental duplicate ownership.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/SEARCH_GROWTH_GUARDRAIL.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L58",
+      "category": "seo_owner_hygiene",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Search Growth",
+      "implementation": "Meta descriptions are written per page intent instead of copied site-wide.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/SEARCH_GROWTH_GUARDRAIL.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L59",
+      "category": "seo_owner_hygiene",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Search Growth",
+      "implementation": "Internal links support the canonical owner instead of creating competing conversion destinations.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/SEARCH_GROWTH_GUARDRAIL.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L60",
+      "category": "seo_owner_hygiene",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Search Growth",
+      "implementation": "Facets, filters and pagination must not become uncontrolled indexable search surfaces.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/SEARCH_GROWTH_GUARDRAIL.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L61",
+      "category": "seo_owner_hygiene",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Search Growth",
+      "implementation": "Structured data must describe the visible page and must not invent unsupported organization facts.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/SEARCH_GROWTH_GUARDRAIL.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L62",
+      "category": "seo_owner_hygiene",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Search Growth",
+      "implementation": "Redirect chains are treated as defects; permanent moves should converge on one canonical destination.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/SEARCH_GROWTH_GUARDRAIL.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L63",
+      "category": "seo_owner_hygiene",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Search Growth",
+      "implementation": "Missing content uses correct 404 or 410 semantics instead of soft-404 success pages.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/SEARCH_GROWTH_GUARDRAIL.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L64",
+      "category": "seo_owner_hygiene",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Search Growth",
+      "implementation": "Virtual-office or unsupported location claims are forbidden in local SEO assets.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/SEARCH_GROWTH_GUARDRAIL.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L65",
+      "category": "seo_owner_hygiene",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Search Growth",
+      "implementation": "Keyword stuffing is forbidden in headings, metadata, alt text and body copy.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/SEARCH_GROWTH_GUARDRAIL.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L66",
+      "category": "seo_owner_hygiene",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Search Growth",
+      "implementation": "Hidden text and hidden link tactics are forbidden.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/SEARCH_GROWTH_GUARDRAIL.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L67",
+      "category": "seo_owner_hygiene",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Search Growth",
+      "implementation": "PBNs, undisclosed paid links and spam-directory growth tactics are excluded.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/SEARCH_GROWTH_GUARDRAIL.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L68",
+      "category": "seo_owner_hygiene",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Search Growth",
+      "implementation": "Indexation is measured from provider evidence rather than assumed from sitemap inclusion.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/SEARCH_GROWTH_GUARDRAIL.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L69",
+      "category": "seo_owner_hygiene",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Search Growth",
+      "implementation": "GSC and Bing observations carry freshness dates so stale scans cannot override current-main evidence.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/SEARCH_GROWTH_GUARDRAIL.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L70",
+      "category": "seo_owner_hygiene",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Search Growth",
+      "implementation": "Every new indexable page requires a distinct user intent and business purpose before release.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/SEARCH_GROWTH_GUARDRAIL.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L71",
+      "category": "geo_evidence",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Search Growth",
+      "implementation": "Entity facts used for GEO or AI visibility require an approved factual source.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/GEO_CURRENT_STATE.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L72",
+      "category": "geo_evidence",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Search Growth",
+      "implementation": "Business name, site and contact facts must remain consistent across governed entity surfaces.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/GEO_CURRENT_STATE.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L73",
+      "category": "geo_evidence",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Search Growth",
+      "implementation": "Profiles and citations point to the canonical site destination rather than arbitrary duplicate pages.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/GEO_CURRENT_STATE.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L74",
+      "category": "geo_evidence",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Search Growth",
+      "implementation": "Service-area claims require real operational support and are not inferred from target keywords.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/GEO_CURRENT_STATE.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L75",
+      "category": "geo_evidence",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Search Growth",
+      "implementation": "Virtual offices and fabricated local presence are excluded from GEO expansion.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/GEO_CURRENT_STATE.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L76",
+      "category": "geo_evidence",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Search Growth",
+      "implementation": "Profile ownership state is tracked separately from mere profile discovery.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/GEO_CURRENT_STATE.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L77",
+      "category": "geo_evidence",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Search Growth",
+      "implementation": "Citations are evaluated for quality and relevance rather than counted as an undifferentiated total.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/GEO_CURRENT_STATE.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L78",
+      "category": "geo_evidence",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Search Growth",
+      "implementation": "Duplicate profile/entity records are detected before another profile is proposed.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/GEO_CURRENT_STATE.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L79",
+      "category": "geo_evidence",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Search Growth",
+      "implementation": "Profile links use governed UTM attribution when attribution is appropriate.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/GEO_CURRENT_STATE.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L80",
+      "category": "geo_evidence",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Search Growth",
+      "implementation": "Discoverability and indexability are separate status fields for entity evidence.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/GEO_CURRENT_STATE.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L81",
+      "category": "geo_evidence",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Search Growth",
+      "implementation": "Knowledge-graph claims require evidence and are not inferred from search snippets alone.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/GEO_CURRENT_STATE.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L82",
+      "category": "geo_evidence",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Search Growth",
+      "implementation": "AI visibility is measured separately from classical search ranking.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/GEO_CURRENT_STATE.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L83",
+      "category": "geo_evidence",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Search Growth",
+      "implementation": "Location pages require unique intent and locally relevant content rather than city-name substitution.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/GEO_CURRENT_STATE.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L84",
+      "category": "geo_evidence",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Search Growth",
+      "implementation": "Localized entity facts must remain semantically equivalent across approved languages.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/GEO_CURRENT_STATE.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L85",
+      "category": "geo_evidence",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Search Growth",
+      "implementation": "Structured organization/location data must agree with visible approved facts.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/GEO_CURRENT_STATE.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L86",
+      "category": "geo_evidence",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Search Growth",
+      "implementation": "Only genuine review evidence may be referenced; fabricated review counts or sentiment are forbidden.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/GEO_CURRENT_STATE.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L87",
+      "category": "geo_evidence",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Search Growth",
+      "implementation": "Competitor/entity comparisons carry an observation date because search surfaces change.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/GEO_CURRENT_STATE.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L88",
+      "category": "geo_evidence",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Search Growth",
+      "implementation": "Every external GEO source record includes capture date or freshness metadata.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/GEO_CURRENT_STATE.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L89",
+      "category": "geo_evidence",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Search Growth",
+      "implementation": "Unknown entity facts stay UNKNOWN instead of being completed by model inference.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/GEO_CURRENT_STATE.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L90",
+      "category": "geo_evidence",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Search Growth",
+      "implementation": "Publication of an entity/profile is not treated as proof of qualified traffic, leads or revenue.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/GEO_CURRENT_STATE.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L91",
+      "category": "hermes_connect_ops",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Hermes Connect registration states use an explicit lifecycle instead of ambiguous free-form status text.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "scripts/hermes-connect-registration-ops-contract.test.mjs"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L92",
+      "category": "hermes_connect_ops",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Registration creation and retries preserve idempotency so one user action cannot create duplicate pilot accounts.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "scripts/hermes-connect-registration-ops-contract.test.mjs"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L93",
+      "category": "hermes_connect_ops",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Email delivery state is tracked separately from account or registration state.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "scripts/hermes-connect-registration-ops-contract.test.mjs"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L94",
+      "category": "hermes_connect_ops",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Automated retry behavior is bounded and cannot loop indefinitely.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "scripts/hermes-connect-registration-ops-contract.test.mjs"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L95",
+      "category": "hermes_connect_ops",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Registration and delivery logs must not contain credentials or secret tokens.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "scripts/hermes-connect-registration-ops-contract.test.mjs"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L96",
+      "category": "hermes_connect_ops",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "English remains the default locale and unsupported locale input falls back safely.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "scripts/hermes-connect-registration-ops-contract.test.mjs"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L97",
+      "category": "hermes_connect_ops",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Activation steps retain a defined order so users do not silently skip required setup state.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "scripts/hermes-connect-registration-ops-contract.test.mjs"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L98",
+      "category": "hermes_connect_ops",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Share links and QR destinations resolve to canonical governed destinations.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "scripts/hermes-connect-registration-ops-contract.test.mjs"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L99",
+      "category": "hermes_connect_ops",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Service add/delete operations require deterministic state and must not leave phantom services.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "scripts/hermes-connect-registration-ops-contract.test.mjs"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L100",
+      "category": "hermes_connect_ops",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Booking statuses use explicit states rather than presentation-only labels.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "scripts/hermes-connect-registration-ops-contract.test.mjs"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L101",
+      "category": "hermes_connect_ops",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Completed and cancelled bookings are excluded from future-booking views.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "scripts/hermes-connect-registration-ops-contract.test.mjs"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L102",
+      "category": "hermes_connect_ops",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Recent Customers is derived from real booking records rather than placeholder data.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "scripts/hermes-connect-registration-ops-contract.test.mjs"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L103",
+      "category": "hermes_connect_ops",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Growth opportunities are shown only when supported by product signals.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "scripts/hermes-connect-registration-ops-contract.test.mjs"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L104",
+      "category": "hermes_connect_ops",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Owner/admin/private boundaries are explicit for Hermes Connect management surfaces.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "scripts/hermes-connect-registration-ops-contract.test.mjs"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L105",
+      "category": "hermes_connect_ops",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "PWA cache behavior must not expose stale private state across users.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "scripts/hermes-connect-registration-ops-contract.test.mjs"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L106",
+      "category": "hermes_connect_ops",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "User-facing failures provide a safe actionable message without leaking internal secrets.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "scripts/hermes-connect-registration-ops-contract.test.mjs"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L107",
+      "category": "hermes_connect_ops",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Pilot-account creation checks for an existing matching record before creating another.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "scripts/hermes-connect-registration-ops-contract.test.mjs"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L108",
+      "category": "hermes_connect_ops",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Operational evidence distinguishes configuration proof from live customer adoption.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "scripts/hermes-connect-registration-ops-contract.test.mjs"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L109",
+      "category": "hermes_connect_ops",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Pilot metrics separate registrations, activated accounts, bookings and retained usage.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "scripts/hermes-connect-registration-ops-contract.test.mjs"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L110",
+      "category": "hermes_connect_ops",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Production activation remains behind the existing owner/release gate.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "scripts/hermes-connect-registration-ops-contract.test.mjs"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L111",
+      "category": "repair_shop_contracts",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Repair Shop management surfaces remain owner-only where the contract requires private access.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "scripts/repair-shop-capabilities-contract.test.mjs"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L112",
+      "category": "repair_shop_contracts",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Prefilled prospect data does not become a verified business claim until the claim boundary is satisfied.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "scripts/repair-shop-capabilities-contract.test.mjs"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L113",
+      "category": "repair_shop_contracts",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Customer CRM aggregation remains derived from booking/customer records rather than public placeholder content.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "scripts/repair-shop-capabilities-contract.test.mjs"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L114",
+      "category": "repair_shop_contracts",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Service records use persistent identifiers so edits do not silently create duplicates.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "scripts/repair-shop-capabilities-contract.test.mjs"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L115",
+      "category": "repair_shop_contracts",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Vehicle records use persistent identifiers and remain scoped to the authorized workspace.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "scripts/repair-shop-capabilities-contract.test.mjs"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L116",
+      "category": "repair_shop_contracts",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Booking acceptance respects capacity constraints instead of accepting unlimited overlapping work.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "scripts/repair-shop-capabilities-contract.test.mjs"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L117",
+      "category": "repair_shop_contracts",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "No-show and follow-up states remain explicit and traceable.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "scripts/repair-shop-capabilities-contract.test.mjs"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L118",
+      "category": "repair_shop_contracts",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Operating statuses use a governed state vocabulary rather than arbitrary display text.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "scripts/repair-shop-capabilities-contract.test.mjs"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L119",
+      "category": "repair_shop_contracts",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Synthetic load-test tenants are clearly separated from real customer records.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "scripts/repair-shop-capabilities-contract.test.mjs"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L120",
+      "category": "repair_shop_contracts",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Hermes driver discount logic remains a bounded contract rather than an unverified marketing claim.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "scripts/repair-shop-capabilities-contract.test.mjs"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L121",
+      "category": "repair_shop_contracts",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Production proof runs against the approved current-main revision.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "scripts/repair-shop-capabilities-contract.test.mjs"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L122",
+      "category": "repair_shop_contracts",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Authentication and authorization failures fail closed for private repair-shop surfaces.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "scripts/repair-shop-capabilities-contract.test.mjs"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L123",
+      "category": "repair_shop_contracts",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Customer contact and vehicle data are excluded from public analytics and public fixtures.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "scripts/repair-shop-capabilities-contract.test.mjs"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L124",
+      "category": "repair_shop_contracts",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Booking source markers distinguish user, internal and synthetic flows when relevant.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "scripts/repair-shop-capabilities-contract.test.mjs"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L125",
+      "category": "repair_shop_contracts",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Fake reviews, fabricated repair outcomes and invented customer evidence are prohibited.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "scripts/repair-shop-capabilities-contract.test.mjs"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L126",
+      "category": "repair_shop_contracts",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Repair service categories use governed identifiers rather than uncontrolled spelling variants.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "scripts/repair-shop-capabilities-contract.test.mjs"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L127",
+      "category": "repair_shop_contracts",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Booking and schedule timestamps retain an explicit timezone context.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "scripts/repair-shop-capabilities-contract.test.mjs"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L128",
+      "category": "repair_shop_contracts",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Cancellation state does not masquerade as successful completion in reporting.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "scripts/repair-shop-capabilities-contract.test.mjs"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L129",
+      "category": "repair_shop_contracts",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Critical Repair Shop flows retain mobile/browser regression coverage.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "scripts/repair-shop-capabilities-contract.test.mjs"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L130",
+      "category": "repair_shop_contracts",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Live tenant or production activation remains behind the normal release gate.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "scripts/repair-shop-capabilities-contract.test.mjs"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L131",
+      "category": "load_board_contracts",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Gmail Load Board intake remains read-only at the mailbox boundary unless a separately approved write action exists.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "scripts/load-board-summary-privacy-contract.test.mjs"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L132",
+      "category": "load_board_contracts",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Load Board summaries exclude private message bodies and unnecessary personal data.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "scripts/load-board-summary-privacy-contract.test.mjs"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L133",
+      "category": "load_board_contracts",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Mailbox intake preserves idempotency so one message cannot create duplicate loads on replay.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "scripts/load-board-summary-privacy-contract.test.mjs"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L134",
+      "category": "load_board_contracts",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Carrier, dispatcher, partner and owner workspaces keep explicit role boundaries.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "scripts/load-board-summary-privacy-contract.test.mjs"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L135",
+      "category": "load_board_contracts",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Lane-preference output is recommendation evidence and not an automatic dispatch commitment.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "scripts/load-board-summary-privacy-contract.test.mjs"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L136",
+      "category": "load_board_contracts",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Owner role previews are clearly identified as previews and do not silently grant production access.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "scripts/load-board-summary-privacy-contract.test.mjs"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L137",
+      "category": "load_board_contracts",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "The Load Board curtain and Hermes Connect handoff remain an explicit funnel boundary.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "scripts/load-board-summary-privacy-contract.test.mjs"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L138",
+      "category": "load_board_contracts",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Private load/customer fields are excluded from public analytics payloads.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "scripts/load-board-summary-privacy-contract.test.mjs"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L139",
+      "category": "load_board_contracts",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Every ingested load retains a traceable source reference where available.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "scripts/load-board-summary-privacy-contract.test.mjs"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L140",
+      "category": "load_board_contracts",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Duplicate-load detection occurs before a second canonical record is created.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "scripts/load-board-summary-privacy-contract.test.mjs"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L141",
+      "category": "load_board_contracts",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Stale load records have an explicit expiry/closed state instead of remaining indefinitely active.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "scripts/load-board-summary-privacy-contract.test.mjs"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L142",
+      "category": "load_board_contracts",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Load status uses a governed state vocabulary.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "scripts/load-board-summary-privacy-contract.test.mjs"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L143",
+      "category": "load_board_contracts",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Carrier access is scoped to permitted load information.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "scripts/load-board-summary-privacy-contract.test.mjs"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L144",
+      "category": "load_board_contracts",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Shipper access is scoped separately from carrier/dispatcher access.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "scripts/load-board-summary-privacy-contract.test.mjs"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L145",
+      "category": "load_board_contracts",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Dispatcher access does not imply owner/admin privileges.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "scripts/load-board-summary-privacy-contract.test.mjs"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L146",
+      "category": "load_board_contracts",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Public examples and private operational records remain separate data classes.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "scripts/load-board-summary-privacy-contract.test.mjs"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L147",
+      "category": "load_board_contracts",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Synthetic/example loads are visibly labelled and never represented as real available freight.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "scripts/load-board-summary-privacy-contract.test.mjs"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L148",
+      "category": "load_board_contracts",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Live load posting or external publication remains behind the existing approval gate.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "scripts/load-board-summary-privacy-contract.test.mjs"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L149",
+      "category": "load_board_contracts",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Transformation from source message to load record remains auditable.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "scripts/load-board-summary-privacy-contract.test.mjs"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L150",
+      "category": "load_board_contracts",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Handoff from Load Board to Hermes Connect is explicit rather than an invisible cross-system write.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "scripts/load-board-summary-privacy-contract.test.mjs"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L151",
+      "category": "carrier_contracts",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Standard carrier contract percentage variants remain explicitly versioned.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "scripts/carrier-contract-engine.test.mjs"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L152",
+      "category": "carrier_contracts",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Generated contract PDFs retain a master hash/evidence reference for integrity checks.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "scripts/carrier-contract-engine.test.mjs"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L153",
+      "category": "carrier_contracts",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Contract delivery is idempotent so retry cannot create uncontrolled duplicate state.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "scripts/carrier-contract-engine.test.mjs"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L154",
+      "category": "carrier_contracts",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Delivery attempts retain bounded audit evidence.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "scripts/carrier-contract-engine.test.mjs"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L155",
+      "category": "carrier_contracts",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "The carrier receives the canonical PDF artifact when the delivery contract requires it.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "scripts/carrier-contract-engine.test.mjs"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L156",
+      "category": "carrier_contracts",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Carrier delivery status and optional internal email-copy status remain separate.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "scripts/carrier-contract-engine.test.mjs"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L157",
+      "category": "carrier_contracts",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Retry behavior is explicit and bounded.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "scripts/carrier-contract-engine.test.mjs"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L158",
+      "category": "carrier_contracts",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Contract API origin/CORS protection remains enforced.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "scripts/carrier-contract-engine.test.mjs"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L159",
+      "category": "carrier_contracts",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Delivery responses preserve the security headers required by the contract.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "scripts/carrier-contract-engine.test.mjs"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L160",
+      "category": "carrier_contracts",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Signatory and carrier data are excluded from public logs and fixtures.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "scripts/carrier-contract-engine.test.mjs"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L161",
+      "category": "carrier_contracts",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Contract templates carry a version so historical agreements are reproducible.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "scripts/carrier-contract-engine.test.mjs"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L162",
+      "category": "carrier_contracts",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Acceptance state is explicit and not inferred from PDF generation alone.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "scripts/carrier-contract-engine.test.mjs"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L163",
+      "category": "carrier_contracts",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Unsigned or unaccepted contracts cannot be treated as activated agreements.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "scripts/carrier-contract-engine.test.mjs"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L164",
+      "category": "carrier_contracts",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Resend behavior reuses canonical agreement identity rather than minting an unrelated agreement.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "scripts/carrier-contract-engine.test.mjs"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L165",
+      "category": "carrier_contracts",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Agreement audit evidence records an authoritative timestamp.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "scripts/carrier-contract-engine.test.mjs"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L166",
+      "category": "carrier_contracts",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Delivery failures produce a failure receipt/diagnostic state without exposing secrets.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "scripts/carrier-contract-engine.test.mjs"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L167",
+      "category": "carrier_contracts",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Tests must not perform provider/live contract writes.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "scripts/carrier-contract-engine.test.mjs"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L168",
+      "category": "carrier_contracts",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Carrier onboarding retains browser-flow coverage for the bounded happy path.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "scripts/carrier-contract-engine.test.mjs"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L169",
+      "category": "carrier_contracts",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Agreement metadata remains scoped to the authorized carrier/workspace.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "scripts/carrier-contract-engine.test.mjs"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L170",
+      "category": "carrier_contracts",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Production contract activation remains behind the existing owner/release gate.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "scripts/carrier-contract-engine.test.mjs"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L171",
+      "category": "website_quality",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Public website hierarchy keeps one canonical destination for each principal offer.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/HERMES_WEBSITE_DECISION_REGISTER.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L172",
+      "category": "website_quality",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Primary CTAs point to an approved destination and are not decorative dead ends.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/HERMES_WEBSITE_DECISION_REGISTER.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L173",
+      "category": "website_quality",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Internal links used by commercial funnels must resolve successfully.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/HERMES_WEBSITE_DECISION_REGISTER.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L174",
+      "category": "website_quality",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Testimonials, rankings, traffic, partner and outcome proof cannot be invented.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/HERMES_WEBSITE_DECISION_REGISTER.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L175",
+      "category": "website_quality",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Pricing copy identifies the intended offer/version and avoids contradictory duplicate price claims.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/HERMES_WEBSITE_DECISION_REGISTER.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L176",
+      "category": "website_quality",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Primary layouts retain an accessible main landmark.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/HERMES_WEBSITE_DECISION_REGISTER.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L177",
+      "category": "website_quality",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Critical conversion flows remain usable at mobile viewport sizes.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/HERMES_WEBSITE_DECISION_REGISTER.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L178",
+      "category": "website_quality",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Meaningful images receive appropriate alternative text while decorative images do not carry misleading labels.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/HERMES_WEBSITE_DECISION_REGISTER.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L179",
+      "category": "website_quality",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Form controls retain accessible labels or equivalent accessible names.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/HERMES_WEBSITE_DECISION_REGISTER.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L180",
+      "category": "website_quality",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Consent-dependent analytics or communication does not bypass the consent contract.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/HERMES_WEBSITE_DECISION_REGISTER.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L181",
+      "category": "website_quality",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Performance claims are not made without measurement evidence.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/HERMES_WEBSITE_DECISION_REGISTER.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L182",
+      "category": "website_quality",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Navigation and in-page anchors must not intentionally point to missing targets.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/HERMES_WEBSITE_DECISION_REGISTER.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L183",
+      "category": "website_quality",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Not-found routes return correct failure semantics rather than a misleading successful shell.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/HERMES_WEBSITE_DECISION_REGISTER.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L184",
+      "category": "website_quality",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Language switching preserves a valid destination and does not create broken locale loops.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/HERMES_WEBSITE_DECISION_REGISTER.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L185",
+      "category": "website_quality",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Public contact facts must match approved organization facts.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/HERMES_WEBSITE_DECISION_REGISTER.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L186",
+      "category": "website_quality",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Each page retains one clear primary heading hierarchy.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/HERMES_WEBSITE_DECISION_REGISTER.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L187",
+      "category": "website_quality",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Trust/compliance pages must not contradict commercial claims.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/HERMES_WEBSITE_DECISION_REGISTER.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L188",
+      "category": "website_quality",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Structured business data must match visible approved organization facts.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/HERMES_WEBSITE_DECISION_REGISTER.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L189",
+      "category": "website_quality",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Conversion events use the governed analytics event registry.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/HERMES_WEBSITE_DECISION_REGISTER.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L190",
+      "category": "website_quality",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Technology Developer",
+      "implementation": "Production publication remains tied to the established release owner and gates.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/HERMES_WEBSITE_DECISION_REGISTER.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L191",
+      "category": "ai_handoff",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Agent Coordinator",
+      "implementation": "Every AI worker has a single Start Here entry point before reading historical journals.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/AI_HANDOFF.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L192",
+      "category": "ai_handoff",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Agent Coordinator",
+      "implementation": "Handoffs record exact branch or commit/head when code state matters.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/AI_HANDOFF.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L193",
+      "category": "ai_handoff",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Agent Coordinator",
+      "implementation": "Current-state freshness is checked before historical handoff text is treated as executable truth.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/AI_HANDOFF.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L194",
+      "category": "ai_handoff",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Agent Coordinator",
+      "implementation": "Every incomplete handoff carries one smallest executable NEXT_ACTION.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/AI_HANDOFF.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L195",
+      "category": "ai_handoff",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Agent Coordinator",
+      "implementation": "Execution ownership is named explicitly.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/AI_HANDOFF.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L196",
+      "category": "ai_handoff",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Agent Coordinator",
+      "implementation": "Tests and checks run are recorded rather than replaced by a prose claim of completion.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/AI_HANDOFF.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L197",
+      "category": "ai_handoff",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Agent Coordinator",
+      "implementation": "Evidence class is named when a conclusion depends on runtime, provider or repository evidence.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/AI_HANDOFF.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L198",
+      "category": "ai_handoff",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Agent Coordinator",
+      "implementation": "Rollback or safe-reversal information is recorded for state-changing work.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/AI_HANDOFF.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L199",
+      "category": "ai_handoff",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Agent Coordinator",
+      "implementation": "Unknowns and unresolved assumptions are written explicitly.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/AI_HANDOFF.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L200",
+      "category": "ai_handoff",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Agent Coordinator",
+      "implementation": "Secrets, credentials and session tokens are excluded from handoffs.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/AI_HANDOFF.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L201",
+      "category": "ai_handoff",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Agent Coordinator",
+      "implementation": "Full raw conversations are not copied into the repository as operational state.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/AI_HANDOFF.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L202",
+      "category": "ai_handoff",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Agent Coordinator",
+      "implementation": "Cross-agent overlap is checked before creating a second implementation owner.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/AI_HANDOFF.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L203",
+      "category": "ai_handoff",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Agent Coordinator",
+      "implementation": "Historical AI_HANDOFF entries are audit provenance, not automatically current truth.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/AI_HANDOFF.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L204",
+      "category": "ai_handoff",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Agent Coordinator",
+      "implementation": "Current code/tests and current owner decisions outrank stale agent notes.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/AI_HANDOFF.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L205",
+      "category": "ai_handoff",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Agent Coordinator",
+      "implementation": "Relevant issue/PR references are included when they define task ownership.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/AI_HANDOFF.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L206",
+      "category": "ai_handoff",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Agent Coordinator",
+      "implementation": "Stale artifacts receive KEEP/FIX/MERGE_INTO/SUPERSEDED/CLOSE classification.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/AI_HANDOFF.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L207",
+      "category": "ai_handoff",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Agent Coordinator",
+      "implementation": "Read-only inspection precedes an unexplained mutation or blind retry.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/AI_HANDOFF.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L208",
+      "category": "ai_handoff",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Agent Coordinator",
+      "implementation": "One Brain remains canonical coordination rather than spawning a second brain.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/AI_HANDOFF.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L209",
+      "category": "ai_handoff",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Agent Coordinator",
+      "implementation": "Plugins remain role/knowledge contracts and do not become independent daemon runtimes by documentation alone.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/AI_HANDOFF.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L210",
+      "category": "ai_handoff",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Agent Coordinator",
+      "implementation": "Completion is tied to accepted evidence/checks rather than the agent saying that work is done.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "docs/AI_HANDOFF.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L211",
+      "category": "security_release",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Access / Identity Governor",
+      "implementation": "Repository and provider access follow least-privilege boundaries.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "AGENTS.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L212",
+      "category": "security_release",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Access / Identity Governor",
+      "implementation": "Passwords, API keys, OAuth tokens and session cookies are never committed to the repository.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "AGENTS.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L213",
+      "category": "security_release",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Access / Identity Governor",
+      "implementation": "Logs and public evidence must not leak credentials or secret-bearing payloads.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "AGENTS.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L214",
+      "category": "security_release",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Access / Identity Governor",
+      "implementation": "Preview/safe mode remains the default where the product contract requires it.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "AGENTS.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L215",
+      "category": "security_release",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Access / Identity Governor",
+      "implementation": "Merge stays behind protected review/check gates.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "AGENTS.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L216",
+      "category": "security_release",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Access / Identity Governor",
+      "implementation": "Deploy remains separate from code completion unless explicitly authorized.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "AGENTS.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L217",
+      "category": "security_release",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Access / Identity Governor",
+      "implementation": "Billing/subscription changes require the existing owner confirmation boundary.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "AGENTS.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L218",
+      "category": "security_release",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Access / Identity Governor",
+      "implementation": "DNS and Cloudflare account/config changes require the existing owner confirmation boundary.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "AGENTS.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L219",
+      "category": "security_release",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Access / Identity Governor",
+      "implementation": "Destructive deletion requires explicit authorization and a bounded target.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "AGENTS.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L220",
+      "category": "security_release",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Access / Identity Governor",
+      "implementation": "External communications remain separate from implementation unless sending is explicitly delegated.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "AGENTS.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L221",
+      "category": "security_release",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Access / Identity Governor",
+      "implementation": "Branch protection and review rules are not bypassed to make CI green.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "AGENTS.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L222",
+      "category": "security_release",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Access / Identity Governor",
+      "implementation": "Acceptance depends on checks for the exact current head rather than a historical green commit.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "AGENTS.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L223",
+      "category": "security_release",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Access / Identity Governor",
+      "implementation": "Dependency/security audit failures are treated as release evidence, not ignored noise.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "AGENTS.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L224",
+      "category": "security_release",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Access / Identity Governor",
+      "implementation": "State-changing work records a rollback or safe reversal path where applicable.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "AGENTS.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L225",
+      "category": "security_release",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Access / Identity Governor",
+      "implementation": "Force-push or destructive history rewriting is avoided for shared active review branches.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "AGENTS.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L226",
+      "category": "security_release",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Access / Identity Governor",
+      "implementation": "Retry/redrive paths preserve idempotency and evidence.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "AGENTS.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L227",
+      "category": "security_release",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Access / Identity Governor",
+      "implementation": "Public repository evidence is sanitized of raw PII and private customer data.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "AGENTS.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L228",
+      "category": "security_release",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Access / Identity Governor",
+      "implementation": "Synthetic fixtures are labelled and cannot be mistaken for real customers or revenue.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "AGENTS.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L229",
+      "category": "security_release",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Access / Identity Governor",
+      "implementation": "No automatic paid AI/provider fallback is introduced by a lightweight closure.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "AGENTS.md"
+      ],
+      "no_live_write": true
+    },
+    {
+      "id": "L230",
+      "category": "security_release",
+      "source_window": "2026-08-01..2026-10-28",
+      "status": "IMPLEMENTED",
+      "owner": "Access / Identity Governor",
+      "implementation": "Owner/reviewer acceptance remains distinct from implementation-complete state.",
+      "evidence_files": [
+        "docs/HERMES_LIGHTWEIGHT_BACKLOG_CLOSURE_2026-10-28.md",
+        "AGENTS.md"
+      ],
+      "no_live_write": true
     }
-  ]
+  ],
+  "existing_closures": 30,
+  "additional_closures": 200,
+  "total_closures": 230
 }
