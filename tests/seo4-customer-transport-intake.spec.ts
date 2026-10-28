@@ -60,7 +60,7 @@ test("shipper, broker, and carrier audience pages use direct role-specific comme
   );
 
   await page.goto("/logistics/car-hauling-dispatch/");
-  await expect(page.getByRole("link", { name: "Start dispatch review" }).first()).toHaveAttribute(
+  await expect(page.getByRole("link", { name: /Start car-hauling dispatch review/i }).first()).toHaveAttribute(
     "href",
     "/logistics/start-car-hauling-dispatch/",
   );
