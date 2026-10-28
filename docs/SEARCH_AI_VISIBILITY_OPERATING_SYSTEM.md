@@ -197,3 +197,45 @@ Machine-readable evidence: `data/seo/bing-owner-snapshot-2026-10-05.json`.
 - **6 · Authority acquisition — EXTERNAL EVIDENCE P1.** Earned/entity-relevant citations and owned profile corrections remain separate from code recovery; never substitute link spam or synthetic directory volume.
 
 Recovery rule: do not repeat the Bing/GSC audit merely to refresh these statuses. Reopen a decision only from a fresh exact source/runtime/search-platform defect that changes an action.
+
+## SEO agent-team operating delta — 2026-10-28 (DRAFT / NOT RUNTIME-ACTIVE)
+
+**Source / status:** Nicholas Dulait, "Grok Bot for SEO: How to Build Your First AI SEO Team (Full Guide)", posted 2026-10-27, https://x.com/nicholasdulait/status/2114974490694242771 . This is an external practitioner proposal and a vendor-marketing article, **not** independently verified xAI architecture or proof of SEO lift. **No ChatSEO subscription/MCP, new plugin, connector, job, schedule, deploy, publication, or production telemetry was activated by this document.**
+
+**Decision:** Adopt the useful _control pattern_ inside existing Hermes, not its product stack:
+data sources -> Agent Coordinator (router) -> existing Hermes Search Growth (measurement/prioritization) + Marketing Growth (draft/refresh) + Technology Developer (bounded technical fix) -> QA Evidence Auditor -> existing AI Master Operating Board / One Brain -> HAE (#2033) only after runtime/permission acceptance -> measured business result -> Knowledge Curator -> reviewed skill delta.
+
+The Agent Coordinator coordinates but does not self-approve its own output. Do not introduce a separate Chief of SEO bot, action board, ChatSEO "brain", cron, D1, CMS writer, WordPress publisher, or externally billed model. Reuse the 9-role HAE registry and verified private-plugin releases; a knowledge/plugin release does not mean a live executable agent. Preserve one canonical search owner per intent, Car Hauling carrier acquisition as P0, and the existing search release, HOS/HUEG, anti-cannibalization, privacy and independent-review gates.
+
+### Capability contract (reuse existing roles)
+
+1. **search.opportunity.prioritize / Search Growth / READ_ONLY.** Input: existing accepted bounded GSC/Bing query×page evidence and/or source-proven exact-URL defect, page/canonical owner, current release status, historical error register, comparison-window metadata. No arbitrary scraping, generic full-site re-audit, fabricated keyword volumes, rankings, leads, or revenue. Output: ranked existing-owner tasks, never writes pages.
+2. **search.content.brief_or_refresh / Marketing Growth + Search Growth / DRAFT_ONLY.** One approved opportunity -> existing owner, concrete reader question, helpful source-backed change, internal link, CTA, measurement hypothesis, drafts/diff. No mass generated geo/equipment/keyword pages, duplicate search intent, fake examples, thin AI content, or spontaneous rewriting of a ranked title.
+3. **search.technical.fix / Technology Developer / PATCH_ONLY when accepted.** Only reproducible current-site defects; exact file/scope, regression test, rollback, no overlap with Claude-owned visual templates. Source changes through reviewed PR, never unapproved main/live mutation.
+4. **search.qa.verify / QA Evidence Auditor / independent.** Verify input freshness/source, source-vs-claim, owner uniqueness, privacy, technical SEO, diff/CI, release and post-release readback. NEVER verify its own implementation or promote from a generated summary.
+5. **search.lesson.propose / Knowledge Curator / DRAFT_ONLY.** After settled real results, compare predicted vs observed and historical failures. Create a versioned proposal with citations, negative cases and independent eval. Never auto-promote its own lesson or release a plugin.
+
+### One unit of work / one board
+
+Use an existing canonical WORK_ID from the AI Master Operating Board and GitHub owner; do **not** create a parallel task tracker. Minimal durable fields:
+\`work_id, business_lane, canonical_url, query_or_defect, source_platform, evidence_ref, observed_at, period_start, period_end, source_freshness, baseline, hypothesis, priority_rationale, accountable_role, active_writer_lock, requested_capability, required_permission, estimated_cost_cap, status, next_gate, qa_receipt, release_sha, live_receipt, outcome_window, outcome, lesson_ref\`.
+
+Statuses: \`TODO -> SOURCE_VERIFIED -> DRAFT -> QA_PENDING -> OWNER_REVIEW -> MERGED -> DEPLOYED -> LIVE_VERIFIED -> SEARCH_OBSERVED -> BUSINESS_RESULT -> LESSON_REVIEWED\`. \`BLOCKED_AUTH / BLOCKED_SOURCE / BLOCKED_DEPENDENCY / FAILED / NO_CHANGE / UNKNOWN\` are truthful non-success states. No conversion of UNKNOWN into zero; no promotion from code-only evidence to live, ranking, qualified lead, or money.
+
+**Candidate ranking:** Start with current committed commercial priority and already evidenced loss, then compare expected qualified opportunity, evidence quality, impact/risk, implementation effort and time to learn. Score is a prioritization heuristic, not fabricated traffic/revenue. A page with no qualifying data remains \`PENDING_EVIDENCE\`, not an assumed "zero-click opportunity". Use same query/page/market/device/search-type scopes and settled 7-/28-day windows where available.
+
+### Scheduler / safety
+
+Do **not** create new ChatGPT automations or HAE recurring jobs from this article. Prior owner Search Closeout cancelled recurring SEO checks; creation requires reconciling newer explicit owner direction and existing HAE schedule registry. Candidate cadence **only after gate**: settled 28-day prioritized analysis weekly; one bounded draft job no more than twice weekly; anomaly/timeout/heartbeat checks using the existing HAE runtime; exception-only reporting. Search Console data is not a five-minute control loop. Every future run needs TTL/timeout, idempotency, one active writer lock, receipt, failure/UNKNOWN detection and budget/capability ceiling. At night: research/drafts only; no website publication, title/canonical change, redirect/delete or account access change without separate approved release path.
+
+### Pilot / acceptance conditions
+
+- **P0 — source/role preflight:** re-read #2033 current gates, #2067 event intake, #2070 self-backlog, #2068 repair, #2069 learning, #2102 private-plugin sync, source registry and active SEO owners. Verify that the requested capability is not already implemented; record exact gaps and do not bypass owner locks.
+- **P1 — bounded read-only sample:** select ONE real existing commercial canonical page (prefer Car Hauling only if current evidence supports an actionable deficit); retrieve the most recent accepted *relevant* GSC/Bing data. If access or freshness is missing, stop \`BLOCKED_SOURCE\`; do not fall back to invented browser numbers. Produce at most ten distinct, evidence-backed actions; fewer is correct if evidence is thinner.
+- **P2 — shadow evaluation:** compare top three ranked items to authenticated source and existing issue/PR; independent QA checks distinct intent, current behavior, change necessity and proposed KPI. No public write.
+- **P3 — controlled action:** ONE bounded existing-page improvement or reproducible technical fix via existing owner PR/release gates. Record source CI, independent QA, exact-head SHA, authorized merge/deploy and public production proof separately.
+- **P4 — observed result / learning:** compare matched settled 7-/28-day GSC/Bing performance and, separately, real CRM qualified action/revenue when receipt exists. Capture \`success|failure|inconclusive\` and source limitations. Pass one evidence-backed lesson proposal through Knowledge Curator -> independent QA -> existing plugin skill release/readback; HAE runtime acceptance remains a separate gate.
+
+**Success metric:** first independently verified _complete_ opportunity -> draft -> QA -> approved release -> exact production readback -> settled search observation -> reviewed lesson cycle, plus actual qualified inquiries and attributed revenue if observed. Draft completion, bot count, publication count, indexation, social views and impressions are NOT revenue. No guaranteed traffic growth or deadline.
+
+**Durable routing:** Google Drive One Brain SEO/GEO CURRENT Router is the CEO-readable decision surface; this file is the searchable repository execution contract; #2033 is the only runtime owner, #2106 the owner-facing Command Center surface. Work/skill promotions must be linked to the same canonical work ID, not forked into new systems.
