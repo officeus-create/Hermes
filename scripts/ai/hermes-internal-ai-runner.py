@@ -36,6 +36,8 @@ REPO = SCRIPT.parents[2]
 CODEX_HERMES = REPO / "scripts" / "ai" / "codex-hermes"
 API_BASE = os.environ.get("HERMES_INTERNAL_AI_API", "").rstrip("/")
 TOKEN = os.environ.get("HERMES_INTERNAL_AI_RUNNER_TOKEN", "")
+HERMES_AI_STATUS_FILE = os.environ.get("HERMES_AI_STATUS_FILE", "").strip()
+DEFAULT_HERMES_AI_STATUS_FILE = Path.home() / "HAE" / "agents" / "drive_ollama_learning_20261026" / "viktor_live" / "status.json"
 # Verified against the installed official `codex exec --help`: these options
 # belong after `exec`. This keeps the workspace sandbox enabled while routing
 # routine approvals through Codex's safe automatic review.
@@ -251,11 +253,65 @@ def task_state(task_id: str) -> dict[str, Any] | None:
     return response.get("task") if response.get("success") else None
 
 
+def hermes_ai_telemetry() -> dict[str, Any] | None:
+    # Read only allowlisted, non-secret operational fields from the local Hermes AI status receipt.
+    path = Path(HERMES_AI_STATUS_FILE).expanduser() if HERMES_AI_STATUS_FILE else DEFAULT_HERMES_AI_STATUS_FILE
+    if not path.is_file():
+        return None
+    try:
+        source = json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return None
+    if not isinstance(source, dict):
+        return None
+
+    def clean_text(key: str, limit: int) -> str | None:
+        value = source.get(key)
+        if value is None:
+            return None
+        cleaned = sanitize(str(value), limit)
+        return cleaned or None
+
+    def count(value: Any) -> int | None:
+        if isinstance(value, bool):
+            return None
+        try:
+            number = int(value)
+        except (TypeError, ValueError):
+            return None
+        return number if 0 <= number <= 1_000_000_000 else None
+
+    autonomy_source = source.get("autonomy") if isinstance(source.get("autonomy"), dict) else {}
+    autonomy = {
+        "cooldown_skipped": count(autonomy_source.get("cooldown_skipped")),
+        "manifest_scanned": count(autonomy_source.get("manifest_scanned")),
+        "external_actions": count(autonomy_source.get("external_actions")),
+        "provider_writes": count(autonomy_source.get("provider_writes")),
+    }
+    telemetry: dict[str, Any] = {
+        "status": clean_text("status", 48),
+        "phase": clean_text("phase", 120),
+        "cycle": count(source.get("cycle")),
+        "current_task": clean_text("current_task", 700),
+        "next_action": clean_text("next_action", 900),
+        "model": clean_text("model", 120),
+        "last_training_phase": clean_text("last_training_phase", 120),
+        "last_training_task": clean_text("last_training_task", 700),
+    }
+    if any(value is not None for value in autonomy.values()):
+        telemetry["autonomy"] = autonomy
+    telemetry = {key: value for key, value in telemetry.items() if value is not None}
+    return telemetry or None
+
+
 def claim() -> dict[str, Any] | None:
     payload = {
         "repo_sha": git("rev-parse", "HEAD"),
         "runtime_version": codex_version(),
         }
+    telemetry = hermes_ai_telemetry()
+    if telemetry:
+        payload["telemetry"] = telemetry
     response = request_json("/api/internal-ai/runner/claim", method="POST", payload=payload)
     if not response.get("success"):
         raise RuntimeError(response.get("error") or "claim_failed")

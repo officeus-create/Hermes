@@ -58,12 +58,40 @@ const roles = [
     <div><span class="ai-map__mini-label">{l("External actions", "Внешние действия")}</span><strong>{l("Owner / QA gate", "Допуск владельца / QA")}</strong><small>{l("No paid AI fallback", "Платный fallback запрещён")}</small></div>
   </div>
   <div class="ai-map__tabs" role="tablist" aria-label={l("AI system sections", "Разделы ИИ-системы")}>
-    <button type="button" data-ai-map-tab="flow" id="ai-tab-flow" role="tab" aria-selected="true" aria-controls="ai-panel-flow">{l("How it works", "Как работает")}</button>
+    <button type="button" data-ai-map-tab="operations" id="ai-tab-operations" role="tab" aria-selected="true" aria-controls="ai-panel-operations">{l("Operations", "Работа сейчас")}</button>
+    <button type="button" data-ai-map-tab="flow" id="ai-tab-flow" role="tab" aria-selected="false" aria-controls="ai-panel-flow" tabindex="-1">{l("How it works", "Как работает")}</button>
     <button type="button" data-ai-map-tab="models" id="ai-tab-models" role="tab" aria-selected="false" aria-controls="ai-panel-models" tabindex="-1">{l("Models and agents", "Модели и агенты")}</button>
     <button type="button" data-ai-map-tab="connections" id="ai-tab-connections" role="tab" aria-selected="false" aria-controls="ai-panel-connections" tabindex="-1">{l("Connections", "Подключения")}</button>
     <button type="button" data-ai-map-tab="rollout" id="ai-tab-rollout" role="tab" aria-selected="false" aria-controls="ai-panel-rollout" tabindex="-1">{l("Activation plan", "План запуска")}</button>
   </div>
-  <div id="ai-panel-flow" data-ai-map-panel="flow" role="tabpanel" aria-labelledby="ai-tab-flow">
+  <div id="ai-panel-operations" data-ai-map-panel="operations" role="tabpanel" aria-labelledby="ai-tab-operations">
+    <p class="ai-map__section-copy">{l("Live owner telemetry comes from the existing authenticated Mac runner heartbeat. Missing values stay UNKNOWN; this screen does not invent progress.", "Живая телеметрия владельца приходит из существующего защищённого heartbeat Mac. Отсутствующие значения остаются НЕИЗВЕСТНО; экран не придумывает прогресс.")}</p>
+    <div class="ai-map__ops-grid">
+      <article class="ai-map__ops-card"><span class="ai-map__mini-label">{l("Execution", "Исполнение")}</span><h3>{l("Hermes AI runtime", "Runtime Hermes AI")}</h3><dl>
+        <div><dt>{l("Primary executor", "Основной исполнитель")}</dt><dd data-ai-ops-primary>UNKNOWN</dd></div>
+        <div><dt>{l("Phase", "Фаза")}</dt><dd data-ai-ops-phase>UNKNOWN</dd></div>
+        <div><dt>{l("Model", "Модель")}</dt><dd data-ai-ops-model>UNKNOWN</dd></div>
+        <div><dt>{l("Cycle", "Цикл")}</dt><dd data-ai-ops-cycle>UNKNOWN</dd></div>
+        <div><dt>Windows</dt><dd>{l("Deferred by owner · Mac is primary", "Отложен владельцем · основной Mac")}</dd></div>
+      </dl></article>
+      <article class="ai-map__ops-card ai-map__ops-card--wide"><span class="ai-map__mini-label">{l("Current work", "Текущая работа")}</span><h3 data-ai-ops-current>UNKNOWN</h3><p><strong>{l("Next:", "Дальше:")}</strong> <span data-ai-ops-next>UNKNOWN</span></p><p class="ai-map__ops-note">{l("Operational status only. Consequential actions remain behind existing QA / owner gates.", "Только операционный статус. Значимые действия остаются за существующими QA / owner gates.")}</p></article>
+      <article class="ai-map__ops-card"><span class="ai-map__mini-label">{l("Self-learning", "Самообучение")}</span><h3 data-ai-ops-training-phase>UNKNOWN</h3><p data-ai-ops-training-task>UNKNOWN</p></article>
+      <article class="ai-map__ops-card"><span class="ai-map__mini-label">{l("Autonomy guard", "Контроль автономности")}</span><h3>$0 · free-only</h3><dl>
+        <div><dt>{l("Unchanged skipped", "Пропущено без изменений")}</dt><dd data-ai-ops-cooldown>UNKNOWN</dd></div>
+        <div><dt>{l("Manifest scanned", "Проверено в manifest")}</dt><dd data-ai-ops-scanned>UNKNOWN</dd></div>
+        <div><dt>{l("External actions", "Внешние действия")}</dt><dd data-ai-ops-external-actions>UNKNOWN</dd></div>
+        <div><dt>{l("Provider writes", "Записи провайдерам")}</dt><dd data-ai-ops-provider-writes>UNKNOWN</dd></div>
+      </dl><p class="ai-map__ops-note">{l("Production, provider and One Brain writes stay independently gated.", "Записи в production, провайдерам и One Brain остаются независимо gated.")}</p></article>
+      <article class="ai-map__ops-card ai-map__team-preview"><span class="ai-map__mini-label">{l("Team view preview", "Предпросмотр для команды")}</span><h3>{l("Safe read-only snapshot", "Безопасный read-only обзор")}</h3><dl>
+        <div><dt>{l("Status", "Статус")}</dt><dd data-ai-team-status>UNKNOWN</dd></div>
+        <div><dt>{l("Phase", "Фаза")}</dt><dd data-ai-team-phase>UNKNOWN</dd></div>
+        <div><dt>{l("Current work", "Текущая работа")}</dt><dd data-ai-team-current>UNKNOWN</dd></div>
+        <div><dt>{l("Model", "Модель")}</dt><dd data-ai-team-model>UNKNOWN</dd></div>
+        <div><dt>{l("Heartbeat", "Heartbeat")}</dt><dd data-ai-team-heartbeat>UNKNOWN</dd></div>
+      </dl><p class="ai-map__ops-note">{l("Employee access is a separate read-only authorization step. Sensitive infrastructure and owner controls are excluded.", "Доступ сотрудников — отдельный read-only этап авторизации. Чувствительная инфраструктура и owner-controls исключены.")}</p></article>
+    </div>
+  </div>
+  <div id="ai-panel-flow" data-ai-map-panel="flow" role="tabpanel" aria-labelledby="ai-tab-flow" hidden>
     <div class="ai-map__overview">
       <div class="ai-map__flow">
         {steps.map((step) => <article class="ai-map__step"><span class="ai-map__num">{step.id}</span><div><strong>{step.name}</strong><p>{step.note}</p></div></article>)}
@@ -143,13 +171,13 @@ if (root) {
     panels.forEach((panel) => { panel.hidden = panel.dataset.aiMapPanel !== name; });
   };
   buttons.forEach((button, index) => {
-    button.addEventListener("click", () => activate(button.dataset.aiMapTab || "flow"));
+    button.addEventListener("click", () => activate(button.dataset.aiMapTab || "operations"));
     button.addEventListener("keydown", (event) => {
       if (!["ArrowRight", "ArrowLeft", "Home", "End"].includes(event.key)) return;
       event.preventDefault();
       const next = event.key === "Home" ? 0 : event.key === "End" ? buttons.length - 1 : (index + (event.key === "ArrowRight" ? 1 : -1) + buttons.length) % buttons.length;
       buttons[next]?.focus();
-      activate(buttons[next]?.dataset.aiMapTab || "flow");
+      activate(buttons[next]?.dataset.aiMapTab || "operations");
     });
   });
   const taskPresets: Record<string, { title: string; details: string }> = {
@@ -212,6 +240,15 @@ if (root) {
 .ai-map__guard{display:grid;gap:.35rem;margin:1.2rem 0;border-left:3px solid #dfaa49;padding:.5rem .7rem;background:#fffaf0;color:#765a24;font-size:.77rem}
 .ai-map__outline{min-height:41px;padding:.6rem .9rem;border:1px solid #b9cfee;color:#1f58a4;background:#fff;border-radius:10px;font-weight:790;cursor:pointer}
 .ai-map__section-copy{font-size:.85rem;line-height:1.65;margin:0 0 1rem;color:#586f88;max-width:850px}
+.ai-map__ops-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.75rem}
+.ai-map__ops-card{border:1px solid #e0e7f0;border-radius:15px;padding:1rem;background:#fff;min-width:0}
+.ai-map__ops-card--wide{grid-column:span 2;background:linear-gradient(135deg,#f7faff,#fff)}
+.ai-map__ops-card h3{font-size:1rem;margin:.45rem 0 .65rem;color:#172b45;overflow-wrap:anywhere}
+.ai-map__ops-card p{font-size:.8rem;line-height:1.55;color:#61738b;overflow-wrap:anywhere}
+.ai-map__ops-card dl{display:grid;gap:.42rem;margin:.6rem 0 0}
+.ai-map__ops-card dl div{display:grid;grid-template-columns:minmax(120px,.8fr) minmax(0,1.2fr);gap:.7rem;padding:.34rem 0;border-bottom:1px solid #edf1f5}
+.ai-map__ops-card dl div:last-child{border-bottom:0}.ai-map__ops-card dt{color:#7a8798;font-size:.72rem}.ai-map__ops-card dd{margin:0;color:#243b58;font-size:.78rem;font-weight:760;overflow-wrap:anywhere}
+.ai-map__ops-note{margin:.7rem 0 0!important;color:#718095!important;font-size:.72rem!important}.ai-map__team-preview{background:#f8fbfa}
 .ai-map__model-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.85rem}
 .ai-map__model,.ai-map__connection{border:1px solid #e0e7f0;border-radius:15px;padding:1rem;display:flex;flex-direction:column;min-width:0;background:#fff}
 .ai-map__model-top,.ai-map__connection-head{display:flex;justify-content:space-between;align-items:start;gap:.65rem}
@@ -233,5 +270,5 @@ if (root) {
 .ai-map__rollout{display:grid;gap:.65rem}.ai-map__rollout article{display:flex;gap:.95rem;padding:1rem;background:#f8fafc;border:1px solid #e7edf4;border-radius:14px}
 .ai-map__rollout h3{font-size:.95rem;margin:.05rem 0 .4rem}.ai-map__rollout p{margin:.1rem 0 .65rem;color:#687b90;font-size:.81rem;line-height:1.5}
 @media(max-width:950px){.ai-map__statusline{grid-template-columns:repeat(2,1fr)}.ai-map__overview{grid-template-columns:1fr}.ai-map__roles{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:600px){.ai-map__header{flex-direction:column}.ai-map__mode{white-space:normal}.ai-map__statusline{grid-template-columns:1fr 1fr}.ai-map__statusline>div{padding:.78rem}.ai-map__model-grid,.ai-map__connection-grid,.ai-map__roles{grid-template-columns:1fr}.ai-map__flag{max-width:62%}.ai-map__tabs{padding:.5rem}}
+@media(max-width:600px){.ai-map__header{flex-direction:column}.ai-map__mode{white-space:normal}.ai-map__statusline{grid-template-columns:1fr 1fr}.ai-map__statusline>div{padding:.78rem}.ai-map__ops-grid,.ai-map__model-grid,.ai-map__connection-grid,.ai-map__roles{grid-template-columns:1fr}.ai-map__ops-card--wide{grid-column:auto}.ai-map__ops-card dl div{grid-template-columns:1fr}.ai-map__flag{max-width:62%}.ai-map__tabs{padding:.5rem}}
 </style>

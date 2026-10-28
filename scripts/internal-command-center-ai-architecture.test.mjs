@@ -17,13 +17,20 @@ assert.match(owner, /const status=await jsonFetch\("\/api\/internal-ai\/status"\
 assert.match(owner, /if\(!status\.r\.ok\|\|!status\.d\.success\).*hidden=true/);
 assert.match(owner, /data-ai-map-runner-time/);
 assert.match(owner, /runtime\.last_seen_at/, "actual runner time derives from owner API");
+assert.match(owner, /runtime\.operations/, "operational telemetry must derive from the existing owner API");
+for (const marker of ["data-ai-ops-phase","data-ai-ops-model","data-ai-ops-cycle","data-ai-ops-current","data-ai-ops-next","data-ai-ops-training-phase","data-ai-ops-provider-writes","data-ai-team-status","data-ai-team-current"]) {
+  assert.ok(arch.includes(marker), "missing operational AI Center marker: " + marker);
+}
+assert.match(arch, /Missing values stay UNKNOWN/, "unknown telemetry must not become invented zero");
+assert.match(arch, /Employee access is a separate read-only authorization step/, "team view remains a separately gated rollout");
+assert.doesNotMatch(arch, /TeamViewer|AnyDesk|Windows executor online/i, "deferred Windows must not look live");
 assert.match(contract, /internal-command-center-ai-architecture\.test\.mjs/, "architecture QA must be in the existing canonical contract suite");
 
 // Topology, roles, and links are explicit and maintainable.
 for (const name of ["HAE · Worker + Queue + D1","Hermes AI · Mac","One Brain","GLM-4.7-Flash","Clef-flash","Clairic","Whisper Large V3 Turbo","WAITING_FREE_AI","Agent Coordinator","Technology Developer","Automatic Engineer","QA Auditor","Access Governor","Knowledge Curator","COO"]) {
   assert.ok(arch.includes(name), "missing documented role: " + name);
 }
-for (const section of ["flow","models","connections","rollout"]) {
+for (const section of ["operations","flow","models","connections","rollout"]) {
   assert.match(arch, new RegExp('data-ai-map-panel="' + section + '"'));
   assert.match(arch, new RegExp('data-ai-map-tab="' + section + '"'));
 }
@@ -42,6 +49,9 @@ assert.match(arch, /title\.value = draft\.title/);
 assert.match(arch, /details\.value = draft\.details/);
 assert.doesNotMatch(arch, /form\.submit\(|requestSubmit\(|fetch\(|sendBeacon\(|\.post\(/i);
 assert.doesNotMatch(arch, /localhost:8765|127\.0\.0\.1:8765\/api|GENUI|OPENAI_API_KEY|Cf-Access-Jwt-Assertion/);
+const teamPreview = arch.match(/<article class="ai-map__ops-card ai-map__team-preview">[\s\S]*?<\/article>/)?.[0] || "";
+assert.ok(teamPreview, "safe team preview must exist");
+assert.doesNotMatch(teamPreview, /localhost|127\.0\.0\.1|approve|deploy|grant|revoke/i, "team preview must not expose local endpoints or owner controls");
 assert.match(arch, /role="tablist"/);
 assert.match(arch, /aria-selected/);
 assert.match(arch, /aria-controls/);

@@ -61,3 +61,13 @@ The Mac is allowed to be offline; it does **not** own a second cloud queue. Loca
 - One Brain knowledge document: https://docs.google.com/document/d/1ZhhySXskA7EdC40bWNNzSeMbvVKn7J1FPQOLNE-D98Y/edit
 
 **Rule:** Do not duplicate the Command Center, Cloudflare Worker, Hermes Connect CRM, ClickUp task store, or One Brain.
+
+## Owner operations telemetry
+
+The AI Center reuses the existing authenticated internal-ai-mac-runner heartbeat instead of adding another API, scheduler or database. The runner may attach one bounded telemetry_json envelope to its existing runner-state row. Accepted fields are limited to status, phase, cycle, current task, next action, local model, last training phase/task, and four autonomy counters: cooldown skipped, manifest scanned, external actions, and provider writes.
+
+Every text field passes through the existing execution sanitizer and every counter is bounded. Missing, malformed, or absent values remain UNKNOWN; they are never converted to zero. The owner status endpoint parses and sanitizes the stored envelope again before returning it.
+
+Mac is the current primary executor. Windows is deferred by the owner and must not be represented as connected. The Team View in the owner UI is only a safe preview of a future read-only employee surface; employee authorization remains a separate gate and must not expose sensitive infrastructure or owner controls.
+
+This preserves the architecture boundary: one Command Center, one existing runner-state row, one HAE, no second planner, Worker, D1 database, scheduler, or task authority.
