@@ -7,6 +7,7 @@ const redirects = await readFile(new URL("../public/_redirects", import.meta.url
 const middleware = await readFile(new URL("../functions/_middleware.js", import.meta.url), "utf8");
 const robots = await readFile(new URL("../public/robots.txt", import.meta.url), "utf8");
 assert.match(redirects, /^\/academy\/ \/paths\/academy\/ 301$/m, "retired /academy/ hub must redirect to canonical Academy direction");
+assert.match(redirects, /^\/logistics\/ \/paths\/logistics\/ 301$/m, "/logistics/ parent of every carrier page must reach the canonical Logistics direction, not 404");
 for (const [legacy, canonical] of [
   ["/resources/rpm-calculator/", "/logistics/resources/rpm-calculator/"],
   ["/tools/load-analyzer/", "/services/hermes-connect/load-analyzer/"],

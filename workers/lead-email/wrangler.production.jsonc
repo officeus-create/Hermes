@@ -20,6 +20,7 @@
     "COLD_FAIR_RUNTIME_MODE": "blocked",
     "COLD_FAIR_PROMOTIONAL_SEND_GATE": "BLOCKED",
     "CARRIER_CONTRACT_INTERNAL_RECIPIENTS": "officeus@hermeslogisticsus.com",
+    "CARRIER_DISPATCH_RECIPIENTS": "dispatchtruck107@gmail.com",
     "CAR_HAULING_DURABLE_OUTBOX_REQUIRED": "true",
     "LOADBOARD_EMAIL_RECIPIENT": "loads@loadboard.hermeslogisticsus.com",
     "LOADBOARD_INGEST_URL": "https://hermeslogisticsus.com/api/load-board/intake",

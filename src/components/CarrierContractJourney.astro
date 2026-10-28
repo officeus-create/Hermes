@@ -6,7 +6,7 @@ type JourneyConfig = { stage: string; primaryLabel: string; primaryHref: string 
 const journeyByPath: Record<string, JourneyConfig> = {
   "/carrier/": { stage: "Carrier agreement", primaryLabel: "Continue to carrier packet", primaryHref: "/logistics/carrier-onboarding/" },
   "/sign/": { stage: "Private carrier link", primaryLabel: "Continue to carrier packet", primaryHref: "/logistics/carrier-onboarding/" },
-  "/logistics/carrier/": { stage: "Comparing carrier support", primaryLabel: "Review plans and carrier packet", primaryHref: "/carrier/" },
+  "/logistics/car-hauling-dispatch/": { stage: "Comparing carrier support", primaryLabel: "Review plans and carrier packet", primaryHref: "/carrier/" },
   "/logistics/carrier-offer/": { stage: "Support options reviewed", primaryLabel: "Review and continue", primaryHref: "/sign/" },
   "/logistics/carrier-agreement/": { stage: "Full terms reviewed", primaryLabel: "Confirm terms and continue", primaryHref: "/logistics/carrier-onboarding/" },
 };
@@ -74,7 +74,7 @@ const smsCopy = `Hermes Logistics: here is the private carrier link we discussed
   type AnalyticsValue = string | number;
   type AnalyticsPayload = Record<string, AnalyticsValue>;
   const pushCarrierAnalytics = (payload: AnalyticsPayload) => { window.dataLayer = window.dataLayer || []; window.dataLayer.push(payload); };
-  const carrierSalesPaths = new Set(["/carrier/", "/sign/", "/logistics/carrier/", "/logistics/carrier-offer/", "/logistics/carrier-agreement/"]);
+  const carrierSalesPaths = new Set(["/carrier/", "/sign/", "/logistics/car-hauling-dispatch/", "/logistics/carrier-offer/", "/logistics/carrier-agreement/"]);
   const destinationTypes = new Map([
     ["/carrier/", "carrier_proposal_entry"],
     ["/sign/", "carrier_signing_entry"],
