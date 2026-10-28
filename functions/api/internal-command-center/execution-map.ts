@@ -49,7 +49,7 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
   const registrySnapshot = pluginRuntimeRegistrySnapshot();
   const registryEvidence = pluginRuntimeRegistryEvidenceStatus(new Date().toISOString());
   const processes = (processRows.results || []).map(publicHaeProcess);
-  const tasks = (work.results || []).map((item) => executionProjection(item, registrySnapshot.entries));
+  const tasks = (work.results || []).map((item: any) => executionProjection(item, registrySnapshot.entries));
   const developments = developmentCatalog({ registrySnapshot, registryEvidence, processes, runner });
   const [human_work_raw, github_developments] = await Promise.all([readClickUpHumanTasks(env), readGithubDevelopments(env)]);
   const human_work = linkHumanWorkDevelopments(human_work_raw, github_developments);
