@@ -45,7 +45,10 @@ for (const section of ["operations","flow","models","connections","rollout"]) {
 assert.match(arch, /No accepted inference receipt yet/);
 assert.match(arch, /Status identifies a source-level observation|Each status identifies a source-level observation/);
 assert.match(arch, /Source snapshot: 27 October 2026/);
-assert.match(arch, /Created; live connector unverified/);
+assert.match(arch, /Owner E2E \+ anonymous redirect proven/, "Access status must reflect proven owner E2E and anonymous redirect");
+assert.match(arch, /Real unlisted-user denial is still an open acceptance gate/, "Access must preserve the real-user denial gate");
+assert.match(arch, /Owner path proven; reboot recovery open/, "Tunnel status must distinguish proven owner path from reboot recovery");
+assert.match(arch, /full Mac reboot\/login recovery is not yet proven/, "Tunnel must not overclaim full restart recovery");
 assert.match(arch, /no Hermes benchmark/i);
 
 // The only interaction with actual work should fill the owner's pre-existing form.
