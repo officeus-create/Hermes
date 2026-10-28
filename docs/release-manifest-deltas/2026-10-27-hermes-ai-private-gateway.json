@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "base_manifest": "docs/release-manifest-2026-08-01.json",
+  "release_delta": "2026-10-27-hermes-ai-private-gateway",
+  "generated_at": "2026-10-27T01:55:00+02:00",
+  "status": "PENDING_PRODUCTION_DEPLOYMENT",
+  "additions": [
+    {
+      "route": "/ai-agents/",
+      "source_state": "current_main",
+      "indexability": "noindex",
+      "robots": "noindex,nofollow,noarchive,nosnippet",
+      "canonical": "https://hermeslogisticsus.com/ai-agents/",
+      "sitemap_owner": null,
+      "source_file": "src/pages/ai-agents/index.astro",
+      "status": "COMPLETE",
+      "blocker": "Private Hermes AI gateway remains fail-closed until owner-approved Cloudflare Access/Tunnel and independent anonymous-deny + authorized-session readback. Route must stay outside public sitemaps/search indexing.",
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    }
+  ],
+  "acceptance": {
+    "route_count_added": 1,
+    "indexable_route_count_added": 0,
+    "requires_green_current_head_ci": true,
+    "requires_production_snapshot_reconciliation_after_deploy": true
+  }
+}
