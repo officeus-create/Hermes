@@ -18,6 +18,16 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
       current_task: operations.current_task ?? null,
       model: operations.model ?? null,
     } : null;
+    const countRows = await env.DB.prepare("SELECT status, COUNT(*) AS count FROM hermes_internal_ai_tasks WHERE organization_scope = ? GROUP BY status").bind(INTERNAL_AI_ORGANIZATION_SCOPE).all();
+    const taskSummary: Record<string, number> = { total: 0, queued: 0, running: 0, needs_approval: 0, completed: 0, failed: 0, cancelled: 0 };
+    for (const row of countRows.results || []) {
+      const status = String(row.status || "");
+      if (!(status in taskSummary) || status === "total") continue;
+      const count = Number(row.count);
+      if (!Number.isInteger(count) || count < 0) continue;
+      taskSummary[status] = count;
+      taskSummary.total += count;
+    }
     return jsonResponse(200, {
       success: true,
       access_level: "team",
@@ -27,6 +37,7 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
         primary_executor: "mac",
         operations: teamOperations,
       },
+      task_summary: taskSummary,
     }, headers);
   }
 
