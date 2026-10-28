@@ -71,3 +71,7 @@ Every text field passes through the existing execution sanitizer and every count
 Mac is the current primary executor. Windows is deferred by the owner and must not be represented as connected. The Team View in the owner UI is only a safe preview of a future read-only employee surface; employee authorization remains a separate gate and must not expose sensitive infrastructure or owner controls.
 
 This preserves the architecture boundary: one Command Center, one existing runner-state row, one HAE, no second planner, Worker, D1 database, scheduler, or task authority.
+
+## Team View authorization
+
+Mac is the current primary executor. Windows is deferred by the owner and must not be represented as connected. Team View now uses a separate explicit server-side read-only capability on the same Hermes account/session system. It is never inferred from email domain, generic login or account role. Team viewers receive only a scrubbed runtime projection (online/heartbeat, status, phase, cycle, current work and model); owner backlog, approvals, repo metadata, access controls, credentials, IP addresses and local endpoints remain owner-only.
