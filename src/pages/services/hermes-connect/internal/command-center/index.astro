@@ -27,10 +27,28 @@ const modules=[
     <div class="shell">
       <header class="hero">
         <div><p class="kicker"><Sparkles size={15}/>Hermes Connect · Owner OS</p><h1>{ru?"Центр управления бизнесом":"Business Command Center"}</h1><p>{ru?"Одно место для направлений Hermes, задач владельца и AI-исполнения. Задачи хранятся в облаке: Mac может быть офлайн, а очередь не пропадёт.":"One place for Hermes business directions, owner work and AI execution. Work is stored in the cloud: the Mac may be offline without losing the queue."}</p></div>
-        <span class="owner-pill"><ShieldCheck size={16}/>HERMES_INTERNAL_OWNER</span>
+        <span class="owner-pill" data-role-pill><ShieldCheck size={16}/>PRIVATE</span>
       </header>
 
-      <section class="access-card" data-access role="status"><strong>{ru?"Проверяем доступ владельца…":"Checking owner access…"}</strong><p>{ru?"Данные откроются только после серверной проверки owner capability.":"Data opens only after server-side owner capability verification."}</p></section>
+      <section class="access-card" data-access role="status"><strong>{ru?"Проверяем внутренний доступ…":"Checking internal access…"}</strong><p>{ru?"Данные откроются только после серверной проверки capability.":"Data opens only after server-side capability verification."}</p></section>
+
+      <div data-team-only hidden>
+        <section class="section panel">
+          <div class="section-head"><div><p class="kicker"><Activity size={14}/>{ru?"Командный обзор":"Team view"}</p><h2>{ru?"Hermes AI — текущий процесс":"Hermes AI — current process"}</h2></div><span class="cloud-note">{ru?"Только чтение":"Read only"}</span></div>
+          <p class="muted">{ru?"Этот экран показывает только безопасный операционный статус. Задачи владельца, approvals, настройки доступа, токены, IP и локальные endpoints скрыты.":"This screen shows only a safe operational snapshot. Owner tasks, approvals, access controls, tokens, IPs and local endpoints stay hidden."}</p>
+          <section class="status-grid">
+            <article><span>{ru?"Статус":"Status"}</span><strong data-team-page-status>—</strong><small>{ru?"Hermes AI":"Hermes AI"}</small></article>
+            <article><span>{ru?"Фаза":"Phase"}</span><strong data-team-page-phase>—</strong><small>{ru?"текущий режим":"current mode"}</small></article>
+            <article><span>{ru?"Модель":"Model"}</span><strong data-team-page-model>—</strong><small>{ru?"локальный executor":"local executor"}</small></article>
+            <article><span>{ru?"Цикл":"Cycle"}</span><strong data-team-page-cycle>—</strong><small>{ru?"последний подтверждённый":"last verified"}</small></article>
+          </section>
+          <article class="panel team-current-work">
+            <p class="kicker">{ru?"Сейчас выполняется":"Current work"}</p>
+            <h3 data-team-page-current>—</h3>
+            <p class="muted">{ru?"Последний heartbeat: ":"Last heartbeat: "}<span data-team-page-heartbeat>—</span></p>
+          </article>
+        </section>
+      </div>
 
       <div data-private hidden>
         <section class="status-grid">
@@ -94,10 +112,18 @@ const modules=[
         </section>
 
         <section class="section panel access-admin">
-          <div class="section-head"><div><p class="kicker"><ShieldCheck size={14}/>{ru?"Доступ":"Access"}</p><h2>{ru?"Владельцы Command Center":"Command Center owners"}</h2></div></div>
-          <p class="muted">{ru?"Доступ не определяется по имени или домену почты. Выдавать capability можно только уже существующему Hermes-аккаунту; каждое изменение пишется в audit trail.":"Access is never inferred from a name or email domain. Capability can be granted only to an existing Hermes account; every change is audited."}</p>
+          <div class="section-head"><div><p class="kicker"><ShieldCheck size={14}/>{ru?"Доступ":"Access"}</p><h2>{ru?"Доступ к Command Center":"Command Center access"}</h2></div></div>
+          <p class="muted">{ru?"Owner и Team View выдаются только существующим Hermes-аккаунтам через server-side capability. Email-домен и роль аккаунта никогда не дают доступ автоматически.":"Owner and Team View are granted only to existing Hermes accounts through server-side capability. Email domain and account role never grant access automatically."}</p>
+          <h3>{ru?"Владельцы":"Owners"}</h3>
           <div class="owner-list" data-owner-list></div>
-          <form data-access-form><label>{ru?"Email существующего Hermes-аккаунта":"Existing Hermes account email"}<input name="email" type="email" autocomplete="off" required placeholder="team@example.com"/></label><div class="access-actions"><button type="submit" name="action" value="grant" class="primary">{ru?"Выдать доступ":"Grant access"}</button><button type="submit" name="action" value="revoke" class="danger">{ru?"Отозвать":"Revoke"}</button></div><p data-access-status role="status"></p></form>
+          <h3>{ru?"Команда · только чтение":"Team · read only"}</h3>
+          <div class="owner-list" data-team-access-list></div>
+          <form data-access-form>
+            <div class="row"><label>{ru?"Email существующего Hermes-аккаунта":"Existing Hermes account email"}<input name="email" type="email" autocomplete="off" required placeholder="team@example.com"/></label>
+            <label>{ru?"Уровень доступа":"Access level"}<select name="capability"><option value="team_view">{ru?"Team View · только чтение":"Team View · read only"}</option><option value="owner">{ru?"Owner · полный":"Owner · full"}</option></select></label></div>
+            <div class="access-actions"><button type="submit" name="action" value="grant" class="primary">{ru?"Выдать доступ":"Grant access"}</button><button type="submit" name="action" value="revoke" class="danger">{ru?"Отозвать":"Revoke"}</button></div>
+            <p data-access-status role="status"></p>
+          </form>
         </section>
       </div>
     </div>
@@ -118,10 +144,20 @@ function setText(sel:string,value:string){const n=q(sel);if(n)n.textContent=valu
 function safePr(value?:string|null){if(!value)return null;try{const u=new URL(value);return u.protocol==="https:"&&u.hostname==="github.com"&&/^\/officeus-create\/Hermes\/pull\/\d+\/?$/.test(u.pathname)?u.href:null}catch{return null}}
 async function loadAll(){
   const status=await jsonFetch("/api/internal-ai/status");
-  if(!status.r.ok||!status.d.success){q("[data-private]")!.hidden=true;const access=q("[data-access]")!;access.hidden=false;access.querySelector("strong")!.textContent=status.r.status===401?t("Sign in required","Нужно войти"):t("HERMES_INTERNAL_OWNER required","Нужен HERMES_INTERNAL_OWNER");return}
-  q("[data-access]")!.hidden=true;q("[data-private]")!.hidden=false;runtime=status.d.runtime||{};const active=status.d.active_task||null;
+  const privateView=q("[data-private]")!,teamView=q("[data-team-only]")!,access=q("[data-access]")!;
+  if(!status.r.ok||!status.d.success){
+    privateView.hidden=true;teamView.hidden=true;access.hidden=false;
+    access.querySelector("strong")!.textContent=status.r.status===401?t("Sign in required","Нужно войти"):t("Internal Command Center access required","Нужен внутренний доступ Command Center");
+    return;
+  }
+  runtime=status.d.runtime||{};const active=status.d.active_task||null;
   const operations=runtime.operations&&typeof runtime.operations==="object"?runtime.operations:{};const autonomy=operations.autonomy&&typeof operations.autonomy==="object"?operations.autonomy:{};const unknown=t("UNKNOWN","НЕИЗВЕСТНО");
   const known=(value:any)=>value===null||value===undefined||value===""?unknown:String(value);const runnerLabel=runtime.online?t("Online","Онлайн"):t("Offline","Офлайн");
+  const fillTeam=()=>{setText("[data-team-page-status]",operations.status?known(operations.status):runnerLabel);setText("[data-team-page-phase]",known(operations.phase));setText("[data-team-page-model]",known(operations.model));setText("[data-team-page-cycle]",known(operations.cycle));setText("[data-team-page-current]",known(operations.current_task));setText("[data-team-page-heartbeat]",runtime.last_seen_at?stamp(runtime.last_seen_at):unknown)};
+  if(status.d.access_level==="team"){
+    access.hidden=true;privateView.hidden=true;teamView.hidden=false;setText("[data-role-pill]",t("TEAM VIEW · READ ONLY","TEAM VIEW · ТОЛЬКО ЧТЕНИЕ"));fillTeam();return;
+  }
+  access.hidden=true;teamView.hidden=true;privateView.hidden=false;setText("[data-role-pill]","HERMES_INTERNAL_OWNER");fillTeam();
   setText("[data-runner-state]",runnerLabel);setText("[data-runner-copy]",runtime.online?t("Mac runner is accepting work","Mac runner принимает работу"):t("Cloud backlog remains safe","Облачная очередь сохранена"));
   setText("[data-agent-badge]",runnerLabel);setText("[data-agent-status]",runnerLabel);setText("[data-agent-seen]",stamp(runtime.last_seen_at));setText("[data-agent-sha]",runtime.repo_sha||"—");
   setText("[data-ai-map-runner]",runtime.online?(runnerLabel+" · "+known(operations.model)):t("Offline / awaiting heartbeat","Офлайн / ожидается heartbeat"));
@@ -134,7 +170,7 @@ async function loadAll(){
   if(work.r.ok&&work.d.success)items=work.d.work_items||[]; if(taskList.r.ok&&taskList.d.success)tasks=taskList.d.tasks||[]; if(account.r.ok&&account.d.success)renderAccount(account.d);if(processList.r.ok&&processList.d.success)processes=processList.d.processes||[];
   setText("[data-backlog-count]",String(items.filter(x=>!["done","cancelled"].includes(x.status)).length));setText("[data-approval-count]",String(tasks.filter(x=>x.status==="needs_approval").length));
   document.querySelectorAll<HTMLElement>("[data-module]").forEach(card=>{const key=card.dataset.module||"";const count=items.filter(x=>x.workstream===key&&!["done","cancelled"].includes(x.status)).length;const badge=card.querySelector<HTMLElement>(".module-state");if(badge)badge.textContent=count?String(count)+" "+t("open","открыто"):t("Clear","Чисто")});
-  renderItems();renderProcesses(); if(accessList.r.ok&&accessList.d.success)renderOwners(accessList.d);
+  renderItems();renderProcesses(); if(accessList.r.ok&&accessList.d.success)renderAccess(accessList.d);
 }
 function visible(item:WorkItem){if(filter==="open")return !["done","cancelled"].includes(item.status);if(filter==="done")return item.status==="done";if(filter==="awaiting_acceptance")return item.status==="awaiting_acceptance";return item.workstream===filter}
 function renderItems(){
@@ -166,8 +202,11 @@ document.querySelectorAll<HTMLButtonElement>("[data-focus-workstream]").forEach(
 const initialDirection=new URLSearchParams(location.search).get("direction");if(initialDirection&&["marketing","logistics","sales","technology","academy","finance","operations"].includes(initialDirection)){filter=initialDirection;const initialButton=q("[data-filters]")?.querySelector<HTMLButtonElement>(`[data-filter="${CSS.escape(initialDirection)}"]`);q("[data-filters]")?.querySelectorAll("button").forEach(x=>x.classList.toggle("active",x===initialButton));setText("[data-backlog-title]",t("Work queue · ","Очередь · ")+initialDirection.charAt(0).toUpperCase()+initialDirection.slice(1));}
 q("[data-filters]")?.addEventListener("click",(e)=>{const b=(e.target as HTMLElement).closest<HTMLButtonElement>("[data-filter]");if(!b)return;filter=b.dataset.filter||"open";q("[data-filters]")?.querySelectorAll("button").forEach(x=>x.classList.toggle("active",x===b));renderItems()});
 function renderAccount(data:any){const box=q("[data-account-workspaces]");if(!box)return;box.replaceChildren();const identity=data.identity||{};setText("[data-account-identity]",identity.name||identity.email||t("Owner account","Аккаунт владельца"));const rows=[...(data.owned_businesses||[]).map((x:any)=>({label:x.name||x.key,href:x.href,state:x.workspace_state||"business"})),...(data.workspaces||[]).map((x:any)=>({label:String(x.key||"workspace").replaceAll("_"," "),href:x.href,state:x.kind||"workspace"}))];if(!rows.length){const p=document.createElement("p");p.className="muted";p.textContent=t("No connected business workspaces for this account yet.","У этого аккаунта пока нет подключённых бизнес-workspaces.");box.append(p);return}rows.forEach((row:any)=>{const a=document.createElement("a");a.className="workspace-tile";a.href=String(row.href||"#");const strong=document.createElement("strong");strong.textContent=String(row.label||"Workspace");const small=document.createElement("small");small.textContent=String(row.state||"workspace").replaceAll("_"," ");a.append(strong,small);box.append(a)})}
-function renderOwners(data:any){const box=q("[data-owner-list]");if(!box)return;box.replaceChildren();(data.access||[]).forEach((owner:any)=>{const row=document.createElement("div");row.className="owner-row";const identity=document.createElement("div");const strong=document.createElement("strong");strong.textContent=owner.name||owner.email||owner.specialist_id;const small=document.createElement("small");small.textContent=(owner.email||"")+" · "+(owner.active?t("active","активен"):t("revoked","отозван"));identity.append(strong,small);const tag=document.createElement("span");tag.textContent=owner.specialist_id===data.current_specialist_id?t("You","Вы"):(owner.active?t("Owner","Владелец"):t("Inactive","Неактивен"));row.append(identity,tag);box.append(row)})}
-q<HTMLFormElement>("[data-access-form]")?.addEventListener("submit",async(e)=>{e.preventDefault();const submit=(e as SubmitEvent).submitter as HTMLButtonElement|null;const action=submit?.value||"grant";const form=e.currentTarget as HTMLFormElement;const data=new FormData(form);if(!confirm(action==="grant"?t("Grant internal owner access to this existing Hermes account?","Выдать этому существующему Hermes-аккаунту внутренний owner-доступ?"):t("Revoke internal owner access from this account?","Отозвать внутренний owner-доступ у этого аккаунта?")))return;const x=await jsonFetch("/api/internal-command-center/access",{method:"POST",body:JSON.stringify({action,email:data.get("email")})});setText("[data-access-status]",x.r.ok?t("Access updated.","Доступ обновлён."):String(x.d.error||"access_update_failed"));if(x.r.ok){form.reset();await loadAll()}});
+function renderAccess(data:any){
+ const render=(selector:string,rows:any[],kind:"owner"|"team")=>{const box=q(selector);if(!box)return;box.replaceChildren();if(!rows.length){const p=document.createElement("p");p.className="muted";p.textContent=kind==="owner"?t("No owner records.","Нет записей owner."):t("No team viewers yet.","Team View пока никому не выдан.");box.append(p);return}(rows||[]).forEach((entry:any)=>{const row=document.createElement("div");row.className="owner-row";const identity=document.createElement("div");const strong=document.createElement("strong");strong.textContent=entry.name||entry.email||entry.specialist_id;const small=document.createElement("small");small.textContent=(entry.email||"")+" · "+(entry.active?t("active","активен"):t("revoked","отозван"));identity.append(strong,small);const tag=document.createElement("span");tag.textContent=kind==="owner"?(entry.specialist_id===data.current_specialist_id?t("You","Вы"):(entry.active?t("Owner","Владелец"):t("Inactive","Неактивен"))):(entry.active?t("Read only","Только чтение"):t("Inactive","Неактивен"));row.append(identity,tag);box.append(row)})};
+ render("[data-owner-list]",data.access||[],"owner");render("[data-team-access-list]",data.team_access||[],"team");
+}
+q<HTMLFormElement>("[data-access-form]")?.addEventListener("submit",async(e)=>{e.preventDefault();const submit=(e as SubmitEvent).submitter as HTMLButtonElement|null;const action=submit?.value||"grant";const form=e.currentTarget as HTMLFormElement;const data=new FormData(form);const capability=String(data.get("capability")||"team_view");const label=capability==="team_view"?t("Team View read-only","Team View только чтение"):t("full owner","полный owner");if(!confirm(action==="grant"?t("Grant "+label+" access to this existing Hermes account?","Выдать этому существующему Hermes-аккаунту доступ "+label+"?"):t("Revoke "+label+" access from this account?","Отозвать у этого аккаунта доступ "+label+"?")))return;const x=await jsonFetch("/api/internal-command-center/access",{method:"POST",body:JSON.stringify({action,email:data.get("email"),capability})});setText("[data-access-status]",x.r.ok?t("Access updated.","Доступ обновлён."):String(x.d.error||"access_update_failed"));if(x.r.ok){form.reset();await loadAll()}});
 void loadAll();const timer=setInterval(()=>void loadAll(),15000);addEventListener("pagehide",()=>clearInterval(timer),{once:true});
 </script>
 
