@@ -482,10 +482,10 @@ jobs:
           {
             echo "# Hermes Automation Engine dry-run"
             echo
-            echo "- Exact main: `$TARGET_SHA`"
+            echo "- Exact main: \`$TARGET_SHA\`"
             echo "- Provider writes: disabled"
-            echo "- Queue canary slot: `$CANARY_SLOT`"
-            echo "- D1 readback: `$CANARY_STATUS`"
+            echo "- Queue canary slot: \`$CANARY_SLOT\`"
+            echo "- D1 readback: \`$CANARY_STATUS\`"
             echo "- ChatGPT/OpenAI runtime calls: 0 by contract"
           } >> "$GITHUB_STEP_SUMMARY"
 
