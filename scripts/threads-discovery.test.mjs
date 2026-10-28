@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { threadsBrandScopes } from "../functions/api/_lib/threads-brand-connector.mjs";
 import {
-  parsePublicThreadsPostUrl, threadsConversationRead, threadsOwnedRead, classifyThreadsResearchText,
+  parsePublicThreadsPostUrl, threadsConversationRead, threadsMentionsRead, threadsOwnedRead, classifyThreadsResearchText,
   threadsReadMode, threadsRequiredScope, threadsResolvePublicPost, threadsSearchRead,
 } from "../functions/api/_lib/threads-discovery.mjs";
 
@@ -21,10 +21,12 @@ for (const invalid of [
 ]) assert.equal(parsePublicThreadsPostUrl(invalid), null);
 assert.equal(threadsReadMode("search"), "search");
 assert.equal(threadsReadMode("owned"), "owned");
+assert.equal(threadsReadMode("mentions"), "mentions");
 assert.equal(threadsReadMode("reply"), null);
 assert.deepEqual(threadsRequiredScope("thread", true),
   ["threads_basic", "threads_read_replies", "threads_profile_discovery"]);
 assert.deepEqual(threadsRequiredScope("search", false), ["threads_basic", "threads_keyword_search"]);
+assert.deepEqual(threadsRequiredScope("mentions", false), ["threads_basic", "threads_manage_mentions"]);
 assert.ok(threadsBrandScopes({ THREADS_BRAND_SCOPES: "threads_basic,threads_profile_discovery" }).includes("threads_profile_discovery"));
 assert.ok(!threadsBrandScopes({}).includes("threads_profile_discovery"));
 
@@ -36,7 +38,7 @@ function mockJson(data, status = 200) {
 async function transport(address, init) {
   const url = new URL(address);
   calls.push({ url, headers: init.headers });
-  assert.equal(url.hostname, "graph.threads.com");
+  assert.equal(url.hostname, "graph.threads.net");
   assert.equal(url.searchParams.has("access_token"), false);
   assert.equal(init.headers.Authorization, "Bearer " + token);
   if (url.pathname.endsWith("/keyword_search")) {
@@ -56,6 +58,7 @@ async function transport(address, init) {
   }
   if (url.pathname.endsWith("/123456789012")) return mockJson({ id: "123456789012", text: "Pricing request", username: "tsapushel_olena" });
   if (url.pathname.endsWith("/me/threads")) return mockJson({ data: [] });
+  if (url.pathname.endsWith("/me/mentions")) return mockJson({ data: [{ id: "800001", text: "@progressopro website help?", username: "buyer" }] });
   throw new Error("unexpected URL: " + url.pathname);
 }
 
@@ -77,6 +80,10 @@ assert.equal(conversation.pages, 2);
 assert.equal(await threadsConversationRead({ token, threadId: "De6z1w-iAC5", transport }).then(x => x.error),
   "invalid_threads_media_id");
 assert.equal((await threadsOwnedRead({ token, transport })).complete, true);
+const mentions = await threadsMentionsRead({ token, transport });
+assert.equal(mentions.ok, true);
+assert.equal(mentions.mode, "mentions");
+assert.equal(mentions.posts[0].id, "800001");
 
 const denied = await threadsSearchRead({
   token, query: "website", transport: async () => mockJson({ error: { code: 10 } }, 403),
@@ -92,6 +99,7 @@ const routeSource = await readFile(new URL("../functions/api/internal/social/thr
 assert.match(routeSource, /requireInternalOwner/);
 assert.match(routeSource, /missing_scopes/);
 assert.match(routeSource, /usableThreadsAccessToken/);
+assert.match(routeSource, /threadsMentionsRead/);
 assert.match(routeSource, /provider_write_performed: false/);
 assert.doesNotMatch(routeSource, /publishThreadsText|reply_to_id|execute.*script/i);
 
