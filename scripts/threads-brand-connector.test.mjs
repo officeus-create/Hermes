@@ -58,7 +58,7 @@ assert.equal(authUrl.searchParams.get("client_id"), "123456");
 assert.equal(authUrl.searchParams.get("redirect_uri"), configEnv.THREADS_BRAND_REDIRECT_URI);
 assert.equal(authUrl.searchParams.get("response_type"), "code");
 assert.equal(authUrl.searchParams.get("state"), "synthetic.state");
-for (const scope of ["threads_basic","threads_content_publish","threads_read_replies","threads_manage_replies","threads_manage_insights"]) {
+for (const scope of ["threads_basic","threads_content_publish","threads_read_replies","threads_manage_replies","threads_manage_mentions","threads_manage_insights"]) {
   assert.ok(authUrl.searchParams.get("scope").split(",").includes(scope));
 }
 const keywordScopes = threadsBrandScopes({ THREADS_BRAND_SCOPES:"threads_basic threads_keyword_search" });
@@ -99,6 +99,8 @@ assert.equal(publicView.publish_enabled, true);
 assert.equal(publicView.expected_username, "office");
 
 const coreSource = await readFile(new URL("../functions/api/_lib/threads-brand-connector.mjs", import.meta.url), "utf8");
+assert.match(coreSource, /https:\/\/graph\.threads\.net\//);
+assert.doesNotMatch(coreSource, /graph\.threads\.com/);
 const startSource = await readFile(new URL("../functions/api/internal/social/threads/start.ts", import.meta.url), "utf8");
 const callbackSource = await readFile(new URL("../functions/api/internal/social/threads/callback.ts", import.meta.url), "utf8");
 const connectionsSource = await readFile(new URL("../functions/api/internal/social/threads/connections.ts", import.meta.url), "utf8");
