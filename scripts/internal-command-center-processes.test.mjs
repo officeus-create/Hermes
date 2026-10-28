@@ -13,9 +13,15 @@ class Statement {
 }
 
 const sqlite = new DatabaseSync(":memory:");
+let beforeBatchHook = null;
 const DB = {
   prepare: (sql) => new Statement(sqlite.prepare(sql)),
   batch: async (statements) => {
+    if (beforeBatchHook) {
+      const hook = beforeBatchHook;
+      beforeBatchHook = null;
+      hook();
+    }
     sqlite.exec("BEGIN");
     try {
       const results = [];
@@ -113,6 +119,43 @@ result = await payload(await mutateProcess({
 }));
 assert.equal(result.status, 200);
 assert.equal(result.body.process.status, "paused");
+
+// Race regression 1: a Worker claims a lease after the owner pre-read but before DB.batch.
+// The owner pause must fail and preserve the newly claimed lease/status.
+result = await payload(await mutateProcess({
+  request: request(`/api/internal-command-center/processes/${processId}`, "PATCH", { action: "activate" }),
+  env: { DB },
+  params: { id: processId },
+}));
+assert.equal(result.status, 200);
+const liveLease = new Date(Date.now() + 120000).toISOString();
+const pausedEventsBeforeRace = Number(sqlite.prepare("SELECT COUNT(*) AS n FROM hermes_automation_process_events WHERE process_id=? AND event_type='process.paused'").get(processId).n);
+beforeBatchHook = () => sqlite.prepare("UPDATE hermes_automation_processes SET lease_until=? WHERE process_id=?").run(liveLease, processId);
+result = await payload(await mutateProcess({
+  request: request(`/api/internal-command-center/processes/${processId}`, "PATCH", { action: "pause" }),
+  env: { DB },
+  params: { id: processId },
+}));
+assert.equal(result.status, 409);
+assert.equal(result.body.error, "process_state_conflict");
+let raceRow = sqlite.prepare("SELECT status,lease_until FROM hermes_automation_processes WHERE process_id=?").get(processId);
+assert.equal(raceRow.status, "active");
+assert.equal(raceRow.lease_until, liveLease);
+assert.equal(Number(sqlite.prepare("SELECT COUNT(*) AS n FROM hermes_automation_process_events WHERE process_id=? AND event_type='process.paused'").get(processId).n), pausedEventsBeforeRace);
+
+// Race regression 2: status changes after the run_next_tick pre-read.
+// Rejected mutation must not emit a phantom process.run_requested event.
+sqlite.prepare("UPDATE hermes_automation_processes SET lease_until=NULL,status='active' WHERE process_id=?").run(processId);
+const runEventsBeforeRace = Number(sqlite.prepare("SELECT COUNT(*) AS n FROM hermes_automation_process_events WHERE process_id=? AND event_type='process.run_requested'").get(processId).n);
+beforeBatchHook = () => sqlite.prepare("UPDATE hermes_automation_processes SET status='paused' WHERE process_id=?").run(processId);
+result = await payload(await mutateProcess({
+  request: request(`/api/internal-command-center/processes/${processId}`, "PATCH", { action: "run_next_tick" }),
+  env: { DB },
+  params: { id: processId },
+}));
+assert.equal(result.status, 409);
+assert.equal(result.body.error, "process_state_conflict");
+assert.equal(Number(sqlite.prepare("SELECT COUNT(*) AS n FROM hermes_automation_process_events WHERE process_id=? AND event_type='process.run_requested'").get(processId).n), runEventsBeforeRace);
 
 const events = sqlite.prepare("SELECT event_type,actor_specialist_id FROM hermes_automation_process_events WHERE process_id=? ORDER BY created_at,event_type").all(processId);
 assert.deepEqual(new Set(events.map((event) => event.event_type)), new Set([
