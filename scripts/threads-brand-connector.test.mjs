@@ -128,10 +128,11 @@ assert.match(connectionsSource, /hermes_logistics_provider:\s*"shared_meta_via_h
 assert.match(connectionsSource, /social_business_lanes:\s*\["HERMES_LOGISTICS",\s*"PROGRESSOPRO"\]/);
 assert.match(connectionsSource, /legacy_direct_publish_enabled:\s*false/);
 
-assert.match(publishSource, /INSERT OR IGNORE INTO hermes_social_threads_publications/);
-assert.match(publishSource, /office_canary_required_before_secondary_publish/);
-assert.match(publishSource, /retry_allowed:\s*false/);
-assert.doesNotMatch(publishSource, /hermes_logistics/);
+assert.match(publishSource, /legacy_threads_brand_direct_publish_disabled/);
+assert.match(publishSource, /provider_write_performed:false/);
+assert.match(publishSource, /runtime_owner:"hae_2033"/);
+assert.match(publishSource, /retry_allowed:false/);
+assert.doesNotMatch(publishSource, /publishThreadsText|readThreadsMedia|INSERT OR IGNORE INTO hermes_social_threads_publications|UPDATE hermes_social_threads_publications/);
 
 assert.match(verifySource, /threadsBrandExpectedUsername\(brand, env\)/);
 assert.match(disconnectSource, /DELETE FROM hermes_social_threads_connections/);
