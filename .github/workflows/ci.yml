@@ -43,6 +43,9 @@ jobs:
       - name: Validate 230 lightweight backlog closures (30 + 200)
         run: node scripts/hermes-lightweight-backlog-closure.test.mjs
 
+      - name: Validate 5000 repository microtasks
+        run: node scripts/hermes-5000-microtask-matrix.test.mjs
+
       - name: Validate Hermes Connect registration operations
         run: node scripts/hermes-connect-registration-ops-contract.test.mjs
 
