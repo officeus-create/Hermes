@@ -63,6 +63,8 @@ import { materializeIndependentQaReceipt } from "./hae-independent-qa-receipt.mj
 
 const ACCOUNT_KEY = "hermes_logistics";
 const PLATFORM = "threads";
+const THREADS_PROVIDER_META = "meta_direct";
+const THREADS_PROVIDER_WINDSOR = "windsor";
 const CHICAGO_TZ = "America/Chicago";
 const ALLOWED_HOURS = new Set([0, 1, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23]);
 
@@ -1442,7 +1444,14 @@ async function insertCandidate(db, candidate) {
   return Number(result?.meta?.changes || 0) === 1;
 }
 
-async function claimPublicationForProvider(db, candidate) {
+export function selectedThreadsProvider(env) {
+  return metaThreadsMode(env) ? THREADS_PROVIDER_META : THREADS_PROVIDER_WINDSOR;
+}
+
+export async function claimPublicationForProvider(db, candidate, providerTransport) {
+  if (![THREADS_PROVIDER_META, THREADS_PROVIDER_WINDSOR].includes(providerTransport)) {
+    throw new Error("publication_provider_invalid");
+  }
   const now = new Date().toISOString();
   await db.prepare(`
     INSERT OR IGNORE INTO hermes_automation_publications
@@ -1457,7 +1466,30 @@ async function claimPublicationForProvider(db, candidate) {
     SET status='publishing',attempt_count=attempt_count+1,updated_at=?
     WHERE idempotency_key=? AND account_key=? AND platform=? AND status='reserved'
   `).bind(now, candidate.idempotency_key, candidate.account_key, candidate.platform).run();
-  return Number(claimed?.meta?.changes || 0) === 1;
+  if (Number(claimed?.meta?.changes || 0) !== 1) return false;
+
+  // Persist immutable transport provenance BEFORE any provider network write.
+  // If this evidence write fails, the publication remains stuck in publishing
+  // and later recovery fails closed instead of guessing from current config.
+  try {
+    const provenance = await db.prepare(`
+      INSERT INTO hermes_automation_runtime_events
+        (event_id,event_type,message_type,content_id,slot_key,created_at)
+      VALUES (?, 'publication.provider_claimed', ?, ?, ?, ?)
+    `).bind(
+      `provider-claim:${candidate.idempotency_key}`,
+      providerTransport,
+      candidate.content_id,
+      candidate.slot_key,
+      now,
+    ).run();
+    if (Number(provenance?.meta?.changes || 0) !== 1) {
+      throw new Error("provider_provenance_not_inserted");
+    }
+  } catch {
+    throw new Error("provider_provenance_persist_failed");
+  }
+  return true;
 }
 
 function publicationEnabled(env) {
@@ -1468,6 +1500,34 @@ function publicationEnabled(env) {
 function addSecondsIso(iso, seconds) {
   const base = Number.isFinite(Date.parse(String(iso || ""))) ? Date.parse(String(iso)) : Date.now();
   return new Date(base + seconds * 1000).toISOString();
+}
+
+export async function readPublicationProviderClaim(db, contentId) {
+  const rows = await db.prepare(
+    "SELECT message_type FROM hermes_automation_runtime_events WHERE event_type='publication.provider_claimed' AND content_id=? ORDER BY created_at ASC LIMIT 2"
+  ).bind(contentId).all();
+  const claims = rows?.results || [];
+  if (claims.length === 0) {
+    return { ok: false, error_class: "publication_provider_provenance_missing" };
+  }
+  if (claims.length !== 1) {
+    return { ok: false, error_class: "publication_provider_provenance_ambiguous" };
+  }
+  const providerTransport = String(claims[0]?.message_type || "");
+  if (![THREADS_PROVIDER_META, THREADS_PROVIDER_WINDSOR].includes(providerTransport)) {
+    return { ok: false, error_class: "publication_provider_provenance_invalid" };
+  }
+  return { ok: true, provider_transport: providerTransport };
+}
+
+export async function readbackThreadsByClaimedProvider(providerTransport, env, body) {
+  if (providerTransport === THREADS_PROVIDER_META) {
+    return readbackThreadsTextViaMeta(env, body);
+  }
+  if (providerTransport === THREADS_PROVIDER_WINDSOR) {
+    return readbackThreadsTextViaWindsor(env, body);
+  }
+  return { ok: false, error_class: "publication_provider_provenance_invalid" };
 }
 
 async function enqueueDueReadbacks(env, limit = 20) {
@@ -1643,7 +1703,8 @@ async function processPlanMessage(env, message) {
       return { status: "preflight_blocked", error_class: preflight.error_class };
     }
   }
-  const claimed = await claimPublicationForProvider(env.DB, candidate);
+  const providerTransport = selectedThreadsProvider(env);
+  const claimed = await claimPublicationForProvider(env.DB, candidate, providerTransport);
   if (!claimed) {
     const existingPublication = await env.DB.prepare(
       "SELECT status FROM hermes_automation_publications WHERE idempotency_key=? AND account_key=? AND platform=? LIMIT 1"
@@ -1655,7 +1716,7 @@ async function processPlanMessage(env, message) {
     };
   }
 
-  const published = metaThreadsMode(env)
+  const published = providerTransport === THREADS_PROVIDER_META
     ? await publishThreadsTextViaMeta(env, candidate.body)
     : await publishThreadsTextViaWindsor(env, candidate.body);
   const now = new Date().toISOString();
@@ -1738,10 +1799,28 @@ async function processReadbackMessage(env, message) {
   if (!row) return { status: "readback_missing_content" };
   if (String(row.state) === "published_verified") return { status: "published_verified", duplicate: true };
 
-  const readback = metaThreadsMode(env)
-    ? await readbackThreadsTextViaMeta(env, String(row.body || ""))
-    : await readbackThreadsTextViaWindsor(env, String(row.body || ""));
+  const provenance = await readPublicationProviderClaim(env.DB, contentId);
   const now = new Date().toISOString();
+  if (!provenance.ok) {
+    const terminalStatus = pendingStatus === "unknown_outcome_readback_pending"
+      ? "unknown_outcome_unresolved"
+      : "readback_unverified";
+    await env.DB.batch([
+      env.DB.prepare("UPDATE hermes_automation_publications SET status=?,next_readback_at=NULL,last_error_class=?,updated_at=? WHERE content_id=?")
+        .bind(terminalStatus, provenance.error_class, now, contentId),
+      env.DB.prepare("UPDATE hermes_automation_content SET state=?,last_error_class=?,updated_at=? WHERE content_id=?")
+        .bind(terminalStatus, provenance.error_class, now, contentId),
+      env.DB.prepare("UPDATE hermes_automation_runs SET status=?,last_error_class=?,updated_at=? WHERE id=?")
+        .bind(terminalStatus, provenance.error_class, now, runIdForSlot(String(row.slot_key || ""))),
+    ]);
+    return { status: terminalStatus, error_class: provenance.error_class };
+  }
+
+  const readback = await readbackThreadsByClaimedProvider(
+    provenance.provider_transport,
+    env,
+    String(row.body || ""),
+  );
   if (readback.ok && readback.found) {
     await env.DB.batch([
       env.DB.prepare("UPDATE hermes_automation_publications SET status='published_verified',provider_post_id=?,permalink=?,last_error_class=NULL,updated_at=? WHERE content_id=?")
