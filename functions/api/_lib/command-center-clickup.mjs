@@ -89,7 +89,7 @@ export async function readClickUpHumanTasks(env = {}, fetchImpl = fetch) {
       url.searchParams.set("include_closed", "false");
       url.searchParams.set("subtasks", "true");
       url.searchParams.set("order_by", "updated");
-      url.searchParams.set("reverse", "true");
+      url.searchParams.set("reverse", "false");
       url.searchParams.set("page", String(page));
       const response = await fetchImpl(url.href, {
         method: "GET",
