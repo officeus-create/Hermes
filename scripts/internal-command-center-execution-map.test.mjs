@@ -4,6 +4,7 @@ import {
   developmentCatalog,
   eligibleCapabilitiesForWorkstream,
   executionProjection,
+  linkHumanWorkDevelopments,
   nextActionForWorkItem,
   stageChainForWorkItem,
 } from "../functions/api/_lib/command-center-execution-map.mjs";
@@ -145,5 +146,16 @@ const githubPrivate=await readGithubDevelopments({HERMES_GITHUB_READ_TOKEN:"read
 assert.equal(githubAuthHeader,"Bearer read-token");
 assert.equal(githubPrivate.source_state,"REPOSITORY_NOT_FOUND");
 assert.deepEqual(githubPrivate.pulls,[]);
+
+const linkedHuman=linkHumanWorkDevelopments(
+  {source_state:"CONNECTED",tasks:[{id:"86cbhdh43",custom_id:null,name:"SEO owner"},{id:"86nope",name:"Unlinked"}]},
+  {pulls:[
+    {number:2200,title:"SEO fix",url:"https://github.com/officeus-create/Hermes/pull/2200",head_sha:"c".repeat(40),ci_state:"UNKNOWN",review_state:"DRAFT",passport:{work_id:"ClickUp 86cbhdh43",agent_family:"CHATGPT"}},
+    {number:2201,title:"False prefix",url:"https://github.com/officeus-create/Hermes/pull/2201",passport:{work_id:"86cbhdh430",agent_family:"CODEX"}},
+  ]},
+);
+assert.equal(linkedHuman.tasks[0].developments.length,1);
+assert.equal(linkedHuman.tasks[0].developments[0].number,2200);
+assert.equal(linkedHuman.tasks[1].developments.length,0);
 
 console.log("INTERNAL_COMMAND_CENTER_EXECUTION_MAP_PASS");
