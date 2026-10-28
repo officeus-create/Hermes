@@ -22,6 +22,11 @@ function row(txt = "Other useful carrier content", stamp = old, id = "1819093335
   return { id, text: txt, timestamp: stamp, media_type: "TEXT_POST",
            permalink: "https://www.threads.com/@hermes.logistics/post/Dd2dlMnjCwo" };
 }
+function establishedHistory(count = 30) {
+  return Array.from({length: count}, (_, index) =>
+    row(`Historical carrier post ${index + 1}`, old, String(18190933357397000n + BigInt(index)))
+  );
+}
 async function withFetch(stubs, fn) {
   let called = 0;
   const oldFetch = globalThis.fetch;
@@ -57,7 +62,15 @@ assert.equal(metaThreadsConfig({...env, HERMES_THREADS_ACCESS_TOKEN: ""}), null)
 }
 {
   const {result,called,args} = await withFetch([profile(), feed([])], () => metaThreadsPreflight(env, post, now));
-  assert.deepEqual(result, {ok:true,account_id_verified:true,last_50_checked:0,safe_to_reserve:true});
+  assert.equal(result.ok,false);
+  assert.equal(result.error_class,"meta_threads_history_incomplete");
+  assert.equal(result.observed_rows,0);
+  assert.equal(result.minimum_required_rows,30);
+  assert.equal(called,2);assertTokenNeverInUrl(args);count++;
+}
+{
+  const {result,called,args} = await withFetch([profile(), feed(establishedHistory())], () => metaThreadsPreflight(env, post, now));
+  assert.deepEqual(result, {ok:true,account_id_verified:true,last_50_checked:30,safe_to_reserve:true});
   assert.equal(called,2);assertTokenNeverInUrl(args);count++;
 }
 {
@@ -116,7 +129,8 @@ assert.equal(metaThreadsConfig({...env, HERMES_THREADS_ACCESS_TOKEN: ""}), null)
   assert.equal(result.error_class,"provider_outcome_unknown");assert.equal(called,2);count++;
 }
 {
-  const {result} = await withFetch([profile(),feed([row(post)])], () => readbackThreadsTextViaMeta(env,post));
+  const switchedEnv = {...env,HERMES_THREADS_PROVIDER:"windsor"};
+  const {result} = await withFetch([profile(),feed([row(post)])], () => readbackThreadsTextViaMeta(switchedEnv,post));
   assert.equal(result.found,true);
   assert.equal(result.provider_post_id,"18190933357397406");count++;
 }
@@ -130,7 +144,7 @@ assert.equal(metaThreadsConfig({...env, HERMES_THREADS_ACCESS_TOKEN: ""}), null)
 }
 {
   const repost = {id:"18112994300212", media_type:"REPOST_FACADE", timestamp:old, text:null};
-  const {result} = await withFetch([profile(),feed([repost])], () => metaThreadsPreflight(env,post,now));
+  const {result} = await withFetch([profile(),feed([repost,...establishedHistory(29)])], () => metaThreadsPreflight(env,post,now));
   assert.equal(result.ok,true);count++;
 }
 {
