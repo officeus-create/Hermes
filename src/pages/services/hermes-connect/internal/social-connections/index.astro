@@ -6,7 +6,7 @@ import SiteFooter from "../../../../../components/SiteFooter.astro";
 
 <BaseLayout
   title="Social Connections | Hermes Connect"
-  description="Private Hermes Connect workspace for owner-authorized social provider connections and controlled Office canary publishing."
+  description="Private Hermes Connect workspace for owner-authorized Threads identity, OAuth health, readback and Social Inbox research."
   robots="noindex,nofollow,noarchive"
 >
   <SiteHeader theme="light" activePath="/paths/technology/" />
@@ -15,11 +15,11 @@ import SiteFooter from "../../../../../components/SiteFooter.astro";
       <div class="shell">
         <p class="eyebrow">Hermes Connect · Growth Bridge #1018</p>
         <h1>Social connections</h1>
-        <p class="lead">Connect brand-owned Threads profiles through owner OAuth, verify the exact profile returned by Meta, then run one bounded Office canary before any secondary brand publishing is enabled. This page is private, noindex, and available only after the canonical HERMES_INTERNAL_OWNER check succeeds.</p>
+        <p class="lead">Connect brand-owned Threads profiles through owner OAuth, verify the exact profile returned by Meta, and inspect provider health/evidence. This legacy connector is an identity/read donor only: owner/manual publishing belongs to Business Social / Social Studio, while recurring and autonomous execution belongs to HAE #2033.</p>
         <div class="boundary">
-          <span>Hermes Logistics stays on Windsor</span>
+          <span>Hermes Logistics → shared Meta provider via HAE</span>
           <span>Tokens stay encrypted server-side</span>
-          <span>No second scheduler</span>
+          <span>No second scheduler or publisher</span>
           <span>No publish before identity verification</span>
         </div>
         <p><a href="/services/hermes-connect/internal/social-connections/threads-research/">Open read-only Threads Research →</a></p>
@@ -31,8 +31,8 @@ import SiteFooter from "../../../../../components/SiteFooter.astro";
       <div class="shell">
         <div class="section-heading">
           <p class="eyebrow">Threads provider</p>
-          <h2>Allowed brand lanes</h2>
-          <p>Office is the first canary. ProgressoPro and Hermes Business Academy can be authorized and verified, but secondary publishing stays separately gated.</p>
+          <h2>Connected account identities</h2>
+          <p>Two commercial lanes only: HERMES_LOGISTICS for all logistics and PROGRESSOPRO for marketing, IT/software and Academy/training. Existing Office/ProgressoPro/Academy connector keys remain compatibility identities for OAuth/readback, not separate business lanes.</p>
         </div>
         <div class="brand-grid" data-brand-grid>
           <article class="brand-card" data-brand="office_test">
@@ -50,7 +50,7 @@ import SiteFooter from "../../../../../components/SiteFooter.astro";
           </article>
 
           <article class="brand-card" data-brand="business_academy">
-            <div class="brand-top"><div><small>Education lane</small><h3>Hermes Business Academy</h3></div><span data-state>Loading…</span></div>
+            <div class="brand-top"><div><small>ProgressoPro · training identity</small><h3>Academy / Training</h3></div><span data-state>Loading…</span></div>
             <dl><div><dt>Username</dt><dd data-username>—</dd></div><div><dt>User ID</dt><dd data-user-id>—</dd></div><div><dt>Scopes</dt><dd data-scopes>—</dd></div><div><dt>Publish</dt><dd data-publish>Off</dd></div></dl>
             <p class="bio" data-bio></p>
             <div class="actions"><button type="button" data-connect>Connect / reconnect</button><button type="button" data-verify disabled>Verify exact profile</button><button type="button" data-disconnect disabled>Disconnect locally</button></div>
@@ -62,23 +62,15 @@ import SiteFooter from "../../../../../components/SiteFooter.astro";
     <section class="section canary">
       <div class="shell canary-grid">
         <div>
-          <p class="eyebrow">Owner-approved write path</p>
-          <h2>Threads text composer</h2>
-          <p>This reuses the existing canonical brand connector. Office remains the first canary; ProgressoPro and Academy stay disabled until exact OAuth identity, private publish flags and the Office canary gate are all satisfied. No recurring schedule is created here.</p>
+          <p class="eyebrow">Writer boundary</p>
+          <h2>Publishing moved to the canonical social path</h2>
+          <p>This connector page no longer publishes Threads posts directly. Use the existing Business Social / Social Studio for explicit owner/manual publishing. Recurring or autonomous execution is owned by HAE #2033 and the shared provider contract. OAuth identity, scopes, readback and historical health remain visible here.</p>
         </div>
-        <form data-canary-form>
-          <label>Brand
-            <select name="brand" data-compose-brand>
-              <option value="office_test">Office Threads Test</option>
-              <option value="progressopro">ProgressoPro</option>
-              <option value="business_academy">Hermes Business Academy</option>
-            </select>
-          </label>
-          <label>Text <span data-byte-count>0 / 500 UTF-8 bytes</span><textarea name="text" rows="7" maxlength="500" placeholder="Owner-approved Threads text."></textarea></label>
-          <label>Idempotency key <input name="idempotency_key" autocomplete="off" placeholder="Generated per brand + approved post" /></label>
-          <button type="submit" data-compose-publish disabled>Publish selected brand</button>
-          <p data-canary-status role="status"></p>
-        </form>
+        <div class="boundary-card">
+          <strong>Direct brand-connector publishing: disabled</strong>
+          <span>Legacy <code>/api/internal/social/threads/publish</code> fails closed and performs no provider write.</span>
+          <a href="/services/hermes-connect/internal/social-connections/threads-research/">Open Threads Research / Social Inbox →</a>
+        </div>
       </div>
     </section>
 
@@ -105,14 +97,8 @@ import SiteFooter from "../../../../../components/SiteFooter.astro";
   };
   const status = document.querySelector<HTMLElement>("[data-page-status]");
   const cards = [...document.querySelectorAll<HTMLElement>("[data-brand]")];
-  const form = document.querySelector<HTMLFormElement>("[data-canary-form]");
-  const canaryStatus = document.querySelector<HTMLElement>("[data-canary-status]");
-  const byteCount = document.querySelector<HTMLElement>("[data-byte-count]");
   const receipts = document.querySelector<HTMLElement>("[data-receipts]");
   const refreshMetrics = document.querySelector<HTMLButtonElement>("[data-refresh-metrics]");
-  const composeBrand = form?.elements.namedItem("brand") as HTMLSelectElement | null;
-  const composePublish = form?.querySelector<HTMLButtonElement>("[data-compose-publish]");
-  const composeKey = form?.elements.namedItem("idempotency_key") as HTMLInputElement | null;
   const connectionByBrand = new Map<string,Connection>();
   const healthButtons = [...document.querySelectorAll<HTMLButtonElement>("[data-health-brand]")];
   let healthBrand = "office_test";
@@ -140,23 +126,7 @@ import SiteFooter from "../../../../../components/SiteFooter.astro";
     status.dataset.error = error ? "true" : "false";
   }
 
-  function refreshComposeKey(force=false) {
-    if (!composeKey || !composeBrand) return;
-    if (composeKey.value && !force) return;
-    const day = new Date().toISOString().slice(0,10).replaceAll("-","");
-    const nonce = crypto.randomUUID().replaceAll("-","").slice(0,12);
-    composeKey.value = `${composeBrand.value}-threads-manual-${day}-${nonce}`;
-  }
 
-  function updateComposeGate() {
-    if (!composePublish || !composeBrand) return;
-    const selected = connectionByBrand.get(composeBrand.value);
-    const ready = Boolean(selected?.identity_verified && selected?.publish_enabled);
-    composePublish.disabled = !ready;
-    composePublish.title = ready
-      ? "Provider identity and publish gate are enabled for this brand."
-      : "Connect + verify this exact brand and enable its private publish gates first.";
-  }
 
   function renderConnection(connection:Connection) {
     connectionByBrand.set(connection.brand, connection);
@@ -172,7 +142,6 @@ import SiteFooter from "../../../../../components/SiteFooter.astro";
     if (verify) verify.disabled = !connection.username || connection.identity_verified;
     const disconnect = card.querySelector<HTMLButtonElement>("[data-disconnect]");
     if (disconnect) disconnect.disabled = !connection.username;
-    updateComposeGate();
   }
 
   async function loadConnections() {
@@ -180,8 +149,7 @@ import SiteFooter from "../../../../../components/SiteFooter.astro";
       const payload = await api("/api/internal/social/threads/connections");
       connectionByBrand.clear();
       for (const connection of payload.connections || []) renderConnection(connection);
-      updateComposeGate();
-      setStatus(payload.runtime_configured
+        setStatus(payload.runtime_configured
         ? "Internal owner access verified. Threads app configuration is present."
         : "Internal owner access verified. Threads app configuration is still required.", !payload.runtime_configured);
     } catch (error:any) {
@@ -236,49 +204,6 @@ import SiteFooter from "../../../../../components/SiteFooter.astro";
       }
     });
   }
-
-  const canaryText = form?.elements.namedItem("text") as HTMLTextAreaElement | null;
-  const countBytes = () => {
-    const bytes = new TextEncoder().encode(canaryText?.value || "").byteLength;
-    if (byteCount) byteCount.textContent = `${bytes} / 500 UTF-8 bytes`;
-  };
-  canaryText?.addEventListener("input", countBytes);
-  composeBrand?.addEventListener("change", ()=>{
-    refreshComposeKey(true);
-    updateComposeGate();
-  });
-  countBytes();
-  refreshComposeKey();
-  updateComposeGate();
-
-  form?.addEventListener("submit", async (event)=>{
-    event.preventDefault();
-    const brand = (form.elements.namedItem("brand") as HTMLSelectElement).value;
-    const text = (form.elements.namedItem("text") as HTMLTextAreaElement).value;
-    const idempotency_key = (form.elements.namedItem("idempotency_key") as HTMLInputElement).value;
-    const connection = connectionByBrand.get(brand);
-    if (!connection?.identity_verified || !connection?.publish_enabled) {
-      if (canaryStatus) canaryStatus.textContent = "Selected brand is not publish-ready. Complete exact OAuth identity verification and private publish gates first.";
-      return;
-    }
-    if (!window.confirm(`Publish this single approved Threads post from ${brand} now? This is an external provider write.`)) return;
-    try {
-      if (canaryStatus) canaryStatus.textContent = "Publishing…";
-      const payload = await api("/api/internal/social/threads/publish", {
-        method:"POST",
-        body:JSON.stringify({brand,text,idempotency_key}),
-      });
-      if (canaryStatus) canaryStatus.textContent = payload.permalink
-        ? `Published ${brand}: ${payload.permalink}`
-        : `Published ${brand} with media ID ${payload.media_id}; readback pending.`;
-      healthBrand = brand;
-      for(const button of healthButtons) button.dataset.active=String(button.dataset.healthBrand===brand);
-      refreshComposeKey(true);
-      await loadReceipts();
-    } catch (error:any) {
-      if (canaryStatus) canaryStatus.textContent = error?.payload?.error || "Canary publish failed.";
-    }
-  });
 
   async function loadReceipts() {
     if (!receipts) return;
