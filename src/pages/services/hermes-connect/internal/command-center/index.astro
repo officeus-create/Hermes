@@ -5,6 +5,7 @@ import SiteHeader from "../../../../../components/SiteHeader.astro";
 import SiteFooter from "../../../../../components/SiteFooter.astro";
 import HermesConnectExperience from "../../../../../components/HermesConnectExperience.astro";
 import HermesConnectInternalAiNav from "../../../../../components/HermesConnectInternalAiNav.astro";
+import HermesAiArchitecture from "../../../../../components/HermesAiArchitecture.astro";
 import HermesLocalAgentsLink from "../../../../../components/HermesLocalAgentsLink.astro";
 import { HAE_OWNER_PROCESS_TEMPLATES } from "../../../../../lib/hae-process-control.mjs";
 const ru=Astro.url.searchParams.get("lang")==="ru";
@@ -41,11 +42,13 @@ const modules=[
 
         <section class="section panel account-portfolio"><div class="section-head"><div><p class="kicker"><Building2 size={14}/>{ru?"Мой Hermes":"My Hermes"}</p><h2>{ru?"Подключённые рабочие пространства":"Connected workspaces"}</h2></div><span data-account-identity class="cloud-note">—</span></div><div class="workspace-grid" data-account-workspaces><p class="muted">{ru?"Загружаем доступы…":"Loading access…"}</p></div></section>
 
+        <HermesAiArchitecture ru={ru}/>
+
         <section class="section">
           <div class="section-head"><div><p class="kicker"><Building2 size={14}/>{ru?"Направления":"Business directions"}</p><h2>{ru?"Что сейчас есть в системе":"What is already connected"}</h2></div></div>
           <div class="module-grid">
             {modules.map((module)=>{const Icon=module.icon;return <article class="module-card" data-module={module.key}><div class="module-top"><span class={"module-icon "+module.key}><Icon size={19}/></span><span class="module-state">{ru?"Открыть":"Open"}</span></div><h3>{module.title}</h3><p>{module.copy}</p><div class="module-links">{module.links.map(([label,href])=><a href={href}>{label}</a>)}</div><button type="button" class="module-focus" data-focus-workstream={module.key}>{ru?"Показать задачи направления":"Show direction work"}</button></article>})}
-            <article class="module-card agents"><div class="module-top"><span class="module-icon agents"><Bot size={19}/></span><span class="module-state" data-agent-badge>—</span></div><h3>{ru?"Агенты":"Agents"}</h3><p>{ru?"Hermes AI runner, история выполнения, approval gates и PR/evidence.":"Hermes AI runner, execution history, approval gates and PR/evidence."}</p><div class="module-links"><a href="/services/hermes-connect/internal/ai-connect/">{ru?"AI Connect":"AI Connect"}</a><a href="/services/hermes-connect/internal/ai-connect/activity/">{ru?"История":"Activity"}</a></div></article>
+            <article class="module-card agents"><div class="module-top"><span class="module-icon agents"><Bot size={19}/></span><span class="module-state" data-agent-badge>—</span></div><h3>{ru?"Агенты":"Agents"}</h3><p>{ru?"Hermes AI runner, история выполнения, approval gates и PR/evidence.":"Hermes AI runner, execution history, approval gates and PR/evidence."}</p><div class="module-links"><a href="#hermes-ai-architecture">{ru?"Архитектура ИИ":"AI Architecture"}</a><a href="/services/hermes-connect/internal/ai-connect/">{ru?"AI Connect":"AI Connect"}</a><a href="/services/hermes-connect/internal/ai-connect/activity/">{ru?"История":"Activity"}</a></div></article>
           </div>
         </section>
 
@@ -118,7 +121,9 @@ async function loadAll(){
   if(!status.r.ok||!status.d.success){q("[data-private]")!.hidden=true;const access=q("[data-access]")!;access.hidden=false;access.querySelector("strong")!.textContent=status.r.status===401?t("Sign in required","Нужно войти"):t("HERMES_INTERNAL_OWNER required","Нужен HERMES_INTERNAL_OWNER");return}
   q("[data-access]")!.hidden=true;q("[data-private]")!.hidden=false;runtime=status.d.runtime||{};const active=status.d.active_task||null;
   setText("[data-runner-state]",runtime.online?t("Online","Онлайн"):t("Offline","Офлайн"));setText("[data-runner-copy]",runtime.online?t("Mac runner is accepting work","Mac runner принимает работу"):t("Cloud backlog remains safe","Облачная очередь сохранена"));
-  setText("[data-agent-badge]",runtime.online?t("Online","Онлайн"):t("Offline","Офлайн"));setText("[data-agent-status]",runtime.online?t("Online","Онлайн"):t("Offline","Офлайн"));setText("[data-agent-seen]",stamp(runtime.last_seen_at));setText("[data-agent-sha]",runtime.repo_sha||"—");setText("[data-active-task]",active?(String(active.status||"")+(active.id?" · "+String(active.id).slice(-10):"")):t("None","Нет"));
+  setText("[data-agent-badge]",runtime.online?t("Online","Онлайн"):t("Offline","Офлайн"));setText("[data-agent-status]",runtime.online?t("Online","Онлайн"):t("Offline","Офлайн"));setText("[data-agent-seen]",stamp(runtime.last_seen_at));setText("[data-agent-sha]",runtime.repo_sha||"—");
+  setText("[data-ai-map-runner]",runtime.online?t("Online · Local Qwen","Онлайн · Локальный Qwen"):t("Offline / awaiting heartbeat","Офлайн / ожидается heartbeat"));
+  setText("[data-ai-map-runner-time]",runtime.last_seen_at?t("Last heartbeat: ","Последний сигнал: ")+stamp(runtime.last_seen_at):t("No verified heartbeat","Нет подтверждённого heartbeat"));setText("[data-active-task]",active?(String(active.status||"")+(active.id?" · "+String(active.id).slice(-10):"")):t("None","Нет"));
   const [work,taskList,accessList,account,processList]=await Promise.all([jsonFetch("/api/internal-command-center/work-items"),jsonFetch("/api/internal-ai/tasks"),jsonFetch("/api/internal-command-center/access"),jsonFetch("/api/hermes-connect/account"),jsonFetch("/api/internal-command-center/processes")]);
   if(work.r.ok&&work.d.success)items=work.d.work_items||[]; if(taskList.r.ok&&taskList.d.success)tasks=taskList.d.tasks||[]; if(account.r.ok&&account.d.success)renderAccount(account.d);if(processList.r.ok&&processList.d.success)processes=processList.d.processes||[];
   setText("[data-backlog-count]",String(items.filter(x=>!["done","cancelled"].includes(x.status)).length));setText("[data-approval-count]",String(tasks.filter(x=>x.status==="needs_approval").length));
