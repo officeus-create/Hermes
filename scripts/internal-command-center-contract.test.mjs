@@ -28,6 +28,10 @@ assert.doesNotMatch(page,/localStorage|sessionStorage/,"owner work must not use 
 assert.doesNotMatch(page,/setInterval\([^,]+,\s*[0-9]{1,4}\)/,"page must not create a high-frequency pseudo-scheduler");
 assert.match(page,/Cloudflare \+ D1/,"cloud persistence boundary must be visible to the owner");
 assert.match(page,/Mac runner/,"Mac runner state must remain separate from cloud CRM state");
+assert.match(page,/data-team-only/,"Command Center must expose a separately gated team surface");
+assert.match(page,/status\.d\.access_level==="team"/,"team surface must activate only from the server access level");
+assert.match(page,/data-team-page-current/,"team surface must show current AI work");
+assert.match(page,/TEAM VIEW · READ ONLY/,"team surface must declare read-only mode");
 assert.match(page,/HAE 24\/7 processes/,"owner must have one visible autonomous-process control surface");
 assert.match(page,/next hourly tick/i,"activation must describe the real HAE tick rather than promise instant execution");
 assert.match(page,/External sends and paid AI are disabled here/,"first autonomous slice must expose its safe execution boundary");
@@ -86,6 +90,10 @@ assert.match(access,/SELECT id,email,name,role FROM specialists WHERE lower\(ema
 assert.match(access,/cannot_revoke_current_owner/,"access flow must prevent self-lockout");
 assert.match(access,/cannot_remove_last_owner/,"access flow must preserve at least one active internal owner");
 assert.match(access,/hermes_internal_owner_access_audit/,"access changes must be auditable");
+assert.match(access,/hermes_internal_team_view_access/,"team access must use a dedicated explicit capability table");
+assert.match(access,/hermes_internal_team_view_access_audit/,"team access changes must have an audit trail");
+assert.match(access,/capability===\"team_view\"/,"owner access API must route Team View separately from full owner access");
+assert.match(access,/requireInternalOwner/,"only an owner may grant or revoke Team View");
 assert.doesNotMatch(access,/volkogon|officeus@|HERMES_OWNER_EMAIL/i,"private people/emails must not be hardcoded as authorization policy");
 assert.match(nav,/internal\/command-center/,"existing owner navigation must expose the unified command center only behind its current server gate");
 assert.match(docs,/canonical PR #2107/,"durable Command Center docs must point at the current canonical implementation");
