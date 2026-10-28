@@ -91,6 +91,7 @@ assert.match(nav,/internal\/command-center/,"existing owner navigation must expo
 assert.match(docs,/canonical PR #2107/,"durable Command Center docs must point at the current canonical implementation");
 assert.doesNotMatch(docs,/IMPLEMENTATION DRAFT in PR #2096/,"superseded #2096 must never return as the current implementation");
 
+await import("./internal-command-center-ai-architecture.test.mjs");
 await import("./internal-command-center-runtime.test.mjs");
 await import("./internal-command-center-state.test.mjs");
 await import("./internal-command-center-processes.test.mjs");
