@@ -57,5 +57,6 @@ console.log("Hermes AI owner architecture: existing owner gate, models, route di
 assert.match(arch, /officeus-create\/Hermes\/pull\/2137/);
 assert.match(arch, /officeus-create\/Hermes\/pull\/2138/);
 assert.doesNotMatch(arch, /officeus-create\/Hermes\/pull\/(2090|2123)/);
-assert.match(docs, /#2090 source merged/);
+assert.match(docs, /#2090 and #2138 source are merged/);
+assert.match(docs, /runtime acceptance remains/i);
 assert.match(docs, /source safety gate #2123 is merged/);
