@@ -39,7 +39,7 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
     connections,
     scheduling: {
       mode: "existing_publisher_only",
-      note: "This CRM surface publishes owner-approved posts now. Recurring scheduling remains in the canonical Hermes Social Publisher.",
+      note: "This CRM surface handles explicit owner/manual publishing. Recurring or autonomous execution remains owned by HAE #2033 and must use the shared provider contract.",
     },
   }, headers);
 }
