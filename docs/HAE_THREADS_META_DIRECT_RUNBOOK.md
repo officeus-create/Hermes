@@ -78,3 +78,28 @@ This endpoint is **read-only** and never returns provider tokens or encrypted to
 Current convergence remains fail-closed while ProgressoPro still uses the legacy connector transport/credential path. A token must never be copied into a HAE job payload, GitHub issue, log, health response or Command Center response. The next write-capability may be enabled only after HAE can resolve the authorized credential server-side and both lanes use the same shared `shared/social/meta-threads-provider.mjs` transport contract.
 
 `write_convergence_ready=false` is a blocker, not a warning to bypass.
+
+
+## Social reply preflight — read-only gate
+
+Private HAE endpoint:
+
+```text
+POST /v1/social-reply-preflight
+Authorization: Bearer <HERMES_AUTOMATION_TOKEN>
+```
+
+Input is limited to the canonical business lane, provider IDs and reply text. HAE resolves credentials server-side and performs only authenticated provider reads:
+
+1. exact account identity;
+2. target exists and is an inbound reply;
+3. target is not a self-reply;
+4. observed root ID matches the requested root;
+5. root provider-read proves ownership by the same connected account;
+6. text is valid for Threads.
+
+The response contains `safe_to_submit_job=true` only after all checks pass and always returns `provider_write_performed=false`. It never publishes, never creates a reply job and never returns a token.
+
+For ProgressoPro, HAE may decrypt the existing `hermes_social_threads_connections.token_ciphertext` only when the separate Worker secret `THREADS_BRAND_TOKEN_KEY` is present. Decryption stays internal; token/ciphertext must never enter Queue payloads, API responses, GitHub or logs.
+
+A future `social.reply` write capability remains blocked until this preflight is exact-head green, the manual Social Studio path adopts the same shared provider contract, and the external-write state machine has provider-receipt/readback handling with no blind retries.
