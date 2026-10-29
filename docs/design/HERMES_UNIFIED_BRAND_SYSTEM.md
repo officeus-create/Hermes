@@ -142,6 +142,7 @@ Owner decision 2026-10-23: one palette everywhere, taken from the H mark v1.1
 
 Text on Pearl uses the readable same-hue mix from `hermes-public-division-colors.css` (AA ≥ 5.6:1).
 Violet `#7C5CFF` is Hermes Intelligence / Hermes Connect, not a direction colour.
+The carrier funnel pages (`/logistics/carrier-offer/`, `/logistics/carrier-onboarding/`, `/logistics/carrier-agreement/`, `/contracts/carrier-agreement-v3/`, `/sign/`, `/carrier/`) belong to Logistics: accents use the Logistics blue scale (`#1F4FC4`, `#2F6BF6`, `#5B8BFF`, `#8FB0FB`); violet, magenta and teal accents are not used there. Green and amber stay only as status colours.
 
 Product accents (used only inside their product surfaces):
 
