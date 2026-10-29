@@ -707,6 +707,10 @@ async function createGenericJob(env, input) {
   if (roleContract?.semantic_required && input?.internal_submission !== true) throw new Error("semantic_job_internal_only");
   if (!idempotencyKey) throw new Error("idempotency_key_required");
   let payload = input?.payload ?? {};
+  if (jobType === "social.reply.prepare") {
+    payload = validateSocialReplyPrepareInput(payload);
+    if (payload.business_lane !== businessLane) throw new Error("social_reply_business_lane_mismatch");
+  }
   if (HISTORICAL_READ_ONLY_JOB_TYPES.includes(jobType)) {
     runHistoricalLearningPrimitive(jobType, payload);
   }
