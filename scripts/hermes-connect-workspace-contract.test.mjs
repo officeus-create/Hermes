@@ -1,5 +1,6 @@
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
+import { membershipRowAsPermission } from "../functions/api/_lib/company-memberships.mjs";
 
 // Website Factory is a private Hermes Connect workspace and must pass its source/backend
 // contract whenever the canonical Hermes Connect workspace gate runs in npm test.
@@ -26,6 +27,7 @@ const academyCss = await readFile(join(root, "src", "styles", "hermes-academy-ap
 const ownerCurrentJs = await readFile(join(root, "public", "hermes-connect-repair-owner-p0-current.js"), "utf8");
 const ceoRefreshWorkflow = await readFile(join(root, ".github", "workflows", "hc-ceo-profile-refresh.yml"), "utf8");
 const cabinetAuditWorkflow = await readFile(join(root, ".github", "workflows", "hc-cabinet-audit.yml"), "utf8");
+const accountApi = await readFile(join(root, "functions", "api", "hermes-connect", "account.ts"), "utf8");
 
 for (const [label, workflow] of [["CEO QA refresh", ceoRefreshWorkflow], ["cabinet audit", cabinetAuditWorkflow]]) {
   assert(workflow.includes("workflow_dispatch:"), `${label}: workflow must remain explicitly runnable.`);
@@ -144,6 +146,37 @@ assert(!ceoRefreshWorkflow.includes("academy_reviewer_access"), "CEO refresh mus
 assert(!ceoRefreshWorkflow.includes("'CEO-QA'"), "CEO refresh must not force controlled cohort/enrollment state through an ops shortcut.");
 assert(!ceoRefreshWorkflow.includes("INSERT INTO specialists"), "CEO refresh must never create a duplicate Hermes identity.");
 assert(!ceoRefreshWorkflow.includes("INSERT INTO repair_shops"), "CEO refresh must never create a duplicate shop/slug.");
+
+// Delegated Company/Workspace discovery is identity inventory only. The exact authenticated
+// specialist scopes the query; malformed/self-granted/revoked memberships stay invisible;
+// target workspaces must independently authorize every data/action request.
+const validMembership = membershipRowAsPermission({
+  id: "grant-1",
+  business_ref: "company:dealer-1",
+  workspace_ref: "dealer_crm:company:dealer-1",
+  specialist_id: "member-1",
+  role: "member",
+  active: 1,
+  grant_source: "verified_owner_grant",
+  granted_by: "owner-1",
+  revoked_at: null,
+});
+assert(validMembership?.specialistId === "member-1", "Valid delegated membership must preserve the authenticated specialist identity.");
+assert(validMembership?.companyId === "company:dealer-1", "Valid delegated membership must preserve the exact company tenant ref.");
+assert(validMembership?.workspaceId === "dealer_crm:company:dealer-1", "Valid delegated membership must preserve the exact workspace ref.");
+for (const row of [
+  { business_ref: "repair_shop:other", specialist_id: "member-1", role: "member", active: 1, grant_source: "verified_owner_grant", granted_by: "owner-1", revoked_at: null },
+  { business_ref: "company:dealer-1", specialist_id: "member-1", role: "owner", active: 1, grant_source: "verified_owner_grant", granted_by: "owner-1", revoked_at: null },
+  { business_ref: "company:dealer-1", specialist_id: "member-1", role: "member", active: 1, grant_source: "verified_owner_grant", granted_by: "member-1", revoked_at: null },
+  { business_ref: "company:dealer-1", specialist_id: "member-1", role: "member", active: 1, grant_source: "verified_owner_grant", granted_by: "owner-1", revoked_at: "2026-10-29T00:00:00Z" },
+]) {
+  assert(membershipRowAsPermission(row) === null, "Malformed, privileged-text, self-granted or revoked membership must fail closed.");
+}
+assert(accountApi.includes('WHERE specialist_id = ? AND active = 1 AND revoked_at IS NULL'), "Account inventory must scope delegated access to the exact authenticated specialist.");
+assert(accountApi.includes('.bind(specialistId).all()'), "Account inventory must bind the authenticated specialist rather than a request-supplied actor.");
+assert(accountApi.includes('membership.specialistId === specialistId'), "Account inventory must re-check normalized membership identity.");
+assert(accountApi.includes('delegated_access: delegatedAccess'), "Account response must expose only the bounded delegated-access inventory.");
+assert(!/INSERT INTO hermes_company_memberships|UPDATE hermes_company_memberships|DELETE FROM hermes_company_memberships/.test(accountApi), "Account discovery must never grant, mutate or revoke tenant membership.");
 
 const forbiddenNetworkPatterns = [
   /\bfetch\s*\(/,
