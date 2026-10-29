@@ -316,7 +316,7 @@
       "submission_auth": "HERMES_AUTOMATION_TOKEN",
       "retention_class": "business_runtime_evidence",
       "role_id": "hermes-academy",
-      "plugin_version": "0.1.13",
+      "plugin_version": "0.1.14",
       "contract_version": "work-english-practice-v1",
       "semantic_required": false,
       "free_ai_policy": "not_required"
