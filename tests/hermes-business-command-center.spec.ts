@@ -46,7 +46,7 @@ test.describe("Hermes Business Command Center",()=>{
     await page.unroute("**/api/internal-command-center/projects*");
     let created:any=null;
     const stamp="2026-10-29T10:00:00.000Z";
-    await page.route("**/api/internal-command-center/projects*",async(route:any)=>{
+    await page.route(/\/api\/internal-command-center\/projects(?:\/[^/?]+)?(?:\?.*)?$/,async(route:any)=>{
       const req=route.request();
       if(req.method()==="POST"){
         const payload=req.postDataJSON();
