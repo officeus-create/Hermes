@@ -1,4 +1,5 @@
 import { jsonResponse } from "../_lib/session.mjs";
+import { normalizeWorkItemProjectId, validWorkItemProject } from "../_lib/command-center-work-item-projects.mjs";
 import { requireInternalOwner } from "../_lib/internal-ai.mjs";
 import {
   COMMAND_CENTER_SCOPE, ensureCommandCenterSchema, newWorkItemId, normalizePriority, normalizeWorkItemDetails,
@@ -39,10 +40,12 @@ export async function onRequestPost({request,env}:{request:Request;env:Env}){
   if(!priority)return jsonResponse(400,{success:false,error:"invalid_priority"},headers);
   if(!title)return jsonResponse(400,{success:false,error:"invalid_title"},headers);
   if(!details)return jsonResponse(400,{success:false,error:"invalid_details"},headers);
+  const projectId=normalizeWorkItemProjectId(payload?.project_id??null);
+  if(!(await validWorkItemProject(env.DB,projectId)))return jsonResponse(400,{success:false,error:"invalid_project_id"},headers);
   const id=newWorkItemId(), now=commandCenterNow();
   await env.DB.prepare(`INSERT INTO hermes_owner_work_items
-    (id,organization_scope,workstream,priority,title,details,source,status,created_by,created_at,updated_at)
-    VALUES (?,?,?,?,?,?,?,'planned',?,?,?)`).bind(id,COMMAND_CENTER_SCOPE,workstream,priority,title,details,source,String(owner.specialist.id),now,now).run();
+    (id,organization_scope,workstream,priority,title,details,source,status,created_by,created_at,updated_at,project_id)
+    VALUES (?,?,?,?,?,?,?,'planned',?,?,?,?)`).bind(id,COMMAND_CENTER_SCOPE,workstream,priority,title,details,source,String(owner.specialist.id),now,now,projectId).run();
   const row=await env.DB.prepare("SELECT * FROM hermes_owner_work_items WHERE id = ? AND organization_scope = ?").bind(id,COMMAND_CENTER_SCOPE).first();
   return jsonResponse(201,{success:true,work_item:publicWorkItem(row)},headers);
 }

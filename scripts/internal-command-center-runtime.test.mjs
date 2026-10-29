@@ -15,6 +15,16 @@ class Statement {
   async first(){return this.statement.get(...this.args)??null}
   async all(){return{results:this.statement.all(...this.args)}}
 }
+// Backwards-compatible migration: real older D1 rows may have no project column.
+const legacySqlite=new DatabaseSync(":memory:");
+legacySqlite.exec("CREATE TABLE hermes_owner_work_items (id TEXT PRIMARY KEY,organization_scope TEXT,status TEXT,priority TEXT,created_at TEXT); INSERT INTO hermes_owner_work_items VALUES ('legacy','hermes_internal','planned','p2','2026-10-01');");
+const legacyDB={prepare:sql=>new Statement(legacySqlite.prepare(sql))};
+await ensureCommandCenterSchema(legacyDB);
+assert(legacySqlite.prepare("PRAGMA table_info(hermes_owner_work_items)").all().some(x=>x.name==="project_id"),"migration must add nullable project_id");
+assert.equal(legacySqlite.prepare("SELECT project_id FROM hermes_owner_work_items WHERE id='legacy'").get().project_id,null,"older task remains unassigned");
+await ensureCommandCenterSchema(legacyDB);
+legacySqlite.close();
+
 const sqlite=new DatabaseSync(":memory:");
 const db={prepare:sql=>new Statement(sqlite.prepare(sql)),batch:async statements=>{
   sqlite.exec("BEGIN IMMEDIATE");try{const results=[];for(const stmt of statements)results.push(await stmt.run());sqlite.exec("COMMIT");return results}
@@ -34,8 +44,8 @@ const request=(path,{method="GET",body,owner="owner"}={})=>new Request("https://
   method,headers:{Cookie:"hermes_session=session-"+owner,Origin:"https://example.invalid","Sec-Fetch-Site":"same-origin",...(body?{"Content-Type":"application/json"}:{})},
   ...(body?{body:JSON.stringify(body)}:{}),
 });
-async function create(title,workstream="marketing"){
-  const response=await createWorkItem({request:request("/api/internal-command-center/work-items",{method:"POST",body:{workstream,priority:"p1",title,details:"Synthetic acceptance task: "+title,source:"text"}}),env:{DB:db}});
+async function create(title,workstream="marketing",projectId=null){
+  const response=await createWorkItem({request:request("/api/internal-command-center/work-items",{method:"POST",body:{workstream,priority:"p1",title,details:"Synthetic acceptance task: "+title,source:"text",project_id:projectId}}),env:{DB:db}});
   assert.equal(response.status,201); const payload=await response.json(); assert.equal(payload.work_item.status,"planned"); return payload.work_item;
 }
 async function patch(id,action){
@@ -72,15 +82,21 @@ assert.equal((await listProjects({request:request("/api/internal-command-center/
 assert.equal((await createProject({request:request("/api/internal-command-center/projects",{method:"POST",body:{title:"Bad category",department:"secret",purpose:"No access"}}),env:{DB:db}})).status,400,"invalid departments rejected");
 assert.equal((await listProjects({request:request("/api/internal-command-center/projects?offset=bad"),env:{DB:db}})).status,400,"invalid paging rejected");
 
-const first=await create("First cloud task","technology");
+const missingProject=await createWorkItem({request:request("/api/internal-command-center/work-items",{method:"POST",body:{workstream:"technology",priority:"p1",title:"Unknown project",details:"Reject foreign linkage",project_id:"hcpr_00000000-0000-4000-8000-000000000000"}}),env:{DB:db}});
+assert.equal(missingProject.status,400,"unknown D1 project must never be linked");
+assert.equal((await missingProject.json()).error,"invalid_project_id");
+assert.equal((await createWorkItem({request:request("/api/internal-command-center/work-items",{method:"POST",owner:"delegate",body:{workstream:"technology",priority:"p1",title:"Delegate task",details:"Unauthorized",project_id:createdProject.id}}),env:{DB:db}})).status,403,"only owner can assign project links");
+const first=await create("First cloud task","technology",createdProject.id);
+assert.equal(first.project_id,createdProject.id,"owner-managed project is linked in create response");
 const second=await create("Second cloud task","marketing");
 assert.notEqual(first.id,second.id);
+assert.equal(second.project_id,null,"older and unassigned tasks retain NULL project");
 // Owner can revise an unclaimed D1 task; the update must not create an AI execution.
 const editedResponse=await mutateWorkItem({
   request:request("/api/internal-command-center/work-items/"+first.id,{
     method:"PATCH",body:{action:"edit",updated_at:first.updated_at,
       title:"Revised cloud task",details:"Revised instructions for owner review",
-      workstream:"technology",priority:"p0"}
+      workstream:"technology",priority:"p0",project_id:"hermes-command-center"}
   }),env:{DB:db},params:{id:first.id}
 });
 assert.equal(editedResponse.status,200,"owner task editor must persist a valid revision");
@@ -88,6 +104,9 @@ const editedPayload=await editedResponse.json();
 assert.equal(editedPayload.work_item.title,"Revised cloud task");
 assert.equal(editedPayload.work_item.priority,"p0");
 assert.equal(editedPayload.work_item.details,"Revised instructions for owner review");
+assert.equal(editedPayload.work_item.project_id,"hermes-command-center","owner may reassign to an immutable canonical project");
+const badEdit=await mutateWorkItem({request:request("/api/internal-command-center/work-items/"+first.id,{method:"PATCH",body:{action:"edit",updated_at:editedPayload.work_item.updated_at,title:"Do not overwrite",details:"Do not overwrite",workstream:"technology",priority:"p0",project_id:"nonexistent"}}),env:{DB:db},params:{id:first.id}});
+assert.equal(badEdit.status,400,"unknown project on edit must be rejected without modifying task");
 const staleEditResponse=await mutateWorkItem({
   request:request("/api/internal-command-center/work-items/"+first.id,{
     method:"PATCH",body:{action:"edit",updated_at:"2000-01-01T00:00:00.000Z",
@@ -109,6 +128,7 @@ assert.equal((await offsetPage.json()).work_items.length,1,"offset must return r
 const rejectedOffset=await listWorkItems({request:request("/api/internal-command-center/work-items?offset=nope"),env:{DB:db}});
 assert.equal(rejectedOffset.status,400,"invalid pagination offset must fail closed");
 assert(listPayload.work_items.every(item=>item.status==="planned"));
+assert.equal(listPayload.work_items.find(item=>item.id===first.id).project_id,"hermes-command-center","D1 list must include the selected project");
 
 const dispatched=await patch(first.id,"dispatch");
 assert.equal(dispatched.response.status,200);

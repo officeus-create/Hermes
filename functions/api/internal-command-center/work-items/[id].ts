@@ -1,4 +1,5 @@
 import { jsonResponse } from "../../_lib/session.mjs";
+import { normalizeWorkItemProjectId, validWorkItemProject } from "../../_lib/command-center-work-item-projects.mjs";
 import { ensureInternalAiSchema, INTERNAL_AI_ORGANIZATION_SCOPE, newTaskId, normalizePrompt, nowIso, publicTask, requireInternalOwner } from "../../_lib/internal-ai.mjs";
 import { ensureCommandCenterSchema, normalizeWorkstream, normalizePriority, normalizeWorkItemTitle, normalizeWorkItemDetails, publicWorkItem, reconcileWorkItems, workItemPrompt } from "../../_lib/internal-command-center.mjs";
 type Env={DB?:any};
@@ -39,14 +40,16 @@ export async function onRequestPatch({request,env,params}:{request:Request;env:E
     const title=normalizeWorkItemTitle(payload?.title),details=normalizeWorkItemDetails(payload?.details);
     const workstream=normalizeWorkstream(payload?.workstream),priority=normalizePriority(payload?.priority);
     const observedAt=String(payload?.updated_at||"");
+    const projectId=normalizeWorkItemProjectId(payload?.project_id===undefined?(row.project_id||null):payload.project_id);
+    if(!(await validWorkItemProject(env.DB,projectId)))return jsonResponse(400,{success:false,error:"invalid_project_id"},headers);
     if(!title||!details||!workstream||!priority)return jsonResponse(400,{success:false,error:"invalid_work_item_fields"},headers);
     if(!observedAt||observedAt!==String(row.updated_at||""))
       return jsonResponse(409,{success:false,error:"work_item_changed_reload_first",work_item:publicWorkItem(row)},headers);
     const changed=await env.DB.prepare(`UPDATE hermes_owner_work_items
-      SET title=?,details=?,workstream=?,priority=?,updated_at=?
+      SET title=?,details=?,workstream=?,priority=?,project_id=?,updated_at=?
       WHERE id=? AND organization_scope=? AND status IN ('planned','ready','blocked')
       AND linked_task_id IS NULL AND updated_at=?`)
-      .bind(title,details,workstream,priority,now,id,INTERNAL_AI_ORGANIZATION_SCOPE,observedAt).run();
+      .bind(title,details,workstream,priority,projectId,now,id,INTERNAL_AI_ORGANIZATION_SCOPE,observedAt).run();
     if(!changed?.meta?.changes)return jsonResponse(409,{success:false,error:"work_item_edit_conflict",work_item:publicWorkItem(await getItem(env.DB,id))},headers);
     return jsonResponse(200,{success:true,work_item:publicWorkItem(await getItem(env.DB,id))},headers);
   }
