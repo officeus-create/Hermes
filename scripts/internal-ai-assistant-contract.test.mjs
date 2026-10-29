@@ -145,10 +145,13 @@ assert.match(bootstrap, /Cache-Control.*no-store/, "owner bootstrap responses mu
 assert.match(bootstrap, /WHERE specialist_id = \? AND active = 1 AND capability = 'HERMES_INTERNAL_OWNER'/, "bootstrap must be idempotent for the current owner");
 assert.match(bootstrap, /internal_owner_already_provisioned/, "one-time bootstrap must close after an internal owner exists");
 assert.match(bootstrap, /ON CONFLICT\(specialist_id\) DO UPDATE SET active = 1/, "bootstrap may only upsert the authenticated specialist id");
+assert.match(bootstrap, /WHERE NOT EXISTS\s*\(\s*SELECT 1 FROM hermes_internal_owner_access/, "bootstrap must guard first-owner admission inside the atomic write");
+assert.match(bootstrap, /claim\?\.meta\?\.changes/, "bootstrap must check the write receipt and reject an unsuccessful concurrent claim");
 assert.doesNotMatch(bootstrap, /body\.specialist_id|body\.email|body\.role|HERMES_OWNER_EMAIL/, "bootstrap must never select the owner from client identity fields");
 assert.match(internalNav, /type="password"/, "activation secret must use a password input");
 assert.match(internalNav, /\/api\/internal-ai\/bootstrap-owner/, "AI cabinet activation must call the bounded bootstrap endpoint");
 assert.match(internalNav, /method:\s*"POST"/, "activation secret must never be placed in a URL query");
 assert.match(internalNav, /input\.value = ""/, "activation UI must clear the one-time secret after success");
+await import("./internal-ai-bootstrap-owner-runtime.test.mjs");
 await import("./internal-command-center-contract.test.mjs");
 console.log("Hermes internal AI Assistant contract: PASS");
