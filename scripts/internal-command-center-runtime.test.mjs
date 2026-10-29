@@ -3,6 +3,8 @@ import { DatabaseSync } from "node:sqlite";
 import { onRequestGet as listWorkItems, onRequestPost as createWorkItem } from "../functions/api/internal-command-center/work-items.ts";
 import { onRequestPatch as mutateWorkItem } from "../functions/api/internal-command-center/work-items/[id].ts";
 import { onRequestGet as listAccess, onRequestPost as mutateAccess } from "../functions/api/internal-command-center/access.ts";
+import { onRequestGet as listProjects, onRequestPost as createProject } from "../functions/api/internal-command-center/projects.ts";
+import { onRequestPatch as editProject } from "../functions/api/internal-command-center/projects/[id].ts";
 import { ensureInternalAiSchema } from "../functions/api/_lib/internal-ai.mjs";
 import { ensureCommandCenterSchema } from "../functions/api/_lib/internal-command-center.mjs";
 
@@ -40,6 +42,35 @@ async function patch(id,action){
   const response=await mutateWorkItem({request:request("/api/internal-command-center/work-items/"+id,{method:"PATCH",body:{action}}),env:{DB:db},params:{id}});
   return {response,payload:await response.json()};
 }
+
+// Owner-built projects share the canonical D1 and cannot overwrite the static project snapshot.
+const createProjectResponse=await createProject({request:request("/api/internal-command-center/projects",{method:"POST",body:{title:"  Land    CRM  ",department:"technology",purpose:"Track verified land opportunities."}}),env:{DB:db}});
+assert.equal(createProjectResponse.status,201,"owner project creation must persist");
+const createdProject=(await createProjectResponse.json()).project;
+assert.match(createdProject.id,/^hcpr_/);
+assert.equal(createdProject.title,"Land CRM");
+assert.equal(createdProject.progress.percent,null,"owner-declared project does not invent milestones");
+assert.equal(createdProject.eta_label,"UNKNOWN");
+assert.equal(createdProject.evidence_level,"OWNER_MANAGED_UNVERIFIED");
+const projectList=await listProjects({request:request("/api/internal-command-center/projects"),env:{DB:db}});
+assert.equal(projectList.status,200);
+const projectListBody=await projectList.json();
+assert(projectListBody.projects.some(item=>item.id===createdProject.id),"D1 project is merged into registry");
+assert(projectListBody.projects.some(item=>item.id==="hermes-command-center"),"canonical project remains visible");
+assert.equal(projectListBody.next_offset,null);
+const projectEditRequest=(body,id=createdProject.id)=>editProject({request:request("/api/internal-command-center/projects/"+id,{method:"PATCH",body}),env:{DB:db},params:{id}});
+const editProjectResponse=await projectEditRequest({title:"Land CRM V2",department:"operations",purpose:"Track documented land objects and tenders.",status:"in_progress",updated_at:createdProject.updated_at});
+assert.equal(editProjectResponse.status,200,"owner may edit own D1 project");
+const projectAfterEdit=(await editProjectResponse.json()).project;
+assert.equal(projectAfterEdit.title,"Land CRM V2");
+assert.equal(projectAfterEdit.status,"in_progress");
+assert.equal(projectAfterEdit.department,"operations");
+assert.equal((await projectEditRequest({title:"Stale overwrite",department:"operations",purpose:"Disallowed",status:"done",updated_at:"2000-01-01T00:00:00.000Z"})).status,409,"stale project edits must fail");
+assert.equal((await projectEditRequest({title:"Unsafe canonical edit",department:"operations",purpose:"Disallowed",status:"done",updated_at:createdProject.updated_at},"hermes-command-center")).status,404,"canonical snapshot project may not be modified");
+assert.equal((await createProject({request:request("/api/internal-command-center/projects",{method:"POST",owner:"delegate",body:{title:"Unsafe",department:"sales",purpose:"No access"}}),env:{DB:db}})).status,403,"delegate cannot create projects");
+assert.equal((await listProjects({request:request("/api/internal-command-center/projects",{owner:"delegate"}),env:{DB:db}})).status,403,"delegate cannot read owner project registry");
+assert.equal((await createProject({request:request("/api/internal-command-center/projects",{method:"POST",body:{title:"Bad category",department:"secret",purpose:"No access"}}),env:{DB:db}})).status,400,"invalid departments rejected");
+assert.equal((await listProjects({request:request("/api/internal-command-center/projects?offset=bad"),env:{DB:db}})).status,400,"invalid paging rejected");
 
 const first=await create("First cloud task","technology");
 const second=await create("Second cloud task","marketing");
