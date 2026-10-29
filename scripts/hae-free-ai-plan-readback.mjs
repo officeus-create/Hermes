@@ -224,6 +224,10 @@ export async function readbackWorkersFreePlan({
   const currentModel=clean(bindingValue(bindings,"HERMES_FREE_AI_CLOUDFLARE_MODEL"),200)||null;
   const currentExpiry=clean(bindingValue(bindings,"HERMES_FREE_AI_CLOUDFLARE_FREE_ASSERTION_EXPIRES_AT"),80)||null;
 
+  const finalMain=await requestJson("https://api.github.com/repos/"+REPO+"/branches/main",githubToken,fetchImpl);
+  if(!finalMain.ok||finalMain.payload?.commit?.sha!==expectedMainSha)
+    fail("hae_free_ai_plan_readback_main_drift");
+
   const exactRuntime=Boolean(settings.ok&&deployedSource===expectedMainSha&&
     runtimeMode==="dry_run"&&publication==="disabled");
   const modelApproved=currentModel===APPROVED_FREE_MODEL;
