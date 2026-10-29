@@ -24,12 +24,16 @@ function dbWith(row){
     prepare(sql){
       const normalized=String(sql).replace(/\s+/g," ").trim();
       return {
+        async first(){
+          if(normalized.includes("FROM hermes_social_threads_connections")) return row;
+          throw new Error("unexpected_unbound_sql");
+        },
         bind(...args){
           return {
             async first(){
               if(normalized.includes("FROM sqlite_master")) return {name:args[0]};
               if(normalized.includes("FROM hermes_social_threads_connections")) return row;
-              throw new Error("unexpected_sql");
+              throw new Error("unexpected_bound_sql");
             },
           };
         },
