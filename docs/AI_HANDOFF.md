@@ -2199,3 +2199,12 @@ ai_name: Codex; role: delegated Academy owner; contribution_type: Implementation
 - Tests: new `scripts/connect-auth-language.test.mjs` (in `npm test`); existing `connect-auth-language-regression` 27/27; `npm test` exit 0; Playwright (desktop + mobile) 40/40 on auth-language, Home Services owner access, MZM managed reviewer and Academy business specs; RU/UK pages checked at 390 px with no horizontal overflow.
 - Google button (`HermesGoogleSignIn.astro`): divider, status and error copy now follow the page language (EN/RU/UK) and are read at use time. Website Factory already has Russian via `?lang=ru` (`public/scripts/website-factory-locale.mjs`); its Ukrainian is not translated (owner: later).
 - Next action — owner: Ukrainian for Website Factory when wanted; a real Google round-trip needs the owner's authorized account.
+
+## 2026-10-29 — Claude Code — carrier funnel pages: Logistics blue instead of violet/pink
+
+- Branch: `claude/carrier-funnel-brand` from main `cef0d59` (separate from #2174 by owner direction).
+- Audit evidence: live crawl of 291 sitemap URLs (no duplicate title/description, one H1, valid JSON-LD) and screenshots at 1280 px showed the carrier funnel pages (offer, onboarding, agreement, agreement-v3, sign, carrier) using violet/magenta/teal accents. Violet `#7C5CFF` is reserved for Hermes Intelligence/Connect in the brand book.
+- Changed: accent colours of those six pages and `CarrierContractJourney.astro` mapped to the Logistics blue scale; low-contrast labels in the offer value strip fixed; brand book and coverage matrix updated. Green/amber status colours kept. `download.astro` (Hermes Connect, violet by design) untouched.
+- Tests: `npm run build` ok, `npm test` exit 0, Playwright desktop + mobile 44/44 on the carrier specs.
+- Left for the owner: cookie banner covering the first-screen CTA at 1280×800; public "ChatGPT" mentions on `/privacy/` and `/services/hermes-connect/` (intentional integration or leak?). Small catalog findings (two connect profile pages without og:image, `/ru/privacy/` without JSON-LD) are not in this PR.
+- Next action — Claude: read back the six pages on the live site at 1440 and 390 after deploy.
