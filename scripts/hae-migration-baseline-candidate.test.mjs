@@ -263,7 +263,8 @@ const workflow = readFileSync(new URL("../.github/workflows/hae-migration-baseli
 assert.match(workflow, /hae-d1-schema-snapshot-accepted/, "Baseline candidate must consume independently accepted schema evidence");
 assert.match(workflow, /hae-runtime-evidence-accepted/, "Baseline candidate must consume independently accepted runtime evidence");
 assert.match(workflow, /baseline_target_not_current_main/, "Baseline candidate must fail closed if target SHA is no longer current main");
-assert.match(workflow, /\.github\/workflows\/automation-engine-release\.yml/, "Evidence run IDs must come from the canonical HAE release workflow");
+assert.match(workflow, /\.github\/workflows\/automation-engine-release\.yml/, "Evidence run IDs may come from direct manual HAE release recovery");
+assert.match(workflow, /\.github\/workflows\/issue-comment-command-router\.yml/, "Owner-comment evidence may come only through the canonical command router");
 assert.match(workflow, /baseline_\$\{kind\}_run_wrong_workflow/, "Evidence provenance must fail closed on a different workflow");
 assert.match(workflow, /baseline_\$\{kind\}_run_head_mismatch/, "Evidence provenance must bind each run head to the exact target SHA");
 assert.match(workflow, /baseline_\$\{kind\}_run_timestamp_missing/, "Evidence chronology must fail closed when run timestamps are unavailable");
@@ -276,7 +277,12 @@ assert.match(workflow, /repo:\/\/workers\/automation-engine\/migrations\/baselin
 assert.match(workflow, /retention-days: 90/, "Accepted candidate transport artifact should retain a bounded 90-day review window while repository promotion becomes the durable record");
 assert.doesNotMatch(workflow, /update_file|git commit|git push|wrangler d1 execute|CREATE TABLE|ALTER TABLE|DROP TABLE/i, "Baseline candidate workflow must not mutate repository or D1");
 
-assert.match(workflow, /issue_comment:/, "Baseline candidate must support owner-triggered issue command execution");
-assert.match(workflow, /github\.actor == 'officeus-create'/, "Issue command must be restricted to the repository owner");
-assert.match(workflow, /github\.event\.issue\.number == 2033/, "Baseline command must be restricted to the canonical HAE owner issue");
-assert.match(workflow, /HAE_BASELINE_CANDIDATE/, "Baseline candidate owner command must be explicit and parse exact evidence run ids");
+const router = readFileSync(new URL("../.github/workflows/issue-comment-command-router.yml", import.meta.url), "utf8");
+assert.doesNotMatch(workflow, /issue_comment:/, "Reusable baseline workflow must not subscribe directly to every issue comment");
+assert.match(workflow, /workflow_call:/, "Baseline candidate must remain owner-triggerable through the bounded router");
+assert.match(workflow, /inputs\.caller_actor == 'officeus-create'/, "Reusable baseline command must revalidate repository owner identity");
+assert.match(workflow, /inputs\.issue_number == 2033/, "Reusable baseline command must revalidate canonical HAE owner issue");
+assert.match(workflow, /HAE_BASELINE_CANDIDATE/, "Baseline candidate owner command must remain explicit and parse exact evidence run ids");
+assert.match(router, /github\.actor == 'officeus-create'/, "Router must restrict baseline command to repository owner");
+assert.match(router, /github\.event\.issue\.number == 2033/, "Router must restrict baseline command to canonical HAE owner issue");
+assert.match(router, /startsWith\(github\.event\.comment\.body, 'HAE_BASELINE_CANDIDATE '\)/, "Router must dispatch only the explicit baseline command");
