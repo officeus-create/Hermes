@@ -71,6 +71,12 @@ assert.equal(listResponse.status,200);
 assert.match(listResponse.headers.get("Cache-Control")||"",/no-store/);
 let listPayload=await listResponse.json();
 assert.equal(listPayload.work_items.length,2);
+assert.equal(listPayload.next_offset,null,"short cloud backlog must have no next page");
+const offsetPage=await listWorkItems({request:request("/api/internal-command-center/work-items?offset=1"),env:{DB:db}});
+assert.equal(offsetPage.status,200,"owner paged tasks must be accepted");
+assert.equal((await offsetPage.json()).work_items.length,1,"offset must return remaining D1 tasks");
+const rejectedOffset=await listWorkItems({request:request("/api/internal-command-center/work-items?offset=nope"),env:{DB:db}});
+assert.equal(rejectedOffset.status,400,"invalid pagination offset must fail closed");
 assert(listPayload.work_items.every(item=>item.status==="planned"));
 
 const dispatched=await patch(first.id,"dispatch");
