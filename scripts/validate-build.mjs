@@ -79,7 +79,8 @@ const routes = [
   },
   { path: "logistics/shipper-dealer/index.html", required: ["Shipper or dealer", "Post a load", "Automatic review", "Email Logistics Sales", "mailto:officeus@hermeslogisticsus.com"] },
   { path: "logistics/broker/index.html", required: ["Broker", "Open broker Load Board", "Carrier capacity", "Email Logistics Sales", "mailto:officeus@hermeslogisticsus.com"] },
-  { path: "logistics/carrier/index.html", required: ["Carrier or owner-operator", "Open Load Board", "Email Logistics Sales", "mailto:officeus@hermeslogisticsus.com"] },
+  // /logistics/carrier/ merged into the dispatch service page on 2026-10-28; the carrier journey lives there now.
+  { path: "logistics/car-hauling-dispatch/index.html", required: ["Start dispatch review", "Review plans and carrier packet", "Open the Car Hauling Load Board", "mailto:officeus@hermeslogisticsus.com"] },
   { path: "logistics/agency/index.html", required: ["Open an agency", "Start agency application", "remote logistics agency"] },
   { path: "logistics/careers/index.html", required: ["Work with us", "Start job application", "Explore training first"] },
   { path: "logistics/apply/index.html", required: ["Logistics Application", "Application type", "data-logistics-application", "data-application-result-copy"] },
@@ -128,7 +129,7 @@ const routes = [
       "No guaranteed load",
       "No guaranteed rate or revenue",
       "does not create an account, approve a carrier",
-      "/logistics/carrier/",
+      "/logistics/car-hauling-dispatch/",
       "/logistics/start-car-hauling-dispatch/",
       "/carrier/",
     ],
@@ -329,15 +330,21 @@ for (const localePath of ["/ua/", "/ru/", "/es/", "/it/", "/fr/"]) {
 if (!html.includes("/contacts/") && !html.includes("contacts/")) throw new Error("Homepage/footer contacts link missing");
 if (!sitemap.includes("/contacts/")) throw new Error("Sitemap entry missing for contacts");
 if (!sitemap.includes("/load-board/")) throw new Error("Sitemap entry missing for Load Board");
-for (const path of ["shipper-dealer", "broker", "carrier", "agency", "careers"]) {
+for (const path of ["shipper-dealer", "broker", "agency", "careers"]) {
   if (!sitemap.includes(`/logistics/${path}/`)) throw new Error(`Sitemap entry missing for logistics audience: ${path}`);
 }
+// The carrier audience merged into the dispatch service page; it must not come back as a second sitemap owner.
+if (sitemap.includes("/logistics/carrier/")) throw new Error("Merged /logistics/carrier/ must not return to the sitemap");
 if (!sitemap.includes("/logistics/apply/")) throw new Error("Sitemap entry missing for logistics application");
 if (!sitemap.includes("/logistics/appleton-wi-vehicle-transport/")) throw new Error("Sitemap entry missing for Appleton vehicle transport");
 if (!sitemap.includes("/logistics/resources/auction-vehicle-pickup-checklist/")) throw new Error("Sitemap entry missing for auction pickup checklist");
 if (!sitemap.includes("/logistics/resources/car-hauler-capacity-checklist/")) throw new Error("Sitemap entry missing for car hauler capacity checklist");
 
 const forbidden = [
+  // Internal engineering jargon that must never reach customers (owner review 2026-10-28).
+  "truthful states",
+  "connect ≠ writable",
+  "deploy ≠ live",
   "guaranteed income",
   "guaranteed employment",
   "10,000+ students",

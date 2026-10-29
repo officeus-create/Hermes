@@ -9,7 +9,9 @@ import SiteFooter from "../../components/SiteFooter.astro";
 import { logisticsAudiences } from "../../data/logistics-audiences";
 
 export function getStaticPaths() {
-  return logisticsAudiences.map((audience) => ({ params: { audience: audience.slug }, props: { audience } }));
+  return logisticsAudiences
+    .filter((audience) => !audience.ownerHref)
+    .map((audience) => ({ params: { audience: audience.slug }, props: { audience } }));
 }
 
 const { audience } = Astro.props;
