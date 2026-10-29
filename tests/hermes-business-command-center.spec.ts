@@ -41,6 +41,16 @@ test.describe("Hermes Business Command Center",()=>{
     await expect(page.locator("[data-account-workspaces]").getByRole("link",{name:/internal ai/i})).toBeVisible();
   });
 
+  test("keeps the owner work queue readable when the project registry is unavailable",async({page})=>{
+    await mockOwner(page);
+    await page.unroute("**/api/internal-command-center/projects*");
+    await page.route("**/api/internal-command-center/projects*",(route:any)=>route.fulfill(json({success:false,error:"temporary_unavailable"},503)));
+    await page.goto("/services/hermes-connect/internal/command-center/");
+    await expect(page.locator("[data-backlog-count]")).toHaveText("1");
+    await expect(page.getByText("Threads website demand")).toBeVisible();
+    await expect(page.locator("[data-process-form]")).toBeVisible();
+  });
+
   test("creates and edits a cloud project without changing canonical project cards",async({page})=>{
     await mockOwner(page);
     await page.unroute("**/api/internal-command-center/projects*");
