@@ -110,6 +110,9 @@ export async function socialAccountReadinessSnapshot(env,{nowMs=Date.now()}={}){
   }
   if(!progressopro.credential_bridge_resolves) blockers.push(progressopro.credential_bridge_error || "progressopro_credential_bridge_not_ready");
   if(progressopro.provider_transport!=="shared_meta_threads_provider") blockers.push("progressopro_provider_transport_not_converged");
+  // Business Social / Social Studio still has its own provider implementation in current main.
+  // Keep overall convergence blocked until that manual-owner path imports the same shared transport.
+  blockers.push("manual_social_studio_provider_not_converged");
 
   return {
     success:true,
@@ -120,6 +123,8 @@ export async function socialAccountReadinessSnapshot(env,{nowMs=Date.now()}={}){
     external_write_performed:false,
     hermes_logistics:logistics,
     progressopro,
+    hae_write_bridge_ready:Boolean(logistics.ready_for_provider_preflight&&progressopro.ready_for_hae_write_bridge),
+    manual_social_studio_provider_converged:false,
     write_convergence_ready:blockers.length===0,
     blockers,
   };
