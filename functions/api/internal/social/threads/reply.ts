@@ -149,7 +149,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
 
   // This endpoint is an owner approval + proof gateway only. It never writes Meta
   // directly. HAE owns every external social action and its durable evidence.
-  const businessLane="progressopro";
+  const businessLane=brand === "office_test" ? "automation" : "progressopro";
   const hae=await submitHaeSocialReply(env,{
     job_type:"social.reply",
     business_lane:businessLane,
