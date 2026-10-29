@@ -150,6 +150,12 @@ assert.equal(blockedSecond.payload.error,"active_task_exists");
 
 const activeTaskId=dispatched.payload.task.id;
 sqlite.prepare("UPDATE hermes_internal_ai_tasks SET status='completed',completed_at=?,updated_at=?,output_summary='Synthetic completion evidence' WHERE id=?").run(now,now,activeTaskId);
+const projectsAfterAiCompletion=(await (await listProjects({request:request("/api/internal-command-center/projects"),env:{DB:db}})).json()).projects;
+assert.deepEqual(
+  projectsAfterAiCompletion.find(project=>project.id==="hermes-command-center")?.work_items_summary,
+  {total:1,open:1,done:0,blocked:0},
+  "Projects GET must reconcile linked AI completion but keep work unfinished until explicit owner acceptance",
+);
 listResponse=await listWorkItems({request:request("/api/internal-command-center/work-items"),env:{DB:db}});
 listPayload=await listResponse.json();
 const firstAfter=listPayload.work_items.find(item=>item.id===first.id);
@@ -167,7 +173,21 @@ assert.equal(accepted.payload.work_item.status,"done");
 assert.equal(accepted.payload.work_item.accepted_by,"owner");
 assert.ok(accepted.payload.work_item.accepted_at);
 assert.ok(accepted.payload.work_item.completed_at);
+const projectsAfterAccept=(await (await listProjects({request:request("/api/internal-command-center/projects"),env:{DB:db}})).json()).projects;
+assert.deepEqual(
+  projectsAfterAccept.find(project=>project.id==="hermes-command-center")?.work_items_summary,
+  {total:1,open:0,done:1,blocked:0},
+  "project done count advances only after explicit owner acceptance",
+);
 
+const secondAssignedResponse=await mutateWorkItem({
+  request:request("/api/internal-command-center/work-items/"+second.id,{
+    method:"PATCH",body:{action:"edit",updated_at:second.updated_at,title:second.title,details:second.details,
+      workstream:second.workstream,priority:second.priority,project_id:"hermes-command-center"}
+  }),env:{DB:db},params:{id:second.id}
+});
+assert.equal(secondAssignedResponse.status,200,"previously unassigned work can be attached to a project before dispatch");
+assert.equal((await secondAssignedResponse.json()).work_item.project_id,"hermes-command-center");
 const secondDispatched=await patch(second.id,"dispatch");
 assert.equal(secondDispatched.response.status,200);
 assert.equal(secondDispatched.payload.work_item.status,"in_progress");
@@ -175,6 +195,12 @@ assert.notEqual(secondDispatched.payload.task.id,activeTaskId);
 
 const failedTaskId=secondDispatched.payload.task.id;
 sqlite.prepare("UPDATE hermes_internal_ai_tasks SET status='failed',updated_at=? WHERE id=?").run(now,failedTaskId);
+const projectsAfterAiFailure=(await (await listProjects({request:request("/api/internal-command-center/projects"),env:{DB:db}})).json()).projects;
+assert.deepEqual(
+  projectsAfterAiFailure.find(project=>project.id==="hermes-command-center")?.work_items_summary,
+  {total:2,open:1,done:1,blocked:1},
+  "Projects GET alone must reconcile a failed linked AI task into the blocked counter",
+);
 listResponse=await listWorkItems({request:request("/api/internal-command-center/work-items"),env:{DB:db}});
 listPayload=await listResponse.json();
 const secondBlocked=listPayload.work_items.find(item=>item.id===second.id);
@@ -212,5 +238,7 @@ assert.equal(accessPayload.access.filter(row=>row.active).length,2);
 
 const anonymous=await listWorkItems({request:new Request("https://example.invalid/api/internal-command-center/work-items"),env:{DB:db}});
 assert.equal(anonymous.status,401);
+const anonymousProjects=await listProjects({request:new Request("https://example.invalid/api/internal-command-center/projects"),env:{DB:db}});
+assert.equal(anonymousProjects.status,401,"project counters remain owner-only after reconciliation change");
 sqlite.close();
 console.log("Hermes Business Command Center runtime: D1 backlog -> single dispatch -> reconcile + audited access PASS");
