@@ -98,13 +98,13 @@ const modules=[
           <form data-edit-form>
             <h2 id="work-edit-heading">{ru?"Редактировать задачу":"Edit cloud task"}</h2>
             <p class="muted">{ru?"Изменения сохраняются в общей облачной базе. Запущенные AI-задачи редактировать нельзя.":"Changes are saved to the shared cloud database. Tasks already dispatched to AI cannot be edited."}</p>
-            <input name="id" type="hidden"/><input name="updated_at" type="hidden"/>
-            <label>{ru?"Название":"Title"}<input name="title" maxlength="160" required/></label>
+            <input name="edit_id" type="hidden"/><input name="edit_updated_at" type="hidden"/>
+            <label>{ru?"Название":"Title"}<input name="edit_title" maxlength="160" required/></label>
             <div class="row">
-              <label>{ru?"Направление":"Direction"}<select name="workstream"><option value="marketing">Marketing</option><option value="logistics">Logistics</option><option value="sales">Sales</option><option value="technology">Technology</option><option value="academy">Academy</option><option value="finance">Finance</option><option value="operations">Operations</option></select></label>
-              <label>{ru?"Приоритет":"Priority"}<select name="priority"><option value="p0">P0</option><option value="p1">P1</option><option value="p2">P2</option><option value="p3">P3</option></select></label>
+              <label>{ru?"Направление":"Direction"}<select name="edit_workstream"><option value="marketing">Marketing</option><option value="logistics">Logistics</option><option value="sales">Sales</option><option value="technology">Technology</option><option value="academy">Academy</option><option value="finance">Finance</option><option value="operations">Operations</option></select></label>
+              <label>{ru?"Приоритет":"Priority"}<select name="edit_priority"><option value="p0">P0</option><option value="p1">P1</option><option value="p2">P2</option><option value="p3">P3</option></select></label>
             </div>
-            <label>{ru?"Описание и ожидаемый результат":"Instructions and expected outcome"}<textarea name="details" rows="8" maxlength="10000" required></textarea></label>
+            <label>{ru?"Описание и ожидаемый результат":"Instructions and expected outcome"}<textarea name="edit_details" rows="8" maxlength="10000" required></textarea></label>
             <p data-edit-status role="status"></p>
             <div class="work-actions"><button type="button" class="secondary" data-edit-cancel>{ru?"Отмена":"Cancel"}</button><button type="submit" class="primary">{ru?"Сохранить в облаке":"Save to cloud"}</button></div>
           </form>
@@ -189,7 +189,7 @@ function openWorkEdit(item:WorkItem){
   const dialog=q<HTMLDialogElement>("[data-edit-dialog]");
   const form=q<HTMLFormElement>("[data-edit-form]");
   if(!dialog||!form)return;
-  for(const [name,value] of Object.entries({id:item.id,updated_at:item.updated_at||"",title:item.title,details:item.details,priority:item.priority,workstream:item.workstream})){
+  for(const [name,value] of Object.entries({edit_id:item.id,edit_updated_at:item.updated_at||"",edit_title:item.title,edit_details:item.details,edit_priority:item.priority,edit_workstream:item.workstream})){
     const field=form.elements.namedItem(name) as HTMLInputElement|HTMLTextAreaElement|HTMLSelectElement|null;
     if(field)field.value=value;
   }
@@ -201,8 +201,8 @@ q<HTMLFormElement>("[data-edit-form]")?.addEventListener("submit",async(event)=>
   event.preventDefault();
   const form=event.currentTarget as HTMLFormElement;
   const data=new FormData(form);
-  const id=String(data.get("id")||"");
-  const payload={action:"edit",updated_at:data.get("updated_at"),title:data.get("title"),details:data.get("details"),priority:data.get("priority"),workstream:data.get("workstream")};
+  const id=String(data.get("edit_id")||"");
+  const payload={action:"edit",updated_at:data.get("edit_updated_at"),title:data.get("edit_title"),details:data.get("edit_details"),priority:data.get("edit_priority"),workstream:data.get("edit_workstream")};
   setText("[data-edit-status]",t("Saving…","Сохраняем…"));
   const {r,d}=await jsonFetch("/api/internal-command-center/work-items/"+encodeURIComponent(id),{method:"PATCH",body:JSON.stringify(payload)});
   if(!r.ok){setText("[data-edit-status]",r.status===409?t("Task changed elsewhere; refresh and reopen.","Задача изменилась в другой сессии; обновите список и откройте её заново."):String(d.error||"save_failed"));return}
