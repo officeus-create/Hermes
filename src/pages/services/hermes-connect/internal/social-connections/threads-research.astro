@@ -33,7 +33,7 @@ import SiteFooter from "../../../../../components/SiteFooter.astro";
 <SiteFooter/>
 </BaseLayout>
 <script>
-type Post={id?:string;username?:string;text?:string;permalink?:string;timestamp?:string;is_reply?:boolean;root_post_id?:string;replied_to_id?:string};
+type Post={id?:string;username?:string;text?:string;permalink?:string;timestamp?:string;is_reply?:boolean;root_post_id?:string;replied_to_id?:string;inbox_candidate?:{business_lane?:string|null;source?:string;classification?:string;decision?:string;reply_authorized?:boolean;reason?:string;inbox_policy_stage?:string}};
 const f=document.querySelector<HTMLFormElement>("[data-research-form]");
 const mode=f?.elements.namedItem("mode") as HTMLSelectElement|null;
 const read=document.querySelector<HTMLButtonElement>("[data-read]");
@@ -63,6 +63,11 @@ function render(items:Post[]){
   const h=document.createElement("strong");h.textContent=post.username?"@"+post.username:"Anonymous";
   const p=document.createElement("p");p.textContent=post.text||"No text";
   article.append(h,p);
+  if(post.inbox_candidate){
+    const policy=document.createElement("small");
+    policy.textContent="Inbox: "+String(post.inbox_candidate.decision||"HUMAN_REVIEW")+" · "+String(post.inbox_candidate.inbox_policy_stage||"PRE_VIKTOR");
+    article.append(policy);
+  }
   const cost=price(post.text||"");if(cost){const small=document.createElement("strong");small.textContent="Possible price mention: "+cost;article.append(small)}
   const url=safeLink(post.permalink||"");if(url){const a=document.createElement("a");a.href=url;a.textContent=" · Open source";a.target="_blank";a.rel="noopener noreferrer";article.append(a)}
   if(post.is_reply&&post.id&&replyReady()){
