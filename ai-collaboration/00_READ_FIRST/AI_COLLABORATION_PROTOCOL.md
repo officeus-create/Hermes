@@ -33,6 +33,37 @@ not_reviewed:
 handoff_to: next owner or NONE
 ```
 
+## Agent Work Passport — PR, commit and cross-chat attribution (owner request 2026-10-28)
+
+This section implements the existing identity opening block and handoff journal; it is **not** another task board, identity store, memory, scheduler, or authorization system. The canonical work item stays its existing GitHub issue/PR or approved source; One Brain keeps durable approved knowledge; `docs/AI_HANDOFF.md` remains the append-only historical log.
+
+**At the start of material work** (a PR, significant PR review, cross-agent decision or handoff), attach a compact **Agent Work Passport** to the PR description or relevant existing issue/PR comment. New PRs must also use the repository PR template, including when created by an API that does not prefill it. The opening YAML identity block above remains available for detailed research/proposals.
+
+```text
+AGENT WORK PASSPORT
+Agent / environment: <ChatGPT | Codex | Claude Code | Hermes AI/Viktor | other; actual tool>
+Contributor: <who actually wrote/tested/changed code; or NONE for review-only>
+Chat / session: <exact human-readable chat title when supplied; else UNAVAILABLE — do not invent one>
+Work ID: <canonical existing issue # / PR # / task ID>
+Role / department: <owner / reviewer / executor; domain>
+Action & scope: <specific contribution, files/surfaces, what is explicitly out of scope>
+Status: <PROPOSED | IN_PROGRESS | PR_OPEN | REVIEWED | MERGED_NOT_LIVE | LIVE_VERIFIED | BLOCKED>
+Evidence: <repo branch, commit SHA, PR, exact-head CI, production proof as applicable>
+Overlap / dependencies: <other active owners, shared files, release/security gates; NONE if checked>
+Next owner & action: <named agent/role + one bounded next step; NONE if finished>
+Owner approval required: <YES/NO; name the exact gated action>
+```
+
+**A material commit** should add concise trailers where the tool permits, e.g. `Agent: Claude Code`, `Chat-Thread: <title or UNAVAILABLE>`, `Work-Item: #2164`. Never rewrite old commits to add attribution. A shared GitHub account's author name does not establish which AI executed the work.
+
+**A material PR update or handoff** adds one new signed comment with a changed-state receipt; do not spam comments for every test or repeat the full passport when nothing changed. Cross-chat context is a **decision digest**, not an exported transcript: accepted owner goal, exact current work ID, decisions, existing owners/branches/files, tests and evidence, blockers, next step and approval boundary. If the recipient has no access to the original conversation, mark the input `OWNER_PROVIDED_HANDOFF` and verify against current GitHub/production before declaring success.
+
+**Never misattribute implementation.** A review by ChatGPT may identify a bug and post a coordination comment; only the tool/agent that implemented the code is the contributor. A message intended for Codex is `HANDOFF_POSTED`, not `CODEX_STARTED`. A green PR is not a deployment. Distinguish proposed work, source-verified code, current-head CI, merge and production verification.
+
+Use the passport for **internal collaboration only**. Do not place AI chat/session details, private task/worker/queue information or internal implementation attribution on public Hermes pages, customer/dispatch emails or public SEO metadata. Do not copy raw chats, credentials or confidential client data into GitHub.
+
+**Recipient workflow:** read `docs/AI_START_HERE.md`, then the latest relevant passport, canonical issue/PR, exact current files/head/CI and handoff; identify a single active writer before editing. If another agent owns the same changed file/behavior, review or request a bounded handoff instead of opening a competing implementation.
+
 ## Required workflow
 
 1. Read this protocol and `00_READ_FIRST/CURRENT_STATE.md`.
