@@ -80,6 +80,7 @@ export function workItemPrompt(item){
     `Work item: ${item.id}`,
     `Direction: ${item.workstream}`,
     `Priority: ${item.priority}`,
+    ...(item.project_id ? [`Project ID: ${item.project_id}`] : []),
     `Title: ${item.title}`,
     "", item.details, "",
     "Execution rules:",
