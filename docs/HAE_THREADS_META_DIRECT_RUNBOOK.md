@@ -1,0 +1,131 @@
+# HAE Threads: optional direct Meta transport (2026-10-28)
+
+Canonical owners: GitHub #1018 Growth Bridge; HAE #2033. This is a narrow transport option **inside the existing** Cloudflare Cron → Queue → D1 pipeline. It does **not** create an additional scheduler, publisher, social profile, author identity, local token file or ledger. Existing `Hermes Social Publisher` ChatGPT task must remain disabled; do not operate two writers.
+
+## Existing connected account and failure
+
+- Target: `@hermes.logistics`, Threads account ID `28419597014385166`. Content is exclusively U.S. car-hauling carriers/owner-operators/small fleets, not generic IT/SEO/marketing.
+- Windsor.ai profile `officeus@hermeslogisticsus.com` has 3 connected accounts and FREE allows 1. A real authenticated 2026-10-28 data read returned a synthetic account-limit warning **in the post fields** instead of posts. Do not publish/assume readback with that result.
+- Existing canonical Google Sheet: `HERMES SOCIAL — ORGANIC DISTRIBUTION LEDGER — CURRENT`, with PUBLISH_LEDGER and out-of-band post/repost reconciliation. Before any provider canary, reconcile all owned/out-of-band posts and any unresolved D1 publications. No blind re-send.
+- Cloudflare Wrangler on inspected Mac had no authenticated session; the existence of code is not evidence of live Cloudflare secrets or a deployed worker. Do not mark production as running based on local tests.
+
+## Runtime config
+
+The opt-in transport requires, **only when owner-authorized Meta OAuth tokens are proven working**, private env/secret values in the existing HAE Worker:
+
+```text
+HERMES_THREADS_PROVIDER=meta_direct
+HERMES_THREADS_META_ACCOUNT_ID=28419597014385166
+HERMES_THREADS_ACCESS_TOKEN=<Threads USER token from official Meta OAuth, secret binding only>
+```
+
+The token must have `threads_basic` + `threads_content_publish` and be valid for `@hermes.logistics`. Do not confuse IG, FB Page and Threads tokens; never store it in Git, README, local test fixtures or log files. Manage expiration/refresh with the existing approved Meta social credentials lifecycle; this patch does not invent a second token manager. The default provider stays Windsor when `HERMES_THREADS_PROVIDER` is absent. The other Hermes/ProgressoPro/Academy brand connectors remain unchanged and still disallow Hermes Logistics duplication.
+
+Existing HAE production publication guards must remain separate and disabled by default:
+
+```text
+HERMES_AUTOMATION_MODE=dry_run
+HERMES_AUTOMATION_PUBLISH=disabled
+```
+
+**No one should flip them until** explicit independent QA/owner release, fresh Cloudflare Cron → Queue → D1 evidence, Meta exact-account authenticated readback of newest >=30 (API limit 50), reconciliation of all ambiguous/out-of-band posts, zero unresolved HAE publication rows, a scoped canary with exact provider ID/permalink, and correct no-duplicate replay across the cutover.
+
+## Exact semantics
+
+- Before a provider write, HAE calls `GET /me?fields=id,username` and `GET /me/threads?fields=id,text,permalink,timestamp,media_type&limit=50` against the Meta Threads Graph API. Any wrong identity, malformed feed, token error, identical recent content, future timestamp or 3h15m recent own-post cooldown blocks the slot **before** the D1 provider claim. For the established `@hermes.logistics` account, fewer than 30 valid recent objects is `meta_threads_history_incomplete` and fails closed; an empty/short provider response can never count as reconciliation evidence.
+- A successful preflight is not enough by itself. Existing D1 claim and same-slot idempotency are mandatory. At the successful `reserved → publishing` claim boundary, HAE persists one immutable `publication.provider_claimed` evidence event in the existing runtime-event ledger with the exact transport (`meta_direct` or `windsor`) **before** any provider network write. Any unresolved prior D1 provider write blocks switching provider.
+- Successful provider dispatch uses the documented 2-step Meta Threads API `/{user_id}/threads` TEXT media container then `/{user_id}/threads_publish`. Provider publication is **never blindly retried**, including 5xx/connection uncertainty.
+- Existing D1 lifecycle schedules bounded `publication.readback` rechecks. Readback is routed by the immutable provider claim stored for that publication, never by the provider currently selected in environment configuration. Missing, ambiguous or legacy provenance fails closed to operator review and can never write `published_verified`. Only exact post text + provider ID + valid Threads permalink from the claimed provider can mark `published_verified`.
+- Readback of REPOST_FACADE may have null text; valid ID and timestamp are still required and its recency still blocks a new authored post.
+- All errors return bounded error classes, never tokens or raw OAuth responses.
+
+## Branch synchronization gate
+
+Before independent review, refresh the PR against current `main` and require `behind=0`; after every synchronization run the exact-head HAE contract again. A previously green pre-sync SHA is historical evidence only.
+
+## Test instructions
+
+```bash
+node --check workers/automation-engine/src/meta-threads.mjs
+node --check workers/automation-engine/src/index.mjs
+node scripts/hae-meta-threads-transport.test.mjs
+node scripts/hae-threads-provider-provenance.test.mjs
+node scripts/hae-windsor-plan-gate.test.mjs
+node scripts/hae-threads-schedule-contract.test.mjs
+node scripts/automation-engine-contract.test.mjs
+```
+
+Required source tests now include the native Meta transport suite plus an explicit immutable-provider-provenance/provider-switch regression. These tests use fake network/provider responses only. No actual Threads provider post, no Cloudflare secret changes, no deployment. A controlled production canary remains an independent owner-gated step.
+
+## Roles and ownership
+
+Claude: site design, load-board, SEO/GEO — untouched. Codex: Command Center PR #2107/#2159 — untouched. HAE Threads #2167 only: readback-safe optional provider transport under Growth Bridge #1018. Do not create a second owner issue/brain or a duplicate public publishing queue.
+
+## Social account readiness / provider convergence
+
+Private HAE readback:
+
+```text
+GET /v1/social-account-readiness
+Authorization: Bearer <HERMES_AUTOMATION_TOKEN>
+```
+
+This endpoint is **read-only** and never returns provider tokens or encrypted token payloads. It reports the two canonical commercial lanes only:
+
+- `HERMES_LOGISTICS` — exact `@hermes.logistics` identity, Worker-secret credential presence and Meta-direct selection.
+- `PROGRESSOPRO` — exact `@progressopro` connector identity/scopes/token-expiry metadata from the existing Hermes Connect D1 record, plus whether HAE has an authorized decryption bridge.
+
+Current convergence remains fail-closed while ProgressoPro still uses the legacy connector transport/credential path. A token must never be copied into a HAE job payload, GitHub issue, log, health response or Command Center response. The next write-capability may be enabled only after HAE can resolve the authorized credential server-side and both lanes use the same shared `shared/social/meta-threads-provider.mjs` transport contract.
+
+`write_convergence_ready=false` is a blocker, not a warning to bypass.
+
+
+## Social reply preflight — read-only gate
+
+Private HAE endpoint:
+
+```text
+POST /v1/social-reply-preflight
+Authorization: Bearer <HERMES_AUTOMATION_TOKEN>
+```
+
+Input is limited to the canonical business lane, provider IDs and reply text. HAE resolves credentials server-side and performs only authenticated provider reads:
+
+1. exact account identity;
+2. target exists and is an inbound reply;
+3. target is not a self-reply;
+4. observed root ID matches the requested root;
+5. root provider-read proves ownership by the same connected account;
+6. text is valid for Threads.
+
+The response contains `safe_to_submit_job=true` only after all checks pass and always returns `provider_write_performed=false`. It never publishes, never creates a reply job and never returns a token.
+
+For ProgressoPro, HAE may decrypt the existing `hermes_social_threads_connections.token_ciphertext` only when the separate Worker secret `THREADS_BRAND_TOKEN_KEY` is present. Decryption stays internal; token/ciphertext must never enter Queue payloads, API responses, GitHub or logs.
+
+A future `social.reply` write capability remains blocked until this preflight is exact-head green, the manual Social Studio path adopts the same shared provider contract, and the external-write state machine has provider-receipt/readback handling with no blind retries.
+
+
+## DRAFT_ONLY social reply preparation
+
+HAE now admits one durable non-write reply job:
+
+```text
+job_type=social.reply.prepare
+permission_class=DRAFT_ONLY
+max_attempts=1
+```
+
+The job is accepted only for the canonical `HERMES_LOGISTICS` or `PROGRESSOPRO` lane, `platform=threads`, an exact reply ID + owned root ID, explicit `OWNER_APPROVED` evidence, and source `threads_owned_reply`.
+
+At Queue execution HAE **re-runs** the provider-read preflight. A previously safe UI/API preflight is not reused as authority. On success, the existing D1 job/event ledger records a result with:
+
+- `draft_status=PREPARED_FOR_EXPLICIT_WRITE_GATE`;
+- `provider_readback_verified=true`;
+- exact account ID / username and target/root IDs;
+- `external_write=false`;
+- `provider_write_performed=false`;
+- next action `explicit_social_reply_write_capability_review`.
+
+This capability has no Threads POST path. The actual `social.reply` external-write capability is intentionally absent and remains denied by default. Adding it later requires a separate owner-approved EXTERNAL_WRITE policy, provider provenance, no-blind-retry semantics and post-write parent-ID/permalink readback.
+
+The private Threads Research/Inbox surface may queue `social.reply.prepare`, but must never represent the queued or prepared job as a published reply.

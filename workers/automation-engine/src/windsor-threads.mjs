@@ -29,6 +29,39 @@ function validHttps(value) {
   }
 }
 
+// Windsor FREE can return HTTP 200 and synthetic text instead of actual
+// Threads data when an account/subscription is restricted. Never treat
+// a provider-plan warning as a successful post or readback. No raw payload
+// is stored/logged: consumers receive a bounded error class only.
+export function windsorProviderResponseError(payload) {
+  const values = [];
+  const add = (value) => { if (typeof value === "string") values.push(value); };
+  if (typeof payload === "string") add(payload);
+  if (payload && typeof payload === "object") {
+    add(payload.error);
+    add(payload.message);
+    add(payload.result);
+    if (Array.isArray(payload.data)) {
+      for (const row of payload.data.slice(0, 3)) {
+        add(row?.post_id);
+        add(row?.post_text);
+        add(row?.message);
+        add(row?.error);
+      }
+    }
+  }
+  const observed = values.join(" ").slice(0, 3000).toLowerCase();
+  if (/reads are paused|not your real numbers|free plan includes [0-9]+ account|disconnect [0-9]+ accounts|upgrade at .*windsor/.test(observed)) {
+    return "windsor_plan_account_limit";
+  }
+  if (payload && typeof payload === "object"
+    && (payload.success === false || payload.ok === false || payload.status === "error")) {
+    return "provider_rejected";
+  }
+  if (typeof payload?.error === "string" && payload.error.trim()) return "provider_rejected";
+  return null;
+}
+
 export function windsorThreadsConfig(env) {
   const apiKey = clean(env?.WINDSOR_API_KEY, 4096);
   const accountId = clean(env?.WINDSOR_THREADS_ACCOUNT_ID || DEFAULT_ACCOUNT_ID, 160);
@@ -79,6 +112,8 @@ export async function publishThreadsTextViaWindsor(env, text) {
       provider_status: response.status,
     };
   }
+  const providerError = windsorProviderResponseError(payload);
+  if (providerError) return { ok: false, error_class: providerError };
 
   return {
     ok: true,
@@ -116,6 +151,8 @@ export async function readbackThreadsTextViaWindsor(env, text) {
   }
   const payload = await response.json().catch(() => ({}));
   if (!response.ok) return { ok: false, error_class: "windsor_readback_failed" };
+  const providerError = windsorProviderResponseError(payload);
+  if (providerError) return { ok: false, error_class: providerError };
 
   const exact = normalizeRows(payload).find((row) => normalizePostText(row?.post_text, 1000) === postText);
   if (!exact) return { ok: true, found: false };
