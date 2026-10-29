@@ -52,6 +52,10 @@ import {
 } from "./capability-graph.mjs";
 import { taskMigrationSnapshot } from "./schedule-migrations.mjs";
 import {
+  enqueueDueOwnerProcesses,
+  ownerManagedJobTypes,
+} from "./owner-process-runtime.mjs";
+import {
   pluginRuntimeRegistryEvidenceStatus,
   pluginRuntimeRegistrySnapshot,
 } from "./plugin-runtime-registry.mjs";
@@ -2209,8 +2213,10 @@ async function buildScheduledRoleContractPayload(env, contract, scheduledAt) {
 
 async function enqueueScheduledRoleContracts(env, scheduledAt) {
   const slotKey = chicagoSlotKey(scheduledAt);
+  const managedJobTypes = await ownerManagedJobTypes(env.DB);
   const eligibleContracts = ROLE_CONTRACTS.filter(
-    (contract) => !contract.semantic_required && roleContractScheduleEligible(contract, scheduledAt),
+    (contract) => !contract.semantic_required && roleContractScheduleEligible(contract, scheduledAt)
+      && !managedJobTypes.has(contract.job_type),
   );
   const outcomes = await Promise.all(eligibleContracts.map(async (contract) => {
     try {
@@ -2281,6 +2287,21 @@ export default {
         eventType: "cron.role_contract_batch_failed",
         slotKey: chicagoSlotKey(scheduledAt),
         errorClass: safeRuntimeErrorClass(error, "scheduled_role_contract_batch_failed"),
+      });
+    }
+
+    try {
+      await enqueueDueOwnerProcesses(env, scheduledAt, {
+        createJob: createGenericJob,
+        buildPayload: buildScheduledRoleContractPayload,
+        contractForJobType: roleContractForJobType,
+        accountKey: ACCOUNT_KEY,
+      });
+    } catch (error) {
+      await recordRuntimeEvent(env, {
+        eventType: "cron.owner_process_batch_failed",
+        slotKey: chicagoSlotKey(scheduledAt),
+        errorClass: safeRuntimeErrorClass(error, "owner_process_batch_failed"),
       });
     }
 

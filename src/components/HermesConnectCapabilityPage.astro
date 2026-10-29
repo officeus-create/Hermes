@@ -120,6 +120,8 @@ const schema = [
         </div>
       </section>
 
+      {Astro.slots.has("demo") && <slot name="demo" />}
+
       <section class="hc-boundary" aria-label="Current availability boundary">
         <ShieldCheck size={22} aria-hidden="true" />
         <div>

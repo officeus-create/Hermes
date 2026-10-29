@@ -1,12 +1,14 @@
 ---
 const normalized = Astro.url.pathname.replace(/\/+$/, "/");
 const items = [
+  { key: "command", href: "/services/hermes-connect/internal/command-center/", en: "Command Center", ru: "Центр управления" },
   { key: "overview", href: "/services/hermes-connect/internal/ai-connect/", en: "Overview", ru: "Обзор" },
   { key: "projects", href: "/services/hermes-connect/internal/ai-connect/projects/", en: "Projects", ru: "Проекты" },
   { key: "activity", href: "/services/hermes-connect/internal/ai-connect/activity/", en: "Activity", ru: "Активность" },
   { key: "assistant", href: "/services/hermes-connect/internal/ai-assistant/", en: "AI Assistant", ru: "AI Assistant" },
 ];
-const currentKey = normalized.includes("/activity/") ? "activity"
+const currentKey = normalized.includes("/internal/command-center/") ? "command"
+  : normalized.includes("/activity/") ? "activity"
   : normalized.includes("/projects/") ? "projects"
   : normalized.includes("/ai-assistant/") ? "assistant"
   : "overview";
@@ -148,7 +150,7 @@ const currentKey = normalized.includes("/activity/") ? "activity"
       link.textContent = isRu ? (link.dataset.ru || link.textContent || "") : (link.dataset.en || link.textContent || "");
       preserveLocale(link);
     });
-    document.querySelectorAll<HTMLAnchorElement>('a[href^="/services/hermes-connect/internal/ai-connect/"],a[href^="/services/hermes-connect/internal/ai-assistant/"]').forEach(preserveLocale);
+    document.querySelectorAll<HTMLAnchorElement>('a[href^="/services/hermes-connect/internal/command-center/"],a[href^="/services/hermes-connect/internal/ai-connect/"],a[href^="/services/hermes-connect/internal/ai-assistant/"]').forEach(preserveLocale);
     translateStaticCopy();
 
     const check = async () => {
