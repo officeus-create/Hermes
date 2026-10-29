@@ -59,10 +59,11 @@ import SiteFooter from "../../../../components/SiteFooter.astro";
             <label>Email<input name="email" type="email" autocomplete="username" required /></label>
             <label><span data-i18n="password">Password</span><input name="password" type="password" autocomplete="current-password" minlength="8" required /></label>
             <button class="primary" type="submit" data-i18n="secureLogin">Secure login</button>
+            <p class="muted new-account-hint"><span data-i18n="noAccount">No account yet?</span> <a href="#new-business" data-i18n="noAccountLink">Choose your business type to register →</a></p>
           </form>
         </article>
 
-        <article class="access-card business-router">
+        <article class="access-card business-router" id="new-business">
           <p class="status" data-i18n="newBusiness">New business</p>
           <h2 data-i18n="chooseType">Choose a type — Hermes opens the right CRM.</h2>
           <div class="business-options">
@@ -131,6 +132,7 @@ import SiteFooter from "../../../../components/SiteFooter.astro";
 
   const dictionary = {
     uk: {
+      noAccount:"Ще немає акаунта?",noAccountLink:"Оберіть тип бізнесу для реєстрації →",
       pilotBoundary:"СТО — поточний живий пілот. Після реєстрації акаунта потрібно налаштувати бізнес; реєстрація не підтверджує активацію чи результати клієнта.",
       back:"← Hermes Connect",eyebrow:"Hermes Connect · один акаунт",title:"Один вхід. CRM — під ваш тип бізнесу.",
       lead:"Hermes identity спільна, але робоче середовище не універсальне. СТО отримує автомобілі, записи й послуги. Академія отримує ліди, консультації, учасників, потоки, завдання, маркетингові KPI та retention.",
@@ -145,6 +147,7 @@ import SiteFooter from "../../../../components/SiteFooter.astro";
       loginError:"Не вдалося увійти. Перевірте email і пароль."
     },
     ru: {
+      noAccount:"Ещё нет аккаунта?",noAccountLink:"Выберите тип бизнеса для регистрации →",
       pilotBoundary:"Сервис для СТО — текущий действующий пилот. После регистрации аккаунта идёт настройка автосервиса; регистрация не подтверждает запуск или результаты для клиентов.",
       back:"← Hermes Connect",eyebrow:"Hermes Connect · один аккаунт",title:"Один вход. CRM — под ваш тип бизнеса.",
       lead:"Аккаунт Hermes общий, но рабочее пространство не универсальное. СТО получает автомобили, записи и услуги. Академии получают лиды, консультации, учеников, потоки, задания, маркетинговые показатели и удержание.",
@@ -159,6 +162,7 @@ import SiteFooter from "../../../../components/SiteFooter.astro";
       loginError:"Не удалось войти. Проверьте email и пароль."
     },
     en: {
+      noAccount:"No account yet?",noAccountLink:"Choose your business type to register →",
       pilotBoundary:"Repair Shop is the current live pilot. Account registration is followed by shop setup; it does not confirm activation or customer results.",
       back:"← Hermes Connect",eyebrow:"Hermes Connect · one account",title:"One sign-in. A CRM matched to your business.",
       lead:"Hermes identity is shared, but the workspace is not universal. Repair Shops get vehicles, bookings and services. Academies get leads, consultations, learners, cohorts, assignments, marketing KPI and retention.",
@@ -225,6 +229,16 @@ import SiteFooter from "../../../../components/SiteFooter.astro";
     });
   };
   applyLanguage(lang);
+
+  // The header "Sign in" link points at this very page; make it bring the form into view instead of doing nothing.
+  document.addEventListener("click", (event) => {
+    const link = (event.target as Element | null)?.closest?.("[data-hermes-sign-in]");
+    const target = document.querySelector<HTMLFormElement>("[data-access-form]");
+    if (!link || !target || target.hidden) return;
+    event.preventDefault();
+    target.scrollIntoView({ behavior: "smooth", block: "center" });
+    target.querySelector<HTMLInputElement>('input[name="email"]')?.focus({ preventScroll: true });
+  });
 
   const loading = document.querySelector<HTMLElement>("[data-access-loading]");
   const active = document.querySelector<HTMLElement>("[data-access-active]");

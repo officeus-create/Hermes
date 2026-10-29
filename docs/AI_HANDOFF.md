@@ -2199,3 +2199,11 @@ ai_name: Codex; role: delegated Academy owner; contribution_type: Implementation
 - Tests: new `scripts/connect-auth-language.test.mjs` (in `npm test`); existing `connect-auth-language-regression` 27/27; `npm test` exit 0; Playwright (desktop + mobile) 40/40 on auth-language, Home Services owner access, MZM managed reviewer and Academy business specs; RU/UK pages checked at 390 px with no horizontal overflow.
 - Google button (`HermesGoogleSignIn.astro`): divider, status and error copy now follow the page language (EN/RU/UK) and are read at use time. Website Factory already has Russian via `?lang=ru` (`public/scripts/website-factory-locale.mjs`); its Ukrainian is not translated (owner: later).
 - Next action — owner: Ukrainian for Website Factory when wanted; a real Google round-trip needs the owner's authorized account.
+
+## 2026-10-29 — Claude Code — Access page: header Sign in no longer a dead link, registration is signposted
+
+- Owner report: on `/services/hermes-connect/access/` "Sign in" did nothing and registration seemed impossible. Reproduced on live: the header Sign in links to the same page (no-op there), and registration only exists behind the business-type cards, with nothing pointing to them from the form. The form itself, the 401 message and the success redirect were verified working (mocked success → `/services/hermes-connect/`).
+- Fix: header/mobile Sign in on this page focuses the email field; a hint under the form ("No account yet? Choose your business type to register →", EN/RU/UK) jumps to the type cards (`#new-business`). No change to the sign-in or registration APIs.
+- Branch `claude/access-signin-fix`, stacked on `claude/beautiful-mendel-lknlyq`. Note: commit `6e66a8d06` on that branch ("replay localized sign-in slice on current main") was pushed by someone else on the same account; this fix is built on top of it, not over it.
+- Tests: `npm test` exit 0; Playwright desktop + mobile 22/22 on auth-language and account specs; manual desktop and 390 px check of focus and anchor.
+- Next action — owner: confirm which account/method failed if the problem persists after this fix (password vs Google).
