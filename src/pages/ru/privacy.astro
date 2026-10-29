@@ -80,11 +80,39 @@ const sections = [
     ],
   },
 ];
+
+const pageTitle = "Политика конфиденциальности и уведомление о сборе данных | Hermes";
+const pageDescription = "Политика конфиденциальности Hermes: формы сайта, атрибуция бизнес-заявок, аналитика по согласию, минимизация данных, хранение, безопасность и запросы пользователей.";
+const pageHeading = "Политика конфиденциальности и уведомление о сборе данных";
+const canonical = "https://hermeslogisticsus.com/ru/privacy/";
+const reviewedAt = "2026-09-15";
+const schema = [
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: pageHeading,
+    description: pageDescription,
+    url: canonical,
+    dateModified: reviewedAt,
+    inLanguage: "ru",
+    isPartOf: { "@id": "https://hermeslogisticsus.com/#website" },
+    publisher: { "@id": "https://hermeslogisticsus.com/#organization" },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Главная", item: "https://hermeslogisticsus.com/ru/" },
+      { "@type": "ListItem", position: 2, name: "Конфиденциальность", item: canonical },
+    ],
+  },
+];
 ---
 
 <BaseLayout
-  title="Политика конфиденциальности и уведомление о сборе данных | Hermes"
-  description="Политика конфиденциальности Hermes: формы сайта, атрибуция бизнес-заявок, аналитика по согласию, минимизация данных, хранение, безопасность и запросы пользователей."
+  title={pageTitle}
+  description={pageDescription}
+  schema={schema}
   locale="ru"
 >
   <SiteHeader theme="light" locale="ru" />
@@ -93,7 +121,7 @@ const sections = [
       <div class="shell ru-trust-inner">
         <nav class="ru-trust-breadcrumb" aria-label="Хлебные крошки"><a href="/ru/">Главная</a><span>/</span><span aria-current="page">Конфиденциальность</span></nav>
         <p class="eyebrow">Уведомление о конфиденциальности</p>
-        <h1>Политика конфиденциальности и уведомление о сборе данных</h1>
+        <h1>{pageHeading}</h1>
         <p class="ru-trust-intro">Какие данные может обрабатывать сайт Hermes, зачем они нужны, как мы ограничиваем их использование и как связаться по вопросам конфиденциальности.</p>
         <p class="ru-trust-reviewed">Проверено: 15 сентября 2026 года</p>
       </div>
