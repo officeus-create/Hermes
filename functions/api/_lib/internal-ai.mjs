@@ -193,13 +193,23 @@ export function publicTask(row) {
   if (!row) return null;
   return { id: row.id, organization_scope: row.organization_scope, agent_role: row.agent_role, status: row.status, created_at: row.created_at, started_at: row.started_at, completed_at: row.completed_at, updated_at: row.updated_at, repo_sha: row.repo_sha, branch: row.branch, pr_url: row.pr_url, evidence_class: row.evidence_class, output_summary: row.output_summary, approval_gate: row.approval_gate, approval_state: row.status === "needs_approval" ? "awaiting_approval" : row.approval_granted_at ? "approved" : null, approval_granted_at: row.approval_granted_at || null, approval_attempt: Number(row.approval_attempt || 0), cancel_requested: Boolean(row.cancel_requested) };
 }
+// A future or stale heartbeat is never evidence of a currently running Mac worker.
+export function isRunnerHeartbeatFresh(lastSeenAt, observedNow = Date.now()) {
+  const lastSeen = typeof lastSeenAt === "string" && lastSeenAt.trim() ? Date.parse(lastSeenAt) : NaN;
+  return Number.isFinite(observedNow) && Number.isFinite(lastSeen) && lastSeen > 0 &&
+    lastSeen <= observedNow && observedNow - lastSeen <= 90000;
+}
+
+// Only observed running work accrues time; terminal duration needs a consistent end receipt.
+// No timestamp, incompatible status, clock skew or future-dated completion means UNKNOWN.
 export function publicTaskTiming(row, now = Date.now()) {
   const started = row?.started_at ? Date.parse(row.started_at) : NaN;
   const completed = row?.completed_at ? Date.parse(row.completed_at) : NaN;
-  const validStarted = Number.isFinite(started);
-  const validCompleted = Number.isFinite(completed) && validStarted && completed >= started;
-  const elapsedEnd = validCompleted ? completed : now;
-  const elapsedSeconds = validStarted && Number.isFinite(elapsedEnd) && elapsedEnd >= started ? Math.floor((elapsedEnd - started) / 1000) : null;
+  const validStarted = Number.isFinite(now) && Number.isFinite(started) && started > 0 && started <= now;
+  const terminal = ["completed", "failed", "cancelled"].includes(row?.status);
+  const validCompleted = terminal && validStarted && Number.isFinite(completed) && completed >= started && completed <= now;
+  const running = row?.status === "running" && validStarted && !row?.completed_at;
+  const elapsedSeconds = validCompleted ? Math.floor((completed - started) / 1000) : running ? Math.floor((now - started) / 1000) : null;
   return {
     elapsed_seconds: elapsedSeconds,
     duration_seconds: validCompleted ? elapsedSeconds : null,
