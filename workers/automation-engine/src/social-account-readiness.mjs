@@ -1,3 +1,5 @@
+import { resolveProgressoproThreadsCredential } from "./social-credential-bridge.mjs";
+
 const HERMES_LOGISTICS_ACCOUNT_ID = "28419597014385166";
 const HERMES_LOGISTICS_USERNAME = "hermes.logistics";
 const PROGRESSOPRO_USERNAME = "progressopro";
@@ -88,15 +90,13 @@ export async function socialAccountReadinessSnapshot(env,{nowMs=Date.now()}={}){
   const requiredProgressoproScopes=["threads_basic","threads_content_publish","threads_read_replies","threads_manage_replies"];
   const progressoproScopes=new Set(progressopro.granted_scopes);
   progressopro.required_write_scopes_present=requiredProgressoproScopes.every(scope=>progressoproScopes.has(scope));
-  progressopro.ready_for_hae_write_bridge=Boolean(
-    progressopro.connection_present
-    &&progressopro.identity_verified
-    &&progressopro.token_ciphertext_present
-    &&progressopro.hae_token_key_present
-    &&progressopro.required_write_scopes_present
-    &&progressopro.token_expiry_state!=="EXPIRED"
-    &&progressopro.token_expiry_state!=="INVALID"
-  );
+  const resolvedCredential=await resolveProgressoproThreadsCredential(env,{nowMs});
+  progressopro.credential_bridge_resolves=Boolean(resolvedCredential?.ok);
+  progressopro.credential_bridge_error=resolvedCredential?.ok ? null : (resolvedCredential?.error_class || "progressopro_credential_bridge_failed");
+  progressopro.ready_for_hae_write_bridge=Boolean(resolvedCredential?.ok);
+  if(resolvedCredential?.ok){
+    progressopro.provider_transport="shared_meta_threads_provider";
+  }
 
   const blockers=[];
   if(!logistics.ready_for_provider_preflight) blockers.push("hermes_logistics_meta_credentials_not_ready");
@@ -108,6 +108,7 @@ export async function socialAccountReadinessSnapshot(env,{nowMs=Date.now()}={}){
     if(!progressopro.hae_token_key_present) blockers.push("progressopro_hae_token_key_bridge_missing");
     if(["EXPIRED","INVALID"].includes(progressopro.token_expiry_state)) blockers.push("progressopro_token_not_usable");
   }
+  if(!progressopro.credential_bridge_resolves) blockers.push(progressopro.credential_bridge_error || "progressopro_credential_bridge_not_ready");
   if(progressopro.provider_transport!=="shared_meta_threads_provider") blockers.push("progressopro_provider_transport_not_converged");
 
   return {
