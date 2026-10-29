@@ -1027,3 +1027,58 @@ jobs:
           path: ${{ runner.temp }}/hae-ci-readback.json
           if-no-files-found: error
           retention-days: 90
+
+# Owner-only readback of Cloudflare account billing state. This job cannot deploy,
+# call Workers AI, mutate subscriptions, send Queue messages or enable inference.
+  free_ai_plan_readback:
+    if: >-
+      github.event_name == 'issue_comment' &&
+      github.actor == 'officeus-create' &&
+      github.event.issue.number == 2033 &&
+      !github.event.issue.pull_request &&
+      startsWith(github.event.comment.body, 'HAE_FREE_AI_PLAN_READBACK ')
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    environment: production
+    permissions:
+      contents: read
+    env:
+      GH_TOKEN: ${{ github.token }}
+      CLOUDFLARE_HAE_RELEASE_TOKEN: ${{ secrets.CLOUDFLARE_HAE_RELEASE_TOKEN }}
+      OWNER_COMMENT: ${{ github.event.comment.body }}
+    steps:
+      - name: Checkout canonical main
+        uses: actions/checkout@v6
+        with:
+          ref: main
+          persist-credentials: false
+
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+
+      - name: Resolve exact requested main SHA
+        shell: bash
+        run: |
+          set -euo pipefail
+          target="$(awk '{print $2}' <<<"$OWNER_COMMENT")"
+          if [[ ! "$target" =~ ^[0-9a-f]{40}$ ]]; then
+            echo "hae_free_ai_plan_readback_sha_invalid"
+            exit 1
+          fi
+          echo "HAE_FREE_AI_PLAN_READBACK_SHA=$target" >> "$GITHUB_ENV"
+
+      - name: Validate fail-closed plan readback contract
+        run: node scripts/hae-free-ai-plan-readback.test.mjs
+
+      - name: Read account subscriptions and deployed HAE settings only
+        run: node scripts/hae-free-ai-plan-readback.mjs
+
+      - name: Retain sanitized Workers plan evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: hae-free-ai-plan-readback
+          path: ${{ runner.temp }}/hae-free-ai-plan-readback.json
+          if-no-files-found: error
+          retention-days: 90
