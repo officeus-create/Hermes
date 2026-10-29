@@ -58,7 +58,7 @@ assert.equal(authUrl.searchParams.get("client_id"), "123456");
 assert.equal(authUrl.searchParams.get("redirect_uri"), configEnv.THREADS_BRAND_REDIRECT_URI);
 assert.equal(authUrl.searchParams.get("response_type"), "code");
 assert.equal(authUrl.searchParams.get("state"), "synthetic.state");
-for (const scope of ["threads_basic","threads_content_publish","threads_read_replies","threads_manage_replies","threads_manage_insights"]) {
+for (const scope of ["threads_basic","threads_content_publish","threads_read_replies","threads_manage_replies","threads_manage_mentions","threads_manage_insights"]) {
   assert.ok(authUrl.searchParams.get("scope").split(",").includes(scope));
 }
 const keywordScopes = threadsBrandScopes({ THREADS_BRAND_SCOPES:"threads_basic threads_keyword_search" });
@@ -99,6 +99,8 @@ assert.equal(publicView.publish_enabled, true);
 assert.equal(publicView.expected_username, "office");
 
 const coreSource = await readFile(new URL("../functions/api/_lib/threads-brand-connector.mjs", import.meta.url), "utf8");
+assert.match(coreSource, /https:\/\/graph\.threads\.net\//);
+assert.doesNotMatch(coreSource, /graph\.threads\.com/);
 const startSource = await readFile(new URL("../functions/api/internal/social/threads/start.ts", import.meta.url), "utf8");
 const callbackSource = await readFile(new URL("../functions/api/internal/social/threads/callback.ts", import.meta.url), "utf8");
 const connectionsSource = await readFile(new URL("../functions/api/internal/social/threads/connections.ts", import.meta.url), "utf8");
@@ -107,13 +109,14 @@ const verifySource = await readFile(new URL("../functions/api/internal/social/th
 const disconnectSource = await readFile(new URL("../functions/api/internal/social/threads/disconnect.ts", import.meta.url), "utf8");
 const metricsSource = await readFile(new URL("../functions/api/internal/social/threads/metrics.ts", import.meta.url), "utf8");
 const pageSource = await readFile(new URL("../src/pages/services/hermes-connect/internal/social-connections/index.astro", import.meta.url), "utf8");
+const researchPage = await readFile(new URL("../src/pages/services/hermes-connect/internal/social-connections/threads-research.astro", import.meta.url), "utf8");
 const navSource = await readFile(new URL("../src/components/RepairShopOwnerNavEnhancer.astro", import.meta.url), "utf8");
 const vendorRegistry = await readFile(new URL("../docs/compliance/vendor-registry.json", import.meta.url), "utf8");
 const releaseDelta = await readFile(new URL("../docs/release-manifest-deltas/2026-09-29-hermes-connect-social-connections.json", import.meta.url), "utf8");
 
 assert.match(coreSource, /auto_publish_text/);
 assert.match(coreSource, /threads\.com\/oauth\/authorize/);
-assert.match(coreSource, /graph\.threads\.com\/oauth\/access_token/);
+assert.match(coreSource, /graph\.threads\.net\/oauth\/access_token/);
 assert.match(coreSource, /th_exchange_token/);
 assert.match(coreSource, /th_refresh_token/);
 assert.match(coreSource, /AES-GCM/);
@@ -121,12 +124,15 @@ assert.match(coreSource, /hermes_social_threads_oauth_states/);
 assert.match(startSource, /requireInternalOwner/);
 assert.match(callbackSource, /requireInternalOwner/);
 assert.match(callbackSource, /internal\/social-connections/);
-assert.match(connectionsSource, /hermes_logistics_provider:\s*"windsor_only"/);
+assert.match(connectionsSource, /hermes_logistics_provider:\s*"shared_meta_via_hae_pending"/);
+assert.match(connectionsSource, /social_business_lanes:\s*\["HERMES_LOGISTICS",\s*"PROGRESSOPRO"\]/);
+assert.match(connectionsSource, /legacy_direct_publish_enabled:\s*false/);
 
-assert.match(publishSource, /INSERT OR IGNORE INTO hermes_social_threads_publications/);
-assert.match(publishSource, /office_canary_required_before_secondary_publish/);
-assert.match(publishSource, /retry_allowed:\s*false/);
-assert.doesNotMatch(publishSource, /hermes_logistics/);
+assert.match(publishSource, /legacy_threads_brand_direct_publish_disabled/);
+assert.match(publishSource, /provider_write_performed:false/);
+assert.match(publishSource, /runtime_owner:"hae_2033"/);
+assert.match(publishSource, /retry_allowed:false/);
+assert.doesNotMatch(publishSource, /publishThreadsText|readThreadsMedia|INSERT OR IGNORE INTO hermes_social_threads_publications|UPDATE hermes_social_threads_publications/);
 
 assert.match(verifySource, /threadsBrandExpectedUsername\(brand, env\)/);
 assert.match(disconnectSource, /DELETE FROM hermes_social_threads_connections/);
@@ -134,11 +140,17 @@ assert.match(disconnectSource, /provider_access_revoked:\s*false/);
 assert.match(metricsSource, /readThreadsMediaInsights/);
 
 assert.match(pageSource, /noindex,nofollow,noarchive/);
-assert.match(pageSource, /Hermes Logistics stays on Windsor/);
+assert.match(pageSource, /Hermes Logistics → shared Meta provider via HAE/);
 assert.match(pageSource, /Office Threads Test/);
 assert.match(pageSource, /ProgressoPro/);
-assert.match(pageSource, /Hermes Business Academy/);
-assert.match(pageSource, /Publish Office canary/);
+assert.doesNotMatch(pageSource, /data-brand="business_academy"/);
+assert.doesNotMatch(pageSource, />Academy<\/button>/);
+assert.match(pageSource, /PROGRESSOPRO · Marketing \+ IT \+ Academy/);
+assert.match(pageSource, /Publishing moved to the canonical social path/);
+assert.match(pageSource, /Business Social \/ Social Studio/);
+assert.match(pageSource, /HAE #2033/);
+assert.doesNotMatch(pageSource, /Publish selected brand|data-compose-publish/);
+assert.doesNotMatch(pageSource, /fetch\("\/api\/internal\/social\/threads\/publish"/);
 assert.match(pageSource, /Disconnect locally/);
 assert.match(navSource, /\$\{repairShopRoot\}\/social/);
 assert.match(navSource, /href:withLocale\(`\$\{repairShopRoot\}\/social\/`\)/);
@@ -147,4 +159,20 @@ assert.doesNotMatch(navSource, /data-hc-social-connections-link/);
 assert.match(vendorRegistry, /meta-threads-owner-oauth/);
 assert.match(releaseDelta, /internal\/social-connections/);
 
+assert.match(researchPage, /data-research-form/);
+assert.match(researchPage, /noindex,nofollow,noarchive/);
+assert.match(researchPage, /api\/internal\/social\/threads\/read/);
+assert.match(researchPage, /navigator.clipboard.writeText/);
+assert.match(researchPage, /credentials:"same-origin"/);
+assert.doesNotMatch(researchPage, /\/api\/internal\/social\/threads\/publish/);
+assert.match(pageSource, /social-connections\/threads-research/);
+assert.match(pageSource, /Threads post health/);
+assert.match(pageSource, /data-health-brand/);
+assert.match(pageSource, /metrics\?brand=/);
+assert.match(pageSource, /Direct brand-connector publishing: disabled/);
+assert.match(pageSource, /identity\/read donor only/);
+assert.doesNotMatch(pageSource, /Threads text composer|data-compose-brand|threads-manual-|Publish this single approved Threads post/);
+assert.doesNotMatch(pageSource, /setInterval|cron|schedulePost|new scheduler/i);
+assert.doesNotMatch(pageSource, /office-threads-canary-20260929-01/);
+await import("./threads-discovery.test.mjs");
 console.log("threads brand connector contract: PASS");

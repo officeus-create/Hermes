@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "base_manifest": "docs/release-manifest-2026-08-01.json",
+  "release_delta": "2026-10-27-threads-research-bounded-replies",
+  "generated_at": "2026-10-27T00:25:00+02:00",
+  "status": "PENDING_PRODUCTION_DEPLOYMENT",
+  "additions": [
+    {
+      "route": "/services/hermes-connect/internal/social-connections/threads-research/",
+      "source_state": "current_main",
+      "indexability": "noindex",
+      "robots": "noindex,nofollow,noarchive",
+      "canonical": "https://hermeslogisticsus.com/services/hermes-connect/internal/social-connections/threads-research/",
+      "sitemap_owner": null,
+      "source_file": "src/pages/services/hermes-connect/internal/social-connections/threads-research.astro",
+      "status": "COMPLETE",
+      "blocker": "Private HERMES_INTERNAL_OWNER Threads research surface. Read access and bounded reply writes remain provider/OAuth gated; this route must stay outside public sitemaps and search indexing.",
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    }
+  ],
+  "acceptance": {
+    "route_count_added": 1,
+    "indexable_route_count_added": 0,
+    "requires_green_current_head_ci": true,
+    "requires_production_snapshot_reconciliation_after_deploy": true
+  }
+}
