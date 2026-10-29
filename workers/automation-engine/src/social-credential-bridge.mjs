@@ -1,3 +1,5 @@
+import { createMetaThreadsTransport } from "../../../shared/social/meta-threads-provider.mjs";
+
 // Server-side credential bridge for existing Hermes social identities.
 // Never return decrypted credentials from public/private HAE status endpoints.
 // The bridge exists so provider tokens are resolved inside HAE, not copied into
@@ -128,4 +130,53 @@ export function redactResolvedSocialCredential(result){
     connection_updated_at:result.connectionUpdatedAt||null,
     access_token_returned:false,
   };
+}
+
+
+export async function resolveThreadsTransportForLane(env,businessLane,{nowMs=Date.now(),fetchImpl=fetch}={}){
+  const lane=clean(businessLane,64).toUpperCase();
+  if(lane==="HERMES_LOGISTICS"){
+    const accountId=numericId(env?.HERMES_THREADS_META_ACCOUNT_ID);
+    const accessToken=clean(env?.HERMES_THREADS_ACCESS_TOKEN,4096);
+    if(accountId!=="28419597014385166"||accessToken.length<20||accessToken.length>4096){
+      return {ok:false,error_class:"hermes_logistics_meta_credentials_not_ready"};
+    }
+    const transport=createMetaThreadsTransport({
+      accessToken,
+      accountId,
+      expectedUsername:"hermes.logistics",
+      fetchImpl,
+    });
+    if(!transport)return {ok:false,error_class:"hermes_logistics_meta_transport_invalid"};
+    return {
+      ok:true,
+      business_lane:"HERMES_LOGISTICS",
+      accountKey:"hermes_logistics",
+      accountId,
+      username:"hermes.logistics",
+      source:"hae_worker_secret",
+      transport,
+    };
+  }
+  if(lane==="PROGRESSOPRO"){
+    const credential=await resolveProgressoproThreadsCredential(env,{nowMs});
+    if(!credential.ok)return credential;
+    const transport=createMetaThreadsTransport({
+      accessToken:credential.accessToken,
+      accountId:credential.accountId,
+      expectedUsername:credential.username,
+      fetchImpl,
+    });
+    if(!transport)return {ok:false,error_class:"progressopro_meta_transport_invalid"};
+    return {
+      ok:true,
+      business_lane:"PROGRESSOPRO",
+      accountKey:"progressopro",
+      accountId:credential.accountId,
+      username:credential.username,
+      source:credential.source,
+      transport,
+    };
+  }
+  return {ok:false,error_class:"social_business_lane_invalid"};
 }
