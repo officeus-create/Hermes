@@ -80,10 +80,14 @@ await assert.rejects(()=>readbackGithubCIEvent({...opts,runAttempt:0}),e=>e.code
 
 import fs from "node:fs";
 const workflow=fs.readFileSync(new URL("../.github/workflows/automation-engine-release.yml",import.meta.url),"utf8");
+const router=fs.readFileSync(new URL("../.github/workflows/issue-comment-command-router.yml",import.meta.url),"utf8");
 const ciBlock=workflow.slice(workflow.indexOf("\n  ci_readback:\n"));
 assert.ok(ciBlock.includes("GH_TOKEN: " + "$" + "{{ github.token }}"));
 assert.ok(ciBlock.includes("CLOUDFLARE_HAE_RELEASE_TOKEN: " + "$" + "{{ secrets.CLOUDFLARE_HAE_RELEASE_TOKEN }}"));
-assert.ok(ciBlock.includes("HAE_CI_READBACK_COMMAND: " + "$" + "{{ github.event.comment.body }}"));
+assert.ok(ciBlock.includes("HAE_CI_READBACK_COMMAND: " + "$" + "{{ inputs.command_body }}"));
+assert.match(ciBlock,/inputs\.caller_actor == 'officeus-create'/);
+assert.match(ciBlock,/inputs\.issue_number == 2033/);
+assert.match(router,/startsWith\(github\.event\.comment\.body, 'HAE_CI_READBACK '\)/);
 assert.ok(ciBlock.includes("path: " + "$" + "{{ runner.temp }}/hae-ci-readback.json"));
 assert.equal((workflow.match(/\$\{\{[^}\n]+\}(?!\})/g)||[]).length,0,"single-closing-brace GitHub expressions must not enter release workflow");
 assert.equal((workflow.match(/\$\{\{[^}\n]+\}\}\}/g)||[]).length,0,"triple-closing-brace GitHub expressions must not enter release workflow");
