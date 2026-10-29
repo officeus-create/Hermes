@@ -124,6 +124,10 @@ The owner is the only CEO and final decision-maker. Agents are specialists opera
 
 Use the lowest-cost capable agent for each task. If a task is context-heavy, delegate bounded sub-tasks through a compact prompt rather than consuming one agent's entire session. Full role and routing rules are in `docs/AI_ROLES.md`.
 
+For **every material PR, review, change handoff or cross-agent decision**, use the compact **Agent Work Passport** in `ai-collaboration/00_READ_FIRST/AI_COLLABORATION_PROTOCOL.md`: true contributing agent/tool, chat/thread title when known (otherwise `UNAVAILABLE`), existing issue/PR ID, role and scoped files, actual status/evidence/SHA, overlaps, next owner and owner-approval gate. Include it in the PR description (API-created PRs too) and in material coordination comments. New material commits should carry `Agent:`, `Chat-Thread:` and `Work-Item:` trailers when possible. Never identify a reviewer or handoff author as a code implementer, and never publish these internal attributions in customer-visible pages or messages.
+
+When giving another agent context from ChatGPT/Claude/Codex, transfer a **sanitized decision digest** with issue/PR/source links and current evidence, not a raw chat transcript. The receiving agent must verify against current `main`, PR heads and production. Do not create a second memory, task tracker, coordinator, or auth system; preserve single-writer boundaries and the existing `docs/AI_HANDOFF.md` journal.
+
 ## Standing autonomy
 
 Agents may, without repeated permission, audit, research, edit files, create feature branches, run checks, commit, push feature branches, open pull requests, and update project documentation/handoffs.
