@@ -118,7 +118,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
   }
 
   const job=await haeJson(env,"/v1/jobs",{
-    job_type:"social.reply",
+    job_type:"social.reply.prepare",
     business_lane:businessLane,
     account_key:"progressopro",
     project_key:"threads-social-inbox",
@@ -146,7 +146,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     const haeError=String(job.payload?.error || "");
     return jsonResponse(job.status,{
       success:false,
-      error:haeError==="job_type_not_allowed"?"hae_social_reply_capability_not_ready":"hae_social_reply_handoff_rejected",
+      error:haeError==="job_type_not_allowed"?"hae_social_reply_prepare_capability_not_ready":"hae_social_reply_prepare_handoff_rejected",
       hae_error:haeError || null,
       blocked:true,
       retry_allowed:false,
@@ -154,15 +154,16 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
       preflight_verified:true,
       idempotency_key:idempotencyKey,
       next_action:haeError==="job_type_not_allowed"
-        ? "add_and_independently_approve_social_reply_capability_in_hae"
+        ? "add_and_independently_approve_social_reply_prepare_capability_in_hae"
         : "repair_hae_private_job_handoff",
     },headers);
   }
 
   return jsonResponse(202,{
     success:true,
-    outcome:"queued_to_hae",
+    outcome:"queued_to_hae_prepare",
     published:false,
+    prepared:false,
     provider_write_performed:false,
     preflight_verified:true,
     brand:"progressopro",
