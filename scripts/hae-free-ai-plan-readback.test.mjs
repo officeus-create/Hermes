@@ -97,6 +97,26 @@ assert.equal(verified.activation_requires_separate_reviewed_source_change,true);
 assert.equal(verified.provider_write_performed,false);
 assert.equal(verified.model_inference_performed,false);
 assert.equal(verified.cost_usd,0);
+assert.equal(
+  verifiedFixture.calls.filter(url=>url.endsWith("/branches/main")).length,
+  2,
+  "successful attestation must verify main before and after provider reads"
+);
+
+const driftBase=fixture();
+let mainReads=0;
+const driftingMain=async(url,...args)=>{
+  if(url.endsWith("/branches/main")){
+    mainReads+=1;
+    return json({commit:{sha:mainReads===1?mainSha:"b".repeat(40)}});
+  }
+  return driftBase.fetchImpl(url,...args);
+};
+await assert.rejects(()=>readbackWorkersFreePlan({
+  expectedMainSha:mainSha,githubToken:"gh",cloudflareToken:"cf",accountId,
+  fetchImpl:driftingMain,nowMs:now,
+}),/hae_free_ai_plan_readback_main_drift/);
+assert.equal(mainReads,2,"main drift fixture must cross the provider-read window");
 
 const deniedFixture=fixture({subscriptionStatus:403});
 const denied=await readbackWorkersFreePlan({
