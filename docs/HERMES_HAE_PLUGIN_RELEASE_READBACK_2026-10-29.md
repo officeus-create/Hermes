@@ -17,14 +17,14 @@ This document records provider release truth only. It does **not** prove that a 
 | hermes-knowledge-curator | 0.1.88 |
 | hermes-marketing-growth | 0.1.13 |
 | hermes-search-growth | 0.1.12 |
-| hermes-academy | 0.1.13 |
+| hermes-academy | 0.1.14 |
 | hermes-dispatch-os | 0.1.26 |
 
 The HAE registry remains intentionally bounded to these nine roles. Other private Hermes plugins are not added merely because they exist or were updated.
 
 ## Completion Truth training receipt
 
-The following existing private plugins received and read back the new `skills/completion-truth-gates/SKILL.md` package layer:
+All 27 Hermes private plugins (excluding personal-health-os) now received and package-read back the `skills/completion-truth-gates/SKILL.md` package layer. The HAE runtime registry remains intentionally bounded to the nine roles below. First-wave/core training included:
 
 - hermes-agent-coordinator 0.1.80
 - hermes-automatic-engineer 0.1.34
@@ -57,3 +57,26 @@ Package readback verified the skill exists in every listed current release and c
 The registry update changes provider-version evidence only. Existing `plugin-release-drift-preflight.mjs` continues to require independent contract/runtime proof and explicitly forbids automatic registry/plugin update, dispatch, One Brain write or new scheduler creation.
 
 No plugin was automatically added to the HAE runtime and no production command, Queue/D1 write, deploy or provider action is authorized by this readback.
+
+
+## Full Hermes plugin training completion
+
+After the core/runtime update, the remaining 15 Hermes roles were updated and package-read back without adding them to HAE runtime:
+
+- hermes-geo-ai-visibility-specialist 0.1.4
+- hermes-seo-organic-specialist 0.1.4
+- hermes-investor-relations 0.1.6
+- hermes-workforce-enablement 0.1.6
+- hermes-compliance-operations 0.1.4
+- hermes-finance-accounting 0.1.5
+- hermes-ceo 0.1.3
+- hermes-recruiter 0.1.5
+- hermes-telegram-growth-manager 0.3.3
+- hermes-news 0.1.4
+- hermes-catalog 0.1.7
+- hermes-academy 0.1.14
+- hermes-hr 0.1.14
+- hermes-private-network 0.1.2
+- hermes-design-hub 0.2.67
+
+Package readback for every updated release verified the Completion Truth skill, the exact release-state ladder, `UNKNOWN != 0`, and real-signal/customer separation. `personal-health-os` was deliberately excluded because this is a Hermes business/runtime governance lesson.
