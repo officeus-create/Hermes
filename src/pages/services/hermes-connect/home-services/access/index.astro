@@ -14,57 +14,57 @@ import SiteFooter from "../../../../../components/SiteFooter.astro";
   <SiteHeader theme="light" activePath="/services/hermes-connect/" />
   <main class="hs-onboarding" id="main-content">
     <div class="shell">
-      <a class="back" href="/services/hermes-connect/access/">← Hermes Connect account options</a>
+      <a class="back" href="/services/hermes-connect/access/" data-i18n="back">← Hermes Connect account options</a>
       <div class="intro">
-        <p class="eyebrow">Hermes Connect · Home Services · Private CRM access</p>
-        <h1>One account. Your Home Services CRM.</h1>
-        <p>For junk removal, cleanouts and other local service businesses. Record real leads, quotes, booked jobs, completed work, tracked costs, payments and reviews in a private workspace.</p>
-        <p class="pilot" data-owner-setup-note>Pilot access: creating an account does not prove client activation, publish your company, or populate revenue. Business information must be saved by an authorized owner.</p>
-        <p class="pilot" data-managed-reviewer-note hidden>Hermes-managed reviewer access: sign in with your existing assigned Hermes identity to inspect only the authorized company. Do not register a new owner account. Reviewer access is not client-owner activation and cannot invent leads, jobs, or revenue.</p>
+        <p class="eyebrow" data-i18n="eyebrow">Hermes Connect · Home Services · Private CRM access</p>
+        <h1 data-i18n="title">One account. Your Home Services CRM.</h1>
+        <p data-i18n="lead">For junk removal, cleanouts and other local service businesses. Record real leads, quotes, booked jobs, completed work, tracked costs, payments and reviews in a private workspace.</p>
+        <p class="pilot" data-owner-setup-note data-i18n="pilot">Pilot access: creating an account does not prove client activation, publish your company, or populate revenue. Business information must be saved by an authorized owner.</p>
+        <p class="pilot" data-managed-reviewer-note data-i18n="reviewer" hidden>Hermes-managed reviewer access: sign in with your existing assigned Hermes identity to inspect only the authorized company. Do not register a new owner account. Reviewer access is not client-owner activation and cannot invent leads, jobs, or revenue.</p>
       </div>
       <div class="steps">
         <section class="panel" data-auth-panel aria-labelledby="auth-title">
-          <p class="eyebrow">Step 1 · Hermes identity</p>
-          <h2 id="auth-title">Create an account or sign in</h2>
+          <p class="eyebrow" data-i18n="step1">Step 1 · Hermes identity</p>
+          <h2 id="auth-title" data-i18n="authTitle">Create an account or sign in</h2>
           <div class="mode" role="group" aria-label="Account action">
-            <button type="button" data-auth-mode="register" aria-pressed="true">Create account</button>
-            <button type="button" data-auth-mode="login" aria-pressed="false">Sign in</button>
+            <button type="button" data-auth-mode="register" aria-pressed="true" data-i18n="tabRegister">Create account</button>
+            <button type="button" data-auth-mode="login" aria-pressed="false" data-i18n="tabLogin">Sign in</button>
           </div>
           <p class="feedback" data-auth-message role="status" aria-live="polite" hidden></p>
           <HermesGoogleSignIn />
 <form data-register-form>
-            <label>Your name<input name="name" autocomplete="name" minlength="2" required /></label>
-            <label>Work email<input type="email" name="email" autocomplete="email" required /></label>
-            <label>Password<input type="password" name="password" autocomplete="new-password" minlength="8" required /></label>
-            <label>Your location<input name="location" placeholder="City, State" minlength="2" required /></label>
-            <button class="primary" type="submit">Create Hermes account</button>
+            <label><span data-i18n="name">Your name</span><input name="name" autocomplete="name" minlength="2" required /></label>
+            <label><span data-i18n="email">Work email</span><input type="email" name="email" autocomplete="email" required /></label>
+            <label><span data-i18n="password">Password</span><input type="password" name="password" autocomplete="new-password" minlength="8" required /></label>
+            <label><span data-i18n="location">Your location</span><input name="location" placeholder="City, State" minlength="2" required /></label>
+            <button class="primary" type="submit" data-i18n="createBtn">Create Hermes account</button>
           </form>
           <form data-login-form hidden>
-            <label>Work email<input type="email" name="email" autocomplete="username" required /></label>
-            <label>Password<input type="password" name="password" autocomplete="current-password" required /></label>
-            <button class="primary" type="submit">Sign in</button>
+            <label><span data-i18n="email">Work email</span><input type="email" name="email" autocomplete="username" required /></label>
+            <label><span data-i18n="password">Password</span><input type="password" name="password" autocomplete="current-password" required /></label>
+            <button class="primary" type="submit" data-i18n="loginBtn">Sign in</button>
           </form>
         </section>
         <section class="panel" data-company-panel aria-labelledby="company-title" hidden>
-          <p class="eyebrow">Step 2 · Your own business</p>
-          <h2 id="company-title">Confirm Home Services company</h2>
-          <p class="note">An existing company attached to this Hermes identity is reused, not duplicated. If your account belongs to a different business type, setup stops rather than overwriting it.</p>
-          <a class="existing" data-open-existing href="/services/hermes-connect/home-services/workspace/" hidden>Open existing Home Services workspace ↗</a>
+          <p class="eyebrow" data-i18n="step2">Step 2 · Your own business</p>
+          <h2 id="company-title" data-i18n="companyTitle">Confirm Home Services company</h2>
+          <p class="note" data-i18n="companyNote">An existing company attached to this Hermes identity is reused, not duplicated. If your account belongs to a different business type, setup stops rather than overwriting it.</p>
+          <a class="existing" data-open-existing href="/services/hermes-connect/home-services/workspace/" data-i18n="openExisting" hidden>Open existing Home Services workspace ↗</a>
           <p class="feedback" data-company-message role="status" aria-live="polite" hidden></p>
           <form data-company-form>
-            <label>Business name<input name="companyName" minlength="2" autocomplete="organization" required /></label>
+            <label><span data-i18n="businessName">Business name</span><input name="companyName" minlength="2" autocomplete="organization" required /></label>
             <div class="two">
-              <label>City<input name="city" minlength="2" required /></label>
-              <label>U.S. state (2 letters)<input name="state" maxlength="2" minlength="2" pattern="[A-Za-z]{2}" placeholder="CA" autocapitalize="characters" required /></label>
+              <label><span data-i18n="city">City</span><input name="city" minlength="2" required /></label>
+              <label><span data-i18n="state">U.S. state (2 letters)</span><input name="state" maxlength="2" minlength="2" pattern="[A-Za-z]{2}" placeholder="CA" autocapitalize="characters" required /></label>
             </div>
-            <label>Official website (optional)<input name="website" type="url" placeholder="https://example.com" /></label>
-            <label>Business phone (optional)<input name="phone" type="tel" autocomplete="tel" /></label>
-            <label class="consent"><input name="catalogOptIn" type="checkbox" /><span><strong>Opt in to Hermes Catalog</strong> — show approved business-level information only, after the public Home Services profile is completed. Listing is self-submitted and verification pending; no customer or financial records are public.</span></label>
-            <button class="primary" type="submit">Save company and open CRM</button>
+            <label><span data-i18n="website">Official website (optional)</span><input name="website" type="url" placeholder="https://example.com" /></label>
+            <label><span data-i18n="phone">Business phone (optional)</span><input name="phone" type="tel" autocomplete="tel" /></label>
+            <label class="consent"><input name="catalogOptIn" type="checkbox" /><span><strong data-i18n="optInStrong">Opt in to Hermes Catalog</strong><span data-i18n="optInText"> — show approved business-level information only, after the public Home Services profile is completed. Listing is self-submitted and verification pending; no customer or financial records are public.</span></span></label>
+            <button class="primary" type="submit" data-i18n="saveBtn">Save company and open CRM</button>
           </form>
         </section>
       </div>
-      <p class="privacy">Private by design: customer contacts, addresses, job photos, quotes, disposal costs, payment details and CRM history never become public from account registration. Owner-submitted Catalog publication requires explicit opt-in and a saved public profile; Hermes-managed public-facts publication has separate documented authority and does not claim owner consent.</p>
+      <p class="privacy" data-i18n="privacy">Private by design: customer contacts, addresses, job photos, quotes, disposal costs, payment details and CRM history never become public from account registration. Owner-submitted Catalog publication requires explicit opt-in and a saved public profile; Hermes-managed public-facts publication has separate documented authority and does not claim owner consent.</p>
     </div>
   </main>
   <SiteFooter />
@@ -72,6 +72,34 @@ import SiteFooter from "../../../../../components/SiteFooter.astro";
 <script is:inline>
 (() => {
   const $ = (selector) => document.querySelector(selector);
+  // English is the markup default. RU / UK come from ?lang=, then the language saved by the Connect shell.
+  const DICT = {"ru": {"back": "← Варианты аккаунта Hermes Connect", "eyebrow": "Hermes Connect · Услуги для дома · Закрытый доступ к CRM", "title": "Один аккаунт. Ваша CRM для услуг для дома.", "lead": "Для вывоза мусора, расчистки помещений и других местных сервисных компаний. Фиксируйте реальные заявки, расчёты, назначенные заказы, выполненную работу, расходы, платежи и отзывы в закрытом рабочем пространстве.", "pilot": "Пилотный доступ: создание аккаунта не подтверждает запуск клиента, не публикует вашу компанию и не заполняет доход. Данные о бизнесе должен сохранить уполномоченный владелец.", "reviewer": "Доступ проверяющего, управляемый Hermes: войдите под назначенным вам аккаунтом Hermes, чтобы просматривать только разрешённую компанию. Не создавайте новый аккаунт владельца.", "step1": "Шаг 1 · Аккаунт Hermes", "authTitle": "Создайте аккаунт или войдите", "tabRegister": "Создать аккаунт", "tabLogin": "Войти", "name": "Ваше имя", "email": "Рабочий email", "password": "Пароль", "location": "Ваше местоположение", "createBtn": "Создать аккаунт Hermes", "loginBtn": "Войти", "step2": "Шаг 2 · Ваш бизнес", "companyTitle": "Подтвердите компанию по услугам для дома", "companyNote": "Существующая компания, привязанная к этому аккаунту Hermes, используется повторно, а не дублируется. Если ваш аккаунт относится к другому типу бизнеса, настройка останавливается и ничего не перезаписывает.", "openExisting": "Открыть существующее рабочее пространство ↗", "businessName": "Название компании", "city": "Город", "state": "Штат США (2 буквы)", "website": "Официальный сайт (необязательно)", "phone": "Рабочий телефон (необязательно)", "optInStrong": "Разместить в Каталоге Hermes", "optInText": " — показывать только одобренные сведения о бизнесе после заполнения публичного профиля. Размещение заявлено самой компанией, проверка не завершена; данные клиентов и финансов не публикуются.", "saveBtn": "Сохранить компанию и открыть CRM", "privacy": "Закрытость по умолчанию: контакты клиентов, адреса, фото заказов, расчёты, расходы на утилизацию, платёжные данные и история CRM не становятся публичными из-за регистрации аккаунта. Размещение в Каталоге по заявке владельца требует явного согласия и сохранённого публичного профиля; публикация открытых фактов силами Hermes имеет отдельное документированное основание и не заявляет согласия владельца.", "msgCreating": "Создаём ваш аккаунт…", "msgEmailTaken": "Этот email уже зарегистрирован. Выберите «Войти».", "msgAccountFail": "Не удалось завершить создание аккаунта: {error}", "msgSigning": "Входим…", "msgSignFail": "Не удалось войти: {error}", "msgWrongType": "Этот аккаунт Hermes уже относится к другому типу компании. Чтобы защитить ту запись, настройка услуг для дома заблокирована. Используйте аккаунт уполномоченного владельца услуг для дома.", "msgFound": "Найдена ваша существующая компания. Проверьте данные или откройте закрытое рабочее пространство.", "msgSaving": "Сохраняем компанию и проверяем результат…", "msgSaveFail": "Сохранение компании не подтверждено: {error}"}, "uk": {"back": "← Варіанти акаунта Hermes Connect", "eyebrow": "Hermes Connect · Послуги для дому · Закритий доступ до CRM", "title": "Один акаунт. Ваша CRM для послуг для дому.", "lead": "Для вивезення сміття, розчищення приміщень та інших місцевих сервісних компаній. Фіксуйте реальні заявки, розрахунки, призначені замовлення, виконану роботу, витрати, платежі та відгуки в закритому робочому просторі.", "pilot": "Пілотний доступ: створення акаунта не підтверджує запуск клієнта, не публікує вашу компанію й не заповнює дохід. Дані про бізнес має зберегти уповноважений власник.", "reviewer": "Доступ перевіряльника, яким керує Hermes: увійдіть під призначеним вам акаунтом Hermes, щоб переглядати лише дозволену компанію. Не створюйте новий акаунт власника.", "step1": "Крок 1 · Акаунт Hermes", "authTitle": "Створіть акаунт або увійдіть", "tabRegister": "Створити акаунт", "tabLogin": "Увійти", "name": "Ваше ім’я", "email": "Робочий email", "password": "Пароль", "location": "Ваше місцезнаходження", "createBtn": "Створити акаунт Hermes", "loginBtn": "Увійти", "step2": "Крок 2 · Ваш бізнес", "companyTitle": "Підтвердьте компанію з послуг для дому", "companyNote": "Наявна компанія, прив’язана до цього акаунта Hermes, використовується повторно, а не дублюється. Якщо ваш акаунт належить до іншого типу бізнесу, налаштування зупиняється й нічого не перезаписує.", "openExisting": "Відкрити наявний робочий простір ↗", "businessName": "Назва компанії", "city": "Місто", "state": "Штат США (2 літери)", "website": "Офіційний сайт (необов’язково)", "phone": "Робочий телефон (необов’язково)", "optInStrong": "Розмістити в Каталозі Hermes", "optInText": " — показувати лише схвалені відомості про бізнес після заповнення публічного профілю. Розміщення заявлене самою компанією, перевірка не завершена; дані клієнтів і фінансів не публікуються.", "saveBtn": "Зберегти компанію й відкрити CRM", "privacy": "Закритість за замовчуванням: контакти клієнтів, адреси, фото замовлень, розрахунки, витрати на утилізацію, платіжні дані та історія CRM не стають публічними через реєстрацію акаунта. Розміщення в Каталозі за заявою власника потребує явної згоди та збереженого публічного профілю; публікація відкритих фактів силами Hermes має окрему задокументовану підставу й не заявляє згоди власника.", "msgCreating": "Створюємо ваш акаунт…", "msgEmailTaken": "Цей email уже зареєстровано. Оберіть «Увійти».", "msgAccountFail": "Не вдалося завершити створення акаунта: {error}", "msgSigning": "Входимо…", "msgSignFail": "Не вдалося увійти: {error}", "msgWrongType": "Цей акаунт Hermes уже належить до іншого типу компанії. Щоб захистити той запис, налаштування послуг для дому заблоковано. Використайте акаунт уповноваженого власника послуг для дому.", "msgFound": "Знайдено вашу наявну компанію. Перевірте дані або відкрийте закритий робочий простір.", "msgSaving": "Зберігаємо компанію й перевіряємо результат…", "msgSaveFail": "Збереження компанії не підтверджено: {error}"}};
+  const EN_MSG = {"msgCreating": "Creating your account…", "msgEmailTaken": "This email is registered. Choose Sign in.", "msgAccountFail": "Account setup could not finish: {error}", "msgSigning": "Signing in…", "msgSignFail": "Sign-in failed: {error}", "msgWrongType": "This Hermes identity already belongs to another company type. To protect that business record, Home Services setup is blocked. Use the authorized Home Services owner account.", "msgFound": "Your existing Home Services company was found. Review its details or open your private workspace.", "msgSaving": "Saving your company and verifying it…", "msgSaveFail": "Company save not confirmed: {error}"};
+  const pickLang = () => {
+    const wanted = (new URLSearchParams(window.location.search).get("lang") || "").toLowerCase();
+    if (wanted === "ru" || wanted === "uk") return wanted;
+    if (wanted === "en") return "en";
+    let stored = "";
+    try { stored = window.localStorage.getItem("hermes-connect-language") || ""; } catch {}
+    return stored === "ru" || stored === "uk" ? stored : "en";
+  };
+  const lang = pickLang();
+  const T = (key, vars = {}) => String((DICT[lang] && DICT[lang][key]) || EN_MSG[key] || key).replace(/\{(\w+)\}/g, (_, name) => vars[name] ?? "");
+  document.documentElement.lang = lang;
+  if (lang !== "en") {
+    document.querySelectorAll("[data-i18n]").forEach((node) => {
+      const value = DICT[lang][node.dataset.i18n];
+      if (value) node.textContent = value;
+    });
+    // The shared Connect chrome says this page is English-only; once translated that notice would be false.
+    const dropEnglishOnlyNotice = () => document.querySelectorAll("[data-hc-english-only]").forEach((node) => node.remove());
+    dropEnglishOnlyNotice();
+    const watcher = new MutationObserver(dropEnglishOnlyNotice);
+    watcher.observe(document.documentElement, { childList: true, subtree: true });
+    window.setTimeout(() => watcher.disconnect(), 6000);
+    const back = document.querySelector("a.back");
+    if (back) back.href = "/services/hermes-connect/access/?lang=" + lang;
+  }
   const registerForm = $("[data-register-form]");
   const loginForm = $("[data-login-form]");
   const managedTarget = new URLSearchParams(window.location.search).get("managed")?.trim().toLowerCase().replace(/[^a-z0-9-]/g, "") || "";
@@ -124,7 +152,7 @@ import SiteFooter from "../../../../../components/SiteFooter.astro";
     const existing = state.company;
     if (existing && existing.companyType !== "home_service") {
       if (companyForm) companyForm.hidden = true;
-      formMessage(companyMessage, "This Hermes identity already belongs to another company type. To protect that business record, Home Services setup is blocked. Use the authorized Home Services owner account.", true);
+      formMessage(companyMessage, T("msgWrongType"), true);
       return;
     }
     if (existing && companyForm) {
@@ -138,7 +166,7 @@ import SiteFooter from "../../../../../components/SiteFooter.astro";
       if (consent && "checked" in consent) consent.checked = Boolean(existing.catalogOptIn);
       const open = $("[data-open-existing]");
       if (open) open.hidden = false;
-      formMessage(companyMessage, "Your existing Home Services company was found. Review its details or open your private workspace.", false);
+      formMessage(companyMessage, T("msgFound"), false);
     }
   };
   registerForm?.addEventListener("submit", async (event) => {
@@ -146,7 +174,7 @@ import SiteFooter from "../../../../../components/SiteFooter.astro";
     const submit = registerForm.querySelector('button[type="submit"]');
     if (submit) submit.disabled = true;
     const data = new FormData(registerForm);
-    formMessage(authMessage, "Creating your account…", false);
+    formMessage(authMessage, T("msgCreating"), false);
     try {
       await api("/api/auth/register", { method: "POST", body: JSON.stringify({
         name: data.get("name"), email: data.get("email"), password: data.get("password"),
@@ -155,7 +183,7 @@ import SiteFooter from "../../../../../components/SiteFooter.astro";
       }) });
       await showCompany();
     } catch (error) {
-      formMessage(authMessage, error?.message === "email_already_registered" ? "This email is registered. Choose Sign in." : "Account setup could not finish: " + error.message, true);
+      formMessage(authMessage, error?.message === "email_already_registered" ? T("msgEmailTaken") : T("msgAccountFail", { error: error.message }), true);
     } finally { if (submit) submit.disabled = false; }
   });
   loginForm?.addEventListener("submit", async (event) => {
@@ -163,7 +191,7 @@ import SiteFooter from "../../../../../components/SiteFooter.astro";
     const submit = loginForm.querySelector('button[type="submit"]');
     if (submit) submit.disabled = true;
     const data = new FormData(loginForm);
-    formMessage(authMessage, "Signing in…", false);
+    formMessage(authMessage, T("msgSigning"), false);
     try {
       await api("/api/auth/login", { method: "POST", body: JSON.stringify({ email: data.get("email"), password: data.get("password") }) });
       if (managedWorkspace) {
@@ -172,7 +200,7 @@ import SiteFooter from "../../../../../components/SiteFooter.astro";
       }
       await showCompany();
     } catch (error) {
-      formMessage(authMessage, "Sign-in failed: " + error.message, true);
+      formMessage(authMessage, T("msgSignFail", { error: error.message }), true);
     } finally { if (submit) submit.disabled = false; }
   });
   companyForm?.addEventListener("submit", async (event) => {
@@ -181,7 +209,7 @@ import SiteFooter from "../../../../../components/SiteFooter.astro";
     if (submit) submit.disabled = true;
     const data = new FormData(companyForm);
     const optIn = data.get("catalogOptIn") === "on";
-    formMessage(companyMessage, "Saving your company and verifying it…", false);
+    formMessage(companyMessage, T("msgSaving"), false);
     try {
       const input = {
         companyName: data.get("companyName"), companyType: "home_service", city: data.get("city"),
@@ -196,7 +224,7 @@ import SiteFooter from "../../../../../components/SiteFooter.astro";
       }
       window.location.assign("/services/hermes-connect/home-services/workspace/");
     } catch (error) {
-      formMessage(companyMessage, "Company save not confirmed: " + error.message, true);
+      formMessage(companyMessage, T("msgSaveFail", { error: error.message }), true);
     } finally { if (submit) submit.disabled = false; }
   });
   if (new URLSearchParams(window.location.search).get("mode") === "login") mode("login");

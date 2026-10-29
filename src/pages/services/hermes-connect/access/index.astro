@@ -144,6 +144,20 @@ import SiteFooter from "../../../../components/SiteFooter.astro";
       boundary:"Реєстрація Hermes-акаунта не публікує бізнес у Catalog автоматично. Публікація бізнес-профілю — окремий opt-in. Приватні CRM-дані не стають публічними.",
       loginError:"Не вдалося увійти. Перевірте email і пароль."
     },
+    ru: {
+      pilotBoundary:"Сервис для СТО — текущий действующий пилот. После регистрации аккаунта идёт настройка автосервиса; регистрация не подтверждает запуск или результаты для клиентов.",
+      back:"← Hermes Connect",eyebrow:"Hermes Connect · один аккаунт",title:"Один вход. CRM — под ваш тип бизнеса.",
+      lead:"Аккаунт Hermes общий, но рабочее пространство не универсальное. СТО получает автомобили, записи и услуги. Академии получают лиды, консультации, учеников, потоки, задания, маркетинговые показатели и удержание.",
+      secure:"Защищённая сессия",checking:"Проверяем ваш аккаунт Hermes…",sessionActive:"Сессия активна",welcome:"Добро пожаловать,",activeCopy:"Ваши бизнесы и доступные рабочие пространства находятся в переключателе аккаунтов Hermes в шапке сайта.",openConnect:"Открыть Hermes Connect",logout:"Выйти",
+      accountAccess:"Вход в аккаунт",signIn:"Войти",signInCopy:"Используйте email и пароль вашего общего аккаунта Hermes.",password:"Пароль",secureLogin:"Безопасный вход",
+      homeServicesState:"НАСТРОЙКА ВЛАДЕЛЬЦА",homeServices:"Услуги для дома / Вывоз мусора",homeServicesCopy:"Частные заявки, расчёты, заказы, расходы, доход и отзывы. Нужна настройка владельцем; публикация в Каталоге — по желанию.",homeServicesStart:"Настроить →",loadBoardState:"ПРОВЕРКА РОЛИ",loadBoard:"Load Board · перевозчики, брокеры, дилеры",loadBoardCopy:"Аккаунт Hermes, профиль компании и доступ к Load Board по вашей роли. Доступ к грузам для перевозчиков одобряется отдельно.",loadBoardStart:"Получить доступ →",
+      newBusiness:"Новый бизнес",chooseType:"Выберите тип — Hermes откроет подходящую CRM.",live:"РАБОТАЕТ",available:"ДОСТУПНО",repair:"Автосервис (СТО)",repairCopy:"Записи, клиенты, автомобили, услуги, расписание и последующая работа с клиентами.",register:"Регистрация →",
+      learnerState:"УЧЕНИК",academyOwner:"Академия / Курсы / Бизнес-клуб",academyOwnerCopy:"CRM продаж, ученики, потоки, уроки, задания, проверки, CAC/LTV/ROMI, HR и удержание.",academyLearner:"Ученик академии",academyLearnerCopy:"Отдельное пространство ученика: обучение, подтверждения, прогресс и поддержка.",createLearner:"Создать аккаунт ученика →",
+      architecture:"Архитектура Hermes Connect",notUniversal:"Не одна CRM для всех бизнесов.",notUniversalCopy:"У одного профиля бизнеса может быть своё рабочее пространство под отрасль. Новые отрасли подключаются к тому же аккаунту Hermes и Каталогу, а не создают дубли компаний.",
+      repairShort:"Автосервис",academyShort:"Академия",liveProduct:"Работающий продукт",businessCrm:"CRM бизнеса + ученик",privateFoundation:"Закрытая основа",logistics:"Логистика",marketing:"Маркетинг",professional:"Профессиональные услуги",preparing:"В подготовке",
+      boundary:"Создание аккаунта Hermes не публикует бизнес в Каталоге автоматически. Публичное размещение — отдельное согласие. Закрытые данные CRM не становятся публичными только из-за регистрации.",
+      loginError:"Не удалось войти. Проверьте email и пароль."
+    },
     en: {
       pilotBoundary:"Repair Shop is the current live pilot. Account registration is followed by shop setup; it does not confirm activation or customer results.",
       back:"← Hermes Connect",eyebrow:"Hermes Connect · one account",title:"One sign-in. A CRM matched to your business.",
@@ -182,8 +196,9 @@ import SiteFooter from "../../../../components/SiteFooter.astro";
     if (aiLabel) aiLabel.textContent = aiProviderLabels[aiProvider] || "your AI assistant";
     if (aiContext) aiContext.hidden = false;
   }
-  // The public clean route is English; Ukrainian is an explicit URL choice.
-  let lang: Lang = params.get("lang") === "uk" ? "uk" : "en";
+  // The public clean route is English; Ukrainian and Russian are explicit URL choices.
+  const requestedLanguage = params.get("lang");
+  let lang: Lang = requestedLanguage === "uk" || requestedLanguage === "ru" ? requestedLanguage : "en";
 
   const withLang = (path: string, preserveAi = false) => {
     const url = new URL(path, window.location.origin);
@@ -201,7 +216,7 @@ import SiteFooter from "../../../../components/SiteFooter.astro";
     document.documentElement.lang = next;
     try { localStorage.setItem("hermes-connect-language", next); } catch {}
     document.querySelectorAll<HTMLElement>("[data-i18n]").forEach((node) => {
-      const key = node.dataset.i18n as keyof typeof dictionary.uk;
+      const key = node.dataset.i18n as keyof typeof dictionary.en;
       const value = dictionary[next][key];
       if (value) node.textContent = value;
     });
