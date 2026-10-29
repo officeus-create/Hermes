@@ -4,6 +4,17 @@ import RussianLocaleIntegrity from "../../components/RussianLocaleIntegrity.astr
 import SiteFooter from "../../components/SiteFooter.astro";
 import SiteHeader from "../../components/SiteHeader.astro";
 
+const privacySchema = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "@id": "https://hermeslogisticsus.com/ru/privacy/#webpage",
+  url: "https://hermeslogisticsus.com/ru/privacy/",
+  name: "Политика конфиденциальности и уведомление о сборе данных | Hermes",
+  description: "Политика конфиденциальности Hermes: формы сайта, атрибуция бизнес-заявок, аналитика по согласию, минимизация данных, хранение, безопасность и запросы пользователей.",
+  inLanguage: "ru",
+  isPartOf: { "@id": "https://hermeslogisticsus.com/#website" },
+};
+
 const sections = [
   {
     title: "Область действия и текущие границы сайта",
@@ -86,6 +97,7 @@ const sections = [
   title="Политика конфиденциальности и уведомление о сборе данных | Hermes"
   description="Политика конфиденциальности Hermes: формы сайта, атрибуция бизнес-заявок, аналитика по согласию, минимизация данных, хранение, безопасность и запросы пользователей."
   locale="ru"
+  schema={privacySchema}
 >
   <SiteHeader theme="light" locale="ru" />
   <main id="main-content" class="ru-trust-page">
