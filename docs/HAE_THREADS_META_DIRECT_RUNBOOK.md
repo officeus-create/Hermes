@@ -103,3 +103,29 @@ The response contains `safe_to_submit_job=true` only after all checks pass and a
 For ProgressoPro, HAE may decrypt the existing `hermes_social_threads_connections.token_ciphertext` only when the separate Worker secret `THREADS_BRAND_TOKEN_KEY` is present. Decryption stays internal; token/ciphertext must never enter Queue payloads, API responses, GitHub or logs.
 
 A future `social.reply` write capability remains blocked until this preflight is exact-head green, the manual Social Studio path adopts the same shared provider contract, and the external-write state machine has provider-receipt/readback handling with no blind retries.
+
+
+## DRAFT_ONLY social reply preparation
+
+HAE now admits one durable non-write reply job:
+
+```text
+job_type=social.reply.prepare
+permission_class=DRAFT_ONLY
+max_attempts=1
+```
+
+The job is accepted only for the canonical `HERMES_LOGISTICS` or `PROGRESSOPRO` lane, `platform=threads`, an exact reply ID + owned root ID, explicit `OWNER_APPROVED` evidence, and source `threads_owned_reply`.
+
+At Queue execution HAE **re-runs** the provider-read preflight. A previously safe UI/API preflight is not reused as authority. On success, the existing D1 job/event ledger records a result with:
+
+- `draft_status=PREPARED_FOR_EXPLICIT_WRITE_GATE`;
+- `provider_readback_verified=true`;
+- exact account ID / username and target/root IDs;
+- `external_write=false`;
+- `provider_write_performed=false`;
+- next action `explicit_social_reply_write_capability_review`.
+
+This capability has no Threads POST path. The actual `social.reply` external-write capability is intentionally absent and remains denied by default. Adding it later requires a separate owner-approved EXTERNAL_WRITE policy, provider provenance, no-blind-retry semantics and post-write parent-ID/permalink readback.
+
+The private Threads Research/Inbox surface may queue `social.reply.prepare`, but must never represent the queued or prepared job as a published reply.
