@@ -2150,3 +2150,10 @@ ai_name: Codex; role: delegated Academy owner; contribution_type: Implementation
 - Fixed in this slice: 33 carrier-cluster meta descriptions no longer cut off with "…" (25 car-hauler-loads markets via `CarHaulerGeoPage.astro`, the markets hub, owner-operator / new-authority / fleet-owner dispatch support, two carrier resources); `/logistics/` (parent of every carrier URL) now 301s to `/paths/logistics/` instead of 404; the Logistics hub service-guide list now leads with carrier pages and links the car-hauler-loads markets hub.
 - Owner decisions open: markets hub title/H1 still "Car Hauler Operating Markets & Route-Fit Research" (proposed "Car Hauler Loads by Market"); `/load-board/?role=*` variants are indexed as separate URLs despite the canonical; thin `/logistics/carrier/` overlaps `/logistics/car-hauling-dispatch/`; recruiting phone +1 (414) 269-7377 vs the one-public-phone rule.
 - Next: re-read GSC positions for the carrier query set on 2026-11-23.
+
+## 2026-10-29 — Claude Code — hermes-lead-email: Workers Builds migration plan
+
+- Branch: `claude/beautiful-mendel-lknlyq` from main `7408654`.
+- Evidence: deploy workflow failed on all 6 runs since 2026-10-04 at the credentials step; deployed Worker (read via Cloudflare MCP) has the carrier subject and `dispatchtruck107` default recipient but not `isCarrierDispatchLead`.
+- Result: compatibility check and settings in `docs/LEAD_EMAIL_WORKERS_BUILDS_MIGRATION.md`. No Cloudflare change made; the Actions workflow is unchanged. Whether Builds is already connected could not be read through the available tools.
+- Next action — owner: open Workers & Pages → hermes-lead-email → Settings → Builds and tell Claude whether a repository is connected; if not, confirm the GitHub OAuth there (no token). Claude then verifies revision, Sales carrier/dealer delivery and no duplicates; dispatch routing is proved by an isolated test, not by the synthetic leads.
