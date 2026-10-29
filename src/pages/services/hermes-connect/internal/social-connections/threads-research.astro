@@ -82,7 +82,7 @@ function render(items:Post[]){
       const resp=await fetch("/api/internal/social/threads/reply",{method:"POST",credentials:"same-origin",headers:{"Content-Type":"application/json","Idempotency-Key":key},body:JSON.stringify({brand:"progressopro",reply_to_id:String(post.id),root_post_id:String(post.root_post_id||post.replied_to_id||""),text:text.trim(),idempotency_key:key})});
       const data=await resp.json().catch(()=>({}));
       if(!resp.ok){say(status,"Reply handoff blocked (HTTP "+resp.status+"): "+(data.error||"unknown"));return}
-      say(status,data.duplicate?"HAE already has this approved reply job; no duplicate job created.":"Approved reply queued to HAE. Job: "+(data.hae_job_id||"pending")+". This is not proof that Threads published it.");
+      say(status,data.duplicate?"HAE already has this approved reply job; no duplicate job created.":"Approved reply queued to HAE for draft-only preparation. Job: "+(data.hae_job_id||"pending")+". This is not proof that Threads published it.");
     }catch{say(status,"Reply API unavailable.")}
     finally{btn.disabled=false}
    });
