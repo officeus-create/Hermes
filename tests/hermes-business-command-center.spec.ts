@@ -16,7 +16,7 @@ async function mockOwner(page:any){
   });
   await page.route("**/api/internal-command-center/access",(route:any)=>route.fulfill(json(owners)));
   await page.route("**/api/internal-command-center/processes",(route:any)=>route.fulfill(json({success:true,processes:[]})));
-  await page.route("**/api/internal-command-center/projects",(route:any)=>route.fulfill(json(projectRegistry)));
+  await page.route("**/api/internal-command-center/projects*",(route:any)=>route.fulfill(json(projectRegistry)));
   await page.route("**/api/hermes-connect/account",(route:any)=>route.fulfill(json({success:true,identity:{id:"owner-1",name:"Owner",email:"owner@example.invalid",role:"Owner"},owned_businesses:[],workspaces:[{key:"internal_ai",kind:"capability_workspace",href:"/services/hermes-connect/internal/ai-connect/",available:true,state:{capability:"HERMES_INTERNAL_OWNER"}}],capabilities:{internal_ai:true}})));
 }
 
@@ -39,6 +39,40 @@ test.describe("Hermes Business Command Center",()=>{
     await expect(page.getByText(/Cloud backlog remains safe/)).toBeVisible();
     await expect(page.getByText("Cloudflare + D1")).toBeVisible();
     await expect(page.locator("[data-account-workspaces]").getByRole("link",{name:/internal ai/i})).toBeVisible();
+  });
+
+  test("creates and edits a cloud project without changing canonical project cards",async({page})=>{
+    await mockOwner(page);
+    await page.unroute("**/api/internal-command-center/projects*");
+    let created:any=null;
+    const stamp="2026-10-29T10:00:00.000Z";
+    await page.route("**/api/internal-command-center/projects*",async(route:any)=>{
+      const req=route.request();
+      if(req.method()==="POST"){
+        const payload=req.postDataJSON();
+        created={id:"hcpr_11111111-1111-4111-8111-111111111111",title:payload.title,department:payload.department,purpose:payload.purpose,status:"planned",editable:true,progress:{completed:0,total:0,percent:null},evidence_level:"OWNER_MANAGED_UNVERIFIED",owner_role:"Hermes owner",agent_role:"Not assigned",plugin_roles:[],dependency_ids:[],milestones:[],links:[],eta_label:"UNKNOWN",eta_basis:"Owner maintained",updated_at:stamp};
+        return route.fulfill(json({success:true,project:created},201));
+      }
+      if(req.method()==="PATCH"){
+        const payload=req.postDataJSON();
+        created={...created,title:payload.title,department:payload.department,purpose:payload.purpose,status:payload.status,updated_at:"2026-10-29T10:01:00.000Z"};
+        return route.fulfill(json({success:true,project:created}));
+      }
+      return route.fulfill(json({...projectRegistry,projects:[...projectRegistry.projects,...(created?[created]:[])],next_offset:null}));
+    });
+    await page.goto("/services/hermes-connect/internal/command-center/");
+    await page.locator('input[name="new_project_title"]').fill("Land and Tenders CRM");
+    await page.locator('textarea[name="new_project_purpose"]').fill("Track land sales and official tenders.");
+    await page.getByRole("button",{name:"Save new project to D1"}).click();
+    await expect(page.getByRole("heading",{name:"Land and Tenders CRM"})).toBeVisible();
+    await expect(page.getByText("Progress UNKNOWN · owner-created project")).toBeVisible();
+    const card=page.locator('[data-project-id="hcpr_11111111-1111-4111-8111-111111111111"]');
+    await card.getByRole("button",{name:"Edit project"}).click();
+    await page.locator('input[name="edit_project_title"]').fill("Land CRM — verified leads");
+    await page.locator('select[name="edit_project_status"]').selectOption("in_progress");
+    await page.getByRole("button",{name:"Save to cloud"}).click();
+    await expect(page.getByRole("heading",{name:"Land CRM — verified leads"})).toBeVisible();
+    await expect(page.getByRole("heading",{name:"Hermes Business Command Center",exact:true})).toBeVisible();
   });
 
   test("captures work into D1 before any agent dispatch",async({page})=>{
