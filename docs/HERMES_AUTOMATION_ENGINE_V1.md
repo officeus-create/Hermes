@@ -261,6 +261,8 @@ Expose Automation Engine inside Hermes Connect:
 - brand/account policy;
 - metrics.
 
+**SOURCE IMPLEMENTED in Command Center PR #2107:** the owner can create, activate, pause and request the next tick for an allowlisted read-only process. Process state and events live in the existing production D1; the existing hourly HAE Cron leases due rows and submits idempotent jobs to the existing Queue. The initial catalog has no arbitrary prompt/payload surface, no provider writes and no paid-AI fallback. This remains source evidence until #2107 and the matching HAE Worker delta pass exact-head CI, are separately authorized for merge/deploy, and receive authenticated production readback.
+
 ### V2 — more destinations
 Reuse the same motor for:
 - Instagram;

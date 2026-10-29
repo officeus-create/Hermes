@@ -150,4 +150,5 @@ assert.match(internalNav, /type="password"/, "activation secret must use a passw
 assert.match(internalNav, /\/api\/internal-ai\/bootstrap-owner/, "AI cabinet activation must call the bounded bootstrap endpoint");
 assert.match(internalNav, /method:\s*"POST"/, "activation secret must never be placed in a URL query");
 assert.match(internalNav, /input\.value = ""/, "activation UI must clear the one-time secret after success");
+await import("./internal-command-center-contract.test.mjs");
 console.log("Hermes internal AI Assistant contract: PASS");
