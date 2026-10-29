@@ -7,6 +7,7 @@ import HermesConnectExperience from "../../../../../components/HermesConnectExpe
 import HermesConnectInternalAiNav from "../../../../../components/HermesConnectInternalAiNav.astro";
 import HermesAiArchitecture from "../../../../../components/HermesAiArchitecture.astro";
 import HermesLocalAgentsLink from "../../../../../components/HermesLocalAgentsLink.astro";
+import HermesExecutionMap from "../../../../../components/HermesExecutionMap.astro";
 import HermesOwnerProjectPortfolio from "../../../../../components/HermesOwnerProjectPortfolio.astro";
 import { HAE_OWNER_PROCESS_TEMPLATES } from "../../../../../lib/hae-process-control.mjs";
 const ru=Astro.url.searchParams.get("lang")==="ru";
@@ -121,6 +122,8 @@ const modules=[
           </form>
           <div class="process-list" data-process-list><p class="muted">{ru?"Загружаем процессы…":"Loading processes…"}</p></div>
         </section>
+
+        <HermesExecutionMap ru={ru}/>
 
         <section class="section panel">
           <div class="section-head"><div><p class="kicker"><Route size={14}/>{ru?"Backlog":"Backlog"}</p><h2 data-backlog-title>{ru?"Все задания владельца":"Owner work queue"}</h2></div><button type="button" class="secondary" data-refresh>{ru?"Обновить":"Refresh"}</button></div>
