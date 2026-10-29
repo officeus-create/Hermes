@@ -43,13 +43,53 @@ const { dividerLabel = "or continue with email" } = Astro.props;
     }
   });
 
-  const errorCopy: Record<string, string> = {
-    google_identity_invalid: "Google could not confirm this account. Use a Google account with a verified email.",
-    google_login_not_configured: "Google sign-in is temporarily unavailable. Use your email below.",
-    rate_limited: "Too many attempts. Wait a minute and try again.",
-    existing_account_signin_required: "This email already has a Hermes account. Sign in with your password or email below first; then you can connect Google.",
-    provider_identity_conflict: "This Google account is already connected to a different Hermes account. Use your email below or contact support.",
+  type Copy = {
+    divider: string; signing: string; signedIn: string; fallback: string;
+    errors: Record<string, string>;
   };
+  const copyByLanguage: Record<string, Copy> = {
+    en: {
+      divider: "or continue with email",
+      signing: "Signing in securely with Google…",
+      signedIn: "Signed in. Opening your workspace…",
+      fallback: "Google sign-in could not be completed. Try again or use your email below.",
+      errors: {
+        google_identity_invalid: "Google could not confirm this account. Use a Google account with a verified email.",
+        google_login_not_configured: "Google sign-in is temporarily unavailable. Use your email below.",
+        rate_limited: "Too many attempts. Wait a minute and try again.",
+        existing_account_signin_required: "This email already has a Hermes account. Sign in with your password or email below first; then you can connect Google.",
+        provider_identity_conflict: "This Google account is already connected to a different Hermes account. Use your email below or contact support.",
+      },
+    },
+    ru: {
+      divider: "или продолжите по email",
+      signing: "Безопасный вход через Google…",
+      signedIn: "Вход выполнен. Открываем рабочее пространство…",
+      fallback: "Не удалось войти через Google. Попробуйте ещё раз или используйте email ниже.",
+      errors: {
+        google_identity_invalid: "Google не смог подтвердить этот аккаунт. Используйте аккаунт Google с подтверждённым email.",
+        google_login_not_configured: "Вход через Google временно недоступен. Используйте email ниже.",
+        rate_limited: "Слишком много попыток. Подождите минуту и повторите.",
+        existing_account_signin_required: "У этого email уже есть аккаунт Hermes. Сначала войдите по паролю или email ниже, затем подключите Google.",
+        provider_identity_conflict: "Этот аккаунт Google уже подключён к другому аккаунту Hermes. Войдите по email ниже или обратитесь в поддержку.",
+      },
+    },
+    uk: {
+      divider: "або продовжте через email",
+      signing: "Безпечний вхід через Google…",
+      signedIn: "Вхід виконано. Відкриваємо робочий простір…",
+      fallback: "Не вдалося увійти через Google. Спробуйте ще раз або скористайтеся email нижче.",
+      errors: {
+        google_identity_invalid: "Google не зміг підтвердити цей акаунт. Використайте акаунт Google з підтвердженим email.",
+        google_login_not_configured: "Вхід через Google тимчасово недоступний. Скористайтеся email нижче.",
+        rate_limited: "Забагато спроб. Зачекайте хвилину й повторіть.",
+        existing_account_signin_required: "Для цього email уже є акаунт Hermes. Спершу увійдіть за паролем або email нижче, потім підключіть Google.",
+        provider_identity_conflict: "Цей акаунт Google уже підключено до іншого акаунта Hermes. Увійдіть через email нижче або зверніться до підтримки.",
+      },
+    },
+  };
+  // Read at use time: the page may set <html lang> after this module is evaluated.
+  const copy = (): Copy => copyByLanguage[siteLanguage()] ?? copyByLanguage.en;
 
   async function setup() {
     const roots = [...document.querySelectorAll<HTMLElement>("[data-hermes-google-signin]")];
@@ -79,7 +119,7 @@ const { dividerLabel = "or continue with email" } = Astro.props;
       auto_select: false,
       cancel_on_tap_outside: true,
       callback: async ({ credential }: { credential?: string }) => {
-        roots.forEach((root) => status(root, "Signing in securely with Google…"));
+        roots.forEach((root) => status(root, copy().signing));
         try {
           const response = await fetch("/api/auth/google", {
             method: "POST",
@@ -89,17 +129,20 @@ const { dividerLabel = "or continue with email" } = Astro.props;
           });
           const payload = await response.json().catch(() => ({})) as { success?: boolean; error?: string };
           if (!response.ok || !payload.success) throw new Error(payload.error || "google_sign_in_failed");
-          roots.forEach((root) => status(root, "Signed in. Opening your workspace…"));
+          roots.forEach((root) => status(root, copy().signedIn));
           window.location.reload();
         } catch (error) {
           const code = error instanceof Error ? error.message : "";
-          roots.forEach((root) => status(root, errorCopy[code] || "Google sign-in could not be completed. Try again or use your email below.", true));
+          roots.forEach((root) => status(root, copy().errors[code] || copy().fallback, true));
         }
       },
     });
 
     const locale = siteLanguage();
     roots.forEach((root) => {
+      // Only the default divider is translated; a page that passes its own dividerLabel keeps it.
+      const divider = root.querySelector<HTMLElement>(".hermes-google-signin__divider span");
+      if (divider && divider.textContent?.trim() === copyByLanguage.en.divider) divider.textContent = copy().divider;
       const target = root.querySelector<HTMLElement>("[data-hermes-google-button]");
       if (!target) return;
       root.hidden = false;
