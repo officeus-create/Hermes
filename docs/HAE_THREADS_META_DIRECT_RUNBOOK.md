@@ -60,3 +60,21 @@ Required source tests now include the native Meta transport suite plus an explic
 ## Roles and ownership
 
 Claude: site design, load-board, SEO/GEO — untouched. Codex: Command Center PR #2107/#2159 — untouched. HAE Threads #2167 only: readback-safe optional provider transport under Growth Bridge #1018. Do not create a second owner issue/brain or a duplicate public publishing queue.
+
+## Social account readiness / provider convergence
+
+Private HAE readback:
+
+```text
+GET /v1/social-account-readiness
+Authorization: Bearer <HERMES_AUTOMATION_TOKEN>
+```
+
+This endpoint is **read-only** and never returns provider tokens or encrypted token payloads. It reports the two canonical commercial lanes only:
+
+- `HERMES_LOGISTICS` — exact `@hermes.logistics` identity, Worker-secret credential presence and Meta-direct selection.
+- `PROGRESSOPRO` — exact `@progressopro` connector identity/scopes/token-expiry metadata from the existing Hermes Connect D1 record, plus whether HAE has an authorized decryption bridge.
+
+Current convergence remains fail-closed while ProgressoPro still uses the legacy connector transport/credential path. A token must never be copied into a HAE job payload, GitHub issue, log, health response or Command Center response. The next write-capability may be enabled only after HAE can resolve the authorized credential server-side and both lanes use the same shared `shared/social/meta-threads-provider.mjs` transport contract.
+
+`write_convergence_ready=false` is a blocker, not a warning to bypass.
