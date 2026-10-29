@@ -2,6 +2,7 @@
 // Canonical social/growth owner: GitHub #1018.
 import { requireInternalOwner } from "../../../_lib/internal-ai.mjs";
 import { jsonResponse } from "../../../_lib/session.mjs";
+import { socialInboxPolicyDecision } from "../../../_lib/social-inbox-policy.mjs";
 import {
   normalizeThreadsBrand,
   usableThreadsAccessToken,
@@ -91,6 +92,47 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
     if (result.ok && resolvedPost) result.source_post = resolvedPost;
   }
 
+  const businessLane = brand === "progressopro" || brand === "business_academy" ? "PROGRESSOPRO" : null;
+  const inboxSource = mode === "search" ? "keyword_search"
+    : mode === "mentions" ? "mention"
+    : mode === "thread" ? "owned_reply"
+    : "owned_post";
+  const attachInboxCandidate = (item:any) => {
+    if (!item || typeof item !== "object") return item;
+    if (!businessLane) {
+      return {
+        ...item,
+        inbox_candidate: {
+          business_lane: null,
+          source: inboxSource,
+          classification: "UNKNOWN",
+          decision: "HUMAN_REVIEW",
+          reply_authorized: false,
+          reason: "technical_canary_requires_owner_review",
+          inbox_policy_stage: "PRE_VIKTOR",
+        },
+      };
+    }
+    const policy = socialInboxPolicyDecision({
+      business_lane: businessLane,
+      source: inboxSource,
+      classification: "UNKNOWN",
+    });
+    return {
+      ...item,
+      inbox_candidate: {
+        business_lane: businessLane,
+        source: inboxSource,
+        classification: "UNKNOWN",
+        decision: policy.decision,
+        reply_authorized: Boolean(policy.reply_authorized),
+        reason: policy.reason,
+        inbox_policy_stage: "PRE_VIKTOR",
+      },
+    };
+  };
+  if (Array.isArray(result.posts)) result.posts = result.posts.map(attachInboxCandidate);
+  if (Array.isArray(result.replies)) result.replies = result.replies.map(attachInboxCandidate);
   if (!result.ok) {
     const status = result.error === "provider_permission_denied" ? 403 :
       result.error === "provider_rate_limited" ? 429 :
@@ -100,6 +142,8 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
   return jsonResponse(200, {
     success: true, brand, ...result,
     read_only: true, provider_write_performed: false,
+    inbox_policy_stage: "PRE_VIKTOR",
+    viktor_classification_required_before_automation: true,
     coverage_note: "Search and third-party conversations depend on Meta app review, API visibility and pagination; complete=false is not an exhaustive archive.",
   }, headers);
 }
