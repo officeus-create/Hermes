@@ -99,6 +99,10 @@ const routeSource = await readFile(new URL("../functions/api/internal/social/thr
 assert.match(routeSource, /requireInternalOwner/);
 assert.match(routeSource, /missing_scopes/);
 assert.match(routeSource, /usableThreadsAccessToken/);
+assert.match(routeSource, /socialInboxPolicyDecision/);
+assert.match(routeSource, /inbox_policy_stage: "PRE_VIKTOR"/);
+assert.match(routeSource, /viktor_classification_required_before_automation: true/);
+assert.match(routeSource, /keyword_search/);
 assert.match(routeSource, /threadsMentionsRead/);
 assert.match(routeSource, /provider_write_performed: false/);
 assert.doesNotMatch(routeSource, /publishThreadsText|reply_to_id|execute.*script/i);
