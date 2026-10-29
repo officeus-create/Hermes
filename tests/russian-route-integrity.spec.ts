@@ -82,5 +82,10 @@ test.describe("Russian route integrity", () => {
     await expect(page.getByRole("link", { name: "Главная" })).toHaveAttribute("href", "/ru/");
     await expect(page.locator(".site-header .wordmark")).toHaveAttribute("href", "/ru/#top");
     await expect(page.locator(".site-footer")).toContainText("Конфиденциальность");
+    const structuredData = page.locator('script[type="application/ld+json"]');
+    await expect(structuredData).toHaveCount(2);
+    const jsonLd = await structuredData.evaluateAll((nodes) => nodes.map((node) => JSON.parse(node.textContent || "{}")));
+    expect(jsonLd.some((item) => item["@type"] === "WebPage" && item.url === "https://hermeslogisticsus.com/ru/privacy/" && item.inLanguage === "ru")).toBeTruthy();
+    expect(jsonLd.some((item) => item["@type"] === "BreadcrumbList")).toBeTruthy();
   });
 });
