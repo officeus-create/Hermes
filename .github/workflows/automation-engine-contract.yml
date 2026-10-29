@@ -6,6 +6,7 @@ on:
       - "workers/automation-engine/**"
       - "scripts/automation-engine-contract.test.mjs"
       - "scripts/hae-meta-threads-transport.test.mjs"
+      - "scripts/meta-threads-provider-contract.test.mjs"
       - "scripts/hae-threads-provider-provenance.test.mjs"
       - "scripts/hae-windsor-plan-gate.test.mjs"
       - "scripts/hae-threads-schedule-contract.test.mjs"
@@ -56,6 +57,7 @@ jobs:
         run: |
           node scripts/automation-engine-contract.test.mjs
           node scripts/hae-meta-threads-transport.test.mjs
+          node scripts/meta-threads-provider-contract.test.mjs
           node scripts/hae-threads-provider-provenance.test.mjs
           node scripts/hae-windsor-plan-gate.test.mjs
           node scripts/hae-threads-schedule-contract.test.mjs
