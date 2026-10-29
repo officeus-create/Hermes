@@ -61,6 +61,7 @@ import { verifyGithubCIPatchProposalEnvelope } from "./github-ci-patch-runtime-i
 import { verifyGithubCIIndependentQaEnvelope } from "./github-ci-independent-qa-runtime-intake.mjs";
 import { materializeIndependentQaReceipt } from "./hae-independent-qa-receipt.mjs";
 import { socialAccountReadinessSnapshot } from "./social-account-readiness.mjs";
+import { socialReplyPreflight } from "./social-reply-preflight.mjs";
 
 const ACCOUNT_KEY = "hermes_logistics";
 const PLATFORM = "threads";
@@ -2565,6 +2566,18 @@ export default {
       if (!authorized(request, env)) return json(401, { success: false, error: "unauthorized" });
       if (!env.DB) return json(503, { success: false, error: "runtime_not_configured" });
       return json(200, await socialAccountReadinessSnapshot(env));
+    }
+    if (request.method === "POST" && url.pathname === "/v1/social-reply-preflight") {
+      if (!authorized(request, env)) return json(401, { success: false, error: "unauthorized" });
+      if (!env.DB) return json(503, { success: false, error: "runtime_not_configured" });
+      const body = await request.json().catch(() => ({}));
+      const result = await socialReplyPreflight(env, body);
+      if (!result.ok) {
+        const invalid = ["social_business_lane_invalid","social_reply_target_invalid","social_reply_root_invalid","social_reply_text_invalid"].includes(result.error_class);
+        const unavailable = ["database_not_configured","hermes_logistics_meta_credentials_not_ready","progressopro_hae_token_key_bridge_missing","progressopro_threads_connection_table_missing","progressopro_threads_connection_missing"].includes(result.error_class);
+        return json(invalid ? 400 : unavailable ? 503 : 409, { success: false, ...result });
+      }
+      return json(200, { success: true, ...result });
     }
     if (request.method === "POST" && url.pathname === "/v1/jobs") {
       if (!authorized(request, env)) return json(401, { success: false, error: "unauthorized" });
