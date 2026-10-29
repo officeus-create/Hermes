@@ -12,7 +12,7 @@ export async function onRequestGet({request,env}:{request:Request;env:Env}){
   const owner=await requireInternalOwner(request,env); if(owner.response)return owner.response;
   await ensureCommandCenterSchema(env.DB); await reconcileWorkItems(env.DB);
   const offsetText=new URL(request.url).searchParams.get("offset")||"0";
-  if(!/^\\d{1,6}$/.test(offsetText))return jsonResponse(400,{success:false,error:"invalid_offset"},headers);
+  if(!/^\d{1,6}$/.test(offsetText))return jsonResponse(400,{success:false,error:"invalid_offset"},headers);
   const offset=Number(offsetText);
   if(!Number.isSafeInteger(offset)||offset>100000)return jsonResponse(400,{success:false,error:"invalid_offset"},headers);
   const result=await env.DB.prepare(`SELECT w.*, t.status AS linked_task_status, t.updated_at AS linked_task_updated_at,
