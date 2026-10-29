@@ -60,6 +60,7 @@ import { verifyGithubCIQueueEnvelope } from "./github-ci-runtime-intake.mjs";
 import { verifyGithubCIPatchProposalEnvelope } from "./github-ci-patch-runtime-intake.mjs";
 import { verifyGithubCIIndependentQaEnvelope } from "./github-ci-independent-qa-runtime-intake.mjs";
 import { materializeIndependentQaReceipt } from "./hae-independent-qa-receipt.mjs";
+import { socialAccountReadinessSnapshot } from "./social-account-readiness.mjs";
 
 const ACCOUNT_KEY = "hermes_logistics";
 const PLATFORM = "threads";
@@ -2559,6 +2560,11 @@ export default {
     if (request.method === "GET" && url.pathname === "/v1/health") {
       if (!authorized(request, env)) return json(401, { success: false, error: "unauthorized" });
       return json(200, { success: true, ...(await health(env)) });
+    }
+    if (request.method === "GET" && url.pathname === "/v1/social-account-readiness") {
+      if (!authorized(request, env)) return json(401, { success: false, error: "unauthorized" });
+      if (!env.DB) return json(503, { success: false, error: "runtime_not_configured" });
+      return json(200, await socialAccountReadinessSnapshot(env));
     }
     if (request.method === "POST" && url.pathname === "/v1/jobs") {
       if (!authorized(request, env)) return json(401, { success: false, error: "unauthorized" });
