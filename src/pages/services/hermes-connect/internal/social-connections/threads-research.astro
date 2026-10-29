@@ -51,9 +51,10 @@ const price=(text:string)=>text.match(/(?:[$€£]\s?\d[\d\s.,]*|\d[\d\s.,]*\s?(
 function safeLink(value:string){try{const u=new URL(value);return u.protocol==="https:"&&["threads.com","www.threads.com","threads.net","www.threads.net"].includes(u.hostname)?u.href:null}catch{return null}}
 async function replyKey(target:string,text:string){const bytes=new TextEncoder().encode(target+"\n"+text);const dig=await crypto.subtle.digest("SHA-256",bytes);const hex=[...new Uint8Array(dig)].map(v=>v.toString(16).padStart(2,"0")).join("").slice(0,24);return "threads-reply:"+val("brand")+":"+target+":"+hex}
 function replyReady(){
- const c=connections.find((x:any)=>x.brand===val("brand"));
+ if(val("brand")!=="progressopro")return false;
+ const c=connections.find((x:any)=>x.brand==="progressopro");
  const scopes=new Set(c?.granted_scopes||[]);
- return Boolean(c?.identity_verified&&c?.publish_enabled&&scopes.has("threads_content_publish")&&scopes.has("threads_read_replies")&&scopes.has("threads_manage_replies"));
+ return Boolean(c?.identity_verified&&scopes.has("threads_content_publish")&&scopes.has("threads_read_replies")&&scopes.has("threads_manage_replies"));
 }
 function render(items:Post[]){
  rows=items;if(copy)copy.disabled=!items.length;if(!posts)return;
@@ -78,7 +79,7 @@ function render(items:Post[]){
     btn.disabled=true;say(status,"Submitting approved reply to HAE…");
     try{
       const key=await replyKey(String(post.id),text.trim());
-      const resp=await fetch("/api/internal/social/threads/reply",{method:"POST",credentials:"same-origin",headers:{"Content-Type":"application/json","Idempotency-Key":key},body:JSON.stringify({brand:val("brand"),reply_to_id:String(post.id),text:text.trim(),idempotency_key:key})});
+      const resp=await fetch("/api/internal/social/threads/reply",{method:"POST",credentials:"same-origin",headers:{"Content-Type":"application/json","Idempotency-Key":key},body:JSON.stringify({brand:"progressopro",reply_to_id:String(post.id),root_post_id:String(post.root_post_id||post.replied_to_id||""),text:text.trim(),idempotency_key:key})});
       const data=await resp.json().catch(()=>({}));
       if(!resp.ok){say(status,"Reply handoff blocked (HTTP "+resp.status+"): "+(data.error||"unknown"));return}
       say(status,data.duplicate?"HAE already has this approved reply job; no duplicate job created.":"Approved reply queued to HAE. Job: "+(data.hae_job_id||"pending")+". This is not proof that Threads published it.");
