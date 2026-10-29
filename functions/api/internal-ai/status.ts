@@ -1,14 +1,14 @@
 import { jsonResponse } from "../_lib/session.mjs";
-import { INTERNAL_AI_ORGANIZATION_SCOPE, parseRunnerTelemetry, publicTask, requireInternalAiViewer } from "../_lib/internal-ai.mjs";
+import { INTERNAL_AI_ORGANIZATION_SCOPE, isRunnerHeartbeatFresh, parseRunnerTelemetry, publicTask, requireInternalAiViewer } from "../_lib/internal-ai.mjs";
 type Env = { DB?: any };
 const headers = { "Cache-Control": "private, no-store", "X-Robots-Tag": "noindex, nofollow" };
 
 export async function onRequestGet({ request, env }: { request: Request; env: Env }) {
   const viewer = await requireInternalAiViewer(request, env); if (viewer.response) return viewer.response;
   const runner = await env.DB.prepare("SELECT id, last_seen_at, repo_sha, runtime_version, telemetry_json FROM hermes_internal_ai_runner_state WHERE id = 'internal-ai-mac-runner' AND organization_scope = ?").bind(INTERNAL_AI_ORGANIZATION_SCOPE).first();
-  const lastSeen = runner?.last_seen_at ? Date.parse(runner.last_seen_at) : 0;
-  const operations = parseRunnerTelemetry(runner?.telemetry_json);
-  const online = Boolean(lastSeen && Date.now() - lastSeen <= 90000);
+  const online = isRunnerHeartbeatFresh(runner?.last_seen_at);
+  // A stale/future heartbeat must never project prior RUNNING work as current.
+  const operations = online ? parseRunnerTelemetry(runner?.telemetry_json) : null;
 
   if (viewer.access_level === "team") {
     const teamOperations = operations ? {
