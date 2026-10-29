@@ -1,33 +1,18 @@
 import { requireInternalOwner } from "../../../_lib/internal-ai.mjs";
 import { jsonResponse } from "../../../_lib/session.mjs";
 import {
-  ensureThreadsBrandConnectorSchema,
   normalizeThreadsBrand,
-  readThreadsMedia,
-  threadsBrandPublishEnabled,
   threadsTextFingerprint,
-  usableThreadsAccessToken,
   validThreadsIdempotencyKey,
   validateThreadsText,
 } from "../../../_lib/threads-brand-connector.mjs";
 
 type Env = {
-  DB?: any;
-  THREADS_BRAND_APP_ID?: string;
-  THREADS_BRAND_APP_SECRET?: string;
-  THREADS_BRAND_REDIRECT_URI?: string;
-  THREADS_BRAND_TOKEN_KEY?: string;
-  THREADS_BRAND_SCOPES?: string;
-  THREADS_OFFICE_TEST_PUBLISH_ENABLED?: string;
-  THREADS_PROGRESSOPRO_PUBLISH_ENABLED?: string;
-  THREADS_BUSINESS_ACADEMY_PUBLISH_ENABLED?: string;
-  THREADS_SECONDARY_BRAND_PUBLISH_ENABLED?: string;
   HERMES_AUTOMATION_BASE_URL?: string;
   HERMES_AUTOMATION_TOKEN?: string;
 };
 
 const headers = { "Cache-Control":"private, no-store", "X-Robots-Tag":"noindex, nofollow" };
-const enabled = (value: unknown) => /^(1|true|yes|on)$/i.test(String(value || "").trim());
 
 function sameOrigin(request: Request) {
   const origin=request.headers.get("Origin");
@@ -37,9 +22,6 @@ function sameOrigin(request: Request) {
 function validMediaId(value: unknown) {
   const id=String(value || "").trim();
   return /^[0-9]{6,40}$/.test(id) ? id : null;
-}
-function scopeSet(row: any) {
-  return new Set(String(row?.granted_scope || "").split(/[\s,]+/).map(v=>v.trim()).filter(Boolean));
 }
 function automationConfig(env: Env) {
   const rawBase=String(env.HERMES_AUTOMATION_BASE_URL || "").trim();
@@ -53,10 +35,10 @@ function automationConfig(env: Env) {
     return null;
   }
 }
-async function submitHaeSocialReply(env: Env, body: Record<string,unknown>) {
+async function haeJson(env:Env,path:string,body:Record<string,unknown>) {
   const config=automationConfig(env);
-  if (!config) return { ok:false, status:503, error:"hae_social_reply_handoff_not_configured" };
-  const endpoint=new URL("/v1/jobs",config.base);
+  if (!config) return { ok:false, status:503, payload:{error:"hae_social_reply_handoff_not_configured"} };
+  const endpoint=new URL(path,config.base);
   let response:Response;
   try {
     response=await fetch(endpoint.toString(),{
@@ -70,29 +52,16 @@ async function submitHaeSocialReply(env: Env, body: Record<string,unknown>) {
       body:JSON.stringify(body),
     });
   } catch {
-    return { ok:false, status:502, error:"hae_social_reply_handoff_unavailable" };
+    return { ok:false, status:502, payload:{error:"hae_social_reply_handoff_unavailable"} };
   }
   const payload:any=await response.json().catch(()=>({}));
-  if (!response.ok) {
-    const providerError=String(payload?.error || "");
-    if (providerError === "job_type_not_allowed") {
-      return { ok:false, status:409, error:"hae_social_reply_capability_not_ready", hae_error:providerError };
-    }
-    return {
-      ok:false,
-      status:response.status >= 400 && response.status < 600 ? response.status : 502,
-      error:"hae_social_reply_handoff_rejected",
-      hae_error:providerError || null,
-    };
-  }
-  return { ok:true, status:response.status, payload };
+  return {ok:response.ok,status:response.status,payload};
 }
 
 export async function onRequestPost({ request, env }: { request: Request; env: Env }) {
   if (!sameOrigin(request)) return jsonResponse(403,{success:false,error:"invalid_origin",provider_write_performed:false},headers);
   const owner=await requireInternalOwner(request,env);
   if (owner.response) return owner.response;
-  if (!env.DB) return jsonResponse(503,{success:false,error:"database_not_configured",provider_write_performed:false},headers);
 
   let body:Record<string,unknown>;
   try { body=await request.json() as Record<string,unknown>; }
@@ -100,60 +69,58 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
 
   const brand=normalizeThreadsBrand(body.brand);
   if (!brand) return jsonResponse(400,{success:false,error:"threads_brand_not_allowed",provider_write_performed:false},headers);
-  if (!threadsBrandPublishEnabled(env,brand)) return jsonResponse(403,{success:false,error:"brand_publish_not_enabled",provider_write_performed:false},headers);
-  if (brand !== "office_test" && !enabled(env.THREADS_SECONDARY_BRAND_PUBLISH_ENABLED)) {
-    return jsonResponse(403,{success:false,error:"secondary_brand_publish_not_enabled",provider_write_performed:false},headers);
+  if (brand === "office_test") {
+    return jsonResponse(409,{
+      success:false,
+      error:"technical_canary_reply_handoff_not_supported",
+      provider_write_performed:false,
+      next_action:"use_progressopro_owner_lane_after_hae_preflight_is_live",
+    },headers);
   }
+  const businessLane="PROGRESSOPRO";
 
   const replyToId=validMediaId(body.reply_to_id);
+  const rootPostId=validMediaId(body.root_post_id);
   if (!replyToId) return jsonResponse(400,{success:false,error:"valid_reply_to_id_required",provider_write_performed:false},headers);
+  if (!rootPostId) return jsonResponse(400,{success:false,error:"valid_root_post_id_required",provider_write_performed:false},headers);
+
   const validated=validateThreadsText(body.text);
   if (!validated.ok) return jsonResponse(400,{success:false,error:validated.error,utf8_bytes:validated.bytes,provider_write_performed:false},headers);
   const idempotencyKey=validThreadsIdempotencyKey(body.idempotency_key || request.headers.get("Idempotency-Key"));
   if (!idempotencyKey) return jsonResponse(400,{success:false,error:"valid_idempotency_key_required",provider_write_performed:false},headers);
   const fingerprint=await threadsTextFingerprint(`${replyToId}\n${validated.text}`);
 
-  await ensureThreadsBrandConnectorSchema(env.DB);
-  if (brand !== "office_test") {
-    const officeCanary=await env.DB.prepare(`SELECT provider_media_id,permalink FROM hermes_social_threads_publications
-      WHERE brand_key='office_test' AND object_type='AUTHORED_POST' AND status='published' AND provider_media_id IS NOT NULL AND permalink IS NOT NULL
-      ORDER BY updated_at DESC LIMIT 1`).first();
-    if (!officeCanary) return jsonResponse(403,{success:false,error:"office_canary_required_before_secondary_publish",provider_write_performed:false},headers);
+  // HAE owns provider credentials and provider-read proof. This Pages route does
+  // not decrypt provider tokens and does not call Meta directly.
+  const preflight=await haeJson(env,"/v1/social-reply-preflight",{
+    business_lane:businessLane,
+    account_key:"progressopro",
+    reply_to_id:replyToId,
+    root_post_id:rootPostId,
+    text:validated.text,
+  });
+  if (!preflight.ok) {
+    return jsonResponse(preflight.status,{
+      success:false,
+      error:String(preflight.payload?.error || preflight.payload?.error_class || "hae_social_reply_preflight_failed"),
+      blocked:true,
+      retry_allowed:false,
+      provider_write_performed:false,
+      preflight_verified:false,
+      next_action:"repair_hae_social_reply_preflight_or_credentials",
+    },headers);
+  }
+  if (!preflight.payload?.safe_to_submit_job || preflight.payload?.provider_write_performed !== false) {
+    return jsonResponse(409,{
+      success:false,error:"hae_social_reply_preflight_not_safe",blocked:true,retry_allowed:false,
+      provider_write_performed:false,preflight_verified:false,
+    },headers);
   }
 
-  const token:any=await usableThreadsAccessToken(env.DB,env,brand);
-  if (!token.ok) return jsonResponse(409,{success:false,error:token.error_class,provider_write_performed:false},headers);
-  const scopes=scopeSet(token.connection);
-  if (!scopes.has("threads_content_publish") || !scopes.has("threads_read_replies") || !scopes.has("threads_manage_replies")) {
-    return jsonResponse(403,{success:false,error:"threads_reply_permissions_required",provider_write_performed:false},headers);
-  }
-
-  const target:any=await readThreadsMedia(token.access_token,replyToId);
-  if (!target.ok) return jsonResponse(409,{success:false,error:"reply_target_readback_failed",provider_error:target.error_class,provider_write_performed:false},headers);
-  if (!target.media.is_reply) return jsonResponse(409,{success:false,error:"reply_target_must_be_inbound_reply",provider_write_performed:false},headers);
-
-  const ownUsername=String(token.connection.username || "").replace(/^@/,"").toLowerCase();
-  const targetUsername=String(target.media.username || "").replace(/^@/,"").toLowerCase();
-  if (!ownUsername || targetUsername === ownUsername) {
-    return jsonResponse(409,{success:false,error:"self_reply_not_allowed",provider_write_performed:false},headers);
-  }
-
-  const rootId=validMediaId(target.media.root_post?.id || target.media.replied_to?.id);
-  if (!rootId) return jsonResponse(409,{success:false,error:"owned_root_not_proven",provider_write_performed:false},headers);
-  const root:any=await readThreadsMedia(token.access_token,rootId);
-  if (!root.ok) return jsonResponse(409,{success:false,error:"owned_root_readback_failed",provider_error:root.error_class,provider_write_performed:false},headers);
-  const rootUsername=String(root.media.username || "").replace(/^@/,"").toLowerCase();
-  if (root.media.is_reply || rootUsername !== ownUsername) {
-    return jsonResponse(403,{success:false,error:"reply_target_not_under_owned_root",provider_write_performed:false},headers);
-  }
-
-  // This endpoint is an owner approval + proof gateway only. It never writes Meta
-  // directly. HAE owns every external social action and its durable evidence.
-  const businessLane=brand === "office_test" ? "automation" : "progressopro";
-  const hae=await submitHaeSocialReply(env,{
+  const job=await haeJson(env,"/v1/jobs",{
     job_type:"social.reply",
     business_lane:businessLane,
-    account_key:brand,
+    account_key:"progressopro",
     project_key:"threads-social-inbox",
     priority:80,
     max_attempts:1,
@@ -161,30 +128,34 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     policy_version:"social-inbound-v1",
     payload:{
       platform:"threads",
-      brand,
+      brand:"progressopro",
       business_lane:businessLane,
       reply_to_id:replyToId,
-      root_post_id:rootId,
+      root_post_id:rootPostId,
       text:validated.text,
       text_fingerprint:fingerprint,
       requested_by:String(owner.specialist.id),
       approval_class:"OWNER_APPROVED",
       source:"threads_owned_reply",
+      preflight_identity:preflight.payload?.username || null,
+      preflight_account_id:preflight.payload?.account_id || null,
     },
   });
 
-  if (!hae.ok) {
-    return jsonResponse(hae.status,{
+  if (!job.ok) {
+    const haeError=String(job.payload?.error || "");
+    return jsonResponse(job.status,{
       success:false,
-      error:hae.error,
-      hae_error:hae.hae_error || null,
+      error:haeError==="job_type_not_allowed"?"hae_social_reply_capability_not_ready":"hae_social_reply_handoff_rejected",
+      hae_error:haeError || null,
       blocked:true,
       retry_allowed:false,
       provider_write_performed:false,
+      preflight_verified:true,
       idempotency_key:idempotencyKey,
-      next_action:hae.error === "hae_social_reply_capability_not_ready"
+      next_action:haeError==="job_type_not_allowed"
         ? "add_and_independently_approve_social_reply_capability_in_hae"
-        : "configure_or_repair_hae_private_handoff",
+        : "repair_hae_private_job_handoff",
     },headers);
   }
 
@@ -193,14 +164,15 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     outcome:"queued_to_hae",
     published:false,
     provider_write_performed:false,
-    brand,
+    preflight_verified:true,
+    brand:"progressopro",
     business_lane:businessLane,
     reply_to_id:replyToId,
-    root_post_id:rootId,
+    root_post_id:rootPostId,
     utf8_bytes:validated.bytes,
     idempotency_key:idempotencyKey,
-    hae_job_id:hae.payload?.job?.job_id || null,
-    hae_state:hae.payload?.job?.state || null,
-    duplicate:Boolean(hae.payload?.duplicate),
+    hae_job_id:job.payload?.job?.job_id || null,
+    hae_state:job.payload?.job?.state || null,
+    duplicate:Boolean(job.payload?.duplicate),
   },headers);
 }
