@@ -84,10 +84,12 @@ test.describe("Hermes Business Command Center",()=>{
       return route.fulfill(json(backlog));
     });
     await page.goto("/services/hermes-connect/internal/command-center/");
+    await page.locator('select[name="project_id"]').selectOption("hermes-command-center");
     await page.locator('input[name="title"]').fill("Website offer packaging");
     await page.locator('textarea[name="details"]').fill("Create a phased six-month offer based on measurable revenue checkpoints.");
     await page.getByRole("button",{name:"Save to backlog"}).click();
     await expect.poll(()=>created?.workstream).toBe("marketing");
+    expect(created?.project_id).toBe("hermes-command-center");
     expect(created?.details).toContain("six-month offer");
     await expect(page.getByText("Saved to cloud backlog.")).toBeVisible();
   });
