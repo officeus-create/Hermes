@@ -44,6 +44,28 @@ async function patch(id,action){
 const first=await create("First cloud task","technology");
 const second=await create("Second cloud task","marketing");
 assert.notEqual(first.id,second.id);
+// Owner can revise an unclaimed D1 task; the update must not create an AI execution.
+const editedResponse=await mutateWorkItem({
+  request:request("/api/internal-command-center/work-items/"+first.id,{
+    method:"PATCH",body:{action:"edit",updated_at:first.updated_at,
+      title:"Revised cloud task",details:"Revised instructions for owner review",
+      workstream:"technology",priority:"p0"}
+  }),env:{DB:db},params:{id:first.id}
+});
+assert.equal(editedResponse.status,200,"owner task editor must persist a valid revision");
+const editedPayload=await editedResponse.json();
+assert.equal(editedPayload.work_item.title,"Revised cloud task");
+assert.equal(editedPayload.work_item.priority,"p0");
+assert.equal(editedPayload.work_item.details,"Revised instructions for owner review");
+const staleEditResponse=await mutateWorkItem({
+  request:request("/api/internal-command-center/work-items/"+first.id,{
+    method:"PATCH",body:{action:"edit",updated_at:"2000-01-01T00:00:00.000Z",
+      title:"Unsafe overwrite",details:"Should not overwrite",workstream:"technology",priority:"p0"}
+  }),env:{DB:db},params:{id:first.id}
+});
+assert.equal(staleEditResponse.status,409,"optimistic timestamp check must block stale writes");
+assert.equal((await staleEditResponse.json()).error,"work_item_changed_reload_first");
+
 let listResponse=await listWorkItems({request:request("/api/internal-command-center/work-items"),env:{DB:db}});
 assert.equal(listResponse.status,200);
 assert.match(listResponse.headers.get("Cache-Control")||"",/no-store/);
