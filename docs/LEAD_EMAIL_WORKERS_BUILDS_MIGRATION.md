@@ -22,23 +22,30 @@ authenticates through Cloudflare's own GitHub App, so no API token is stored in 
 | Email binding | `send_email` `EMAIL`, sender `website@hermeslogisticsus.com` | Declared in config. |
 | Cron | `*/15 * * * *` | Declared in config. |
 | Exposure | `workers_dev:false`, `preview_urls:false`, no routes | Must stay. Enforced by `cloudflare-production-hardening-contract.test.mjs`. |
-| Pre-deploy tests | The workflow runs 4 contract tests and a dry-run first | Builds has no equivalent gate, but the same tests run in PR CI. |
+| Pre-deploy tests | The workflow runs 4 contract tests and a dry-run first | Carried into the Builds build command below; exact-main CI must also be green before the first production build. |
 
-## Settings to use when connecting (owner approves the GitHub/Cloudflare OAuth in the dashboard)
+## Settings to use when connecting (owner approves the OAuth in the dashboard)
 
 Workers & Pages → `hermes-lead-email` → Settings → Builds → Connect.
 
 - Repository: `officeus-create/Hermes`, production branch `main`.
 - Root directory: `workers/lead-email`.
-- Build command: empty.
-- Deploy command: `npx wrangler deploy --config wrangler.production.jsonc --keep-vars`.
-- Build watch paths: include `workers/lead-email/*` only.
+- Build command (keeps the safety gate the Actions workflow has today):
+  `cd ../.. && npm ci && node scripts/repair-shop-password-recovery-contract.test.mjs && node scripts/load-board-intake-api-contract.test.mjs && node scripts/load-board-gmail-readonly-contract.test.mjs && npm run test:cold-fair-outbound-guard && npx --yes wrangler@4 deploy --dry-run --config workers/lead-email/wrangler.production.jsonc --outdir /tmp/hermes-lead-email-dry-run`
+  A failing test fails the build and nothing is deployed. Keep this list equal to the workflow's pre-deploy steps.
+- Deploy command: `npx --yes wrangler@4 deploy --config wrangler.production.jsonc --keep-vars`.
+  `workers/lead-email` has no `package.json` or lockfile and the root `package.json` does not declare Wrangler, so an unpinned `npx wrangler` could pick the latest release. `wrangler@4` matches the workflow's `wranglerVersion: "4"`. An exact 4.x pin through an isolated manifest is a follow-up, not a blocker.
+- Build watch paths: include `workers/lead-email/*`. Also add `scripts/*lead*`, `scripts/load-board-*`, `scripts/repair-shop-password-recovery-contract.test.mjs` and `.github/workflows/lead-email-worker-production.yml` only if the owner wants those changes to redeploy; the default is Worker source and config only.
 - Non-production branch builds: OFF. Pull requests must not upload Worker versions.
 - Do not change the Worker name, bindings or variables in the dashboard.
 
-Open point to confirm in the dashboard: whether Builds picks the Wrangler version from a
-`package.json` reachable from the root directory. If not, pin it in the deploy command
-(`npx wrangler@4 deploy ...`) to match the workflow.
+### Token that Builds creates (show to the owner before the OAuth)
+
+Builds creates and stores its own Cloudflare API token, so nothing is pasted into GitHub or chat. The default token is broader than one Worker: account settings read, Workers Scripts / KV / R2 edit, Workers Routes edit across zones, user details and memberships read. The owner sees this permission list in the dashboard and may pick an existing, narrower token instead if one exists.
+
+### First launch
+
+Connecting does not by itself deploy. A build runs on the next push that touches a watch path, or from a manual retry/trigger if the dashboard offers one. Do not assume an immediate deploy after Connect.
 
 ## Order of work
 
