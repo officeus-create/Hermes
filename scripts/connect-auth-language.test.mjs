@@ -40,6 +40,12 @@ assert.ok(hooks.size > 25, "home-services: i18n hooks must be present");
 for (const key of hooks) assert.ok(dict.ru[key], `home-services: hook ${key} must resolve in ru and uk`);
 for (const key of new Set([...hs.matchAll(/\bT\("(\w+)"/g)].map((m) => m[1]))) assert.ok(dict.ru[key] && enMsg[key], `home-services: message ${key} must be translated`);
 assert.match(hs, /\/api\/auth\/register/);
+assert.match(hs, /syncConnectAuthChrome/);
+assert.match(hs, /syncConnectAuthChrome\(lang\)/);
+const chrome = readFileSync(new URL("../src/lib/connect-auth-chrome.ts", import.meta.url), "utf8");
+assert.match(chrome, /language: 'en' \| 'uk' \| 'ru'/);
+assert.match(chrome, /Мова контенту: українська/);
+assert.match(chrome, /Увійти/);
 // The shared Google button follows the page language for its divider, status and error copy.
 const google = readFileSync(new URL("../src/components/HermesGoogleSignIn.astro", import.meta.url), "utf8");
 const errorKeys = (lang) => {
