@@ -72,15 +72,19 @@ const source=fs.readFileSync(new URL("./hae-t4-dlq-canary.mjs",import.meta.url),
 assert.doesNotMatch(source,/\bfetch\s*\(|\bspawn\s*\(|\bexecFile\s*\(|\bchild_process\b/);
 
 const workflow=fs.readFileSync(new URL("../.github/workflows/automation-engine-release.yml",import.meta.url),"utf8");
+const router=fs.readFileSync(new URL("../.github/workflows/issue-comment-command-router.yml",import.meta.url),"utf8");
 assert.match(workflow,/t4_dlq_canary:/);
-assert.match(workflow,/github\.event\.issue\.number == 2033/);
-assert.match(workflow,/github\.actor == 'officeus-create'/);
-assert.match(workflow,/startsWith\(github\.event\.comment\.body, 'HAE_T4_DLQ_CANARY '\)/);
+assert.match(workflow,/inputs\.issue_number == 2033/);
+assert.match(workflow,/inputs\.caller_actor == 'officeus-create'/);
+assert.match(workflow,/startsWith\(inputs\.command_body, 'HAE_T4_DLQ_CANARY '\)/);
+assert.match(router,/github\.event\.issue\.number == 2033/);
+assert.match(router,/github\.actor == 'officeus-create'/);
+assert.match(router,/startsWith\(github\.event\.comment\.body, 'HAE_T4_DLQ_CANARY '\)/);
 assert.ok(workflow.includes("run: node scripts/hae-t4-cloudflare-transport.mjs"));
 assert.match(workflow,/CLOUDFLARE_HAE_RELEASE_TOKEN/);
 assert.ok(workflow.includes("GH_TOKEN: " + "$" + "{{ github.token }}"));
 assert.ok(workflow.includes("CLOUDFLARE_HAE_RELEASE_TOKEN: " + "$" + "{{ secrets.CLOUDFLARE_HAE_RELEASE_TOKEN }}"));
-assert.ok(workflow.includes("T4_OWNER_COMMENT: " + "$" + "{{ github.event.comment.body }}"));
+assert.ok(workflow.includes("T4_OWNER_COMMENT: " + "$" + "{{ inputs.command_body }}"));
 assert.ok(workflow.includes("path: " + "$" + "{{ runner.temp }}/t4-d1-transport-receipt.json"));
 assert.doesNotMatch(workflow.slice(workflow.indexOf("  t4_dlq_canary:")), /wrangler@4 deploy/);
 const transport=fs.readFileSync(new URL("./hae-t4-cloudflare-transport.mjs",import.meta.url),"utf8");
