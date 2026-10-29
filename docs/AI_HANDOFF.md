@@ -2208,3 +2208,11 @@ ai_name: Codex; role: delegated Academy owner; contribution_type: Implementation
 - Tests: `npm run build` ok, `npm test` exit 0, Playwright desktop + mobile 44/44 on the carrier specs.
 - Left for the owner: cookie banner covering the first-screen CTA at 1280×800; public "ChatGPT" mentions on `/privacy/` and `/services/hermes-connect/` (intentional integration or leak?). Small catalog findings (two connect profile pages without og:image, `/ru/privacy/` without JSON-LD) are not in this PR.
 - Next action — Claude: read back the six pages on the live site at 1440 and 390 after deploy.
+
+
+## 2026-10-29 — ChatGPT — Access page: header Sign in no longer a dead link, registration is signposted
+
+- Owner report: on `/services/hermes-connect/access/` "Sign in" did nothing and registration seemed impossible. Root cause: the header Sign in links to the same page, and registration only exists behind the business-type cards.
+- Fix replayed on fresh `main`: header/mobile Sign in focuses the email field; a hint under the form (EN/RU/UK) jumps to the type cards (`#new-business`). No auth API changes.
+- Fresh branch `chatgpt/access-signin-fix-main2` based on `ad532cc6` after #2185 merged; supersedes stale-base #2186 if protected checks require current-main replay.
+- Next action: exact-head CI, then protected merge and live readback.
