@@ -1,6 +1,6 @@
 import { jsonResponse } from "../_lib/session.mjs";
 import { requireInternalOwner } from "../_lib/internal-ai.mjs";
-import { ensureCommandCenterSchema } from "../_lib/internal-command-center.mjs";
+import { ensureCommandCenterSchema, reconcileWorkItems } from "../_lib/internal-command-center.mjs";
 import { commandCenterProjectPortfolio, validateCommandCenterProjects } from "../_lib/command-center-projects.mjs";
 import { ensureOwnerProjectSchema, normalizeOwnerProjectFields, publicOwnerProject, OWNER_PROJECT_SCOPE } from "../_lib/command-center-owner-projects.mjs";
 
@@ -18,6 +18,7 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
   if (validateCommandCenterProjects(canonical).length) return jsonResponse(503, { success:false,error:"project_registry_invalid" },headers);
   await ensureOwnerProjectSchema(env.DB);
   await ensureCommandCenterSchema(env.DB);
+  await reconcileWorkItems(env.DB);
   const offset=parseOffset(request);
   if(offset===null)return jsonResponse(400,{success:false,error:"invalid_offset"},headers);
   const result=await env.DB.prepare("SELECT * FROM hermes_owner_projects WHERE organization_scope=? ORDER BY created_at DESC,id DESC LIMIT 101 OFFSET ?").bind(OWNER_PROJECT_SCOPE,offset).all();
