@@ -11,14 +11,19 @@ const sameOriginMutation=(request:Request)=>request.headers.get("Sec-Fetch-Site"
 export async function onRequestGet({request,env}:{request:Request;env:Env}){
   const owner=await requireInternalOwner(request,env); if(owner.response)return owner.response;
   await ensureCommandCenterSchema(env.DB); await reconcileWorkItems(env.DB);
+  const offsetText=new URL(request.url).searchParams.get("offset")||"0";
+  if(!/^\\d{1,6}$/.test(offsetText))return jsonResponse(400,{success:false,error:"invalid_offset"},headers);
+  const offset=Number(offsetText);
+  if(!Number.isSafeInteger(offset)||offset>100000)return jsonResponse(400,{success:false,error:"invalid_offset"},headers);
   const result=await env.DB.prepare(`SELECT w.*, t.status AS linked_task_status, t.updated_at AS linked_task_updated_at,
     t.pr_url AS linked_task_pr_url, t.output_summary AS linked_task_output_summary
     FROM hermes_owner_work_items w
     LEFT JOIN hermes_internal_ai_tasks t ON t.id = w.linked_task_id AND t.organization_scope = w.organization_scope
     WHERE w.organization_scope = ?
     ORDER BY CASE w.status WHEN 'in_progress' THEN 0 WHEN 'ready' THEN 1 WHEN 'planned' THEN 2 WHEN 'blocked' THEN 3 WHEN 'done' THEN 4 ELSE 5 END,
-      CASE w.priority WHEN 'p0' THEN 0 WHEN 'p1' THEN 1 WHEN 'p2' THEN 2 ELSE 3 END, w.created_at DESC LIMIT 100`).bind(COMMAND_CENTER_SCOPE).all();
-  return jsonResponse(200,{success:true,work_items:(result.results||[]).map(publicWorkItem)},headers);
+      CASE w.priority WHEN 'p0' THEN 0 WHEN 'p1' THEN 1 WHEN 'p2' THEN 2 ELSE 3 END, w.created_at DESC LIMIT 101 OFFSET ?`).bind(COMMAND_CENTER_SCOPE,offset).all();
+  const rows=result.results||[];
+  return jsonResponse(200,{success:true,work_items:rows.slice(0,100).map(publicWorkItem),next_offset:rows.length>100?offset+100:null},headers);
 }
 
 export async function onRequestPost({request,env}:{request:Request;env:Env}){
