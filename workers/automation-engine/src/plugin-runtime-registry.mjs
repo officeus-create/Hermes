@@ -1,15 +1,15 @@
-const OBSERVED_AT = "2026-10-27";
+const OBSERVED_AT = "2026-10-29";
 
 export const PLUGIN_RUNTIME_REGISTRY = Object.freeze({
-  "hermes-automatic-engineer": Object.freeze({ version: "0.1.26", observed_at: OBSERVED_AT }),
-  "hermes-agent-coordinator": Object.freeze({ version: "0.1.71", observed_at: OBSERVED_AT }),
-  "hermes-technology-developer": Object.freeze({ version: "0.1.56", observed_at: OBSERVED_AT }),
-  "hermes-qa-evidence-auditor": Object.freeze({ version: "0.1.8", observed_at: OBSERVED_AT }),
-  "hermes-knowledge-curator": Object.freeze({ version: "0.1.81", observed_at: OBSERVED_AT }),
-  "hermes-marketing-growth": Object.freeze({ version: "0.1.8", observed_at: OBSERVED_AT }),
-  "hermes-search-growth": Object.freeze({ version: "0.1.8", observed_at: OBSERVED_AT }),
-  "hermes-academy": Object.freeze({ version: "0.1.12", observed_at: OBSERVED_AT }),
-  "hermes-dispatch-os": Object.freeze({ version: "0.1.21", observed_at: OBSERVED_AT }),
+  "hermes-automatic-engineer": Object.freeze({ version: "0.1.34", observed_at: OBSERVED_AT }),
+  "hermes-agent-coordinator": Object.freeze({ version: "0.1.80", observed_at: OBSERVED_AT }),
+  "hermes-technology-developer": Object.freeze({ version: "0.1.60", observed_at: OBSERVED_AT }),
+  "hermes-qa-evidence-auditor": Object.freeze({ version: "0.1.16", observed_at: OBSERVED_AT }),
+  "hermes-knowledge-curator": Object.freeze({ version: "0.1.88", observed_at: OBSERVED_AT }),
+  "hermes-marketing-growth": Object.freeze({ version: "0.1.13", observed_at: OBSERVED_AT }),
+  "hermes-search-growth": Object.freeze({ version: "0.1.12", observed_at: OBSERVED_AT }),
+  "hermes-academy": Object.freeze({ version: "0.1.14", observed_at: OBSERVED_AT }),
+  "hermes-dispatch-os": Object.freeze({ version: "0.1.26", observed_at: OBSERVED_AT }),
 });
 
 export function pluginRuntimeVersion(roleId) {
