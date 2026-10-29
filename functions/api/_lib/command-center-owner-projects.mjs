@@ -19,8 +19,8 @@ export async function ensureOwnerProjectSchema(db) {
 }
 
 export function normalizeOwnerProjectFields(value) {
-  const title=typeof value?.title==="string"?value.title.replace(/\\u0000/g,"").replace(/\\s+/g," ").trim():"";
-  const purpose=typeof value?.purpose==="string"?value.purpose.replace(/\\u0000/g,"").trim():"";
+  const title=typeof value?.title==="string"?value.title.replace(/\u0000/g,"").replace(/\s+/g," ").trim():"";
+  const purpose=typeof value?.purpose==="string"?value.purpose.replace(/\u0000/g,"").trim():"";
   const department=typeof value?.department==="string"?value.department.toLowerCase().trim():"";
   if(!title||title.length>160||!purpose||purpose.length>2000||!DEPARTMENTS.has(department))return null;
   return {title,purpose,department};
