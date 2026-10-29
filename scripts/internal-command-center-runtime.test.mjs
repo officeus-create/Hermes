@@ -5,7 +5,7 @@ import { onRequestPatch as mutateWorkItem } from "../functions/api/internal-comm
 import { onRequestGet as listAccess, onRequestPost as mutateAccess } from "../functions/api/internal-command-center/access.ts";
 import { onRequestGet as aiStatus } from "../functions/api/internal-ai/status.ts";
 import { onRequestGet as listAiTasks } from "../functions/api/internal-ai/tasks.ts";
-import { ensureInternalAiSchema } from "../functions/api/_lib/internal-ai.mjs";
+import { ensureInternalAiSchema, isRunnerHeartbeatFresh, publicTaskTiming } from "../functions/api/_lib/internal-ai.mjs";
 import { ensureCommandCenterSchema } from "../functions/api/_lib/internal-command-center.mjs";
 
 class Statement {
@@ -28,6 +28,31 @@ for(const [id,email,name] of [["owner","owner@example.invalid","Synthetic Owner"
 await ensureInternalAiSchema(db);
 await ensureCommandCenterSchema(db);
 const now=new Date().toISOString();
+// Deterministic negative QA: only valid state + timestamps produce execution metrics.
+const fixedNow=Date.parse("2026-10-28T20:00:00.000Z");
+const startedAt="2026-10-28T19:00:00.000Z";
+const finishedAt="2026-10-28T19:10:00.000Z";
+const validTiming=publicTaskTiming({status:"completed",started_at:startedAt,completed_at:finishedAt},fixedNow);
+assert.equal(validTiming.duration_seconds,600);
+assert.equal(validTiming.elapsed_seconds,600);
+for(const [name,row] of [
+  ["future_completion",{status:"completed",started_at:startedAt,completed_at:"2026-10-29T19:10:00.000Z"}],
+  ["queued_with_completion",{status:"queued",started_at:startedAt,completed_at:finishedAt}],
+  ["terminal_without_completion",{status:"failed",started_at:startedAt,completed_at:null}],
+  ["future_start",{status:"running",started_at:"2026-10-29T19:00:00.000Z",completed_at:null}],
+  ["running_with_completion",{status:"running",started_at:startedAt,completed_at:finishedAt}],
+  ["approval_not_running",{status:"needs_approval",started_at:startedAt,completed_at:null}],
+]){
+  const timing=publicTaskTiming(row,fixedNow);
+  assert.equal(timing.elapsed_seconds,null,name+" must not fabricate elapsed time");
+  assert.equal(timing.duration_seconds,null,name+" must not fabricate duration");
+  assert.equal(timing.eta_label,"UNKNOWN");
+}
+assert.equal(publicTaskTiming({status:"running",started_at:startedAt,completed_at:null},fixedNow).elapsed_seconds,3600);
+assert.equal(isRunnerHeartbeatFresh("2026-10-28T19:58:31.000Z",fixedNow),true,"89-second heartbeat is fresh");
+assert.equal(isRunnerHeartbeatFresh("2026-10-28T19:58:29.000Z",fixedNow),false,"91-second heartbeat is stale");
+assert.equal(isRunnerHeartbeatFresh("2026-10-28T20:00:01.000Z",fixedNow),false,"future heartbeat must fail closed");
+assert.equal(isRunnerHeartbeatFresh("invalid",fixedNow),false,"malformed heartbeat must fail closed");
 sqlite.prepare("INSERT INTO hermes_internal_owner_access (specialist_id,active,capability,created_at,updated_at) VALUES (?,?,?,?,?)").run("owner",1,"HERMES_INTERNAL_OWNER",now,now);
 
 const request=(path,{method="GET",body,owner="owner"}={})=>new Request("https://example.invalid"+path,{
@@ -171,6 +196,21 @@ const ownerStatusPayload=await ownerStatus.json();
 assert.equal(ownerStatusPayload.access_level,"owner");
 assert.equal(ownerStatusPayload.runtime.repo_sha,"synthetic-sha");
 assert.equal(ownerStatusPayload.runtime.operations.next_action,"Owner-only next action");
+
+// A stale or future Mac heartbeat must not show historical RUNNING work as current.
+for(const [reason,offset] of [["stale_91s",-91000],["future_30s",30000]]){
+  const incorrectTime=new Date(Date.now()+offset).toISOString();
+  sqlite.prepare("UPDATE hermes_internal_ai_runner_state SET last_seen_at=? WHERE id='internal-ai-mac-runner'").run(incorrectTime);
+  for(const who of ["owner","delegate"]){
+    const response=await aiStatus({request:request("/api/internal-ai/status",{owner:who}),env:{DB:db}});
+    assert.equal(response.status,200,reason+" "+who+" access must remain separate");
+    const payload=await response.json();
+    assert.equal(payload.runtime.online,false,reason+" "+who+" must be offline");
+    assert.equal(payload.runtime.operations,null,reason+" "+who+" must not see stale RUNNING/current work");
+    assert.equal(payload.runtime.last_seen_at,incorrectTime,"historical heartbeat may remain as dated evidence");
+  }
+}
+sqlite.prepare("UPDATE hermes_internal_ai_runner_state SET last_seen_at=? WHERE id='internal-ai-mac-runner'").run(new Date().toISOString());
 
 const teamRevoke=await mutateAccess({request:request("/api/internal-command-center/access",{method:"POST",body:{action:"revoke",email:"delegate@example.invalid",capability:"team_view"}}),env:{DB:db}});
 assert.equal(teamRevoke.status,200);
