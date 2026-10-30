@@ -2230,3 +2230,10 @@ ai_name: Codex; role: delegated Academy owner; contribution_type: Implementation
   5. `gate-check` `EXPECT:` needs `/regex/` form; plain text is a substring.
   6. Header links that point at the current page are dead clicks; give them an action on that page.
 - Next action — owner: merge or close #2197; answer the cookie-banner and Website Factory questions. Claude: read #2197 live after merge; keep the two scheduled rechecks.
+
+## 2026-10-30 — Claude Code — Website Factory in Ukrainian
+
+- `public/scripts/website-factory-locale.mjs` now carries a Ukrainian dictionary (177 strings, same keys as the Russian one), Ukrainian number/label patterns, localized handoff sentence and "Видалити" labels, and the private-context banner in Ukrainian. The Russian runtime was generalized (`dictionary`, `normalizeLocalizedRuntime`) with no change to Russian output.
+- Tests: `connect-auth-language.test.mjs` asserts uk keys equal ru keys; new Playwright case `Ukrainian Website Factory …` (desktop + mobile) next to the Russian one; `website-factory-design4` and the Russian case still pass; `npm test` exit 0.
+- Not touched: Website Factory markup, API, auth; Command Center.
+- Next action — owner: native-speaker read of the Ukrainian wording if it will be shown to clients.

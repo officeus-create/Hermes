@@ -57,4 +57,18 @@ assert.ok(errorKeys("en").length >= 5, "google: English error copy must be found
 for (const lang of ["ru", "uk"]) assert.deepEqual(errorKeys(lang), errorKeys("en"), `google: ${lang} must translate every error code`);
 assert.match(google, /divider: "или продолжите по email"/);
 assert.match(google, /divider: "або продовжте через email"/);
+
+// Website Factory: the Ukrainian dictionary must cover exactly the English keys the Russian one does.
+const factoryLocale = readFileSync(new URL("../public/scripts/website-factory-locale.mjs", import.meta.url), "utf8");
+const mapKeys = (name) => {
+  const start = factoryLocale.indexOf(`const ${name} = new Map(Object.entries({`);
+  const end = factoryLocale.indexOf("}));", start);
+  assert.ok(start >= 0 && end > start, `factory ${name} map must exist`);
+  return [...factoryLocale.slice(start, end).matchAll(/^  ("(?:[^"\\]|\\.)*"): /gm)].map((m) => m[1]).sort();
+};
+const ruKeys = mapKeys("ru");
+const ukKeys = mapKeys("uk");
+assert.ok(ruKeys.length > 150, "factory ru map must be found");
+assert.deepEqual(ukKeys, ruKeys, "factory uk map must have exactly the ru keys");
+assert.match(factoryLocale, /const dictionary = locale === "ru" \? ru : locale === "uk" \? uk : null;/);
 console.log("connect-auth-language: access, academy, academy business and home services complete in RU; home services UK complete.");
