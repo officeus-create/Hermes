@@ -15,7 +15,7 @@ const ACTIVATE_OPERATION_ID = "activate_command_center_owner_2026_10_30";
 const RECOVER_OPERATION_ID = "recover_command_center_owner_credentials_2026_10_31";
 const RECEIPT_ID = "command-center-owner-activation-2026-10-30";
 const ACCOUNT_EMAIL_PATH = "https://lead-email.internal/v1/send-account";
-const ACCOUNT_EMAIL_SUBJECT = "[HERMES ACCOUNT] [COMMAND CENTER PASSWORD RESET]";
+const ACCOUNT_EMAIL_SUBJECT = "[HERMES ACCOUNT] [PASSWORD RESET]";
 const noStore = { "Cache-Control": "private, no-store", "X-Robots-Tag": "noindex, nofollow" };
 
 const PUBLIC_KEY_PEM = `-----BEGIN PUBLIC KEY-----
