@@ -1,10 +1,15 @@
 import { expect, test } from "@playwright/test";
 
 const referenceRoutes = [
-  { route: "/services/hermes-connect/ai-command-center/", robots: "noindex,follow" },
   { route: "/services/hermes-connect/unified-inbox/", robots: "noindex,follow" },
   { route: "/services/hermes-connect/load-analyzer/", robots: "index,follow" },
 ];
+
+test("retired AI Command Center identity points to the unified Business Command Center", async ({ page }) => {
+  await page.goto("/services/hermes-connect/ai-command-center/");
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", "noindex,follow");
+  await expect(page.getByRole("link",{name:"Open Business Command Center"})).toHaveAttribute("href","/services/hermes-connect/command-center/");
+});
 
 test.describe("Hermes Connect reference capability GEO hierarchy", () => {
   for (const { route, robots } of referenceRoutes) {
