@@ -2143,6 +2143,14 @@ ai_name: Codex; role: delegated Academy owner; contribution_type: Implementation
 - Status: SOURCE/LOCAL VERIFIED only. Keep Coverage row 11 `PARTIAL` until merge, deployment and 1440/390 production readback.
 - Next: open bounded PR; then take Resources/Guides as a separate family slice using the existing SEO/website/carrier/vehicle-transport analytics owners rather than adding a second tracker.
 
+## 2026-10-28 — Claude Code — carrier (car hauling) SEO audit slice
+
+- Branch: `claude/beautiful-mendel-lknlyq` from current main.
+- Audit evidence (GSC via connector, 2026-07-31 → 2026-10-28): carrier queries ("car hauler dispatch", "car hauler load board", "car hauling loads") rank at positions ~40–80 with 0 clicks; the only carrier clicks come from `/careers/car-hauling-dispatcher/` (pos 6) and the capacity checklist (pos 8). Google AI Overview citations: hermeslogisticsus.com 0, resolute-logistics.com 212.
+- Fixed in this slice: 33 carrier-cluster meta descriptions no longer cut off with "…" (25 car-hauler-loads markets via `CarHaulerGeoPage.astro`, the markets hub, owner-operator / new-authority / fleet-owner dispatch support, two carrier resources); `/logistics/` (parent of every carrier URL) now 301s to `/paths/logistics/` instead of 404; the Logistics hub service-guide list now leads with carrier pages and links the car-hauler-loads markets hub.
+- Owner decisions open: markets hub title/H1 still "Car Hauler Operating Markets & Route-Fit Research" (proposed "Car Hauler Loads by Market"); `/load-board/?role=*` variants are indexed as separate URLs despite the canonical; thin `/logistics/carrier/` overlaps `/logistics/car-hauling-dispatch/`; recruiting phone +1 (414) 269-7377 vs the one-public-phone rule.
+- Next: re-read GSC positions for the carrier query set on 2026-11-23.
+
 ## 2026-10-27 — ChatGPT/Codex — Business Command Center owner-acceptance boundary
 
 - Agent/task owner: ChatGPT/Codex; bounded continuation of the existing Business Command Center, not a new admin, queue, runtime, brain, or system of record.
@@ -2173,14 +2181,6 @@ ai_name: Codex; role: delegated Academy owner; contribution_type: Implementation
 - Verification: local-agents security contract PASS; full Command Center contract PASS; `npm run build` PASS (436 pages); focused Command Center Playwright PASS 18/18 desktop/mobile. No merge, deploy, owner-access mutation, provider action, or tunnel change performed.
 - Coordination: stacked AI Architecture PR #2125 is zero-behind #2107 and exact-head CI green before this slice. After #2107 receives this commit, #2125 must take one normal parent sync and retain its rule that Cloudflare Tunnel may target only the authenticated 8766 bridge, never raw port 8765. A browser loopback link is not a tunnel destination.
 
-## 2026-10-28 — Claude Code — carrier (car hauling) SEO audit slice
-
-- Branch: `claude/beautiful-mendel-lknlyq` from current main.
-- Audit evidence (GSC via connector, 2026-07-31 → 2026-10-28): carrier queries ("car hauler dispatch", "car hauler load board", "car hauling loads") rank at positions ~40–80 with 0 clicks; the only carrier clicks come from `/careers/car-hauling-dispatcher/` (pos 6) and the capacity checklist (pos 8). Google AI Overview citations: hermeslogisticsus.com 0, resolute-logistics.com 212.
-- Fixed in this slice: 33 carrier-cluster meta descriptions no longer cut off with "…" (25 car-hauler-loads markets via `CarHaulerGeoPage.astro`, the markets hub, owner-operator / new-authority / fleet-owner dispatch support, two carrier resources); `/logistics/` (parent of every carrier URL) now 301s to `/paths/logistics/` instead of 404; the Logistics hub service-guide list now leads with carrier pages and links the car-hauler-loads markets hub.
-- Owner decisions open: markets hub title/H1 still "Car Hauler Operating Markets & Route-Fit Research" (proposed "Car Hauler Loads by Market"); `/load-board/?role=*` variants are indexed as separate URLs despite the canonical; thin `/logistics/carrier/` overlaps `/logistics/car-hauling-dispatch/`; recruiting phone +1 (414) 269-7377 vs the one-public-phone rule.
-- Next: re-read GSC positions for the carrier query set on 2026-11-23.
-
 ## 2026-10-28 — ChatGPT/Codex — unified project portfolio + safe public Command Center preview
 
 - Scope: continued existing Business Command Center PR #2107; no separate admin, task registry, runtime, database or brain was created. Three supplied cross-chat reports were treated as planning evidence and reconciled against current source/PR state.
@@ -2191,3 +2191,49 @@ ai_name: Codex; role: delegated Academy owner; contribution_type: Implementation
 - Verification on implementation state: registry/public-safety contracts PASS; `npm run build` PASS (436 pages, 0 errors); `npm test` PASS; focused Command Center Playwright PASS 22/22 desktop/mobile. Full `npm run test:e2e` completed with 2,525 PASS / 16 expected skips / 11 timeouts: the 10 already tracked public interaction-stability failures plus one concurrent Repair booking i18n timeout. A one-worker rerun passed that Repair scenario on both projects and reproduced only the same 10 known failures (42 PASS / 10 timeouts). No Command Center scenario failed. Exact-head CI is still required before a release claim.
 - Ecosystem scorecard: **Primary outcome** — one truthful map for projects and relationships. **Conversion/revenue** — synthetic preview routes prospective buyers to the existing contact funnel without false proof. **Knowledge** — cross-chat intent becomes explicit registry fields and evidence rules. **AI/automation** — HAE remains runtime; agents/plugins are roles, not new schedulers. **Data/privacy** — internal registry is owner-only/no-store and public demo is synthetic. **Architecture** — additive projection in the canonical Command Center. **Deferred** — live aggregation from canonical systems, selected #2125/#2159 continuation, production identity provisioning, merge/deploy and production readback.
 - Next minimal path: pass full E2E and exact-head CI, obtain maintainer decision on #2125 vs #2159, review #2107, then owner-authorize merge/deploy and perform authenticated production D1/HAE/readback. No merge or deploy was performed in this slice.
+
+## 2026-10-29 — Claude Code — sign-in pages: Russian for Access, Academy, Academy Business, Home Services
+
+- Branch: `claude/beautiful-mendel-lknlyq` from main `cef0d59`.
+- Added Russian to the general Access page, Academy learner sign-in and Academy Business sign-in; Home Services access got a full RU + UK dictionary (it had none). `syncConnectAuthChrome` now supports `ru` (header labels, `/ru/` home link). Access page still resolves English unless `?lang=` is explicit (existing clean-route contract); Academy pages also honour the saved language.
+- Tests: new `scripts/connect-auth-language.test.mjs` (in `npm test`); existing `connect-auth-language-regression` 27/27; `npm test` exit 0; Playwright (desktop + mobile) 40/40 on auth-language, Home Services owner access, MZM managed reviewer and Academy business specs; RU/UK pages checked at 390 px with no horizontal overflow.
+- Google button (`HermesGoogleSignIn.astro`): divider, status and error copy now follow the page language (EN/RU/UK) and are read at use time. Website Factory already has Russian via `?lang=ru` (`public/scripts/website-factory-locale.mjs`); its Ukrainian is not translated (owner: later).
+- Next action — owner: Ukrainian for Website Factory when wanted; a real Google round-trip needs the owner's authorized account.
+
+## 2026-10-29 — Claude Code — carrier funnel pages: Logistics blue instead of violet/pink
+
+- Branch: `claude/carrier-funnel-brand` from main `cef0d59` (separate from #2174 by owner direction).
+- Audit evidence: live crawl of 291 sitemap URLs (no duplicate title/description, one H1, valid JSON-LD) and screenshots at 1280 px showed the carrier funnel pages (offer, onboarding, agreement, agreement-v3, sign, carrier) using violet/magenta/teal accents. Violet `#7C5CFF` is reserved for Hermes Intelligence/Connect in the brand book.
+- Changed: accent colours of those six pages and `CarrierContractJourney.astro` mapped to the Logistics blue scale; low-contrast labels in the offer value strip fixed; brand book and coverage matrix updated. Green/amber status colours kept. `download.astro` (Hermes Connect, violet by design) untouched.
+- Tests: `npm run build` ok, `npm test` exit 0, Playwright desktop + mobile 44/44 on the carrier specs.
+- Left for the owner: cookie banner covering the first-screen CTA at 1280×800; public "ChatGPT" mentions on `/privacy/` and `/services/hermes-connect/` (intentional integration or leak?). Small catalog findings (two connect profile pages without og:image, `/ru/privacy/` without JSON-LD) are not in this PR.
+- Next action — Claude: read back the six pages on the live site at 1440 and 390 after deploy.
+
+## 2026-10-29 — Claude Code — Access page: header Sign in no longer a dead link, registration is signposted
+
+- Owner report: on `/services/hermes-connect/access/` "Sign in" did nothing and registration seemed impossible. Reproduced on live: the header Sign in links to the same page (no-op there), and registration only exists behind the business-type cards, with nothing pointing to them from the form. The form itself, the 401 message and the success redirect were verified working (mocked success → `/services/hermes-connect/`).
+- Fix: header/mobile Sign in on this page focuses the email field; a hint under the form ("No account yet? Choose your business type to register →", EN/RU/UK) jumps to the type cards (`#new-business`). No change to the sign-in or registration APIs.
+- Branch `claude/access-signin-fix-main`, replayed onto main `0c8c9d3` after #2174 and #2179 were merged (the earlier stacked PR #2178 is superseded).
+- Tests: `npm test` exit 0; Playwright desktop + mobile 22/22 on auth-language and account specs; manual desktop and 390 px check of focus and anchor.
+- Next action — owner: confirm which account/method failed if the problem persists after this fix (password vs Google).
+
+## 2026-10-30 — Claude Code — chat-wide audit (gate ledger) and lessons
+
+- Method: 12 runnable gates (unlazy skill, outside the repo) against the live site and `main`. Result: 11 met, 1 unmet. Unmet = the Access page sign-in fix (not on `main`/live; PRs #2178 and #2186 were closed without merge) → re-opened as #2197. Met: Russian Access page and Home Services, carrier funnel without violet, homepage jargon gone, catalog og:image and `/ru/privacy/` JSON-LD live, retired phone absent, `/logistics/` 301, Load Board RU/UK, Website Factory Google hook, lead Worker not exposed on workers.dev.
+- Open and not code: owner decision on the cookie banner covering the first CTA; Website Factory Ukrainian; a real Google round-trip (needs the owner's account); Gmail intake stays off until OAuth is verified; GSC recheck 2026-11-10 (trigger armed) and carrier positions 2026-11-23; `#2041` supersede (owner).
+- New finding: the internal carrier call script (Drive "SCRIPT CALL CARRIER.docx") makes claims the public site deliberately does not make: gross increase "$1,500 to $4,000", "$2,500–$6,000 per year in taxes", rate markup "10–20%", "multiple accounts / work in pairs", plus a personal first name. Public pages disclaim income guarantees. Recommend the owner reviews the script (tax and earnings claims) before it is used with carriers; nothing from it was copied to the site.
+- Lessons to keep (process):
+  1. Do not stack a PR on a branch another agent may merge or rewrite; open against `main` and keep the diff small. Stacked #2178 was stranded when #2174 merged.
+  2. Before reporting a fix as done, check the live page or `main` for the exact marker, not only CI green. Use a grep gate.
+  3. A shared file like `docs/AI_HANDOFF.md` conflicts constantly; append, then merge `main` last.
+  4. Bundled Astro scripts do not appear in the HTML; check the `_astro/*.js` file for strings in dictionaries.
+  5. `gate-check` `EXPECT:` needs `/regex/` form; plain text is a substring.
+  6. Header links that point at the current page are dead clicks; give them an action on that page.
+- Next action — owner: merge or close #2197; answer the cookie-banner and Website Factory questions. Claude: read #2197 live after merge; keep the two scheduled rechecks.
+
+## 2026-10-30 — Claude Code — cookie notice no longer covers left hero actions on wide screens
+
+- Finding (design audit 2026-10-29): at 1280×800 the analytics notice (960 px wide bar at bottom) sat over the left-aligned primary hero buttons on the dispatch and geo pages.
+- Change: `TrackingConsent.astro` only — from 1101 px up the notice is 560 px wide, single column, aligned right; text, choices, storage and consent logic unchanged; tablet and mobile layouts untouched.
+- Checked at 1280×800 on `/`, `/logistics/car-hauling-dispatch/`, `/logistics/car-hauler-loads/chicago-il/`: no overlap with the first hero actions. `npm test` exit 0; Playwright consent and repair-public-design specs 20/20 (desktop + mobile).
+- Next action — Claude: read back the live pages at 1280 after deploy.

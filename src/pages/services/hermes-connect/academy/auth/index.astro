@@ -91,6 +91,14 @@ import "../../../../../styles/hermes-academy-app.css";
       active:"Сесія активна",welcome:"Вітаємо,",dashboard:"Відкрити learner dashboard",logout:"Вийти",login:"Увійти",create:"Створити акаунт",password:"Пароль",secureLogin:"Безпечний вхід",
       fullName:"Ім’я та прізвище",location:"Країна та місто",createLearner:"Створити learner account",loginFailed:"Не вдалося увійти. Перевірте email і пароль.",registrationFailed:"Не вдалося створити акаунт."
     },
+    ru: {
+      academy:"Hermes Connect Academy",signInCrumb:"Вход",shared:"Общий аккаунт Hermes",title:"Один аккаунт Hermes для всей экосистемы.",
+      lead:"Если у вас уже есть сессия Hermes Connect, Академия использует тот же аккаунт. Новый ученик создаёт аккаунт через общую службу входа Hermes — без второго хранилища паролей и отдельного входа в Академию.",
+      boundary:"Создание аккаунта ученика не означает автоматического зачисления на программу. Статус зачисления показывается отдельно в кабинете ученика.",
+      owner:"Вы владелец академии или онлайн-курсов? Открыть CRM для бизнеса Академии →",secure:"Защищённая сессия",checking:"Проверяем вашу сессию Hermes…",checkingCopy:"Действующая сессия Hermes работает здесь без повторного входа.",
+      active:"Сессия активна",welcome:"Добро пожаловать,",dashboard:"Открыть кабинет ученика",logout:"Выйти",login:"Войти",create:"Создать аккаунт",password:"Пароль",secureLogin:"Безопасный вход",
+      fullName:"Имя и фамилия",location:"Страна и город",createLearner:"Создать аккаунт ученика",loginFailed:"Не удалось войти. Проверьте email и пароль.",registrationFailed:"Не удалось создать аккаунт."
+    },
     en: {
       academy:"Hermes Connect Academy",signInCrumb:"Sign in",shared:"Shared Hermes identity",title:"Use one Hermes account across the ecosystem.",
       lead:"If you already have a Hermes Connect session, Academy uses that same identity. New learners create an account through the shared Hermes authentication service — no second password store or Academy-only login.",
@@ -105,11 +113,11 @@ import "../../../../../styles/hermes-academy-app.css";
   // Match the shared Connect shell: explicit choice, then saved choice, then English.
   let savedLanguage: string | null = null;
   try { savedLanguage = window.localStorage.getItem("hermes-connect-language"); } catch {}
-  let lang: Lang = (params.has("lang") ? params.get("lang") : savedLanguage) === "uk" ? "uk" : "en";
+  const wantedLanguage = params.has("lang") ? params.get("lang") : savedLanguage;
+  let lang: Lang = wantedLanguage === "uk" || wantedLanguage === "ru" ? wantedLanguage : "en";
   const withLang = (path: string) => {
     const url = new URL(path, window.location.origin);
-    if (lang === "en") url.searchParams.set("lang", "en");
-    else url.searchParams.set("lang", "uk");
+    url.searchParams.set("lang", lang);
     return url.pathname + url.search + url.hash;
   };
   const applyLanguage = (next: Lang) => {
@@ -117,7 +125,7 @@ import "../../../../../styles/hermes-academy-app.css";
     lang = next;
     document.documentElement.lang = next;
     document.querySelectorAll<HTMLElement>("[data-i18n]").forEach((node) => {
-      const key = node.dataset.i18n as keyof typeof dictionary.uk;
+      const key = node.dataset.i18n as keyof typeof dictionary.en;
       const value = dictionary[next][key];
       if (value) node.textContent = value;
     });
