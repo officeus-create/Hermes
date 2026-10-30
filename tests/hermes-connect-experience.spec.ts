@@ -88,7 +88,8 @@ test("Hermes Connect product family navigation presents current products first a
   await expect(links.nth(1)).toHaveAttribute("href", "/services/hermes-connect/repair-shops/");
   await expect(links.nth(1)).toHaveAttribute("aria-current", "page");
   await expect(links.nth(2)).toHaveText("Load Board");
-  await expect(links.nth(3)).toHaveText("AI Command Center");
+  await expect(links.nth(3)).toHaveText("Business Command Center");
+  await expect(links.nth(3)).toHaveAttribute("href","/services/hermes-connect/command-center/");
   await expect(links.nth(4)).toHaveText("Academy");
   await expect(page.locator(".repair-pilot-page .hero-header-nav")).toHaveCount(0);
 });
