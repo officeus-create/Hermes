@@ -1,0 +1,93 @@
+---
+interface Props { ru?:boolean }
+const { ru=false }=Astro.props;
+const projects=[
+  {dir:"technology",title:ru?"Запуск клиентского сайта":"Client website launch",state:ru?"В работе":"In progress",owner:ru?"Technology":"Technology",next:ru?"Завершить мобильный QA":"Complete mobile QA",progress:62},
+  {dir:"marketing",title:ru?"Поисковая кампания":"Search demand campaign",state:ru?"На проверке":"Review",owner:ru?"Marketing":"Marketing",next:ru?"Принять evidence":"Accept evidence",progress:48},
+  {dir:"logistics",title:ru?"Онбординг перевозчика":"Carrier onboarding",state:ru?"Готово к запуску":"Ready",owner:ru?"Logistics":"Logistics",next:ru?"Проверить документы":"Verify documents",progress:78},
+  {dir:"academy",title:ru?"Практика по продажам":"Sales practice cohort",state:ru?"Запланировано":"Planned",owner:ru?"Academy":"Academy",next:ru?"Назначить проверяющего":"Assign reviewer",progress:30},
+];
+const tasks=[
+ {p:"P1",title:ru?"Проверить результат AI перед публикацией":"Review AI result before publishing",project:ru?"Поисковая кампания":"Search demand campaign",status:ru?"Нужно решение":"Needs decision"},
+ {p:"P1",title:ru?"Исправить мобильную навигацию":"Fix mobile navigation",project:ru?"Запуск клиентского сайта":"Client website launch",status:ru?"В работе":"In progress"},
+ {p:"P2",title:ru?"Подготовить пакет онбординга":"Prepare onboarding packet",project:ru?"Онбординг перевозчика":"Carrier onboarding",status:ru?"Готово":"Ready"},
+];
+---
+<section class="hcc-preview hcc-panel" data-public-command-center-preview>
+  <div class="hcc-preview-top">
+    <div><p class="hcc-sample">{ru?"Демонстрационный workspace · SAMPLE DATA":"Workspace preview · SAMPLE DATA"}</p><h2>{ru?"Как выглядит единый слой управления":"How one operating layer comes together"}</h2></div>
+    <span>{ru?"Без внутренних данных Hermes":"No Hermes private data"}</span>
+  </div>
+  <div class="hcc-demo-tabs" role="tablist" aria-label={ru?"Демонстрация Command Center":"Command Center preview"}>
+    {[
+      ["today",ru?"Сегодня":"Today"],["projects",ru?"Проекты":"Projects"],["tasks",ru?"Задачи":"Tasks"],
+      ["automation",ru?"AI и автоматизация":"AI & automation"],["evidence",ru?"Доказательства":"Evidence"]
+    ].map(([key,label],index)=><button type="button" role="tab" aria-selected={index===0?"true":"false"} class:list={["hcc-demo-tab",index===0&&"is-active"]} data-demo-tab={key}>{label}</button>)}
+  </div>
+
+  <div class="hcc-demo-panel is-active" data-demo-panel="today" role="tabpanel">
+    <div class="hcc-decision-grid">
+      <article><span>{ru?"Нужно моё решение":"Needs my decision"}</span><strong>2</strong><small>{ru?"Результаты AI и команды ждут приёмки":"AI/team results awaiting acceptance"}</small></article>
+      <article><span>{ru?"Выполняется":"Running now"}</span><strong>3</strong><small>{ru?"Задачи и автоматизации с подтверждённым состоянием":"Tasks and automations with verified state"}</small></article>
+      <article><span>{ru?"Заблокировано":"Blocked"}</span><strong>1</strong><small>{ru?"Есть указанная причина и следующий шаг":"Reason and next step are recorded"}</small></article>
+      <article><span>{ru?"Следующее действие":"Next"}</span><strong>1</strong><small>{ru?"Принять результат поисковой кампании":"Accept search campaign result"}</small></article>
+    </div>
+    <div class="hcc-focus hcc-demo-flow">
+      <div><span>1</span><strong>{ru?"Сигнал":"Signal"}</strong><small>{ru?"Запрос, событие, задача":"Request, event, task"}</small></div>
+      <i>→</i><div><span>2</span><strong>{ru?"Проект":"Project"}</strong><small>{ru?"Контекст и владелец":"Context and owner"}</small></div>
+      <i>→</i><div><span>3</span><strong>Hermes AI</strong><small>{ru?"Выполнение с ограничениями":"Bounded execution"}</small></div>
+      <i>→</i><div><span>4</span><strong>Evidence</strong><small>PR · CI · readback</small></div>
+      <i>→</i><div><span>5</span><strong>{ru?"Решение владельца":"Owner decision"}</strong><small>{ru?"Принять или вернуть":"Accept or rework"}</small></div>
+    </div>
+  </div>
+
+  <div class="hcc-demo-panel" data-demo-panel="projects" role="tabpanel" hidden>
+    <div class="hcc-project-grid">
+      {projects.map(p=><article class="hcc-card hcc-project-card" data-direction={p.dir}>
+        <div class="hcc-project-head"><span>{p.owner}</span><b>{p.state}</b></div>
+        <h3>{p.title}</h3><p>{ru?"Следующее: ":"Next: "}{p.next}</p>
+        <div class="hcc-progress"><div><span>{ru?"Пример прогресса":"Sample progress"}</span><strong>{p.progress}%</strong></div><div><i style={"width:"+p.progress+"%"}></i></div></div>
+      </article>)}
+    </div>
+  </div>
+
+  <div class="hcc-demo-panel" data-demo-panel="tasks" role="tabpanel" hidden>
+    <div class="hcc-task-table" role="table" aria-label={ru?"Пример очереди задач":"Sample task queue"}>
+      {tasks.map(t=><article role="row"><b>{t.p}</b><div><strong>{t.title}</strong><small>{t.project}</small></div><span>{t.status}</span></article>)}
+    </div>
+  </div>
+
+  <div class="hcc-demo-panel" data-demo-panel="automation" role="tabpanel" hidden>
+    <div class="hcc-automation-grid">
+      <article class="hcc-card"><span class="hcc-sample">Hermes AI</span><h3>{ru?"Анализ результата перед решением":"Result analysis before decision"}</h3><p>{ru?"AI может подготовить результат и evidence, но финальное бизнес-решение остаётся за владельцем.":"AI can prepare a result and evidence while the final business decision remains with the owner."}</p><b>{ru?"Статус: ждёт приёмки":"Status: awaiting acceptance"}</b></article>
+      <article class="hcc-card"><span class="hcc-sample">{ru?"Автоматизация":"Automation"}</span><h3>{ru?"Проверка системы каждые 6 часов":"System readiness every 6 hours"}</h3><p>{ru?"Повторяющийся процесс имеет cadence, журнал, последнее состояние и контролируемое включение.":"A recurring process has a cadence, history, last state and controlled activation."}</p><b>{ru?"Статус: активна":"Status: active"}</b></article>
+    </div>
+  </div>
+
+  <div class="hcc-demo-panel" data-demo-panel="evidence" role="tabpanel" hidden>
+    <div class="hcc-evidence-list">
+      <article><span>01</span><div><strong>{ru?"Изменение":"Change"}</strong><p>PR #0000 · {ru?"проверяемая версия":"reviewable version"}</p></div><b>PR</b></article>
+      <article><span>02</span><div><strong>{ru?"Проверки":"Checks"}</strong><p>{ru?"Контракты, браузер, аудит":"Contracts, browser, audit"}</p></div><b>CI</b></article>
+      <article><span>03</span><div><strong>{ru?"Публикация":"Release"}</strong><p>{ru?"Exact-SHA deployment + production readback":"Exact-SHA deployment + production readback"}</p></div><b>LIVE</b></article>
+      <article><span>04</span><div><strong>{ru?"Приёмка":"Acceptance"}</strong><p>{ru?"Владелец принимает бизнес-результат отдельно от технического завершения":"Owner accepts the business result separately from technical completion"}</p></div><b>OWNER</b></article>
+    </div>
+  </div>
+</section>
+
+<script>
+document.querySelectorAll("[data-public-command-center-preview]").forEach(root=>{
+  const tabs=[...root.querySelectorAll("[data-demo-tab]")];
+  const panels=[...root.querySelectorAll("[data-demo-panel]")];
+  tabs.forEach(tab=>tab.addEventListener("click",()=>{
+    const key=tab.dataset.demoTab;
+    tabs.forEach(item=>{const active=item===tab;item.classList.toggle("is-active",active);item.setAttribute("aria-selected",String(active))});
+    panels.forEach(panel=>{const active=panel.dataset.demoPanel===key;panel.hidden=!active;panel.classList.toggle("is-active",active)});
+  }));
+});
+</script>
+
+<style>
+.hcc-preview{padding:clamp(1rem,2.5vw,1.5rem);overflow:hidden}.hcc-preview-top{display:flex;justify-content:space-between;gap:1rem;align-items:flex-start}.hcc-preview-top h2{margin:.2rem 0 0;font-family:var(--font-display);font-size:clamp(1.6rem,3vw,2.4rem);letter-spacing:-.04em}.hcc-preview-top>span{border:1px solid var(--hermes-line-light);border-radius:999px;padding:.45rem .65rem;color:var(--hermes-muted);font-size:.78rem;font-weight:750}.hcc-demo-tabs{display:flex;gap:.35rem;overflow:auto;margin:1.2rem 0;padding-bottom:.25rem}.hcc-demo-tab{min-height:44px;border:1px solid var(--hermes-line-light);border-radius:12px;background:var(--hermes-paper);padding:.65rem .8rem;font-weight:800;color:var(--hermes-muted);white-space:nowrap;cursor:pointer}.hcc-demo-tab.is-active{background:var(--hermes-action-ink);color:#fff;border-color:var(--hermes-action-ink)}.hcc-demo-panel[hidden]{display:none}.hcc-decision-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.7rem}.hcc-decision-grid article{display:grid;gap:.3rem;padding:1rem;border:1px solid var(--hermes-line-light);border-radius:18px;background:var(--hermes-paper)}.hcc-decision-grid span{font-size:.8rem;color:var(--hermes-muted)}.hcc-decision-grid strong{font-size:1.55rem}.hcc-decision-grid small{color:var(--hermes-muted);line-height:1.4}.hcc-demo-flow{display:grid;grid-template-columns:repeat(9,auto);gap:.65rem;align-items:center;margin-top:.75rem;padding:1.1rem}.hcc-demo-flow>div{display:grid;gap:.25rem;min-width:0}.hcc-demo-flow>div>span{color:var(--hermes-violet-on-dark);font:700 .7rem var(--font-mono)}.hcc-demo-flow small{color:#cbd5e1}.hcc-demo-flow>i{font-style:normal;color:#8390a8}.hcc-project-grid,.hcc-automation-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.75rem}.hcc-project-card,.hcc-automation-grid article{padding:1rem}.hcc-project-head{display:flex;justify-content:space-between;gap:1rem;align-items:center}.hcc-project-head span{font:700 .74rem var(--font-mono);text-transform:uppercase}.hcc-project-head b{font-size:.75rem;color:var(--hermes-muted)}.hcc-project-card[data-direction="logistics"] .hcc-project-head span{color:var(--hermes-logistics)}.hcc-project-card[data-direction="technology"] .hcc-project-head span{color:#157da5}.hcc-project-card[data-direction="academy"] .hcc-project-head span{color:#0b7a59}.hcc-project-card[data-direction="marketing"] .hcc-project-head span{color:#b84e35}.hcc-project-card h3,.hcc-automation-grid h3{margin:.8rem 0 .35rem;font-size:1.15rem}.hcc-project-card p,.hcc-automation-grid p{margin:0;color:var(--hermes-muted);line-height:1.55}.hcc-progress{margin-top:1rem}.hcc-progress>div:first-child{display:flex;justify-content:space-between;font-size:.82rem}.hcc-progress>div:last-child{height:8px;margin-top:.35rem;border-radius:999px;background:#edf1f6;overflow:hidden}.hcc-progress i{display:block;height:100%;background:var(--hermes-violet);border-radius:inherit}.hcc-task-table{display:grid;gap:.55rem}.hcc-task-table article{display:grid;grid-template-columns:52px 1fr auto;gap:.8rem;align-items:center;min-height:64px;padding:.75rem .85rem;border:1px solid var(--hermes-line-light);border-radius:16px;background:var(--hermes-paper)}.hcc-task-table article>b{color:var(--hermes-violet-text);font-family:var(--font-mono)}.hcc-task-table article div{display:grid;gap:.2rem}.hcc-task-table small{color:var(--hermes-muted)}.hcc-task-table article>span{font-size:.78rem;font-weight:750;color:var(--hermes-muted)}.hcc-automation-grid article>b{display:inline-block;margin-top:.9rem;font-size:.8rem;color:var(--hermes-violet-text)}.hcc-evidence-list{display:grid;gap:.55rem}.hcc-evidence-list article{display:grid;grid-template-columns:42px 1fr auto;gap:.8rem;align-items:center;padding:.8rem;border:1px solid var(--hermes-line-light);border-radius:16px;background:var(--hermes-paper)}.hcc-evidence-list article>span{display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:#f2efff;color:var(--hermes-violet-text);font-family:var(--font-mono);font-size:.75rem}.hcc-evidence-list p{margin:.15rem 0 0;color:var(--hermes-muted)}.hcc-evidence-list b{font:700 .72rem var(--font-mono);color:var(--hermes-muted)}
+@media(max-width:850px){.hcc-decision-grid{grid-template-columns:repeat(2,1fr)}.hcc-demo-flow{grid-template-columns:1fr}.hcc-demo-flow>i{transform:rotate(90deg);justify-self:start}.hcc-project-grid,.hcc-automation-grid{grid-template-columns:1fr}}
+@media(max-width:560px){.hcc-preview-top{flex-direction:column}.hcc-decision-grid{grid-template-columns:1fr}.hcc-task-table article{grid-template-columns:42px 1fr}.hcc-task-table article>span{grid-column:2}.hcc-evidence-list article{grid-template-columns:36px 1fr}.hcc-evidence-list b{grid-column:2}}
+</style>
