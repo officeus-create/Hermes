@@ -20,7 +20,8 @@ jobs:
       (github.event.comment.body == '/activate-kittles-first5' ||
        github.event.comment.body == '/provision-kittles-trial' ||
        github.event.comment.body == '/recover-kittles-provision' ||
-       github.event.comment.body == '/activate-command-center-owner') &&
+       github.event.comment.body == '/activate-command-center-owner' ||
+       github.event.comment.body == '/recover-command-center-owner') &&
       contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -80,6 +81,51 @@ jobs:
           EOF
             exit 1
           }
+
+          if [ "${COMMAND}" = "/recover-command-center-owner" ]; then
+            OWNER_HTTP="$(curl -sS --retry 2 --retry-all-errors --retry-delay 1 --connect-timeout 10 --max-time 45 \
+              -o "${TMP}/owner.json" -w '%{http_code}' \
+              -X POST "${BASE_URL}/api/internal/command-center-owner-activation" \
+              -H "Authorization: Bearer ${OIDC_TOKEN}" \
+              -H 'Content-Type: application/json' \
+              --data-binary '{"operation":"recover_command_center_owner_credentials_2026_10_31"}' || printf 000)"
+
+            if [ "${OWNER_HTTP}" != 200 ] || [ "$(jq -r '.success // false' "${TMP}/owner.json" 2>/dev/null)" != true ]; then
+              OWNER_ERROR="$(jq -r '.error // "owner_credential_recovery_failed"' "${TMP}/owner.json" 2>/dev/null || printf owner_credential_recovery_failed)"
+              fail "${OWNER_ERROR}" "Hermes Command Center owner credential recovery returned HTTP ${OWNER_HTTP}."
+            fi
+
+            OWNER_EMAIL="$(jq -r '.owner_email // empty' "${TMP}/owner.json")"
+            DELIVERY="$(jq -r '.credential_delivery // empty' "${TMP}/owner.json")"
+            LOGIN_PROOF="$(jq -r '.login_proof // empty' "${TMP}/owner.json")"
+            STATUS_PROOF="$(jq -r '.internal_ai_status_proof // empty' "${TMP}/owner.json")"
+            PROJECTS_PROOF="$(jq -r '.command_center_projects_proof // empty' "${TMP}/owner.json")"
+
+            [ "${OWNER_EMAIL}" = "officeus@hermeslogisticsus.com" ] \
+              || fail "owner_email_mismatch" "Owner recovery returned an unexpected identity."
+            [ "${DELIVERY}" = "internal_admin_mailbox" ] \
+              || fail "owner_credential_delivery_unverified" "Owner password was not delivered through the internal admin mailbox."
+            [ "${LOGIN_PROOF}" = "pass" ] && [ "${STATUS_PROOF}" = "pass" ] && [ "${PROJECTS_PROOF}" = "pass" ] \
+              || fail "owner_access_proof_failed" "Recovered owner credential did not pass login/status/projects readback."
+
+            echo "classification=pass" >> "${GITHUB_OUTPUT}"
+            cat > "${RESULT}" <<EOF
+          ## Hermes Command Center owner credential recovery — PASS
+
+          - ✅ Existing internal owner preserved: `officeus@hermeslogisticsus.com`.
+          - ✅ Hermes password was rotated through the canonical PBKDF2 auth model.
+          - ✅ Prior Hermes sessions were invalidated.
+          - ✅ Hermes email/password login proof passed.
+          - ✅ `/api/internal-ai/status` owner proof passed.
+          - ✅ `/api/internal-command-center/projects` owner proof passed.
+          - ✅ New temporary password delivered only to the corporate internal-admin mailbox.
+          - Login: https://hermeslogisticsus.com/services/hermes-connect/access/?lang=ru
+          - Command Center: https://hermeslogisticsus.com/services/hermes-connect/internal/command-center/?lang=ru
+
+          No password, token, session, D1 ID, or private credential value is published in GitHub.
+          EOF
+            exit 0
+          fi
 
           if [ "${COMMAND}" = "/activate-command-center-owner" ]; then
             OWNER_HTTP="$(curl -sS --retry 2 --retry-all-errors --retry-delay 1 --connect-timeout 10 --max-time 45 \
