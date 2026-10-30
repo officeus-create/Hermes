@@ -2208,3 +2208,12 @@ ai_name: Codex; role: delegated Academy owner; contribution_type: Implementation
 - Tests: `npm run build` ok, `npm test` exit 0, Playwright desktop + mobile 44/44 on the carrier specs.
 - Left for the owner: cookie banner covering the first-screen CTA at 1280×800; public "ChatGPT" mentions on `/privacy/` and `/services/hermes-connect/` (intentional integration or leak?). Small catalog findings (two connect profile pages without og:image, `/ru/privacy/` without JSON-LD) are not in this PR.
 - Next action — Claude: read back the six pages on the live site at 1440 and 390 after deploy.
+
+
+## 2026-10-30 — ChatGPT — Current-main convergence of Access + Home Services auth UX
+
+- Current protected `main` advanced through Command Center #2184, so stale-base #2187 and #2183 are being converged onto one fresh branch rather than repeatedly bypassing branch protection.
+- General Access: header/mobile Sign in focuses the existing email form; EN/RU/UK registration hint jumps to `#new-business`. No auth API changes.
+- Home Services: existing RU/UK page dictionary now also synchronizes the shared Connect chrome through `syncConnectAuthChrome(lang)`; legacy client behavior stays unchanged.
+- Regression coverage combines both fixes in the existing Connect auth-language contract. No second auth system, routing layer, or UI shell created.
+- Next action: exact-head CI, protected merge, then live desktop/mobile readback.
