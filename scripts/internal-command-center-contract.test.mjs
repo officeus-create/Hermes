@@ -44,6 +44,7 @@ assert.match(commandCss,/--hermes-radius-panel|var\(--hermes-radius-panel\)/,"Co
 assert.match(middleware,/requireInternalOwner/,"edge middleware must verify owner access before serving private Command Center HTML");
 assert.match(middleware,/privateCommandCenterGateResponse/,"anonymous/private failures must receive the minimal secure shell rather than the static workspace");
 assert.match(middleware,/\/services\/hermes-connect\/internal\/command-center\//,"edge gate must target the private Command Center route");
+assert.match(middleware,/command-center\/index\.html/,"direct private index.html asset path must be covered by the owner edge gate");
 
 assert.match(helper,/hermes_owner_work_items/,"work items need a durable D1 table");
 assert.match(helper,/organization_scope TEXT NOT NULL CHECK \(organization_scope = 'hermes_internal'\)/,"owner backlog must remain internal-tenant scoped");
