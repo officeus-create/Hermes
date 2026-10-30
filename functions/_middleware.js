@@ -410,8 +410,10 @@ async function routeMainAndCompatibilityHosts(context) {
   }
 
   const incomingUrl = new URL(context.request.url);
-  const normalizedPrivatePath = incomingUrl.pathname.length > 1 ? incomingUrl.pathname.replace(/\/+$/, "/") : incomingUrl.pathname;
-  if (normalizedPrivatePath === "/services/hermes-connect/internal/command-center/") {
+  const normalizedPrivatePath = incomingUrl.pathname.length > 1 ? incomingUrl.pathname.replace(/\/+$/, "") : incomingUrl.pathname;
+  const isPrivateCommandCenter = normalizedPrivatePath === "/services/hermes-connect/internal/command-center"
+    || normalizedPrivatePath === "/services/hermes-connect/internal/command-center/index.html";
+  if (isPrivateCommandCenter) {
     const owner = await requireInternalOwner(context.request, context.env);
     if (owner.response) return withTransportSecurity(privateCommandCenterGateResponse(owner.response.status, incomingUrl));
   }
