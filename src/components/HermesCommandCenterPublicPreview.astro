@@ -75,9 +75,9 @@ const tasks=[
 </section>
 
 <script>
-document.querySelectorAll("[data-public-command-center-preview]").forEach(root=>{
-  const tabs=[...root.querySelectorAll("[data-demo-tab]")];
-  const panels=[...root.querySelectorAll("[data-demo-panel]")];
+document.querySelectorAll<HTMLElement>("[data-public-command-center-preview]").forEach(root=>{
+  const tabs=[...root.querySelectorAll<HTMLButtonElement>("[data-demo-tab]")];
+  const panels=[...root.querySelectorAll<HTMLElement>("[data-demo-panel]")];
   tabs.forEach(tab=>tab.addEventListener("click",()=>{
     const key=tab.dataset.demoTab;
     tabs.forEach(item=>{const active=item===tab;item.classList.toggle("is-active",active);item.setAttribute("aria-selected",String(active))});
