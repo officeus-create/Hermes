@@ -54,14 +54,14 @@ const verticals = [
 ];
 
 const labs = [
-  { name: "Business Command Center", href: "/services/hermes-connect/command-center/" },
-  { name: "Unified Inbox", href: "/services/hermes-connect/unified-inbox/" },
-  { name: "Load Analysis + RPM", href: "/load-board/#load-analysis" },
-  { name: "Load Analyzer concept · not live", href: "/services/hermes-connect/load-analyzer/" },
-  { name: "Rate Negotiator", href: "/services/hermes-connect/rate-negotiator/" },
-  { name: "Proposal Builder", href: "/services/hermes-connect/proposal-builder/" },
-  { name: "ROI Calculator", href: "/services/hermes-connect/roi-calculator/" },
-  { name: "Business Automation", href: "/services/hermes-connect/business-automation/" },
+  { name: "Business Command Center", href: "/services/hermes-connect/command-center/", state: "PRIVATE PRODUCT · PUBLIC DEMO" },
+  { name: "Unified Inbox", href: "/services/hermes-connect/unified-inbox/", state: "REFERENCE" },
+  { name: "Load Analysis + RPM", href: "/load-board/#load-analysis", state: "CURRENT" },
+  { name: "Load Analyzer concept · not live", href: "/services/hermes-connect/load-analyzer/", state: "REFERENCE" },
+  { name: "Rate Negotiator", href: "/services/hermes-connect/rate-negotiator/", state: "REFERENCE" },
+  { name: "Proposal Builder", href: "/services/hermes-connect/proposal-builder/", state: "REFERENCE" },
+  { name: "ROI Calculator", href: "/services/hermes-connect/roi-calculator/", state: "REFERENCE" },
+  { name: "Business Automation", href: "/services/hermes-connect/business-automation/", state: "REFERENCE" },
 ];
 
 const faqs = [
@@ -279,7 +279,7 @@ const schema = [
           <p>These modules support product exploration while remaining subordinate to the current Repair Shops live vertical.</p>
         </div>
         <div class="hc-lab-links">
-          {labs.map((lab) => <a href={lab.href}><span>REFERENCE</span><strong>{lab.name}</strong><ArrowRight size={15} aria-hidden="true" /></a>)}
+          {labs.map((lab) => <a href={lab.href}><span>{lab.state}</span><strong>{lab.name}</strong><ArrowRight size={15} aria-hidden="true" /></a>)}
         </div>
       </div>
     </section>
