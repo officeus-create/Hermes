@@ -1,13 +1,21 @@
-import { hashPassword } from "../../../src/legacy-prototype/auth.mjs";
+import { hashPassword, verifyPassword } from "../../../src/legacy-prototype/auth.mjs";
 import { bearerToken, verifyGitHubFirst5ActivationOidcToken } from "../_lib/github-oidc.mjs";
 import { ensureInternalAiSchema, nowIso } from "../_lib/internal-ai.mjs";
 import { jsonResponse } from "../_lib/session.mjs";
 
-type Env = { DB?: any };
+type ServiceFetcher = { fetch(input: RequestInfo | URL, init?: RequestInit): Promise<Response> };
+type Env = {
+  DB?: any;
+  LEAD_EMAIL_SERVICE?: ServiceFetcher;
+  LEAD_SERVICE_TOKEN?: string;
+};
 
 const OWNER_EMAIL = "officeus@hermeslogisticsus.com";
-const OPERATION_ID = "activate_command_center_owner_2026_10_30";
+const ACTIVATE_OPERATION_ID = "activate_command_center_owner_2026_10_30";
+const RECOVER_OPERATION_ID = "recover_command_center_owner_credentials_2026_10_31";
 const RECEIPT_ID = "command-center-owner-activation-2026-10-30";
+const ACCOUNT_EMAIL_PATH = "https://lead-email.internal/v1/send-account";
+const ACCOUNT_EMAIL_SUBJECT = "[HERMES ACCOUNT] [COMMAND CENTER PASSWORD RESET]";
 const noStore = { "Cache-Control": "private, no-store", "X-Robots-Tag": "noindex, nofollow" };
 
 const PUBLIC_KEY_PEM = `-----BEGIN PUBLIC KEY-----
@@ -50,7 +58,64 @@ async function encryptCredentialBundle(email: string, password: string) {
   return bytesToBase64(await crypto.subtle.encrypt({ name: "RSA-OAEP" }, key, plaintext));
 }
 
-async function cleanupFailedAttempt(db: any, specialistId: string, createdSpecialist: boolean, previousPassword: any) {
+async function sendOwnerCredentials(env: Env, password: string) {
+  if (!env.LEAD_EMAIL_SERVICE || !env.LEAD_SERVICE_TOKEN) return false;
+  const text = [
+    "Hermes Business Command Center temporary access",
+    "",
+    "Login: " + OWNER_EMAIL,
+    "Temporary password: " + password,
+    "Sign in: https://hermeslogisticsus.com/services/hermes-connect/access/?lang=ru",
+    "Command Center: https://hermeslogisticsus.com/services/hermes-connect/internal/command-center/?lang=ru",
+    "",
+    "This credential was generated only for the approved Hermes owner recovery.",
+  ].join("\n");
+
+  try {
+    const response = await env.LEAD_EMAIL_SERVICE.fetch(ACCOUNT_EMAIL_PATH, {
+      method: "POST",
+      headers: {
+        Authorization: "Bearer " + env.LEAD_SERVICE_TOKEN,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        request_id: "command_center_owner_" + crypto.randomUUID(),
+        subject: ACCOUNT_EMAIL_SUBJECT,
+        text,
+        recipient_email: OWNER_EMAIL,
+      }),
+    });
+    return response.ok;
+  } catch {
+    return false;
+  }
+}
+
+async function proveOwnerAccess(base: string, password: string) {
+  const loginResponse = await fetch(`${base}/api/auth/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Origin: base },
+    body: JSON.stringify({ email: OWNER_EMAIL, password }),
+  });
+  if (!loginResponse.ok) throw new Error("login_proof_failed");
+
+  const setCookie = loginResponse.headers.get("set-cookie") || "";
+  const cookie = setCookie.split(";")[0];
+  if (!cookie.startsWith("hermes_session=")) throw new Error("session_cookie_missing");
+
+  const meResponse = await fetch(`${base}/api/auth/me`, { headers: { Cookie: cookie } });
+  if (!meResponse.ok) throw new Error("auth_me_proof_failed");
+
+  const statusResponse = await fetch(`${base}/api/internal-ai/status`, { headers: { Cookie: cookie } });
+  if (!statusResponse.ok) throw new Error("owner_status_proof_failed");
+
+  const projectsResponse = await fetch(`${base}/api/internal-command-center/projects`, { headers: { Cookie: cookie } });
+  if (!projectsResponse.ok) throw new Error("command_center_projects_proof_failed");
+
+  return cookie;
+}
+
+async function cleanupFailedActivation(db: any, specialistId: string, createdSpecialist: boolean, previousPassword: any) {
   try {
     await db.prepare("DELETE FROM hermes_internal_owner_access WHERE specialist_id=? AND capability='HERMES_INTERNAL_OWNER'")
       .bind(specialistId).run();
@@ -68,11 +133,100 @@ async function cleanupFailedAttempt(db: any, specialistId: string, createdSpecia
   }
 }
 
+async function recoverExistingOwner(request: Request, env: Env) {
+  const owners = await env.DB.prepare(`
+    SELECT a.specialist_id,s.email,s.password_hash,s.password_salt
+    FROM hermes_internal_owner_access a
+    JOIN specialists s ON s.id=a.specialist_id
+    WHERE a.active=1 AND a.capability='HERMES_INTERNAL_OWNER'
+    LIMIT 2
+  `).all();
+  const rows = Array.isArray(owners?.results) ? owners.results : [];
+  if (rows.length === 0) {
+    return jsonResponse(409, { success: false, error: "internal_owner_not_provisioned" }, noStore);
+  }
+  if (rows.length !== 1) {
+    return jsonResponse(409, { success: false, error: "internal_owner_ambiguous" }, noStore);
+  }
+
+  const row: any = rows[0];
+  const specialistId = String(row.specialist_id || "");
+  const email = String(row.email || "").trim().toLowerCase();
+  const oldHash = String(row.password_hash || "");
+  const oldSalt = String(row.password_salt || "");
+  if (!specialistId || email !== OWNER_EMAIL) {
+    return jsonResponse(409, { success: false, error: "internal_owner_identity_mismatch" }, noStore);
+  }
+  if (!oldHash || !oldSalt) {
+    return jsonResponse(409, { success: false, error: "owner_password_state_incomplete" }, noStore);
+  }
+
+  const password = randomPassword();
+  const { hash, salt } = await hashPassword(password);
+  let changed = false;
+
+  try {
+    const update = await env.DB.prepare(
+      "UPDATE specialists SET password_hash=?,password_salt=? WHERE id=? AND lower(email)=lower(?)",
+    ).bind(hash, salt, specialistId, OWNER_EMAIL).run();
+    if (Number(update?.meta?.changes || 0) !== 1) {
+      return jsonResponse(409, { success: false, error: "credential_update_conflict" }, noStore);
+    }
+    changed = true;
+
+    await env.DB.prepare("DELETE FROM sessions WHERE specialist_id=?").bind(specialistId).run();
+    if (!await verifyPassword(password, salt, hash)) throw new Error("credential_hash_readback_failed");
+
+    const base = new URL(request.url).origin;
+    await proveOwnerAccess(base, password);
+
+    if (!await sendOwnerCredentials(env, password)) {
+      await env.DB.prepare("UPDATE specialists SET password_hash=?,password_salt=? WHERE id=?")
+        .bind(oldHash, oldSalt, specialistId).run();
+      await env.DB.prepare("DELETE FROM sessions WHERE specialist_id=?").bind(specialistId).run();
+      changed = false;
+      return jsonResponse(503, {
+        success: false,
+        error: "credential_delivery_failed_password_restored",
+      }, noStore);
+    }
+
+    await env.DB.prepare("DELETE FROM sessions WHERE specialist_id=?").bind(specialistId).run();
+
+    return jsonResponse(200, {
+      success: true,
+      state: "credentials_recovered",
+      capability: "HERMES_INTERNAL_OWNER",
+      owner_email: OWNER_EMAIL,
+      authentication_method: "email_password",
+      login_proof: "pass",
+      auth_me_proof: "pass",
+      internal_ai_status_proof: "pass",
+      command_center_projects_proof: "pass",
+      credential_delivery: "internal_admin_mailbox",
+      login_url: "/services/hermes-connect/access/?lang=ru",
+      command_center_url: "/services/hermes-connect/internal/command-center/?lang=ru",
+    }, noStore);
+  } catch (error) {
+    if (changed) {
+      await env.DB.prepare("UPDATE specialists SET password_hash=?,password_salt=? WHERE id=?")
+        .bind(oldHash, oldSalt, specialistId).run();
+      await env.DB.prepare("DELETE FROM sessions WHERE specialist_id=?").bind(specialistId).run();
+    }
+    console.error("command_center_owner_credential_recovery_failed", {
+      class: error instanceof Error ? error.message : "unknown_error",
+    });
+    return jsonResponse(409, { success: false, error: "owner_credential_recovery_failed" }, noStore);
+  }
+}
+
 export async function onRequestPost({ request, env }: { request: Request; env: Env }) {
   if (!env.DB) return jsonResponse(503, { success: false, error: "database_not_configured" }, noStore);
 
   const token = bearerToken(request);
-  if (!token || !await verifyGitHubFirst5ActivationOidcToken(token)) return jsonResponse(403, { success: false, error: "operator_not_authorized" }, noStore);
+  if (!token || !await verifyGitHubFirst5ActivationOidcToken(token)) {
+    return jsonResponse(403, { success: false, error: "operator_not_authorized" }, noStore);
+  }
 
   let body: Record<string, unknown>;
   try {
@@ -80,11 +234,18 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
   } catch {
     return jsonResponse(400, { success: false, error: "invalid_json" }, noStore);
   }
-  if (String(body.operation || "") !== OPERATION_ID) {
+
+  const operation = String(body.operation || "");
+  if (operation !== ACTIVATE_OPERATION_ID && operation !== RECOVER_OPERATION_ID) {
     return jsonResponse(400, { success: false, error: "unsupported_operation" }, noStore);
   }
 
   await ensureInternalAiSchema(env.DB);
+
+  if (operation === RECOVER_OPERATION_ID) {
+    return recoverExistingOwner(request, env);
+  }
+
   await env.DB.prepare(`CREATE TABLE IF NOT EXISTS hermes_internal_owner_bootstrap_receipts (
     id TEXT PRIMARY KEY,
     source TEXT NOT NULL,
@@ -174,25 +335,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     ).bind(specialistId, RECEIPT_ID).run();
 
     const base = new URL(request.url).origin;
-    const loginResponse = await fetch(`${base}/api/auth/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Origin: base },
-      body: JSON.stringify({ email: OWNER_EMAIL, password }),
-    });
-    if (!loginResponse.ok) throw new Error("login_proof_failed");
-
-    const setCookie = loginResponse.headers.get("set-cookie") || "";
-    const cookie = setCookie.split(";")[0];
-    if (!cookie.startsWith("hermes_session=")) throw new Error("session_cookie_missing");
-
-    const meResponse = await fetch(`${base}/api/auth/me`, { headers: { Cookie: cookie } });
-    if (!meResponse.ok) throw new Error("auth_me_proof_failed");
-
-    const statusResponse = await fetch(`${base}/api/internal-ai/status`, { headers: { Cookie: cookie } });
-    if (!statusResponse.ok) throw new Error("owner_status_proof_failed");
-
-    const projectsResponse = await fetch(`${base}/api/internal-command-center/projects`, { headers: { Cookie: cookie } });
-    if (!projectsResponse.ok) throw new Error("command_center_projects_proof_failed");
+    await proveOwnerAccess(base, password);
 
     const bundle = await encryptCredentialBundle(OWNER_EMAIL, password);
     await env.DB.prepare(
@@ -214,7 +357,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
       command_center_url: "/services/hermes-connect/internal/command-center/?lang=ru",
     }, noStore);
   } catch (error) {
-    await cleanupFailedAttempt(env.DB, specialistId, createdSpecialist, previousPassword);
+    await cleanupFailedActivation(env.DB, specialistId, createdSpecialist, previousPassword);
     console.error("command_center_owner_activation_failed", {
       class: error instanceof Error ? error.message : "unknown_error",
     });
