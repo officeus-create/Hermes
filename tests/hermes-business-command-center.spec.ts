@@ -7,6 +7,15 @@ const processPayload={id:"haep_demo",name:"AI gateway readiness",job_type:"ai.ga
 const owners={success:true,current_specialist_id:"owner-1",access:[{specialist_id:"owner-1",active:true,email:"owner@example.invalid",name:"Owner",role:"Owner"}]};
 const projectRegistry={success:true,source_class:"BOUNDED_CANONICAL_SNAPSHOT",checked_at:"2026-10-28T15:30:00+02:00",projects:[{id:"hermes-command-center",title:"Hermes Business Command Center",department:"technology",purpose:"One owner workspace for projects, CRM work, HAE processes, AI execution and evidence.",owner_role:"hermes-technology-developer",agent_role:"Hermes Technology Developer",plugin_roles:["hermes-agent-coordinator"],dependency_ids:[],related_ids:["hae-runtime"],status:"blocked",evidence_level:"EXACT_HEAD_CI_GREEN",progress:{completed:6,total:9,percent:67},work_items_summary:{total:1,open:1,done:0,blocked:0},eta:null,eta_label:"UNKNOWN",eta_basis:"No deterministic completion history is available yet.",blockers:["Independent review remains."],milestones:[{id:"owner-backlog",label:"Owner backlog and D1 capture",state:"done"},{id:"production",label:"Authenticated production owner readback",state:"planned"}],links:[{label:"PR #2107",href:"https://github.com/officeus-create/Hermes/pull/2107"}]}]};
 
+async function openOwnerView(page:any,key:string){
+  const direct=page.locator(`.hcc-nav > [data-cc-nav="${key}"]:visible`);
+  if(await direct.count()){await direct.first().click();return}
+  const more=page.locator("details.hcc-nav-more");
+  await expect(more).toBeVisible();
+  await more.locator("summary").click();
+  await more.locator(`[data-cc-nav="${key}"]`).click();
+}
+
 async function mockOwner(page:any){
   await page.route("**/api/internal-ai/status",(route:any)=>route.fulfill(json(statusPayload)));
   await page.route("**/api/internal-ai/tasks",(route:any)=>route.fulfill(json({success:true,tasks:[]})));
@@ -35,10 +44,10 @@ test.describe("Hermes Business Command Center",()=>{
     await expect(page.getByRole("heading",{name:"Business Command Center",exact:true})).toBeVisible();
     await expect(page.locator("[data-runner-state]")).toHaveText("Offline");
     await expect(page.locator("[data-backlog-count]")).toHaveText("1");
-    await expect(page.getByText("Threads website demand")).toBeVisible();
+    await expect(page.locator("[data-today-list]").getByText("Threads website demand",{exact:true})).toBeVisible();
     await expect(page.getByText(/Cloud backlog remains safe/)).toBeVisible();
     await expect(page.getByText("Cloudflare + D1")).toBeVisible();
-    await page.getByRole("button",{name:"Access",exact:true}).click();
+    await openOwnerView(page,"access");
     await expect(page.locator("[data-account-workspaces]").getByRole("link",{name:/internal ai/i})).toBeVisible();
   });
 
@@ -48,7 +57,7 @@ test.describe("Hermes Business Command Center",()=>{
     await page.route("**/api/internal-command-center/projects*",(route:any)=>route.fulfill(json({success:false,error:"temporary_unavailable"},503)));
     await page.goto("/services/hermes-connect/internal/command-center/");
     await expect(page.locator("[data-backlog-count]")).toHaveText("1");
-    await expect(page.getByText("Threads website demand")).toBeVisible();
+    await expect(page.locator("[data-today-list]").getByText("Threads website demand",{exact:true})).toBeVisible();
     await page.getByRole("button",{name:"Tasks",exact:true}).click();
     await expect(page.locator("[data-work-list]").getByText("Threads website demand")).toBeVisible();
   });
@@ -105,7 +114,7 @@ test.describe("Hermes Business Command Center",()=>{
     await expect.poll(()=>created?.workstream).toBe("marketing");
     expect(created?.project_id).toBe("hermes-command-center");
     expect(created?.details).toContain("six-month offer");
-    await expect(page.getByText("Saved to cloud backlog.")).toBeVisible();
+    await expect(page.locator("[data-owner-toast]")).toHaveText("Saved to cloud backlog.");
   });
 
   test("exposes Command Center from canonical Connect shell only after owner verification",async({page})=>{
@@ -119,7 +128,7 @@ test.describe("Hermes Business Command Center",()=>{
     await mockOwner(page);
     await page.goto("/services/hermes-connect/internal/command-center/?direction=marketing");
     await expect(page.locator("[data-backlog-title]")).toHaveText("Work queue · Marketing");
-    await expect(page.getByText("Threads website demand")).toBeVisible();
+    await expect(page.locator("[data-work-list]").getByText("Threads website demand",{exact:true})).toBeVisible();
     await page.getByRole("button",{name:"Projects",exact:true}).click();
     await page.locator('article[data-module="logistics"] button[data-focus-workstream="logistics"]').click();
     await expect(page.locator("[data-backlog-title]")).toHaveText("Work queue · Logistics");
@@ -139,7 +148,7 @@ test.describe("Hermes Business Command Center",()=>{
     await page.goto("/services/hermes-connect/internal/command-center/");
     await page.getByRole("button",{name:"Tasks",exact:true}).click();
     await expect(page.getByText("Execution finished. Review the evidence before accepting the business result.")).toBeVisible();
-    await expect(page.getByText(/PR and test evidence are ready for review/)).toBeVisible();
+    await expect(page.locator("[data-work-list] .output-summary")).toContainText("PR and test evidence are ready for review.");
     await page.getByRole("button",{name:"Accept result"}).click();
     await expect.poll(()=>accepted).toBe(true);
   });
@@ -176,7 +185,7 @@ test.describe("Hermes Business Command Center",()=>{
   test("offers the local AI Agents UI with a cloud fallback",async({page})=>{
     await mockOwner(page);
     await page.goto("/services/hermes-connect/internal/command-center/");
-    await page.getByRole("button",{name:"Agents",exact:true}).click();
+    await openOwnerView(page,"agents");
     const local=page.locator("[data-local-agents-open]");
     await expect(local).toHaveAttribute("href","http://127.0.0.1:8765/ai-agents/?utm_source=chatgpt.com");
     await expect(local).toHaveAttribute("target","_blank");
@@ -215,7 +224,7 @@ test.describe("Hermes Business Command Center",()=>{
   test("localizes the canonical public Command Center in Russian without changing the public data boundary",async({page})=>{
     await page.goto("/services/hermes-connect/command-center/?lang=ru");
     await expect(page.locator("html")).toHaveAttribute("lang","ru");
-    await expect(page.getByText("Один спокойный слой, где проекты, задачи, AI, автоматизация, доказательства и решения владельца становятся одной управляемой системой.")).toBeVisible();
+    await expect(page.getByRole("heading",{name:"Не ещё один dashboard. Слой принятия решений."})).toBeVisible();
     await expect(page.getByText(/SAMPLE DATA/)).toBeVisible();
     await expect(page.getByText("Без внутренних данных Hermes")).toBeVisible();
     await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content",/index,follow/);
