@@ -19,7 +19,11 @@ const nav=[
 ];
 const schema=[
   {"@context":"https://schema.org","@type":"WebPage",name:title,description,url:"https://hermeslogisticsus.com/services/hermes-connect/command-center/"},
-  {"@context":"https://schema.org","@type":"SoftwareApplication",name:"Hermes Business Command Center",applicationCategory:"BusinessApplication",operatingSystem:"Web",description:ru?"Закрытая операционная система владельца с публичной демонстрационной версией.":"A private owner operating system with a public demonstration layer."}
+  {"@context":"https://schema.org","@type":"SoftwareApplication",name:"Hermes Business Command Center",applicationCategory:"BusinessApplication",operatingSystem:"Web",description:ru?"Закрытая операционная система владельца с публичной демонстрационной версией.":"A private owner operating system with a public demonstration layer."},
+  {"@context":"https://schema.org","@type":"BreadcrumbList",itemListElement":[
+    {"@type":"ListItem",position:1,name:"Hermes Connect",item:"https://hermeslogisticsus.com/services/hermes-connect/"},
+    {"@type":"ListItem",position:2,name:"Hermes Business Command Center",item:"https://hermeslogisticsus.com/services/hermes-connect/command-center/"}
+  ]}
 ];
 ---
 <BaseLayout title={title} description={description} robots="index,follow,max-image-preview:large" htmlLang={ru?"ru":"en"} schema={schema}>
