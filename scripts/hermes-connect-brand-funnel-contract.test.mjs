@@ -113,7 +113,6 @@ assert(foundingPlan.includes('fetch("/api/logistics-lead"'), "Founding Plan: rea
 assert(foundingPlan.includes("No card is charged during setup"), "Founding Plan: no-charge-during-setup boundary must remain explicit.");
 
 const capabilityPages = [
-  "ai-command-center.astro",
   "unified-inbox.astro",
   "load-analyzer.astro",
   "rate-negotiator.astro",
@@ -121,6 +120,16 @@ const capabilityPages = [
   "roi-calculator.astro",
   "business-automation.astro",
 ];
+const businessCommandCenter = await text("src/pages/services/hermes-connect/command-center/index.astro");
+const commandCenterShell = await text("src/components/HermesBusinessCommandCenterShell.astro");
+const commandCenterPreview = await text("src/components/HermesCommandCenterPublicPreview.astro");
+const retiredAiCommandCenter = await text("src/pages/services/hermes-connect/ai-command-center.astro");
+assert(businessCommandCenter.includes("HermesBusinessCommandCenterShell") && businessCommandCenter.includes("HermesCommandCenterPublicPreview"), "Business Command Center: canonical public page must use the shared shell and public-safe sample preview.");
+assert(businessCommandCenter.includes('robots="index,follow,max-image-preview:large"'), "Business Command Center: public owner must be indexable.");
+assert(commandCenterPreview.includes("SAMPLE DATA") && commandCenterPreview.includes("No Hermes private data"), "Business Command Center: public demo must be explicitly synthetic and private-data free.");
+assert(commandCenterShell.includes('mode:"public"|"private"'), "Business Command Center: public and private surfaces must share one shell.");
+assert(retiredAiCommandCenter.includes("Business Command Center") && retiredAiCommandCenter.includes('robots="noindex,follow"'), "AI Command Center: retired identity must route users toward the unified Business Command Center without competing in search.");
+
 for (const file of capabilityPages) {
   const source = await text(`src/pages/services/hermes-connect/${file}`);
   assert(source.includes("HermesConnectCapabilityPage"), `${file}: must use the shared Connect capability design system.`);
