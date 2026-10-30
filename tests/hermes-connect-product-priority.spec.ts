@@ -4,7 +4,7 @@ const expected = [
   ["Product Hub", "/services/hermes-connect/"],
   ["Repair Shops", "/services/hermes-connect/repair-shops/"],
   ["Load Board", "/load-board/"],
-  ["AI Command Center", "/services/hermes-connect/ai-command-center/"],
+  ["Business Command Center", "/services/hermes-connect/command-center/"],
   ["Academy", "/services/hermes-connect/academy/"],
 ];
 
