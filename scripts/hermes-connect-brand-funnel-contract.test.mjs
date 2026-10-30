@@ -75,7 +75,8 @@ for (const label of ["Home", "Inbox", "Customers", "Calendar", "Sales", "Marketi
 }
 assert(hub.includes("/demos/hermes-connect/mark-option02.svg"), "Hub: approved Option 02 mark must remain as the static product signature.");
 assert(!hub.includes("hc-knot-float") && !hub.includes('class="hc-knot"'), "Hub: decorative infinity/knot object must not return to perpetual motion.");
-assert(hub.includes('{ name: "Load Analysis + RPM", href: "/load-board/#load-analysis" }'), "Hub: Load Analysis must route into the canonical Load Board decision path.");
+assert(hub.includes('{ name: "Load Analysis + RPM", href: "/load-board/#load-analysis", state: "CURRENT" }'), "Hub: Load Analysis must route into the canonical Load Board decision path.");
+assert(hub.includes('{ name: "Business Command Center", href: "/services/hermes-connect/command-center/", state: "PRIVATE PRODUCT · PUBLIC DEMO" }'), "Hub: Business Command Center must be classified as a real private product with a public sample, not a generic reference capability.");
 assert(hub.includes("Hermes Connect Labs") && hub.includes("REFERENCE"), "Hub: reference capabilities must remain subordinate and clearly classified.");
 assert(!hub.includes("connect.hermeslogisticsus.com/workspace"), "Hub: legacy workspace link must not be user-facing.");
 assert(hub.includes("$0 during Repair Shop setup · $99/month after setup if you continue"), "Hub: current free-setup to Founding Shop continuation offer must remain explicit.");
