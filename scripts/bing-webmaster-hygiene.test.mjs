@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
+import { readFile, readdir } from "node:fs/promises";
 import { join } from "node:path";
 
 const root = process.cwd();
@@ -13,6 +13,40 @@ const [robots, dispatchPage, loadBoard, reviewDraft, headers] = await Promise.al
 
 const attr = (html, name) => html.match(new RegExp(`<meta\\s+name=["']${name}["']\\s+content=["']([^"']+)["']`, "i"))?.[1] ?? "";
 const title = (html) => html.match(/<title>([^<]+)<\/title>/i)?.[1] ?? "";
+
+
+const collectHtmlFiles = async (dir) => {
+  const entries = await readdir(dir, { withFileTypes: true });
+  const nested = await Promise.all(entries.map(async (entry) => {
+    const path = join(dir, entry.name);
+    if (entry.isDirectory()) return collectHtmlFiles(path);
+    return entry.isFile() && entry.name.endsWith(".html") ? [path] : [];
+  }));
+  return nested.flat();
+};
+
+const publicHtmlFiles = await collectHtmlFiles(join(root, "dist"));
+const mechanicallyTruncatedDescriptions = [];
+const overlongIndexableDescriptions = [];
+for (const file of publicHtmlFiles) {
+  const html = await readFile(file, "utf8");
+  const description = attr(html, "description");
+  if (!description) continue;
+  const robots = attr(html, "robots").toLowerCase();
+  if (robots.includes("noindex")) continue;
+  if (/…$|\.\.\.$/.test(description)) mechanicallyTruncatedDescriptions.push(file);
+  if (description.length > 160) overlongIndexableDescriptions.push(`${file} (${description.length})`);
+}
+assert.deepEqual(
+  mechanicallyTruncatedDescriptions,
+  [],
+  `indexable meta descriptions must end as complete phrases, not mechanical ellipses:\n${mechanicallyTruncatedDescriptions.join("\n")}`,
+);
+assert.deepEqual(
+  overlongIndexableDescriptions,
+  [],
+  `indexable meta descriptions must stay within the shared 160-character source budget:\n${overlongIndexableDescriptions.join("\n")}`,
+);
 
 assert.equal(
   robots.includes("# BEGIN Cloudflare Managed content"),
