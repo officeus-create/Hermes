@@ -1,0 +1,45 @@
+/* Hermes Business Command Center — shared public/private design layer.
+ * Canonical brand tokens are inherited from hermes-brand-system.css. */
+.hcc-page{
+  min-height:80vh;
+  color:var(--hermes-ink);
+  background:
+    radial-gradient(circle at 8% 0,color-mix(in srgb,var(--hermes-technology) 9%,transparent),transparent 32rem),
+    radial-gradient(circle at 92% 8%,color-mix(in srgb,var(--hermes-marketing) 7%,transparent),transparent 34rem),
+    var(--hermes-pearl);
+}
+.hcc-shell{width:min(1180px,calc(100% - 2rem));margin:0 auto;padding:clamp(1.5rem,3vw,2.5rem) 0 5rem}
+.hcc-hero{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(220px,.6fr);gap:2rem;align-items:start;padding:clamp(1.2rem,3vw,2rem) 0 1.2rem}
+.hcc-kicker{margin:0 0 .55rem;color:var(--hermes-violet-text);font:700 .78rem/1.2 var(--font-mono);letter-spacing:.09em;text-transform:uppercase}
+.hcc-hero h1{margin:0;font-family:var(--font-display);font-size:clamp(2.5rem,5.5vw,5rem);font-weight:720;line-height:.96;letter-spacing:var(--hermes-display-tracking);text-wrap:balance}
+.hcc-lead{max-width:820px;margin:.9rem 0 0;color:var(--hermes-muted);font-size:clamp(1.02rem,1.45vw,1.18rem);line-height:1.65}
+.hcc-hero-side{display:flex;flex-direction:column;align-items:flex-end;gap:.7rem}
+.hcc-badge{display:inline-flex;align-items:center;min-height:36px;padding:.35rem .7rem;border:1px solid var(--hermes-line-light);border-radius:var(--hermes-radius-pill);background:rgba(255,255,255,.8);color:var(--hermes-muted);font:700 .78rem/1 var(--font-body)}
+.hcc-nav{position:sticky;top:0;z-index:20;display:flex;gap:.35rem;overflow:auto;margin:0 0 1.2rem;padding:.45rem;border:1px solid var(--hermes-line-light);border-radius:18px;background:color-mix(in srgb,var(--hermes-pearl) 88%,transparent);backdrop-filter:blur(16px);box-shadow:0 10px 30px rgba(11,13,18,.05)}
+.hcc-nav-item{flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:.65rem .85rem;border:0;border-radius:12px;background:transparent;color:var(--hermes-muted);font:750 .88rem/1 var(--font-body);text-decoration:none;cursor:pointer;white-space:nowrap}
+.hcc-nav-item:hover,.hcc-nav-item:focus-visible{color:var(--hermes-ink);background:var(--hermes-paper);outline:none}
+.hcc-nav-item.is-active{color:#fff;background:var(--hermes-action-ink)}
+.hcc-panel{border:1px solid var(--hermes-line-light);border-radius:var(--hermes-radius-panel);background:rgba(255,255,255,.94);box-shadow:var(--hermes-shadow-card)}
+.hcc-card{border:1px solid var(--hermes-line-light);border-radius:var(--hermes-radius-card);background:var(--hermes-paper)}
+.hcc-section{margin-top:1rem;padding:clamp(1rem,2vw,1.4rem)}
+.hcc-section-head{display:flex;justify-content:space-between;gap:1rem;align-items:flex-start;margin-bottom:1rem}
+.hcc-section-head h2{margin:.25rem 0 0;font-family:var(--font-display);font-size:clamp(1.45rem,2.5vw,2rem);letter-spacing:-.035em}
+.hcc-section-head p{margin:.2rem 0 0;color:var(--hermes-muted);line-height:1.55}
+.hcc-primary,.hcc-secondary{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:.7rem 1rem;border-radius:var(--hermes-radius-control);font-weight:800;text-decoration:none;cursor:pointer}
+.hcc-primary{border:1px solid var(--hermes-action-ink);background:var(--hermes-action-ink);color:#fff}
+.hcc-secondary{border:1px solid var(--hermes-line-light);background:var(--hermes-paper);color:var(--hermes-ink)}
+.hcc-actions{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:1.25rem}
+.hcc-sample{font:700 .72rem/1.2 var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--hermes-violet-text)}
+.hcc-focus{color:#fff;background:
+  radial-gradient(circle at 84% 16%,color-mix(in srgb,var(--hermes-violet) 35%,transparent),transparent 22rem),
+  var(--hermes-action-ink);border-radius:var(--hermes-radius-panel);box-shadow:var(--hermes-shadow-workspace)}
+.hcc-focus .hcc-section-head p,.hcc-focus .muted{color:#cbd5e1}
+.hcc-focus .hcc-sample{color:var(--hermes-violet-on-dark)}
+@media(max-width:800px){
+ .hcc-shell{width:min(100% - 1rem,1180px)}
+ .hcc-hero{grid-template-columns:1fr;gap:1rem;padding-top:1rem}
+ .hcc-hero-side{align-items:flex-start}
+ .hcc-hero h1{font-size:clamp(2.4rem,12vw,4rem)}
+ .hcc-nav{top:.25rem}
+}
+@media(prefers-reduced-motion:reduce){.hcc-nav{scroll-behavior:auto}}
