@@ -12,7 +12,7 @@ interface Props {
 }
 const { mode, ru=false, title, lead, eyebrow="Hermes Connect", badge, nav=[], activeKey } = Astro.props;
 ---
-<main class={"hcc-page hcc-page--"+mode} data-command-center-mode={mode}>
+<main id="main-content" class={"hcc-page hcc-page--"+mode} data-command-center-mode={mode}>
   <div class="hcc-shell">
     <header class="hcc-hero">
       <div class="hcc-hero-copy">
