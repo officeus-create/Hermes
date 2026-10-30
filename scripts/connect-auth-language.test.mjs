@@ -24,6 +24,13 @@ for (const path of ["access/index.astro", "academy/auth/index.astro", "academy/b
   assert.match(source, /=== "ru"/, `${path}: must select Russian`);
 }
 
+// The access page explains where registration is and keeps the header Sign in useful.
+const access = read("access/index.astro");
+assert.match(access, /id="new-business"/);
+assert.match(access, /data-i18n="noAccountLink"/);
+assert.match(access, /closest\?\.\("\[data-hermes-sign-in\]"\)/);
+for (const key of ["noAccount", "noAccountLink"]) assert.equal((access.match(new RegExp(`${key}:"`, "g")) ?? []).length, 3, `${key} must exist in uk, ru and en`);
+
 // Home Services access carries its own dictionary: ru and uk must match each other and every hook.
 const hs = read("home-services/access/index.astro");
 const dict = JSON.parse(hs.match(/const DICT = (\{.*?\});\n\s+const EN_MSG/s)[1]);
@@ -40,6 +47,12 @@ assert.ok(hooks.size > 25, "home-services: i18n hooks must be present");
 for (const key of hooks) assert.ok(dict.ru[key], `home-services: hook ${key} must resolve in ru and uk`);
 for (const key of new Set([...hs.matchAll(/\bT\("(\w+)"/g)].map((m) => m[1]))) assert.ok(dict.ru[key] && enMsg[key], `home-services: message ${key} must be translated`);
 assert.match(hs, /\/api\/auth\/register/);
+assert.match(hs, /syncConnectAuthChrome/);
+assert.match(hs, /syncConnectAuthChrome\(lang\)/);
+const chrome = readFileSync(new URL("../src/lib/connect-auth-chrome.ts", import.meta.url), "utf8");
+assert.match(chrome, /language: 'en' \| 'uk' \| 'ru'/);
+assert.match(chrome, /Мова контенту: українська/);
+assert.match(chrome, /Увійти/);
 // The shared Google button follows the page language for its divider, status and error copy.
 const google = readFileSync(new URL("../src/components/HermesGoogleSignIn.astro", import.meta.url), "utf8");
 const errorKeys = (lang) => {
