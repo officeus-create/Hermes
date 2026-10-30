@@ -28,10 +28,11 @@ const { mode, ru=false, title, lead, eyebrow="Hermes Connect", badge, nav=[], ac
     </header>
     {nav.length>0 && (
       <nav class="hcc-nav" aria-label={ru?"Навигация Command Center":"Command Center navigation"}>
-        {nav.map((item)=> mode==="private"
-          ? <button type="button" class:list={["hcc-nav-item",activeKey===item.key&&"is-active"]} data-cc-nav={item.key}>{item.label}</button>
+        {nav.map((item,index)=> mode==="private"
+          ? <button type="button" class:list={["hcc-nav-item",index>=4&&"hcc-nav-secondary",activeKey===item.key&&"is-active"]} data-cc-nav={item.key}>{item.label}</button>
           : <a class:list={["hcc-nav-item",activeKey===item.key&&"is-active"]} href={item.href||("#"+item.key)}>{item.label}</a>
         )}
+        {mode==="private" && nav.length>4 && <details class="hcc-nav-more"><summary>{ru?"Ещё":"More"}</summary><div>{nav.slice(4).map((item)=><button type="button" class:list={["hcc-nav-item",activeKey===item.key&&"is-active"]} data-cc-nav={item.key}>{item.label}</button>)}</div></details>}
       </nav>
     )}
     <slot />
