@@ -1,6 +1,6 @@
 # Hermes Owner Business Command Center — canonical contract
 
-Status: CURRENT PRIVATE FOUNDATION; public/private unification is implemented in PR #2198 on top of merged owner backlog/project work. #2096 and #2105 remain superseded historical implementations.
+Status: CURRENT PRIVATE FOUNDATION; public/private unification is implemented in PR #2198 on top of merged owner backlog/project work. Private foundation: canonical PR #2107. #2096 and #2105 remain superseded historical implementations.
 Private route: /services/hermes-connect/internal/command-center/
 Public route: /services/hermes-connect/command-center/
 Private access: server-verified HERMES_INTERNAL_OWNER only; edge middleware must verify capability before serving the static owner workspace asset.
