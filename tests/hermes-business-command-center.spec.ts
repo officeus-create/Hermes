@@ -38,6 +38,7 @@ test.describe("Hermes Business Command Center",()=>{
     await expect(page.getByText("Threads website demand")).toBeVisible();
     await expect(page.getByText(/Cloud backlog remains safe/)).toBeVisible();
     await expect(page.getByText("Cloudflare + D1")).toBeVisible();
+    await page.getByRole("button",{name:"Access",exact:true}).click();
     await expect(page.locator("[data-account-workspaces]").getByRole("link",{name:/internal ai/i})).toBeVisible();
   });
 
@@ -48,7 +49,8 @@ test.describe("Hermes Business Command Center",()=>{
     await page.goto("/services/hermes-connect/internal/command-center/");
     await expect(page.locator("[data-backlog-count]")).toHaveText("1");
     await expect(page.getByText("Threads website demand")).toBeVisible();
-    await expect(page.locator("[data-process-form]")).toBeVisible();
+    await page.getByRole("button",{name:"Tasks",exact:true}).click();
+    await expect(page.locator("[data-work-list]").getByText("Threads website demand")).toBeVisible();
   });
 
   test("creates and edits a cloud project without changing canonical project cards",async({page})=>{
@@ -71,6 +73,7 @@ test.describe("Hermes Business Command Center",()=>{
       return route.fulfill(json({...projectRegistry,projects:[...projectRegistry.projects,...(created?[created]:[])],next_offset:null}));
     });
     await page.goto("/services/hermes-connect/internal/command-center/");
+    await page.getByRole("button",{name:"Projects",exact:true}).click();
     await page.locator('input[name="new_project_title"]').fill("Land and Tenders CRM");
     await page.locator('textarea[name="new_project_purpose"]').fill("Track land sales and official tenders.");
     await page.getByRole("button",{name:"Save new project to D1"}).click();
@@ -94,6 +97,7 @@ test.describe("Hermes Business Command Center",()=>{
       return route.fulfill(json(backlog));
     });
     await page.goto("/services/hermes-connect/internal/command-center/");
+    await page.getByRole("button",{name:/New task/}).first().click();
     await page.locator('select[name="project_id"]').selectOption("hermes-command-center");
     await page.locator('input[name="title"]').fill("Website offer packaging");
     await page.locator('textarea[name="details"]').fill("Create a phased six-month offer based on measurable revenue checkpoints.");
@@ -116,6 +120,7 @@ test.describe("Hermes Business Command Center",()=>{
     await page.goto("/services/hermes-connect/internal/command-center/?direction=marketing");
     await expect(page.locator("[data-backlog-title]")).toHaveText("Work queue · Marketing");
     await expect(page.getByText("Threads website demand")).toBeVisible();
+    await page.getByRole("button",{name:"Projects",exact:true}).click();
     await page.locator('article[data-module="logistics"] button[data-focus-workstream="logistics"]').click();
     await expect(page.locator("[data-backlog-title]")).toHaveText("Work queue · Logistics");
     await expect(page).toHaveURL(/direction=logistics/);
@@ -132,6 +137,7 @@ test.describe("Hermes Business Command Center",()=>{
       return route.fulfill(json({success:true,work_item:{...reviewItem,status:"done",accepted_by:"owner-1",accepted_at:"2026-10-27T12:00:00.000Z"}}));
     });
     await page.goto("/services/hermes-connect/internal/command-center/");
+    await page.getByRole("button",{name:"Tasks",exact:true}).click();
     await expect(page.getByText("Execution finished. Review the evidence before accepting the business result.")).toBeVisible();
     await expect(page.getByText(/PR and test evidence are ready for review/)).toBeVisible();
     await page.getByRole("button",{name:"Accept result"}).click();
@@ -154,6 +160,7 @@ test.describe("Hermes Business Command Center",()=>{
       return route.fulfill(json({success:true,process:{...processPayload,status:"active",next_run_at:"2026-10-28T12:00:00.000Z"}}));
     });
     await page.goto("/services/hermes-connect/internal/command-center/");
+    await page.getByRole("button",{name:"Automations",exact:true}).click();
     await expect(page.getByRole("heading",{name:"HAE 24/7 processes"})).toBeVisible();
     await expect(page.locator("[data-process-list]").getByText("AI gateway readiness",{exact:true})).toBeVisible();
     await page.getByRole("button",{name:"Activate"}).click();
@@ -169,6 +176,7 @@ test.describe("Hermes Business Command Center",()=>{
   test("offers the local AI Agents UI with a cloud fallback",async({page})=>{
     await mockOwner(page);
     await page.goto("/services/hermes-connect/internal/command-center/");
+    await page.getByRole("button",{name:"Agents",exact:true}).click();
     const local=page.locator("[data-local-agents-open]");
     await expect(local).toHaveAttribute("href","http://127.0.0.1:8765/ai-agents/?utm_source=chatgpt.com");
     await expect(local).toHaveAttribute("target","_blank");
@@ -178,6 +186,7 @@ test.describe("Hermes Business Command Center",()=>{
   test("shows the owner project map with evidence-derived progress and unknown ETA",async({page})=>{
     await mockOwner(page);
     await page.goto("/services/hermes-connect/internal/command-center/");
+    await page.getByRole("button",{name:"Projects",exact:true}).click();
     const project=page.locator('[data-project-id="hermes-command-center"]');
     await expect(page.getByRole("heading",{name:"Every Hermes initiative in one structure"})).toBeVisible();
     await expect(project.getByRole("heading",{name:"Hermes Business Command Center"})).toBeVisible();
@@ -187,14 +196,17 @@ test.describe("Hermes Business Command Center",()=>{
     await expect(project.getByRole("link",{name:/PR #2107/})).toHaveAttribute("href","https://github.com/officeus-create/Hermes/pull/2107");
   });
 
-  test("keeps the public Command Center preview synthetic and routes to a scoped request",async({page})=>{
-    await page.goto("/services/hermes-connect/ai-command-center/");
-    const demo=page.locator("[data-command-center-demo]");
-    await expect(demo.getByText("Demo data only")).toBeVisible();
-    await expect(demo.getByRole("heading",{name:"See projects, ownership and progress together"})).toBeVisible();
-    await expect(demo.getByRole("link",{name:/Request a Command Center/})).toHaveAttribute("href","/contacts/?path=technology&utm_source=command_center_demo");
-    await expect(demo).not.toContainText("HERMES_INTERNAL_OWNER");
-    await expect(demo).not.toContainText("#2107");
+  test("keeps the canonical public Command Center synthetic, useful and private-data free",async({page})=>{
+    await page.goto("/services/hermes-connect/command-center/");
+    const demo=page.locator("[data-public-command-center-preview]");
+    await expect(page.getByRole("heading",{name:"Hermes Business Command Center",exact:true})).toBeVisible();
+    await expect(demo.getByText(/SAMPLE DATA/)).toBeVisible();
+    await expect(demo.getByRole("heading",{name:"How one operating layer comes together"})).toBeVisible();
+    await demo.getByRole("tab",{name:"Evidence"}).click();
+    await expect(demo.getByText(/Exact-SHA deployment/)).toBeVisible();
+    await expect(page.getByRole("link",{name:"Request a Command Center"}).first()).toHaveAttribute("href","/contacts/?path=technology&utm_source=business_command_center");
+    await expect(page.locator("body")).not.toContainText("HERMES_INTERNAL_OWNER");
+    await expect(page.locator("body")).not.toContainText("#2107");
   });
 
   test("keeps the owner page usable at 390px",async({page})=>{
@@ -203,6 +215,8 @@ test.describe("Hermes Business Command Center",()=>{
     await page.goto("/services/hermes-connect/internal/command-center/");
     await expect(page.getByRole("heading",{name:"Business Command Center",exact:true})).toBeVisible();
     await expect(page.locator("body")).not.toHaveCSS("overflow-x","scroll");
+    await expect(page.getByRole("button",{name:"Today",exact:true})).toHaveClass(/is-active/);
+    await page.getByRole("button",{name:/New task/}).first().click();
     await expect(page.locator("[data-work-form]")).toBeVisible();
   });
 });
