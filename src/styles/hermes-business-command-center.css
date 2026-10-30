@@ -45,6 +45,7 @@
 @media(prefers-reduced-motion:reduce){.hcc-nav{scroll-behavior:auto}}
 
 /* Private owner workspace */
+.owner-toast{position:sticky;top:4.2rem;z-index:35;width:max-content;max-width:min(92vw,560px);margin-left:auto;padding:.72rem .9rem;border:1px solid #b9dfca;border-radius:14px;background:#f0fbf5;color:#17633f;font-size:.88rem;font-weight:800;box-shadow:0 12px 32px rgba(11,13,18,.08)}.owner-toast[hidden]{display:none!important}\n
 .owner-workspace{display:grid;gap:1rem}
 .owner-workspace[hidden],.owner-view[hidden]{display:none!important}
 .owner-view{display:grid;gap:1rem}
