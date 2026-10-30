@@ -1,5 +1,5 @@
 import { hashPassword } from "../../../src/legacy-prototype/auth.mjs";
-import { verifyGithubActionsOidcToken } from "../_lib/github-actions-oidc.mjs";
+import { bearerToken, verifyGitHubFirst5ActivationOidcToken } from "../_lib/github-oidc.mjs";
 import { ensureInternalAiSchema, nowIso } from "../_lib/internal-ai.mjs";
 import { jsonResponse } from "../_lib/session.mjs";
 
@@ -7,28 +7,18 @@ type Env = { DB?: any };
 
 const OWNER_EMAIL = "officeus@hermeslogisticsus.com";
 const OPERATION_ID = "activate_command_center_owner_2026_10_30";
-const OIDC_AUDIENCE = "hermes-command-center-owner-activation";
-const ALLOWED_WORKFLOW_REFS = [
-  "officeus-create/Hermes/.github/workflows/command-center-owner-activation.yml@refs/heads/main",
-];
 const RECEIPT_ID = "command-center-owner-activation-2026-10-30";
 const noStore = { "Cache-Control": "private, no-store", "X-Robots-Tag": "noindex, nofollow" };
 
 const PUBLIC_KEY_PEM = `-----BEGIN PUBLIC KEY-----
-MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtoC7TnAhDD5kfd+Xbfas
-3mGhY0TMlO3vTL18lH2OpEeoJmmVYUTcfhjHRja+NfeURBS3g/FxyAGmlTXf6ngU
-6Mlv5u1h8EWUM4bE5o4WH9044fjWa5vHJJk+Sgjgs//NyH6wrCt4PtfuFlpm1WX/
-wudXs9DBWclDwBJSu4RhNo8Cr8QD6JZy4hpp0x0duiez8NnYiezQ1aKB+n6wW0PC
-GWNIJv79ub59aoytZikL6ucsY4QgwPhX17vajDFdKqnUR2fvyEXNv72T069xJlGk
-+HnAGP0hBWsgGeiHbTL1XDUOLQJzj+HiVCii1LLPDsAmJxmYl4OFqU+/uVLSry3E
-yQIDAQAB
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAySmge0mCU5IT8gh3Pa+v
+7T9KkwRdnooHcuKZqXo+vSvlNkgWs6TzNig9Q1xFiJEUQDpuEV/m4dRAyte8pJrj
+rBbUzpy0uks8xm+yh6OdWC9/jlFZMq7mayGbCSZ/BpeOf+REHhj2YxIoV+LaDr2d
+xXP+sM00vxF7k8ZLdrDeenm/QQVpjr5E7AS7PQaDPj9XS6VvVEw1ukH7X3dvUWtd
+xG+qlt3WmCNJz4pHsPtLHdHIlEWhp3HquxKgHetv506EpH/6JAw3c5b9TcbzYaXD
+LCm7OrTXlgNeGT3yyRY2jdDGRFJogaEtBUA8x8lockAZM9MxHHX2AabHw5wR9T0R
+sQIDAQAB
 -----END PUBLIC KEY-----`;
-
-function bearerToken(request: Request) {
-  const header = request.headers.get("Authorization") || "";
-  const match = /^Bearer\s+(.+)$/i.exec(header);
-  return match ? match[1].trim() : "";
-}
 
 function randomPassword() {
   const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%^&*";
@@ -82,12 +72,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
   if (!env.DB) return jsonResponse(503, { success: false, error: "database_not_configured" }, noStore);
 
   const token = bearerToken(request);
-  const authorized = token && await verifyGithubActionsOidcToken({
-    token,
-    expectedAudience: OIDC_AUDIENCE,
-    allowedWorkflowRefs: ALLOWED_WORKFLOW_REFS,
-  });
-  if (!authorized) return jsonResponse(403, { success: false, error: "operator_not_authorized" }, noStore);
+  if (!token || !await verifyGitHubFirst5ActivationOidcToken(token)) return jsonResponse(403, { success: false, error: "operator_not_authorized" }, noStore);
 
   let body: Record<string, unknown>;
   try {
