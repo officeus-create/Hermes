@@ -3,13 +3,13 @@
     { key: "hub", href: "/services/hermes-connect/" },
     { key: "repair", href: "/services/hermes-connect/repair-shops/" },
     { key: "loadBoard", href: "/load-board/" },
-    { key: "aiCommand", href: "/services/hermes-connect/ai-command-center/" },
+    { key: "aiCommand", href: "/services/hermes-connect/command-center/" },
     { key: "academy", href: "/services/hermes-connect/academy/" },
   ];
 
   const LABELS = {
-    en: { hub: "Product Hub", repair: "Repair Shops", loadBoard: "Load Board", aiCommand: "AI Command Center", academy: "Academy" },
-    ru: { hub: "Центр продуктов", repair: "СТО", loadBoard: "Load Board", aiCommand: "ИИ-командный центр", academy: "Академия" },
+    en: { hub: "Product Hub", repair: "Repair Shops", loadBoard: "Load Board", aiCommand: "Business Command Center", academy: "Academy" },
+    ru: { hub: "Центр продуктов", repair: "СТО", loadBoard: "Load Board", aiCommand: "Business Command Center", academy: "Академия" },
     uk: { hub: "Центр продуктів", repair: "СТО", loadBoard: "Load Board", aiCommand: "AI-командний центр", academy: "Академія" },
     es: { hub: "Centro de productos", repair: "Talleres", loadBoard: "Load Board", aiCommand: "Centro de mando de IA", academy: "Academia" },
     it: { hub: "Centro prodotti", repair: "Officine", loadBoard: "Load Board", aiCommand: "Centro di comando AI", academy: "Accademia" },
