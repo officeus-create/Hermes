@@ -1,3 +1,5 @@
+import { requireInternalOwner } from "./api/_lib/internal-ai.mjs";
+
 const CONNECT_HOST = "connect.hermeslogisticsus.com";
 const MAIN_HOST = "hermeslogisticsus.com";
 const WWW_MAIN_HOST = "www.hermeslogisticsus.com";
@@ -22,8 +24,10 @@ const MAIN_LEGACY_REDIRECTS = new Map([
   ["/resources/rpm-calculator/", "/logistics/resources/rpm-calculator/"],
   ["/tools/load-analyzer", "/services/hermes-connect/load-analyzer/"],
   ["/tools/load-analyzer/", "/services/hermes-connect/load-analyzer/"],
-  ["/ai-command-center", "/services/hermes-connect/ai-command-center/"],
-  ["/ai-command-center/", "/services/hermes-connect/ai-command-center/"],
+  ["/ai-command-center", "/services/hermes-connect/command-center/"],
+  ["/ai-command-center/", "/services/hermes-connect/command-center/"],
+  ["/services/hermes-connect/ai-command-center", "/services/hermes-connect/command-center/"],
+  ["/services/hermes-connect/ai-command-center/", "/services/hermes-connect/command-center/"],
   ["/unified-inbox", "/services/hermes-connect/unified-inbox/"],
   ["/unified-inbox/", "/services/hermes-connect/unified-inbox/"],
 ]);
@@ -67,6 +71,7 @@ const CONNECT_COMPAT_ENTRY_PATHS = new Set([
 
 const CURRENT_CAPABILITY_PATHS = new Set([
   "/ai-command-center",
+  "/command-center",
   "/unified-inbox",
   "/load-analyzer",
   "/rate-negotiator",
@@ -164,7 +169,9 @@ function canonicalConnectCompatibilityRedirect(incomingUrl) {
     targetPath = "/services/hermes-connect/repair-shops/auth/";
   } else {
     const capabilityPath = normalizedCapabilityPath(incomingUrl.pathname);
-    if (capabilityPath) targetPath = `/services/hermes-connect${capabilityPath}/`;
+    if (capabilityPath) targetPath = capabilityPath === "/ai-command-center"
+      ? "/services/hermes-connect/command-center/"
+      : `/services/hermes-connect${capabilityPath}/`;
     else if (EXPLICIT_DEMO_DOCUMENTS.has(incomingUrl.pathname)) targetPath = `${CONNECT_ASSET_ROOT}${incomingUrl.pathname}`;
   }
 
@@ -343,6 +350,40 @@ function canonicalGonePath(pathname) {
   return MAIN_GONE_PATHS.has(normalized) ? normalized : null;
 }
 
+function privateCommandCenterGateResponse(status, incomingUrl) {
+  const ru = incomingUrl.searchParams.get("lang") === "ru";
+  const title = status === 401
+    ? (ru ? "Вход в Command Center" : "Sign in to Command Center")
+    : status === 403
+      ? (ru ? "Нужен доступ владельца" : "Owner access required")
+      : (ru ? "Command Center временно недоступен" : "Command Center temporarily unavailable");
+  const copy = status === 401
+    ? (ru ? "Закрытая рабочая система открывается только после защищённого входа в Hermes." : "The private workspace opens only after secure Hermes sign-in.")
+    : status === 403
+      ? (ru ? "Сессия активна, но права владельца для этого рабочего пространства ещё не подтверждены." : "Your session is active, but owner access for this workspace has not been verified yet.")
+      : (ru ? "Сервер не смог подтвердить защищённый доступ. Попробуйте снова после восстановления сервиса." : "The server could not verify secure access. Try again after service recovery.");
+  const actionHref = status === 401
+    ? "/services/hermes-connect/access/?source=command-center" + (ru ? "&lang=ru" : "")
+    : status === 403
+      ? "/services/hermes-connect/internal/ai-connect/" + (ru ? "?lang=ru" : "")
+      : "/services/hermes-connect/command-center/" + (ru ? "?lang=ru" : "");
+  const action = status === 401
+    ? (ru ? "Войти в Hermes" : "Sign in to Hermes")
+    : status === 403
+      ? (ru ? "Проверить доступ владельца" : "Review owner access")
+      : (ru ? "Открыть публичное демо" : "Open public demo");
+  const html = `<!doctype html><html lang="${ru ? "ru" : "en"}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow,noarchive"><title>${title} | Hermes Connect</title><style>body{margin:0;background:#f7f6f3;color:#0b0d12;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.gate{min-height:100vh;display:grid;place-items:center;padding:24px}.card{width:min(620px,100%);box-sizing:border-box;border:1px solid rgba(11,13,18,.1);border-radius:30px;background:#fff;padding:clamp(24px,5vw,48px);box-shadow:0 24px 70px rgba(11,13,18,.08)}.eyebrow{color:#6446e6;font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase}.card h1{margin:12px 0;font-size:clamp(32px,7vw,56px);line-height:.98;letter-spacing:-.05em}.card p{color:#666c79;font-size:17px;line-height:1.65}.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}.actions a{min-height:44px;display:inline-flex;align-items:center;justify-content:center;padding:0 18px;border-radius:12px;text-decoration:none;font-weight:800}.primary{background:#0a164f;color:#fff}.secondary{border:1px solid rgba(11,13,18,.12);color:#0b0d12}</style></head><body><main class="gate"><section class="card"><div class="eyebrow">Hermes Connect · Private workspace</div><h1>${title}</h1><p>${copy}</p><div class="actions"><a class="primary" href="${actionHref}">${action}</a><a class="secondary" href="/services/hermes-connect/command-center/${ru ? "?lang=ru" : ""}">${ru ? "Публичная версия" : "Public version"}</a></div></section></main></body></html>`;
+  return new Response(html, {
+    status,
+    headers: {
+      "Content-Type": "text/html; charset=utf-8",
+      "Cache-Control": "no-store, private",
+      "X-Robots-Tag": "noindex, nofollow, noarchive",
+      "Referrer-Policy": "same-origin",
+    },
+  });
+}
+
 function goneSearchArtifactResponse() {
   return new Response("Gone", {
     status: 410,
@@ -369,6 +410,11 @@ async function routeMainAndCompatibilityHosts(context) {
   }
 
   const incomingUrl = new URL(context.request.url);
+  const normalizedPrivatePath = incomingUrl.pathname.length > 1 ? incomingUrl.pathname.replace(/\/+$/, "/") : incomingUrl.pathname;
+  if (normalizedPrivatePath === "/services/hermes-connect/internal/command-center/") {
+    const owner = await requireInternalOwner(context.request, context.env);
+    if (owner.response) return withTransportSecurity(privateCommandCenterGateResponse(owner.response.status, incomingUrl));
+  }
   if (canonicalGonePath(incomingUrl.pathname)) {
     return withTransportSecurity(goneSearchArtifactResponse());
   }
