@@ -200,6 +200,9 @@ test.describe("Hermes Business Command Center",()=>{
     await page.goto("/services/hermes-connect/command-center/");
     const demo=page.locator("[data-public-command-center-preview]");
     await expect(page.getByRole("heading",{name:"Hermes Business Command Center",exact:true})).toBeVisible();
+    await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content",/index,follow/);
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href","https://hermeslogisticsus.com/services/hermes-connect/command-center/");
+    await expect(page.locator("html")).toHaveAttribute("lang","en");
     await expect(demo.getByText(/SAMPLE DATA/)).toBeVisible();
     await expect(demo.getByRole("heading",{name:"How one operating layer comes together"})).toBeVisible();
     await demo.getByRole("tab",{name:"Evidence"}).click();
@@ -207,6 +210,15 @@ test.describe("Hermes Business Command Center",()=>{
     await expect(page.getByRole("link",{name:"Request a Command Center"}).first()).toHaveAttribute("href","/contacts/?path=technology&utm_source=business_command_center");
     await expect(page.locator("body")).not.toContainText("HERMES_INTERNAL_OWNER");
     await expect(page.locator("body")).not.toContainText("#2107");
+  });
+
+  test("localizes the canonical public Command Center in Russian without changing the public data boundary",async({page})=>{
+    await page.goto("/services/hermes-connect/command-center/?lang=ru");
+    await expect(page.locator("html")).toHaveAttribute("lang","ru");
+    await expect(page.getByText("Один спокойный слой, где проекты, задачи, AI, автоматизация, доказательства и решения владельца становятся одной управляемой системой.")).toBeVisible();
+    await expect(page.getByText(/SAMPLE DATA/)).toBeVisible();
+    await expect(page.getByText("Без внутренних данных Hermes")).toBeVisible();
+    await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content",/index,follow/);
   });
 
   test("keeps the owner page usable at 390px",async({page})=>{
