@@ -138,15 +138,17 @@ async function recoverExistingOwner(request: Request, env: Env) {
     SELECT a.specialist_id,s.email,s.password_hash,s.password_salt
     FROM hermes_internal_owner_access a
     JOIN specialists s ON s.id=a.specialist_id
-    WHERE a.active=1 AND a.capability='HERMES_INTERNAL_OWNER'
+    WHERE a.active=1
+      AND a.capability='HERMES_INTERNAL_OWNER'
+      AND lower(s.email)=lower(?)
     LIMIT 2
-  `).all();
+  `).bind(OWNER_EMAIL).all();
   const rows = Array.isArray(owners?.results) ? owners.results : [];
   if (rows.length === 0) {
     return jsonResponse(409, { success: false, error: "internal_owner_not_provisioned" }, noStore);
   }
   if (rows.length !== 1) {
-    return jsonResponse(409, { success: false, error: "internal_owner_ambiguous" }, noStore);
+    return jsonResponse(409, { success: false, error: "internal_owner_identity_ambiguous" }, noStore);
   }
 
   const row: any = rows[0];
