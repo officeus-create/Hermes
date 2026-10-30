@@ -228,6 +228,10 @@ test.describe("Hermes Business Command Center",()=>{
     await expect(page.getByRole("heading",{name:"Business Command Center",exact:true})).toBeVisible();
     await expect(page.locator("body")).not.toHaveCSS("overflow-x","scroll");
     await expect(page.getByRole("button",{name:"Today",exact:true})).toHaveClass(/is-active/);
+    await page.locator(".hcc-nav-more summary").click();
+    await page.getByRole("button",{name:"Evidence",exact:true}).click();
+    await expect(page.locator('[data-cc-view="evidence"]')).toBeVisible();
+    await page.getByRole("button",{name:"Today",exact:true}).click();
     await page.getByRole("button",{name:/New task/}).first().click();
     await expect(page.locator("[data-work-form]")).toBeVisible();
   });
