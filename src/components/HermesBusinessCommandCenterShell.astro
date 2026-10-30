@@ -1,0 +1,39 @@
+---
+interface NavItem { key:string; label:string; href?:string; }
+interface Props {
+  mode:"public"|"private";
+  ru?:boolean;
+  title:string;
+  lead:string;
+  eyebrow?:string;
+  badge?:string;
+  nav?:NavItem[];
+  activeKey?:string;
+}
+const { mode, ru=false, title, lead, eyebrow="Hermes Connect", badge, nav=[], activeKey } = Astro.props;
+---
+<main class={"hcc-page hcc-page--"+mode} data-command-center-mode={mode}>
+  <div class="hcc-shell">
+    <header class="hcc-hero">
+      <div class="hcc-hero-copy">
+        <p class="hcc-kicker">{eyebrow}</p>
+        <h1>{title}</h1>
+        <p class="hcc-lead">{lead}</p>
+        <slot name="hero-actions" />
+      </div>
+      <div class="hcc-hero-side">
+        {badge && <span class="hcc-badge">{badge}</span>}
+        <slot name="hero-side" />
+      </div>
+    </header>
+    {nav.length>0 && (
+      <nav class="hcc-nav" aria-label={ru?"Навигация Command Center":"Command Center navigation"}>
+        {nav.map((item)=> mode==="private"
+          ? <button type="button" class:list={["hcc-nav-item",activeKey===item.key&&"is-active"]} data-cc-nav={item.key}>{item.label}</button>
+          : <a class:list={["hcc-nav-item",activeKey===item.key&&"is-active"]} href={item.href||("#"+item.key)}>{item.label}</a>
+        )}
+      </nav>
+    )}
+    <slot />
+  </div>
+</main>
