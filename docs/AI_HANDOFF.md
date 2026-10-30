@@ -2208,3 +2208,25 @@ ai_name: Codex; role: delegated Academy owner; contribution_type: Implementation
 - Tests: `npm run build` ok, `npm test` exit 0, Playwright desktop + mobile 44/44 on the carrier specs.
 - Left for the owner: cookie banner covering the first-screen CTA at 1280×800; public "ChatGPT" mentions on `/privacy/` and `/services/hermes-connect/` (intentional integration or leak?). Small catalog findings (two connect profile pages without og:image, `/ru/privacy/` without JSON-LD) are not in this PR.
 - Next action — Claude: read back the six pages on the live site at 1440 and 390 after deploy.
+
+## 2026-10-29 — Claude Code — Access page: header Sign in no longer a dead link, registration is signposted
+
+- Owner report: on `/services/hermes-connect/access/` "Sign in" did nothing and registration seemed impossible. Reproduced on live: the header Sign in links to the same page (no-op there), and registration only exists behind the business-type cards, with nothing pointing to them from the form. The form itself, the 401 message and the success redirect were verified working (mocked success → `/services/hermes-connect/`).
+- Fix: header/mobile Sign in on this page focuses the email field; a hint under the form ("No account yet? Choose your business type to register →", EN/RU/UK) jumps to the type cards (`#new-business`). No change to the sign-in or registration APIs.
+- Branch `claude/access-signin-fix-main`, replayed onto main `0c8c9d3` after #2174 and #2179 were merged (the earlier stacked PR #2178 is superseded).
+- Tests: `npm test` exit 0; Playwright desktop + mobile 22/22 on auth-language and account specs; manual desktop and 390 px check of focus and anchor.
+- Next action — owner: confirm which account/method failed if the problem persists after this fix (password vs Google).
+
+## 2026-10-30 — Claude Code — chat-wide audit (gate ledger) and lessons
+
+- Method: 12 runnable gates (unlazy skill, outside the repo) against the live site and `main`. Result: 11 met, 1 unmet. Unmet = the Access page sign-in fix (not on `main`/live; PRs #2178 and #2186 were closed without merge) → re-opened as #2197. Met: Russian Access page and Home Services, carrier funnel without violet, homepage jargon gone, catalog og:image and `/ru/privacy/` JSON-LD live, retired phone absent, `/logistics/` 301, Load Board RU/UK, Website Factory Google hook, lead Worker not exposed on workers.dev.
+- Open and not code: owner decision on the cookie banner covering the first CTA; Website Factory Ukrainian; a real Google round-trip (needs the owner's account); Gmail intake stays off until OAuth is verified; GSC recheck 2026-11-10 (trigger armed) and carrier positions 2026-11-23; `#2041` supersede (owner).
+- New finding: the internal carrier call script (Drive "SCRIPT CALL CARRIER.docx") makes claims the public site deliberately does not make: gross increase "$1,500 to $4,000", "$2,500–$6,000 per year in taxes", rate markup "10–20%", "multiple accounts / work in pairs", plus a personal first name. Public pages disclaim income guarantees. Recommend the owner reviews the script (tax and earnings claims) before it is used with carriers; nothing from it was copied to the site.
+- Lessons to keep (process):
+  1. Do not stack a PR on a branch another agent may merge or rewrite; open against `main` and keep the diff small. Stacked #2178 was stranded when #2174 merged.
+  2. Before reporting a fix as done, check the live page or `main` for the exact marker, not only CI green. Use a grep gate.
+  3. A shared file like `docs/AI_HANDOFF.md` conflicts constantly; append, then merge `main` last.
+  4. Bundled Astro scripts do not appear in the HTML; check the `_astro/*.js` file for strings in dictionaries.
+  5. `gate-check` `EXPECT:` needs `/regex/` form; plain text is a substring.
+  6. Header links that point at the current page are dead clicks; give them an action on that page.
+- Next action — owner: merge or close #2197; answer the cookie-banner and Website Factory questions. Claude: read #2197 live after merge; keep the two scheduled rechecks.
