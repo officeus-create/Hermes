@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-test("Logistics hover changes weather without replacing the equipment scene", async ({ page }) => {
+test("Logistics keeps real film and freight fallback without synthetic weather", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "no-preference" });
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto("/");
@@ -8,33 +8,35 @@ test("Logistics hover changes weather without replacing the equipment scene", as
   const route = page.locator('[data-route-id="logistics"]');
   const world = route.locator("[data-home-logistics-echo]");
   const scene = route.locator("[data-home-logistics-scene-image]");
+  const cinematic = route.locator('[data-home-cinematic-video="logistics"]');
 
   await route.scrollIntoViewIfNeeded();
-  const weatherBefore = await world.getAttribute("data-logistics-weather-state");
-  const sceneBefore = await scene.getAttribute("src");
-  expect(weatherBefore).toMatch(/^(sun|fog|dusk|rain)$/);
+  await expect(world).not.toHaveAttribute("data-logistics-weather-state", /.+/);
+  await expect(route.locator(".home-logistics-weather")).toHaveCount(0);
+  await expect(scene).toHaveAttribute("data-logistics-scene-ready", /^(car-hauler|dry-van|reefer|flatbed|step-deck|hotshot)$/);
+  await expect(cinematic).toHaveAttribute("data-home-cinematic-version", "v2");
 
+  const sceneBefore = await scene.getAttribute("src");
   await route.hover();
-  await expect.poll(() => world.getAttribute("data-logistics-weather-state")).not.toBe(weatherBefore);
   expect(await scene.getAttribute("src")).toBe(sceneBefore);
-  await expect(scene).toHaveCSS("transform", "none");
   await expect(route.locator('[data-home-motion="truck"]')).toHaveCount(0);
 });
 
-test("Logistics reduced motion freezes the world in the stable sun state", async ({ page }) => {
+test("Logistics reduced motion keeps the stable freight fallback and never adds fake weather", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
 
   const route = page.locator('[data-route-id="logistics"]');
   const world = route.locator("[data-home-logistics-echo]");
-  await expect(world).toHaveAttribute("data-logistics-weather-state", "sun");
+  const scene = route.locator("[data-home-logistics-scene-image]");
+  await expect(world).not.toHaveAttribute("data-logistics-weather-state", /.+/);
+  await expect(route.locator(".home-logistics-weather")).toHaveCount(0);
   await expect(world).toHaveAttribute("data-logistics-echo-motion", "reduced");
-  await expect(route.locator(".home-logistics-weather")).toHaveCSS("animation-name", "none");
+  await expect(scene).toHaveAttribute("data-logistics-scene-ready", "car-hauler");
   await expect(route.locator('[data-home-cinematic-video="logistics"]')).toHaveCSS("display", "none");
   expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false);
 });
-
 
 test("Logistics golden scene stays coherent and local without split vehicle layers", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 1000 });
