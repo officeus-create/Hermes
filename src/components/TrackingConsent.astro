@@ -491,6 +491,21 @@ const isRepairShopRoute = Astro.url.pathname.startsWith("/services/hermes-connec
     .tracking-consent-actions { flex-wrap: wrap; justify-content: flex-start; }
   }
 
+  /* Wide desktop: keep the consent choice visible without covering first-screen commercial CTAs. */
+  @media (min-width: 1101px) {
+    .tracking-consent-banner {
+      width: min(600px, calc(100vw - 2rem));
+      grid-template-columns: minmax(0, 1fr);
+      gap: .38rem;
+    }
+    .tracking-consent-detail { display: none; }
+    .tracking-consent-compact-copy { display: block; }
+    .tracking-consent-actions {
+      flex-wrap: wrap;
+      justify-content: flex-start;
+    }
+  }
+
   @media (max-width: 700px) {
     .tracking-consent-banner {
       top: auto;
