@@ -24,6 +24,13 @@ for (const path of ["access/index.astro", "academy/auth/index.astro", "academy/b
   assert.match(source, /=== "ru"/, `${path}: must select Russian`);
 }
 
+// The access page explains where registration is and keeps the header Sign in useful.
+const access = read("access/index.astro");
+assert.match(access, /id="new-business"/);
+assert.match(access, /data-i18n="noAccountLink"/);
+assert.match(access, /closest\?\.\("\[data-hermes-sign-in\]"\)/);
+for (const key of ["noAccount", "noAccountLink"]) assert.equal((access.match(new RegExp(`${key}:"`, "g")) ?? []).length, 3, `${key} must exist in uk, ru and en`);
+
 // Home Services access carries its own dictionary: ru and uk must match each other and every hook.
 const hs = read("home-services/access/index.astro");
 const dict = JSON.parse(hs.match(/const DICT = (\{.*?\});\n\s+const EN_MSG/s)[1]);
