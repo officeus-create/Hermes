@@ -88,7 +88,7 @@ async function loadProjects(){
   } catch(error) {
     console.warn("Command Center project metadata unavailable; task backlog remains usable.");
   }
-  renderItems();
+  renderItems();renderOwnerOverview();
 }
 function priorityRank(value:string){return ({p0:0,p1:1,p2:2,p3:3} as Record<string,number>)[value]??9}
 function renderOwnerOverview(){
