@@ -120,7 +120,7 @@ function switchView(view:string){
   document.querySelectorAll<HTMLButtonElement>("[data-cc-nav]").forEach(button=>{const active=button.dataset.ccNav===next;button.classList.toggle("is-active",active);button.setAttribute("aria-current",active?"page":"false")});
   const url=new URL(location.href);if(next==="today")url.searchParams.delete("view");else url.searchParams.set("view",next);history.replaceState(null,"",url);
 }
-document.querySelectorAll<HTMLButtonElement>("[data-cc-nav]").forEach(button=>button.addEventListener("click",()=>switchView(button.dataset.ccNav||"today")));
+document.querySelectorAll<HTMLButtonElement>("[data-cc-nav]").forEach(button=>button.addEventListener("click",()=>{switchView(button.dataset.ccNav||"today");button.closest("details")?.removeAttribute("open")}));
 const captureDialog=q<HTMLDialogElement>("[data-capture-dialog]");
 document.querySelectorAll<HTMLButtonElement>("[data-new-task]").forEach(button=>button.addEventListener("click",()=>captureDialog?.showModal()));
 q("[data-capture-cancel]")?.addEventListener("click",()=>captureDialog?.close());
