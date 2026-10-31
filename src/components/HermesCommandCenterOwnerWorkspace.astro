@@ -2,6 +2,7 @@
 import { GraduationCap, Megaphone, Mic, PackageCheck, ShieldCheck, Truck, Users, Wrench, CircleDollarSign } from "@lucide/astro";
 import HermesLocalAgentsLink from "./HermesLocalAgentsLink.astro";
 import HermesOwnerProjectPortfolio from "./HermesOwnerProjectPortfolio.astro";
+import HermesAiArchitecture from "./HermesAiArchitecture.astro";
 import { HAE_OWNER_PROCESS_TEMPLATES } from "../lib/hae-process-control.mjs";
 interface Props{ru?:boolean}
 const {ru=false}=Astro.props;
@@ -93,6 +94,7 @@ const functions=[
         <HermesLocalAgentsLink ru={ru}/>
       </article>
     </div>
+    <section class="hcc-panel" data-ai-owner-map><HermesAiArchitecture ru={ru}/></section>
   </section>
 
   <section class="owner-view" data-cc-view="evidence" hidden>
@@ -108,9 +110,9 @@ const functions=[
       <div class="workspace-grid" data-account-workspaces><p class="muted">{ru?"Загружаем доступы…":"Loading access…"}</p></div>
     </section>
     <section class="hcc-panel access-admin">
-      <div class="owner-section-head"><div><p class="hcc-sample">{ru?"Доступ":"Access"}</p><h2>{ru?"Владельцы Command Center":"Command Center owners"}</h2><p>{ru?"Доступ выдаётся только существующему Hermes-аккаунту и фиксируется в audit trail.":"Access can be granted only to an existing Hermes account and is written to the audit trail."}</p></div><ShieldCheck size={22}/></div>
+      <div class="owner-section-head"><div><p class="hcc-sample">{ru?"Доступ":"Access"}</p><h2>{ru?"Владельцы и командный просмотр":"Owners and Team View"}</h2><p>{ru?"Доступ выдаётся только существующему Hermes-аккаунту и фиксируется в audit trail.":"Access can be granted only to an existing Hermes account and is written to the audit trail."}</p></div><ShieldCheck size={22}/></div>
       <div class="owner-list" data-owner-list></div>
-      <form data-access-form><label>{ru?"Email существующего Hermes-аккаунта":"Existing Hermes account email"}<input name="email" type="email" autocomplete="off" required placeholder="team@example.com"/></label><div class="access-actions"><button type="submit" name="action" value="grant" class="primary">{ru?"Выдать доступ":"Grant access"}</button><button type="submit" name="action" value="revoke" class="danger">{ru?"Отозвать":"Revoke"}</button></div><p data-access-status role="status"></p></form>
+      <form data-access-form><label>{ru?"Email существующего Hermes-аккаунта":"Existing Hermes account email"}<input name="email" type="email" autocomplete="off" required placeholder="team@example.com"/></label><label>{ru?"Уровень доступа":"Permission"}<select name="capability"><option value="team_view">{ru?"Командный просмотр · только чтение":"Team View · read only"}</option><option value="owner">{ru?"Владелец · полный доступ":"Owner · full access"}</option></select></label><p class="muted">{ru?"Доступ сотрудника включает только безопасный статус AI. Полные права владельца выдаются отдельно.":"Team View can read only sanitized AI status. Full owner permissions require a separate selection."} <a href="/services/hermes-connect/internal/team-view/">{ru?"Открыть Team View":"Open Team View"}</a></p><div class="access-actions"><button type="submit" name="action" value="grant" class="primary">{ru?"Выдать доступ":"Grant access"}</button><button type="submit" name="action" value="revoke" class="danger">{ru?"Отозвать":"Revoke"}</button></div><p data-access-status role="status"></p></form>
     </section>
   </section>
 
