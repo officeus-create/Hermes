@@ -16,7 +16,7 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
     // No free-form owner task, phase or model text may cross this boundary.
     const teamStatusAllowlist = new Set(["IDLE", "RUNNING", "PAUSED", "STOPPED", "OFFLINE", "LEARNING"]);
     const teamOperations = operations ? {
-      status: teamStatusAllowlist.has(operations.status) ? operations.status : null,
+      status: teamStatusAllowlist.has(operations.status ?? "") ? operations.status : null,
       phase: null,
       cycle: operations.cycle ?? null,
       current_task: operations.current_task ? "Task active — details private" : null,
