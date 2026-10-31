@@ -134,3 +134,62 @@ const currentCarrier=buildCarrierPrPilotEvidence({...carrierEvidence,compare:{ba
 assert.equal(currentCarrier.blocker,"OWNER_RELEASE_APPROVALS_UNVERIFIED");
 assert.equal(currentCarrier.production_deploy_allowed,false);
 console.log("HAE Carrier #1908 verified-source classifier PASS: one blocked work item, truthful CI, sanitized evidence, zero autonomous writes");
+
+\n// Authenticated read-only source adapter: six GET requests, no secret/reflection or automatic dispatch.
+const {readCarrierPrEvidence}=await import("./hae-carrier-pr-source.mjs");
+const sourcePr={
+  number:1908,html_url:"https://github.com/officeus-create/Hermes/pull/1908",
+  head:{sha:carrierHead,repo:{full_name:"officeus-create/Hermes"}},
+  base:{sha:carrierEvidence.pr.base_sha,repo:{full_name:"officeus-create/Hermes"}},
+  state:"open",draft:true,merged_at:null,body:"SENSITIVE_PR_BODY_IGNORE"
+};
+const compareResponse={base_commit:{sha:carrierEvidence.main_sha},status:"diverged",ahead_by:49,behind_by:299};
+const workflowResponse={total_count:3,workflow_runs:carrierEvidence.checks.map((c,i)=>({
+  id:100+i,name:c.name,head_sha:carrierHead,
+  repository:{full_name:"officeus-create/Hermes"},
+  status:"completed",conclusion:c.conclusion
+}))};
+function sourceMock(overrides={}){
+  const paths={
+    "/pulls/1908":sourcePr,"/branches/main":{commit:{sha:carrierEvidence.main_sha}},
+    "/compare/main..."+carrierHead:compareResponse,
+    "/actions/runs?head_sha="+carrierHead+"&event=pull_request&per_page=100":workflowResponse,
+    ...overrides
+  };
+  const calls=[];
+  const fetchImpl=async(url,options)=>{
+    assert.equal(options.method,"GET");
+    assert.equal(options.headers.Authorization,"Bearer test-github-token");
+    calls.push(url);
+    const key=url.replace("https://api.github.com/repos/officeus-create/Hermes","");
+    return {ok:Object.hasOwn(paths,key),json:async()=>paths[key]};
+  };
+  return {fetchImpl,calls};
+}
+const goodSource=sourceMock();
+const sourced=await readCarrierPrEvidence({
+  githubToken:"test-github-token",fetchImpl:goodSource.fetchImpl,
+  observedAt:carrierEvidence.observed_at
+});
+assert.equal(sourced.blocker,"STALE_BRANCH_REQUIRES_MINIMAL_RECONCILIATION");
+assert.equal(sourced.github_read_only_requests,6);
+assert.equal(goodSource.calls.length,6);
+assert.equal(sourced.runtime_admission_verified,false);
+assert.equal(sourced.automatic_job_submission_allowed,false);
+assert.equal(sourced.source_identity_rechecked,true);
+assert.ok(!JSON.stringify(sourced).includes("SENSITIVE_PR_BODY_IGNORE"));
+await assert.rejects(()=>readCarrierPrEvidence({
+  githubToken:"short",fetchImpl:goodSource.fetchImpl,
+  observedAt:carrierEvidence.observed_at
+}),e=>e.code==="hae_carrier_source_token_required");
+await assert.rejects(()=>readCarrierPrEvidence({
+  githubToken:"test-github-token",
+  fetchImpl:sourceMock({"/actions/runs?head_sha="+carrierHead+"&event=pull_request&per_page=100":{...workflowResponse,total_count:101}}).fetchImpl,
+  observedAt:carrierEvidence.observed_at
+}),e=>e.code==="hae_carrier_source_source_coverage_incomplete");
+await assert.rejects(()=>readCarrierPrEvidence({
+  githubToken:"test-github-token",
+  fetchImpl:sourceMock({"/pulls/1908":{...sourcePr,head:{...sourcePr.head,repo:{full_name:"other/repo"}}}}).fetchImpl,
+  observedAt:carrierEvidence.observed_at
+}),e=>e.code==="hae_carrier_source_pr_or_main_identity_invalid");
+console.log("HAE carrier authenticated GitHub source adapter PASS: six GET-only reads, SHA pinning, no secrets, zero runtime writes");
