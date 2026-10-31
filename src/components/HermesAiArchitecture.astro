@@ -214,7 +214,10 @@ if (root) {
       form.dataset.source = "text";
       const status = form.querySelector<HTMLElement>("[data-capture-status]");
       if (status) status.textContent = "Черновик заполнен. Проверьте задачу и нажмите «Сохранить в очередь»; пока ничего не запущено.";
-      form.scrollIntoView({ behavior: "smooth", block: "center" });
+      // This is only a draft. Open the existing owner capture dialog for review;
+      // never auto-submit, dispatch, approve, publish or charge a provider.
+      const dialog = form.closest("dialog");
+      if (dialog instanceof HTMLDialogElement && !dialog.open) dialog.showModal();
       details.focus({ preventScroll: true });
     });
   });
