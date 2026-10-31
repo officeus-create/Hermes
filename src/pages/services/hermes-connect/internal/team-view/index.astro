@@ -1,0 +1,80 @@
+---
+import BaseLayout from "../../../../../layouts/BaseLayout.astro";
+import SiteHeader from "../../../../../components/SiteHeader.astro";
+import SiteFooter from "../../../../../components/SiteFooter.astro";
+---
+<BaseLayout title="Hermes AI · Team View | Hermes Connect" description="Explicitly authorized, read-only team operations view." robots="noindex,nofollow,noarchive" htmlLang="en">
+  <SiteHeader activePath="/paths/technology/"/>
+  <main class="team-page" data-team-view>
+    <div class="team-shell">
+      <div class="eyebrow">Hermes Connect · Team View</div>
+      <h1 data-en="Hermes AI — team overview" data-ru="Hermes AI — командный обзор">Hermes AI — team overview</h1>
+      <p data-en="Read-only operational status. Owner tasks, prompts, decisions, approvals, accounts, URLs and provider details are not shared." data-ru="Операционный статус только для чтения. Задачи владельца, промпты, решения, approvals, аккаунты, URL и данные провайдеров скрыты.">Read-only operational status. Owner tasks, prompts, decisions, approvals, accounts, URLs and provider details are not shared.</p>
+      <section class="gate" data-team-gate role="status">
+        <strong data-en="Checking your Team View permission…" data-ru="Проверяем доступ к Team View…">Checking your Team View permission…</strong>
+      </section>
+      <div data-team-content hidden>
+        <div class="grid">
+          <article><span data-en="Runner" data-ru="Исполнитель">Runner</span><strong data-team-online>—</strong></article>
+          <article><span data-en="Safe status" data-ru="Безопасный статус">Safe status</span><strong data-team-status>—</strong></article>
+          <article><span data-en="Cycle" data-ru="Цикл">Cycle</span><strong data-team-cycle>—</strong></article>
+          <article><span data-en="Current work" data-ru="Текущая работа">Current work</span><strong data-team-current>—</strong></article>
+        </div>
+        <section class="summary">
+          <h2 data-en="Task counts — no private details" data-ru="Количество задач — без личных данных">Task counts — no private details</h2>
+          <div class="grid" data-team-counts>
+            <article><span data-en="Queued" data-ru="В очереди">Queued</span><strong data-count="queued">—</strong></article>
+            <article><span data-en="Running" data-ru="В работе">Running</span><strong data-count="running">—</strong></article>
+            <article><span data-en="Completed" data-ru="Завершено">Completed</span><strong data-count="completed">—</strong></article>
+            <article><span data-en="Needs approval" data-ru="Ожидает решения">Needs approval</span><strong data-count="needs_approval">—</strong></article>
+          </div>
+        </section>
+        <p class="boundary" data-en="Team View cannot start, change, approve, publish or delete tasks. All access is granted and revoked by a Hermes owner." data-ru="Team View не может запускать, менять, подтверждать, публиковать или удалять задачи. Доступ выдаёт и отзывает владелец Hermes.">Team View cannot start, change, approve, publish or delete tasks. All access is granted and revoked by a Hermes owner.</p>
+      </div>
+      <a href="/services/hermes-connect/access/" data-en="Hermes account" data-ru="Аккаунт Hermes">Hermes account</a>
+    </div>
+  </main>
+  <SiteFooter/>
+</BaseLayout>
+<script>
+  const ru = new URLSearchParams(window.location.search).get("lang")==="ru";
+  document.documentElement.lang=ru?"ru":"en";
+  document.querySelectorAll<HTMLElement>("[data-en][data-ru]").forEach(node=>{node.textContent=ru?node.dataset.ru||"":node.dataset.en||""});
+  const node=(selector:string)=>document.querySelector<HTMLElement>(selector);
+  const set=(selector:string,value:string)=>{const target=node(selector);if(target)target.textContent=value};
+  const validStatus=new Set(["IDLE","RUNNING","PAUSED","STOPPED","OFFLINE","LEARNING"]);
+  const safeCount=(value:unknown)=>Number.isSafeInteger(value)&&Number(value)>=0&&Number(value)<=1000000?String(value):"—";
+  async function readTeam(){
+    const gate=node("[data-team-gate]"),content=node("[data-team-content]");
+    try{
+      const response=await fetch("/api/internal-ai/status",{credentials:"same-origin",cache:"no-store",headers:{Accept:"application/json"}});
+      const data=await response.json().catch(()=>({}));
+      if(!response.ok||!data.success||!["team","owner"].includes(data.access_level)){
+        if(content)content.hidden=true;
+        if(gate){gate.hidden=false;gate.textContent=response.status===401?(ru?"Войдите в Hermes, чтобы открыть Team View.":"Sign in to Hermes to open Team View."):ru?"Нет доступа к Team View.":"Team View access is not authorized."}
+        return;
+      }
+      if(gate)gate.hidden=true;
+      if(content)content.hidden=false;
+      set("[data-team-online]",data.runtime?.online?(ru?"Онлайн":"Online"):(ru?"Офлайн":"Offline"));
+      const status=data.runtime?.operations?.status;
+      set("[data-team-status]",validStatus.has(status)?status:"—");
+      set("[data-team-cycle]",safeCount(data.runtime?.operations?.cycle));
+      // Owner endpoint may contain raw tasks; this display never echoes them.
+      set("[data-team-current]",data.runtime?.operations?.current_task?(ru?"Задача выполняется · детали закрыты":"Task active · details private"):"—");
+      for(const key of ["queued","running","completed","needs_approval"]){
+        const value=data.access_level==="team"?data.task_summary?.[key]:null;
+        set('[data-count="'+key+'"]',safeCount(value));
+      }
+    }catch{
+      if(content)content.hidden=true;
+      if(gate){gate.hidden=false;gate.textContent=ru?"Не удалось проверить доступ.":"Unable to verify Team View access."}
+    }
+  }
+  void readTeam();
+  const timer=setInterval(()=>void readTeam(),30000);
+  addEventListener("pagehide",()=>clearInterval(timer),{once:true});
+</script>
+<style>
+.team-page{background:#f5f7fb;color:#16213a;min-height:75vh;padding:118px 24px 88px}.team-shell{width:min(1050px,100%);margin:0 auto}.team-shell h1{font-size:clamp(30px,6vw,57px);line-height:1.1;letter-spacing:-.04em}.team-shell>p{max-width:850px;line-height:1.7;color:#59657b}.eyebrow{font-size:12px;letter-spacing:.12em;color:#5542c9;font-weight:800;text-transform:uppercase}.gate,.summary{background:#fff;border:1px solid #dce1eb;padding:24px;border-radius:20px;margin:24px 0}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin:22px 0}.grid article{background:white;border:1px solid #dce1eb;border-radius:18px;padding:20px;display:grid;gap:14px}.grid article span{font-size:13px;color:#626d80}.grid article strong{font-size:21px;overflow-wrap:anywhere}.summary .grid article{background:#fafaff}.boundary{max-width:800px;font-size:14px;color:#59657b;line-height:1.7}.team-shell>a{display:inline-flex;min-height:44px;align-items:center;color:#4834be;font-weight:700}
+</style>

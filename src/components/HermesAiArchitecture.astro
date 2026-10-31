@@ -1,0 +1,282 @@
+---
+import { pluginRuntimeRegistrySnapshot } from "../../workers/automation-engine/src/plugin-runtime-registry.mjs";
+/**
+ * Internal owner control room: architecture and integration roadmap.
+ * No provider secrets, private evidence or account data live in this component.
+ * Runtime details are read only after the existing owner gate authorizes loadAll().
+ */
+const { ru = false } = Astro.props;
+const pluginRegistry = pluginRuntimeRegistrySnapshot();
+const translations: Record<string, string> = {};
+const l = (en: string, local: string) => { translations[en] = local; return ru ? local : en; };
+const steps = [
+  { id: "01", name: l("Owner request / inbound event", "Задание владельца / событие"), note: l("Typed task, CI event, CRM or approved connector", "Ввод, CI, CRM либо разрешённый коннектор") },
+  { id: "02", name: "HAE · Worker + Queue + D1", note: l("One WORK_ID, owner of state, cost and permissions", "Единый WORK_ID, состояние, права и бюджет") },
+  { id: "03", name: l("Policy router", "Маршрутизатор политик"), note: l("Deterministic rules first; unknown → HOLD", "Сначала правила; неопределённость → HOLD") },
+  { id: "04", name: l("Local / cloud specialist", "Локальный / облачный специалист"), note: l("Mac Qwen or approved free Cloudflare model", "Qwen на Mac либо разрешённая бесплатная модель") },
+  { id: "05", name: l("Independent QA / owner gate", "Независимая QA / допуск владельца"), note: l("Proof before deploy, reply, spend or publish", "Доказательство до релиза, ответа и публикации") },
+  { id: "06", name: "Evidence → One Brain", note: l("Promote only independently verified lessons", "Только проверенные уроки в единый мозг") }
+];
+const models = [
+  { id: "glm", title: "GLM-4.7-Flash", name: "@cf/zai-org/glm-4.7-flash", role: l("Reasoning · CI diagnosis · code and content drafts", "Анализ · CI · проекты исправлений и текстов"), stage: l("Provider binding confirmed; real inference not yet accepted", "Binding подтверждён; реальный inference ещё не принят"), tone: "review", action: "glm", link: "https://github.com/officeus-create/Hermes/pull/2137", linkText: l("Review runtime free-plan gate", "Проверить runtime Free-plan") },
+  { id: "clef", title: "Clef-flash", name: "@cf/cloudflare/clef-flash", role: l("Choose workstream, severity, intent and agent", "Выбор направления, срочности, намерения и агента"), stage: l("Candidate · no Hermes benchmark or activation", "Кандидат · без бенчмарка и активации"), tone: "planned", action: "clef", link: "https://developers.cloudflare.com/ai/models/", linkText: l("Model catalog", "Каталог моделей") },
+  { id: "clairic", title: "Clairic", name: "@cf/cloudflare/clairic", role: l("Structured field extraction from allowed inputs", "Извлечение полей из разрешённых данных"), stage: l("Candidate · preview; no Hermes benchmark", "Кандидат · preview, тесты не проведены"), tone: "planned", action: "clairic", link: "https://developers.cloudflare.com/ai/models/", linkText: l("Model catalog", "Каталог моделей") },
+  { id: "whisper", title: "Whisper Large V3 Turbo", name: "@cf/openai/whisper-large-v3-turbo", role: l("Consent-based call and audio transcription", "Расшифровка звонков и аудио при наличии согласия"), stage: l("Later stage · audio/privacy gate", "Позднее · проверка прав на аудио"), tone: "planned", action: "whisper", link: "https://developers.cloudflare.com/ai/models/", linkText: l("Model catalog", "Каталог моделей") }
+];
+const connections = [
+  { id: "owner", title: "Hermes Connect Owner OS", state: l("Source available; release pending", "Код есть; релиз ожидается"), tone: "review", text: l("Existing owner-gated admin, D1 work queue and one-active-runner control.", "Существующая админка с проверкой владельца, очередью D1 и одним активным исполнителем."), url: "https://github.com/officeus-create/Hermes/pull/2107", cta: l("Owner admin PR", "PR админки") },
+  { id: "hae", title: "HAE · Cloudflare", state: l("Worker/AI binding observed", "Worker и AI binding проверены"), tone: "observed", text: l("Existing Worker, Queue and D1. Production is dry_run; publishing disabled. Source PR is not live proof.", "Единый Worker, Queue и D1. Production в dry_run, публикации выключены. PR не доказывает выпуск."), url: "https://github.com/officeus-create/Hermes/issues/2033", cta: l("Runtime evidence", "Доказательства runtime") },
+  { id: "access", title: "Cloudflare Access", state: l("Owner E2E + anonymous redirect proven", "Owner E2E и anonymous redirect подтверждены"), tone: "observed", text: l("Owner reached the private app and guarded status endpoint; an anonymous external request redirects to Access. Real unlisted-user denial is still an open acceptance gate.", "Владелец вошёл в приватное приложение и защищённый status endpoint; анонимный внешний запрос уходит в Access. Реальный отказ пользователю вне allowlist ещё остаётся acceptance-gate."), url: "https://dash.cloudflare.com/ec00de0c2f5ffd6fda4034ca98f992f9/one/access-controls/apps", cta: l("Access settings", "Настройки Access") },
+  { id: "tunnel", title: "Mac · private Cloudflare Tunnel", state: l("Owner path proven; reboot recovery open", "Owner path подтверждён; reboot recovery открыт"), tone: "review", text: l("The named Tunnel targets the signed-JWT bridge 127.0.0.1:8766, never raw port 8765. Owner E2E and process-crash recovery are proven; full Mac reboot/login recovery is not yet proven.", "Именованный Tunnel ведёт к JWT-мосту 127.0.0.1:8766, а не к raw-порту 8765. Owner E2E и восстановление после падения процесса подтверждены; полный reboot/login Mac ещё не доказан."), url: "https://dash.cloudflare.com/ec00de0c2f5ffd6fda4034ca98f992f9/tunnels", cta: l("Tunnel settings", "Настройки Tunnel") },
+  { id: "models", title: "Workers AI · free-only", state: l("Source gate merged; runtime Free-plan readback in review", "Исходный допуск merged; runtime Free-plan проверяется"), tone: "review", text: l("#2123 source safety is merged. #2137 must prove the deployed source, Workers Free attestation and $0 bounded inference before activation; no paid fallback.", "#2123 уже merged. #2137 должен подтвердить deployed source, Workers Free и $0 bounded inference до активации; платного fallback нет."), url: "https://github.com/officeus-create/Hermes/pull/2137", cta: l("Runtime readback PR", "PR runtime-проверки") },
+  { id: "knowledge", title: "One Brain · Google Drive", state: l("Canonical knowledge source", "Единый источник знаний"), tone: "observed", text: l("Lessons and business rules are promoted only after independent QA, not directly from model output.", "Уроки и правила попадают сюда после проверки, не напрямую из ответа модели."), url: "https://docs.google.com/document/d/1ZhhySXskA7EdC40bWNNzSeMbvVKn7J1FPQOLNE-D98Y/edit", cta: l("Open One Brain", "Открыть One Brain") },
+  { id: "ci", title: "GitHub CI event sensor", state: l("Source merged; runtime QA receipt gate remains", "Исходный код merged; остаётся runtime QA receipt gate"), tone: "review", text: l("#2090 intake and #2138 separate independent-QA source are merged. Source merge is not a live D1 QA receipt; runtime acceptance remains evidence-gated by #2033 before any release path advances.", "#2090 intake и #2138 independent-QA source merged. Merge исходников не равен live D1 QA receipt; runtime acceptance остаётся под evidence-gate #2033."), url: "https://github.com/officeus-create/Hermes/pull/2138", cta: l("Independent QA activation", "Активация независимой QA") }
+];
+const roles = [
+  { name: "Agent Coordinator", detail: l("Route jobs to existing owners, never guess privileges", "Назначает задания существующим исполнителям, не придумывает права") },
+  { name: "Technology Developer", detail: l("Implement product/code changes under the active owner and exact-head release contract", "Реализует код в текущем owner lane и по exact-head release contract") },
+  { name: "Automatic Engineer", detail: l("Own the single HAE runtime and prepare bounded repairs; never self-approve", "Владеет единым HAE runtime и готовит ограниченные исправления; не утверждает себя сам") },
+  { name: "QA Auditor", detail: l("Independently compare failures to live and exact-head evidence", "Независимо проверяет ошибки по live и exact-head evidence") },
+  { name: "Access Governor", detail: l("Enforce least privilege, tenant scope, grant/review/revoke and connector boundaries", "Контролирует least privilege, tenant scope, выдачу/проверку/отзыв доступов и коннекторы") },
+  { name: "Knowledge Curator", detail: l("Promote accepted lessons to One Brain only after evidence and QA", "Передаёт подтверждённые уроки в One Brain только после evidence и QA") },
+  { name: "COO", detail: l("Close the work cell: acceptance, KPI boundary, blocker and next action", "Замыкает work cell: acceptance, KPI, blocker и следующий шаг") },
+  { name: l("Business specialists", "Бизнес-специалисты"), detail: "Logistics · Marketing · SEO/GEO · Sales · Academy · Finance · HR · Design" }
+];
+---
+
+<section class="ai-map" id="hermes-ai-architecture" data-ai-architecture aria-labelledby="ai-map-heading">
+  <header class="ai-map__header">
+    <div>
+      <p class="ai-map__kicker"><span class="ai-map__pulse" aria-hidden="true"></span> HERMES AI · OWNER CONTROL PLANE</p>
+      <h2 id="ai-map-heading">{l("AI system architecture", "Архитектура ИИ-системы")}</h2>
+      <p>{l("One view of what exists, how it works, why it is needed and exactly what must be verified before activation.", "Одна схема: что существует, как работает, зачем нужно и какие проверки необходимы перед включением.")}</p>
+    </div>
+    <span class="ai-map__mode">{l("Private owner workspace", "Приватная админка владельца")}</span>
+  </header>
+  <div class="ai-map__statusline">
+    <div><span class="ai-map__mini-label">{l("Mac AI runner", "ИИ на Mac")}</span><strong data-ai-map-runner>{l("Waiting for owner status", "Ожидание статуса владельца")}</strong><small data-ai-map-runner-time>{l("Not checked", "Не проверено")}</small></div>
+    <div><span class="ai-map__mini-label">HAE</span><strong>Worker · D1 · Queue</strong><small>{l("Existing canonical runtime", "Существующий единый runtime")}</small></div>
+    <div><span class="ai-map__mini-label">{l("Cloud models", "Облачные модели")}</span><strong>{l("1 candidate for initial test", "1 кандидат на первый тест")}</strong><small>{l("No accepted inference receipt yet", "Принятой квитанции inference ещё нет")}</small></div>
+    <div><span class="ai-map__mini-label">{l("External actions", "Внешние действия")}</span><strong>{l("Owner / QA gate", "Допуск владельца / QA")}</strong><small>{l("No paid AI fallback", "Платный fallback запрещён")}</small></div>
+  </div>
+  <div class="ai-map__tabs" role="tablist" aria-label={l("AI system sections", "Разделы ИИ-системы")}>
+    <button type="button" data-ai-map-tab="operations" id="ai-tab-operations" role="tab" aria-selected="true" aria-controls="ai-panel-operations">{l("Operations", "Работа сейчас")}</button>
+    <button type="button" data-ai-map-tab="flow" id="ai-tab-flow" role="tab" aria-selected="false" aria-controls="ai-panel-flow" tabindex="-1">{l("How it works", "Как работает")}</button>
+    <button type="button" data-ai-map-tab="models" id="ai-tab-models" role="tab" aria-selected="false" aria-controls="ai-panel-models" tabindex="-1">{l("Models and agents", "Модели и агенты")}</button>
+    <button type="button" data-ai-map-tab="connections" id="ai-tab-connections" role="tab" aria-selected="false" aria-controls="ai-panel-connections" tabindex="-1">{l("Connections", "Подключения")}</button>
+    <button type="button" data-ai-map-tab="rollout" id="ai-tab-rollout" role="tab" aria-selected="false" aria-controls="ai-panel-rollout" tabindex="-1">{l("Activation plan", "План запуска")}</button>
+  </div>
+  <div id="ai-panel-operations" data-ai-map-panel="operations" role="tabpanel" aria-labelledby="ai-tab-operations">
+    <p class="ai-map__section-copy">{l("Live owner telemetry comes from the existing authenticated Mac runner heartbeat. Missing values stay UNKNOWN; this screen does not invent progress.", "Живая телеметрия владельца приходит из существующего защищённого heartbeat Mac. Отсутствующие значения остаются НЕИЗВЕСТНО; экран не придумывает прогресс.")}</p>
+    <div class="ai-map__ops-grid">
+      <article class="ai-map__ops-card"><span class="ai-map__mini-label">{l("Execution", "Исполнение")}</span><h3>{l("Hermes AI runtime", "Runtime Hermes AI")}</h3><dl>
+        <div><dt>{l("Primary executor", "Основной исполнитель")}</dt><dd data-ai-ops-primary>UNKNOWN</dd></div>
+        <div><dt>{l("Phase", "Фаза")}</dt><dd data-ai-ops-phase>UNKNOWN</dd></div>
+        <div><dt>{l("Model", "Модель")}</dt><dd data-ai-ops-model>UNKNOWN</dd></div>
+        <div><dt>{l("Cycle", "Цикл")}</dt><dd data-ai-ops-cycle>UNKNOWN</dd></div>
+        <div><dt>Windows</dt><dd>{l("Deferred by owner · Mac is primary", "Отложен владельцем · основной Mac")}</dd></div>
+      </dl></article>
+      <article class="ai-map__ops-card ai-map__ops-card--wide"><span class="ai-map__mini-label">{l("Current work", "Текущая работа")}</span><h3 data-ai-ops-current>UNKNOWN</h3><p><strong>{l("Next:", "Дальше:")}</strong> <span data-ai-ops-next>UNKNOWN</span></p><p class="ai-map__ops-note">{l("Operational status only. Consequential actions remain behind existing QA / owner gates.", "Только операционный статус. Значимые действия остаются за существующими QA / owner gates.")}</p></article>
+      <article class="ai-map__ops-card"><span class="ai-map__mini-label">{l("Self-learning", "Самообучение")}</span><h3 data-ai-ops-training-phase>UNKNOWN</h3><p data-ai-ops-training-task>UNKNOWN</p></article>
+      <article class="ai-map__ops-card"><span class="ai-map__mini-label">{l("Autonomy guard", "Контроль автономности")}</span><h3>$0 · free-only</h3><dl>
+        <div><dt>{l("Unchanged skipped", "Пропущено без изменений")}</dt><dd data-ai-ops-cooldown>UNKNOWN</dd></div>
+        <div><dt>{l("Manifest scanned", "Проверено в manifest")}</dt><dd data-ai-ops-scanned>UNKNOWN</dd></div>
+        <div><dt>{l("External actions", "Внешние действия")}</dt><dd data-ai-ops-external-actions>UNKNOWN</dd></div>
+        <div><dt>{l("Provider writes", "Записи провайдерам")}</dt><dd data-ai-ops-provider-writes>UNKNOWN</dd></div>
+      </dl><p class="ai-map__ops-note">{l("Production, provider and One Brain writes stay independently gated.", "Записи в production, провайдерам и One Brain остаются независимо gated.")}</p></article>
+      <article class="ai-map__ops-card ai-map__team-preview"><span class="ai-map__mini-label">{l("Team view preview", "Предпросмотр для команды")}</span><h3>{l("Safe read-only snapshot", "Безопасный read-only обзор")}</h3><dl>
+        <div><dt>{l("Status", "Статус")}</dt><dd data-ai-team-status>UNKNOWN</dd></div>
+        <div><dt>{l("Phase", "Фаза")}</dt><dd data-ai-team-phase>UNKNOWN</dd></div>
+        <div><dt>{l("Current work", "Текущая работа")}</dt><dd data-ai-team-current>UNKNOWN</dd></div>
+        <div><dt>{l("Model", "Модель")}</dt><dd data-ai-team-model>UNKNOWN</dd></div>
+        <div><dt>{l("Heartbeat", "Heartbeat")}</dt><dd data-ai-team-heartbeat>UNKNOWN</dd></div>
+      </dl><p class="ai-map__ops-note">{l("Employee access is a separate read-only authorization step. Sensitive infrastructure and owner controls are excluded.", "Доступ сотрудников — отдельный read-only этап авторизации. Чувствительная инфраструктура и owner-controls исключены.")}</p></article>
+    </div>
+  </div>
+  <div id="ai-panel-flow" data-ai-map-panel="flow" role="tabpanel" aria-labelledby="ai-tab-flow" hidden>
+    <div class="ai-map__overview">
+      <div class="ai-map__flow">
+        {steps.map((step) => <article class="ai-map__step"><span class="ai-map__num">{step.id}</span><div><strong>{step.name}</strong><p>{step.note}</p></div></article>)}
+      </div>
+      <aside class="ai-map__principles">
+        <h3>{l("The division of responsibilities", "Кто за что отвечает")}</h3>
+        <p><strong>HAE</strong> — {l("the only job ledger, scheduler and permission boundary.", "единственный центр задач, расписания и разрешений.")}</p>
+        <p><strong>Hermes AI · Mac</strong> — {l("local context, audits and tools; offline is allowed.", "локальные знания, аудит и инструменты; может быть офлайн.")}</p>
+        <p><strong>Workers AI</strong> — {l("optional narrow AI capabilities, with evidence and quota checks.", "дополнительные узкие функции ИИ при наличии лимита и доказательств.")}</p>
+        <p><strong>One Brain</strong> — {l("canonical accepted knowledge, not automatic model memory.", "проверенные знания, а не бесконтрольная память моделей.")}</p>
+        <div class="ai-map__guard"><strong>{l("When a gate fails", "Если проверка не пройдена")}</strong><span>HOLD · WAITING_FREE_AI · PATCH_ONLY</span></div>
+        <button type="button" class="ai-map__outline" data-ai-task-preset="qa">{l("Prepare a real QA task", "Подготовить задачу QA")}</button>
+      </aside>
+    </div>
+  </div>
+  <div id="ai-panel-models" data-ai-map-panel="models" role="tabpanel" aria-labelledby="ai-tab-models" hidden>
+    <p class="ai-map__section-copy">{l("A catalog listing is not proof of free availability or deployment. These are candidate roles, not claims of active production agents.", "Наличие модели в каталоге не доказывает бесплатный доступ или запуск. Здесь обозначены роли-кандидаты, а не активные production-агенты.")}</p>
+    <div class="ai-map__model-grid">
+      {models.map((model) => <article class="ai-map__model"><div class="ai-map__model-top"><span class="ai-map__model-monogram">{model.title.slice(0,1)}</span><span class={"ai-map__flag "+model.tone}>{model.stage}</span></div><h3>{model.title}</h3><code>{model.name}</code><p>{model.role}</p><div class="ai-map__model-actions"><a href={model.link} target="_blank" rel="noopener noreferrer">{model.linkText} ↗</a><button type="button" data-ai-task-preset={model.action}>{l("Prepare test", "Подготовить тест")}</button></div></article>)}
+    </div>
+    <h3 class="ai-map__minor">{l("Planned work roles", "Роли рабочих агентов")}</h3>
+    <div class="ai-map__roles">{roles.map((role) => <div><strong>{role.name}</strong><small>{role.detail}</small></div>)}</div>
+    <h3 class="ai-map__minor">{l("HAE plugin runtime registry", "Реестр runtime-плагинов HAE")}</h3>
+    <p class="ai-map__section-copy">{l("Canonical compiled registry from the latest accepted private Plugin Creator readback. Versions are source evidence, not proof that a provider session is online now.", "Канонический compiled registry из последнего принятого приватного Plugin Creator readback. Версии — evidence по источнику, а не доказательство, что provider-сессия сейчас онлайн.")}</p>
+    <div class="ai-map__roles" data-plugin-registry>
+      {pluginRegistry.entries.map((entry) => <div data-plugin-role={entry.role_id}><strong>{entry.role_id}</strong><small>v{entry.plugin_version} · {entry.observed_at}</small></div>)}
+    </div>
+    <p class="ai-map__footnote" data-plugin-registry-source>{pluginRegistry.source_class} · {l("snapshot, not live provider status", "снимок, не live-статус провайдера")}</p>
+  </div>
+  <div id="ai-panel-connections" data-ai-map-panel="connections" role="tabpanel" aria-labelledby="ai-tab-connections" hidden>
+    <p class="ai-map__section-copy">{l("Each status identifies a source-level observation or a pending gate. Links open the existing provider/admin; no credential is stored here.", "Каждый статус — наблюдение по источнику или ожидаемая проверка. Ссылки открывают действующую админку провайдера; секреты здесь не хранятся.")}</p>
+    <div class="ai-map__connection-grid">
+      {connections.map((connection) => <article class="ai-map__connection"><div class="ai-map__connection-head"><h3>{connection.title}</h3><span class={"ai-map__flag "+connection.tone}>{connection.state}</span></div><p>{connection.text}</p><a href={connection.url} target="_blank" rel="noopener noreferrer">{connection.cta} ↗</a></article>)}
+    </div>
+    <p class="ai-map__footnote">{l("Source snapshot: 27 October 2026. Only Mac runner heartbeat above is refreshed from owner-authenticated API. Provider status must not silently become CONNECTED without authenticated readback.", "Снимок источников: 27 октября 2026. Только heartbeat Mac выше обновляется из API владельца. Статус провайдера не становится CONNECTED без подтверждённого readback.")}</p>
+  </div>
+  <div id="ai-panel-rollout" data-ai-map-panel="rollout" role="tabpanel" aria-labelledby="ai-tab-rollout" hidden>
+    <div class="ai-map__rollout">
+      <article><span class="ai-map__num">P0</span><div><h3>{l("One owner admin + exact access", "Одна админка + проверка доступа")}</h3><p>{l("Release Command Center through existing owner capability; verify Access policy, Tunnel 8766 and anonymous/other-user denial.", "Выпустить Command Center с проверкой прав владельца; протестировать Access, Tunnel 8766 и отказ постороннему.")}</p><button data-ai-task-preset="access" type="button">{l("Prepare work item", "Подготовить задачу")}</button></div></article>
+      <article><span class="ai-map__num">P1</span><div><h3>{l("One verified free cloud model", "Одна подтверждённая бесплатная модель")}</h3><p>{l("GLM synthetic task through existing HAE Worker; exact inference receipt, 0 paid spend, dry_run and quota gate.", "Синтетический вызов GLM через существующий HAE; квитанция inference, $0 расходов, dry_run и контроль квоты.")}</p><button data-ai-task-preset="glm" type="button">{l("Prepare work item", "Подготовить задачу")}</button></div></article>
+      <article><span class="ai-map__num">P2</span><div><h3>{l("Model routing and holdouts", "Маршрутизация и независимые тесты")}</h3><p>{l("Compare Clef and Clairic on held-out labels; use deterministic rules first, HOLD on uncertainty, no private corpus export.", "Проверить Clef и Clairic на контрольных примерах; правила первыми, HOLD при сомнениях, без отправки приватного корпуса.")}</p><button data-ai-task-preset="routing" type="button">{l("Prepare work item", "Подготовить задачу")}</button></div></article>
+      <article><span class="ai-map__num">P3</span><div><h3>{l("Closed-loop work and learning", "Исполнение и самообучение")}</h3><p>{l("GitHub/CI sensor → existing Queue/D1 → bounded patch → independent QA → reviewed One Brain lesson.", "GitHub/CI → существующие Queue/D1 → ограниченный патч → QA → проверенный урок One Brain.")}</p><button data-ai-task-preset="qa" type="button">{l("Prepare work item", "Подготовить задачу")}</button></div></article>
+    </div>
+    <p class="ai-map__footnote">{l("Preparing an item fills the existing owner form below; it does NOT dispatch an agent or create a cloud task until you save it.", "Подготовка задачи заполняет существующую форму ниже; она НЕ запускает агента и НЕ создаёт запись, пока вы не нажмёте «Сохранить».")}</p>
+  </div>
+  <script is:inline type="application/json" data-ai-map-translations set:html={JSON.stringify(translations).replace(/</g, "\\u003c")}></script>
+</section>
+
+<script>
+const root = document.querySelector<HTMLElement>("[data-ai-architecture]");
+if (root) {
+  // The site is statically generated: URL ?lang=ru must be applied client-side.
+  // All visible translations are defined alongside source strings, not remote data.
+  const locale = new URLSearchParams(location.search).get("lang");
+  const localMessages = root.querySelector<HTMLScriptElement>("[data-ai-map-translations]");
+  if (locale === "ru" && localMessages) {
+    let translations: Record<string, string> = {};
+    try { translations = JSON.parse(localMessages.textContent || "{}"); } catch { /* Keep source English; never invent localized content. */ }
+    const pairs = Object.entries(translations).sort((a, b) => b[0].length - a[0].length);
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    let node: Node | null;
+    while ((node = walker.nextNode())) {
+      if (node.parentElement?.closest("script,style")) continue;
+      let value = node.textContent || "";
+      for (const [en, local] of pairs) {
+        if (en && value.includes(en)) value = value.replace(en, local);
+      }
+      node.textContent = value;
+    }
+    root.querySelectorAll<HTMLElement>("[aria-label]").forEach((el) => {
+      const label = el.getAttribute("aria-label") || "";
+      if (translations[label]) el.setAttribute("aria-label", translations[label]);
+    });
+  }
+  const buttons = Array.from(root.querySelectorAll<HTMLButtonElement>("[data-ai-map-tab]"));
+  const panels = Array.from(root.querySelectorAll<HTMLElement>("[data-ai-map-panel]"));
+  const activate = (name: string) => {
+    buttons.forEach((button) => {
+      const isSelected = button.dataset.aiMapTab === name;
+      button.setAttribute("aria-selected", String(isSelected));
+      button.tabIndex = isSelected ? 0 : -1;
+    });
+    panels.forEach((panel) => { panel.hidden = panel.dataset.aiMapPanel !== name; });
+  };
+  buttons.forEach((button, index) => {
+    button.addEventListener("click", () => activate(button.dataset.aiMapTab || "operations"));
+    button.addEventListener("keydown", (event) => {
+      if (!["ArrowRight", "ArrowLeft", "Home", "End"].includes(event.key)) return;
+      event.preventDefault();
+      const next = event.key === "Home" ? 0 : event.key === "End" ? buttons.length - 1 : (index + (event.key === "ArrowRight" ? 1 : -1) + buttons.length) % buttons.length;
+      buttons[next]?.focus();
+      activate(buttons[next]?.dataset.aiMapTab || "operations");
+    });
+  });
+  const taskPresets: Record<string, { title: string; details: string }> = {
+    access: { title: "Hermes AI Access + Tunnel E2E acceptance", details: "Verify self-hosted owner-only Cloudflare Access app, named Tunnel -> signed-JWT bridge 127.0.0.1:8766, anonymous/other-user denial and authorized user acceptance. NO direct exposure of 8765, no public publishing before evidence." },
+    glm: { title: "HAE Workers AI · GLM free-only synthetic inference proof", details: "Via EXISTING HAE Worker + AI binding, run one synthetic bounded GLM-4.7-Flash dry_run exercise only after confirmed Workers Free plan, exact-head review, quota and $0 paid-ledger guard. Record source SHA, provider receipt, WAITING_FREE_AI on failure. No private corpus or paid fallback." },
+    clef: { title: "Clef-flash · held-out classifier evaluation", details: "SOURCE/DRAFT only. Evaluate @cf/cloudflare/clef-flash on synthetic held-out Hermes routing and intent cases, compare with deterministic rules and GLM. Check free eligibility, privacy and real consumption before any provider call; HOLD when uncertainty." },
+    clairic: { title: "Clairic · structured extraction evaluation", details: "SOURCE/DRAFT only. Test @cf/cloudflare/clairic on synthetic MC/DOT, dates, amounts and report fields against ground truth. Verify preview and Workers Free limits before any model call. Do not persist model guesses as facts." },
+    whisper: { title: "Whisper · audio consent and transcription pilot", details: "DRAFT only. Build consent/data-retention specification and synthetic audio benchmark. Do not ingest customer call recordings or social video audio without lawful access and privacy approval." },
+    routing: { title: "HAE capability router: local Qwen + cloud free models", details: "Reuse ONE HAE task authority (Worker/D1/Queue). Document routing by classification, quota and privacy; local Mac offline -> WAITING_LOCAL; no paid fallback. Benchmark held-out cases and independent QA before publishing or agent actions." },
+    qa: { title: "HAE verified learning and bounded repair pipeline", details: "Inspect current HAE #2033, merged #2138 independent-QA sensor source (#2090 intake merged), #2068 repair and #2069 lessons. One WORK_ID from real intake -> exact Queue/D1 readback -> PATCH_ONLY -> independent QA -> reviewed One Brain lesson -> later runtime consumption. No duplicate agents, no merge/deploy/publish without gates." }
+  };
+  root.querySelectorAll<HTMLButtonElement>("[data-ai-task-preset]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const draft = taskPresets[button.dataset.aiTaskPreset || ""];
+      const form = document.querySelector<HTMLFormElement>("[data-work-form]");
+      if (!draft || !form || form.closest("[data-private]")?.hasAttribute("hidden")) return;
+      const title = form.elements.namedItem("title");
+      const details = form.elements.namedItem("details");
+      const workstream = form.elements.namedItem("workstream");
+      const priority = form.elements.namedItem("priority");
+      if (!(title instanceof HTMLInputElement) || !(details instanceof HTMLTextAreaElement) || !(workstream instanceof HTMLSelectElement) || !(priority instanceof HTMLSelectElement)) return;
+      title.value = draft.title;
+      details.value = draft.details;
+      workstream.value = "technology";
+      priority.value = "p1";
+      form.dataset.source = "text";
+      const status = form.querySelector<HTMLElement>("[data-capture-status]");
+      if (status) status.textContent = "Черновик заполнен. Проверьте задачу и нажмите «Сохранить в очередь»; пока ничего не запущено.";
+      form.scrollIntoView({ behavior: "smooth", block: "center" });
+      details.focus({ preventScroll: true });
+    });
+  });
+}
+</script>
+
+<style>
+.ai-map{scroll-margin-top:11rem;margin:1.75rem 0 2rem;color:#142039;border:1px solid #dce4ed;border-radius:24px;background:#fff;box-shadow:0 22px 54px rgba(35,54,85,.07);overflow:hidden;font-size:1rem}
+.ai-map__header{display:flex;align-items:start;justify-content:space-between;gap:1.5rem;padding:clamp(1.25rem,3vw,2rem) clamp(1.25rem,3vw,2rem) 1.3rem;background:linear-gradient(125deg,#f4f8ff 0%,#fff 54%,#f5fbfa 100%)}
+.ai-map__header h2{font-size:clamp(1.5rem,3vw,2.15rem);letter-spacing:-.045em;margin:.45rem 0;color:#142039}
+.ai-map__header p:not(.ai-map__kicker){line-height:1.55;max-width:740px;color:#5a6a82;margin:0}
+.ai-map__kicker{font-size:.73rem;letter-spacing:.13em;font-weight:820;color:#205ab4;margin:0;display:flex;gap:.55rem;align-items:center}
+.ai-map__pulse{height:8px;width:8px;border-radius:50%;background:#288cbe}
+.ai-map__mode{border:1px solid #dce5ef;padding:.55rem .75rem;border-radius:999px;background:#fff;color:#49607d;white-space:nowrap;font-size:.75rem;font-weight:740}
+.ai-map__statusline{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-block:1px solid #e6ebf2;background:#fff}
+.ai-map__statusline>div{padding:1.05rem 1.3rem;border-right:1px solid #e7ecf3;display:grid;gap:.26rem;min-width:0}
+.ai-map__statusline>div:last-child{border:0}.ai-map__mini-label{color:#647a97;font-size:.65rem;text-transform:uppercase;letter-spacing:.11em;font-weight:750}
+.ai-map__statusline strong{font-size:.9rem;color:#1f2c46}.ai-map__statusline small{font-size:.72rem;color:#79869a}
+.ai-map__tabs{display:flex;gap:.4rem;padding:.7rem 1.15rem;overflow:auto;border-bottom:1px solid #e8edf4}
+.ai-map__tabs button{white-space:nowrap;border:0;border-radius:10px;background:transparent;color:#526884;padding:.65rem .85rem;cursor:pointer;font-size:.82rem;font-weight:780}
+.ai-map__tabs button[aria-selected="true"]{background:#eaf2ff;color:#2056a4}
+.ai-map__tabs button:focus-visible,.ai-map button:focus-visible,.ai-map a:focus-visible{outline:3px solid #61a4f9;outline-offset:2px}
+.ai-map [role="tabpanel"]{padding:clamp(1rem,2.7vw,1.5rem)}.ai-map [hidden]{display:none!important}
+.ai-map__overview{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(270px,.75fr);gap:1rem}
+.ai-map__flow{display:grid;gap:.32rem}.ai-map__step{display:flex;gap:.9rem;align-items:center;border-radius:13px;background:#f8fafd;padding:.8rem 1rem;border:1px solid #e8edf4;position:relative}
+.ai-map__num{flex-shrink:0;display:inline-grid;place-items:center;min-width:38px;height:38px;padding:0 .2rem;border-radius:11px;color:#2464bd;background:#e8f1ff;font-size:.79rem;font-weight:850}
+.ai-map__step strong{display:block;font-size:.93rem;color:#182a43}.ai-map__step p{margin:.2rem 0 0;color:#64758d;font-size:.77rem;line-height:1.45}
+.ai-map__principles{background:#f5f8ff;border:1px solid #e1eafa;border-radius:16px;padding:1.2rem}
+.ai-map__principles h3,.ai-map__minor{font-size:1.05rem;margin:0 0 1rem;color:#183051}
+.ai-map__principles p{font-size:.82rem;color:#63728a;line-height:1.6;margin:.65rem 0}.ai-map__principles p strong{color:#243a58}
+.ai-map__guard{display:grid;gap:.35rem;margin:1.2rem 0;border-left:3px solid #dfaa49;padding:.5rem .7rem;background:#fffaf0;color:#765a24;font-size:.77rem}
+.ai-map__outline{min-height:41px;padding:.6rem .9rem;border:1px solid #b9cfee;color:#1f58a4;background:#fff;border-radius:10px;font-weight:790;cursor:pointer}
+.ai-map__section-copy{font-size:.85rem;line-height:1.65;margin:0 0 1rem;color:#586f88;max-width:850px}
+.ai-map__ops-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.75rem}
+.ai-map__ops-card{border:1px solid #e0e7f0;border-radius:15px;padding:1rem;background:#fff;min-width:0}
+.ai-map__ops-card--wide{grid-column:span 2;background:linear-gradient(135deg,#f7faff,#fff)}
+.ai-map__ops-card h3{font-size:1rem;margin:.45rem 0 .65rem;color:#172b45;overflow-wrap:anywhere}
+.ai-map__ops-card p{font-size:.8rem;line-height:1.55;color:#61738b;overflow-wrap:anywhere}
+.ai-map__ops-card dl{display:grid;gap:.42rem;margin:.6rem 0 0}
+.ai-map__ops-card dl div{display:grid;grid-template-columns:minmax(120px,.8fr) minmax(0,1.2fr);gap:.7rem;padding:.34rem 0;border-bottom:1px solid #edf1f5}
+.ai-map__ops-card dl div:last-child{border-bottom:0}.ai-map__ops-card dt{color:#7a8798;font-size:.72rem}.ai-map__ops-card dd{margin:0;color:#243b58;font-size:.78rem;font-weight:760;overflow-wrap:anywhere}
+.ai-map__ops-note{margin:.7rem 0 0!important;color:#718095!important;font-size:.72rem!important}.ai-map__team-preview{background:#f8fbfa}
+.ai-map__model-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.85rem}
+.ai-map__model,.ai-map__connection{border:1px solid #e0e7f0;border-radius:15px;padding:1rem;display:flex;flex-direction:column;min-width:0;background:#fff}
+.ai-map__model-top,.ai-map__connection-head{display:flex;justify-content:space-between;align-items:start;gap:.65rem}
+.ai-map__model-monogram{height:39px;width:39px;border-radius:12px;background:#e6f0ff;color:#265bb0;display:grid;place-items:center;font-weight:840}
+.ai-map__flag{font-size:.65rem;line-height:1.4;border-radius:8px;padding:.33rem .5rem;font-weight:770;text-align:right;max-width:68%}
+.ai-map__flag.observed{color:#277456;background:#e8f6ed}.ai-map__flag.review{color:#8a6522;background:#fff4da}.ai-map__flag.planned{color:#6b7280;background:#f1f3f6}
+.ai-map__model h3,.ai-map__connection h3{font-size:1.05rem;letter-spacing:-.025em;margin:.85rem 0 .3rem;color:#162942}
+.ai-map__model code{font-size:.7rem;word-break:break-all;color:#52749b}
+.ai-map__model p,.ai-map__connection p{font-size:.82rem;line-height:1.55;color:#65748a;flex:1}
+.ai-map__model-actions{display:flex;flex-wrap:wrap;gap:.7rem;align-items:center}
+.ai-map__model a,.ai-map__connection a{font-size:.76rem;font-weight:820;color:#225cae;text-decoration:none}
+.ai-map__model button,.ai-map__rollout button{background:#f1f6ff;color:#225cae;border:1px solid #d9e7fc;border-radius:8px;font-weight:750;font-size:.77rem;padding:.55rem .7rem;cursor:pointer}
+.ai-map__minor{margin:1.5rem 0 .75rem}.ai-map__roles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.6rem}
+.ai-map__roles>div{background:#f8fafc;border:1px solid #edf0f6;padding:.75rem;border-radius:12px;display:grid;gap:.3rem}
+.ai-map__roles strong{font-size:.8rem}.ai-map__roles small{font-size:.72rem;line-height:1.45;color:#6a7a90}
+.ai-map__connection-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.75rem}
+.ai-map__connection h3{margin:0}.ai-map__connection a{margin-top:auto}
+.ai-map__footnote{font-size:.72rem;line-height:1.6;color:#6f8295;margin:1.15rem 0 0}
+.ai-map__rollout{display:grid;gap:.65rem}.ai-map__rollout article{display:flex;gap:.95rem;padding:1rem;background:#f8fafc;border:1px solid #e7edf4;border-radius:14px}
+.ai-map__rollout h3{font-size:.95rem;margin:.05rem 0 .4rem}.ai-map__rollout p{margin:.1rem 0 .65rem;color:#687b90;font-size:.81rem;line-height:1.5}
+@media(max-width:950px){.ai-map__statusline{grid-template-columns:repeat(2,1fr)}.ai-map__overview{grid-template-columns:1fr}.ai-map__roles{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.ai-map__header{flex-direction:column}.ai-map__mode{white-space:normal}.ai-map__statusline{grid-template-columns:1fr 1fr}.ai-map__statusline>div{padding:.78rem}.ai-map__ops-grid,.ai-map__model-grid,.ai-map__connection-grid,.ai-map__roles{grid-template-columns:1fr}.ai-map__ops-card--wide{grid-column:auto}.ai-map__ops-card dl div{grid-template-columns:1fr}.ai-map__flag{max-width:62%}.ai-map__tabs{padding:.5rem}}
+</style>

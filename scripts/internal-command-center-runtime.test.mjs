@@ -3,6 +3,8 @@ import { DatabaseSync } from "node:sqlite";
 import { onRequestGet as listWorkItems, onRequestPost as createWorkItem } from "../functions/api/internal-command-center/work-items.ts";
 import { onRequestPatch as mutateWorkItem } from "../functions/api/internal-command-center/work-items/[id].ts";
 import { onRequestGet as listAccess, onRequestPost as mutateAccess } from "../functions/api/internal-command-center/access.ts";
+import { onRequestGet as aiStatus } from "../functions/api/internal-ai/status.ts";
+import { onRequestGet as listAiTasks } from "../functions/api/internal-ai/tasks.ts";
 import { onRequestGet as listProjects, onRequestPost as createProject } from "../functions/api/internal-command-center/projects.ts";
 import { onRequestPatch as editProject } from "../functions/api/internal-command-center/projects/[id].ts";
 import { ensureInternalAiSchema } from "../functions/api/_lib/internal-ai.mjs";
@@ -214,6 +216,45 @@ assert.equal(retriedSecond.response.status,200,
 assert.equal(retriedSecond.payload.work_item.status,"in_progress");
 assert.notEqual(retriedSecond.payload.task.id,failedTaskId);
 assert.equal(retriedSecond.payload.work_item.linked_task_id,retriedSecond.payload.task.id);
+
+sqlite.prepare("INSERT INTO hermes_internal_ai_runner_state (id,organization_scope,last_seen_at,repo_sha,runtime_version,telemetry_json) VALUES (?,?,?,?,?,?)").run(
+  "internal-ai-mac-runner","hermes_internal",new Date().toISOString(),"synthetic-sha","synthetic-runtime",
+  JSON.stringify({status:"RUNNING",phase:"AUTONOMOUS_OPERATIONS_AND_LEARNING",cycle:563,current_task:"Owner task Jane Doe jane@example.invalid at https://internal.example.invalid/tenant/123",next_action:"Owner-only next action",model:"qwen3.5:4b",last_training_phase:"DOCUMENTARY_REVIEW",autonomy:{external_actions:0,provider_writes:0}})
+);
+sqlite.prepare("INSERT INTO hermes_internal_ai_events (organization_scope,task_id,event_type,message,created_at) VALUES (?,?,?,?,?)").run("hermes_internal",retriedSecond.payload.task.id,"output","Synthetic latest log event",now);
+const taskHistoryResponse=await listAiTasks({request:request("/api/internal-ai/tasks"),env:{DB:db}});
+assert.equal(taskHistoryResponse.status,200);
+const taskHistory=await taskHistoryResponse.json();
+assert.equal(taskHistory.timing_policy,"timestamps_only");
+const currentExecution=taskHistory.tasks.find(task=>task.id===retriedSecond.payload.task.id);
+assert.equal(currentExecution.last_event.type,"output");
+assert.equal(currentExecution.progress_percent,null);
+assert.equal(currentExecution.eta_label,"UNKNOWN");
+
+let viewerStatus=await aiStatus({request:request("/api/internal-ai/status",{owner:"delegate"}),env:{DB:db}});
+assert.equal(viewerStatus.status,403,"generic Hermes account must not inherit Team View");
+const teamGrant=await mutateAccess({request:request("/api/internal-command-center/access",{method:"POST",body:{action:"grant",email:"delegate@example.invalid",capability:"team_view"}}),env:{DB:db}});
+assert.equal(teamGrant.status,200);
+viewerStatus=await aiStatus({request:request("/api/internal-ai/status",{owner:"delegate"}),env:{DB:db}});
+assert.equal(viewerStatus.status,200);
+const teamStatus=await viewerStatus.json();
+assert.equal(teamStatus.access_level,"team");
+assert.equal(teamStatus.runtime.operations.model,null,"Team View must hide raw model telemetry");
+assert.equal(teamStatus.runtime.operations.phase,null,"Team View must hide arbitrary phases");
+assert.equal(teamStatus.runtime.operations.status,"RUNNING");
+assert.equal(teamStatus.runtime.operations.current_task,"Task active — details private");
+for(const privateSnippet of ["Jane Doe","jane@example.invalid","internal.example.invalid","tenant/123"]){
+  assert.equal(JSON.stringify(teamStatus).includes(privateSnippet),false,"Team View must redact private owner telemetry: "+privateSnippet);
+}
+const ownerStatus=await aiStatus({request:request("/api/internal-ai/status"),env:{DB:db}});
+assert.equal(ownerStatus.status,200,"Owner must retain access to authorized telemetry");
+assert.match(JSON.stringify(await ownerStatus.json()),/Jane Doe/,"Owner-only telemetry stays available");
+assert.equal("repo_sha" in teamStatus.runtime,false,"Team View must hide repo metadata");
+assert.equal("active_task" in teamStatus,false,"Team View must hide owner task details");
+const teamRevoke=await mutateAccess({request:request("/api/internal-command-center/access",{method:"POST",body:{action:"revoke",email:"delegate@example.invalid",capability:"team_view"}}),env:{DB:db}});
+assert.equal(teamRevoke.status,200);
+viewerStatus=await aiStatus({request:request("/api/internal-ai/status",{owner:"delegate"}),env:{DB:db}});
+assert.equal(viewerStatus.status,403,"revoked Team View must fail closed");
 
 const grant=await mutateAccess({request:request("/api/internal-command-center/access",{method:"POST",body:{action:"grant",email:"delegate@example.invalid"}}),env:{DB:db}});
 assert.equal(grant.status,200);

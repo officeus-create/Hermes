@@ -15,6 +15,20 @@ export async function ensureInternalAiSchema(db) {
     created_at TEXT NOT NULL,
     updated_at TEXT NOT NULL
   )`).run();
+  await db.prepare(`CREATE TABLE IF NOT EXISTS hermes_internal_team_view_access (
+    specialist_id TEXT PRIMARY KEY,
+    active INTEGER NOT NULL DEFAULT 0 CHECK (active IN (0,1)),
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL
+  )`).run();
+  await db.prepare(`CREATE TABLE IF NOT EXISTS hermes_internal_team_view_access_audit (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    organization_scope TEXT NOT NULL CHECK (organization_scope = 'hermes_internal'),
+    actor_specialist_id TEXT NOT NULL,
+    target_specialist_id TEXT NOT NULL,
+    action TEXT NOT NULL CHECK (action IN ('grant','revoke')),
+    created_at TEXT NOT NULL
+  )`).run();
   await db.prepare(`CREATE TABLE IF NOT EXISTS hermes_internal_ai_tasks (
     id TEXT PRIMARY KEY,
     organization_scope TEXT NOT NULL CHECK (organization_scope = 'hermes_internal'),
@@ -63,8 +77,12 @@ export async function ensureInternalAiSchema(db) {
     organization_scope TEXT NOT NULL CHECK (organization_scope = 'hermes_internal'),
     last_seen_at TEXT NOT NULL,
     repo_sha TEXT,
-    runtime_version TEXT
+    runtime_version TEXT,
+    telemetry_json TEXT
   )`).run();
+  const runnerColumns = await db.prepare("PRAGMA table_info(hermes_internal_ai_runner_state)").all();
+  const runnerColumnNames = new Set((runnerColumns.results || []).map((column) => column.name));
+  if (!runnerColumnNames.has("telemetry_json")) await db.prepare("ALTER TABLE hermes_internal_ai_runner_state ADD COLUMN telemetry_json TEXT").run();
 }
 
 export async function requireInternalOwner(request, env) {
@@ -75,6 +93,18 @@ export async function requireInternalOwner(request, env) {
   const access = await env.DB.prepare(`SELECT specialist_id, capability FROM hermes_internal_owner_access WHERE specialist_id = ? AND active = 1 AND capability = 'HERMES_INTERNAL_OWNER' LIMIT 1`).bind(specialist.id).first();
   if (!access) return { response: jsonResponse(403, { success: false, error: "hermes_internal_owner_required" }) };
   return { specialist, access };
+}
+
+export async function requireInternalAiViewer(request, env) {
+  if (!env.DB) return { response: jsonResponse(503, { success: false, error: "database_not_configured" }) };
+  const specialist = await getAuthenticatedSpecialist(request, env.DB);
+  if (!specialist) return { response: jsonResponse(401, { success: false, error: "not_authenticated" }) };
+  await ensureInternalAiSchema(env.DB);
+  const ownerAccess = await env.DB.prepare("SELECT specialist_id FROM hermes_internal_owner_access WHERE specialist_id = ? AND active = 1 AND capability = 'HERMES_INTERNAL_OWNER' LIMIT 1").bind(specialist.id).first();
+  if (ownerAccess) return { specialist, access_level: "owner" };
+  const teamAccess = await env.DB.prepare("SELECT specialist_id FROM hermes_internal_team_view_access WHERE specialist_id = ? AND active = 1 LIMIT 1").bind(specialist.id).first();
+  if (!teamAccess) return { response: jsonResponse(403, { success: false, error: "hermes_internal_view_required" }) };
+  return { specialist, access_level: "team" };
 }
 
 function timingSafeEqualText(left, right) {
@@ -110,6 +140,43 @@ export function sanitizeExecutionText(value, maxLength = MAX_EVENT_LENGTH) {
     .replace(/((?:api[_-]?key|authorization|bearer|token|secret|password)\s*[:=]\s*)[^\s,;]+/gi, "$1[REDACTED]")
     .slice(0, Math.max(1, maxLength));
 }
+function boundedRunnerCount(value) {
+  const number = Number(value);
+  return Number.isInteger(number) && number >= 0 && number <= 1000000000 ? number : null;
+}
+export function sanitizeRunnerTelemetry(value = {}) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+  const autonomySource = value.autonomy && typeof value.autonomy === "object" && !Array.isArray(value.autonomy) ? value.autonomy : {};
+  const autonomy = {
+    cooldown_skipped: boundedRunnerCount(autonomySource.cooldown_skipped),
+    manifest_scanned: boundedRunnerCount(autonomySource.manifest_scanned),
+    external_actions: boundedRunnerCount(autonomySource.external_actions),
+    provider_writes: boundedRunnerCount(autonomySource.provider_writes),
+  };
+  const telemetry = {
+    status: sanitizeExecutionText(value.status, 48) || null,
+    phase: sanitizeExecutionText(value.phase, 120) || null,
+    cycle: boundedRunnerCount(value.cycle),
+    current_task: sanitizeExecutionText(value.current_task, 700) || null,
+    next_action: sanitizeExecutionText(value.next_action, 900) || null,
+    model: sanitizeExecutionText(value.model, 120) || null,
+    last_training_phase: sanitizeExecutionText(value.last_training_phase, 120) || null,
+    last_training_task: sanitizeExecutionText(value.last_training_task, 700) || null,
+    autonomy,
+  };
+  const hasAutonomy = Object.values(autonomy).some((entry) => entry !== null);
+  const hasValue = Object.entries(telemetry).some(([key, entry]) => key !== "autonomy" && entry !== null);
+  return hasValue || hasAutonomy ? telemetry : null;
+}
+export function parseRunnerTelemetry(value) {
+  if (!value) return null;
+  try {
+    return sanitizeRunnerTelemetry(JSON.parse(String(value)));
+  } catch {
+    return null;
+  }
+}
+
 export function sanitizeTaskResult(payload = {}) {
   const status = TASK_STATES.has(payload.status) ? payload.status : "failed";
   return {
@@ -125,6 +192,31 @@ export function sanitizeTaskResult(payload = {}) {
 export function publicTask(row) {
   if (!row) return null;
   return { id: row.id, organization_scope: row.organization_scope, agent_role: row.agent_role, status: row.status, created_at: row.created_at, started_at: row.started_at, completed_at: row.completed_at, updated_at: row.updated_at, repo_sha: row.repo_sha, branch: row.branch, pr_url: row.pr_url, evidence_class: row.evidence_class, output_summary: row.output_summary, approval_gate: row.approval_gate, approval_state: row.status === "needs_approval" ? "awaiting_approval" : row.approval_granted_at ? "approved" : null, approval_granted_at: row.approval_granted_at || null, approval_attempt: Number(row.approval_attempt || 0), cancel_requested: Boolean(row.cancel_requested) };
+}
+// A future or stale heartbeat is never evidence of a currently running Mac worker.
+export function isRunnerHeartbeatFresh(lastSeenAt, observedNow = Date.now()) {
+  const lastSeen = typeof lastSeenAt === "string" && lastSeenAt.trim() ? Date.parse(lastSeenAt) : NaN;
+  return Number.isFinite(observedNow) && Number.isFinite(lastSeen) && lastSeen > 0 &&
+    lastSeen <= observedNow && observedNow - lastSeen <= 90000;
+}
+
+// Only observed running work accrues time; terminal duration needs a consistent end receipt.
+// No timestamp, incompatible status, clock skew or future-dated completion means UNKNOWN.
+export function publicTaskTiming(row, now = Date.now()) {
+  const started = row?.started_at ? Date.parse(row.started_at) : NaN;
+  const completed = row?.completed_at ? Date.parse(row.completed_at) : NaN;
+  const validStarted = Number.isFinite(now) && Number.isFinite(started) && started > 0 && started <= now;
+  const terminal = ["completed", "failed", "cancelled"].includes(row?.status);
+  const validCompleted = terminal && validStarted && Number.isFinite(completed) && completed >= started && completed <= now;
+  const running = row?.status === "running" && validStarted && !row?.completed_at;
+  const elapsedSeconds = validCompleted ? Math.floor((completed - started) / 1000) : running ? Math.floor((now - started) / 1000) : null;
+  return {
+    elapsed_seconds: elapsedSeconds,
+    duration_seconds: validCompleted ? elapsedSeconds : null,
+    progress_percent: null,
+    eta: null,
+    eta_label: "UNKNOWN",
+  };
 }
 export function runnerTask(row) {
   const task = publicTask(row);
