@@ -24,6 +24,13 @@ for (const path of ["access/index.astro", "academy/auth/index.astro", "academy/b
   assert.match(source, /=== "ru"/, `${path}: must select Russian`);
 }
 
+// The access page explains where registration is and keeps the header Sign in useful.
+const access = read("access/index.astro");
+assert.match(access, /id="new-business"/);
+assert.match(access, /data-i18n="noAccountLink"/);
+assert.match(access, /closest\?\.\("\[data-hermes-sign-in\]"\)/);
+for (const key of ["noAccount", "noAccountLink"]) assert.equal((access.match(new RegExp(`${key}:"`, "g")) ?? []).length, 3, `${key} must exist in uk, ru and en`);
+
 // Home Services access carries its own dictionary: ru and uk must match each other and every hook.
 const hs = read("home-services/access/index.astro");
 const dict = JSON.parse(hs.match(/const DICT = (\{.*?\});\n\s+const EN_MSG/s)[1]);
@@ -50,4 +57,18 @@ assert.ok(errorKeys("en").length >= 5, "google: English error copy must be found
 for (const lang of ["ru", "uk"]) assert.deepEqual(errorKeys(lang), errorKeys("en"), `google: ${lang} must translate every error code`);
 assert.match(google, /divider: "или продолжите по email"/);
 assert.match(google, /divider: "або продовжте через email"/);
+
+// Website Factory: the Ukrainian dictionary must cover exactly the English keys the Russian one does.
+const factoryLocale = readFileSync(new URL("../public/scripts/website-factory-locale.mjs", import.meta.url), "utf8");
+const mapKeys = (name) => {
+  const start = factoryLocale.indexOf(`const ${name} = new Map(Object.entries({`);
+  const end = factoryLocale.indexOf("}));", start);
+  assert.ok(start >= 0 && end > start, `factory ${name} map must exist`);
+  return [...factoryLocale.slice(start, end).matchAll(/^  ("(?:[^"\\]|\\.)*"): /gm)].map((m) => m[1]).sort();
+};
+const ruKeys = mapKeys("ru");
+const ukKeys = mapKeys("uk");
+assert.ok(ruKeys.length > 150, "factory ru map must be found");
+assert.deepEqual(ukKeys, ruKeys, "factory uk map must have exactly the ru keys");
+assert.match(factoryLocale, /const dictionary = locale === "ru" \? ru : locale === "uk" \? uk : null;/);
 console.log("connect-auth-language: access, academy, academy business and home services complete in RU; home services UK complete.");

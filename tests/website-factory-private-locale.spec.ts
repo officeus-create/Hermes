@@ -114,3 +114,28 @@ test("Russian Website Factory stays on the same noindex route and localizes the 
     expect(factoryText || "").not.toContain(forbidden);
   }
 });
+
+test("Ukrainian Website Factory stays on the same noindex route and localizes the full wizard", async ({ page }) => {
+  await mockFactory(page);
+  await page.goto("/services/hermes-connect/website-factory/?lang=uk", { waitUntil: "domcontentloaded" });
+
+  await expect(page).toHaveURL(/\/services\/hermes-connect\/website-factory\/\?lang=uk$/);
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", /noindex,nofollow/);
+  await expect(page.locator("[data-hc-product-context] .hc-product-context__summary strong")).toHaveText("ПРИВАТНИЙ ПРОЦЕС WEBSITE FACTORY");
+  await expect(page.locator("[data-hc-english-only]")).toHaveCount(0);
+  await expect(page.getByRole("heading", { name: "Спочатку складіть бриф — потім створюйте сайт." })).toBeVisible();
+  await expect(page.getByText("Ваші брифи сайтів", { exact: true })).toBeVisible();
+
+  await page.getByRole("button", { name: "Почати новий сайт" }).click();
+  await expect(page.locator("[data-wizard-view]")).toBeVisible();
+  await expect(page.locator("[data-step-count]")).toHaveText("Крок 1 з 9");
+  await expect(page.locator('[data-step="1"] h3')).toHaveText("Де ваш бізнес уже представлений?");
+  await expect(page.locator('[data-step="9"] h3')).toHaveText("Створіть бриф сайту.");
+  await expect(page.locator('[data-step="9"] > p:not(.factory-kicker)')).toContainText("Вона не стверджує, що production-процес створення сайту вже запущено.");
+  await expect(page.getByRole("button", { name: "Зберегти й продовжити" })).toBeVisible();
+
+  const factoryText = await page.locator(".factory-page").textContent();
+  for (const forbidden of ["Where does your business already exist?", "Create the website brief.", "Save & continue"]) {
+    expect(factoryText || "").not.toContain(forbidden);
+  }
+});
