@@ -209,7 +209,36 @@ document.querySelectorAll<HTMLButtonElement>("[data-focus-workstream]").forEach(
 const initialDirection=new URLSearchParams(location.search).get("direction");if(initialDirection&&["marketing","logistics","sales","technology","academy","finance","operations"].includes(initialDirection)){filter=initialDirection;switchView("tasks");const initialButton=q("[data-filters]")?.querySelector<HTMLButtonElement>(`[data-filter="${CSS.escape(initialDirection)}"]`);q("[data-filters]")?.querySelectorAll("button").forEach(x=>x.classList.toggle("active",x===initialButton));setText("[data-backlog-title]",t("Work queue · ","Очередь · ")+initialDirection.charAt(0).toUpperCase()+initialDirection.slice(1));}
 q("[data-filters]")?.addEventListener("click",(e)=>{const b=(e.target as HTMLElement).closest<HTMLButtonElement>("[data-filter]");if(!b)return;filter=b.dataset.filter||"open";q("[data-filters]")?.querySelectorAll("button").forEach(x=>x.classList.toggle("active",x===b));renderItems()});
 function renderAccount(data:any){const box=q("[data-account-workspaces]");if(!box)return;box.replaceChildren();const identity=data.identity||{};setText("[data-account-identity]",identity.name||identity.email||t("Owner account","Аккаунт владельца"));const rows=[...(data.owned_businesses||[]).map((x:any)=>({label:x.name||x.key,href:x.href,state:x.workspace_state||"business"})),...(data.workspaces||[]).map((x:any)=>({label:String(x.key||"workspace").replaceAll("_"," "),href:x.href,state:x.kind||"workspace"}))];if(!rows.length){const p=document.createElement("p");p.className="muted";p.textContent=t("No connected business workspaces for this account yet.","У этого аккаунта пока нет подключённых бизнес-workspaces.");box.append(p);return}rows.forEach((row:any)=>{const a=document.createElement("a");a.className="workspace-tile";a.href=String(row.href||"#");const strong=document.createElement("strong");strong.textContent=String(row.label||"Workspace");const small=document.createElement("small");small.textContent=String(row.state||"workspace").replaceAll("_"," ");a.append(strong,small);box.append(a)})}
-function renderOwners(data:any){const box=q("[data-owner-list]");if(!box)return;box.replaceChildren();(data.access||[]).forEach((owner:any)=>{const row=document.createElement("div");row.className="owner-row";const identity=document.createElement("div");const strong=document.createElement("strong");strong.textContent=owner.name||owner.email||owner.specialist_id;const small=document.createElement("small");small.textContent=(owner.email||"")+" · "+(owner.active?t("active","активен"):t("revoked","отозван"));identity.append(strong,small);const tag=document.createElement("span");tag.textContent=owner.specialist_id===data.current_specialist_id?t("You","Вы"):(owner.active?t("Owner","Владелец"):t("Inactive","Неактивен"));row.append(identity,tag);box.append(row)})}
-q<HTMLFormElement>("[data-access-form]")?.addEventListener("submit",async(e)=>{e.preventDefault();const submit=(e as SubmitEvent).submitter as HTMLButtonElement|null;const action=submit?.value||"grant";const form=e.currentTarget as HTMLFormElement;const data=new FormData(form);if(!confirm(action==="grant"?t("Grant internal owner access to this existing Hermes account?","Выдать этому существующему Hermes-аккаунту внутренний owner-доступ?"):t("Revoke internal owner access from this account?","Отозвать внутренний owner-доступ у этого аккаунта?")))return;const x=await jsonFetch("/api/internal-command-center/access",{method:"POST",body:JSON.stringify({action,email:data.get("email")})});setText("[data-access-status]",x.r.ok?t("Access updated.","Доступ обновлён."):String(x.d.error||"access_update_failed"));if(x.r.ok){form.reset();await loadAll()}});
+function renderOwners(data:any){
+  const box=q("[data-owner-list]");if(!box)return;box.replaceChildren();
+  const owners=(Array.isArray(data.access)?data.access:[]).map((entry:any)=>({...entry,permission:"owner"}));
+  const viewers=(Array.isArray(data.team_access)?data.team_access:[]).map((entry:any)=>({...entry,permission:"team_view"}));
+  const all=[...owners,...viewers];
+  if(!all.length){const p=document.createElement("p");p.className="muted";p.textContent=t("No granted access yet.","Доступы ещё не выданы.");box.append(p);return}
+  all.forEach((entry:any)=>{
+    const row=document.createElement("div");row.className="owner-row";
+    const identity=document.createElement("div");const strong=document.createElement("strong");
+    strong.textContent=String(entry.name||entry.email||entry.specialist_id||"Hermes account");
+    const small=document.createElement("small");
+    const role=entry.permission==="team_view"?t("Team View · read only","Team View · только чтение"):t("Owner · full access","Владелец · полный доступ");
+    small.textContent=String(entry.email||"")+" · "+role+" · "+(entry.active?t("active","активен"):t("revoked","отозван"));
+    identity.append(strong,small);
+    const tag=document.createElement("span");
+    tag.textContent=entry.specialist_id===data.current_specialist_id?t("You","Вы"):(entry.active?t("Granted","Выдан"):t("Inactive","Неактивен"));
+    row.append(identity,tag);box.append(row);
+  });
+}
+q<HTMLFormElement>("[data-access-form]")?.addEventListener("submit",async(e)=>{
+  e.preventDefault();
+  const submit=(e as SubmitEvent).submitter as HTMLButtonElement|null;
+  const action=submit?.value||"grant";const form=e.currentTarget as HTMLFormElement;const data=new FormData(form);
+  const capability=data.get("capability")==="owner"?"owner":"team_view";
+  const permissionLabel=capability==="owner"?t("full owner access","полные права владельца"):t("read-only Team View","Team View только для чтения");
+  const prompt=action==="grant"?t("Grant ","Выдать "):t("Revoke ","Отозвать ");
+  if(!confirm(prompt+permissionLabel+"?"))return;
+  const x=await jsonFetch("/api/internal-command-center/access",{method:"POST",body:JSON.stringify({action,email:data.get("email"),capability})});
+  setText("[data-access-status]",x.r.ok?t("Access updated.","Доступ обновлён."):String(x.d.error||"access_update_failed"));
+  if(x.r.ok){form.reset();await loadAll()}
+});
 void loadAll();const timer=setInterval(()=>void loadAll(),15000);addEventListener("pagehide",()=>clearInterval(timer),{once:true});
 </script>
