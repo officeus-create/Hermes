@@ -64,6 +64,10 @@ const hasAttr = (tag, name) => new RegExp(`\\b${name}(?:\\s*=|\\s|>)`, "i").test
 
 const tags = (html, tagName) => [...html.matchAll(new RegExp(`<${tagName}\\b[^>]*>`, "gi"))].map((match) => match[0]);
 const elements = (html, tagName) => [...html.matchAll(new RegExp(`<${tagName}\\b[^>]*>([\\s\\S]*?)<\\/${tagName}>`, "gi"))];
+// HTML <template> content is inert until activated by client JS. Static SEO checks
+// must count rendered page headings, not headings staged inside locale templates.
+const renderedElements = (html, tagName) => elements(html.replace(/<template\\b[^>]*>[\\s\\S]*?<\\/template>/gi, " "), tagName);
+if (renderedElements('<h1>Visible</h1><template><h1>Inert locale</h1></template>', 'h1').length !== 1) throw new Error('SEO template heading regression');
 
 const metaByName = (html, name) => tags(html, "meta").filter((tag) => getAttr(tag, "name").toLowerCase() === name.toLowerCase());
 const metaByProperty = (html, property) => tags(html, "meta").filter((tag) => getAttr(tag, "property").toLowerCase() === property.toLowerCase());
@@ -166,7 +170,7 @@ for (const [path, html] of htmlByPath) {
   if (!indexable && path !== "404.html") {
     const noindexTitles = elements(html, "title");
     const noindexDescriptions = metaByName(html, "description");
-    const noindexH1s = elements(html, "h1");
+    const noindexH1s = renderedElements(html, "h1");
     const noindexImages = tags(html, "img");
     const noindexMissingAlt = noindexImages.filter((tag) => !hasAttr(tag, "alt"));
     if (noindexTitles.length !== 1 || !decode(noindexTitles[0]?.[1] ?? "")) {
@@ -200,7 +204,7 @@ for (const [path, html] of htmlByPath) {
   if (description.length < 70 || description.length > 170) addWarning(route, `meta description length is ${description.length}; review snippet quality`);
   if (description) descriptionOwners.set(description.toLowerCase(), [...(descriptionOwners.get(description.toLowerCase()) ?? []), route]);
 
-  const h1Elements = elements(html, "h1");
+  const h1Elements = renderedElements(html, "h1");
   if (h1Elements.length !== 1) addError(route, `expected exactly one H1, found ${h1Elements.length}`);
   const h1 = stripTags(h1Elements[0]?.[1] ?? "");
   if (!h1) addError(route, "H1 is empty");
