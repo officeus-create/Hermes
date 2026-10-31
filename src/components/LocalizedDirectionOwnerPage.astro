@@ -1,10 +1,11 @@
 ---
-import { ArrowLeft, ArrowRight, Check, Mail, ShieldCheck } from "@lucide/astro";
+import { ArrowLeft, ArrowRight, Check, Mail, Phone, ShieldCheck } from "@lucide/astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import SiteFooter from "./SiteFooter.astro";
 import SiteHeader from "./SiteHeader.astro";
 import DirectionProductNav from "./DirectionProductNav.astro";
 import { localizedOverviews } from "../data/localized-overviews";
+import { site } from "../data/site";
 import { localeConfig } from "../data/locales";
 import { directionOwnerRoutes, getDirectionAlternates, type DirectionId, type LocalizedSiteLocale } from "../data/localized-direction-owners";
 import { localizedAcademyProcess, localizedDirectionCopy, localizedDirectionUi } from "../data/localized-direction-copy";
@@ -88,9 +89,22 @@ const faqSchema = {
           <h1>{copy.h1}</h1>
           <p class="localized-owner-lead">{direction.body}</p>
           <p class="localized-owner-detail">{copy.detail}</p>
+          {locale === "ru" && directionId === "logistics" && (
+            <p class="localized-owner-detail">
+              Русскоязычным перевозчикам США: диспетчеризация автовозов на 1–10 автомобилей —
+              от одиночной перевозки и hotshot на 2–3 машины до многоместных автовозов.
+              Поиск загрузок, переговоры с брокерами и документы обсуждаем после проверки техники,
+              вместимости, authority, страхования и маршрутов. Наличие грузов не гарантируется.
+            </p>
+          )}
           <div class="hero-actions">
             <a class="button button-primary" href="#scope">{ui.scopeEyebrow}<ArrowRight size={18} aria-hidden="true" /></a>
             <a class="button button-ghost" href={mailto}>{ui.contactButton}<Mail size={18} aria-hidden="true" /></a>
+            {locale === "ru" && directionId === "logistics" && (
+              <a class="button button-ghost" href={site.publicPhones[0].href}>
+                <Phone size={18} aria-hidden="true" />Позвонить диспетчеру: {site.publicPhones[0].value}
+              </a>
+            )}
           </div>
         </div>
       </div>
