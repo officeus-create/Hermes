@@ -245,7 +245,7 @@
     // No caller/contact/MC/DOT/referrer or raw href is included in GA4.
     // gtag is the sole dispatch path: it already queues to dataLayer, so using
     // pushEvent() here would duplicate the event on sites with gtag enabled.
-    const phoneHref = link.getAttribute("href")?.trim().toLowerCase().replace(/[\\s().-]/g, "") ?? "";
+    const phoneHref = link.getAttribute("href")?.trim().toLowerCase().replace(/[\s().-]/g, "") ?? "";
     if (phoneHref.startsWith("tel:")) {
       const pagePath = window.location.pathname;
       const serviceGroup = pagePath === "/ru/logistics/"
