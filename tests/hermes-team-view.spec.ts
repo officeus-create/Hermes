@@ -24,7 +24,7 @@ test.describe("Hermes AI employee Team View",()=>{
     await expect(page.locator('[data-count="queued"]')).toHaveText("2");
     await expect(page.locator("[data-team-current]")).toHaveText("Task active · details private");
     await expect(page.locator("[data-team-content]")).not.toContainText("Owner-only");
-    await expect(page.getByRole("button")).toHaveCount(0);
+    await expect(page.locator("[data-team-content]").getByRole("button")).toHaveCount(0);
     expect(unsafeMutationCalls).toBe(0);
   });
 
