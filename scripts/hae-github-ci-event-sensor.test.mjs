@@ -89,7 +89,8 @@ fail(() => normalizeGithubCIEvent({...event,workflow_run:{...event.workflow_run,
 
 console.log("HAE #2067 GitHub/CI sensor parser PASS: deterministic event proof, zero secrets, partial coverage HOLD, existing WORK_ID contract");
 
-\n// First real Carrier Acquisition pilot evidence; no fake D1/Queue execution.
+
+// First real Carrier Acquisition pilot evidence; no fake D1/Queue execution.
 const {buildCarrierPrPilotEvidence} = await import("../workers/automation-engine/src/carrier-pr-pilot-evidence.mjs");
 const carrierHead="4031b04ad7751f0a8ce1f21008dbd81dde54998b";
 const carrierEvidence={
@@ -135,7 +136,8 @@ assert.equal(currentCarrier.blocker,"OWNER_RELEASE_APPROVALS_UNVERIFIED");
 assert.equal(currentCarrier.production_deploy_allowed,false);
 console.log("HAE Carrier #1908 verified-source classifier PASS: one blocked work item, truthful CI, sanitized evidence, zero autonomous writes");
 
-\n// Authenticated read-only source adapter: six GET requests, no secret/reflection or automatic dispatch.
+
+// Authenticated read-only source adapter: six GET requests, no secret/reflection or automatic dispatch.
 const {readCarrierPrEvidence}=await import("./hae-carrier-pr-source.mjs");
 const sourcePr={
   number:1908,html_url:"https://github.com/officeus-create/Hermes/pull/1908",
