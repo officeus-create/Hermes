@@ -243,7 +243,7 @@ test.describe("Hermes Business Command Center",()=>{
     await page.locator('[data-access-form] input[name="email"]').fill("owner@example.invalid");
     await page.locator('[data-access-form] input[name="password"]').fill("synthetic-test-only");
     await page.locator("[data-access-form] button[type=submit]").click();
-    await expect(page).toHaveURL(/\\/services\\/hermes-connect\\/internal\\/command-center\\/\\?lang=ru$/);
+    await expect(page).toHaveURL(/\/services\/hermes-connect\/internal\/command-center\/\?lang=ru$/);
   });
 
   test("keeps the owner page usable at 390px",async({page})=>{
