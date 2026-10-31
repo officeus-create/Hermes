@@ -43,7 +43,7 @@ import SiteFooter from "../../../../../components/SiteFooter.astro";
   const node=(selector:string)=>document.querySelector<HTMLElement>(selector);
   const set=(selector:string,value:string)=>{const target=node(selector);if(target)target.textContent=value};
   const validStatus=new Set(["IDLE","RUNNING","PAUSED","STOPPED","OFFLINE","LEARNING"]);
-  const safeCount=(value:unknown)=>Number.isSafeInteger(value)&&Number(value)>=0&&Number(value)<=1000000?String(value):"—";
+  const safeCount=(value:unknown)=>typeof value==="number"&&Number.isSafeInteger(value)&&value>=0&&value<=1000000?String(value):"—";
   async function readTeam(){
     const gate=node("[data-team-gate]"),content=node("[data-team-content]");
     try{
