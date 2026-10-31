@@ -66,7 +66,7 @@ const tags = (html, tagName) => [...html.matchAll(new RegExp(`<${tagName}\\b[^>]
 const elements = (html, tagName) => [...html.matchAll(new RegExp(`<${tagName}\\b[^>]*>([\\s\\S]*?)<\\/${tagName}>`, "gi"))];
 // HTML <template> content is inert until activated by client JS. Static SEO checks
 // must count rendered page headings, not headings staged inside locale templates.
-const renderedElements = (html, tagName) => elements(html.replace(/<template\\b[^>]*>[\\s\\S]*?<\\/template>/gi, " "), tagName);
+const renderedElements = (html, tagName) => elements(html.replace(/<template\b[^>]*>[\s\S]*?<\/template>/gi, " "), tagName);
 if (renderedElements('<h1>Visible</h1><template><h1>Inert locale</h1></template>', 'h1').length !== 1) throw new Error('SEO template heading regression');
 
 const metaByName = (html, name) => tags(html, "meta").filter((tag) => getAttr(tag, "name").toLowerCase() === name.toLowerCase());
