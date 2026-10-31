@@ -52,6 +52,8 @@ const simulateLogisticsPhoneClick = ({
   class MockAnchor extends MockElement {
     constructor(value) { super(); this.href = value; }
     getAttribute(name) { return name === "href" ? this.href : null; }
+    hasAttribute() { return false; }
+    get dataset() { return {}; }
   }
   anchor = new MockAnchor(href);
   const pageDocument = {
