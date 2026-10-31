@@ -12,7 +12,7 @@ test("Product Hub Russian locale translates the shared Hermes Connect module str
   await expect(links.nth(0)).toHaveText("Центр продуктов");
   await expect(links.nth(1)).toHaveText("СТО");
   await expect(links.nth(2)).toHaveText("Load Board");
-  await expect(links.nth(3)).toHaveText("ИИ-командный центр");
+  await expect(links.nth(3)).toHaveText("Бизнес-командный центр");
   await expect(links.nth(4)).toHaveText("Академия");
   await expect(links.nth(0)).toHaveAttribute("aria-current", "page");
   await expect(family).toContainText("Единый центр сообщений");
@@ -52,7 +52,7 @@ test("Repair Shops Russian locale translates the mobile landing surface", async 
   await expect(links.nth(0)).toHaveText("Центр продуктов");
   await expect(links.nth(1)).toHaveText("СТО");
   await expect(links.nth(2)).toHaveText("Load Board");
-  await expect(links.nth(3)).toHaveText("ИИ-командный центр");
+  await expect(links.nth(3)).toHaveText("Бизнес-командный центр");
   await expect(links.nth(4)).toHaveText("Академия");
   await expect(links.nth(1)).toHaveAttribute("aria-current", "page");
   await expect(family).not.toContainText("Repair Shops");
@@ -69,7 +69,7 @@ test("Repair Shop family navigation stays task-focused in English", async ({ pag
   await expect(links.nth(0)).toHaveText("Product Hub");
   await expect(links.nth(1)).toHaveText("Repair Shops");
   await expect(links.nth(2)).toHaveText("Load Board");
-  await expect(links.nth(3)).toHaveText("AI Command Center");
+  await expect(links.nth(3)).toHaveText("Business Command Center");
   await expect(links.nth(4)).toHaveText("Academy");
   await expect(links.nth(1)).toHaveAttribute("aria-current", "page");
   await expect(family).not.toContainText("Unified Inbox");
