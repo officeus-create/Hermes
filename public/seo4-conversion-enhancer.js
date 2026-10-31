@@ -241,6 +241,32 @@
     const link = source.closest("a[href]");
     if (!(link instanceof HTMLAnchorElement)) return;
 
+    // Measure only clicks on the owner-approved public Logistics dispatch line.
+    // No caller/contact/MC/DOT/referrer or raw href is included in GA4.
+    // gtag is the sole dispatch path: it already queues to dataLayer, so using
+    // pushEvent() here would duplicate the event on sites with gtag enabled.
+    const phoneHref = link.getAttribute("href")?.trim().toLowerCase().replace(/[\\s().-]/g, "") ?? "";
+    if (phoneHref.startsWith("tel:")) {
+      const pagePath = window.location.pathname;
+      const serviceGroup = pagePath === "/ru/logistics/"
+        ? "ru_logistics"
+        : carrierServiceGroups[pagePath];
+      if (
+        phoneHref === "tel:+13517775337"
+        && serviceGroup
+        && analyticsConsentGranted()
+        && typeof window.gtag === "function"
+      ) {
+        window.gtag("event", "logistics_phone_click", {
+          page_path: pagePath,
+          locale: pagePath === "/ru/logistics/" ? "ru" : "en",
+          service_group: serviceGroup,
+          cta_type: "dispatch_phone",
+        });
+      }
+      return;
+    }
+
     let target;
     try {
       target = new URL(link.href, window.location.origin);
