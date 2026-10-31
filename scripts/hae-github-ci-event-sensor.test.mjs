@@ -152,8 +152,8 @@ const workflowResponse={total_count:3,workflow_runs:carrierEvidence.checks.map((
 function sourceMock(overrides={}){
   const paths={
     "/pulls/1908":sourcePr,"/branches/main":{commit:{sha:carrierEvidence.main_sha}},
-    "/compare/main..."+carrierHead:compareResponse,
-    "/actions/runs?head_sha="+carrierHead+"&event=pull_request&per_page=100":workflowResponse,
+    ["/compare/main..."+carrierHead]:compareResponse,
+    ["/actions/runs?head_sha="+carrierHead+"&event=pull_request&per_page=100"]:workflowResponse,
     ...overrides
   };
   const calls=[];
@@ -184,7 +184,7 @@ await assert.rejects(()=>readCarrierPrEvidence({
 }),e=>e.code==="hae_carrier_source_token_required");
 await assert.rejects(()=>readCarrierPrEvidence({
   githubToken:"test-github-token",
-  fetchImpl:sourceMock({"/actions/runs?head_sha="+carrierHead+"&event=pull_request&per_page=100":{...workflowResponse,total_count:101}}).fetchImpl,
+  fetchImpl:sourceMock({["/actions/runs?head_sha="+carrierHead+"&event=pull_request&per_page=100"]:{...workflowResponse,total_count:101}}).fetchImpl,
   observedAt:carrierEvidence.observed_at
 }),e=>e.code==="hae_carrier_source_source_coverage_incomplete");
 await assert.rejects(()=>readCarrierPrEvidence({
