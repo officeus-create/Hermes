@@ -230,6 +230,22 @@ test.describe("Hermes Business Command Center",()=>{
     await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content",/index,follow/);
   });
 
+  test("routes the authorized Hermes owner directly to Command Center after normal sign-in",async({page})=>{
+    // Synthetic routing test: identity and granted capability are mocked, never a real login.
+    await page.route("**/api/auth/me",(route:any)=>route.fulfill(json({success:false,error:"not_authenticated"},401)));
+    await page.route("**/api/auth/login",(route:any)=>route.fulfill(json({success:true})));
+    await page.route("**/api/hermes-connect/account",(route:any)=>route.fulfill(json({
+      success:true,capabilities:{internal_ai:true},
+      owned_businesses:[{href:"/services/hermes-connect/repair-shops/dashboard/"}],
+    })));
+    await page.goto("/services/hermes-connect/access/?lang=ru");
+    await expect(page.locator("[data-access-form]")).toBeVisible();
+    await page.locator('[data-access-form] input[name="email"]').fill("owner@example.invalid");
+    await page.locator('[data-access-form] input[name="password"]').fill("synthetic-test-only");
+    await page.locator("[data-access-form] button[type=submit]").click();
+    await expect(page).toHaveURL(/\\/services\\/hermes-connect\\/internal\\/command-center\\/\\?lang=ru$/);
+  });
+
   test("keeps the owner page usable at 390px",async({page})=>{
     await page.setViewportSize({width:390,height:844});
     await mockOwner(page);
