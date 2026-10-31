@@ -225,7 +225,7 @@ test.describe("Hermes Business Command Center",()=>{
     await page.goto("/services/hermes-connect/command-center/?lang=ru");
     await expect(page.locator("html")).toHaveAttribute("lang","ru");
     await expect(page.getByRole("heading",{name:"Не ещё один dashboard. Слой принятия решений."})).toBeVisible();
-    await expect(page.locator("[data-public-command-center-preview] .hcc-sample").getByText(/SAMPLE DATA/)).toBeVisible();
+    await expect(page.locator("[data-public-command-center-preview] .hcc-sample")).toContainText("SAMPLE DATA");
     await expect(page.getByText("Без внутренних данных Hermes")).toBeVisible();
     await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content",/index,follow/);
   });
