@@ -35,7 +35,7 @@ assert.match(access,/hermes_internal_team_view_access_audit/);
 assert.match(access,/requireInternalOwner/);
 assert.match(owner,/value="team_view"/);
 assert.match(owner,/value="owner"/);
-assert.match(page,/capability:data\.get\("capability"\)/);
+assert.match(page,/const capability=data\.get\("capability"\)==="owner"/);
 assert.match(team,/data-team-view/);
 assert.match(team,/\/api\/internal-ai\/status/);
 assert.match(team,/data-team-content hidden/);
