@@ -38,6 +38,14 @@ assert.match(conversionEnhancer, /event:\s*"carrier_dispatch_page_view"/);
 assert.match(conversionEnhancer, /service_group:\s*"car_hauling_dispatch"/);
 assert.match(conversionEnhancer, /carrierDispatchMeasurementStarted\s*\|\|\s*!analyticsConsentGranted\(\)\s*\|\|\s*!isCarrierDispatchPath\(\)/);
 assert.match(conversionEnhancer, /if\s*\(analyticsConsentGranted\(\)\)\s*setupCarrierDispatchMeasurement\(\)/);
+const ruLogisticsOwner = fs.readFileSync(path.join(root, "src/components/LocalizedDirectionOwnerPage.astro"), "utf8");
+const ruDirectionCopy = fs.readFileSync(path.join(root, "src/data/localized-direction-copy.ts"), "utf8");
+assert.match(ruLogisticsOwner, /locale === "ru" && directionId === "logistics"/);
+assert.match(ruLogisticsOwner, /href=\{site\.publicPhones\[0\]\.href\}/);
+assert.match(ruLogisticsOwner, /site\.publicPhones\[0\]\.value/);
+assert.match(ruDirectionCopy, /Диспетчер для Car Hauling — 1–10 автомобилей/);
+assert.match(ruDirectionCopy, /href: "\/logistics\/car-hauling-dispatch\//);
+
 // Executable, non-networked phone-click checks on the production enhancer.
 const simulateLogisticsPhoneClick = ({
   pathname = "/logistics/car-hauling-dispatch/",
