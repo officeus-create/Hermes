@@ -123,9 +123,10 @@ const capabilityPages = [
 ];
 const businessCommandCenter = await text("src/pages/services/hermes-connect/command-center/index.astro");
 const commandCenterShell = await text("src/components/HermesBusinessCommandCenterShell.astro");
+const commandCenterContent = await text("src/components/HermesCommandCenterPublicContent.astro");
 const commandCenterPreview = await text("src/components/HermesCommandCenterPublicPreview.astro");
 const retiredAiCommandCenter = await text("src/pages/services/hermes-connect/ai-command-center.astro");
-assert(businessCommandCenter.includes("HermesBusinessCommandCenterShell") && businessCommandCenter.includes("HermesCommandCenterPublicPreview"), "Business Command Center: canonical public page must use the shared shell and public-safe sample preview.");
+assert(businessCommandCenter.includes("HermesCommandCenterPublicContent") && commandCenterContent.includes("HermesBusinessCommandCenterShell") && commandCenterContent.includes("HermesCommandCenterPublicPreview"), "Business Command Center: canonical public page must delegate to the shared shell and public-safe sample preview.");
 assert(businessCommandCenter.includes('robots="index,follow,max-image-preview:large"'), "Business Command Center: public owner must be indexable.");
 assert(commandCenterPreview.includes("SAMPLE DATA") && commandCenterPreview.includes("No Hermes private data"), "Business Command Center: public demo must be explicitly synthetic and private-data free.");
 assert(commandCenterShell.includes('mode:"public"|"private"'), "Business Command Center: public and private surfaces must share one shell.");
