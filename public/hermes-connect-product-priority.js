@@ -9,8 +9,8 @@
 
   const LABELS = {
     en: { hub: "Product Hub", repair: "Repair Shops", loadBoard: "Load Board", aiCommand: "Business Command Center", academy: "Academy" },
-    ru: { hub: "Центр продуктов", repair: "СТО", loadBoard: "Load Board", aiCommand: "Business Command Center", academy: "Академия" },
-    uk: { hub: "Центр продуктів", repair: "СТО", loadBoard: "Load Board", aiCommand: "Business Command Center", academy: "Академія" },
+    ru: { hub: "Центр продуктов", repair: "СТО", loadBoard: "Load Board", aiCommand: "Бизнес-командный центр", academy: "Академия" },
+    uk: { hub: "Центр продуктів", repair: "СТО", loadBoard: "Load Board", aiCommand: "Бізнес-командний центр", academy: "Академія" },
     es: { hub: "Centro de productos", repair: "Talleres", loadBoard: "Load Board", aiCommand: "Business Command Center", academy: "Academia" },
     it: { hub: "Centro prodotti", repair: "Officine", loadBoard: "Load Board", aiCommand: "Business Command Center", academy: "Accademia" },
     fr: { hub: "Centre produits", repair: "Ateliers", loadBoard: "Load Board", aiCommand: "Business Command Center", academy: "Académie" },
