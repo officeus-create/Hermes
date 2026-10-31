@@ -17,7 +17,7 @@ assert.equal(new Set(portfolio.map((project) => project.id)).size, portfolio.len
 assert.ok(portfolio.every((project) => Number.isInteger(project.progress.percent) && project.progress.percent >= 0 && project.progress.percent <= 100));
 assert.ok(portfolio.every((project) => project.eta === null && project.eta_label === "UNKNOWN"), "unproven ETA must stay UNKNOWN");
 assert.ok(portfolio.some((project) => project.id === "investor-intelligence" && project.evidence_level === "HOLD_EVENT_TRIGGER_ONLY"));
-assert.ok(portfolio.some((project) => project.id === "ai-operations" && project.status === "blocked"), "the #2125/#2159 ownership conflict must remain visible");
+assert.ok(portfolio.some((project) => project.id === "ai-operations" && project.status === "in_progress"), "AI Operations must remain in progress until role-scoped production acceptance");
 
 assert.match(api, /requireInternalOwner/);
 assert.match(api, /Cache-Control.*private, no-store/);
