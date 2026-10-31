@@ -2231,19 +2231,16 @@ ai_name: Codex; role: delegated Academy owner; contribution_type: Implementation
   6. Header links that point at the current page are dead clicks; give them an action on that page.
 - Next action — owner: merge or close #2197; answer the cookie-banner and Website Factory questions. Claude: read #2197 live after merge; keep the two scheduled rechecks.
 
+## 2026-10-30 — Claude Code — Website Factory in Ukrainian
+
+- `public/scripts/website-factory-locale.mjs` now carries a Ukrainian dictionary (177 strings, same keys as the Russian one), Ukrainian number/label patterns, localized handoff sentence and "Видалити" labels, and the private-context banner in Ukrainian. The Russian runtime was generalized (`dictionary`, `normalizeLocalizedRuntime`) with no change to Russian output.
+- Tests: `connect-auth-language.test.mjs` asserts uk keys equal ru keys; new Playwright case `Ukrainian Website Factory …` (desktop + mobile) next to the Russian one; `website-factory-design4` and the Russian case still pass; `npm test` exit 0.
+- Not touched: Website Factory markup, API, auth; Command Center.
+- Next action — owner: native-speaker read of the Ukrainian wording if it will be shown to clients.
+
 ## 2026-10-30 — Claude Code — cookie notice no longer covers left hero actions on wide screens
 
 - Finding (design audit 2026-10-29): at 1280×800 the analytics notice (960 px wide bar at bottom) sat over the left-aligned primary hero buttons on the dispatch and geo pages.
 - Change: `TrackingConsent.astro` only — from 1101 px up the notice is 560 px wide, single column, aligned right; text, choices, storage and consent logic unchanged; tablet and mobile layouts untouched.
 - Checked at 1280×800 on `/`, `/logistics/car-hauling-dispatch/`, `/logistics/car-hauler-loads/chicago-il/`: no overlap with the first hero actions. `npm test` exit 0; Playwright consent and repair-public-design specs 20/20 (desktop + mobile).
 - Next action — Claude: read back the live pages at 1280 after deploy.
-
-## 2026-10-30 — ChatGPT/Codex — canonical #2159 convergence with current Command Center
-
-- Scope: continued the owner-selected canonical AI Operations branch #2159 only. #2125 remains superseded and was not restored, replayed, or used as a source for a new implementation.
-- Freshness: merged current `origin/main` (`3963f11d`) into #2159 as `a53b35a7d`. At the merge commit, the branch was `0` commits behind both `origin/main` and the canonical Command Center branch `feat/hermes-business-command-center-main2-20261026`.
-- Conflict resolution: retained the #2159 owner/team capability boundary, scrubbed Team View, runner freshness/telemetry safeguards, existing Plugin Registry projection and owner-only execution history. Retained the merged Command Center D1 project/task relationship and live project counters; new owner work capture can now link a task to an existing canonical or owner-managed D1 project through the same private project API.
-- Truth boundary: recent execution cards use only stored `started_at`/`completed_at` and sanitized event receipts. Task progress and ETA remain `UNKNOWN` without measured steps and deterministic history. No synthetic status, percentage, ETA, plugin KPIs, local endpoint, credential, or production claim was added.
-- Verification: `npm run build` PASS (435 pages, warnings only); `npm test` PASS, including Command Center runtime/contract/project portfolio, Internal AI contracts/evaluation/approval transport, HAE owner process runtime and project/task reconciliation. Focused runtime tests exercise owner-only project linkage, Team View grant/revoke, scrubbed runtime projection, latest execution event, and fail-closed anonymous access.
-- Release boundary: branch was pushed, but no merge, deploy, Cloudflare mutation, owner bootstrap activation, provider action or production readback was performed. GitHub CLI is unavailable in this environment and direct PR-page readback was unavailable, so remote exact-head CI and independent QA still require separate confirmation before any release gate.
-- Next minimal path: independent verifier runs the current branch tip (contracts/build/browser checks and role-boundary review); then confirm remote CI on that same SHA. Only after owner authorization may protected merge/deploy and authenticated production readback proceed.

@@ -252,6 +252,8 @@ import SiteFooter from "../../../../components/SiteFooter.astro";
     try {
       const response = await fetch("/api/hermes-connect/account", { credentials: "same-origin", headers: { Accept: "application/json" } });
       const data = await response.json().catch(() => ({}));
+      // The existing server-owned capability decides owner destination; no email/role guess.
+      if (response.ok && data?.success && data?.capabilities?.internal_ai === true) return "/services/hermes-connect/internal/command-center/";
       const owned = Array.isArray(data?.owned_businesses) ? data.owned_businesses.filter((item: any) => item?.href) : [];
       if (response.ok && data?.success && owned.length === 1) return String(owned[0].href);
     } catch {}

@@ -1,34 +1,16 @@
 ---
-import HermesConnectCapabilityPage from "../../../components/HermesConnectCapabilityPage.astro";
-import HermesCommandCenterDemo from "../../../components/HermesCommandCenterDemo.astro";
-
-const faqs = [
-  {
-    question: "Is AI Command Center a current live Hermes Connect product?",
-    answer: "No. This page documents a reference capability in the Hermes Connect product family. Repair Shops is the current live pilot.",
-  },
-  {
-    question: "What is the intended role of AI Command Center?",
-    answer: "The capability is designed to classify incoming requests, surface intent and urgency signals, and organize recommended operational actions in one decision view.",
-  },
-];
-
-const capabilities = [
-  { title: "Intent scoring", body: "Classify request intent and confidence so operators can see which conversations need attention first." },
-  { title: "Action queue", body: "Group time-sensitive requests and recommended next actions into one prioritized operational view." },
-  { title: "Product-family orchestration", body: "Provide a shared decision layer that can eventually coordinate specialized Hermes Connect workflows without creating separate product silos." },
-];
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import SiteHeader from "../../../components/SiteHeader.astro";
+import SiteFooter from "../../../components/SiteFooter.astro";
+import HermesBusinessCommandCenterShell from "../../../components/HermesBusinessCommandCenterShell.astro";
+import "../../../styles/hermes-business-command-center.css";
+const ru=Astro.url.searchParams.get("lang")==="ru";
 ---
-
-<HermesConnectCapabilityPage
-  name="AI Command Center"
-  pageTitle="AI Command Center Reference Capability | Hermes Connect"
-  description="Reference documentation for the Hermes Connect AI Command Center capability. Repair Shops is the current live pilot."
-  canonicalUrl="https://hermeslogisticsus.com/services/hermes-connect/ai-command-center/"
-  lead="A decision-layer concept for classifying incoming requests, prioritizing operational work, and presenting recommended next actions inside the Hermes Connect product family."
-  capabilities={capabilities}
-  boundary="This capability is not presented as a current public beta or production runtime. External ERP/CRM synchronization and autonomous operational actions are not claimed as live. Use the Repair Shop product for the current pilot flow."
-  faqs={faqs}
->
-  <HermesCommandCenterDemo slot="demo" />
-</HermesConnectCapabilityPage>
+<BaseLayout title={ru?"AI теперь внутри Business Command Center | Hermes Connect":"AI is now inside Business Command Center | Hermes Connect"} description={ru?"AI Command Center объединён с Hermes Business Command Center.":"AI Command Center is now part of Hermes Business Command Center."} robots="noindex,follow" htmlLang={ru?"ru":"en"}>
+  <SiteHeader activePath="/services/hermes-connect/"/>
+  <HermesBusinessCommandCenterShell mode="public" ru={ru} title="Hermes Business Command Center" lead={ru?"AI больше не является отдельным Command Center. Hermes Intelligence — один из слоёв единой системы проектов, задач, автоматизации, evidence и решений владельца.":"AI is no longer a separate Command Center. Hermes Intelligence is one layer inside the unified system for projects, tasks, automation, evidence and owner decisions."} eyebrow="Hermes Connect · unified operating layer" badge={ru?"Маршрут объединён":"Route consolidated"}>
+    <Fragment slot="hero-actions"><div class="hcc-actions"><a class="hcc-primary" href={"/services/hermes-connect/command-center/"+(ru?"?lang=ru":"")}>{ru?"Открыть Business Command Center":"Open Business Command Center"}</a><a class="hcc-secondary" href="/services/hermes-connect/">{ru?"Hermes Connect":"Hermes Connect"}</a></div></Fragment>
+    <section class="hcc-panel hcc-section"><div class="hcc-section-head"><div><p class="hcc-sample">{ru?"Почему изменилось":"Why this changed"}</p><h2>{ru?"Один продукт вместо двух конкурирующих названий":"One product instead of two competing names"}</h2><p>{ru?"Публичная демонстрация и закрытая owner-версия теперь называются Hermes Business Command Center. AI, agents и automation отображаются внутри него как функциональный слой.":"The public demonstration and private owner workspace are now Hermes Business Command Center. AI, agents and automation sit inside it as functional layers."}</p></div></div></section>
+  </HermesBusinessCommandCenterShell>
+  <SiteFooter/>
+</BaseLayout>
