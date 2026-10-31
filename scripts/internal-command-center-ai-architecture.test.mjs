@@ -30,7 +30,7 @@ assert.match(status,/Task active — details private/);
 assert.match(status,/phase: null/);
 assert.match(status,/model: null/);
 assert.match(status,/task_summary/);
-assert.doesNotMatch(status,/current_task: operations\.current_task/);
+assert.doesNotMatch(status,/current_task:\s*operations\.current_task\s*[,}]/,"Team View must not project the raw owner task");
 assert.match(access,/hermes_internal_team_view_access_audit/);
 assert.match(access,/requireInternalOwner/);
 assert.match(owner,/value="team_view"/);
