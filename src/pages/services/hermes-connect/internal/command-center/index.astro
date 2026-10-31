@@ -50,7 +50,7 @@ function renderAiArchitecture(data:any){
   // Only called after the server confirms full internal owner authorization.
   const ops=data?.operations||null;
   const observed=(value:unknown)=>typeof value==="string"&&value.trim()?value:"UNKNOWN";
-  const count=(value:unknown)=>Number.isSafeInteger(value)&&Number(value)>=0?String(value):"UNKNOWN";
+  const count=(value:unknown)=>typeof value==="number"&&Number.isSafeInteger(value)&&value>=0?String(value):"UNKNOWN";
   setText("[data-ai-map-runner]",data?.online?t("Online","Онлайн"):t("Offline","Офлайн"));
   setText("[data-ai-map-runner-time]",data?.last_seen_at?stamp(data.last_seen_at):"UNKNOWN");
   setText("[data-ai-ops-primary]",data?.primary_executor==="mac"?"Mac":"UNKNOWN");
