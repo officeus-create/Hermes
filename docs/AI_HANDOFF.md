@@ -2230,3 +2230,17 @@ ai_name: Codex; role: delegated Academy owner; contribution_type: Implementation
   5. `gate-check` `EXPECT:` needs `/regex/` form; plain text is a substring.
   6. Header links that point at the current page are dead clicks; give them an action on that page.
 - Next action — owner: merge or close #2197; answer the cookie-banner and Website Factory questions. Claude: read #2197 live after merge; keep the two scheduled rechecks.
+
+## 2026-10-30 — Claude Code — Website Factory in Ukrainian
+
+- `public/scripts/website-factory-locale.mjs` now carries a Ukrainian dictionary (177 strings, same keys as the Russian one), Ukrainian number/label patterns, localized handoff sentence and "Видалити" labels, and the private-context banner in Ukrainian. The Russian runtime was generalized (`dictionary`, `normalizeLocalizedRuntime`) with no change to Russian output.
+- Tests: `connect-auth-language.test.mjs` asserts uk keys equal ru keys; new Playwright case `Ukrainian Website Factory …` (desktop + mobile) next to the Russian one; `website-factory-design4` and the Russian case still pass; `npm test` exit 0.
+- Not touched: Website Factory markup, API, auth; Command Center.
+- Next action — owner: native-speaker read of the Ukrainian wording if it will be shown to clients.
+
+## 2026-10-30 — Claude Code — cookie notice no longer covers left hero actions on wide screens
+
+- Finding (design audit 2026-10-29): at 1280×800 the analytics notice (960 px wide bar at bottom) sat over the left-aligned primary hero buttons on the dispatch and geo pages.
+- Change: `TrackingConsent.astro` only — from 1101 px up the notice is 560 px wide, single column, aligned right; text, choices, storage and consent logic unchanged; tablet and mobile layouts untouched.
+- Checked at 1280×800 on `/`, `/logistics/car-hauling-dispatch/`, `/logistics/car-hauler-loads/chicago-il/`: no overlap with the first hero actions. `npm test` exit 0; Playwright consent and repair-public-design specs 20/20 (desktop + mobile).
+- Next action — Claude: read back the live pages at 1280 after deploy.
