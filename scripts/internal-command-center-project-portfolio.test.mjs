@@ -7,6 +7,7 @@ const ownerWorkspace = fs.readFileSync("src/components/HermesCommandCenterOwnerW
 const ownerComponent = fs.readFileSync("src/components/HermesOwnerProjectPortfolio.astro", "utf8");
 const publicPage = fs.readFileSync("src/pages/services/hermes-connect/command-center/index.astro", "utf8");
 const publicDemo = fs.readFileSync("src/components/HermesCommandCenterPublicPreview.astro", "utf8");
+const publicContent = fs.readFileSync("src/components/HermesCommandCenterPublicContent.astro", "utf8");
 const retiredAiPage = fs.readFileSync("src/pages/services/hermes-connect/ai-command-center.astro", "utf8");
 const portfolio = commandCenterProjectPortfolio();
 
@@ -28,11 +29,13 @@ assert.match(ownerComponent, /role="progressbar"/);
 assert.match(ownerComponent, /Dependencies/);
 assert.match(ownerComponent, /ETA/);
 
-assert.match(publicPage, /HermesCommandCenterPublicPreview/);
+assert.match(publicPage, /HermesCommandCenterPublicContent/);
+assert.match(publicContent, /HermesBusinessCommandCenterShell/);
+assert.match(publicContent, /HermesCommandCenterPublicPreview/);
 assert.match(publicPage, /robots="index,follow,max-image-preview:large"/,"canonical public Command Center must be indexable");
-assert.match(publicPage, /Private production system · public sample/,"public page must state the production/demo boundary");
+assert.match(publicContent, /Private production system · public sample/,"public page must state the production/demo boundary");
 assert.match(publicDemo, /SAMPLE DATA/);
-assert.match(publicPage, /Request a Command Center|Обсудить Command Center/);
+assert.match(publicContent, /Request a Command Center|Обсудить Command Center/);
 assert.match(retiredAiPage, /AI is no longer a separate Command Center|AI больше не является отдельным Command Center/,"old public AI identity must be subordinate to Business Command Center");
 assert.doesNotMatch(publicDemo, /#2107|#2125|#2159|HERMES_INTERNAL_OWNER|127\.0\.0\.1|One Brain|WORK_ID/);
 assert.doesNotMatch(publicDemo, /password|token|secret|credential/i);
