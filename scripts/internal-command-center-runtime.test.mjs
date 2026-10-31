@@ -9,6 +9,7 @@ import { onRequestGet as listProjects, onRequestPost as createProject } from "..
 import { onRequestPatch as editProject } from "../functions/api/internal-command-center/projects/[id].ts";
 import { ensureInternalAiSchema } from "../functions/api/_lib/internal-ai.mjs";
 import { ensureCommandCenterSchema } from "../functions/api/_lib/internal-command-center.mjs";
+import { onRequest as commandCenterMiddleware } from "../functions/_middleware.js";
 
 class Statement {
   constructor(statement,args=[]){this.statement=statement;this.args=args}
@@ -251,10 +252,45 @@ assert.equal(ownerStatus.status,200,"Owner must retain access to authorized tele
 assert.match(JSON.stringify(await ownerStatus.json()),/Jane Doe/,"Owner-only telemetry stays available");
 assert.equal("repo_sha" in teamStatus.runtime,false,"Team View must hide repo metadata");
 assert.equal("active_task" in teamStatus,false,"Team View must hide owner task details");
+// The static employee HTML must be rejected at the edge before any asset body
+// is served. A viewer capability does not unlock the owner's private HTML.
+const middlewareRoute = commandCenterMiddleware[0];
+const edgeReq=(path,id=null)=>new Request("https://hermeslogisticsus.com"+path,{
+  headers:id?{Cookie:"hermes_session=session-"+id}:{},
+});
+async function edgeProbe(path,id=null){
+  let assetReads=0;
+  const response=await middlewareRoute({
+    request:edgeReq(path,id),env:{DB:db},
+    next:async()=>{assetReads++;return new Response("SYNTHETIC_PRIVATE_ASSET_SENTINEL")},
+  });
+  return {response,assetReads,text:await response.text()};
+}
+const anonTeam=await edgeProbe("/services/hermes-connect/internal/team-view/");
+assert.equal(anonTeam.response.status,401,"Team HTML anonymous access must fail closed");
+assert.equal(anonTeam.assetReads,0,"anonymous Team request must not reach static asset");
+assert(!anonTeam.text.includes("SYNTHETIC_PRIVATE_ASSET_SENTINEL"));
+const delegatedTeam=await edgeProbe("/services/hermes-connect/internal/team-view/","delegate");
+assert.equal(delegatedTeam.response.status,200,"explicitly authorized team viewer may load only the team HTML");
+assert.equal(delegatedTeam.assetReads,1);
+const delegatedOwner=await edgeProbe("/services/hermes-connect/internal/command-center/","delegate");
+assert.equal(delegatedOwner.response.status,403,"team capability must never grant owner HTML");
+assert.equal(delegatedOwner.assetReads,0);
+const directOwnerAsset=await edgeProbe("/services/hermes-connect/internal/command-center/index.html","delegate");
+assert.equal(directOwnerAsset.response.status,403,"team capability must never grant direct owner index.html");
+assert.equal(directOwnerAsset.assetReads,0);
+const realOwnerPage=await edgeProbe("/services/hermes-connect/internal/command-center/","owner");
+assert.equal(realOwnerPage.response.status,200,"explicit real owner capability retains owner page");
+assert.equal(realOwnerPage.assetReads,1);
+
 const teamRevoke=await mutateAccess({request:request("/api/internal-command-center/access",{method:"POST",body:{action:"revoke",email:"delegate@example.invalid",capability:"team_view"}}),env:{DB:db}});
 assert.equal(teamRevoke.status,200);
 viewerStatus=await aiStatus({request:request("/api/internal-ai/status",{owner:"delegate"}),env:{DB:db}});
 assert.equal(viewerStatus.status,403,"revoked Team View must fail closed");
+const revokedPage=await edgeProbe("/services/hermes-connect/internal/team-view/","delegate");
+assert.equal(revokedPage.response.status,403,"revoked employee must also lose HTML access");
+assert.equal(revokedPage.assetReads,0);
+
 
 const grant=await mutateAccess({request:request("/api/internal-command-center/access",{method:"POST",body:{action:"grant",email:"delegate@example.invalid"}}),env:{DB:db}});
 assert.equal(grant.status,200);
