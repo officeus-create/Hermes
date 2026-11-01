@@ -118,7 +118,6 @@ test("analytics consent uses host-appropriate transport and can be withdrawn", a
 
   await page.getByRole("button", { name: "Privacy settings" }).click();
   await expect(page.getByRole("heading", { name: "Choose whether to allow website analytics." })).toBeVisible();
-  const googleRequestCountBeforeWithdrawal = googleRequests.length;
 
   await Promise.all([
     page.waitForNavigation({ waitUntil: "domcontentloaded" }),
@@ -130,8 +129,13 @@ test("analytics consent uses host-appropriate transport and can be withdrawn", a
   await expect(page.locator('script[data-hermes-ga4="true"]')).toHaveCount(0);
   await expect(page.locator('script[data-hermes-clarity="true"]')).toHaveCount(0);
   await expect(page.getByRole("heading", { name: "Choose whether to allow website analytics." })).toBeHidden();
+
+  // The effective privacy boundary is the denied post-withdrawal document.
+  // Enhanced-measurement work queued before the click may finish while the old page unloads;
+  // no Google transport may start after the denied reload is established.
+  const googleRequestCountAfterDeniedReload = googleRequests.length;
   await page.waitForTimeout(300);
-  expect(googleRequests).toHaveLength(googleRequestCountBeforeWithdrawal);
+  expect(googleRequests).toHaveLength(googleRequestCountAfterDeniedReload);
   await expect.poll(() => page.evaluate(() => document.cookie.includes("_clck=") || document.cookie.includes("_clsk="))).toBe(false);
 });
 
@@ -260,3 +264,53 @@ test("desktop post-choice privacy settings stays in document flow and clear of H
   expect(geometry!.left).toBeGreaterThanOrEqual(0);
   expect(geometry!.top).toBeGreaterThanOrEqual(0);
 });
+
+test("desktop pre-choice consent stays clear of primary Logistics CTAs at 1280x800", async ({ page }) => {
+  const routes = [
+    { path: "/paths/logistics/", cta: ".detail-page-logistics .detail-hero .button-primary" },
+    { path: "/carrier/", cta: "[data-commercial-primary-cta]" },
+    { path: "/logistics/carrier-offer/", cta: "[data-primary-choice='agreement']" },
+  ];
+
+  for (const route of routes) {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto(route.path, { waitUntil: "domcontentloaded" });
+
+    const banner = page.locator("[data-consent-banner]");
+    const primaryCta = page.locator(route.cta).first();
+    await expect(banner).toBeVisible();
+    await expect(primaryCta).toBeVisible();
+    await expect(page.locator(".tracking-consent-detail")).toBeHidden();
+    await expect(page.locator(".tracking-consent-compact-copy")).toBeVisible();
+
+    const geometry = await page.evaluate(({ cta }) => {
+      const bannerElement = document.querySelector<HTMLElement>("[data-consent-banner]");
+      const ctaElement = document.querySelector<HTMLElement>(cta);
+      if (!bannerElement || !ctaElement) return null;
+      const plain = (rect: DOMRect) => ({
+        left: rect.left,
+        right: rect.right,
+        top: rect.top,
+        bottom: rect.bottom,
+        width: rect.width,
+        height: rect.height,
+      });
+      return {
+        banner: plain(bannerElement.getBoundingClientRect()),
+        cta: plain(ctaElement.getBoundingClientRect()),
+        viewportWidth: window.innerWidth,
+        viewportHeight: window.innerHeight,
+      };
+    }, { cta: route.cta });
+
+    expect(geometry, route.path).not.toBeNull();
+    expect(geometry!.banner.width, route.path).toBeLessThanOrEqual(600);
+    expect(geometry!.banner.right, route.path).toBeLessThanOrEqual(geometry!.viewportWidth);
+    expect(geometry!.banner.bottom, route.path).toBeLessThanOrEqual(geometry!.viewportHeight);
+    expect(rectanglesOverlap(geometry!.banner as DOMRect, geometry!.cta as DOMRect), route.path).toBe(false);
+
+    await page.getByRole("button", { name: "Continue without analytics" }).click();
+    await page.evaluate(() => localStorage.removeItem("hermes-analytics-consent"));
+  }
+});
+
