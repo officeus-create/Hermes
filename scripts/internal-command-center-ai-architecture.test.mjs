@@ -51,4 +51,6 @@ for(const marker of ["data-ai-ops-phase","data-ai-ops-model","data-ai-ops-cycle"
 assert.match(arch,/pluginRuntimeRegistrySnapshot/);
 assert.match(arch,/Missing values stay UNKNOWN/);
 assert.match(docs,/no new planner, Worker, D1 database/i);
+assert.match(docs,/PLUGIN_SELECTED_NOT_EXECUTED/);
+assert.doesNotMatch(docs,/Mac remains the declared primary executor/);
 console.log("Hermes AI Operations and Team View role-scoped integration: PASS");
