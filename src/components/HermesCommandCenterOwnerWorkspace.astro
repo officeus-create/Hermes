@@ -75,6 +75,28 @@ const functions=[
     </section>
   </section>
 
+  <section class="owner-view" data-cc-view="social" hidden>
+    <section class="hcc-panel">
+      <div class="owner-section-head"><div><p class="hcc-sample">Social Acquisition</p><h2>{ru?"Соцсети → диалоги → лиды → доказательства":"Social → conversations → leads → evidence"}</h2><p>{ru?"Read-only обзор существующего HAE/social runtime. Публикация и ответы не включаются отсюда автоматически.":"Read-only view over the existing HAE/social runtime. Publishing and replies are never activated automatically from this view."}</p></div><span class="owner-cloud-note" data-social-state>UNKNOWN</span></div>
+      <div class="owner-decision-grid">
+        <article><span>{ru?"Контент в очереди":"Content queue"}</span><strong data-social-content-count>UNKNOWN</strong><small>{ru?"HAE D1 · без второго publisher":"HAE D1 · no second publisher"}</small></article>
+        <article><span>{ru?"Publication receipts":"Publication receipts"}</span><strong data-social-receipt-count>UNKNOWN</strong><small>{ru?"Provider ID / permalink при наличии":"Provider ID / permalink when verified"}</small></article>
+        <article><span>{ru?"Threads connections":"Threads connections"}</span><strong data-social-connection-count>UNKNOWN</strong><small>{ru?"OAuth/identity state без секретов":"OAuth/identity state without secrets"}</small></article>
+        <article><span>{ru?"Carrier Leads":"Carrier Leads"}</span><strong>UNKNOWN</strong><small>{ru?"Нет канонического агрегата — ноль не придумываем":"No canonical aggregate — never infer zero"}</small></article>
+      </div>
+      <div class="workspace-grid" data-social-connections><p class="muted">{ru?"Загружаем provider health…":"Loading provider health…"}</p></div>
+      <div class="owner-evidence-list" data-social-queue><p class="muted">{ru?"Загружаем Content Queue…":"Loading Content Queue…"}</p></div>
+      <div class="owner-evidence-list" data-social-receipts><p class="muted">{ru?"Загружаем publication receipts…":"Loading publication receipts…"}</p></div>
+      <div class="owner-head-actions">
+        <a class="hcc-secondary" href="/services/hermes-connect/internal/social-connections/">{ru?"Provider / OAuth":"Provider / OAuth"}</a>
+        <a class="hcc-secondary" href="/services/hermes-connect/unified-inbox/">{ru?"Unified Inbox":"Unified Inbox"}</a>
+        <a class="hcc-secondary" href="/paths/marketing/">{ru?"Marketing":"Marketing"}</a>
+        <a class="hcc-secondary" href="/load-board/">{ru?"Carrier / Load Board":"Carrier / Load Board"}</a>
+      </div>
+      <p class="muted">{ru?"Ответы остаются DRAFT_ONLY через social.reply.prepare. Внешняя публикация требует отдельного owner/provider gate.":"Replies remain DRAFT_ONLY through social.reply.prepare. External publication requires its separate owner/provider gate."}</p>
+    </section>
+  </section>
+
   <section class="owner-view" data-cc-view="automations" hidden>
     <section class="hcc-panel process-control" data-process-control>
       <div class="owner-section-head"><div><p class="hcc-sample">{ru?"Автоматизация":"Automation"}</p><h2>{ru?"Процессы HAE 24/7":"HAE 24/7 processes"}</h2><p>{ru?"Проверенные процессы создаются на паузе и включаются отдельно. Внешние отправки и платный AI в этом слое отключены.":"Verified processes start paused and are activated separately. External sends and paid AI are disabled in this layer."}</p></div><span class="owner-cloud-note">D1 · Queue · $0 default</span></div>
