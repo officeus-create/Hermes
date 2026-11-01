@@ -2194,7 +2194,15 @@ export default {
       const slotKey = chicagoSlotKey(scheduledAt);
       if (socialAcquisitionV2Enabled(env)) {
         try {
-          await enqueueHourlySocialPlans(env, slotKey);
+          const socialBatch=await enqueueHourlySocialPlans(env, slotKey);
+          if(socialBatch?.control?.allowed===false){
+            await recordRuntimeEvent(env, {
+              eventType: "cron.social_v2_owner_paused",
+              messageType: "social.threads.plan",
+              slotKey,
+              errorClass: "social_owner_paused",
+            });
+          }
         } catch (error) {
           await recordRuntimeEvent(env, {
             eventType: "cron.social_v2_enqueue_failed",
