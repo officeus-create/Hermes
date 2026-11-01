@@ -1,4 +1,5 @@
 import { socialAccountReadinessSnapshot } from "../../../workers/automation-engine/src/social-account-readiness.mjs";
+import { socialAcquisitionOwnerControl } from "../../../workers/automation-engine/src/social-hourly-runtime.mjs";
 
 const LANE_ACCOUNT=Object.freeze({
   HERMES_LOGISTICS:"hermes_logistics",
@@ -213,6 +214,10 @@ export async function buildCommandCenterSocialSnapshot(env,{nowMs=Date.now()}={}
   const lanes=[];
   for(const lane of Object.keys(LANE_ACCOUNT))lanes.push(await laneSnapshot(db,lane,tables));
 
+  let ownerControl;
+  try{ownerControl=await socialAcquisitionOwnerControl(db)}
+  catch{ownerControl={configured:false,process_id:null,status:"UNKNOWN",allowed:false,updated_at:null,last_error_class:"social_owner_control_unavailable"}}
+
   let latestHeartbeat=null;
   if(tables.heartbeats){
     const row=await db.prepare(`SELECT trigger_type,cron_expression,scheduled_at,observed_at,execution_lag_ms,chicago_slot_key,
@@ -259,6 +264,7 @@ export async function buildCommandCenterSocialSnapshot(env,{nowMs=Date.now()}={}
       scheduler_owner:"HAE",
       queue_owner:"HAE",
       datastore_owner:"existing Hermes Connect D1",
+      owner_control:ownerControl,
     },
     schedule:{
       timezone:"America/Chicago",
