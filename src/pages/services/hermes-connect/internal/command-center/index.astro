@@ -183,7 +183,7 @@ function renderSocialAcquisition(data:any,threads:any){
 window.addEventListener("hermes:execution-map",(event)=>renderPluginRegistry((event as CustomEvent).detail));
 queueMicrotask(()=>{const cached=(window as any).__hermesCommandCenterExecutionMap;if(cached)renderPluginRegistry(cached)});
 function renderPluginRegistry(data:any){
-  const box=q("[data-plugin-registry]");if(!box)return;box.replaceChildren();
+  const box=q('[data-cc-view="plugins"] [data-plugin-registry]');if(!box)return;box.replaceChildren();
   const rows=Array.isArray(data?.plugin_registry)?data.plugin_registry:[];
   const evidence=data?.registry_evidence||{};
   setText("[data-plugin-registry-state]",evidence.fresh===true?t("FRESH","АКТУАЛЬНО"):String(evidence.reason||"UNKNOWN"));
