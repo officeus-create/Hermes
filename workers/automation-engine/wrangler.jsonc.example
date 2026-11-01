@@ -57,6 +57,7 @@
   "vars": {
     "HERMES_AUTOMATION_MODE": "dry_run",
     "HERMES_AUTOMATION_PUBLISH": "disabled",
+    "HERMES_SOCIAL_ACQUISITION_V2": "disabled",
     "HERMES_AUTOMATION_SOURCE_SHA": "INJECT_EXACT_MAIN_SHA_AT_RELEASE",
     "HERMES_HAE_OWNER_ALERT_RECIPIENT": "officeus@hermeslogisticsus.com",
     "HERMES_HAE_OWNER_ALERT_SENDER": "website@hermeslogisticsus.com",
@@ -82,7 +83,10 @@
 //   HERMES_AUTOMATION_TOKEN
 //   WINDSOR_API_KEY
 //
-// Live publication requires BOTH:
+// Social Acquisition V2 is disabled by default. Source merge/deploy alone must not cut over writers.
+// Enable HERMES_SOCIAL_ACQUISITION_V2 only after exact-account readiness + historical reconciliation.
+// Live publication then requires ALL THREE:
+//   HERMES_SOCIAL_ACQUISITION_V2=enabled
 //   HERMES_AUTOMATION_MODE=live
 //   HERMES_AUTOMATION_PUBLISH=enabled
 //

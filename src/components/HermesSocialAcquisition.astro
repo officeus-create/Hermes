@@ -1,0 +1,351 @@
+---
+interface Props{ru?:boolean}
+const {ru=false}=Astro.props;
+---
+<section class="hcc-panel social-acquisition" data-social-acquisition>
+  <div class="social-head">
+    <div>
+      <p class="hcc-sample">Social Acquisition</p>
+      <h2>{ru?"Социальные сети · HAE":"Social networks · HAE"}</h2>
+      <p>{ru
+        ?"Один контент-конвейер для Hermes Logistics и ProgressoPro. Здесь показываются только D1/HAE/provider-состояния, которые можно доказать."
+        :"One content pipeline for Hermes Logistics and ProgressoPro. This view shows only D1/HAE/provider states that can be evidenced."}</p>
+    </div>
+    <div class="social-actions">
+      <span class="social-control-state" data-social-control-state>—</span>
+      <button type="button" class="hcc-secondary" data-social-control disabled>{ru?"Пауза":"Pause"}</button>
+      <button type="button" class="hcc-secondary" data-social-refresh>{ru?"Обновить":"Refresh"}</button>
+    </div>
+  </div>
+
+  <div class="social-kpis">
+    <article><span>{ru?"HAE runtime":"HAE runtime"}</span><strong data-social-runtime>—</strong><small data-social-runtime-copy>—</small></article>
+    <article><span>{ru?"Публикации":"Publishing"}</span><strong data-social-publish>—</strong><small>{ru?"Внешние записи fail-closed":"External writes fail closed"}</small></article>
+    <article><span>{ru?"Расписание":"Schedule"}</span><strong>20 CT</strong><small>00, 01, 06–23 · America/Chicago</small></article>
+    <article><span>{ru?"Нерешённые записи":"Unresolved writes"}</span><strong data-social-unresolved>—</strong><small>{ru?"UNKNOWN не считается нулём":"UNKNOWN is not zero"}</small></article>
+  </div>
+
+  <div class="social-pipeline" aria-label={ru?"Контент-конвейер":"Content pipeline"}>
+    {["Source","Content","Validate","HAE","Provider","Readback","CRM","Learn"].map((step,index)=>
+      <span><b>{index+1}</b>{step}</span>
+    )}
+  </div>
+
+  <div class="social-lanes" data-social-lanes>
+    <p class="muted">{ru?"Загружаем две business lanes…":"Loading both business lanes…"}</p>
+  </div>
+
+  <section class="social-content-queue">
+    <div class="social-subhead">
+      <div><p class="hcc-sample">{ru?"Контент-очередь":"Content queue"}</p><h3>{ru?"Последние HAE drafts":"Latest HAE drafts"}</h3></div>
+      <small>{ru?"Просмотр без публикации":"Read-only preview"}</small>
+    </div>
+    <div class="social-content-list" data-social-content><p class="muted">—</p></div>
+  </section>
+
+  <section class="social-recent">
+    <div class="social-subhead">
+      <div><p class="hcc-sample">{ru?"Последние публикации":"Recent publications"}</p><h3>{ru?"Provider / readback evidence":"Provider / readback evidence"}</h3></div>
+      <span data-social-observed>—</span>
+    </div>
+    <div class="social-publications" data-social-publications><p class="muted">—</p></div>
+  </section>
+
+  <section class="social-roadmap">
+    <div class="social-subhead">
+      <div><p class="hcc-sample">{ru?"Каналы":"Channels"}</p><h3>{ru?"Roadmap готовности":"Readiness roadmap"}</h3></div>
+      <small>{ru?"Readiness ≠ план":"Provider truth vs plan"}</small>
+    </div>
+    <div class="social-roadmap-grid" data-social-roadmap><p class="muted">—</p></div>
+  </section>
+
+  <section class="social-performance">
+    <div class="social-subhead">
+      <div><p class="hcc-sample">{ru?"Аналитика":"Analytics"}</p><h3>24h · 72h · 7d</h3></div>
+      <small>{ru?"Только D1/HAE evidence":"D1/HAE evidence only"}</small>
+    </div>
+    <div class="social-window-grid" data-social-windows><p class="muted">—</p></div>
+    <p class="social-learning" data-social-learning>—</p>
+  </section>
+
+  <section class="social-inbound">
+    <div><p class="hcc-sample">Inbound</p><h3>{ru?"Ответы, mentions и лиды":"Replies, mentions and leads"}</h3></div>
+    <p data-social-inbound>{ru?"Проверяем фактическую готовность…":"Checking actual readiness…"}</p>
+  </section>
+
+  <section class="social-research">
+    <div class="social-subhead">
+      <div><p class="hcc-sample">Threads Inbox / Research</p><h3>{ru?"Read-only входящие и поиск":"Read-only inbound & search"}</h3></div>
+      <small>{ru?"Только draft · без публикации":"Draft-only · no publish"}</small>
+    </div>
+    <div class="social-research-controls">
+      <label><span>{ru?"Бренд":"Lane"}</span><select data-social-research-lane>
+        <option value="HERMES_LOGISTICS">Hermes Logistics</option>
+        <option value="PROGRESSOPRO">ProgressoPro</option>
+      </select></label>
+      <label><span>{ru?"Режим":"Mode"}</span><select data-social-research-mode>
+        <option value="mentions">Mentions</option>
+        <option value="search">Keyword search</option>
+        <option value="replies">Replies</option>
+        <option value="conversation">Conversation</option>
+      </select></label>
+      <label data-social-query-wrap><span>{ru?"Запрос":"Query"}</span><input data-social-research-query type="text" maxlength="180" placeholder="car hauler" /></label>
+      <label data-social-thread-wrap><span>Thread ID</span><input data-social-research-thread type="text" inputmode="numeric" maxlength="40" placeholder="181…" /></label>
+      <button type="button" class="hcc-secondary" data-social-research-load>{ru?"Прочитать":"Read"}</button>
+    </div>
+    <p class="social-research-state" data-social-research-state>{ru?"Выберите режим и запустите read-only проверку.":"Choose a mode and run a read-only check."}</p>
+    <div class="social-research-results" data-social-research-results></div>
+  </section>
+  <p class="social-status" data-social-status role="status"></p>
+</section>
+
+<script is:inline define:vars={{ru}}>
+(()=>{
+  const root=document.querySelector("[data-social-acquisition]");
+  if(!root)return;
+  const q=(selector)=>root.querySelector(selector);
+  const esc=(value)=>String(value??"").replace(/[&<>"']/g,(c)=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));
+  const socialHosts=new Set(["hermeslogisticsus.com","www.threads.net","threads.net","www.instagram.com","instagram.com","www.facebook.com","facebook.com","x.com","www.x.com","www.linkedin.com","linkedin.com"]);
+  const safeHref=(value)=>{
+    try{const url=new URL(String(value||""));return url.protocol==="https:"&&socialHosts.has(url.hostname)?url.href:null}catch{return null}
+  };
+  const hydrateLinks=()=>root.querySelectorAll("a[data-social-url]").forEach((node)=>{
+    const href=safeHref(node.getAttribute("data-social-url"));
+    if(href)node.setAttribute("href",href);
+    else node.replaceWith(document.createTextNode("UNKNOWN"));
+  });
+  const label=(value)=>String(value??"UNKNOWN").replaceAll("_"," ");
+  const metric=(value)=>value===null||value===undefined?"UNKNOWN":String(value);
+  const badge=(value)=>`<span class="social-badge" data-state="${esc(String(value||"UNKNOWN").toLowerCase())}">${esc(label(value))}</span>`;
+  const fmt=(value)=>{
+    if(!value)return "UNKNOWN";
+    const date=new Date(value);
+    return Number.isFinite(date.getTime())?date.toLocaleString():String(value);
+  };
+  const platformNames={threads:"Threads",instagram:"Instagram",facebook:"Facebook",x:"X"};
+  const laneName=(lane)=>lane==="HERMES_LOGISTICS"?"Hermes Logistics":"ProgressoPro";
+  let currentControl=null;
+
+  function render(data){
+    q("[data-social-runtime]").textContent=data.runtime?.social_v2==="enabled"?"Social V2":"HOLD";
+    const hb=data.health?.last_heartbeat;
+    q("[data-social-runtime-copy]").textContent=hb?.observed_at
+      ?`${data.runtime?.automation_mode||"UNKNOWN"} · heartbeat ${fmt(hb.observed_at)}`
+      :`${data.runtime?.automation_mode||"UNKNOWN"} · heartbeat UNKNOWN`;
+    q("[data-social-publish]").textContent=data.runtime?.external_write_enabled?(ru?"ВКЛ":"ON"):(ru?"ВЫКЛ":"OFF");
+    q("[data-social-observed]").textContent=fmt(data.observed_at);
+    currentControl=data.runtime?.owner_control||null;
+    const controlButton=q("[data-social-control]");
+    const controlState=q("[data-social-control-state]");
+    if(controlState)controlState.textContent=currentControl?.configured
+      ?`${ru?"Control":"Control"}: ${label(currentControl.status)}`
+      :`${ru?"Control":"Control"}: ${label(currentControl?.status||"UNCONFIGURED")}`;
+    if(controlButton){
+      controlButton.disabled=currentControl?.status==="UNKNOWN";
+      controlButton.textContent=!currentControl?.configured
+        ?(ru?"Создать контроль":"Initialize control")
+        :(currentControl?.allowed===true?(ru?"Пауза":"Pause"):(ru?"Возобновить":"Resume"));
+    }
+
+    const laneHtml=(data.lanes||[]).map((lane)=>{
+      const states=Object.entries(lane.platform_states||{}).map(([platform,state])=>
+        `<li><span>${esc(platformNames[platform]||platform)}</span>${badge(state?.state)}<small>${esc(state?.latest_at?fmt(state.latest_at):"UNKNOWN")}</small></li>`
+      ).join("");
+      const readiness=lane.lane==="HERMES_LOGISTICS"?data.readiness?.hermes_logistics:data.readiness?.progressopro;
+      const ready=lane.lane==="HERMES_LOGISTICS"?readiness?.ready_for_provider_preflight:readiness?.ready_for_hae_write_bridge;
+      const policy=lane.plugin_policy_receipt?.policy||"UNKNOWN";
+      const latest=lane.latest_verified_publication;
+      const inboundScopes=readiness?.inbound_scopes||{};
+      const inboundScopeText=readiness?.scope_evidence_known
+        ?`R:${inboundScopes.replies?"ready":"hold"} · M:${inboundScopes.mentions?"ready":"hold"} · S:${inboundScopes.search?"ready":"hold"}`
+        :"R/M/S: UNKNOWN";
+      return `<article class="social-lane">
+        <div class="social-lane-head"><div><p>${esc(laneName(lane.lane))}</p><h3>${esc(lane.account_key)}</h3></div>${badge(ready===true?"PROVIDER READY":ready===false?"PROVIDER HOLD":"UNKNOWN")}</div>
+        <ul class="social-platforms">${states}</ul>
+        <dl>
+          <div><dt>${ru?"Последний HAE run":"Latest HAE run"}</dt><dd>${esc(lane.latest_run?.status||"UNKNOWN")}</dd></div>
+          <div><dt>${ru?"Unresolved":"Unresolved"}</dt><dd>${lane.unresolved_publications===null?"UNKNOWN":esc(lane.unresolved_publications)}</dd></div>
+          <div><dt>${ru?"Plugin policy":"Plugin policy"}</dt><dd>${esc(policy)}</dd></div>
+          <div><dt>${ru?"Inbound scopes":"Inbound scopes"}</dt><dd>${esc(inboundScopeText)}</dd></div>
+          <div><dt>${ru?"Последний verified post":"Latest verified post"}</dt><dd>${safeHref(latest?.permalink)?`<a data-social-url="${esc(safeHref(latest.permalink))}" target="_blank" rel="noreferrer">${esc(latest.provider_post_id||"open")}</a>`:"UNKNOWN"}</dd></div>
+        </dl>
+      </article>`;
+    }).join("");
+    q("[data-social-lanes]").innerHTML=laneHtml||`<p class="muted">${ru?"Нет проверяемых lane-состояний":"No verifiable lane state"}</p>`;
+
+    const unresolved=(data.lanes||[]).map(x=>x.unresolved_publications);
+    q("[data-social-unresolved]").textContent=unresolved.some(x=>x===null)?"UNKNOWN":String(unresolved.reduce((sum,x)=>sum+Number(x||0),0));
+
+    const contentItems=(data.lanes||[]).flatMap(lane=>(lane.recent_content||[]).map(item=>({...item,lane:lane.lane})))
+      .sort((a,b)=>String(b.updated_at||"").localeCompare(String(a.updated_at||""))).slice(0,12);
+    q("[data-social-content]").innerHTML=contentItems.length?contentItems.map(item=>`<article class="social-content-item">
+      <div class="social-content-meta"><strong>${esc(laneName(item.lane))} · ${esc(platformNames[item.platform]||item.platform)}</strong>${badge(item.state)}</div>
+      <p>${esc(item.body||"")}</p>
+      <footer><span>${esc(item.topic||"UNKNOWN")} · ${esc(item.slot_key||"UNKNOWN")}</span>${safeHref(item.destination_url)?`<a data-social-url="${esc(safeHref(item.destination_url))}" target="_blank" rel="noreferrer">${ru?"Проверить source":"Verify source"}</a>`:`<span>${ru?"Source HOLD":"Source HOLD"}</span>`}</footer>
+    </article>`).join(""):`<p class="muted">${ru?"HAE drafts пока не зафиксированы":"No HAE drafts recorded yet"}</p>`;
+
+    const pubs=(data.recent_publications||[]);
+    q("[data-social-publications]").innerHTML=pubs.length?pubs.slice(0,10).map(pub=>`<article>
+      <div><strong>${esc(laneName(pub.account_key==="progressopro"?"PROGRESSOPRO":"HERMES_LOGISTICS"))} · ${esc(platformNames[pub.platform]||pub.platform)}</strong><small>${esc(fmt(pub.updated_at))}</small></div>
+      ${badge(pub.status)}
+      <span>${safeHref(pub.permalink)?`<a data-social-url="${esc(safeHref(pub.permalink))}" target="_blank" rel="noreferrer">${esc(pub.provider_post_id||"provider")}</a>`:esc(pub.last_error_class||pub.provider_post_id||"no verified permalink")}</span>
+    </article>`).join(""):`<p class="muted">${ru?"Пока нет publication receipts":"No publication receipts yet"}</p>`;
+
+    hydrateLinks();
+
+    const roadmap=data.channel_roadmap||[];
+    q("[data-social-roadmap]").innerHTML=roadmap.map((item)=>`<article>
+      <div><strong>${esc(platformNames[item.channel]||item.channel)}</strong>${badge(item.state)}</div>
+      <small>${esc(item.owner||"UNKNOWN")}</small>
+      <p>${esc(label(item.next_gate||"UNKNOWN"))}</p>
+    </article>`).join("")||`<p class="muted">${ru?"Roadmap пока не доказан":"Roadmap unavailable"}</p>`;
+
+    const windows=data.analytics?.windows||{};
+    q("[data-social-windows]").innerHTML=["24h","72h","7d"].map((key)=>{
+      const win=windows[key]||{};
+      return `<article><strong>${esc(key)}</strong>
+        <span>${ru?"Пакеты":"Packages"}: ${esc(metric(win.content_rows))}</span>
+        <span>Verified: ${esc(metric(win.verified_publications))}</span>
+        <span>HOLD/error: ${esc(metric(win.blocked_or_failed_runs))}</span>
+        <span>Unresolved: ${esc(metric(win.unresolved_publications))}</span>
+      </article>`;
+    }).join("");
+    const experiments=data.experiments||{};
+    q("[data-social-learning]").textContent=`70/30 · ${Math.round(Number(experiments.winner_share_target||0)*100)}% winner mechanics / ${Math.round(Number(experiments.exploration_share_target||0)*100)}% exploration · ${label(experiments.selection_state)}`;
+
+    const inbound=data.inbound||{};
+    q("[data-social-inbound]").textContent=`Threads: ${label(inbound.threads_replies_mentions)} · Instagram: ${label(inbound.instagram_comments_messages)} · Facebook: ${label(inbound.facebook_comments_messages)} · Inbox: ${label(inbound.unified_inbox)}`;
+    q("[data-social-status]").textContent=(data.readiness?.blockers||[]).length
+      ?`${ru?"Блокеры":"Blockers"}: ${data.readiness.blockers.join(", ")}`
+      :(ru?"Read model синхронизирован с HAE.":"Read model synchronized with HAE.");
+  }
+  function syncResearchInputs(){
+    const mode=q("[data-social-research-mode]")?.value||"mentions";
+    const queryWrap=q("[data-social-query-wrap]");
+    const threadWrap=q("[data-social-thread-wrap]");
+    if(queryWrap)queryWrap.hidden=mode!=="search";
+    if(threadWrap)threadWrap.hidden=!["replies","conversation"].includes(mode);
+  }
+  async function prepareReplyDraft(button){
+    const lane=String(button?.dataset?.lane||"");
+    const replyToId=String(button?.dataset?.replyId||"");
+    const rootPostId=String(button?.dataset?.rootId||"");
+    const author=String(button?.dataset?.author||"UNKNOWN");
+    const state=q("[data-social-research-state]");
+    if(!lane||!replyToId||!rootPostId)return;
+    const text=window.prompt(ru
+      ?`Подготовить ответ @${author} (до 500 UTF-8 bytes). Это НЕ публикация.`
+      :`Prepare reply to @${author} (max 500 UTF-8 bytes). This will NOT publish.`,"");
+    if(!text?.trim())return;
+    if(!window.confirm(ru
+      ?"Создать DRAFT_ONLY задачу в HAE? Ответ не будет опубликован."
+      :"Create a DRAFT_ONLY HAE job? The reply will not be published."))return;
+    button.disabled=true;
+    if(state)state.textContent=ru?"Передаём draft-intake в HAE…":"Recording HAE draft intake…";
+    try{
+      const response=await fetch("/api/internal-command-center/social/reply-prepare",{
+        method:"POST",credentials:"same-origin",
+        headers:{Accept:"application/json","Content-Type":"application/json"},
+        body:JSON.stringify({business_lane:lane,reply_to_id:replyToId,root_post_id:rootPostId,text:text.trim()}),
+      });
+      const data=await response.json().catch(()=>({}));
+      if(!response.ok||!data.success)throw new Error(data.error||"reply_prepare_failed");
+      if(state)state.textContent=data.duplicate
+        ?(ru?"Такой HAE intake уже существует; дубль не создан.":"This HAE intake already exists; duplicate suppressed.")
+        :(data.hae_job_id
+          ?(ru?`HAE draft job уже создан: ${data.hae_job_id}. Публикация: OFF.`:`HAE draft job already exists: ${data.hae_job_id}. Publication: OFF.`)
+          :(ru?`HAE intake принят: ${data.intake_request_id||"pending"}. HAE подготовит draft через canonical Cron/Queue. Публикация: OFF.`:`HAE intake recorded: ${data.intake_request_id||"pending"}. HAE will prepare the draft through canonical Cron/Queue. Publication: OFF.`));
+    }catch(error){
+      if(state)state.textContent=`HOLD: ${error?.message||"UNKNOWN"}`;
+    }finally{button.disabled=false}
+  }
+
+  async function loadResearch(){
+    const lane=q("[data-social-research-lane]")?.value||"HERMES_LOGISTICS";
+    const mode=q("[data-social-research-mode]")?.value||"mentions";
+    const state=q("[data-social-research-state]");
+    const results=q("[data-social-research-results]");
+    if(state)state.textContent=ru?"Читаем Meta Threads без provider write…":"Reading Meta Threads with no provider write…";
+    if(results)results.innerHTML="";
+    const url=new URL("/api/internal-command-center/social/threads",window.location.origin);
+    url.searchParams.set("lane",lane);
+    url.searchParams.set("mode",mode);
+    url.searchParams.set("limit","20");
+    if(mode==="search")url.searchParams.set("q",q("[data-social-research-query]")?.value||"");
+    if(["replies","conversation"].includes(mode))url.searchParams.set("thread_id",q("[data-social-research-thread]")?.value||"");
+    try{
+      const response=await fetch(url.toString(),{headers:{Accept:"application/json"},credentials:"same-origin"});
+      const data=await response.json().catch(()=>({}));
+      if(!response.ok||!data.success)throw new Error(data.error||"threads_inbox_read_failed");
+      const rows=Array.isArray(data.rows)?data.rows:[];
+      if(results)results.innerHTML=rows.length?rows.map((item)=>`<article>
+        <div class="social-research-meta"><strong>@${esc(item.username||"UNKNOWN")}</strong>${badge(item.inbox_candidate?.decision||"HUMAN_REVIEW")}</div>
+        <p>${esc(item.text||"")}</p>
+        <footer>
+          <span>${esc(fmt(item.timestamp))} · ${esc(item.inbox_candidate?.classification||"UNKNOWN")}</span>
+          ${safeHref(item.permalink)?`<a data-social-url="${esc(safeHref(item.permalink))}" target="_blank" rel="noreferrer">Threads ↗</a>`:""}
+          ${item.is_reply&&item.id&&item.root_post_id&&item.username&&mode!=="search"
+            ?`<button type="button" class="hcc-secondary" data-social-reply-prepare data-lane="${esc(lane)}" data-reply-id="${esc(item.id)}" data-root-id="${esc(item.root_post_id)}" data-author="${esc(item.username)}">${ru?"Подготовить draft":"Prepare draft"}</button>`
+            :""}
+        </footer>
+      </article>`).join(""):`<p class="muted">${ru?"Нет строк в текущем bounded read.":"No rows in this bounded read."}</p>`;
+      hydrateLinks();
+      results?.querySelectorAll("[data-social-reply-prepare]").forEach((button)=>button.addEventListener("click",()=>prepareReplyDraft(button)));
+      if(state)state.textContent=`${rows.length} · ${data.complete===true?"complete":"bounded/partial"} · provider write: OFF`;
+    }catch(error){
+      if(state)state.textContent=`${ru?"HOLD":"HOLD"}: ${error?.message||"UNKNOWN"}`;
+    }
+  }
+
+  async function load(){
+    q("[data-social-status]").textContent=ru?"Обновляем HAE/D1…":"Refreshing HAE/D1…";
+    try{
+      const response=await fetch("/api/internal-command-center/social",{headers:{Accept:"application/json"},credentials:"same-origin"});
+      const data=await response.json().catch(()=>({}));
+      if(!response.ok||!data.success)throw new Error(data.error||"social_readback_failed");
+      render(data);
+    }catch(error){
+      q("[data-social-status]").textContent=`${ru?"Readback недоступен":"Readback unavailable"}: ${error?.message||"UNKNOWN"}`;
+    }
+  }
+  async function toggleControl(){
+    const button=q("[data-social-control]");
+    if(button)button.disabled=true;
+    q("[data-social-status]").textContent=ru?"Обновляем owner control…":"Updating owner control…";
+    try{
+      if(!currentControl?.configured){
+        const response=await fetch("/api/internal-command-center/processes",{
+          method:"POST",credentials:"same-origin",
+          headers:{Accept:"application/json","Content-Type":"application/json"},
+          body:JSON.stringify({job_type:"social.acquisition.control",cadence_hours:1,name:"Social Acquisition"}),
+        });
+        const data=await response.json().catch(()=>({}));
+        if(!response.ok||!data.success)throw new Error(data.error||"social_control_create_failed");
+      }else{
+        const action=currentControl.allowed===true?"pause":"activate";
+        const response=await fetch("/api/internal-command-center/processes/"+encodeURIComponent(currentControl.process_id),{
+          method:"PATCH",credentials:"same-origin",
+          headers:{Accept:"application/json","Content-Type":"application/json"},
+          body:JSON.stringify({action}),
+        });
+        const data=await response.json().catch(()=>({}));
+        if(!response.ok||!data.success)throw new Error(data.error||"social_control_update_failed");
+      }
+      await load();
+    }catch(error){
+      q("[data-social-status]").textContent=`${ru?"Control недоступен":"Control unavailable"}: ${error?.message||"UNKNOWN"}`;
+      if(button)button.disabled=false;
+    }
+  }
+  q("[data-social-research-mode]")?.addEventListener("change",syncResearchInputs);
+  q("[data-social-research-load]")?.addEventListener("click",loadResearch);
+  syncResearchInputs();
+  q("[data-social-control]")?.addEventListener("click",toggleControl);
+  q("[data-social-refresh]")?.addEventListener("click",load);
+  load();
+})();
+</script>
+
+<style>
+.social-acquisition{display:grid;gap:1rem}.social-actions{display:flex;align-items:center;justify-content:flex-end;gap:.5rem;flex-wrap:wrap}.social-control-state{font-size:.75rem;color:#667085}.social-head,.social-subhead,.social-lane-head{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem}.social-head h2,.social-subhead h3,.social-lane h3{margin:.2rem 0}.social-head p,.social-subhead p,.social-lane p{margin:0}.social-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.75rem}.social-kpis article,.social-lane,.social-recent,.social-inbound{border:1px solid rgba(93,105,123,.18);border-radius:18px;padding:1rem;background:rgba(255,255,255,.64)}.social-kpis span,.social-kpis small,.social-platforms small{display:block;color:#667085}.social-kpis strong{display:block;font-size:1.35rem;margin:.25rem 0}.social-pipeline{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:.35rem}.social-pipeline span{display:flex;gap:.4rem;align-items:center;padding:.55rem .65rem;border-radius:12px;background:rgba(35,62,89,.06);font-size:.78rem}.social-pipeline b{display:grid;place-items:center;width:1.35rem;height:1.35rem;border-radius:50%;background:#17324d;color:white;font-size:.68rem}.social-lanes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.8rem}.social-platforms{list-style:none;padding:0;margin:1rem 0;display:grid;gap:.45rem}.social-platforms li{display:grid;grid-template-columns:90px 1fr auto;align-items:center;gap:.5rem}.social-lane dl{display:grid;gap:.5rem;margin:0}.social-lane dl div{display:grid;grid-template-columns:140px 1fr;gap:.6rem}.social-lane dt{color:#667085}.social-lane dd{margin:0;overflow-wrap:anywhere}.social-badge{display:inline-flex;width:max-content;padding:.25rem .5rem;border-radius:999px;background:rgba(102,112,133,.12);font-size:.7rem;font-weight:700;text-transform:uppercase}.social-badge[data-state*="ready"],.social-badge[data-state*="verified"]{background:rgba(3,152,85,.12);color:#027a48}.social-badge[data-state*="hold"],.social-badge[data-state*="unknown"],.social-badge[data-state*="unverified"]{background:rgba(247,144,9,.12);color:#b54708}.social-research{border:1px solid rgba(93,105,123,.18);border-radius:18px;padding:1rem;background:rgba(255,255,255,.64)}.social-research-controls{display:grid;grid-template-columns:1fr 1fr 1.25fr 1.25fr auto;gap:.55rem;align-items:end}.social-research-controls label{display:grid;gap:.25rem;font-size:.75rem;color:#667085}.social-research-controls select,.social-research-controls input{min-width:0;padding:.55rem .65rem;border:1px solid rgba(93,105,123,.2);border-radius:10px;background:white}.social-research-state{font-size:.78rem;color:#667085}.social-research-results{display:grid;gap:.5rem}.social-research-results article{padding:.75rem;border:1px solid rgba(93,105,123,.12);border-radius:14px}.social-research-meta,.social-research-results footer{display:flex;justify-content:space-between;gap:.6rem;align-items:center}.social-research-results p{white-space:pre-wrap;overflow-wrap:anywhere}.social-research-results footer{font-size:.72rem;color:#667085}.social-roadmap{border:1px solid rgba(93,105,123,.18);border-radius:18px;padding:1rem;background:rgba(255,255,255,.64)}.social-roadmap-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.65rem}.social-roadmap-grid article{padding:.8rem;border:1px solid rgba(93,105,123,.12);border-radius:14px}.social-roadmap-grid article>div{display:flex;justify-content:space-between;gap:.5rem;align-items:center}.social-roadmap-grid small,.social-roadmap-grid p{font-size:.76rem;color:#667085}.social-roadmap-grid p{margin:.4rem 0 0}.social-performance{border:1px solid rgba(93,105,123,.18);border-radius:18px;padding:1rem;background:rgba(255,255,255,.64)}.social-window-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.65rem}.social-window-grid article{display:grid;gap:.25rem;padding:.8rem;border:1px solid rgba(93,105,123,.12);border-radius:14px}.social-window-grid span,.social-learning{font-size:.78rem;color:#667085}.social-learning{margin:.75rem 0 0}.social-content-queue{border:1px solid rgba(93,105,123,.18);border-radius:18px;padding:1rem;background:rgba(255,255,255,.64)}.social-content-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.65rem}.social-content-item{padding:.8rem;border:1px solid rgba(93,105,123,.12);border-radius:14px;background:rgba(255,255,255,.5)}.social-content-meta,.social-content-item footer{display:flex;justify-content:space-between;gap:.6rem;align-items:center}.social-content-item p{white-space:pre-wrap;overflow-wrap:anywhere}.social-content-item footer{font-size:.72rem;color:#667085}.social-content-item footer a{font-weight:700}.social-publications{display:grid;gap:.5rem}.social-publications article{display:grid;grid-template-columns:1fr auto minmax(120px,.65fr);gap:.6rem;align-items:center;padding:.65rem 0;border-top:1px solid rgba(93,105,123,.12)}.social-publications article:first-child{border-top:0}.social-publications small{display:block;color:#667085}.social-publications span:last-child{overflow-wrap:anywhere}.social-inbound{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem}.social-inbound p{max-width:68ch}.social-status{margin:0;color:#667085;overflow-wrap:anywhere}@media(max-width:900px){.social-kpis{grid-template-columns:repeat(2,1fr)}.social-window-grid,.social-roadmap-grid{grid-template-columns:1fr}.social-research-controls{grid-template-columns:1fr 1fr}.social-pipeline{grid-template-columns:repeat(4,1fr)}.social-lanes{grid-template-columns:1fr}.social-content-list{grid-template-columns:1fr}.social-publications article{grid-template-columns:1fr}.social-inbound{display:block}}@media(max-width:520px){.social-kpis{grid-template-columns:1fr}.social-pipeline{grid-template-columns:repeat(2,1fr)}.social-head{display:block}.social-head button{margin-top:.75rem}.social-platforms li{grid-template-columns:80px 1fr}.social-platforms small{display:none}.social-lane dl div{grid-template-columns:1fr}}
+</style>

@@ -39,6 +39,8 @@ export async function enqueueDueOwnerProcesses(env, scheduledAt, {
   let dispatched = 0;
 
   for (const process of due?.results || []) {
+    const template = haeProcessTemplate(process.job_type);
+    if (template?.control_only) continue;
     const processId = String(process.process_id || "");
     const dueAt = String(process.next_run_at || "");
     const leaseUntil = addHoursIso(scheduledIso, 1);
@@ -56,7 +58,6 @@ export async function enqueueDueOwnerProcesses(env, scheduledAt, {
     if (Number(claimed?.meta?.changes || 0) !== 1) continue;
 
     try {
-      const template = haeProcessTemplate(process.job_type);
       const contract = contractForJobType(process.job_type);
       if (!template || !contract || contract.semantic_required || contract.permission_class !== "READ_ONLY") {
         throw new Error("owner_process_contract_not_allowed");

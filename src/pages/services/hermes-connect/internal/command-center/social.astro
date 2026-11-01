@@ -1,0 +1,73 @@
+---
+import BaseLayout from "../../../../../layouts/BaseLayout.astro";
+import SiteHeader from "../../../../../components/SiteHeader.astro";
+import SiteFooter from "../../../../../components/SiteFooter.astro";
+import HermesBusinessCommandCenterShell from "../../../../../components/HermesBusinessCommandCenterShell.astro";
+import HermesSocialAcquisition from "../../../../../components/HermesSocialAcquisition.astro";
+import "../../../../../styles/hermes-business-command-center.css";
+const ru=Astro.url.searchParams.get("lang")==="ru";
+---
+<BaseLayout
+  title={ru?"Social Acquisition | Hermes Command Center":"Social Acquisition | Hermes Command Center"}
+  description={ru?"Закрытый owner-раздел Hermes Command Center для social acquisition, HAE и provider evidence.":"Private Hermes Command Center owner surface for social acquisition, HAE and provider evidence."}
+  robots="noindex,nofollow,noarchive"
+  htmlLang={ru?"ru":"en"}
+>
+  <SiteHeader activePath="/paths/technology/"/>
+  <HermesBusinessCommandCenterShell
+    mode="private"
+    ru={ru}
+    title={ru?"Social Acquisition":"Social Acquisition"}
+    lead={ru
+      ?"Две business lanes, один HAE runtime и доказуемый путь от контента до provider readback и CRM."
+      :"Two business lanes, one HAE runtime and an evidence-backed path from content to provider readback and CRM."}
+    eyebrow="Hermes Command Center · Social"
+    badge={ru?"Закрытый кабинет владельца":"Private owner workspace"}
+    nav={[]}
+    activeKey="social"
+  >
+    <Fragment slot="hero-actions">
+      <div class="hcc-actions">
+        <a class="hcc-secondary" href={"/services/hermes-connect/internal/command-center/"+(ru?"?lang=ru":"")}>
+          {ru?"← Командный центр":"← Command Center"}
+        </a>
+      </div>
+    </Fragment>
+    <section class="access-card" data-social-access role="status">
+      <strong>{ru?"Проверяем защищённую сессию…":"Verifying secure session…"}</strong>
+      <p>{ru?"Social Acquisition откроется только после серверной проверки owner-доступа.":"Social Acquisition opens only after server-side owner verification."}</p>
+    </section>
+    <div data-social-private hidden>
+      <HermesSocialAcquisition ru={ru}/>
+    </div>
+  </HermesBusinessCommandCenterShell>
+  <SiteFooter/>
+</BaseLayout>
+
+<script is:inline define:vars={{ru}}>
+(async()=>{
+  const access=document.querySelector("[data-social-access]");
+  const privateView=document.querySelector("[data-social-private]");
+  try{
+    const response=await fetch("/api/internal-ai/status",{credentials:"same-origin",cache:"no-store",headers:{Accept:"application/json"}});
+    const data=await response.json().catch(()=>({}));
+    if(!response.ok||!data.success){
+      if(access){
+        access.hidden=false;
+        const strong=access.querySelector("strong");
+        if(strong)strong.textContent=response.status===401
+          ?(ru?"Нужно войти":"Sign in required")
+          :(ru?"Нужен доступ владельца":"Owner access required");
+      }
+      return;
+    }
+    if(access)access.hidden=true;
+    if(privateView)privateView.hidden=false;
+  }catch{
+    if(access){
+      const strong=access.querySelector("strong");
+      if(strong)strong.textContent=ru?"Проверка доступа недоступна":"Access verification unavailable";
+    }
+  }
+})();
+</script>

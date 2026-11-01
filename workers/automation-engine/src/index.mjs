@@ -52,6 +52,17 @@ import {
   pluginRuntimeRegistryEvidenceStatus,
   pluginRuntimeRegistrySnapshot,
 } from "./plugin-runtime-registry.mjs";
+import { socialAccountReadinessSnapshot } from "./social-account-readiness.mjs";
+import { runSocialReplyPrepare, validateSocialReplyPrepareInput } from "./social-reply-prepare.mjs";
+import { drainSocialReplyPrepareIntake } from "./social-reply-intake-runtime.mjs";
+import {
+  socialAcquisitionV2Enabled,
+  enqueueHourlySocialPlans,
+  persistHourlySocialPackages,
+  processSocialThreadsPlan,
+  processSocialThreadsReadback,
+  enqueueDueSocialReadbacks,
+} from "./social-hourly-runtime.mjs";
 import { haeSelfRepairPacketReplayMatches } from "./hae-self-improvement.mjs";
 import { verifyGithubCIQueueEnvelope } from "./github-ci-runtime-intake.mjs";
 import { verifyGithubCIPatchProposalEnvelope } from "./github-ci-patch-runtime-intake.mjs";
@@ -547,6 +558,13 @@ const READ_ONLY_GENERIC_JOB_TYPES = new Set([
   ...HISTORICAL_READ_ONLY_JOB_TYPES,
   ...ROLE_CONTRACT_JOB_TYPES,
 ]);
+const DRAFT_ONLY_GENERIC_JOB_TYPES = new Set([
+  "social.reply.prepare",
+]);
+const GENERIC_JOB_TYPES = new Set([
+  ...READ_ONLY_GENERIC_JOB_TYPES,
+  ...DRAFT_ONLY_GENERIC_JOB_TYPES,
+]);
 
 function genericJobEventId(jobId, eventType) {
   return `evt:${jobId}:${eventType}:${crypto.randomUUID()}`;
@@ -685,12 +703,17 @@ async function createGenericJob(env, input) {
   const rawMaxAttempts = metricNumberOrNull(input?.max_attempts);
   const priority = rawPriority === null ? 50 : Math.max(0, Math.min(100, Math.trunc(rawPriority)));
   const maxAttempts = rawMaxAttempts === null ? 3 : Math.max(1, Math.min(5, Math.trunc(rawMaxAttempts)));
-  if (!READ_ONLY_GENERIC_JOB_TYPES.has(jobType)) throw new Error("job_type_not_allowed");
+  if (!GENERIC_JOB_TYPES.has(jobType)) throw new Error("job_type_not_allowed");
+  if (DRAFT_ONLY_GENERIC_JOB_TYPES.has(jobType) && maxAttempts !== 1) throw new Error("draft_only_max_attempts_must_be_one");
   if (!businessLane) throw new Error("business_lane_required");
   if (roleContract && businessLane !== roleContract.business_lane) throw new Error("role_contract_business_lane_mismatch");
   if (roleContract?.semantic_required && input?.internal_submission !== true) throw new Error("semantic_job_internal_only");
   if (!idempotencyKey) throw new Error("idempotency_key_required");
   let payload = input?.payload ?? {};
+  if (jobType === "social.reply.prepare") {
+    payload = validateSocialReplyPrepareInput(payload);
+    if (payload.business_lane !== businessLane) throw new Error("social_reply_business_lane_mismatch");
+  }
   if (HISTORICAL_READ_ONLY_JOB_TYPES.includes(jobType)) {
     runHistoricalLearningPrimitive(jobType, payload);
   }
@@ -922,6 +945,15 @@ async function submitRuntimeProofJob(env, message) {
 }
 
 async function runReadOnlyGenericCapability(env, job) {
+  if (job.job_type === "social.reply.prepare") {
+    let payload = {};
+    try {
+      payload = JSON.parse(String(job.payload_json || "{}"));
+    } catch {
+      throw new Error("generic_job_payload_invalid");
+    }
+    return runSocialReplyPrepare(env, payload);
+  }
   if (ROLE_CONTRACT_JOB_TYPES.includes(job.job_type)) {
     let payload = {};
     try {
@@ -1571,6 +1603,7 @@ async function enqueuePlanRun(env, slotKey) {
 }
 
 async function recoverPendingPlanRuns(env, limit = 20) {
+  if (socialAcquisitionV2Enabled(env)) return 0;
   if (!env.DB || !env.AUTOMATION_QUEUE) return 0;
   await ensureSchema(env.DB);
   const queuedStaleCutoff = addSecondsIso(new Date().toISOString(), -2 * 60);
@@ -1591,6 +1624,16 @@ async function processPlanMessage(env, message) {
   await ensureSchema(env.DB);
   const slotKey = clean(message?.slot_key, 32);
   if (!/^\d{4}-\d{2}-\d{2}T\d{2}$/.test(slotKey)) throw new Error("slot_key_invalid");
+  if (socialAcquisitionV2Enabled(env)) {
+    await persistHourlySocialPackages(env.DB, slotKey);
+    return processSocialThreadsPlan(env, {
+      type: "social.threads.plan",
+      business_lane: "HERMES_LOGISTICS",
+      account_key: "hermes_logistics",
+      platform: "threads",
+      slot_key: slotKey,
+    });
+  }
   // Queue push can be used as a private Cloudflare control-plane canary without
   // exposing an HTTP route. Ensure the durable run row exists even when the
   // message did not originate from this Worker's scheduled producer.
@@ -2170,28 +2213,71 @@ export default {
       });
     }
 
+    try {
+      await drainSocialReplyPrepareIntake(env, { createJob: createGenericJob });
+    } catch (error) {
+      await recordRuntimeEvent(env, {
+        eventType: "cron.social_reply_intake_failed",
+        messageType: "social.reply.prepare",
+        errorClass: safeRuntimeErrorClass(error, "social_reply_intake_failed"),
+      });
+    }
+
     if (eligible) {
       const slotKey = chicagoSlotKey(scheduledAt);
-      const inserted = await reserveRun(env.DB, slotKey, "cron");
-      if (inserted) {
+      if (socialAcquisitionV2Enabled(env)) {
         try {
-          const enqueued = await enqueuePlanRun(env, slotKey);
-          if (!enqueued) {
+          const socialBatch=await enqueueHourlySocialPlans(env, slotKey);
+          if(socialBatch?.control?.allowed===false){
             await recordRuntimeEvent(env, {
-              eventType: "cron.current_slot_enqueue_failed",
-              messageType: "content.plan",
+              eventType: "cron.social_v2_owner_paused",
+              messageType: "social.threads.plan",
               slotKey,
-              errorClass: "current_slot_enqueue_failed",
+              errorClass: "social_owner_paused",
             });
           }
         } catch (error) {
           await recordRuntimeEvent(env, {
-            eventType: "cron.current_slot_enqueue_failed",
-            messageType: "content.plan",
+            eventType: "cron.social_v2_enqueue_failed",
+            messageType: "social.threads.plan",
             slotKey,
-            errorClass: safeRuntimeErrorClass(error, "current_slot_enqueue_failed"),
+            errorClass: safeRuntimeErrorClass(error, "social_v2_enqueue_failed"),
           });
         }
+      } else {
+        const inserted = await reserveRun(env.DB, slotKey, "cron");
+        if (inserted) {
+          try {
+            const enqueued = await enqueuePlanRun(env, slotKey);
+            if (!enqueued) {
+              await recordRuntimeEvent(env, {
+                eventType: "cron.current_slot_enqueue_failed",
+                messageType: "content.plan",
+                slotKey,
+                errorClass: "current_slot_enqueue_failed",
+              });
+            }
+          } catch (error) {
+            await recordRuntimeEvent(env, {
+              eventType: "cron.current_slot_enqueue_failed",
+              messageType: "content.plan",
+              slotKey,
+              errorClass: safeRuntimeErrorClass(error, "current_slot_enqueue_failed"),
+            });
+          }
+        }
+      }
+    }
+
+    if (socialAcquisitionV2Enabled(env)) {
+      try {
+        await enqueueDueSocialReadbacks(env);
+      } catch (error) {
+        await recordRuntimeEvent(env, {
+          eventType: "cron.social_v2_readback_recovery_failed",
+          messageType: "social.threads.readback",
+          errorClass: safeRuntimeErrorClass(error, "social_v2_readback_recovery_failed"),
+        });
       }
     }
 
@@ -2307,6 +2393,20 @@ export default {
           item.ack();
           continue;
         }
+        if (messageType === "social.threads.plan") {
+          if (!env.DB || !env.AUTOMATION_QUEUE) throw new Error("runtime_not_configured");
+          await ensureSchema(env.DB);
+          await processSocialThreadsPlan(env, payload);
+          item.ack();
+          continue;
+        }
+        if (messageType === "social.threads.readback") {
+          if (!env.DB) throw new Error("database_not_configured");
+          await ensureSchema(env.DB);
+          await processSocialThreadsReadback(env, payload);
+          item.ack();
+          continue;
+        }
         if (messageType === "content.plan") {
           await processPlanMessage(env, payload);
           item.ack();
@@ -2384,6 +2484,9 @@ export default {
         provider_transport: "windsor_connectors_api",
         provider_configured: Boolean(windsorThreadsConfig(env)),
         publication_enabled: publicationEnabled(env),
+        social_acquisition_v2_enabled: socialAcquisitionV2Enabled(env),
+        social_business_lanes: ["HERMES_LOGISTICS", "PROGRESSOPRO"],
+        social_platforms: ["threads", "instagram", "facebook", "x"],
       });
     }
     if (request.method === "GET" && url.pathname === "/v1/plugin-runtime-registry") {
@@ -2469,6 +2572,11 @@ export default {
     if (request.method === "GET" && url.pathname === "/v1/health") {
       if (!authorized(request, env)) return json(401, { success: false, error: "unauthorized" });
       return json(200, { success: true, ...(await health(env)) });
+    }
+    if (request.method === "GET" && url.pathname === "/v1/social-account-readiness") {
+      if (!authorized(request, env)) return json(401, { success: false, error: "unauthorized" });
+      if (!env.DB) return json(503, { success: false, error: "runtime_not_configured" });
+      return json(200, await socialAccountReadinessSnapshot(env));
     }
     if (request.method === "POST" && url.pathname === "/v1/jobs") {
       if (!authorized(request, env)) return json(401, { success: false, error: "unauthorized" });

@@ -3,6 +3,7 @@ import { requireInternalOwner } from "../../_lib/internal-ai.mjs";
 import {
   ensureHaeProcessSchema,
   haeProcessEventStatement,
+  haeProcessTemplate,
   publicHaeProcess,
 } from "../../../../src/lib/hae-process-control.mjs";
 
@@ -24,6 +25,8 @@ export async function onRequestPatch({ request, env, params }: { request: Reques
   const id = String(params.id || "");
   let row = await getProcess(env.DB, id);
   if (!row) return jsonResponse(404, { success: false, error: "process_not_found" }, headers);
+  const template = haeProcessTemplate(row.job_type);
+  const controlOnly = Boolean(template && "control_only" in template && template.control_only === true);
   let payload: any; try { payload = await request.json(); } catch { return jsonResponse(400, { success: false, error: "invalid_json" }, headers); }
   const action = String(payload?.action || "").trim();
   const now = new Date().toISOString();
@@ -37,18 +40,25 @@ export async function onRequestPatch({ request, env, params }: { request: Reques
       return jsonResponse(409, { success: false, error: "process_run_in_flight", process: publicHaeProcess(row) }, headers);
     }
     nextStatus = "active"; eventType = "process.activated";
-    update = env.DB.prepare(`UPDATE hermes_automation_processes
-      SET status='active',next_run_at=?,lease_until=NULL,last_error_class=NULL,updated_at=?
-      WHERE process_id=? AND organization_scope=? AND (lease_until IS NULL OR lease_until<=?)`).bind(now, now, id, SCOPE, now);
+    update = controlOnly
+      ? env.DB.prepare(`UPDATE hermes_automation_processes
+          SET status='active',next_run_at=NULL,lease_until=NULL,last_error_class=NULL,updated_at=?
+          WHERE process_id=? AND organization_scope=? AND (lease_until IS NULL OR lease_until<=?)`).bind(now, id, SCOPE, now)
+      : env.DB.prepare(`UPDATE hermes_automation_processes
+          SET status='active',next_run_at=?,lease_until=NULL,last_error_class=NULL,updated_at=?
+          WHERE process_id=? AND organization_scope=? AND (lease_until IS NULL OR lease_until<=?)`).bind(now, now, id, SCOPE, now);
   } else if (action === "pause") {
     if (row.lease_until && Date.parse(String(row.lease_until)) > Date.parse(now)) {
       return jsonResponse(409, { success: false, error: "process_run_in_flight", process: publicHaeProcess(row) }, headers);
     }
     nextStatus = "paused"; eventType = "process.paused";
     update = env.DB.prepare(`UPDATE hermes_automation_processes
-      SET status='paused',lease_until=NULL,updated_at=?
+      SET status='paused',next_run_at=NULL,lease_until=NULL,updated_at=?
       WHERE process_id=? AND organization_scope=? AND (lease_until IS NULL OR lease_until<=?)`).bind(now, id, SCOPE, now);
   } else if (action === "run_next_tick") {
+    if (controlOnly) {
+      return jsonResponse(409, { success: false, error: "process_control_only", process: publicHaeProcess(row) }, headers);
+    }
     if (String(row.status) !== "active") {
       return jsonResponse(409, { success: false, error: "process_not_active", process: publicHaeProcess(row) }, headers);
     }
