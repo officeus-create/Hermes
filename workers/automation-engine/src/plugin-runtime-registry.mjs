@@ -1,14 +1,14 @@
 // Exact authenticated Plugin Creator readback instant, not the UTC date at midnight.
 // A date-only midnight surrogate makes a fresh late-UTC readback falsely stale after rollover.
 // This is bounded release evidence, NOT proof of runtime loading or automatic refreshing.
-const OBSERVED_AT = "2026-11-01T05:04:00.000Z";
+const OBSERVED_AT = "2026-11-01T19:48:39.016Z";
 
 export const PLUGIN_RUNTIME_REGISTRY = Object.freeze({
-  "hermes-automatic-engineer": Object.freeze({ version: "0.1.34", observed_at: OBSERVED_AT }),
-  "hermes-agent-coordinator": Object.freeze({ version: "0.1.85", observed_at: OBSERVED_AT }),
-  "hermes-technology-developer": Object.freeze({ version: "0.1.60", observed_at: OBSERVED_AT }),
-  "hermes-qa-evidence-auditor": Object.freeze({ version: "0.1.19", observed_at: OBSERVED_AT }),
-  "hermes-knowledge-curator": Object.freeze({ version: "0.1.90", observed_at: OBSERVED_AT }),
+  "hermes-automatic-engineer": Object.freeze({ version: "0.1.35", observed_at: OBSERVED_AT }),
+  "hermes-agent-coordinator": Object.freeze({ version: "0.1.86", observed_at: OBSERVED_AT }),
+  "hermes-technology-developer": Object.freeze({ version: "0.1.61", observed_at: OBSERVED_AT }),
+  "hermes-qa-evidence-auditor": Object.freeze({ version: "0.1.20", observed_at: OBSERVED_AT }),
+  "hermes-knowledge-curator": Object.freeze({ version: "0.1.91", observed_at: OBSERVED_AT }),
   "hermes-marketing-growth": Object.freeze({ version: "0.1.16", observed_at: OBSERVED_AT }),
   "hermes-search-growth": Object.freeze({ version: "0.1.13", observed_at: OBSERVED_AT }),
   "hermes-academy": Object.freeze({ version: "0.1.14", observed_at: OBSERVED_AT }),
