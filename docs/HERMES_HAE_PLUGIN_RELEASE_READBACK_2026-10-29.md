@@ -148,3 +148,13 @@ Canonical ledger remains `1Ya2fgHZVISV3XHd_w9JHSJBrizCy-LeKczD9H_qJErc`, now wit
 ### Final UTC provenance after actual Coordinator release
 
 The `0.1.84` Coordinator release was created **after** the earlier `2026-11-01T00:46:39.120Z` provider inventory. Therefore that older time is not the observation of v0.1.84. A **new** authenticated 28-plugin listing completed `2026-11-01T00:52:46.408Z`, confirming coordinator `0.1.84` release `pluginrel_6ae68cfdb7948191aaba16e655c92e36` and QA Auditor `0.1.18` release `pluginrel_6ae68b2776ac81919aaa7f0bee272115`. The registry timestamp is now bound only to this newer readback. No automatic plugin update/agent execution inference follows.
+
+
+## 2026-11-01 04:43:48Z — default plugin routing + hourly social factory refresh
+
+Authenticated Plugin Creator updates and immediate package readback confirmed two HAE-allowed role releases created for the owner's explicit social/default-plugin directive:
+
+- `hermes-agent-coordinator` **0.1.85**, release `pluginrel_6ae6c32705388191ada207438ad88a6a`: added discovery keywords/capabilities/default prompts and strengthened `chatgpt-request-router` so every accessible Hermes/ProgressoPro task must read/apply the smallest relevant private specialist set before substantive execution; inaccessible specialist paths are reported as `PLUGIN_ACCESS_GAP`. This is discovery/routing metadata plus skill policy, not a global hidden ChatGPT hook.
+- `hermes-marketing-growth` **0.1.15**, release `pluginrel_6ae6c3379da48191a012c9738f2de5cf`: added `social-hourly-content-factory` for the two canonical lanes `HERMES_LOGISTICS` and `PROGRESSOPRO`, generating platform-native Threads/Instagram/Facebook/X variants while preserving HAE as the sole durable scheduler/publisher.
+
+Only existing role version identity fields and registry evidence time are refreshed in this PR. No permission class, job type, provider credential, external-write authority, scheduler, Queue/D1 shape, paid AI, merge/deploy or production publication is enabled by this version sync. Runtime consumption still requires exact-head CI, independent QA, protected merge/deploy and later HAE receipt/readback.
