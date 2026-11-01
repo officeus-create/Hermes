@@ -76,7 +76,7 @@ const {ru=false}=Astro.props;
   <section class="social-research">
     <div class="social-subhead">
       <div><p class="hcc-sample">Threads Inbox / Research</p><h3>{ru?"Read-only входящие и поиск":"Read-only inbound & search"}</h3></div>
-      <small>{ru?"Никаких автоответов":"No automatic replies"}</small>
+      <small>{ru?"Только draft · без публикации":"Draft-only · no publish"}</small>
     </div>
     <div class="social-research-controls">
       <label><span>{ru?"Бренд":"Lane"}</span><select data-social-research-lane>
@@ -226,6 +226,38 @@ const {ru=false}=Astro.props;
     if(queryWrap)queryWrap.hidden=mode!=="search";
     if(threadWrap)threadWrap.hidden=!["replies","conversation"].includes(mode);
   }
+  async function prepareReplyDraft(button){
+    const lane=String(button?.dataset?.lane||"");
+    const replyToId=String(button?.dataset?.replyId||"");
+    const rootPostId=String(button?.dataset?.rootId||"");
+    const author=String(button?.dataset?.author||"UNKNOWN");
+    const state=q("[data-social-research-state]");
+    if(!lane||!replyToId||!rootPostId)return;
+    const text=window.prompt(ru
+      ?`Подготовить ответ @${author} (до 500 UTF-8 bytes). Это НЕ публикация.`
+      :`Prepare reply to @${author} (max 500 UTF-8 bytes). This will NOT publish.`,"");
+    if(!text?.trim())return;
+    if(!window.confirm(ru
+      ?"Создать DRAFT_ONLY задачу в HAE? Ответ не будет опубликован."
+      :"Create a DRAFT_ONLY HAE job? The reply will not be published."))return;
+    button.disabled=true;
+    if(state)state.textContent=ru?"Готовим HAE draft…":"Preparing HAE draft…";
+    try{
+      const response=await fetch("/api/internal-command-center/social/reply-prepare",{
+        method:"POST",credentials:"same-origin",
+        headers:{Accept:"application/json","Content-Type":"application/json"},
+        body:JSON.stringify({business_lane:lane,reply_to_id:replyToId,root_post_id:rootPostId,text:text.trim()}),
+      });
+      const data=await response.json().catch(()=>({}));
+      if(!response.ok||!data.success)throw new Error(data.error||"reply_prepare_failed");
+      if(state)state.textContent=data.duplicate
+        ?(ru?"Такой HAE draft уже существует; дубль не создан.":"This HAE draft already exists; duplicate suppressed.")
+        :(ru?`HAE draft создан: ${data.hae_job_id||"queued"}. Публикация: OFF.`:`HAE draft prepared: ${data.hae_job_id||"queued"}. Publication: OFF.`);
+    }catch(error){
+      if(state)state.textContent=`HOLD: ${error?.message||"UNKNOWN"}`;
+    }finally{button.disabled=false}
+  }
+
   async function loadResearch(){
     const lane=q("[data-social-research-lane]")?.value||"HERMES_LOGISTICS";
     const mode=q("[data-social-research-mode]")?.value||"mentions";
@@ -250,9 +282,13 @@ const {ru=false}=Astro.props;
         <footer>
           <span>${esc(fmt(item.timestamp))} · ${esc(item.inbox_candidate?.classification||"UNKNOWN")}</span>
           ${safeHref(item.permalink)?`<a data-social-url="${esc(safeHref(item.permalink))}" target="_blank" rel="noreferrer">Threads ↗</a>`:""}
+          ${item.is_reply&&item.id&&item.root_post_id&&item.username&&mode!=="search"
+            ?`<button type="button" class="hcc-secondary" data-social-reply-prepare data-lane="${esc(lane)}" data-reply-id="${esc(item.id)}" data-root-id="${esc(item.root_post_id)}" data-author="${esc(item.username)}">${ru?"Подготовить draft":"Prepare draft"}</button>`
+            :""}
         </footer>
       </article>`).join(""):`<p class="muted">${ru?"Нет строк в текущем bounded read.":"No rows in this bounded read."}</p>`;
       hydrateLinks();
+      results?.querySelectorAll("[data-social-reply-prepare]").forEach((button)=>button.addEventListener("click",()=>prepareReplyDraft(button)));
       if(state)state.textContent=`${rows.length} · ${data.complete===true?"complete":"bounded/partial"} · provider write: OFF`;
     }catch(error){
       if(state)state.textContent=`${ru?"HOLD":"HOLD"}: ${error?.message||"UNKNOWN"}`;
