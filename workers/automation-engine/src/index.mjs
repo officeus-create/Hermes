@@ -63,6 +63,7 @@ import {
   processSocialThreadsReadback,
   enqueueDueSocialReadbacks,
 } from "./social-hourly-runtime.mjs";
+import { runCatalogWeeklyOwnerReport, runCatalogMondayOwnerNotice } from "./catalog-owner-weekly.mjs";
 import { haeSelfRepairPacketReplayMatches } from "./hae-self-improvement.mjs";
 import { verifyGithubCIQueueEnvelope } from "./github-ci-runtime-intake.mjs";
 import { verifyGithubCIPatchProposalEnvelope } from "./github-ci-patch-runtime-intake.mjs";
@@ -2165,7 +2166,26 @@ export default {
     const scheduledAt = rawScheduledTime === null
       ? observedAt
       : new Date(rawScheduledTime);
+    // Monday/Friday :00 UTC ticks only serve owner Catalog; preserve all other HAE jobs.
+    // Europe/Kyiv guard inside the handlers selects 12:00 local across DST.
+    const ownerCatalogClockTick = [1, 5].includes(scheduledAt.getUTCDay())
+      && [9, 10].includes(scheduledAt.getUTCHours())
+      && scheduledAt.getUTCMinutes() === 0;
+    if (ownerCatalogClockTick || ["0 9 * * 1", "0 10 * * 1", "0 9 * * 5", "0 10 * * 5"].includes(String(controller?.cron || ""))) {
+      await runCatalogWeeklyOwnerReport(env, scheduledAt);
+      await runCatalogMondayOwnerNotice(env, scheduledAt);
+      return;
+    }
     await ensureSchema(env.DB);
+    try {
+      await runCatalogWeeklyOwnerReport(env, scheduledAt);
+      await runCatalogMondayOwnerNotice(env, scheduledAt);
+    } catch (error) {
+      await recordRuntimeEvent(env, {
+        eventType: "cron.catalog_owner_schedule_failed",
+        errorClass: safeRuntimeErrorClass(error, "catalog_owner_schedule_failed"),
+      });
+    }
     const eligible = isEligibleChicagoSlot(scheduledAt);
     try {
       await recordCronHeartbeat(env, scheduledAt, observedAt, eligible, controller?.cron);
