@@ -166,7 +166,6 @@ export const ZERO_TOKEN_PLUGIN_TASK_CONTRACTS = Object.freeze([
     steps: ["validate canonical Catalog counts", "preserve UNKNOWN for unavailable duplicate/SEO evidence", "separate implemented from planned", "emit one bounded NEXT action with DONE criteria"],
     output: "Command Center report payload only; no email/send/publish side effect",
     kpi: ["catalog_profile_count", "verified_public_count", "open_catalog_work_count", "cost_usd"],
-    cadenceHours: 168,
   }),
   contract({
     roleId: "hermes-agent-coordinator",
@@ -178,7 +177,6 @@ export const ZERO_TOKEN_PLUGIN_TASK_CONTRACTS = Object.freeze([
     steps: ["validate allowlisted source metadata", "deduplicate source ids and URLs", "classify sourcing/interview/routing relevance deterministically", "emit impact and one practical next step per accepted change"],
     output: "Command Center HR-tech radar with source, impact and next step; no external write",
     kpi: ["source_count", "accepted_change_count", "unknown_count", "cost_usd"],
-    cadenceHours: 168,
   }),
   contract({
     roleId: "hermes-academy",
