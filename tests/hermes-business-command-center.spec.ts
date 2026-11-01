@@ -187,7 +187,7 @@ test.describe("Hermes Business Command Center",()=>{
       return route.fulfill(json({success:true,process:{...processPayload,status:"active",next_run_at:"2026-10-28T12:00:00.000Z"}}));
     });
     await page.goto("/services/hermes-connect/internal/command-center/");
-    await page.getByRole("button",{name:"Automations",exact:true}).click();
+    await openOwnerView(page,"automations");
     await expect(page.getByRole("heading",{name:"HAE 24/7 processes"})).toBeVisible();
     await expect(page.locator("[data-process-list]").getByText("AI gateway readiness",{exact:true})).toBeVisible();
     await page.getByRole("button",{name:"Activate"}).click();
@@ -213,8 +213,8 @@ test.describe("Hermes Business Command Center",()=>{
 
     await openOwnerView(page,"plugins");
     await expect(page.locator('[data-cc-view="plugins"]')).toBeVisible();
-    await expect(page.locator("[data-plugin-registry]")).toContainText("hermes-agent-coordinator");
-    await expect(page.locator("[data-plugin-registry]")).toContainText("@0.1.86");
+    await expect(page.locator('[data-cc-view="plugins"] [data-plugin-registry]')).toContainText("hermes-agent-coordinator");
+    await expect(page.locator('[data-cc-view="plugins"] [data-plugin-registry]')).toContainText("@0.1.86");
     await expect(page.locator('[data-cc-view="plugins"]')).toContainText(/separate HAE receipt/);
 
     await openOwnerView(page,"executions");
