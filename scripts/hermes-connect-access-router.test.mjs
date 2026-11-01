@@ -76,6 +76,9 @@ test("Client View derives tenant scope from authenticated memberships only", () 
   assert.match(clientApi, /internal_ai:\s*false/);
   assert.match(clientApi, /cross_tenant_search:\s*false/);
   assert.match(clientApi, /write_enabled:\s*false/);
+  assert.doesNotMatch(clientApi, /owner_specialist_id/,"Client View response must not expose canonical owner identity");
+  assert.doesNotMatch(clientApi, /membership_id|grant_source/,"Client View response must minimize internal membership metadata");
+  assert.doesNotMatch(clientApi, /specialist\.email/,"Client View response must not echo account email");
   assert.match(membershipSource, /WHERE specialist_id = \? AND active = 1 AND revoked_at IS NULL/);
   assert.match(clientPage, /robots="noindex,nofollow"/);
   assert.match(clientPage, /\/api\/hermes-connect\/client-view/);
