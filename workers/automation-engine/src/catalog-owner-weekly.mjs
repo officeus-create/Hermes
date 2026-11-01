@@ -60,8 +60,13 @@ async function github(fetcher){
     "repo:officeus-create/Hermes catalog in:title is:pr is:merged"
   ];
   const [issues,openPrs,mergedPrs]=await Promise.all(requests.map(q=>grab(fetcher,base+encodeURIComponent(q)+"&per_page=30&sort=updated",true)));
+  // Declared dependencies are evidence links, not independently validated blocking states.
+  const references=(body)=>([...String(body||"").slice(0,6000).matchAll(
+    /\b(?:blocked by|depends on|dependency|prerequisite|requires|after)\s*:?(?:\s+PR)?\s*#(\d{1,6})\b/gi
+  )].slice(0,8).map(m=>Number(m[1])));
   const map=(result,state)=>(result.body?.items||[]).slice(0,8).map(v=>({
-    title:String(v.title||"").slice(0,160),url:v.html_url,number:v.number,state
+    title:String(v.title||"").slice(0,160),url:v.html_url,number:v.number,state,
+    declared_dependency_ids:references(v.body)
   }));
   return {
     status:[issues,openPrs,mergedPrs].every(x=>x.status==="MEASURED")?"MEASURED":"PARTIAL_OR_UNKNOWN",
@@ -69,6 +74,7 @@ async function github(fetcher){
     open_issues:issues.status==="MEASURED"?map(issues,"PLANNED_OR_OPEN"):null,
     open_prs:openPrs.status==="MEASURED"?map(openPrs,"OPEN_PR"):null,
     prs:mergedPrs.status==="MEASURED"?map(mergedPrs,"SOURCE_MERGED_NOT_LIVE"):null,
+    dependency_status:issues.status==="MEASURED"&&openPrs.status==="MEASURED"?"DECLARED_ONLY_NOT_LIVE_VERIFIED":"UNKNOWN",
     coverage:"bounded title search (30 per type), not exhaustive; merge does not establish production release"
   };
 }

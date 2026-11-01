@@ -17,7 +17,7 @@ sqlite.prepare("INSERT INTO hermes_company_profiles VALUES(?,?,?,?)").run("one",
 const stableFetch=async url=>{
   if(url.includes("/businesses/")) return new Response('<html><link rel="canonical" href="https://hermeslogisticsus.com/businesses/"></html>',{status:200});
   if(url.includes("sitemap-connect-catalog")) return new Response("<urlset><loc>https://hermeslogisticsus.com/businesses/foo/</loc></urlset>",{status:200});
-  if(url.includes("api.github.com"))return new Response(JSON.stringify({items:[{number:2209,title:"Friday owner audit",state:"open",html_url:"https://github.com/officeus-create/Hermes/issues/2209"}]}),{status:200,headers:{"Content-Type":"application/json"}});
+  if(url.includes("api.github.com"))return new Response(JSON.stringify({items:[{number:2209,title:"Friday owner audit",body:"Blocked by #2106",state:"open",html_url:"https://github.com/officeus-create/Hermes/issues/2209"}]}),{status:200,headers:{"Content-Type":"application/json"}});
   throw Error("unexpected URL "+url);
 };
 assert.equal(fridayKyivSlot("2026-11-06T10:00:00Z"),"2026-11-06","winter noon must be UTC 10");
@@ -42,6 +42,8 @@ assert.equal(report.profiles.verified_public,1);
 assert.equal(report.profiles.new_7d,1);
 assert.equal(report.profiles.free_tier_count,null,"opt-in must not invent a free-tier count");
 assert.equal(report.sitemap.semantic_overlap,"NOT_VERIFIED");
+assert.deepEqual(report.work.open_issues[0].declared_dependency_ids,[2106]);
+assert.equal(report.work.dependency_status,"DECLARED_ONLY_NOT_LIVE_VERIFIED");
 assert.equal(typeof report.next_action.task,"string");
 assert.equal(typeof report.next_action.done,"string");
 assert.equal(report.realized.public_businesses_live,true);

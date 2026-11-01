@@ -72,6 +72,10 @@ async function loadCatalogOwnerReport(){
     t("Semantic SEO overlap: ","Семантическое SEO-пересечение: ")+val(r.sitemap?.semantic_overlap),
     t("Source merged (not live proof): ","Слито в код (не доказательство продакшена): ")+(done||"—"),
     t("Planned / open: ","Запланировано / открыто: ")+(planned||"—"),
+    t("Declared dependencies: ","Заявленные зависимости: ")+
+      (Array.isArray(r.planned)?r.planned.filter((x:any)=>x.declared_dependency_ids?.length)
+        .map((x:any)=>"#"+x.number+" → "+x.declared_dependency_ids.map((id:number)=>"#"+id).join(", ")).join("; ")||"—":"UNKNOWN")+
+      " ["+val(r.work?.dependency_status)+"]",
     t("Blockers: ","Блокеры: ")+blockers,
     t("NEXT ACTION: ","СЛЕДУЮЩАЯ ЗАДАЧА: ")+val(r.next_action?.task),
     "DONE: "+val(r.next_action?.done),
