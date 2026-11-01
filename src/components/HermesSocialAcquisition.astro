@@ -1,0 +1,126 @@
+---
+interface Props{ru?:boolean}
+const {ru=false}=Astro.props;
+---
+<section class="hcc-panel social-acquisition" data-social-acquisition>
+  <div class="social-head">
+    <div>
+      <p class="hcc-sample">Social Acquisition</p>
+      <h2>{ru?"Социальные сети · HAE":"Social networks · HAE"}</h2>
+      <p>{ru
+        ?"Один контент-конвейер для Hermes Logistics и ProgressoPro. Здесь показываются только D1/HAE/provider-состояния, которые можно доказать."
+        :"One content pipeline for Hermes Logistics and ProgressoPro. This view shows only D1/HAE/provider states that can be evidenced."}</p>
+    </div>
+    <button type="button" class="hcc-secondary" data-social-refresh>{ru?"Обновить":"Refresh"}</button>
+  </div>
+
+  <div class="social-kpis">
+    <article><span>{ru?"HAE runtime":"HAE runtime"}</span><strong data-social-runtime>—</strong><small data-social-runtime-copy>—</small></article>
+    <article><span>{ru?"Публикации":"Publishing"}</span><strong data-social-publish>—</strong><small>{ru?"Внешние записи fail-closed":"External writes fail closed"}</small></article>
+    <article><span>{ru?"Расписание":"Schedule"}</span><strong>20 CT</strong><small>00, 01, 06–23 · America/Chicago</small></article>
+    <article><span>{ru?"Нерешённые записи":"Unresolved writes"}</span><strong data-social-unresolved>—</strong><small>{ru?"UNKNOWN не считается нулём":"UNKNOWN is not zero"}</small></article>
+  </div>
+
+  <div class="social-pipeline" aria-label={ru?"Контент-конвейер":"Content pipeline"}>
+    {["Source","Content","Validate","HAE","Provider","Readback","CRM","Learn"].map((step,index)=>
+      <span><b>{index+1}</b>{step}</span>
+    )}
+  </div>
+
+  <div class="social-lanes" data-social-lanes>
+    <p class="muted">{ru?"Загружаем две business lanes…":"Loading both business lanes…"}</p>
+  </div>
+
+  <section class="social-recent">
+    <div class="social-subhead">
+      <div><p class="hcc-sample">{ru?"Последние публикации":"Recent publications"}</p><h3>{ru?"Provider / readback evidence":"Provider / readback evidence"}</h3></div>
+      <span data-social-observed>—</span>
+    </div>
+    <div class="social-publications" data-social-publications><p class="muted">—</p></div>
+  </section>
+
+  <section class="social-inbound">
+    <div><p class="hcc-sample">Inbound</p><h3>{ru?"Ответы, mentions и лиды":"Replies, mentions and leads"}</h3></div>
+    <p data-social-inbound>{ru?"Проверяем фактическую готовность…":"Checking actual readiness…"}</p>
+  </section>
+  <p class="social-status" data-social-status role="status"></p>
+</section>
+
+<script is:inline define:vars={{ru}}>
+(()=>{
+  const root=document.querySelector("[data-social-acquisition]");
+  if(!root)return;
+  const q=(selector)=>root.querySelector(selector);
+  const esc=(value)=>String(value??"").replace(/[&<>"']/g,(c)=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));
+  const label=(value)=>String(value??"UNKNOWN").replaceAll("_"," ");
+  const badge=(value)=>`<span class="social-badge" data-state="${esc(String(value||"UNKNOWN").toLowerCase())}">${esc(label(value))}</span>`;
+  const fmt=(value)=>{
+    if(!value)return "UNKNOWN";
+    const date=new Date(value);
+    return Number.isFinite(date.getTime())?date.toLocaleString():String(value);
+  };
+  const platformNames={threads:"Threads",instagram:"Instagram",facebook:"Facebook",x:"X"};
+  const laneName=(lane)=>lane==="HERMES_LOGISTICS"?"Hermes Logistics":"ProgressoPro";
+
+  function render(data){
+    q("[data-social-runtime]").textContent=data.runtime?.social_v2==="enabled"?"Social V2":"HOLD";
+    q("[data-social-runtime-copy]").textContent=`${data.runtime?.automation_mode||"UNKNOWN"} · HAE`;
+    q("[data-social-publish]").textContent=data.runtime?.external_write_enabled?(ru?"ВКЛ":"ON"):(ru?"ВЫКЛ":"OFF");
+    q("[data-social-observed]").textContent=fmt(data.observed_at);
+
+    const laneHtml=(data.lanes||[]).map((lane)=>{
+      const states=Object.entries(lane.platform_states||{}).map(([platform,state])=>
+        `<li><span>${esc(platformNames[platform]||platform)}</span>${badge(state?.state)}<small>${esc(state?.latest_at?fmt(state.latest_at):"UNKNOWN")}</small></li>`
+      ).join("");
+      const readiness=lane.lane==="HERMES_LOGISTICS"?data.readiness?.hermes_logistics:data.readiness?.progressopro;
+      const ready=lane.lane==="HERMES_LOGISTICS"?readiness?.ready_for_provider_preflight:readiness?.ready_for_hae_write_bridge;
+      const policy=lane.plugin_policy_receipt?.policy||"UNKNOWN";
+      const latest=lane.latest_verified_publication;
+      return `<article class="social-lane">
+        <div class="social-lane-head"><div><p>${esc(laneName(lane.lane))}</p><h3>${esc(lane.account_key)}</h3></div>${badge(ready===true?"PROVIDER READY":ready===false?"PROVIDER HOLD":"UNKNOWN")}</div>
+        <ul class="social-platforms">${states}</ul>
+        <dl>
+          <div><dt>${ru?"Последний HAE run":"Latest HAE run"}</dt><dd>${esc(lane.latest_run?.status||"UNKNOWN")}</dd></div>
+          <div><dt>${ru?"Unresolved":"Unresolved"}</dt><dd>${lane.unresolved_publications===null?"UNKNOWN":esc(lane.unresolved_publications)}</dd></div>
+          <div><dt>${ru?"Plugin policy":"Plugin policy"}</dt><dd>${esc(policy)}</dd></div>
+          <div><dt>${ru?"Последний verified post":"Latest verified post"}</dt><dd>${latest?.permalink?`<a href="${esc(latest.permalink)}" target="_blank" rel="noreferrer">${esc(latest.provider_post_id||"open")}</a>`:"UNKNOWN"}</dd></div>
+        </dl>
+      </article>`;
+    }).join("");
+    q("[data-social-lanes]").innerHTML=laneHtml||`<p class="muted">${ru?"Нет проверяемых lane-состояний":"No verifiable lane state"}</p>`;
+
+    const unresolved=(data.lanes||[]).map(x=>x.unresolved_publications);
+    q("[data-social-unresolved]").textContent=unresolved.some(x=>x===null)?"UNKNOWN":String(unresolved.reduce((sum,x)=>sum+Number(x||0),0));
+
+    const pubs=(data.recent_publications||[]);
+    q("[data-social-publications]").innerHTML=pubs.length?pubs.slice(0,10).map(pub=>`<article>
+      <div><strong>${esc(laneName(pub.account_key==="progressopro"?"PROGRESSOPRO":"HERMES_LOGISTICS"))} · ${esc(platformNames[pub.platform]||pub.platform)}</strong><small>${esc(fmt(pub.updated_at))}</small></div>
+      ${badge(pub.status)}
+      <span>${pub.permalink?`<a href="${esc(pub.permalink)}" target="_blank" rel="noreferrer">${esc(pub.provider_post_id||"provider")}</a>`:esc(pub.last_error_class||pub.provider_post_id||"no verified permalink")}</span>
+    </article>`).join(""):`<p class="muted">${ru?"Пока нет publication receipts":"No publication receipts yet"}</p>`;
+
+    const inbound=data.inbound||{};
+    q("[data-social-inbound]").textContent=`Threads: ${label(inbound.threads_replies_mentions)} · Instagram: ${label(inbound.instagram_comments_messages)} · Facebook: ${label(inbound.facebook_comments_messages)} · Inbox: ${label(inbound.unified_inbox)}`;
+    q("[data-social-status]").textContent=(data.readiness?.blockers||[]).length
+      ?`${ru?"Блокеры":"Blockers"}: ${data.readiness.blockers.join(", ")}`
+      :(ru?"Read model синхронизирован с HAE.":"Read model synchronized with HAE.");
+  }
+  async function load(){
+    q("[data-social-status]").textContent=ru?"Обновляем HAE/D1…":"Refreshing HAE/D1…";
+    try{
+      const response=await fetch("/api/internal-command-center/social",{headers:{Accept:"application/json"},credentials:"same-origin"});
+      const data=await response.json().catch(()=>({}));
+      if(!response.ok||!data.success)throw new Error(data.error||"social_readback_failed");
+      render(data);
+    }catch(error){
+      q("[data-social-status]").textContent=`${ru?"Readback недоступен":"Readback unavailable"}: ${error?.message||"UNKNOWN"}`;
+    }
+  }
+  q("[data-social-refresh]")?.addEventListener("click",load);
+  load();
+})();
+</script>
+
+<style>
+.social-acquisition{display:grid;gap:1rem}.social-head,.social-subhead,.social-lane-head{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem}.social-head h2,.social-subhead h3,.social-lane h3{margin:.2rem 0}.social-head p,.social-subhead p,.social-lane p{margin:0}.social-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.75rem}.social-kpis article,.social-lane,.social-recent,.social-inbound{border:1px solid rgba(93,105,123,.18);border-radius:18px;padding:1rem;background:rgba(255,255,255,.64)}.social-kpis span,.social-kpis small,.social-platforms small{display:block;color:#667085}.social-kpis strong{display:block;font-size:1.35rem;margin:.25rem 0}.social-pipeline{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:.35rem}.social-pipeline span{display:flex;gap:.4rem;align-items:center;padding:.55rem .65rem;border-radius:12px;background:rgba(35,62,89,.06);font-size:.78rem}.social-pipeline b{display:grid;place-items:center;width:1.35rem;height:1.35rem;border-radius:50%;background:#17324d;color:white;font-size:.68rem}.social-lanes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.8rem}.social-platforms{list-style:none;padding:0;margin:1rem 0;display:grid;gap:.45rem}.social-platforms li{display:grid;grid-template-columns:90px 1fr auto;align-items:center;gap:.5rem}.social-lane dl{display:grid;gap:.5rem;margin:0}.social-lane dl div{display:grid;grid-template-columns:140px 1fr;gap:.6rem}.social-lane dt{color:#667085}.social-lane dd{margin:0;overflow-wrap:anywhere}.social-badge{display:inline-flex;width:max-content;padding:.25rem .5rem;border-radius:999px;background:rgba(102,112,133,.12);font-size:.7rem;font-weight:700;text-transform:uppercase}.social-badge[data-state*="ready"],.social-badge[data-state*="verified"]{background:rgba(3,152,85,.12);color:#027a48}.social-badge[data-state*="hold"],.social-badge[data-state*="unknown"],.social-badge[data-state*="unverified"]{background:rgba(247,144,9,.12);color:#b54708}.social-publications{display:grid;gap:.5rem}.social-publications article{display:grid;grid-template-columns:1fr auto minmax(120px,.65fr);gap:.6rem;align-items:center;padding:.65rem 0;border-top:1px solid rgba(93,105,123,.12)}.social-publications article:first-child{border-top:0}.social-publications small{display:block;color:#667085}.social-publications span:last-child{overflow-wrap:anywhere}.social-inbound{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem}.social-inbound p{max-width:68ch}.social-status{margin:0;color:#667085;overflow-wrap:anywhere}@media(max-width:900px){.social-kpis{grid-template-columns:repeat(2,1fr)}.social-pipeline{grid-template-columns:repeat(4,1fr)}.social-lanes{grid-template-columns:1fr}.social-publications article{grid-template-columns:1fr}.social-inbound{display:block}}@media(max-width:520px){.social-kpis{grid-template-columns:1fr}.social-pipeline{grid-template-columns:repeat(2,1fr)}.social-head{display:block}.social-head button{margin-top:.75rem}.social-platforms li{grid-template-columns:80px 1fr}.social-platforms small{display:none}.social-lane dl div{grid-template-columns:1fr}}
+</style>
