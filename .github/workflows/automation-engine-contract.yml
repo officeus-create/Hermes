@@ -5,6 +5,7 @@ on:
     paths:
       - "workers/automation-engine/**"
       - "scripts/automation-engine-contract.test.mjs"
+      - "scripts/hae-catalog-owner-weekly.test.mjs"
       - "scripts/hae-social-reply-preflight.test.mjs"
       - "scripts/hae-social-reply-prepare.test.mjs"
       - "scripts/hae-social-reply-intake.test.mjs"
@@ -55,6 +56,7 @@ jobs:
       - name: Run automation engine contract
         run: |
           node scripts/automation-engine-contract.test.mjs
+          node --experimental-strip-types scripts/hae-catalog-owner-weekly.test.mjs
           node scripts/hae-social-reply-preflight.test.mjs
           node scripts/hae-social-reply-prepare.test.mjs
           node scripts/hae-social-reply-intake.test.mjs
