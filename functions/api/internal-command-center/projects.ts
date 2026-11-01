@@ -29,6 +29,7 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
     SUM(CASE WHEN status = 'blocked' THEN 1 ELSE 0 END) AS blocked
     FROM hermes_owner_work_items WHERE organization_scope=? AND project_id IS NOT NULL GROUP BY project_id`)
     .bind(OWNER_PROJECT_SCOPE).all();
+  const checkedAt=new Date().toISOString();
   const summaries=new Map((summaryRows.results||[]).map((row:any)=>[String(row.project_id),{
     total:Number(row.total||0),open:Number(row.open||0),done:Number(row.done||0),blocked:Number(row.blocked||0),
   }]));
@@ -37,7 +38,19 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
     success:true,
     registry_owner:"hermes-business-command-center",
     source_class:"CANONICAL_SNAPSHOT_PLUS_OWNER_D1",
-    checked_at:"2026-10-28T15:30:00+02:00",
+    checked_at:checkedAt,
+    source_freshness:{
+      canonical_registry:{
+        source_class:"IMMUTABLE_REVIEWED_SNAPSHOT",
+        evidence_at:"2026-10-28T15:30:00+02:00",
+        freshness:"HISTORICAL_EVIDENCE",
+      },
+      owner_d1:{
+        source_class:"CURRENT_REQUEST_D1_READBACK",
+        checked_at:checkedAt,
+        freshness:"CURRENT_REQUEST_READBACK",
+      },
+    },
     progress_method:"completed milestones divided by total declared milestones; owner-created projects use UNKNOWN",
     work_items_method:"live owner D1 status counts; separate from project milestone progress",
     eta_policy:"ETA is UNKNOWN until deterministic or historical duration evidence exists.",
