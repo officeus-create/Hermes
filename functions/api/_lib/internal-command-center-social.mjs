@@ -251,7 +251,9 @@ export async function buildCommandCenterSocialSnapshot(env,{nowMs=Date.now()}={}
   const socialV2=String(env?.HERMES_SOCIAL_ACQUISITION_V2||"").trim().toLowerCase()==="enabled";
   const automationMode=clean(env?.HERMES_AUTOMATION_MODE,40)||"UNKNOWN";
   const publicationConfig=clean(env?.HERMES_AUTOMATION_PUBLISH,40)||"UNKNOWN";
-  const externalWriteEnabled=Boolean(socialV2&&automationMode==="live"&&publicationConfig==="enabled");
+  const externalWriteEnabled=Boolean(
+    socialV2&&automationMode==="live"&&publicationConfig==="enabled"&&ownerControl?.external_write_allowed===true
+  );
 
   return {
     success:true,
