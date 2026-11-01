@@ -2172,7 +2172,7 @@ async function buildScheduledCatalogReportPayload(env, scheduledAt, mode) {
     next_action="Review self-submitted Catalog companies and verify only those with sufficient source evidence.";
     done_criteria="DONE when each reviewed company is either verified_public with evidence or remains explicitly self_submitted/held.";
   } else if(Number(open_catalog_work_count||0)>0){
-    next_action="Close the highest-priority open Catalog work item with task-linked evidence.";
+    next_action="Close the highest-priority open Catalog work item with evidence linked to the task.";
     done_criteria="DONE when the selected Catalog work item reaches accepted/done with canonical evidence and no inferred business result.";
   } else {
     next_action="Run a source-backed SEO duplicate/indexability audit before expanding Catalog discovery pages.";
