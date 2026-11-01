@@ -1,6 +1,7 @@
-// Plugin Creator readback was on Nov 1 Kyiv time, still Oct 31 UTC.
-// This source date is interpreted as 00:00Z by freshness checks; do not stamp a future UTC day.
-const OBSERVED_AT = "2026-10-31";
+// Exact authenticated Plugin Creator readback instant, not the UTC date at midnight.
+// A date-only midnight surrogate makes a fresh late-UTC readback falsely stale after rollover.
+// This is bounded release evidence, NOT proof of runtime loading or automatic refreshing.
+const OBSERVED_AT = "2026-10-31T23:35:25.000Z";
 
 export const PLUGIN_RUNTIME_REGISTRY = Object.freeze({
   "hermes-automatic-engineer": Object.freeze({ version: "0.1.34", observed_at: OBSERVED_AT }),
@@ -35,7 +36,7 @@ export function pluginRuntimeRegistrySnapshot() {
 export function pluginRuntimeRegistryEvidenceStatus(nowIso, maxAgeHours = 24) {
   const snapshot = pluginRuntimeRegistrySnapshot();
   const nowMs = Date.parse(String(nowIso || ""));
-  const observedMs = Date.parse(`${snapshot.observed_at}T00:00:00Z`);
+  const observedMs = Date.parse(snapshot.observed_at);
   const maxAge = Number(maxAgeHours);
   if (!Number.isFinite(nowMs) || !Number.isFinite(observedMs) || !Number.isFinite(maxAge) || maxAge <= 0) {
     return {
