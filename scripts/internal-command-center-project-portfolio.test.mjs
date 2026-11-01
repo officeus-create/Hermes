@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import { commandCenterProjectPortfolio, validateCommandCenterProjects } from "../functions/api/_lib/command-center-projects.mjs";
+import { commandCenterProjectCoverageSnapshot } from "../functions/api/_lib/command-center-project-coverage.mjs";
 
 const api = fs.readFileSync("functions/api/internal-command-center/projects.ts", "utf8");
 const ownerWorkspace = fs.readFileSync("src/components/HermesCommandCenterOwnerWorkspace.astro", "utf8");
@@ -10,6 +11,8 @@ const publicDemo = fs.readFileSync("src/components/HermesCommandCenterPublicPrev
 const publicContent = fs.readFileSync("src/components/HermesCommandCenterPublicContent.astro", "utf8");
 const retiredAiPage = fs.readFileSync("src/pages/services/hermes-connect/ai-command-center.astro", "utf8");
 const portfolio = commandCenterProjectPortfolio();
+const coverage = commandCenterProjectCoverageSnapshot();
+const coverageArtifact = JSON.parse(fs.readFileSync("data/command-center/project-coverage-2026-11-01.json","utf8"));
 
 assert.deepEqual(validateCommandCenterProjects(portfolio), []);
 assert.ok(portfolio.length >= 10, "the initial owner registry must cover the consolidated project families");
@@ -36,6 +39,8 @@ assert.match(ownerComponent, /\/api\/internal-command-center\/projects/);
 assert.match(ownerComponent, /role="progressbar"/);
 assert.match(ownerComponent, /Dependencies/);
 assert.match(ownerComponent, /ETA/);
+assert.match(ownerComponent,/data-project-coverage/);
+assert.match(ownerComponent,/ONE BRAIN COVERAGE/);
 assert.match(ownerComponent, /declared snapshot/,"owner UI must disclose snapshot age");
 assert.match(ownerComponent, /coverageState/,"owner UI must surface partial coverage rather than imply completeness");
 
