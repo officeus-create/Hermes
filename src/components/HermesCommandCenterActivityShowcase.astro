@@ -1,0 +1,116 @@
+---
+interface Props { ru?: boolean }
+const { ru=false }=Astro.props;
+const stages=[
+  {title:ru?"Сигнал":"Signal",detail:ru?"Событие принято":"Event captured"},
+  {title:ru?"Маршрутизация":"Routing",detail:ru?"Выбрано направление":"Lane selected"},
+  {title:ru?"Исполнение":"Execution",detail:ru?"Ограниченная операция":"Bounded operation"},
+  {title:ru?"Проверка":"Verification",detail:ru?"Проверен результат":"Output inspected"},
+  {title:ru?"Решение":"Decision",detail:ru?"Контроль человеком":"Human oversight"},
+];
+const entries=[
+  {type:ru?"Событие":"Event",title:ru?"Запрос поступил в систему":"A request enters the workflow",detail:ru?"Содержимое скрыто в демонстрации":"Content is hidden in this illustration"},
+  {type:ru?"Процесс":"Process",title:ru?"Следующий этап выбран":"Next stage selected",detail:ru?"Доступ и ограничения проверяются":"Access and boundaries are checked"},
+  {type:ru?"Контроль":"Control",title:ru?"Результат передан на проверку":"Output passed to review",detail:ru?"Никаких автоматических бизнес-решений":"No automatic business acceptance"},
+];
+---
+<section class="hcc-activity-showcase" data-hcc-activity-showcase aria-labelledby="hcc-activity-title">
+  <div class="hcc-activity-head">
+    <div>
+      <p class="hcc-activity-eyebrow">{ru?"ВИЗУАЛЬНАЯ СИМУЛЯЦИЯ · НЕ LIVE-ДАННЫЕ":"VISUAL SIMULATION · NOT LIVE DATA"}</p>
+      <h2 id="hcc-activity-title">{ru?"Система в движении. Детали остаются закрытыми.":"A system in motion. The details stay private."}</h2>
+      <p>{ru
+        ?"Пример того, как автоматизация передаёт работу между этапами. Здесь нет реальных задач, клиентов, внутренних логов или показателей Hermes."
+        :"An illustrative handoff between automation stages. No real Hermes tasks, customers, internal logs or performance metrics are shown."}</p>
+    </div>
+    <button
+      class="hcc-activity-toggle"
+      type="button"
+      data-hcc-activity-toggle
+      data-label-play={ru?"Воспроизвести симуляцию":"Play simulation"}
+      data-label-pause={ru?"Остановить симуляцию":"Pause simulation"}
+      aria-pressed="false"
+      aria-label={ru?"Остановить симуляцию":"Pause simulation"}
+    >{ru?"Остановить симуляцию":"Pause simulation"}</button>
+  </div>
+  <div class="hcc-activity-body">
+    <div class="hcc-activity-visual">
+      <div class="hcc-activity-visual-label"><span class="hcc-activity-indicator" aria-hidden="true"></span>{ru?"Схема работы · пример":"Workflow diagram · illustration"}</div>
+      <ol class="hcc-activity-pipeline" aria-label={ru?"Пять демонстрационных этапов":"Five illustrative stages"}>
+        {stages.map((stage,index)=>
+          <li data-hcc-activity-node style={"--stage-index:"+index}>
+            <span class="hcc-activity-number">{"0"+(index+1)}</span>
+            <span class="hcc-activity-dot" aria-hidden="true"></span>
+            <strong>{stage.title}</strong>
+            <small>{stage.detail}</small>
+          </li>
+        )}
+      </ol>
+      <div class="hcc-activity-track" aria-hidden="true"><span></span></div>
+      <p class="hcc-activity-boundary">{ru?"Показан принцип, а не фактическая активность. Реальный статус доступен только авторизованным пользователям.":"Shows the concept, not actual activity. Real status is available only to authorized users."}</p>
+    </div>
+    <div class="hcc-activity-log">
+      <div class="hcc-activity-log-head"><strong>{ru?"Пример журнала событий":"Illustrative event stream"}</strong><span>DEMO</span></div>
+      <ol>
+        {entries.map((event,index)=>
+          <li>
+            <span class="hcc-activity-log-index">{"0"+(index+1)}</span>
+            <div><small>{event.type}</small><strong>{event.title}</strong><p>{event.detail}</p></div>
+          </li>
+        )}
+      </ol>
+      <div class="hcc-activity-log-footer">{ru?"Сведения о настоящих операциях защищены":"Actual operational information is protected"}</div>
+    </div>
+  </div>
+</section>
+<script>
+document.querySelectorAll<HTMLElement>("[data-hcc-activity-showcase]").forEach(root=>{
+  const control=root.querySelector<HTMLButtonElement>("[data-hcc-activity-toggle]");
+  if(!control) return;
+  control.addEventListener("click",()=>{
+    const paused=root.classList.toggle("is-paused");
+    control.setAttribute("aria-pressed",String(paused));
+    control.textContent=paused?(control.dataset.labelPlay||"Play simulation"):(control.dataset.labelPause||"Pause simulation");
+    control.setAttribute("aria-label",control.textContent);
+  });
+});
+</script>
+<style>
+.hcc-activity-showcase{padding:clamp(1.2rem,3vw,2rem);border:1px solid #303b5a;border-radius:var(--hermes-radius-panel,24px);background:linear-gradient(140deg,#0d172a 0%,#161d38 58%,#211739 100%);color:#f7f8ff;overflow:hidden}
+.hcc-activity-head{display:flex;align-items:flex-start;justify-content:space-between;gap:1.4rem;margin-bottom:1.4rem}
+.hcc-activity-head>div{max-width:720px}
+.hcc-activity-eyebrow{margin:0 0:.5rem;font:800 .72rem var(--font-mono,monospace);letter-spacing:.09em;color:#cdbdff}
+.hcc-activity-head h2{font-family:var(--font-display,sans-serif);font-size:clamp(1.65rem,3.2vw,2.8rem);line-height:1.07;letter-spacing:-.04em;margin:0 0:.7rem;color:#fff}
+.hcc-activity-head p:not(.hcc-activity-eyebrow){margin:0;color:#ccd4e8;line-height:1.6}
+.hcc-activity-toggle{flex:0 0 auto;min-height:44px;padding:.6rem .9rem;border:1px solid #7887ad;border-radius:12px;color:#f3f5ff;background:#252e4d;font:750 .86rem inherit;cursor:pointer}
+.hcc-activity-toggle:hover,.hcc-activity-toggle:focus-visible{border-color:#d4c6ff;outline-offset:3px}
+.hcc-activity-body{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(250px,1fr);gap:.85rem}
+.hcc-activity-visual,.hcc-activity-log{min-width:0;border:1px solid #3a4564;border-radius:18px;background:rgba(9,15,31,.7);padding:1rem}
+.hcc-activity-visual-label{display:flex;align-items:center;gap:.5rem;font:800 .75rem var(--font-mono,monospace);color:#dae2ff}
+.hcc-activity-indicator{height:8px;width:8px;border-radius:50%;background:#a88bfa;box-shadow:0 0 0 4px rgba(168,139,250,.16)}
+.hcc-activity-pipeline{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:.4rem;list-style:none;margin:2rem 0 0;padding:0}
+.hcc-activity-pipeline li{display:flex;flex-direction:column;align-items:flex-start;gap:.35rem;min-width:0;padding:.8rem .55rem;border:1px solid #3c4766;border-radius:13px;background:rgba(29,39,67,.78)}
+.hcc-activity-number{font:700 .7rem var(--font-mono,monospace);color:#bcb0e9}
+.hcc-activity-dot{display:block;width:12px;height:12px;margin:.4rem 0;border:2px solid #a993ff;border-radius:50%;background:#353052;animation:hcc-activity-pulse 10s infinite both;animation-delay:calc(var(--stage-index) * 2s)}
+.hcc-activity-pipeline strong{font-size:.83rem;overflow-wrap:anywhere;color:#fff}
+.hcc-activity-pipeline small{color:#b8c3dc;font-size:.72rem;line-height:1.4;overflow-wrap:anywhere}
+.hcc-activity-track{height:5px;overflow:hidden;margin:1.4rem 0 1.1rem;border-radius:999px;background:#333d5b}
+.hcc-activity-track span{display:block;height:100%;width:22%;border-radius:999px;background:linear-gradient(90deg,#7969ed,#cbbafa);animation:hcc-activity-travel 10s linear infinite}
+.hcc-activity-boundary{margin:.8rem 0 0;color:#bfc9df;font-size:.8rem;line-height:1.5}
+.hcc-activity-log-head{display:flex;justify-content:space-between;gap:.5rem;align-items:center;font-size:.85rem}
+.hcc-activity-log-head span{padding:.25rem .4rem;border:1px solid #7567a8;border-radius:6px;color:#e7dbff;font:800 .65rem var(--font-mono,monospace)}
+.hcc-activity-log ol{list-style:none;display:grid;gap:.5rem;margin:1rem 0;padding:0}
+.hcc-activity-log li{display:grid;grid-template-columns:24px minmax(0,1fr);gap:.65rem;padding:.7rem;border:1px solid #35415b;border-radius:12px}
+.hcc-activity-log-index{font:700 .68rem var(--font-mono,monospace);color:#bda9ff}
+.hcc-activity-log li div{display:grid;gap:.2rem;min-width:0}
+.hcc-activity-log li small{color:#c9bafe;font-weight:750}
+.hcc-activity-log li strong{color:#fff;font-size:.83rem}
+.hcc-activity-log li p{margin:0;color:#bac5db;font-size:.74rem;line-height:1.45}
+.hcc-activity-log-footer{padding-top:.7rem;border-top:1px solid #384361;color:#c4d0e8;font-size:.75rem}
+.is-paused .hcc-activity-dot,.is-paused .hcc-activity-track span{animation-play-state:paused}
+@keyframes hcc-activity-pulse{0%,16%,100%{background:#353052;box-shadow:0 0 0 0 rgba(169,147,255,0)}6%,12%{background:#ba9bff;box-shadow:0 0 0 7px rgba(169,147,255,.17)}}
+@keyframes hcc-activity-travel{from{transform:translateX(-110%)}to{transform:translateX(470%)}}
+@media(max-width:900px){.hcc-activity-body{grid-template-columns:1fr}}
+@media(max-width:620px){.hcc-activity-head{flex-direction:column}.hcc-activity-pipeline{grid-template-columns:1fr;gap:.55rem;margin:1rem 0}.hcc-activity-pipeline li{display:grid;grid-template-columns:30px 18px 1fr;align-items:center;gap:.5rem}.hcc-activity-pipeline li small{grid-column:3}.hcc-activity-dot{margin:0}.hcc-activity-toggle{width:100%}}
+@media(prefers-reduced-motion:reduce){.hcc-activity-dot,.hcc-activity-track span{animation:none}.hcc-activity-dot{background:#a993ff}}
+</style>
