@@ -1,5 +1,9 @@
 const DONE_STATES = new Set(["done", "accepted"]);
 
+export const PROJECT_PORTFOLIO_SNAPSHOT_OBSERVED_AT = "2026-11-01T18:48:20.000Z";
+export const PROJECT_PORTFOLIO_COVERAGE_STATE = "PARTIAL_DECLARED_REGISTRY";
+export const PROJECT_PORTFOLIO_COVERAGE_NOTE = "Declared Command Center project families plus owner-created D1 projects; not a complete One Brain or company-wide project inventory.";
+
 const milestone = (id, label, state, evidence = null) => Object.freeze({ id, label, state, evidence });
 
 const projects = Object.freeze([
@@ -16,9 +20,12 @@ const projects = Object.freeze([
     related_ids: ["hae-runtime", "ai-operations", "plugin-workforce", "one-brain"],
     started_at: "2026-10-26T00:00:00.000Z",
     target_at: null,
-    blockers: ["Authenticated production owner login, exact deployed SHA and HAE runtime readback remain."],
-    evidence_level: "SOURCE_MERGED_RUNTIME_UNVERIFIED",
-    links: [{ label: "Merged Command Center #2198", href: "https://github.com/officeus-create/Hermes/pull/2198" }],
+    blockers: ["Current Command Center release train #2159 → #2170 → #2219 → #2221 still requires independent review, protected release and authenticated owner-browser readback."],
+    evidence_level: "SOURCE_STACK_CI_GREEN_RUNTIME_UNVERIFIED",
+    links: [
+      { label: "Roadmap #2106", href: "https://github.com/officeus-create/Hermes/issues/2106" },
+      { label: "AI Operations #2159", href: "https://github.com/officeus-create/Hermes/pull/2159" },
+    ],
     milestones: [
       milestone("owner-backlog", "Owner backlog and D1 capture", "done", "PR #2107"),
       milestone("acceptance", "Owner acceptance and rework boundary", "done", "PR #2107"),
@@ -45,8 +52,8 @@ const projects = Object.freeze([
     related_ids: ["mac-ai", "windows-ai", "plugin-workforce"],
     started_at: "2026-10-27T00:00:00.000Z",
     target_at: null,
-    blockers: ["Exact-head CI, independent QA, owner-authorized release and authenticated production readback remain."],
-    evidence_level: "CANONICAL_PR_IN_REVIEW",
+    blockers: ["PR #2159 exact-head CI is 10/10 GREEN; independent review, protected release and authenticated production readback remain."],
+    evidence_level: "EXACT_HEAD_CI_GREEN_REVIEW_PENDING",
     links: [{ label: "PR #2159", href: "https://github.com/officeus-create/Hermes/pull/2159" }],
     milestones: [
       milestone("architecture", "AI architecture view", "done", "PR #2159"),
@@ -54,7 +61,7 @@ const projects = Object.freeze([
       milestone("team-view", "Scrubbed Team View", "done", "PR #2159"),
       milestone("plugin-registry", "Canonical plugin registry projection", "done", "PR #2159"),
       milestone("canonicalize", "Owner selected one canonical implementation", "done", "Owner decision: #2159 is canonical"),
-      milestone("exact-head-ci", "Canonical exact-head CI", "active"),
+      milestone("exact-head-ci", "Canonical exact-head CI", "done", "PR #2159 · 10/10 GREEN"),
       milestone("independent-qa", "Independent QA", "planned"),
       milestone("production", "Role-scoped production readback", "planned"),
     ],
@@ -72,8 +79,8 @@ const projects = Object.freeze([
     related_ids: ["self-learning", "free-ai", "hermes-command-center"],
     started_at: "2026-10-21T00:00:00.000Z",
     target_at: null,
-    blockers: [],
-    evidence_level: "PARTIAL_LIVE_VERIFIED",
+    blockers: ["Current-main HAE_VERIFY passed, but runtime exact-SHA continuity is not accepted because production Worker still reports source SHA 6ae12754… instead of d0c7ea43…."],
+    evidence_level: "PARTIAL_RUNTIME_PASS_DEPLOYED_SHA_STALE",
     links: [{ label: "Issue #2033", href: "https://github.com/officeus-create/Hermes/issues/2033" }],
     milestones: [
       milestone("worker", "Worker, D1, Queue and Cron", "done", "#2033"),
@@ -122,8 +129,8 @@ const projects = Object.freeze([
     related_ids: ["self-learning", "mac-ai", "windows-ai"],
     started_at: "2026-10-27T00:00:00.000Z",
     target_at: null,
-    blockers: ["Authenticated provider-plan readback is required before activation."],
-    evidence_level: "WAITING_FREE_AI",
+    blockers: ["PR #2137 exact-head CI is 8/8 GREEN; independent review/merge and authenticated Workers plan readback remain before any activation."],
+    evidence_level: "SOURCE_CI_GREEN_PLAN_UNKNOWN",
     links: [{ label: "PR #2137", href: "https://github.com/officeus-create/Hermes/pull/2137" }],
     milestones: [
       milestone("policy", "$0 fail-closed policy", "done", "#2123"),
@@ -191,8 +198,8 @@ const projects = Object.freeze([
     related_ids: ["free-ai", "windows-ai"],
     started_at: "2026-10-25T00:00:00.000Z",
     target_at: null,
-    blockers: ["Availability depends on the current device and power; cloud HAE must remain independent."],
-    evidence_level: "LOCAL_VERIFIED",
+    blockers: ["Latest authorized Remote Desktop readback shows the Mac host offline; prior local verification is historical and cloud HAE must remain independent."],
+    evidence_level: "HISTORICAL_LOCAL_VERIFIED_CURRENT_OFFLINE",
     links: [],
     milestones: [
       milestone("cockpit", "Local AI Cockpit", "done", "HTTP 200 local readback"),
@@ -214,8 +221,8 @@ const projects = Object.freeze([
     related_ids: ["mac-ai", "free-ai"],
     started_at: "2026-10-28T00:00:00.000Z",
     target_at: null,
-    blockers: ["Accepted Windows runtime receipt has not been produced."],
-    evidence_level: "PACKAGE_VERIFIED_NOT_LIVE",
+    blockers: ["Latest authorized Remote Desktop readback shows Windows YuraValentyuk offline; no canonical HAE WORK_ID → lease → execution → D1 receipt exists."],
+    evidence_level: "HISTORICAL_LOCAL_VERIFIED_CURRENT_OFFLINE",
     links: [],
     milestones: [
       milestone("package", "Portable migration package", "done"),
