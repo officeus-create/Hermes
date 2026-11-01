@@ -187,6 +187,8 @@ roots.forEach(async(root)=>{
     const github=data.github_developments||{source_state:"UNKNOWN",pulls:[]};
     renderProviderHealth(data.provider_health||[]);
     renderDepartmentKpis(data.department_kpis||[]);
+    (window as any).__hermesCommandCenterExecutionMap=data;
+    window.dispatchEvent(new CustomEvent("hermes:execution-map",{detail:data}));
     [[t("Owner/AI tasks","Owner/AI задачи"),tasks.length],[t("Human tasks","Командные задачи"),human.tasks?.length||0],[t("Developments","Разработки"),github.pulls?.length||0],[t("Active","В работе"),active],[t("Blocked","Блокеры"),blocked],[t("Plugin registry","Реестр плагинов"),data.registry_evidence?.fresh?t("Fresh","Свежий"):t("Stale snapshot","Устаревший срез")]].forEach(([label,value])=>{const a=document.createElement("article");a.append(text("span",String(label)),text("strong",String(value)));summary.append(a)});
     humanState.textContent=String(human.source_state||"UNKNOWN").replaceAll("_"," ");
     humanList.replaceChildren();
