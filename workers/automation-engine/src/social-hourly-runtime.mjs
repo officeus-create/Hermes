@@ -1,6 +1,7 @@
 import { SOCIAL_LANES, buildHourlySocialPackage, accountKeyForLane } from "./social-content-factory.mjs";
 import { resolveThreadsTransportForLane } from "./social-credential-bridge.mjs";
 import { normalizeThreadsText, safeThreadsPermalink } from "../../../shared/social/meta-threads-provider.mjs";
+import { pluginRuntimeVersion } from "./plugin-runtime-registry.mjs";
 
 const PLATFORM = "threads";
 const COOLDOWN_MS = (3 * 60 + 15) * 60_000;
@@ -77,6 +78,12 @@ export async function persistHourlySocialPackages(db,slotKey){
       const inserted=await db.prepare(sql).bind(contentId,accountKey,platform,slotKey,templateId,variantKey,variant.destination_url,variant.body,state,now,now).run();
       results.push({lane,account_key:accountKey,platform,content_id:contentId,state,inserted:Number(inserted?.meta?.changes||0)===1});
     }
+    const coordinatorVersion=pluginRuntimeVersion("hermes-agent-coordinator");
+    const marketingVersion=pluginRuntimeVersion("hermes-marketing-growth");
+    if(!coordinatorVersion||!marketingVersion)throw new Error("social_plugin_policy_version_missing");
+    const receipt="plugin_policy:hermes-agent-coordinator@"+coordinatorVersion+"|hermes-marketing-growth@"+marketingVersion;
+    await db.prepare("INSERT OR IGNORE INTO hermes_automation_runtime_events (event_id,event_type,message_type,content_id,slot_key,created_at) VALUES (?, 'social.plugin_policy_bound', ?, ?, ?, ?)")
+      .bind("social-plugin-policy:"+accountKey+":"+slotKey,receipt,accountKey+":threads:"+slotKey,slotKey,now).run();
   }
   return results;
 }
