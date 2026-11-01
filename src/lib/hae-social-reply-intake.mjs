@@ -50,7 +50,12 @@ export async function ensureSocialReplyIntakeSchema(db){
     ON hermes_automation_social_reply_intake(organization_scope,status,created_at)`).run();
 }
 
-export async function createSocialReplyPrepareIntake(db,input,{idempotencyKey,now=new Date().toISOString()}={}){
+/**
+ * @param {any} db
+ * @param {any} input
+ * @param {{idempotencyKey:string,now?:string}} options
+ */
+export async function createSocialReplyPrepareIntake(db,input,{idempotencyKey,now=new Date().toISOString()}){
   if(!db)throw new Error("database_not_configured");
   const normalized=normalizeSocialReplyPrepareIntake(input);
   const key=clean(idempotencyKey,240);
