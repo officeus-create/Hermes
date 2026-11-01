@@ -53,6 +53,7 @@ import {
   pluginRuntimeRegistrySnapshot,
 } from "./plugin-runtime-registry.mjs";
 import { socialAccountReadinessSnapshot } from "./social-account-readiness.mjs";
+import { runSocialReplyPrepare, validateSocialReplyPrepareInput } from "./social-reply-prepare.mjs";
 import {
   socialAcquisitionV2Enabled,
   enqueueHourlySocialPlans,
@@ -556,6 +557,13 @@ const READ_ONLY_GENERIC_JOB_TYPES = new Set([
   ...HISTORICAL_READ_ONLY_JOB_TYPES,
   ...ROLE_CONTRACT_JOB_TYPES,
 ]);
+const DRAFT_ONLY_GENERIC_JOB_TYPES = new Set([
+  "social.reply.prepare",
+]);
+const GENERIC_JOB_TYPES = new Set([
+  ...READ_ONLY_GENERIC_JOB_TYPES,
+  ...DRAFT_ONLY_GENERIC_JOB_TYPES,
+]);
 
 function genericJobEventId(jobId, eventType) {
   return `evt:${jobId}:${eventType}:${crypto.randomUUID()}`;
@@ -694,12 +702,17 @@ async function createGenericJob(env, input) {
   const rawMaxAttempts = metricNumberOrNull(input?.max_attempts);
   const priority = rawPriority === null ? 50 : Math.max(0, Math.min(100, Math.trunc(rawPriority)));
   const maxAttempts = rawMaxAttempts === null ? 3 : Math.max(1, Math.min(5, Math.trunc(rawMaxAttempts)));
-  if (!READ_ONLY_GENERIC_JOB_TYPES.has(jobType)) throw new Error("job_type_not_allowed");
+  if (!GENERIC_JOB_TYPES.has(jobType)) throw new Error("job_type_not_allowed");
+  if (DRAFT_ONLY_GENERIC_JOB_TYPES.has(jobType) && maxAttempts !== 1) throw new Error("draft_only_max_attempts_must_be_one");
   if (!businessLane) throw new Error("business_lane_required");
   if (roleContract && businessLane !== roleContract.business_lane) throw new Error("role_contract_business_lane_mismatch");
   if (roleContract?.semantic_required && input?.internal_submission !== true) throw new Error("semantic_job_internal_only");
   if (!idempotencyKey) throw new Error("idempotency_key_required");
   let payload = input?.payload ?? {};
+  if (jobType === "social.reply.prepare") {
+    payload = validateSocialReplyPrepareInput(payload);
+    if (payload.business_lane !== businessLane) throw new Error("social_reply_business_lane_mismatch");
+  }
   if (HISTORICAL_READ_ONLY_JOB_TYPES.includes(jobType)) {
     runHistoricalLearningPrimitive(jobType, payload);
   }
@@ -931,6 +944,15 @@ async function submitRuntimeProofJob(env, message) {
 }
 
 async function runReadOnlyGenericCapability(env, job) {
+  if (job.job_type === "social.reply.prepare") {
+    let payload = {};
+    try {
+      payload = JSON.parse(String(job.payload_json || "{}"));
+    } catch {
+      throw new Error("generic_job_payload_invalid");
+    }
+    return runSocialReplyPrepare(env, payload);
+  }
   if (ROLE_CONTRACT_JOB_TYPES.includes(job.job_type)) {
     let payload = {};
     try {
