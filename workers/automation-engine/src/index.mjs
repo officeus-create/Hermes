@@ -52,6 +52,15 @@ import {
   pluginRuntimeRegistryEvidenceStatus,
   pluginRuntimeRegistrySnapshot,
 } from "./plugin-runtime-registry.mjs";
+import { socialAccountReadinessSnapshot } from "./social-account-readiness.mjs";
+import {
+  socialAcquisitionV2Enabled,
+  enqueueHourlySocialPlans,
+  persistHourlySocialPackages,
+  processSocialThreadsPlan,
+  processSocialThreadsReadback,
+  enqueueDueSocialReadbacks,
+} from "./social-hourly-runtime.mjs";
 import { haeSelfRepairPacketReplayMatches } from "./hae-self-improvement.mjs";
 import { verifyGithubCIQueueEnvelope } from "./github-ci-runtime-intake.mjs";
 import { verifyGithubCIPatchProposalEnvelope } from "./github-ci-patch-runtime-intake.mjs";
@@ -1571,6 +1580,7 @@ async function enqueuePlanRun(env, slotKey) {
 }
 
 async function recoverPendingPlanRuns(env, limit = 20) {
+  if (socialAcquisitionV2Enabled(env)) return 0;
   if (!env.DB || !env.AUTOMATION_QUEUE) return 0;
   await ensureSchema(env.DB);
   const queuedStaleCutoff = addSecondsIso(new Date().toISOString(), -2 * 60);
@@ -1591,6 +1601,16 @@ async function processPlanMessage(env, message) {
   await ensureSchema(env.DB);
   const slotKey = clean(message?.slot_key, 32);
   if (!/^\d{4}-\d{2}-\d{2}T\d{2}$/.test(slotKey)) throw new Error("slot_key_invalid");
+  if (socialAcquisitionV2Enabled(env)) {
+    await persistHourlySocialPackages(env.DB, slotKey);
+    return processSocialThreadsPlan(env, {
+      type: "social.threads.plan",
+      business_lane: "HERMES_LOGISTICS",
+      account_key: "hermes_logistics",
+      platform: "threads",
+      slot_key: slotKey,
+    });
+  }
   // Queue push can be used as a private Cloudflare control-plane canary without
   // exposing an HTTP route. Ensure the durable run row exists even when the
   // message did not originate from this Worker's scheduled producer.
@@ -2172,26 +2192,51 @@ export default {
 
     if (eligible) {
       const slotKey = chicagoSlotKey(scheduledAt);
-      const inserted = await reserveRun(env.DB, slotKey, "cron");
-      if (inserted) {
+      if (socialAcquisitionV2Enabled(env)) {
         try {
-          const enqueued = await enqueuePlanRun(env, slotKey);
-          if (!enqueued) {
+          await enqueueHourlySocialPlans(env, slotKey);
+        } catch (error) {
+          await recordRuntimeEvent(env, {
+            eventType: "cron.social_v2_enqueue_failed",
+            messageType: "social.threads.plan",
+            slotKey,
+            errorClass: safeRuntimeErrorClass(error, "social_v2_enqueue_failed"),
+          });
+        }
+      } else {
+        const inserted = await reserveRun(env.DB, slotKey, "cron");
+        if (inserted) {
+          try {
+            const enqueued = await enqueuePlanRun(env, slotKey);
+            if (!enqueued) {
+              await recordRuntimeEvent(env, {
+                eventType: "cron.current_slot_enqueue_failed",
+                messageType: "content.plan",
+                slotKey,
+                errorClass: "current_slot_enqueue_failed",
+              });
+            }
+          } catch (error) {
             await recordRuntimeEvent(env, {
               eventType: "cron.current_slot_enqueue_failed",
               messageType: "content.plan",
               slotKey,
-              errorClass: "current_slot_enqueue_failed",
+              errorClass: safeRuntimeErrorClass(error, "current_slot_enqueue_failed"),
             });
           }
-        } catch (error) {
-          await recordRuntimeEvent(env, {
-            eventType: "cron.current_slot_enqueue_failed",
-            messageType: "content.plan",
-            slotKey,
-            errorClass: safeRuntimeErrorClass(error, "current_slot_enqueue_failed"),
-          });
         }
+      }
+    }
+
+    if (socialAcquisitionV2Enabled(env)) {
+      try {
+        await enqueueDueSocialReadbacks(env);
+      } catch (error) {
+        await recordRuntimeEvent(env, {
+          eventType: "cron.social_v2_readback_recovery_failed",
+          messageType: "social.threads.readback",
+          errorClass: safeRuntimeErrorClass(error, "social_v2_readback_recovery_failed"),
+        });
       }
     }
 
@@ -2307,6 +2352,20 @@ export default {
           item.ack();
           continue;
         }
+        if (messageType === "social.threads.plan") {
+          if (!env.DB || !env.AUTOMATION_QUEUE) throw new Error("runtime_not_configured");
+          await ensureSchema(env.DB);
+          await processSocialThreadsPlan(env, payload);
+          item.ack();
+          continue;
+        }
+        if (messageType === "social.threads.readback") {
+          if (!env.DB) throw new Error("database_not_configured");
+          await ensureSchema(env.DB);
+          await processSocialThreadsReadback(env, payload);
+          item.ack();
+          continue;
+        }
         if (messageType === "content.plan") {
           await processPlanMessage(env, payload);
           item.ack();
@@ -2384,6 +2443,9 @@ export default {
         provider_transport: "windsor_connectors_api",
         provider_configured: Boolean(windsorThreadsConfig(env)),
         publication_enabled: publicationEnabled(env),
+        social_acquisition_v2_enabled: socialAcquisitionV2Enabled(env),
+        social_business_lanes: ["HERMES_LOGISTICS", "PROGRESSOPRO"],
+        social_platforms: ["threads", "instagram", "facebook", "x"],
       });
     }
     if (request.method === "GET" && url.pathname === "/v1/plugin-runtime-registry") {
@@ -2469,6 +2531,11 @@ export default {
     if (request.method === "GET" && url.pathname === "/v1/health") {
       if (!authorized(request, env)) return json(401, { success: false, error: "unauthorized" });
       return json(200, { success: true, ...(await health(env)) });
+    }
+    if (request.method === "GET" && url.pathname === "/v1/social-account-readiness") {
+      if (!authorized(request, env)) return json(401, { success: false, error: "unauthorized" });
+      if (!env.DB) return json(503, { success: false, error: "runtime_not_configured" });
+      return json(200, await socialAccountReadinessSnapshot(env));
     }
     if (request.method === "POST" && url.pathname === "/v1/jobs") {
       if (!authorized(request, env)) return json(401, { success: false, error: "unauthorized" });

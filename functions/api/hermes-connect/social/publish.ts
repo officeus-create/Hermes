@@ -104,9 +104,10 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
 
   let published: any;
   if (provider === "threads") {
-    if (imageUrls.length === 0) published = await publishBusinessThreadsText(credential.payload, text);
-    else if (imageUrls.length === 1) published = await publishThreadsImage(credential.payload, text, imageUrls[0]);
-    else published = await publishThreadsCarousel(credential.payload, text, imageUrls);
+    const threadsCredential = { ...credential.payload, username: credential.row?.username };
+    if (imageUrls.length === 0) published = await publishBusinessThreadsText(threadsCredential, text);
+    else if (imageUrls.length === 1) published = await publishThreadsImage(threadsCredential, text, imageUrls[0]);
+    else published = await publishThreadsCarousel(threadsCredential, text, imageUrls);
   } else if (provider === "facebook") {
     published = await publishFacebookPagePost(env, credential.payload, text, imageUrls);
   } else if (surface === "story") {

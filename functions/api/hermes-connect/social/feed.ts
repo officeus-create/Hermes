@@ -29,7 +29,8 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
       output[provider]={connected:false,error:credential.error_class,items:[]};
       continue;
     }
-    const recent=await readRecentSocialMedia(env,credential.payload,provider,6);
+    const providerCredential=provider==="threads"?{...credential.payload,username:credential.row?.username}:credential.payload;
+    const recent=await readRecentSocialMedia(env,providerCredential,provider,6);
     output[provider]={connected:true,error:recent.ok?null:recent.error_class,items:recent.items||[]};
   }
   return jsonResponse(200,{success:true,business:{name:business.business_name,vertical:business.vertical_key},feeds:output},headers);

@@ -16,8 +16,7 @@ function normalizePostText(value, max = 500) {
     .map((line) => line.replace(/[\t ]+/g, " ").trim())
     .join("\n")
     .replace(/\n{3,}/g, "\n\n")
-    .trim()
-    .slice(0, max);
+    .trim();
 }
 
 function validHttps(value) {
@@ -47,8 +46,9 @@ function windsorUrl(path, apiKey) {
 export async function publishThreadsTextViaWindsor(env, text) {
   const config = windsorThreadsConfig(env);
   if (!config) return { ok: false, error_class: "windsor_not_configured" };
-  const postText = normalizePostText(text, 500);
-  if (!postText || postText.length > 500) return { ok: false, error_class: "threads_text_invalid" };
+  const postText = normalizePostText(text);
+  const postBytes = new TextEncoder().encode(postText).byteLength;
+  if (!postText || postBytes > 500) return { ok: false, error_class: "threads_text_invalid" };
 
   const url = windsorUrl("threads/actions", config.apiKey);
   let response;
@@ -97,7 +97,7 @@ function normalizeRows(payload) {
 export async function readbackThreadsTextViaWindsor(env, text) {
   const config = windsorThreadsConfig(env);
   if (!config) return { ok: false, error_class: "windsor_not_configured" };
-  const postText = normalizePostText(text, 1000);
+  const postText = normalizePostText(text);
   if (!postText) return { ok: false, error_class: "threads_text_invalid" };
 
   const url = windsorUrl("threads", config.apiKey);

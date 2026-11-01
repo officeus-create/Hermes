@@ -6,12 +6,14 @@ import { cleanConnectionText, upsertCompanyConnection } from "./company-connecti
 import {
   exchangeThreadsAuthorizationCode,
   fetchThreadsProfile,
-  publishThreadsText,
-  readThreadsMedia,
   threadsAuthorizationUrl,
   threadsBrandRuntimeConfig,
-  validateThreadsText,
 } from "./threads-brand-connector.mjs";
+import {
+  createMetaThreadsTransport,
+  validateThreadsText,
+  safeThreadsPermalink,
+} from "../../../shared/social/meta-threads-provider.mjs";
 
 const PROVIDERS = Object.freeze(["facebook", "instagram", "threads"]);
 const PROVIDER_SET = new Set(PROVIDERS);
@@ -977,18 +979,35 @@ export async function publishInstagramCarousel(env, credential, caption, imageUr
 
 export async function publishBusinessThreadsText(credential, text) {
   const validated = validateThreadsText(text);
-  if (!validated.ok) return { ok: false, error_class: validated.error };
+  if (!validated.ok) return { ok: false, error_class: validated.error_class };
   const accessToken = clean(credential?.access_token, 4096);
   const userId = clean(credential?.threads_user_id, 160);
-  if (!accessToken || !userId) return { ok: false, error_class: "authorization_required" };
-  const published = await publishThreadsText(accessToken, userId, validated.text);
+  const expectedUsername = clean(credential?.username, 160).replace(/^@/, "").toLowerCase();
+  if (!accessToken || !userId || !expectedUsername) return { ok: false, error_class: "authorization_required" };
+  const transport = createMetaThreadsTransport({
+    accessToken,
+    accountId: userId,
+    expectedUsername,
+  });
+  if (!transport) return { ok: false, error_class: "threads_transport_invalid" };
+  const identity = await transport.verifyIdentity();
+  if (!identity.ok) return identity;
+  const published = await transport.publishText(validated.text);
   if (!published.ok) return published;
-  const readback = await readThreadsMedia(accessToken, published.media_id);
+  const readback = await transport.readMedia(published.provider_object_id);
+  const permalink = readback.ok ? safeThreadsPermalink(readback.media?.permalink) : null;
+  const exact = Boolean(
+    readback.ok
+    && readback.media?.id === published.provider_object_id
+    && readback.media?.username === expectedUsername
+    && readback.media?.text === validated.text
+    && permalink
+  );
   return {
     ok: true,
-    media_id: published.media_id,
-    permalink: readback.ok ? readback.media.permalink : null,
-    readback_ok: readback.ok,
+    media_id: published.provider_object_id,
+    permalink: exact ? permalink : null,
+    readback_ok: exact,
   };
 }
 
