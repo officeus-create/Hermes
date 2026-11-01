@@ -29,7 +29,7 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
     const business = parseBusinessRef(membership.companyId);
     if (!business || business.namespace !== "company") continue;
     const company = await env.DB.prepare(`
-      SELECT id,company_name,company_type,city,state,website,catalog_status,load_board_access,updated_at
+      SELECT id,company_name,company_type,city,state
       FROM hermes_company_profiles
       WHERE id=? LIMIT 1
     `).bind(business.native_id).first();
@@ -44,10 +44,6 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
         type: clean(company.company_type, 80),
         city: clean(company.city, 120),
         state: clean(company.state, 8),
-        website: clean(company.website, 500) || null,
-        catalog_status: clean(company.catalog_status, 80) || "UNKNOWN",
-        load_board_access: Number(company.load_board_access) === 1,
-        updated_at: clean(company.updated_at, 80) || null,
       },
       capabilities: {
         read_workspace: true,
