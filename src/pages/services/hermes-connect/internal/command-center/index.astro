@@ -91,7 +91,7 @@ async function loadAll(){
   setText("[data-runner-state]",runtime.online?t("Online","Онлайн"):t("Offline","Офлайн"));setText("[data-runner-copy]",runtime.online?t("Mac heartbeat observed; Windows runtime unverified","Heartbeat Mac получен; Windows не подтверждён"):t("Mac heartbeat unavailable; cloud backlog preserved","Heartbeat Mac недоступен; облачная очередь сохранена"));
   renderAiArchitecture(runtime);
   setText("[data-agent-badge]",runtime.online?t("Online","Онлайн"):t("Offline","Офлайн"));setText("[data-agent-status]",runtime.online?t("Online","Онлайн"):t("Offline","Офлайн"));setText("[data-agent-seen]",stamp(runtime.last_seen_at));setText("[data-agent-sha]",runtime.repo_sha||"—");setText("[data-active-task]",active?(String(active.status||"")+(active.id?" · "+String(active.id).slice(-10):"")):t("None","Нет"));
-  const [work,taskList,accessList,account,processList,reportList,intelligence,executionMap,socialAcquisition,threadsConnections]=await Promise.all([
+  const [work,taskList,accessList,account,processList,reportList,intelligence,socialAcquisition,threadsConnections]=await Promise.all([
     jsonFetch("/api/internal-command-center/work-items"),
     jsonFetch("/api/internal-ai/tasks"),
     jsonFetch("/api/internal-command-center/access"),
@@ -99,7 +99,6 @@ async function loadAll(){
     jsonFetch("/api/internal-command-center/processes"),
     jsonFetch("/api/internal-command-center/reports"),
     jsonFetch("/api/internal-command-center/owner-intelligence"),
-    jsonFetch("/api/internal-command-center/execution-map"),
     jsonFetch("/api/internal-command-center/social-acquisition"),
     jsonFetch("/api/internal/social/threads/connections"),
   ]);
@@ -121,7 +120,6 @@ async function loadAll(){
   if(processList.r.ok&&processList.d.success)processes=processList.d.processes||[];
   if(reportList.r.ok&&reportList.d.success)renderReports(reportList.d);
   if(intelligence.r.ok&&intelligence.d.success)renderIntelligence(intelligence.d);
-  if(executionMap.r.ok&&executionMap.d.success)renderPluginRegistry(executionMap.d);
   renderSocialAcquisition(socialAcquisition.r.ok&&socialAcquisition.d.success?socialAcquisition.d:null,threadsConnections.r.ok&&threadsConnections.d.success?threadsConnections.d:null);
   setText("[data-backlog-count]",String(items.filter(x=>!["done","cancelled"].includes(x.status)).length));setText("[data-approval-count]",String(tasks.filter(x=>x.status==="needs_approval").length));
   document.querySelectorAll<HTMLElement>("[data-module]").forEach(card=>{const key=card.dataset.module||"";const count=items.filter(x=>x.workstream===key&&!["done","cancelled"].includes(x.status)).length;const badge=card.querySelector<HTMLElement>(".module-state");if(badge)badge.textContent=count?String(count)+" "+t("open","открыто"):t("Clear","Чисто")});
@@ -182,6 +180,8 @@ function renderSocialAcquisition(data:any,threads:any){
   if(queue){queue.replaceChildren();if(!content.length){const p=document.createElement("p");p.className="muted";p.textContent=data?.content_queue?.source_state==="CONNECTED"?t("No recent HAE content rows.","Нет свежих HAE content rows."):t("HAE content source unavailable; count remains UNKNOWN.","HAE content source недоступен; количество остаётся UNKNOWN.");queue.append(p)}else content.slice(0,10).forEach((item:any)=>{const card=document.createElement("article");card.className="owner-evidence-item";const body=document.createElement("div");const title=document.createElement("strong");title.textContent=String(item.account_key||"UNKNOWN")+" · "+String(item.platform||"UNKNOWN");const meta=document.createElement("small");meta.textContent=String(item.slot_key||item.content_id||"")+" · "+String(item.state||"UNKNOWN")+" · "+stamp(item.updated_at);body.append(title,meta);const state=document.createElement("span");state.textContent=String(item.state||"UNKNOWN");card.append(body,state);queue.append(card)})}
   if(receipts){receipts.replaceChildren();if(!pubs.length){const p=document.createElement("p");p.className="muted";p.textContent=data?.publication_receipts?.source_state==="CONNECTED"?t("No recent publication receipts.","Нет свежих publication receipts."):t("Publication receipt source unavailable; state remains UNKNOWN.","Источник publication receipts недоступен; состояние остаётся UNKNOWN.");receipts.append(p)}else pubs.slice(0,10).forEach((item:any)=>{const card=document.createElement("article");card.className="owner-evidence-item";const body=document.createElement("div");const title=document.createElement("strong");title.textContent=String(item.account_key||"UNKNOWN")+" · "+String(item.platform||"UNKNOWN");const meta=document.createElement("small");meta.textContent=String(item.status||"UNKNOWN")+" · attempts "+String(item.attempt_count??"UNKNOWN")+" · "+stamp(item.updated_at);body.append(title,meta);if(item.permalink){try{const u=new URL(String(item.permalink));if(u.protocol==="https:"&&["threads.net","www.threads.net","threads.com","www.threads.com"].includes(u.hostname)){const a=document.createElement("a");a.href=u.href;a.target="_blank";a.rel="noopener noreferrer";a.textContent=t("Provider receipt ↗","Provider receipt ↗");body.append(a)}}catch{}}const state=document.createElement("span");state.textContent=String(item.provider_post_id?"RECEIPT":"NO RECEIPT");card.append(body,state);receipts.append(card)})}
 }
+window.addEventListener("hermes:execution-map",(event)=>renderPluginRegistry((event as CustomEvent).detail));
+queueMicrotask(()=>{const cached=(window as any).__hermesCommandCenterExecutionMap;if(cached)renderPluginRegistry(cached)});
 function renderPluginRegistry(data:any){
   const box=q("[data-plugin-registry]");if(!box)return;box.replaceChildren();
   const rows=Array.isArray(data?.plugin_registry)?data.plugin_registry:[];
