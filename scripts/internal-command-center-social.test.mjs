@@ -28,6 +28,11 @@ CREATE TABLE hermes_automation_runtime_events (
  event_id TEXT PRIMARY KEY,event_type TEXT,queue_name TEXT,queue_message_id TEXT,message_sent_at TEXT,message_type TEXT,job_id TEXT,
  content_id TEXT,slot_key TEXT,attempt_count INTEGER,error_class TEXT,created_at TEXT
 );
+CREATE TABLE hermes_automation_heartbeats (
+ heartbeat_id TEXT PRIMARY KEY,trigger_type TEXT,cron_expression TEXT,scheduled_at TEXT,observed_at TEXT,
+ execution_lag_ms INTEGER,chicago_slot_key TEXT,eligible INTEGER,source_sha TEXT,automation_mode TEXT,
+ publication_config TEXT,publication_enabled INTEGER
+);
 `);
 const now="2026-11-01T08:00:00.000Z";
 sqlite.prepare("INSERT INTO hermes_automation_content VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)").run(
@@ -52,6 +57,9 @@ sqlite.prepare("INSERT INTO hermes_automation_runtime_events VALUES (?,?,?,?,?,?
  "plugin_policy:hermes-agent-coordinator@0.1.85|hermes-marketing-growth@0.1.16",null,
  "hermes_logistics:threads:2026-11-01T01","2026-11-01T01",null,null,now
 );
+sqlite.prepare("INSERT INTO hermes_automation_heartbeats VALUES (?,?,?,?,?,?,?,?,?,?,?,?)").run(
+ "hb-1","scheduled","0 * * * *",now,now,125,"2026-11-01T01",1,"synthetic-source-sha","dry_run","disabled",0
+);
 
 const snapshot=await buildCommandCenterSocialSnapshot({DB:db,HERMES_AUTOMATION_MODE:"dry_run",HERMES_AUTOMATION_PUBLISH:"disabled"},{nowMs:Date.parse(now)});
 assert.equal(snapshot.success,true);
@@ -68,6 +76,10 @@ assert.match(logistics.plugin_policy_receipt.policy,/hermes-agent-coordinator@0\
 assert.equal(progresso.platform_states.facebook.state,"draft_ready");
 assert.equal(progresso.unresolved_publications,0);
 assert.equal(snapshot.inbound.threads_replies_mentions,"NOT_LIVE");
+assert.equal(snapshot.health.last_heartbeat.chicago_slot_key,"2026-11-01T01");
+assert.equal(snapshot.health.last_heartbeat.execution_lag_ms,125);
+assert.equal(snapshot.health.queue_depth,"UNKNOWN");
+assert.equal(snapshot.health.dlq_depth,"UNKNOWN");
 assert.equal(snapshot.funnel.counts,"NOT_JOINED_IN_THIS_READ_MODEL");
 const serialized=JSON.stringify(snapshot);
 for(const forbidden of ["token_ciphertext","access_token","HERMES_THREADS_ACCESS_TOKEN","THREADS_BRAND_TOKEN_KEY"]){
