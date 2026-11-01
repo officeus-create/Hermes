@@ -2,6 +2,9 @@ const REPO_OWNER = "officeus-create";
 const REPO_NAME = "Hermes";
 const MAX_PAGES = 3;
 const PAGE_SIZE = 100;
+const MAX_ENRICHED_PULLS = 12;
+const ENRICHMENT_BATCH_SIZE = 4;
+const MIN_RATE_LIMIT_FOR_ENRICHMENT = 30;
 
 const clean = (value, max = 1000) => String(value ?? "").replace(/\u0000/g, "").trim().slice(0, max);
 const safeGithubUrl = (value, number) => {
@@ -63,8 +66,132 @@ export function normalizeGithubPull(pull = {}) {
     updated_at: clean(pull.updated_at, 80) || null,
     created_at: clean(pull.created_at, 80) || null,
     passport: parseAgentWorkPassport(pull.body),
+    requested_reviewers: Array.isArray(pull.requested_reviewers)
+      ? pull.requested_reviewers.map((reviewer) => clean(reviewer?.login, 160)).filter(Boolean).slice(0, 20)
+      : [],
     ci_state: "UNKNOWN",
+    check_count: null,
     review_state: pull.draft === true ? "DRAFT" : "UNKNOWN",
+    review_count: null,
+    independent_review_state: pull.draft === true ? "NOT_APPLICABLE_DRAFT" : "UNKNOWN",
+    approving_reviewers: [],
+    changes_requesting_reviewers: [],
+    enrichment_state: "NOT_ENRICHED",
+  };
+}
+
+export function observedGithubCheckState(checkRuns) {
+  if (!Array.isArray(checkRuns)) return "UNKNOWN";
+  if (!checkRuns.length) return "NO_CHECKS_OBSERVED";
+  if (checkRuns.some((run) => clean(run?.status, 40).toLowerCase() !== "completed")) return "CHECKS_RUNNING";
+  const conclusions = checkRuns.map((run) => clean(run?.conclusion, 60).toLowerCase());
+  const failing = new Set(["failure", "cancelled", "timed_out", "action_required", "startup_failure"]);
+  if (conclusions.some((conclusion) => failing.has(conclusion))) return "CHECKS_FAILED_OR_CANCELLED";
+  if (conclusions.every((conclusion) => conclusion === "success")) return "OBSERVED_CHECKS_ALL_SUCCESS";
+  return "OBSERVED_CHECKS_COMPLETED_MIXED";
+}
+
+export function projectGithubReviews(reviews, author, draft = false) {
+  const rows = Array.isArray(reviews) ? reviews : [];
+  if (draft) {
+    return {
+      review_state: "DRAFT",
+      review_count: rows.length,
+      independent_review_state: "NOT_APPLICABLE_DRAFT",
+      approving_reviewers: [],
+      changes_requesting_reviewers: [],
+    };
+  }
+  const normalized = rows.map((review, index) => ({
+    login: clean(review?.user?.login, 160),
+    state: clean(review?.state, 60).toUpperCase(),
+    submitted_at: clean(review?.submitted_at, 80),
+    id: Number(review?.id) || index,
+  })).filter((review) => review.login && review.state);
+  normalized.sort((left, right) => {
+    const lt = Date.parse(left.submitted_at || "") || 0;
+    const rt = Date.parse(right.submitted_at || "") || 0;
+    return lt - rt || left.id - right.id;
+  });
+  const latest = new Map();
+  for (const review of normalized) latest.set(review.login.toLowerCase(), review);
+  const effective = [...latest.values()].filter((review) => !["DISMISSED", "PENDING"].includes(review.state));
+  const changes = effective.filter((review) => review.state === "CHANGES_REQUESTED").map((review) => review.login);
+  const approvals = effective.filter((review) => review.state === "APPROVED").map((review) => review.login);
+  const comments = effective.filter((review) => review.state === "COMMENTED");
+  const authorLogin = clean(author, 160).toLowerCase();
+  const independentChanges = changes.filter((login) => login.toLowerCase() !== authorLogin);
+  const independentApprovals = approvals.filter((login) => login.toLowerCase() !== authorLogin);
+  const reviewState = changes.length
+    ? "CHANGES_REQUESTED"
+    : approvals.length
+      ? "APPROVED_OBSERVED"
+      : comments.length
+        ? "COMMENTED_ONLY"
+        : "NO_REVIEW_SUBMISSION";
+  const independentReviewState = independentChanges.length
+    ? "CHANGES_REQUESTED_BY_DIFFERENT_LOGIN"
+    : independentApprovals.length
+      ? "APPROVED_BY_DIFFERENT_LOGIN"
+      : "PENDING";
+  return {
+    review_state: reviewState,
+    review_count: normalized.length,
+    independent_review_state: independentReviewState,
+    approving_reviewers: approvals.slice(0, 20),
+    changes_requesting_reviewers: changes.slice(0, 20),
+  };
+}
+
+async function readGithubJson(url, headers, fetchImpl) {
+  let response;
+  try {
+    response = await fetchImpl(url, { method: "GET", headers });
+  } catch {
+    return { ok: false, status: null, payload: null, remaining: null, error: "transport_failed" };
+  }
+  const limit = response.headers?.get?.("x-ratelimit-remaining");
+  const remaining = limit != null && Number.isFinite(Number(limit)) ? Number(limit) : null;
+  let payload = null;
+  try { payload = await response.json(); } catch {}
+  return {
+    ok: response.ok,
+    status: response.status,
+    payload,
+    remaining,
+    error: response.ok ? null : "provider_error",
+  };
+}
+
+async function enrichGithubPull(pull, headers, fetchImpl) {
+  if (!pull?.number || !pull?.head_sha) {
+    return { pull: { ...pull, enrichment_state: "IDENTITY_INCOMPLETE" }, remaining: [] };
+  }
+  const checkUrl = "https://api.github.com/repos/" + REPO_OWNER + "/" + REPO_NAME + "/commits/" + pull.head_sha + "/check-runs?per_page=100";
+  const checkResult = await readGithubJson(checkUrl, headers, fetchImpl);
+  let reviewResult = null;
+  if (!pull.draft) {
+    const reviewUrl = "https://api.github.com/repos/" + REPO_OWNER + "/" + REPO_NAME + "/pulls/" + pull.number + "/reviews?per_page=100";
+    reviewResult = await readGithubJson(reviewUrl, headers, fetchImpl);
+  }
+  const checkRuns = checkResult.ok && Array.isArray(checkResult.payload?.check_runs) ? checkResult.payload.check_runs : null;
+  const reviewRows = pull.draft
+    ? []
+    : reviewResult?.ok && Array.isArray(reviewResult.payload) ? reviewResult.payload : null;
+  const reviewProjection = projectGithubReviews(reviewRows, pull.author, pull.draft);
+  const errors = [];
+  if (!checkResult.ok || checkRuns === null) errors.push("CHECKS_UNAVAILABLE");
+  if (!pull.draft && (!reviewResult?.ok || reviewRows === null)) errors.push("REVIEWS_UNAVAILABLE");
+  return {
+    pull: {
+      ...pull,
+      ci_state: checkRuns === null ? "UNKNOWN" : observedGithubCheckState(checkRuns),
+      check_count: checkRuns === null ? null : checkRuns.length,
+      ...reviewProjection,
+      enrichment_state: errors.length ? "PARTIAL_OR_FAILED" : "ENRICHED",
+      enrichment_errors: errors,
+    },
+    remaining: [checkResult.remaining, reviewResult?.remaining].filter((value) => Number.isFinite(value)),
   };
 }
 
@@ -129,6 +256,47 @@ export async function readGithubDevelopments(env = {}, fetchImpl = fetch) {
       truncated: false,
     };
   }
+  let projectedPulls = pulls;
+  let enrichmentState = token ? "NOT_RUN" : "AUTH_REQUIRED";
+  let enrichedPullCount = 0;
+  if (token) {
+    if (remaining !== null && remaining <= MIN_RATE_LIMIT_FOR_ENRICHMENT) {
+      enrichmentState = "RATE_LIMIT_GUARD";
+      projectedPulls = pulls.map((pull) => ({ ...pull, enrichment_state: "RATE_LIMIT_GUARD" }));
+    } else {
+      const limit = Math.min(pulls.length, MAX_ENRICHED_PULLS);
+      const enriched = [];
+      let stoppedForRateLimit = false;
+      for (let start = 0; start < limit; start += ENRICHMENT_BATCH_SIZE) {
+        if (remaining !== null && remaining <= MIN_RATE_LIMIT_FOR_ENRICHMENT) {
+          stoppedForRateLimit = true;
+          break;
+        }
+        const batch = pulls.slice(start, Math.min(limit, start + ENRICHMENT_BATCH_SIZE));
+        const results = await Promise.all(batch.map((pull) => enrichGithubPull(pull, headers, fetchImpl)));
+        for (const result of results) {
+          enriched.push(result.pull);
+          enrichedPullCount += 1;
+          for (const value of result.remaining) remaining = remaining === null ? value : Math.min(remaining, value);
+        }
+      }
+      projectedPulls = [
+        ...enriched,
+        ...pulls.slice(enriched.length).map((pull) => ({
+          ...pull,
+          enrichment_state: stoppedForRateLimit ? "RATE_LIMIT_GUARD" : "NOT_ENRICHED_LIMIT",
+        })),
+      ];
+      const failures = enriched.filter((pull) => pull.enrichment_state !== "ENRICHED").length;
+      enrichmentState = stoppedForRateLimit
+        ? "PARTIAL_RATE_LIMIT_GUARD"
+        : failures
+          ? "PARTIAL_PROVIDER_ERRORS"
+          : "ENRICHED";
+    }
+  } else {
+    projectedPulls = pulls.map((pull) => ({ ...pull, enrichment_state: "AUTH_REQUIRED" }));
+  }
   return {
     source: "github",
     source_state: truncated ? "CONNECTED_PARTIAL" : token ? "CONNECTED_AUTHENTICATED" : "CONNECTED_PUBLIC",
@@ -136,7 +304,10 @@ export async function readGithubDevelopments(env = {}, fetchImpl = fetch) {
     repository: REPO_OWNER + "/" + REPO_NAME,
     authenticated: Boolean(token),
     rate_limit_remaining: remaining,
-    pulls,
+    enrichment_state: enrichmentState,
+    enriched_pull_count: enrichedPullCount,
+    enrichment_limit: MAX_ENRICHED_PULLS,
+    pulls: projectedPulls,
     truncated,
   };
 }
