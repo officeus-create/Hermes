@@ -292,6 +292,30 @@ assert.equal(revokedPage.response.status,403,"revoked employee must also lose HT
 assert.equal(revokedPage.assetReads,0);
 
 
+const badCapability=await mutateAccess({request:request("/api/internal-command-center/access",{method:"POST",body:{action:"grant",email:"delegate@example.invalid",capability:"team_viwe"}}),env:{DB:db}});
+assert.equal(badCapability.status,400,"unknown explicit capability must fail closed");
+assert.equal((await badCapability.json()).error,"invalid_capability");
+
+const beforeFaultAudit=Number(sqlite.prepare("SELECT count(*) AS n FROM hermes_internal_team_view_access_audit").get().n);
+const faultDb={
+  prepare:sql=>new Statement(sqlite.prepare(sql)),
+  batch:async statements=>{
+    sqlite.exec("BEGIN IMMEDIATE");
+    try{
+      await statements[0].run();
+      throw new Error("synthetic_audit_failure");
+    }catch(error){
+      sqlite.exec("ROLLBACK");
+      throw error;
+    }
+  }
+};
+const failedAtomicGrant=await mutateAccess({request:request("/api/internal-command-center/access",{method:"POST",body:{action:"grant",email:"delegate@example.invalid",capability:"team_view"}}),env:{DB:faultDb}});
+assert.equal(failedAtomicGrant.status,503,"audit failure must fail the whole access mutation");
+assert.equal((await failedAtomicGrant.json()).error,"access_mutation_failed");
+assert.equal(sqlite.prepare("SELECT active FROM hermes_internal_team_view_access WHERE specialist_id='delegate'").get().active,0,"failed audit must roll back effective Team View permission");
+assert.equal(Number(sqlite.prepare("SELECT count(*) AS n FROM hermes_internal_team_view_access_audit").get().n),beforeFaultAudit,"failed atomic mutation must not create audit receipt");
+
 const grant=await mutateAccess({request:request("/api/internal-command-center/access",{method:"POST",body:{action:"grant",email:"delegate@example.invalid"}}),env:{DB:db}});
 assert.equal(grant.status,200);
 assert.equal((await grant.json()).target.specialist_id,"delegate");
