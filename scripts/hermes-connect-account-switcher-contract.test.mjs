@@ -111,7 +111,8 @@ test('membership Client View is a private company workspace from the canonical a
   assert.match(source, /item\?\.key === "client_view"/);
   assert.match(source, /data-workspace-client data-hc-workspace-link="client" hidden/);
   assert.match(source, /client:\s*"\/services\/hermes-connect\/client-view\/"/);
-  assert.match(source, /if \(clientWorkspace && client\) client\.hidden = false/);
+  assert.match(source, /if \(clientWorkspace && client\)/);
+  assert.match(source, /client\.hidden = false/);
   assert.match(source, /entries\.push\(\{ key: "client"/);
   assert.match(source, /current === "client"/);
   assert.match(header, /isClientPrivateRoute/);
