@@ -5,7 +5,7 @@ const OBSERVED_AT = "2026-11-01T00:46:39.120Z";
 
 export const PLUGIN_RUNTIME_REGISTRY = Object.freeze({
   "hermes-automatic-engineer": Object.freeze({ version: "0.1.34", observed_at: OBSERVED_AT }),
-  "hermes-agent-coordinator": Object.freeze({ version: "0.1.83", observed_at: OBSERVED_AT }),
+  "hermes-agent-coordinator": Object.freeze({ version: "0.1.84", observed_at: OBSERVED_AT }),
   "hermes-technology-developer": Object.freeze({ version: "0.1.60", observed_at: OBSERVED_AT }),
   "hermes-qa-evidence-auditor": Object.freeze({ version: "0.1.18", observed_at: OBSERVED_AT }),
   "hermes-knowledge-curator": Object.freeze({ version: "0.1.89", observed_at: OBSERVED_AT }),
