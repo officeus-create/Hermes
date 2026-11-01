@@ -151,9 +151,9 @@ assert.match(worker, /idempotency_key: idempotencyKey/);
 assert.match(worker, /!contract\.semantic_required && roleContractScheduleEligible/);
 assert.match(worker, /url\.pathname === "\/v1\/schedule-migrations"/);
 
-assert.match(worker,/Europe\\/Kyiv/,"Command Center reports must use Kyiv local scheduling");
-assert.match(worker,/cronExpression==="0 \\* \\* \\* \\*"/,"exact-hour report wake must be isolated from the existing HAE cron");
-assert.match(worker,/hae:command-center-report:\\$\\{job.key\\}:\\$\\{localDate\\}/,"weekly report runs need local-date idempotency");
-assert.match(worker,/report\\.hr-tech\\.weekly\\.build/);
-assert.match(worker,/report\\.catalog\\.weekly\\.build/);
+assert.ok(worker.includes("Europe/Kyiv"),"Command Center reports must use Kyiv local scheduling");
+assert.ok(worker.includes('cronExpression==="0 * * * *"'),"exact-hour report wake must be isolated from the existing HAE cron");
+assert.ok(worker.includes('hae:command-center-report:${job.key}:${localDate}'),"weekly report runs need local-date idempotency");
+assert.ok(worker.includes('report.hr-tech.weekly.build'));
+assert.ok(worker.includes('report.catalog.weekly.build'));
 console.log("HAE zero-token plugin task migration PASS: 14 recovered schedules, 13 deterministic plugin capabilities, no ChatGPT runtime dependency");
