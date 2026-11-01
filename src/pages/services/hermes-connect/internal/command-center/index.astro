@@ -47,6 +47,38 @@ async function jsonFetch(url:string,options:RequestInit={}){const r=await fetch(
 function setText(sel:string,value:string){const n=q(sel);if(n)n.textContent=value}
 function showOwnerToast(message:string){const n=q<HTMLElement>("[data-owner-toast]");if(!n)return;n.textContent=message;n.hidden=false}
 function safePr(value?:string|null){if(!value)return null;try{const u=new URL(value);return u.protocol==="https:"&&u.hostname==="github.com"&&/^\/officeus-create\/Hermes\/pull\/\d+\/?$/.test(u.pathname)?u.href:null}catch{return null}}
+let catalogReportLastPoll=0;
+async function loadCatalogOwnerReport(){
+  const box=q<HTMLElement>("[data-catalog-weekly-body]");
+  const state=q<HTMLElement>("[data-catalog-weekly-state]");
+  if(!box||!state||Date.now()-catalogReportLastPoll<300000)return;
+  catalogReportLastPoll=Date.now();
+  const res=await jsonFetch("/api/internal-command-center/catalog-weekly-report");
+  if(!res.r.ok||!res.d.success){state.textContent=t("Catalog report source unavailable.","Источник отчёта Catalog недоступен.");return}
+  const item=(res.d.reports||[]).find((row:any)=>row.state==="ready"&&row.report);
+  if(!item){state.textContent=t("Awaiting the first Friday HAE receipt.","Ожидаем первый пятничный receipt HAE.");return}
+  const r=item.report;
+  state.textContent=t("Latest verified execution: ","Последний отчёт HAE: ")+String(item.week_date||"—")+" · "+String(r.checked_at||"—");
+  const val=(x:any)=>x===undefined||x===null?"UNKNOWN":String(x);
+  const blockers=Array.isArray(r.blockers)?r.blockers.join(", "):"UNKNOWN";
+  const done=Array.isArray(r.realized?.source_only)?r.realized.source_only.map((x:any)=>x.title+" [SOURCE ONLY]").slice(0,6).join("; "):"UNKNOWN";
+  const planned=Array.isArray(r.planned)?r.planned.map((x:any)=>x.title).slice(0,6).join("; "):"UNKNOWN";
+  const lines=[
+    t("Public /businesses/: ","Запуск /businesses/: ")+val(r.businesses?.live_verified?"LIVE_READBACK_PASS":"NOT_VERIFIED"),
+    t("Profiles opted in: ","Профили opt-in: ")+val(r.profiles?.opted_in)+t(" | New in 7 days: "," | Новые за 7 дней: ")+val(r.profiles?.new_7d),
+    t("Verified public companies: ","Подтверждённые публичные компании: ")+val(r.profiles?.verified_public),
+    t("Free tier / claimed: ","Бесплатный тариф / подтверждение владельца: ")+val(r.profiles?.free_tier_count)+" / "+val(r.profiles?.claimed_count),
+    t("Catalog sitemap duplicate URLs: ","Дубли URL в sitemap: ")+val(r.sitemap?.duplicate_urls?.length),
+    t("Semantic SEO overlap: ","Семантическое SEO-пересечение: ")+val(r.sitemap?.semantic_overlap),
+    t("Source merged (not live proof): ","Слито в код (не доказательство продакшена): ")+(done||"—"),
+    t("Planned / open: ","Запланировано / открыто: ")+(planned||"—"),
+    t("Blockers: ","Блокеры: ")+blockers,
+    t("NEXT ACTION: ","СЛЕДУЮЩАЯ ЗАДАЧА: ")+val(r.next_action?.task),
+    "DONE: "+val(r.next_action?.done),
+    t("Source SHA: ","SHA источника: ")+val(r.source_sha)
+  ];
+  box.textContent=lines.join("\n");box.hidden=false;
+}
 async function loadAll(){
   const status=await jsonFetch("/api/internal-ai/status");
   if(!status.r.ok||!status.d.success){q("[data-private]")!.hidden=true;const access=q("[data-access]")!;access.hidden=false;access.querySelector("strong")!.textContent=status.r.status===401?t("Sign in required","Нужно войти"):t("Owner access required","Нужен доступ владельца");return}
@@ -70,7 +102,7 @@ async function loadAll(){
   if(taskList.r.ok&&taskList.d.success)tasks=taskList.d.tasks||[]; if(account.r.ok&&account.d.success)renderAccount(account.d);if(processList.r.ok&&processList.d.success)processes=processList.d.processes||[];
   setText("[data-backlog-count]",String(items.filter(x=>!["done","cancelled"].includes(x.status)).length));setText("[data-approval-count]",String(tasks.filter(x=>x.status==="needs_approval").length));
   document.querySelectorAll<HTMLElement>("[data-module]").forEach(card=>{const key=card.dataset.module||"";const count=items.filter(x=>x.workstream===key&&!["done","cancelled"].includes(x.status)).length;const badge=card.querySelector<HTMLElement>(".module-state");if(badge)badge.textContent=count?String(count)+" "+t("open","открыто"):t("Clear","Чисто")});
-  renderItems();renderProcesses();renderOwnerOverview();renderEvidence();if(accessList.r.ok&&accessList.d.success)renderOwners(accessList.d);
+  renderItems();renderProcesses();renderOwnerOverview();renderEvidence();void loadCatalogOwnerReport();if(accessList.r.ok&&accessList.d.success)renderOwners(accessList.d);
   void loadProjects();
 }
 // Project lookup is optional metadata: never block cloud backlog or HAE processing when it fails.

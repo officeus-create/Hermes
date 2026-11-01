@@ -48,6 +48,7 @@ import {
   enqueueDueOwnerProcesses,
   ownerManagedJobTypes,
 } from "./owner-process-runtime.mjs";
+import { runCatalogWeeklyOwnerReport } from "./catalog-owner-weekly.mjs";
 import {
   pluginRuntimeRegistryEvidenceStatus,
   pluginRuntimeRegistrySnapshot,
@@ -2122,7 +2123,24 @@ export default {
     const scheduledAt = rawScheduledTime === null
       ? observedAt
       : new Date(rawScheduledTime);
+    // The two Friday UTC clock ticks are for Kyiv DST alignment only.
+    // They do not run the existing social or generic schedules a second time.
+    const fridayClockTick = scheduledAt.getUTCDay() === 5
+      && [9, 10].includes(scheduledAt.getUTCHours())
+      && scheduledAt.getUTCMinutes() === 0;
+    if (fridayClockTick || ["0 9 * * 5", "0 10 * * 5"].includes(String(controller?.cron || ""))) {
+      await runCatalogWeeklyOwnerReport(env, scheduledAt);
+      return;
+    }
     await ensureSchema(env.DB);
+    try {
+      await runCatalogWeeklyOwnerReport(env, scheduledAt);
+    } catch (error) {
+      await recordRuntimeEvent(env, {
+        eventType: "cron.catalog_owner_report_failed",
+        errorClass: safeRuntimeErrorClass(error, "catalog_owner_report_failed"),
+      });
+    }
     const eligible = isEligibleChicagoSlot(scheduledAt);
     try {
       await recordCronHeartbeat(env, scheduledAt, observedAt, eligible, controller?.cron);
