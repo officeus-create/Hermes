@@ -2244,3 +2244,10 @@ ai_name: Codex; role: delegated Academy owner; contribution_type: Implementation
 - Change: `TrackingConsent.astro` only — from 1101 px up the notice is 560 px wide, single column, aligned right; text, choices, storage and consent logic unchanged; tablet and mobile layouts untouched.
 - Checked at 1280×800 on `/`, `/logistics/car-hauling-dispatch/`, `/logistics/car-hauler-loads/chicago-il/`: no overlap with the first hero actions. `npm test` exit 0; Playwright consent and repair-public-design specs 20/20 (desktop + mobile).
 - Next action — Claude: read back the live pages at 1280 after deploy.
+
+## 2026-11-01 — Claude Code — call line on the remaining carrier dispatch-support pages
+
+- Finding: `LogisticsCommercialPage` shows the approved desk phone only when a page sets `phoneDesk`. owner-operator-dispatch-support and car-hauling-dispatch had it; fleet-owner-dispatch-support and new-authority-car-hauler-support (carrier-facing) and auction-vehicle-pickup (shipper-facing) did not — no call line.
+- Change: added `phoneDesk: "dispatch"` to the two carrier support pages and `phoneDesk: "shippers"` to auction-vehicle-pickup. One line each; same approved number +1 (351) 777-5337; no design/markup change (the component already renders the desk line).
+- Tests: `npm run build` 0 errors; `npm test` exit 0; built HTML of all three pages now carries the tel link.
+- Next action — Claude: live readback after merge.
