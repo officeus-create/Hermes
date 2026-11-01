@@ -153,10 +153,10 @@ export function developmentCatalog({ registrySnapshot = {}, registryEvidence = {
     last_seen_at: runner?.last_seen_at || null,
     repo_sha: runner?.repo_sha || null,
     runtime_version: runner?.runtime_version || null,
-    phase: runner?.operations?.phase || null,
-    model: runner?.operations?.model || null,
-    current_task: runner?.operations?.current_task || null,
-    next_action: runner?.operations?.next_action || null,
+    phase: runner?.online ? (runner?.operations?.phase || null) : null,
+    model: runner?.online ? (runner?.operations?.model || null) : null,
+    current_task: runner?.online ? (runner?.operations?.current_task || null) : null,
+    next_action: runner?.online ? (runner?.operations?.next_action || null) : null,
   }];
   return { plugins, automation, systems };
 }

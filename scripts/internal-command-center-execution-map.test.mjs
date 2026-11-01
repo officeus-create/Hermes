@@ -64,6 +64,14 @@ assert.equal(catalog.systems[0].id,"viktor-windows");
 assert.equal(catalog.systems[0].status,"RUNTIME_UNVERIFIED","primary Windows status requires actual canonical HAE lease evidence");
 assert.equal(catalog.systems[1].id,"viktor-mac");
 assert.equal(catalog.systems[1].status,"HEARTBEAT_FRESH","Mac heartbeat must not be displayed as task execution");
+const staleRunnerCatalog=developmentCatalog({
+  runner:{online:false,last_seen_at:"2026-10-20T00:00:00Z",operations:{status:"RUNNING",phase:"Executing",model:"stale-local-model",current_task:"stale-owner-work",next_action:"stale-action"}},
+});
+assert.equal(staleRunnerCatalog.systems[1].status,"OFFLINE_OR_UNKNOWN");
+for(const field of ["phase","model","current_task","next_action"]){
+  assert.equal(staleRunnerCatalog.systems[1][field],null,`Stale heartbeat must not leak stale ${field} as live telemetry`);
+}
+
 
 assert.equal(clickupAuthorization("pk_test_readonly"),"pk_test_readonly");
 assert.equal(clickupAuthorization("oauth_test_readonly"),"Bearer oauth_test_readonly");

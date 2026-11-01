@@ -37,12 +37,13 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
     .catch(async () => env.DB.prepare("SELECT * FROM hermes_automation_processes WHERE organization_scope='hermes_internal' ORDER BY updated_at DESC").all());
 
   const runnerRow = await env.DB.prepare("SELECT id,last_seen_at,repo_sha,runtime_version,telemetry_json FROM hermes_internal_ai_runner_state WHERE id='internal-ai-mac-runner' AND organization_scope='hermes_internal' LIMIT 1").first();
+  const runnerOnline = isRunnerHeartbeatFresh(runnerRow?.last_seen_at);
   const runner = {
-    online: isRunnerHeartbeatFresh(runnerRow?.last_seen_at),
+    online: runnerOnline,
     last_seen_at: runnerRow?.last_seen_at || null,
     repo_sha: runnerRow?.repo_sha || null,
     runtime_version: runnerRow?.runtime_version || null,
-    operations: parseRunnerTelemetry(runnerRow?.telemetry_json),
+    operations: runnerOnline ? parseRunnerTelemetry(runnerRow?.telemetry_json) : null,
   };
 
   const registrySnapshot = pluginRuntimeRegistrySnapshot();
