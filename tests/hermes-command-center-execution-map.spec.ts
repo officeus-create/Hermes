@@ -31,6 +31,10 @@ test.describe("Command Center capability execution map", () => {
     await page.route("**/api/internal-command-center/processes", route => route.fulfill(json({ success: true, processes: [] })));
     await page.route("**/api/internal-command-center/projects*", route => route.fulfill(json({ success: true, projects: [] })));
     await page.route("**/api/hermes-connect/account", route => route.fulfill(json({ success: true, identity: { id: "owner-1", role: "Owner" }, owned_businesses: [], workspaces: [] })));
+    await page.route("**/api/internal-command-center/reports", route => route.fulfill(json({ success:true, schedules:[], reports:[] })));
+    await page.route("**/api/internal-command-center/owner-intelligence", route => route.fulfill(json({ success:true, knowledge:{state:"REVIEW_GATED",sources:[],automatic_promotion:false}, investor:{state:"EVENT_TRIGGER_ONLY"} })));
+    await page.route("**/api/internal-command-center/social-acquisition", route => route.fulfill(json({ success:true, checked_at:"2026-11-01T12:00:00.000Z", content_queue:{source_state:"CONNECTED",items:[]}, publication_receipts:{source_state:"CONNECTED",items:[]}, carrier_leads:{source_state:"UNKNOWN",count:null} })));
+    await page.route("**/api/internal/social/threads/connections", route => route.fulfill(json({ success:true, runtime_configured:false, connections:[] })));
     await page.route("**/api/internal-command-center/execution-map", route => {
       mapRequests += 1;
       return route.fulfill(json({
