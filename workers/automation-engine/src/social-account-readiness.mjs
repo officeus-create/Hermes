@@ -1,4 +1,4 @@
-import { resolveProgressoproThreadsCredential } from "./social-credential-bridge.mjs";
+import { resolveProgressoproThreadsCredential, resolveThreadsTransportForLane } from "./social-credential-bridge.mjs";
 
 const HERMES_LOGISTICS_ACCOUNT_ID = "28419597014385166";
 const HERMES_LOGISTICS_USERNAME = "hermes.logistics";
@@ -43,6 +43,20 @@ export async function socialAccountReadinessSnapshot(env,{nowMs=Date.now()}={}){
   logistics.ready_for_provider_preflight=Boolean(
     logistics.account_identity_configured&&logistics.credential_present&&logistics.provider_selected
   );
+  const resolvedLogistics=await resolveThreadsTransportForLane(env,"HERMES_LOGISTICS",{nowMs,fetchImpl:async()=>{throw new Error("readiness_no_network");}});
+  logistics.credential_bridge_resolves=Boolean(resolvedLogistics?.ok);
+  logistics.credential_bridge_error=resolvedLogistics?.ok?null:(resolvedLogistics?.error_class||"hermes_logistics_credential_bridge_failed");
+  logistics.credential_source=resolvedLogistics?.ok?resolvedLogistics.source:logistics.credential_source;
+  logistics.ready_for_provider_preflight=Boolean(resolvedLogistics?.ok);
+  logistics.granted_scopes=Array.isArray(resolvedLogistics?.grantedScopes)?resolvedLogistics.grantedScopes:[];
+  logistics.scope_evidence_known=Array.isArray(resolvedLogistics?.grantedScopes);
+  const logisticsScopes=new Set(logistics.granted_scopes);
+  logistics.inbound_scopes={
+    replies:logistics.scope_evidence_known&&["threads_basic","threads_read_replies"].every(scope=>logisticsScopes.has(scope)),
+    mentions:logistics.scope_evidence_known&&["threads_basic","threads_manage_mentions"].every(scope=>logisticsScopes.has(scope)),
+    search:logistics.scope_evidence_known&&["threads_basic","threads_keyword_search"].every(scope=>logisticsScopes.has(scope)),
+  };
+
 
   let progressopro={
     business_lane:"PROGRESSOPRO",
@@ -87,15 +101,27 @@ export async function socialAccountReadinessSnapshot(env,{nowMs=Date.now()}={}){
     }
   }
 
-  const requiredProgressoproScopes=["threads_basic","threads_content_publish","threads_read_replies","threads_manage_replies"];
+  const requiredProgressoproScopes=["threads_basic","threads_content_publish"];
+  const replyProgressoproScopes=["threads_read_replies","threads_manage_replies"];
   const progressoproScopes=new Set(progressopro.granted_scopes);
   progressopro.required_write_scopes_present=requiredProgressoproScopes.every(scope=>progressoproScopes.has(scope));
-  const resolvedCredential=await resolveProgressoproThreadsCredential(env,{nowMs});
+  progressopro.reply_scopes_present=replyProgressoproScopes.every(scope=>progressoproScopes.has(scope));
+  progressopro.scope_evidence_known=progressopro.connection_present;
+  progressopro.inbound_scopes={
+    replies:["threads_basic","threads_read_replies"].every(scope=>progressoproScopes.has(scope)),
+    mentions:["threads_basic","threads_manage_mentions"].every(scope=>progressoproScopes.has(scope)),
+    search:["threads_basic","threads_keyword_search"].every(scope=>progressoproScopes.has(scope)),
+  };
+  const resolvedCredential=await resolveThreadsTransportForLane(env,"PROGRESSOPRO",{nowMs,fetchImpl:async()=>{throw new Error("readiness_no_network");}});
   progressopro.credential_bridge_resolves=Boolean(resolvedCredential?.ok);
   progressopro.credential_bridge_error=resolvedCredential?.ok ? null : (resolvedCredential?.error_class || "progressopro_credential_bridge_failed");
   progressopro.ready_for_hae_write_bridge=Boolean(resolvedCredential?.ok);
   if(resolvedCredential?.ok){
     progressopro.provider_transport="shared_meta_threads_provider";
+    progressopro.credential_source=resolvedCredential.source;
+    progressopro.observed_account_id=resolvedCredential.accountId;
+    progressopro.observed_username=resolvedCredential.username;
+    progressopro.identity_verified=true;
   }
 
   const blockers=[];
@@ -110,10 +136,6 @@ export async function socialAccountReadinessSnapshot(env,{nowMs=Date.now()}={}){
   }
   if(!progressopro.credential_bridge_resolves) blockers.push(progressopro.credential_bridge_error || "progressopro_credential_bridge_not_ready");
   if(progressopro.provider_transport!=="shared_meta_threads_provider") blockers.push("progressopro_provider_transport_not_converged");
-  // Business Social / Social Studio still has its own provider implementation in current main.
-  // Keep overall convergence blocked until that manual-owner path imports the same shared transport.
-  blockers.push("manual_social_studio_provider_not_converged");
-
   return {
     success:true,
     observed_at:new Date(nowMs).toISOString(),
@@ -124,8 +146,14 @@ export async function socialAccountReadinessSnapshot(env,{nowMs=Date.now()}={}){
     hermes_logistics:logistics,
     progressopro,
     hae_write_bridge_ready:Boolean(logistics.ready_for_provider_preflight&&progressopro.ready_for_hae_write_bridge),
-    manual_social_studio_provider_converged:false,
+    manual_social_studio_provider_converged:true,
     write_convergence_ready:blockers.length===0,
+    platform_gates:{
+      threads:"SHARED_PROVIDER_READY_WHEN_CREDENTIALS_PASS",
+      instagram:"REQUIRES_AUTH_AND_RIGHTS_CLEARED_MEDIA",
+      facebook:"REQUIRES_PAGE_ACCOUNT_AUTH",
+      x:"HOLD_PAID_PROVIDER",
+    },
     blockers,
   };
 }

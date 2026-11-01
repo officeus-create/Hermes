@@ -81,7 +81,7 @@ export async function resolveProgressoproThreadsCredential(env,{nowMs=Date.now()
     return {ok:false,error_class:"progressopro_identity_not_verified"};
   }
 
-  const required=["threads_basic","threads_content_publish","threads_read_replies","threads_manage_replies"];
+  const required=["threads_basic","threads_content_publish"];
   const granted=scopeSet(row.granted_scope);
   const missingScopes=required.filter(scope=>!granted.has(scope));
   if(missingScopes.length){
@@ -118,6 +118,61 @@ export async function resolveProgressoproThreadsCredential(env,{nowMs=Date.now()
   };
 }
 
+
+export async function resolveBusinessSocialThreadsCredential(env,{
+  accountId,
+  expectedUsername,
+  nowMs=Date.now(),
+}={}){
+  if(!env?.DB)return {ok:false,error_class:"database_not_configured"};
+  const exactAccount=numericId(accountId);
+  const exactUsername=username(expectedUsername);
+  const rawKey=clean(env?.HERMES_SOCIAL_TOKEN_KEY||env?.THREADS_BRAND_TOKEN_KEY,4096);
+  if(!exactAccount||!exactUsername)return {ok:false,error_class:"business_social_identity_required"};
+  if(!rawKey)return {ok:false,error_class:"business_social_token_key_missing"};
+  if(!await tableExists(env.DB,"hermes_business_social_credentials")){
+    return {ok:false,error_class:"business_social_credentials_table_missing"};
+  }
+  let rows;
+  try{
+    rows=await env.DB.prepare(
+      "SELECT business_key,owner_specialist_id,state,username,external_account_ref,token_ciphertext,token_expires_at,granted_scope,updated_at "+
+      "FROM hermes_business_social_credentials WHERE provider='threads' AND state='connected_write' AND external_account_ref=?"
+    ).bind(exactAccount).all();
+  }catch{
+    return {ok:false,error_class:"business_social_connection_read_failed"};
+  }
+  const matches=(rows?.results||[]).filter(row=>username(row?.username)===exactUsername);
+  if(matches.length===0)return {ok:false,error_class:"business_social_threads_connection_missing"};
+  if(matches.length!==1)return {ok:false,error_class:"business_social_threads_connection_ambiguous"};
+  const row=matches[0];
+  const granted=scopeSet(row.granted_scope);
+  for(const scope of ["threads_basic","threads_content_publish"]){
+    if(!granted.has(scope))return {ok:false,error_class:"business_social_required_scopes_missing",missing_scopes:[scope]};
+  }
+  const expiresAt=clean(row.token_expires_at,100);
+  const expiresMs=Date.parse(expiresAt);
+  if(expiresAt&&(!Number.isFinite(expiresMs)||expiresMs<=nowMs)){
+    return {ok:false,error_class:"business_social_token_expired"};
+  }
+  const decrypted=await decryptPayload(rawKey,row.token_ciphertext);
+  if(!decrypted.ok)return decrypted;
+  const accessToken=clean(decrypted.payload?.access_token,4096);
+  if(accessToken.length<20||accessToken.length>4096)return {ok:false,error_class:"business_social_access_token_invalid"};
+  const payloadUserId=numericId(decrypted.payload?.threads_user_id||decrypted.payload?.user_id);
+  if(payloadUserId&&payloadUserId!==exactAccount)return {ok:false,error_class:"business_social_token_identity_mismatch"};
+  return {
+    ok:true,
+    source:"hermes_business_social_credentials",
+    accessToken,
+    accountId:exactAccount,
+    username:exactUsername,
+    grantedScopes:[...granted].sort(),
+    expiresAt:expiresAt||null,
+    connectionUpdatedAt:clean(row.updated_at,100)||null,
+  };
+}
+
 export function redactResolvedSocialCredential(result){
   if(!result?.ok)return result;
   return {
@@ -136,15 +191,28 @@ export function redactResolvedSocialCredential(result){
 export async function resolveThreadsTransportForLane(env,businessLane,{nowMs=Date.now(),fetchImpl=fetch}={}){
   const lane=clean(businessLane,64).toUpperCase();
   if(lane==="HERMES_LOGISTICS"){
-    const accountId=numericId(env?.HERMES_THREADS_META_ACCOUNT_ID);
-    const accessToken=clean(env?.HERMES_THREADS_ACCESS_TOKEN,4096);
-    if(accountId!=="28419597014385166"||accessToken.length<20||accessToken.length>4096){
-      return {ok:false,error_class:"hermes_logistics_meta_credentials_not_ready"};
+    const configuredAccount=numericId(env?.HERMES_THREADS_META_ACCOUNT_ID);
+    const configuredToken=clean(env?.HERMES_THREADS_ACCESS_TOKEN,4096);
+    let credential=null;
+    if(configuredAccount==="28419597014385166"&&configuredToken.length>=20&&configuredToken.length<=4096){
+      const configuredScopes=[...scopeSet(env?.HERMES_THREADS_GRANTED_SCOPES||"")].sort();
+      credential={
+        ok:true,source:"hae_worker_secret",accessToken:configuredToken,
+        accountId:configuredAccount,username:"hermes.logistics",
+        grantedScopes:configuredScopes.length?configuredScopes:null,
+      };
+    }else{
+      credential=await resolveBusinessSocialThreadsCredential(env,{
+        accountId:"28419597014385166",
+        expectedUsername:"hermes.logistics",
+        nowMs,
+      });
     }
+    if(!credential?.ok)return {ok:false,error_class:credential?.error_class||"hermes_logistics_meta_credentials_not_ready"};
     const transport=createMetaThreadsTransport({
-      accessToken,
-      accountId,
-      expectedUsername:"hermes.logistics",
+      accessToken:credential.accessToken,
+      accountId:credential.accountId,
+      expectedUsername:credential.username,
       fetchImpl,
     });
     if(!transport)return {ok:false,error_class:"hermes_logistics_meta_transport_invalid"};
@@ -152,14 +220,22 @@ export async function resolveThreadsTransportForLane(env,businessLane,{nowMs=Dat
       ok:true,
       business_lane:"HERMES_LOGISTICS",
       accountKey:"hermes_logistics",
-      accountId,
-      username:"hermes.logistics",
-      source:"hae_worker_secret",
+      accountId:credential.accountId,
+      username:credential.username,
+      source:credential.source,
+      grantedScopes:Array.isArray(credential.grantedScopes)?credential.grantedScopes:null,
       transport,
     };
   }
   if(lane==="PROGRESSOPRO"){
-    const credential=await resolveProgressoproThreadsCredential(env,{nowMs});
+    let credential=await resolveProgressoproThreadsCredential(env,{nowMs});
+    if(!credential.ok){
+      credential=await resolveBusinessSocialThreadsCredential(env,{
+        accountId:env?.THREADS_PROGRESSOPRO_ACCOUNT_ID||"39909484478649830",
+        expectedUsername:"progressopro",
+        nowMs,
+      });
+    }
     if(!credential.ok)return credential;
     const transport=createMetaThreadsTransport({
       accessToken:credential.accessToken,
@@ -175,6 +251,7 @@ export async function resolveThreadsTransportForLane(env,businessLane,{nowMs=Dat
       accountId:credential.accountId,
       username:credential.username,
       source:credential.source,
+      grantedScopes:Array.isArray(credential.grantedScopes)?credential.grantedScopes:null,
       transport,
     };
   }
