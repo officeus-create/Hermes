@@ -170,6 +170,12 @@ function publicReadiness(raw){
       provider_transport:clean(logistics.provider_transport,120)||"UNKNOWN",
       credential_ready:Boolean(logistics.credential_bridge_resolves&&logistics.ready_for_provider_preflight),
       ready_for_provider_preflight:Boolean(logistics.ready_for_provider_preflight),
+      scope_evidence_known:Boolean(logistics.scope_evidence_known),
+      inbound_scopes:{
+        replies:Boolean(logistics.inbound_scopes?.replies),
+        mentions:Boolean(logistics.inbound_scopes?.mentions),
+        search:Boolean(logistics.inbound_scopes?.search),
+      },
       error_class:clean(logistics.credential_bridge_error,200)||null,
     },
     progressopro:{
@@ -185,6 +191,12 @@ function publicReadiness(raw){
       provider_transport:clean(progresso.provider_transport,120)||"UNKNOWN",
       credential_ready:Boolean(progresso.credential_bridge_resolves&&progresso.ready_for_hae_write_bridge),
       ready_for_hae_write_bridge:Boolean(progresso.ready_for_hae_write_bridge),
+      scope_evidence_known:Boolean(progresso.scope_evidence_known),
+      inbound_scopes:{
+        replies:Boolean(progresso.inbound_scopes?.replies),
+        mentions:Boolean(progresso.inbound_scopes?.mentions),
+        search:Boolean(progresso.inbound_scopes?.search),
+      },
       error_class:clean(progresso.credential_bridge_error,200)||null,
     },
     platform_gates:{
