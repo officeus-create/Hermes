@@ -39,11 +39,15 @@ assert.match(ownerWorkspace,/Execution environment|Среда исполнени
 assert.match(ownerWorkspace,/HAE 24\/7 processes/,"owner must have one visible autonomous-process control surface");
 assert.match(ownerWorkspace,/External sends and paid AI are disabled in this layer/,"first autonomous slice must expose its safe execution boundary");
 assert.match(ownerWorkspace,/data-cc-view="today"/,"owner home must prioritize the Today decision layer");
-for(const key of ["projects","tasks","crm","automations","agents","evidence","reports","knowledge","investor","access"]) assert.match(ownerWorkspace,new RegExp(`data-cc-view="${key}"`),`owner workspace must expose ${key} view`);
+for(const key of ["projects","tasks","crm","automations","agents","plugins","executions","evidence","reports","knowledge","investor","access"]) assert.match(ownerWorkspace,new RegExp(`data-cc-view="${key}"`),`owner workspace must expose ${key} view`);
 assert.match(ownerWorkspace,/data-new-task/,"task capture must be a compact on-demand action instead of a permanent large form");
 assert.match(ownerWorkspace,/Command Center does not create a second CRM/,"CRM owner view must route to existing Hermes Connect workspaces instead of cloning CRM state");
 assert.match(page,/\/api\/internal-command-center\/reports/,"owner workspace must read HAE report receipts");
 assert.match(page,/\/api\/internal-command-center\/owner-intelligence/,"owner workspace must read One Brain/investor governance state");
+assert.match(page,/\/api\/internal-command-center\/execution-map/,"Plugins view must reuse the canonical owner execution read model");
+assert.match(ownerWorkspace,/REGISTERED CAPABILITY|ЗАРЕГИСТРИРОВАННАЯ ВОЗМОЖНОСТЬ/,"Plugins view must distinguish capability registration from execution");
+assert.match(ownerWorkspace,/separate HAE receipt|отдельным HAE receipt/,"Plugins view must require a separate HAE receipt before claiming execution");
+assert.match(ownerWorkspace,/data-cc-view="executions"[\s\S]*HermesExecutionMap/,"Executions view must reuse the canonical execution map");
 assert.match(page,/\/api\/hermes-connect\/account/,"CRM router must reuse the canonical Hermes account portfolio");
 assert.match(reports,/HERMES_COMMAND_CENTER_ONLY/,"reports must be scoped to Command Center delivery");
 assert.match(reports,/max_cost_usd:0/,"reports must remain zero-cost by contract");
