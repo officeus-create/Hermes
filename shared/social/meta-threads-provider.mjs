@@ -120,6 +120,8 @@ export function createMetaThreadsTransport({
       username: normalizedUsername(row?.username) || null,
       is_reply: Boolean(row?.is_reply),
       is_quote_post: Boolean(row?.is_quote_post),
+      replied_to: numericId(row?.replied_to?.id) ? { id: numericId(row.replied_to.id) } : null,
+      root_post: numericId(row?.root_post?.id) ? { id: numericId(row.root_post.id) } : null,
       reposted_post: numericId(row?.reposted_post?.id) ? { id: numericId(row.reposted_post.id) } : null,
     };
   }
@@ -176,6 +178,81 @@ export function createMetaThreadsTransport({
       after = nextAfter;
     }
     return { ok: false, error_class: "meta_threads_history_incomplete" };
+  }
+
+  async function collectReadPages(path,{params={},limit=50,maxPages=3}={}){
+    const safeLimit=Math.max(1,Math.min(100,Number(limit)||50));
+    const pageLimit=Math.max(1,Math.min(5,Number(maxPages)||3));
+    const rows=[];
+    const seenIds=new Set();
+    const seenCursors=new Set();
+    let after=null;
+    for(let page=0;page<pageLimit&&rows.length<safeLimit;page+=1){
+      const result=await request(path,{params:{...params,limit:String(Math.min(100,safeLimit-rows.length)),after:after||undefined}});
+      if(!result.ok)return{...result,rows,complete:false,pages:page};
+      const batch=result.payload?.data;
+      if(!Array.isArray(batch))return{ok:false,error_class:"meta_threads_invalid_response",rows,complete:false,pages:page+1};
+      for(const raw of batch){
+        const row=normalizeMediaRow(raw);
+        if(!row)return{ok:false,error_class:"meta_threads_invalid_response",rows,complete:false,pages:page+1};
+        if(seenIds.has(row.id))continue;
+        seenIds.add(row.id);
+        rows.push(row);
+        if(rows.length>=safeLimit)break;
+      }
+      const nextAfter=clean(result.payload?.paging?.cursors?.after,600);
+      const hasNext=Boolean(result.payload?.paging?.next);
+      if(rows.length>=safeLimit)return{ok:true,rows:rows.slice(0,safeLimit),complete:!hasNext,pages:page+1,limit_reached:true};
+      if(!nextAfter)return{ok:true,rows,complete:!hasNext,pages:page+1,limit_reached:false};
+      if(seenCursors.has(nextAfter))return{ok:false,error_class:"meta_threads_pagination_loop",rows,complete:false,pages:page+1};
+      seenCursors.add(nextAfter);
+      after=nextAfter;
+    }
+    return{ok:true,rows,complete:false,pages:pageLimit,limit_reached:true};
+  }
+
+  async function listMentions({limit=50,maxPages=2}={}){
+    return collectReadPages("me/mentions",{
+      params:{fields:"id,text,permalink,timestamp,media_type,username,is_reply,is_quote_post,replied_to,root_post"},
+      limit,maxPages,
+    });
+  }
+
+  async function listReplies(threadId,{limit=50,maxPages=2}={}){
+    const id=numericId(threadId);
+    if(!id)return{ok:false,error_class:"invalid_threads_media_id"};
+    return collectReadPages(id+"/replies",{
+      params:{fields:"id,text,permalink,timestamp,media_type,username,is_reply,is_quote_post,replied_to,root_post"},
+      limit,maxPages,
+    });
+  }
+
+  async function listConversation(threadId,{limit=100,maxPages=3}={}){
+    const id=numericId(threadId);
+    if(!id)return{ok:false,error_class:"invalid_threads_media_id"};
+    return collectReadPages(id+"/conversation",{
+      params:{fields:"id,text,permalink,timestamp,media_type,username,is_reply,is_quote_post,replied_to,root_post",reverse:"false"},
+      limit,maxPages,
+    });
+  }
+
+  async function searchPublic(query,{searchType="RECENT",limit=25}={}){
+    const q=clean(query,180);
+    if(q.length<2)return{ok:false,error_class:"threads_query_too_short"};
+    const safeLimit=Math.max(1,Math.min(100,Number(limit)||25));
+    const type=String(searchType||"RECENT").toUpperCase()==="TOP"?"TOP":"RECENT";
+    const result=await request("keyword_search",{
+      params:{q,search_type:type,limit:String(safeLimit),fields:"id,text,permalink,timestamp,media_type,username,is_reply,is_quote_post,replied_to,root_post"},
+    });
+    if(!result.ok)return result;
+    if(!Array.isArray(result.payload?.data))return{ok:false,error_class:"meta_threads_invalid_response"};
+    const rows=[];
+    for(const raw of result.payload.data){
+      const row=normalizeMediaRow(raw);
+      if(!row)return{ok:false,error_class:"meta_threads_invalid_response"};
+      rows.push(row);
+    }
+    return{ok:true,rows,complete:false,ranked_results:true,query:q,search_type:type};
   }
 
   async function createContainer(values) {
@@ -277,6 +354,10 @@ export function createMetaThreadsTransport({
     expectedUsername: username,
     verifyIdentity,
     listRecentAuthored,
+    listMentions,
+    listReplies,
+    listConversation,
+    searchPublic,
     publishText,
     publishImage,
     publishCarousel,
