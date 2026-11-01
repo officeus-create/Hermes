@@ -49,6 +49,7 @@ import {
   ownerManagedJobTypes,
 } from "./owner-process-runtime.mjs";
 import { runCatalogWeeklyOwnerReport, runCatalogMondayOwnerNotice } from "./catalog-owner-weekly.mjs";
+import { runHrTechRadar } from "./hr-tech-radar.mjs";
 import {
   pluginRuntimeRegistryEvidenceStatus,
   pluginRuntimeRegistrySnapshot,
@@ -2123,6 +2124,14 @@ export default {
     const scheduledAt = rawScheduledTime === null
       ? observedAt
       : new Date(rawScheduledTime);
+    // Monday 07:00/08:00 UTC ticks serve the owner HR-tech radar at 10:00 Kyiv across DST.
+    const ownerHrClockTick = scheduledAt.getUTCDay() === 1
+      && [7, 8].includes(scheduledAt.getUTCHours())
+      && scheduledAt.getUTCMinutes() === 0;
+    if (ownerHrClockTick || ["0 7 * * 1", "0 8 * * 1"].includes(String(controller?.cron || ""))) {
+      await runHrTechRadar(env, scheduledAt);
+      return;
+    }
     // Monday/Friday :00 UTC ticks only serve owner Catalog; preserve all other HAE jobs.
     // Europe/Kyiv guard inside the handlers selects 12:00 local across DST.
     const ownerCatalogClockTick = [1, 5].includes(scheduledAt.getUTCDay())
@@ -2137,6 +2146,7 @@ export default {
     try {
       await runCatalogWeeklyOwnerReport(env, scheduledAt);
       await runCatalogMondayOwnerNotice(env, scheduledAt);
+      await runHrTechRadar(env, scheduledAt);
     } catch (error) {
       await recordRuntimeEvent(env, {
         eventType: "cron.catalog_owner_schedule_failed",
