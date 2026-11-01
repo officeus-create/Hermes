@@ -92,10 +92,12 @@ const {ru=false}=Astro.props;
     const controlState=q("[data-social-control-state]");
     if(controlState)controlState.textContent=currentControl?.configured
       ?`${ru?"Control":"Control"}: ${label(currentControl.status)}`
-      :`${ru?"Control":"Control"}: ${currentControl?.allowed===true?"INHERIT ACTIVE":"UNKNOWN"}`;
+      :`${ru?"Control":"Control"}: ${label(currentControl?.status||"UNCONFIGURED")}`;
     if(controlButton){
-      controlButton.disabled=currentControl?.allowed!==true&&currentControl?.configured!==true;
-      controlButton.textContent=currentControl?.allowed===true?(ru?"Пауза":"Pause"):(ru?"Возобновить":"Resume");
+      controlButton.disabled=currentControl?.status==="UNKNOWN";
+      controlButton.textContent=!currentControl?.configured
+        ?(ru?"Создать контроль":"Initialize control")
+        :(currentControl?.allowed===true?(ru?"Пауза":"Pause"):(ru?"Возобновить":"Resume"));
     }
 
     const laneHtml=(data.lanes||[]).map((lane)=>{
