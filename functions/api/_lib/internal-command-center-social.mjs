@@ -13,6 +13,13 @@ const UNRESOLVED_PUBLICATION_STATES=Object.freeze([
   "unknown_outcome_unresolved",
   "readback_unverified",
 ]);
+const BLOCKED_RUN_STATES=Object.freeze([
+  "preflight_blocked",
+  "failed",
+  "plan_enqueue_failed",
+  "readback_unverified",
+  "unknown_outcome_unresolved",
+]);
 
 const clean=(value,max=800)=>String(value??"").replace(/[<>\u0000-\u001f\u007f]/g," ").replace(/\s+/g," ").trim().slice(0,max);
 const countOrNull=(value)=>{
@@ -192,6 +199,40 @@ function publicReadiness(raw){
   };
 }
 
+async function operationalWindowSnapshot(db,tables,nowMs,hours){
+  const since=new Date(nowMs-hours*60*60*1000).toISOString();
+  let content_rows=null;
+  let threads_runs=null;
+  let verified_publications=null;
+  let unresolved_publications=null;
+  let blocked_or_failed_runs=null;
+
+  if(tables.content){
+    const row=await db.prepare("SELECT COUNT(*) AS count FROM hermes_automation_content WHERE account_key IN ('hermes_logistics','progressopro') AND updated_at>=?").bind(since).first();
+    content_rows=countOrNull(row?.count);
+  }
+  if(tables.runs){
+    const row=await db.prepare("SELECT COUNT(*) AS count FROM hermes_automation_runs WHERE account_key IN ('hermes_logistics','progressopro') AND updated_at>=?").bind(since).first();
+    threads_runs=countOrNull(row?.count);
+    const placeholders=BLOCKED_RUN_STATES.map(()=>"?").join(",");
+    const blocked=await db.prepare(`SELECT COUNT(*) AS count FROM hermes_automation_runs
+      WHERE account_key IN ('hermes_logistics','progressopro') AND updated_at>=? AND status IN (${placeholders})`)
+      .bind(since,...BLOCKED_RUN_STATES).first();
+    blocked_or_failed_runs=countOrNull(blocked?.count);
+  }
+  if(tables.publications){
+    const verified=await db.prepare("SELECT COUNT(*) AS count FROM hermes_automation_publications WHERE account_key IN ('hermes_logistics','progressopro') AND updated_at>=? AND status='published_verified'").bind(since).first();
+    verified_publications=countOrNull(verified?.count);
+    const placeholders=UNRESOLVED_PUBLICATION_STATES.map(()=>"?").join(",");
+    const unresolved=await db.prepare(`SELECT COUNT(*) AS count FROM hermes_automation_publications
+      WHERE account_key IN ('hermes_logistics','progressopro') AND updated_at>=? AND status IN (${placeholders})`)
+      .bind(since,...UNRESOLVED_PUBLICATION_STATES).first();
+    unresolved_publications=countOrNull(unresolved?.count);
+  }
+
+  return {hours,since,content_rows,threads_runs,verified_publications,unresolved_publications,blocked_or_failed_runs};
+}
+
 export async function buildCommandCenterSocialSnapshot(env,{nowMs=Date.now()}={}){
   const db=env?.DB;
   const tableNames={
@@ -248,6 +289,11 @@ export async function buildCommandCenterSocialSnapshot(env,{nowMs=Date.now()}={}
     recentPublications=(rows?.results||[]).map(publicPublication);
   }
 
+  const analyticsWindows={};
+  for(const [key,hours] of [["24h",24],["72h",72],["7d",168]]){
+    analyticsWindows[key]=await operationalWindowSnapshot(db,tables,nowMs,hours);
+  }
+
   const socialV2=String(env?.HERMES_SOCIAL_ACQUISITION_V2||"").trim().toLowerCase()==="enabled";
   const automationMode=clean(env?.HERMES_AUTOMATION_MODE,40)||"UNKNOWN";
   const publicationConfig=clean(env?.HERMES_AUTOMATION_PUBLISH,40)||"UNKNOWN";
@@ -284,6 +330,19 @@ export async function buildCommandCenterSocialSnapshot(env,{nowMs=Date.now()}={}
       last_inbound_event:"NOT_LIVE",
     },
     recent_publications:recentPublications,
+    analytics:{
+      windows:analyticsWindows,
+      provider_engagement:"NOT_CONNECTED_TO_SOCIAL_V2_READ_MODEL",
+      qualified_outcomes:"NOT_JOINED_IN_THIS_READ_MODEL",
+      rule:"UNKNOWN_is_not_zero",
+    },
+    experiments:{
+      winner_share_target:0.70,
+      exploration_share_target:0.30,
+      selection_state:"HOLD_UNTIL_SAME_ACCOUNT_PROVIDER_METRICS_AND_QUALIFIED_OUTCOME",
+      evaluation_windows:["24h","72h","7d"],
+      rule:"70_30_is_a_bounded_experiment_policy_not_an_algorithm_guarantee",
+    },
     inbound:{
       threads_replies_mentions:"NOT_LIVE",
       instagram_comments_messages:"NOT_LIVE",
