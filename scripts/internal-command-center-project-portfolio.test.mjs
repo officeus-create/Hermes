@@ -39,6 +39,9 @@ assert.match(ownerWorkspace, /HermesOwnerProjectPortfolio/, "project portfolio b
 assert.match(ownerComponent, /\/api\/internal-command-center\/projects/);
 assert.match(ownerComponent, /role="progressbar"/);
 assert.match(ownerComponent, /Dependencies/);
+assert.match(ownerComponent,/Elapsed/,"project cards must expose elapsed time from real timestamps");
+assert.match(ownerComponent,/Duration/,"project cards must expose duration only when completion evidence exists");
+assert.match(ownerComponent,/formatDuration/,"elapsed/duration must be derived from timestamps, not guessed");
 assert.match(ownerComponent, /ETA/);
 assert.match(ownerComponent,/data-project-coverage/);
 assert.match(ownerComponent,/ONE BRAIN COVERAGE/);
