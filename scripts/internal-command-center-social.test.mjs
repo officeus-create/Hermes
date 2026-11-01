@@ -104,15 +104,32 @@ for(const forbidden of ["token_ciphertext","access_token","HERMES_THREADS_ACCESS
 }
 
 const endpoint=await readFile(new URL("../functions/api/internal-command-center/social.ts",import.meta.url),"utf8");
+const threadsEndpoint=await readFile(new URL("../functions/api/internal-command-center/social/threads.ts",import.meta.url),"utf8");
 const component=await readFile(new URL("../src/components/HermesSocialAcquisition.astro",import.meta.url),"utf8");
 const route=await readFile(new URL("../src/pages/services/hermes-connect/internal/command-center/social.astro",import.meta.url),"utf8");
 assert.match(endpoint,/requireInternalOwner/);
+assert.match(threadsEndpoint,/requireInternalOwner/);
+assert.match(threadsEndpoint,/threads_scope_evidence_unknown/);
+assert.match(threadsEndpoint,/threads_provider_scope_required/);
+assert.match(threadsEndpoint,/provider_write_performed:false/);
+assert.match(threadsEndpoint,/reply_write_enabled:false/);
+assert.match(threadsEndpoint,/searchPublic/);
+assert.match(threadsEndpoint,/listMentions/);
+assert.match(threadsEndpoint,/listReplies/);
+assert.match(threadsEndpoint,/listConversation/);
+assert.doesNotMatch(threadsEndpoint,/publishReply/);
 assert.match(endpoint,/private, no-store/);
 assert.doesNotMatch(endpoint,/onRequestPost/);
 assert.match(component,/Social Acquisition/);
 assert.match(component,/Content queue/);
 assert.match(component,/data-social-content/);
 assert.match(component,/data-social-roadmap/);
+assert.match(component,/data-social-research-lane/);
+assert.match(component,/data-social-research-mode/);
+assert.match(component,/data-social-research-load/);
+assert.match(component,/api\/internal-command-center\/social\/threads/);
+assert.match(component,/provider write: OFF/);
+assert.doesNotMatch(component,/data-social-reply-send/);
 assert.match(component,/data-social-windows/);
 assert.match(component,/data-social-learning/);
 assert.match(component,/24h/);
