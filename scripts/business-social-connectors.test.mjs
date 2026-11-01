@@ -242,3 +242,4 @@ assert.match(releaseDelta, /"route_count_added": 3/);
 
 console.log("business social connectors contract: PASS");
 await import("./internal-command-center-social.test.mjs");
+await import("./social-inbox-policy.test.mjs");
