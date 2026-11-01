@@ -130,7 +130,8 @@ assert.match(access,/cannot_remove_last_owner/,"access flow must preserve at lea
 assert.match(access,/hermes_internal_owner_access_audit/,"access changes must be auditable");
 assert.doesNotMatch(access,/volkogon|officeus@|HERMES_OWNER_EMAIL/i,"private people/emails must not be hardcoded as authorization policy");
 assert.match(nav,/internal\/command-center/,"existing owner navigation must expose the unified command center only behind its current server gate");
-assert.match(docs,/canonical PR #2107/,"durable Command Center docs must point at the current canonical implementation");
+assert.match(docs,/#2106 \/ #2159 → #2170 → #2219 → #2221 → #2222 → #2232 → #2234 → #2236/,"durable Command Center docs must point at the current canonical completion train");
+assert.match(docs,/merged PR #2107/,"durable docs must retain #2107 as the merged private foundation rather than a competing current writer");
 assert.doesNotMatch(docs,/IMPLEMENTATION DRAFT in PR #2096/,"superseded #2096 must never return as the current implementation");
 
 await import("./internal-command-center-runtime.test.mjs");
