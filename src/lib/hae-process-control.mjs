@@ -2,6 +2,16 @@ const PROCESS_STATES = new Set(["paused", "active", "blocked"]);
 
 export const HAE_OWNER_PROCESS_TEMPLATES = Object.freeze([
   Object.freeze({
+    job_type: "social.acquisition.control",
+    role_id: "hermes-marketing-growth",
+    business_lane: "marketing",
+    workstream: "marketing",
+    label: "Social Acquisition control",
+    label_ru: "Управление Social Acquisition",
+    allowed_cadence_hours: Object.freeze([1]),
+    control_only: true,
+  }),
+  Object.freeze({
     job_type: "logistics.source.freshness.audit",
     role_id: "hermes-dispatch-os",
     business_lane: "logistics",
@@ -192,5 +202,6 @@ export function publicHaeProcess(row) {
     updated_at: row.updated_at || null,
     template_label: template?.label || String(row.job_type),
     template_label_ru: template?.label_ru || String(row.job_type),
+    control_only: Boolean(template?.control_only),
   };
 }
