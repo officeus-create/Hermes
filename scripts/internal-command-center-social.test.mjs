@@ -102,6 +102,7 @@ assert.match(component,/CRM/);
 assert.doesNotMatch(component,/Publish selected/);
 assert.doesNotMatch(component,/setInterval\(/);
 assert.match(route,/HermesSocialAcquisition/);
+assert.match(route,/\.\.\/\.\.\/\.\.\/\.\.\/\.\.\/components\/HermesSocialAcquisition\.astro/);
 assert.match(route,/noindex,nofollow,noarchive/);
 assert.match(route,/api\/internal-ai\/status/);
 assert.match(route,/data-social-private hidden/);
