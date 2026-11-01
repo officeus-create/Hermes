@@ -87,6 +87,11 @@ assert.match(runtime,/publication\.provider_claimed/);
 assert.match(runtime,/provider_accepted_readback_pending/);
 assert.match(runtime,/unknown_outcome_readback_pending/);
 assert.match(runtime,/published_verified/);
+assert.match(runtime,/pluginRuntimeVersion/);
+assert.match(runtime,/social\.plugin_policy_bound/);
+assert.match(runtime,/hermes-agent-coordinator/);
+assert.match(runtime,/hermes-marketing-growth/);
+assert.match(runtime,/social_plugin_policy_version_missing/);
 assert.doesNotMatch(runtime,/WINDSOR_API_KEY/);
 assert.doesNotMatch(runtime,/access_token/);
 
