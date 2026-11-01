@@ -267,11 +267,23 @@ const clickupHealth=providerHealth.find((item)=>item.id==="clickup");
 const githubHealth=providerHealth.find((item)=>item.id==="github");
 assert.equal(clickupHealth.health,"HEALTHY");
 assert.equal(clickupHealth.item_count,1);
+assert.equal(clickupHealth.credential_configured,true);
+assert.equal(clickupHealth.authentication_state,"SUCCEEDED");
 assert.equal(clickupHealth.credential_exposed,false);
 assert.equal(clickupHealth.writable,false);
 assert.equal(githubHealth.health,"UNAVAILABLE");
 assert.equal(githubHealth.http_status,403);
-assert.equal(githubHealth.authenticated,true);
+assert.equal(githubHealth.credential_configured,true);
+assert.equal(githubHealth.authentication_state,"FAILED_OR_RATE_LIMITED");
+assert.equal("authenticated" in githubHealth,false,"Provider health must not label configured credentials as successful authentication");
 assert.equal("token" in githubHealth,false,"Provider health must never expose token material");
+
+const publicGithubHealth=buildProviderHealth({
+  checkedAt:"2026-11-01T19:30:00.000Z",
+  github:{source_state:"CONNECTED_PUBLIC",checked_at:"2026-11-01T19:29:30.000Z",repository:"officeus-create/Hermes",authenticated:false,pulls:[]},
+}).find((item)=>item.id==="github");
+assert.equal(publicGithubHealth.credential_configured,false);
+assert.equal(publicGithubHealth.authentication_state,"PUBLIC_NO_CREDENTIAL");
+
 
 console.log("INTERNAL_COMMAND_CENTER_EXECUTION_MAP_PASS");
