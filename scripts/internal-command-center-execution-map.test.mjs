@@ -21,6 +21,8 @@ assert.doesNotMatch(readModelEndpointSource,/\breconcileWorkItems\s*\(/,"Evidenc
 assert.match(readModelEndpointSource,/readDepartmentKpiSources\(env\.DB, checkedAt\)/,"Department KPIs must be read from canonical sources through the owner read model");
 assert.match(readModelEndpointSource,/department_kpis/,"Owner read model must expose department KPI projection");
 assert.match(readModelEndpointSource,/provider_health/,"Owner read model must expose provider health without a provider mirror");
+assert.match(readModelEndpointSource,/plugin_registry:\s*registrySnapshot\.entries\.map/,"Owner read model must expose only minimized plugin registry metadata");
+assert.match(readModelEndpointSource,/role_id, plugin_version, observed_at/,"Plugin registry projection must remain role/version/time only");
 assert.match(executionMapUiSource,/independent_review_state/,"Execution Map UI must surface independent review evidence separately");
 assert.match(executionMapUiSource,/github\.enrichment_state/,"Execution Map UI must expose GitHub enrichment scope/state");
 
