@@ -63,21 +63,6 @@ const entries=[
     </div>
   </div>
 </section>
-<script>
-// The Russian tree is swapped from an inert template at page load.
-// Delegate on the stable document, not to nodes that can be replaced before module evaluation.
-document.addEventListener("click",event=>{
-  const target=event.target;
-  if(!(target instanceof Element)) return;
-  const control=target.closest<HTMLButtonElement>("[data-hcc-activity-toggle]");
-  const root=control?.closest<HTMLElement>("[data-hcc-activity-showcase]");
-  if(!control||!root) return;
-  const paused=root.classList.toggle("is-paused");
-  control.setAttribute("aria-pressed",String(paused));
-  control.textContent=paused?(control.dataset.labelPlay||"Play simulation"):(control.dataset.labelPause||"Pause simulation");
-  control.setAttribute("aria-label",control.textContent);
-});
-</script>
 <style>
 .hcc-activity-showcase{padding:clamp(1.2rem,3vw,2rem);border:1px solid #303b5a;border-radius:var(--hermes-radius-panel,24px);background:linear-gradient(140deg,#0d172a 0%,#161d38 58%,#211739 100%);color:#f7f8ff;overflow:hidden}
 .hcc-activity-head{display:flex;align-items:flex-start;justify-content:space-between;gap:1.4rem;margin-bottom:1.4rem}
