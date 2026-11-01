@@ -49,7 +49,8 @@ test.describe("Command Center capability execution map", () => {
         }],
         human_work: { source_state: "NOT_CONFIGURED", tasks: [] },
         github_developments: { source_state: "PRIVATE_OR_NOT_FOUND", pulls: [] },
-        registry_evidence: { fresh: false },
+        plugin_registry: [{ role_id:"hermes-technology-developer", plugin_version:"0.1.61", observed_at:"2026-11-01T12:00:00.000Z" }],
+        registry_evidence: { fresh: false, reason:"STALE_EVIDENCE" },
         developments: {
           systems: [{ kind: "EXECUTOR", id: "viktor-windows", label: "Hermes AI · VIKTOR · Windows (assigned primary)", status: "RUNTIME_UNVERIFIED" }],
           plugins: [], automation: [],
@@ -59,19 +60,24 @@ test.describe("Command Center capability execution map", () => {
 
     await page.goto("/services/hermes-connect/internal/command-center/");
     await expect(page.locator("[data-private]")).toBeVisible();
-    const direct = page.locator('.hcc-nav > [data-cc-nav="evidence"]:visible');
+    const direct = page.locator('.hcc-nav > [data-cc-nav="executions"]:visible');
     if (await direct.count()) await direct.first().click();
     else {
       const more = page.locator("details.hcc-nav-more");
       await expect(more).toBeVisible();
       await more.locator("summary").click();
-      await more.locator('[data-cc-nav="evidence"]').click();
+      await more.locator('[data-cc-nav="executions"]').click();
     }
     await expect(page.locator("[data-execution-list]")).toContainText("Verify safe plugin routing");
     await expect(page.locator("[data-execution-list]")).toContainText("PLUGIN_SELECTED_NOT_EXECUTED");
     await expect(page.locator("[data-execution-list]")).toContainText("SNAPSHOT_VERSION_MATCHED_NOT_EXECUTED");
     await expect(page.locator("[data-execution-list]")).toContainText("UNASSIGNED");
     await expect(page.locator("[data-development-list]")).toContainText("RUNTIME_UNVERIFIED");
+    const pluginDirect=page.locator('.hcc-nav > [data-cc-nav="plugins"]:visible');
+    if(await pluginDirect.count()) await pluginDirect.first().click(); else { const more=page.locator("details.hcc-nav-more"); if(!(await more.getAttribute("open"))) await more.locator("summary").click(); await more.locator('[data-cc-nav="plugins"]').click(); }
+    await expect(page.locator("[data-plugin-registry]")).toContainText("hermes-technology-developer");
+    await expect(page.locator("[data-plugin-registry]")).toContainText("@0.1.61");
+    await expect(page.locator("[data-plugin-registry]")).toContainText(/execution requires a separate HAE receipt/i);
     expect(mapRequests).toBe(1);
   });
 });
