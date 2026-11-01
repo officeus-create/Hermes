@@ -241,7 +241,7 @@ const {ru=false}=Astro.props;
       ?"Создать DRAFT_ONLY задачу в HAE? Ответ не будет опубликован."
       :"Create a DRAFT_ONLY HAE job? The reply will not be published."))return;
     button.disabled=true;
-    if(state)state.textContent=ru?"Готовим HAE draft…":"Preparing HAE draft…";
+    if(state)state.textContent=ru?"Передаём draft-intake в HAE…":"Recording HAE draft intake…";
     try{
       const response=await fetch("/api/internal-command-center/social/reply-prepare",{
         method:"POST",credentials:"same-origin",
@@ -251,8 +251,10 @@ const {ru=false}=Astro.props;
       const data=await response.json().catch(()=>({}));
       if(!response.ok||!data.success)throw new Error(data.error||"reply_prepare_failed");
       if(state)state.textContent=data.duplicate
-        ?(ru?"Такой HAE draft уже существует; дубль не создан.":"This HAE draft already exists; duplicate suppressed.")
-        :(ru?`HAE draft создан: ${data.hae_job_id||"queued"}. Публикация: OFF.`:`HAE draft prepared: ${data.hae_job_id||"queued"}. Publication: OFF.`);
+        ?(ru?"Такой HAE intake уже существует; дубль не создан.":"This HAE intake already exists; duplicate suppressed.")
+        :(data.hae_job_id
+          ?(ru?`HAE draft job уже создан: ${data.hae_job_id}. Публикация: OFF.`:`HAE draft job already exists: ${data.hae_job_id}. Publication: OFF.`)
+          :(ru?`HAE intake принят: ${data.intake_request_id||"pending"}. HAE подготовит draft через canonical Cron/Queue. Публикация: OFF.`:`HAE intake recorded: ${data.intake_request_id||"pending"}. HAE will prepare the draft through canonical Cron/Queue. Publication: OFF.`));
     }catch(error){
       if(state)state.textContent=`HOLD: ${error?.message||"UNKNOWN"}`;
     }finally{button.disabled=false}
