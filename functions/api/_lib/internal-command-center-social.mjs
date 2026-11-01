@@ -321,6 +321,15 @@ export async function buildCommandCenterSocialSnapshot(env,{nowMs=Date.now()}={}
       rule:"hourly_evaluation_not_forced_publication",
     },
     readiness,
+    channel_roadmap:[
+      {channel:"threads",owner:"hermes-marketing-growth",runtime:"HAE",state:readiness?.platform_gates?.threads||"UNKNOWN",next_gate:"exact_runtime_canary_provider_readback"},
+      {channel:"instagram",owner:"hermes-marketing-growth + hermes-design-hub",runtime:"HAE",state:readiness?.platform_gates?.instagram||"UNKNOWN",next_gate:"shared_media_transport_exact_account_rights_cleared_creative"},
+      {channel:"facebook",owner:"hermes-marketing-growth",runtime:"HAE",state:readiness?.platform_gates?.facebook||"UNKNOWN",next_gate:"page_oauth_shared_transport_provider_readback"},
+      {channel:"x",owner:"hermes-marketing-growth",runtime:"HAE",state:readiness?.platform_gates?.x||"UNKNOWN",next_gate:"write_entitlement_and_economics_approval"},
+      {channel:"linkedin",owner:"hermes-marketing-growth",runtime:"HAE",state:"ACCOUNT_SELECTION_REQUIRED",next_gate:"exact_company_account_and_authorized_write_adapter"},
+      {channel:"tiktok",owner:"hermes-marketing-growth",runtime:"HAE",state:"PROVIDER_PATH_UNVERIFIED",next_gate:"verified_official_write_path_and_account_scope"},
+      {channel:"telegram",owner:"hermes-telegram-growth-manager",runtime:"HAE_WHEN_AUTHORIZED",state:"SEPARATE_DOMAIN_OWNER",next_gate:"authorized_telegram_transport_and_attribution_contract"},
+    ],
     lanes,
     health:{
       last_heartbeat:latestHeartbeat,
