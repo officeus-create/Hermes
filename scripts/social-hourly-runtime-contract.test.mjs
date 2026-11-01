@@ -27,31 +27,47 @@ function sourceResponse({status=200,contentType="text/html; charset=utf-8",body=
     async text(){return body;},
   };
 }
-const validSource="https://hermeslogisticsus.com/logistics/car-hauling-dispatch/?utm_source=threads&utm_medium=organic_social";
+const validSource="https://hermeslogisticsus.com/logistics/car-hauling-dispatch/?utm_source=threads&utm_medium=organic_social&utm_campaign=carrier_dispatch";
 assert.equal((await verifySocialSourcePage(
-  {destination_url:validSource,body:"Current source "+validSource},
+  {account_key:"hermes_logistics",destination_url:validSource,body:"Current source "+validSource},
   {fetchImpl:async()=>sourceResponse()},
 )).ok,true);
 let externalFetches=0;
 assert.equal((await verifySocialSourcePage(
-  {destination_url:"https://example.com/path",body:"https://example.com/path"},
+  {account_key:"hermes_logistics",destination_url:"https://example.com/path",body:"https://example.com/path"},
   {fetchImpl:async()=>{externalFetches+=1;return sourceResponse();}},
 )).error_class,"social_source_not_canonical");
 assert.equal(externalFetches,0);
+
+const wrongLane="https://hermeslogisticsus.com/paths/marketing/?utm_source=threads&utm_medium=organic_social&utm_campaign=carrier_dispatch";
+assert.equal((await verifySocialSourcePage(
+  {account_key:"hermes_logistics",destination_url:wrongLane,body:"Wrong lane "+wrongLane},
+  {fetchImpl:async()=>sourceResponse()},
+)).error_class,"social_source_lane_mismatch");
+const brokenUtm="https://hermeslogisticsus.com/logistics/car-hauling-dispatch/?utm_source";
+assert.equal((await verifySocialSourcePage(
+  {account_key:"hermes_logistics",destination_url:brokenUtm,body:"Broken "+brokenUtm},
+  {fetchImpl:async()=>sourceResponse()},
+)).error_class,"social_source_utm_invalid");
+const noCampaign="https://hermeslogisticsus.com/logistics/car-hauling-dispatch/?utm_source=threads&utm_medium=organic_social";
+assert.equal((await verifySocialSourcePage(
+  {account_key:"hermes_logistics",destination_url:noCampaign,body:"Missing campaign "+noCampaign},
+  {fetchImpl:async()=>sourceResponse()},
+)).error_class,"social_source_utm_invalid");
 assert.equal((await verifySocialSourcePage(
   {destination_url:validSource,body:"missing tracked URL"},
   {fetchImpl:async()=>sourceResponse()},
 )).error_class,"social_source_link_mismatch");
 assert.equal((await verifySocialSourcePage(
-  {destination_url:validSource,body:"Current source "+validSource},
+  {account_key:"hermes_logistics",destination_url:validSource,body:"Current source "+validSource},
   {fetchImpl:async()=>sourceResponse({status:302})},
 )).error_class,"social_source_http_status");
 assert.equal((await verifySocialSourcePage(
-  {destination_url:validSource,body:"Current source "+validSource},
+  {account_key:"hermes_logistics",destination_url:validSource,body:"Current source "+validSource},
   {fetchImpl:async()=>sourceResponse({contentType:"application/json"})},
 )).error_class,"social_source_not_html");
 assert.equal((await verifySocialSourcePage(
-  {destination_url:validSource,body:"Current source "+validSource},
+  {account_key:"hermes_logistics",destination_url:validSource,body:"Current source "+validSource},
   {fetchImpl:async()=>{throw new Error("network");}},
 )).error_class,"social_source_readback_unavailable");
 
@@ -78,6 +94,8 @@ assert.match(runtime,/HERMES_AUTOMATION_PUBLISH/);
 assert.match(runtime,/unresolved_previous_publication/);
 assert.match(runtime,/verifySocialSourcePage/);
 assert.match(runtime,/social_source_not_canonical/);
+assert.match(runtime,/social_source_lane_mismatch/);
+assert.match(runtime,/social_source_utm_invalid/);
 assert.match(runtime,/social_source_link_mismatch/);
 assert.match(runtime,/social_source_readback_unavailable/);
 assert.match(runtime,/meta_threads_history_incomplete/);
