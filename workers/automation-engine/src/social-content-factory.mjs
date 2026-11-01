@@ -245,6 +245,7 @@ function assertMaxBytes(text, limit, errorClass) {
 function buildXText(theme, url) {
   const candidates = [
     theme.hook + "\n" + theme.question + "\n" + url,
+    theme.question + "\n" + url,
     theme.hook + "\n" + url,
   ];
   for (const candidate of candidates) {
