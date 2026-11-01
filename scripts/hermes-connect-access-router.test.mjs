@@ -1,6 +1,8 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
+import { DatabaseSync } from "node:sqlite";
+import { ensureCompanyMembershipSchema, listActiveCompanyMemberships } from "../functions/api/_lib/company-memberships.mjs";
 
 const [page, product, accountApi, clientApi, clientPage, membershipSource] = await Promise.all([
   readFile(new URL("../src/pages/services/hermes-connect/access/index.astro", import.meta.url), "utf8"),
@@ -85,4 +87,46 @@ test("Client View derives tenant scope from authenticated memberships only", () 
   assert.match(clientPage, /robots="noindex,nofollow"/);
   assert.match(clientPage, /\/api\/hermes-connect\/client-view/);
   assert.doesNotMatch(clientPage, /company_id=/i, "Client View page must not construct arbitrary tenant selectors");
+});
+
+
+function makeMembershipD1() {
+  const sqlite = new DatabaseSync(":memory:");
+  const db = {
+    prepare(sql) {
+      let args = [];
+      const q = {
+        bind(...values) { args = values; return q; },
+        async all() { return { results: sqlite.prepare(sql).all(...args).map((row) => ({ ...row })) }; },
+        async first() { const row = sqlite.prepare(sql).get(...args); return row ? { ...row } : null; },
+        async run() {
+          const result = sqlite.prepare(sql).run(...args);
+          return { success: true, meta: { changes: Number(result.changes) } };
+        },
+      };
+      return q;
+    },
+  };
+  return { sqlite, db };
+}
+
+test("active membership listing excludes revoked/inactive and other specialists", async () => {
+  const { sqlite, db } = makeMembershipD1();
+  await ensureCompanyMembershipSchema(db);
+  const insert = sqlite.prepare(`
+    INSERT INTO hermes_company_memberships
+      (id,business_ref,workspace_ref,specialist_id,role,active,grant_source,granted_by,created_at,updated_at,revoked_at,revoked_by)
+    VALUES (?,?,?,?,?,?,?,?,?,?,?,?)
+  `);
+  insert.run("m1","company:tenant-a","workspace:a","client-a","read_only",1,"synthetic_test","owner-1","2026-11-01T00:00:00Z","2026-11-01T01:00:00Z",null,null);
+  insert.run("m2","company:tenant-b","workspace:b","client-a","member",0,"synthetic_test","owner-1","2026-11-01T00:00:00Z","2026-11-01T01:00:00Z",null,null);
+  insert.run("m3","company:tenant-c","workspace:c","client-a","admin",1,"synthetic_test","owner-1","2026-11-01T00:00:00Z","2026-11-01T01:00:00Z","2026-11-01T02:00:00Z","owner-1");
+  insert.run("m4","company:tenant-d","workspace:d","client-b","read_only",1,"synthetic_test","owner-1","2026-11-01T00:00:00Z","2026-11-01T01:00:00Z",null,null);
+
+  const memberships = await listActiveCompanyMemberships(db,{specialistId:"client-a"});
+  assert.equal(memberships.length,1);
+  assert.equal(memberships[0].companyId,"company:tenant-a");
+  assert.equal(memberships[0].workspaceId,"workspace:a");
+  assert.equal(memberships[0].role,"read_only");
+  assert.equal(memberships.some((item)=>item.companyId==="company:tenant-d"),false,"another specialist tenant must never bleed into the result");
 });
