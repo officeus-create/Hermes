@@ -1,5 +1,5 @@
 import { jsonResponse } from "../_lib/session.mjs";
-import { ensureCommandCenterSchema, reconcileWorkItems } from "../_lib/internal-command-center.mjs";
+import { ensureCommandCenterSchema } from "../_lib/internal-command-center.mjs";
 import { developmentCatalog, executionProjection, linkHumanWorkDevelopments } from "../_lib/command-center-execution-map.mjs";
 import { readClickUpHumanTasks } from "../_lib/command-center-clickup.mjs";
 import { readGithubDevelopments } from "../_lib/command-center-github.mjs";
@@ -14,7 +14,6 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
   const owner = await requireInternalOwner(request, env); if (owner.response) return owner.response;
   await ensureCommandCenterSchema(env.DB);
   await ensureHaeProcessSchema(env.DB);
-  await reconcileWorkItems(env.DB);
 
   const work = await env.DB.prepare(`SELECT w.*,
     t.status AS linked_task_status, t.started_at AS linked_task_started_at, t.updated_at AS linked_task_updated_at,

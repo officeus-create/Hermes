@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import {
   currentStageForWorkItem,
   developmentCatalog,
@@ -11,6 +12,9 @@ import {
 } from "../functions/api/_lib/command-center-execution-map.mjs";
 import { clickupAuthorization, normalizeClickUpTask, readClickUpHumanTasks } from "../functions/api/_lib/command-center-clickup.mjs";
 import { normalizeGithubPull, parseAgentWorkPassport, readGithubDevelopments } from "../functions/api/_lib/command-center-github.mjs";
+
+const readModelEndpointSource=readFileSync(new URL("../functions/api/internal-command-center/execution-map.ts",import.meta.url),"utf8");
+assert.doesNotMatch(readModelEndpointSource,/\breconcileWorkItems\s*\(/,"Evidence read must not mutate canonical owner work statuses as an incidental side effect");
 
 const registry=[
   {role_id:"hermes-agent-coordinator",plugin_version:"0.1.71",observed_at:"2026-10-27"},
