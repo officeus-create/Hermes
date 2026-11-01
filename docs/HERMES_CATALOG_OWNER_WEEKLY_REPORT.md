@@ -1,12 +1,14 @@
 # Hermes Catalog owner Friday report (HAE, Command Center only)
 
-Owner configuration: every Friday 12:00 Europe/Kyiv; first target 2026-11-06. No ChatGPT/Codex scheduled task, no email/Telegram and no paid AI. Canonical issue: https://github.com/officeus-create/Hermes/issues/2209.
+Owner configuration: report every Friday 12:00 Europe/Kyiv (first target 2026-11-06), plus private Command Center notification every Monday 12:00 Europe/Kyiv (first target 2026-11-02). No ChatGPT/Codex scheduled task, no email/Telegram and no paid AI. Canonical issue: https://github.com/officeus-create/Hermes/issues/2209.
 
 This is a distinct internal development audit, not the existing Catalog performance email for consenting Repair Shop business owners (#1545).
 
 ## Runtime — reuse existing HAE
 
 The existing Hermes Automation Engine Cloudflare Worker remains the only scheduler, and existing Hermes Connect D1 remains the source of truth. Two Friday 09:00/10:00 UTC cron wakeups are added to the SAME Worker, with a Europe/Kyiv local-time guard selecting the single correct 12:00 tick across DST. These two wakeups skip all other HAE jobs. The existing :17 hourly HAE cron provides a 12:17 recovery opportunity, not another agent or service.
+
+The same Worker also wakes Monday at 09:00/10:00 UTC (DST guard selects 12:00 Kyiv), strictly for a private owner notification. It reads the immediately preceding Friday D1 receipt, shows blockers and ONE next action / DONE, or explicitly reports FRIDAY_REPORT_MISSING. It does not rescan sources or use any AI. The notice is recorded once in hermes_catalog_owner_monday_notices by Monday date; no phone push/email is implied, and the existing Today view shows the notice once available. Monday first scheduled run may precede the initial Friday report and will correctly show missing evidence.
 
 One D1 hermes_catalog_owner_weekly_reports row per local Friday (catalog-owner:YYYY-MM-DD), protected by atomic lease. One successful immutable weekly receipt. Failed execution can retry on the existing HAE tick. Every report records source_sha, checked_at, evidence and gaps. Private API requires HERMES_INTERNAL_OWNER. Private Command Center Today view displays report; public static content never embeds business counts.
 
@@ -25,7 +27,7 @@ No external sends, no visitor personal identifiers, no ChatGPT, Codex, Workers A
 
 ## Release gates
 
-1. Run winter/summer DST, wrong-time, duplicate-run, missing-source, zero-AI and anonymous-auth tests.
+1. Run Friday and Monday winter/summer DST, wrong-time, duplicate-run, preceding-Friday-missing, zero-AI and anonymous-auth tests.
 2. Require exact-head CI and independent code review, protected merge.
 3. Perform separate reviewed HAE release, preserving publication OFF and exact production source SHA.
 4. Read actual Friday Cloudflare scheduled execution + D1 report + authenticated Command Center UI, verify no second delivery/queue.
