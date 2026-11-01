@@ -27,6 +27,14 @@ for(const required of ["website-conversion","seo-geo","social-demand","crm-follo
 }
 assert.equal(HERMES_SOCIAL_THEMES.some(theme=>String(theme.path).includes("carrier-offer")),false,"public social factory must not route to private/noindex carrier offer");
 
+for (const [lane,themes] of [["HERMES_LOGISTICS",HERMES_SOCIAL_THEMES],["PROGRESSOPRO",PROGRESSOPRO_SOCIAL_THEMES]]) {
+  for (let variantIndex=0; variantIndex<themes.length; variantIndex+=1) {
+    const pack=buildHourlySocialPackage(lane,"2026-11-01T10",variantIndex);
+    assert.ok([...pack.variants.x.body].length<=280,`X variant overflow for ${lane}/${pack.canonical.topic}`);
+    assert.ok(new TextEncoder().encode(pack.variants.threads.body).byteLength<=500,`Threads overflow for ${lane}/${pack.canonical.topic}`);
+  }
+}
+
 for (const lane of SOCIAL_LANES) {
   const seen = new Set();
   for (const hour of ["06","07","08","09","10","11","12","13","14","15","16","17","18","19"]) {
