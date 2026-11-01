@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import { commandCenterProjectPortfolio, validateCommandCenterProjects } from "../functions/api/_lib/command-center-projects.mjs";
+import { commandCenterProjectCoverageSnapshot } from "../functions/api/_lib/command-center-project-coverage.mjs";
 
 const api = fs.readFileSync("functions/api/internal-command-center/projects.ts", "utf8");
 const ownerWorkspace = fs.readFileSync("src/components/HermesCommandCenterOwnerWorkspace.astro", "utf8");
@@ -10,6 +11,8 @@ const publicDemo = fs.readFileSync("src/components/HermesCommandCenterPublicPrev
 const publicContent = fs.readFileSync("src/components/HermesCommandCenterPublicContent.astro", "utf8");
 const retiredAiPage = fs.readFileSync("src/pages/services/hermes-connect/ai-command-center.astro", "utf8");
 const portfolio = commandCenterProjectPortfolio();
+const coverage = commandCenterProjectCoverageSnapshot();
+const coverageArtifact = JSON.parse(fs.readFileSync("data/command-center/project-coverage-2026-11-01.json","utf8"));
 
 assert.deepEqual(validateCommandCenterProjects(portfolio), []);
 assert.ok(portfolio.length >= 10, "the initial owner registry must cover the consolidated project families");
@@ -29,11 +32,22 @@ assert.match(api, /source_class:"IMMUTABLE_REVIEWED_SNAPSHOT"/,"canonical projec
 assert.match(api, /evidence_at:"2026-10-28T15:30:00\+02:00"/,"historical registry evidence date must remain explicit");
 assert.match(api, /source_class:"CURRENT_REQUEST_D1_READBACK"/,"owner D1 counts must be labeled as current-request readback");
 assert.doesNotMatch(api, /checked_at:"2026-10-28T15:30:00\+02:00"/,"historical snapshot date must never masquerade as current checked_at");
+assert.match(api, /commandCenterProjectCoverageSnapshot/,"project API must expose the reviewed One Brain coverage snapshot only behind owner auth");
+assert.equal(coverage.coverage_status,"PARTIAL","coverage must stay PARTIAL until every canonical family has an accepted live/readback mapping");
+assert.equal(coverage.ledger_row_count_observed,116);
+assert.equal(coverage.families.length,15);
+assert.ok(coverage.families.every((family)=>family.source_state==="CURRENT_SOURCE_IDENTIFIED"));
+assert.ok(coverage.families.every((family)=>family.active_work_id_count===null&&family.count_state==="UNKNOWN_NOT_EXHAUSTIVELY_MAPPED"),"representative WORK_IDs must not masquerade as complete active counts");
+assert.equal(coverageArtifact.snapshot_id,coverage.snapshot_id);
+assert.equal(coverageArtifact.ledger_row_count_observed,coverage.ledger_row_count_observed);
 assert.match(ownerWorkspace, /HermesOwnerProjectPortfolio/, "project portfolio belongs to the shared owner workspace Projects view");
 assert.match(ownerComponent, /\/api\/internal-command-center\/projects/);
 assert.match(ownerComponent, /role="progressbar"/);
 assert.match(ownerComponent, /Dependencies/);
 assert.match(ownerComponent, /ETA/);
+assert.match(ownerComponent, /data-project-coverage/);
+assert.match(ownerComponent, /ONE BRAIN COVERAGE/);
+assert.match(ownerComponent, /ledger_row_count_observed/);
 
 assert.match(publicPage, /HermesCommandCenterPublicContent/);
 assert.match(publicContent, /HermesBusinessCommandCenterShell/);
