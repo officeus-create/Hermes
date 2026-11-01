@@ -125,3 +125,14 @@ Authenticated `Plugin_Creator.list_owned_personal_plugins(limit=50)` completed a
 | hermes-dispatch-os | pluginrel_6ae3b49243648191a085db018d74e22c | 0.1.26 |
 
 The exact UTC instant is a **snapshot timestamp**, not an automatically refreshing feed. After the existing 24-hour freshness bound, the registry truth is `STALE_OR_FUTURE` until a new authenticated provider readback is accepted, not `LIVE`. This source sync makes no claim that the plugins are loaded by a 24/7 HAE Worker. No provider permission change, plugin update, Cloudflare deployment, Queue/D1 write or paid model invocation.
+
+
+## 2026-11-01 00:46:39.120Z — plugin routing and independent QA release drift correction
+
+A second authenticated Plugin Creator current-release listing (28 owned plugins, 9 HAE-allowed role identities) showed **two** versions advanced since the earlier 00:39Z snapshot:
+- `hermes-agent-coordinator` **0.1.82 → 0.1.83**, provider release `pluginrel_6ae68b167ccc8191841b547dc4f3bb30`.
+- `hermes-qa-evidence-auditor` **0.1.17 → 0.1.18**, provider release `pluginrel_6ae68b2776ac81919aaa7f0bee272115`.
+
+The other seven roles and all 23 capability records remain unchanged apart from those **two version-only fields**. Existing `chatgpt-request-router`, `resume-after-pause`, `free-24x7-digital-workforce`, `ci-cascade-root-cause`, `viktor-hae-truth-gates`, `completion-truth-gates` and `closed-loop-work-cell` plugin skills were actually **READ and APPLIED as skill-level routing/assurance instructions** in the task session, not called as remote, executing Hermes agents. They are already installed in the plugin releases, so no duplicate skill/plugin is needed. User's instruction to route each business task through these roles is a default handling policy when skills are loaded, **not a guarantee that ChatGPT silently calls all private plugins in every unrelated/new chat**. All 28 plugins being present is only an inventory fact. A running HAE Worker consuming these versioned contracts still requires an exact deployed SHA, D1/Queue job receipt, independent QA and approval.
+
+The signed-off workflow for repeated business tasks: Coordinator (route + one owner + skill/tool receipt) → specialized HAE/Technology/Business skills as applicable → actual connector/source write only if authorized → *different* QA verifier → accepted lesson via Knowledge Curator/One Brain → reviewed Plugin Creator release → subsequent real HAE job proves consumption. Default NO_PAID_AI / NO_OUTBOUND / NO_AUTO_MERGE / PUBLICATION_OFF. Group tasks by real capability and use progressive disclosure; never call 28 plugins as a ritual.
