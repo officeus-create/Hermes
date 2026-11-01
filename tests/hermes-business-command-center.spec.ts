@@ -27,6 +27,24 @@ async function mockOwner(page:any){
   await page.route("**/api/internal-command-center/processes",(route:any)=>route.fulfill(json({success:true,processes:[]})));
   await page.route("**/api/internal-command-center/projects*",(route:any)=>route.fulfill(json(projectRegistry)));
   await page.route("**/api/hermes-connect/account",(route:any)=>route.fulfill(json({success:true,identity:{id:"owner-1",name:"Owner",email:"owner@example.invalid",role:"Owner"},owned_businesses:[],workspaces:[{key:"internal_ai",kind:"capability_workspace",href:"/services/hermes-connect/internal/ai-connect/",available:true,state:{capability:"HERMES_INTERNAL_OWNER"}}],capabilities:{internal_ai:true}})));
+  await page.route("**/api/internal-command-center/reports",(route:any)=>route.fulfill(json({success:true,schedules:[],reports:[]})));
+  await page.route("**/api/internal-command-center/owner-intelligence",(route:any)=>route.fulfill(json({success:true,knowledge:{state:"REVIEW_GATED",sources:[],automatic_promotion:false},investor:{state:"EVENT_TRIGGER_ONLY"},self_learning_project:null})));
+  await page.route("**/api/internal-command-center/execution-map",(route:any)=>route.fulfill(json({
+    success:true,checked_at:"2026-11-01T20:00:00.000Z",tasks:[],developments:{systems:[],plugins:[],automation:[]},
+    human_work:{source_state:"NOT_CONFIGURED",tasks:[]},github_developments:{source_state:"NOT_CONFIGURED",pulls:[]},
+    department_kpis:[],provider_health:[],
+    plugin_registry:[{role_id:"hermes-agent-coordinator",plugin_version:"0.1.86",observed_at:"2026-11-01T19:48:39.016Z"}],
+    registry_evidence:{fresh:true,reason:"FRESH_EVIDENCE"}
+  })));
+  await page.route("**/api/internal-command-center/social-acquisition",(route:any)=>route.fulfill(json({
+    success:true,checked_at:"2026-11-01T20:00:00.000Z",
+    content_queue:{source_state:"CONNECTED",items:[{content_id:"c1",account_key:"progressopro",platform:"threads",slot_key:"slot-1",state:"ready",updated_at:"2026-11-01T19:59:00.000Z"}]},
+    publication_receipts:{source_state:"CONNECTED",items:[]},
+    carrier_leads:{source_state:"UNKNOWN",count:null,reason:"NO_CANONICAL_CROSS_SOURCE_CARRIER_LEAD_AGGREGATE"}
+  })));
+  await page.route("**/api/internal/social/threads/connections",(route:any)=>route.fulfill(json({
+    success:true,runtime_configured:true,connections:[{brand:"progressopro",label:"ProgressoPro",state:"connected_verified",identity_verified:true,publish_enabled:false,granted_scopes:["threads_basic"],token_expires_at:"2026-12-01T00:00:00.000Z",token_expired:false}]
+  })));
 }
 
 test.describe("Hermes Business Command Center",()=>{
@@ -180,6 +198,28 @@ test.describe("Hermes Business Command Center",()=>{
     await form.getByRole("button",{name:"Create paused"}).click();
     await expect.poll(()=>created?.cadence_hours).toBe(24);
     expect(created?.job_type).toBe("academy.english.practice.build");
+  });
+
+  test("opens Social, Plugins and Executions as separate views without creating another runtime",async({page})=>{
+    await mockOwner(page);
+    await page.goto("/services/hermes-connect/internal/command-center/");
+    await openOwnerView(page,"social");
+    await expect(page.locator('[data-cc-view="social"]')).toBeVisible();
+    await expect(page.locator("[data-social-content-count]")).toHaveText("1");
+    await expect(page.locator("[data-social-connections]")).toContainText("ProgressoPro");
+    await expect(page.locator('[data-cc-view="social"]')).toContainText(/DRAFT_ONLY/);
+    await expect(page.locator('[data-cc-view="social"]')).toContainText(/Carrier Leads/);
+    await expect(page.locator('[data-cc-view="social"]')).toContainText(/UNKNOWN/);
+
+    await openOwnerView(page,"plugins");
+    await expect(page.locator('[data-cc-view="plugins"]')).toBeVisible();
+    await expect(page.locator("[data-plugin-registry]")).toContainText("hermes-agent-coordinator");
+    await expect(page.locator("[data-plugin-registry]")).toContainText("@0.1.86");
+    await expect(page.locator('[data-cc-view="plugins"]')).toContainText(/separate HAE receipt/);
+
+    await openOwnerView(page,"executions");
+    await expect(page.locator('[data-cc-view="executions"]')).toBeVisible();
+    await expect(page.locator("[data-execution-map]")).toBeVisible();
   });
 
   test("offers the local AI Agents UI with a cloud fallback",async({page})=>{
