@@ -129,7 +129,7 @@
       "submission_auth": "HERMES_AUTOMATION_TOKEN",
       "retention_class": "business_runtime_evidence",
       "role_id": "hermes-marketing-growth",
-      "plugin_version": "0.1.15",
+      "plugin_version": "0.1.16",
       "contract_version": "marketing-content-dedupe-v1",
       "semantic_required": false,
       "free_ai_policy": "not_required"
@@ -265,7 +265,7 @@
       "submission_auth": "HERMES_AUTOMATION_TOKEN",
       "retention_class": "business_runtime_evidence",
       "role_id": "hermes-marketing-growth",
-      "plugin_version": "0.1.15",
+      "plugin_version": "0.1.16",
       "contract_version": "growth-error-closure-v1",
       "semantic_required": false,
       "free_ai_policy": "not_required"
@@ -299,7 +299,7 @@
       "submission_auth": "HERMES_AUTOMATION_TOKEN",
       "retention_class": "business_runtime_evidence",
       "role_id": "hermes-marketing-growth",
-      "plugin_version": "0.1.15",
+      "plugin_version": "0.1.16",
       "contract_version": "internet-mentions-audit-v1",
       "semantic_required": false,
       "free_ai_policy": "not_required"
