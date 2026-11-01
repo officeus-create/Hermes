@@ -6,6 +6,8 @@ import {
   buildHourlySocialPackage,
   buildSocialTrackedUrl,
   laneForAccountKey,
+  HERMES_SOCIAL_THEMES,
+  PROGRESSOPRO_SOCIAL_THEMES,
 } from "../workers/automation-engine/src/social-content-factory.mjs";
 
 assert.deepEqual(SOCIAL_LANES, ["HERMES_LOGISTICS","PROGRESSOPRO"]);
@@ -14,6 +16,16 @@ assert.equal(accountKeyForLane("HERMES_LOGISTICS"), "hermes_logistics");
 assert.equal(accountKeyForLane("PROGRESSOPRO"), "progressopro");
 assert.equal(laneForAccountKey("hermes_logistics"), "HERMES_LOGISTICS");
 assert.equal(laneForAccountKey("progressopro"), "PROGRESSOPRO");
+
+const hermesThemeIds=new Set(HERMES_SOCIAL_THEMES.map(theme=>theme.id));
+for(const required of ["deadhead","rpm","load-fit","broker-setup","paperwork","route-sequence","equipment-fit","dealer-inventory","auction-readiness","delivery-to-invoice"]){
+  assert.equal(hermesThemeIds.has(required),true,"missing Hermes social theme "+required);
+}
+const progressoThemeIds=new Set(PROGRESSOPRO_SOCIAL_THEMES.map(theme=>theme.id));
+for(const required of ["website-conversion","seo-geo","social-demand","crm-followup","offer-positioning","automation","website-system","local-seo","technology-systems","hermes-connect","academy-training"]){
+  assert.equal(progressoThemeIds.has(required),true,"missing ProgressoPro social theme "+required);
+}
+assert.equal(HERMES_SOCIAL_THEMES.some(theme=>String(theme.path).includes("carrier-offer")),false,"public social factory must not route to private/noindex carrier offer");
 
 for (const lane of SOCIAL_LANES) {
   const seen = new Set();
