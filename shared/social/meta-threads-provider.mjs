@@ -256,7 +256,7 @@ export function createMetaThreadsTransport({
   }
 
   async function createContainer(values) {
-    const result = await request("me/threads", { post: true, params: values });
+    const result = await request(`${account}/threads`, { post: true, params: values });
     if (!result.ok) return result;
     const id = numericId(result.payload?.id);
     return id ? { ok: true, container_id: id } : { ok: false, error_class: "provider_outcome_unknown" };
@@ -265,7 +265,7 @@ export function createMetaThreadsTransport({
   async function publishContainer(containerId) {
     const creationId = numericId(containerId);
     if (!creationId) return { ok: false, error_class: "invalid_threads_container_id" };
-    const result = await request("me/threads_publish", { post: true, params: { creation_id: creationId } });
+    const result = await request(`${account}/threads_publish`, { post: true, params: { creation_id: creationId } });
     if (!result.ok) return result;
     const id = numericId(result.payload?.id);
     if (!id) return { ok: false, error_class: "provider_outcome_unknown" };
