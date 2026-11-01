@@ -119,6 +119,8 @@ async function sourceSnapshot(db,source,result,when){
 }
 export function hrTechRadarDefaultSources(){return DEFAULT_SOURCES.map(x=>({...x}));}
 export async function buildHrTechRadar(env,when=new Date(),fetcher=fetch){
+  if(!env?.DB)throw new Error("database_not_configured");
+  await ensureHrTechRadarSchema(env.DB);
   const checkedAt=new Date().toISOString();
   const events=[],sources=[];
   for(const source of DEFAULT_SOURCES){
