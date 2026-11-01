@@ -40,6 +40,7 @@ test.describe("Command Center capability execution map", () => {
           owner_status: "planned", current_stage: "PLANNED", next_action: "Review before dispatch",
           stage_chain: [{ stage: "ASSIGNED", state: "pending" }, { stage: "EXECUTED", state: "unknown" }],
           executor: { surface: "UNASSIGNED", plugin_role_id: null },
+          plugin_route_consistency: { state: "SNAPSHOT_VERSION_MATCHED_NOT_EXECUTED", mismatched_roles: [] },
           plugin_route: {
             state: "PLUGIN_SELECTED_NOT_EXECUTED", policy_version: "command-center-route-v1",
             owner: { role_id: "hermes-technology-developer", plugin_version: "0.1.60" }, helpers: [],
@@ -68,6 +69,7 @@ test.describe("Command Center capability execution map", () => {
     }
     await expect(page.locator("[data-execution-list]")).toContainText("Verify safe plugin routing");
     await expect(page.locator("[data-execution-list]")).toContainText("PLUGIN_SELECTED_NOT_EXECUTED");
+    await expect(page.locator("[data-execution-list]")).toContainText("SNAPSHOT_VERSION_MATCHED_NOT_EXECUTED");
     await expect(page.locator("[data-execution-list]")).toContainText("UNASSIGNED");
     await expect(page.locator("[data-development-list]")).toContainText("RUNTIME_UNVERIFIED");
     expect(mapRequests).toBe(1);

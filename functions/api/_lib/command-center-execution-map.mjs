@@ -67,7 +67,20 @@ export function nextActionForWorkItem(item = {}) {
   return "Review the task, then mark Ready or dispatch it through the existing Internal AI path.";
 }
 
-export function executionProjection(item = {}, registryEntries = []) {
+export function pluginRouteConsistency(route, registryEntries = [], registryEvidence = {}) {
+  if (!route?.owner?.role_id) return { state: "NO_PLUGIN_SELECTED", mismatched_roles: [] };
+  if (registryEvidence?.fresh !== true) return { state: "REGISTRY_SNAPSHOT_UNVERIFIED", mismatched_roles: [] };
+  const versions = new Map((registryEntries || []).map((entry) => [String(entry.role_id || ""), String(entry.plugin_version || "")]));
+  const roles = [route.owner, ...(Array.isArray(route.helpers) ? route.helpers : [])];
+  const mismatched = roles.filter((role) => !role?.role_id || !role?.plugin_version || versions.get(String(role.role_id)) !== String(role.plugin_version))
+    .map((role) => String(role?.role_id || "UNKNOWN"));
+  return {
+    state: mismatched.length ? "PLUGIN_ROUTE_VERSION_DRIFT" : "SNAPSHOT_VERSION_MATCHED_NOT_EXECUTED",
+    mismatched_roles: mismatched,
+  };
+}
+
+export function executionProjection(item = {}, registryEntries = [], registryEvidence = {}) {
   const linked = Boolean(item.linked_task_id);
   const taskRole = linked ? String(item.linked_task_agent_role || "software_engineer") : null;
   const selectedRoute = readWorkItemPluginRoute(item);
@@ -89,6 +102,7 @@ export function executionProjection(item = {}, registryEntries = []) {
       assignment_truth: linked ? "LEGACY_INTERNAL_AI_ROLE" : "NOT_ASSIGNED",
     },
     plugin_route: selectedRoute,
+    plugin_route_consistency: pluginRouteConsistency(selectedRoute, registryEntries, registryEvidence),
     eligible_capabilities: eligibleCapabilitiesForWorkstream(item.workstream, registryEntries),
     evidence: {
       repo_sha: item.linked_task_repo_sha || null,

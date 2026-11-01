@@ -99,6 +99,7 @@ roots.forEach(async(root)=>{
         [t("Executor","Исполнитель"),task.executor?.surface==="INTERNAL_AI"?"Internal AI · "+(task.executor.agent_role||"UNKNOWN"):"UNASSIGNED"],
         [t("Plugin assignment","Назначение плагина"),task.executor?.plugin_role_id||"UNKNOWN"],
         [t("Plugin route (selected, not executed)","Маршрут плагина (выбран, не запущен)"),task.plugin_route?.owner?.role_id ? `${task.plugin_route.owner.role_id} · ${task.plugin_route.state}` : "UNKNOWN"],
+        [t("Route version evidence","Доказательство версии маршрута"),task.plugin_route_consistency?.state || "UNKNOWN"],
         [t("LIVE","LIVE"),task.live_state||"UNKNOWN"],
         [t("Business result","Бизнес-результат"),task.business_result_state||"UNKNOWN"],
       ];

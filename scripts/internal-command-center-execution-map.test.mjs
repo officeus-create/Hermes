@@ -4,6 +4,7 @@ import {
   developmentCatalog,
   eligibleCapabilitiesForWorkstream,
   executionProjection,
+  pluginRouteConsistency,
   linkHumanWorkDevelopments,
   nextActionForWorkItem,
   stageChainForWorkItem,
@@ -51,6 +52,17 @@ const selectedProjection=executionProjection({
 assert.equal(selectedProjection.plugin_route?.owner.role_id,"hermes-search-growth");
 assert.equal(selectedProjection.plugin_route?.state,"PLUGIN_SELECTED_NOT_EXECUTED");
 assert.equal(selectedProjection.executor.plugin_role_id,null,"selected route is not evidence of plugin execution");
+
+
+const matchingRoute={state:"PLUGIN_SELECTED_NOT_EXECUTED",owner:{role_id:"hermes-search-growth",plugin_version:"0.1.13"},helpers:[{role_id:"hermes-agent-coordinator",plugin_version:"0.1.71"}]};
+const matchingRegistry=[{role_id:"hermes-search-growth",plugin_version:"0.1.13"},{role_id:"hermes-agent-coordinator",plugin_version:"0.1.71"}];
+assert.equal(pluginRouteConsistency(matchingRoute,matchingRegistry,{fresh:true}).state,"SNAPSHOT_VERSION_MATCHED_NOT_EXECUTED");
+assert.equal(pluginRouteConsistency(matchingRoute,matchingRegistry,{fresh:false}).state,"REGISTRY_SNAPSHOT_UNVERIFIED");
+assert.deepEqual(pluginRouteConsistency(matchingRoute,[{role_id:"hermes-search-growth",plugin_version:"0.1.14"},{role_id:"hermes-agent-coordinator",plugin_version:"0.1.71"}],{fresh:true}),{state:"PLUGIN_ROUTE_VERSION_DRIFT",mismatched_roles:["hermes-search-growth"]});
+assert.equal(pluginRouteConsistency(null,matchingRegistry,{fresh:true}).state,"NO_PLUGIN_SELECTED");
+const mismatchProjection=executionProjection({id:"route-old",title:"Marketing SEO",workstream:"marketing",status:"ready",plugin_route_json:JSON.stringify({policy_version:"command-center-route-v1",...matchingRoute})},[{role_id:"hermes-search-growth",plugin_version:"0.1.14"},{role_id:"hermes-agent-coordinator",plugin_version:"0.1.71"}],{fresh:true});
+assert.equal(mismatchProjection.plugin_route_consistency.state,"PLUGIN_ROUTE_VERSION_DRIFT","Map should reveal dispatch-time version drift without changing the source task or inventing execution");
+assert.equal(mismatchProjection.executor.plugin_role_id,null);
 
 const catalog=developmentCatalog({
   registrySnapshot:{source_class:"PRIVATE_PLUGIN_CREATOR_READBACK",entries:registry},
