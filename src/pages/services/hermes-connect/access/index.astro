@@ -230,7 +230,7 @@ import SiteFooter from "../../../../components/SiteFooter.astro";
   };
   applyLanguage(lang);
 
-  // The header Sign in link points at this page; focus the existing form instead of no-oping.
+  // The header "Sign in" link points at this very page; make it bring the form into view instead of doing nothing.
   document.addEventListener("click", (event) => {
     const link = (event.target as Element | null)?.closest?.("[data-hermes-sign-in]");
     const target = document.querySelector<HTMLFormElement>("[data-access-form]");
@@ -252,6 +252,8 @@ import SiteFooter from "../../../../components/SiteFooter.astro";
     try {
       const response = await fetch("/api/hermes-connect/account", { credentials: "same-origin", headers: { Accept: "application/json" } });
       const data = await response.json().catch(() => ({}));
+      // The existing server-owned capability decides owner destination; no email/role guess.
+      if (response.ok && data?.success && data?.capabilities?.internal_ai === true) return "/services/hermes-connect/internal/command-center/";
       const owned = Array.isArray(data?.owned_businesses) ? data.owned_businesses.filter((item: any) => item?.href) : [];
       if (response.ok && data?.success && owned.length === 1) return String(owned[0].href);
     } catch {}

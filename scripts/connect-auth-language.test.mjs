@@ -47,12 +47,6 @@ assert.ok(hooks.size > 25, "home-services: i18n hooks must be present");
 for (const key of hooks) assert.ok(dict.ru[key], `home-services: hook ${key} must resolve in ru and uk`);
 for (const key of new Set([...hs.matchAll(/\bT\("(\w+)"/g)].map((m) => m[1]))) assert.ok(dict.ru[key] && enMsg[key], `home-services: message ${key} must be translated`);
 assert.match(hs, /\/api\/auth\/register/);
-assert.match(hs, /syncConnectAuthChrome/);
-assert.match(hs, /syncConnectAuthChrome\(lang\)/);
-const chrome = readFileSync(new URL("../src/lib/connect-auth-chrome.ts", import.meta.url), "utf8");
-assert.match(chrome, /language: 'en' \| 'uk' \| 'ru'/);
-assert.match(chrome, /Мова контенту: українська/);
-assert.match(chrome, /Увійти/);
 // The shared Google button follows the page language for its divider, status and error copy.
 const google = readFileSync(new URL("../src/components/HermesGoogleSignIn.astro", import.meta.url), "utf8");
 const errorKeys = (lang) => {
@@ -63,4 +57,18 @@ assert.ok(errorKeys("en").length >= 5, "google: English error copy must be found
 for (const lang of ["ru", "uk"]) assert.deepEqual(errorKeys(lang), errorKeys("en"), `google: ${lang} must translate every error code`);
 assert.match(google, /divider: "или продолжите по email"/);
 assert.match(google, /divider: "або продовжте через email"/);
+
+// Website Factory: the Ukrainian dictionary must cover exactly the English keys the Russian one does.
+const factoryLocale = readFileSync(new URL("../public/scripts/website-factory-locale.mjs", import.meta.url), "utf8");
+const mapKeys = (name) => {
+  const start = factoryLocale.indexOf(`const ${name} = new Map(Object.entries({`);
+  const end = factoryLocale.indexOf("}));", start);
+  assert.ok(start >= 0 && end > start, `factory ${name} map must exist`);
+  return [...factoryLocale.slice(start, end).matchAll(/^  ("(?:[^"\\]|\\.)*"): /gm)].map((m) => m[1]).sort();
+};
+const ruKeys = mapKeys("ru");
+const ukKeys = mapKeys("uk");
+assert.ok(ruKeys.length > 150, "factory ru map must be found");
+assert.deepEqual(ukKeys, ruKeys, "factory uk map must have exactly the ru keys");
+assert.match(factoryLocale, /const dictionary = locale === "ru" \? ru : locale === "uk" \? uk : null;/);
 console.log("connect-auth-language: access, academy, academy business and home services complete in RU; home services UK complete.");

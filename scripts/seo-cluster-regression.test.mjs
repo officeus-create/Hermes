@@ -27,6 +27,10 @@ const getAttr = (tag, name) => {
 };
 const tags = (html, tagName) => [...html.matchAll(new RegExp(`<${tagName}\\b[^>]*>`, "gi"))].map((match) => match[0]);
 const elements = (html, tagName) => [...html.matchAll(new RegExp(`<${tagName}\\b[^>]*>([\\s\\S]*?)<\\/${tagName}>`, "gi"))];
+// HTML <template> trees are inert until client activation; an H1 there is
+// not a second rendered heading on the indexable default-language page.
+const renderedElements = (html, tagName) => elements(html.replace(/<template\b[^>]*>[\s\S]*?<\/template>/gi, " "), tagName);
+if (renderedElements("<h1>Real</h1><template><h1>Translation</h1></template>", "h1").length !== 1) throw new Error("Inert locale template SEO regression");
 const linksByRel = (html, rel) => tags(html, "link").filter((tag) => getAttr(tag, "rel").toLowerCase().split(/\s+/).includes(rel));
 const metaByName = (html, name) => tags(html, "meta").filter((tag) => getAttr(tag, "name").toLowerCase() === name.toLowerCase());
 const htmlPathFromUrl = (url) => {
@@ -103,7 +107,7 @@ for (const url of clusterUrls) {
   const description = getAttr(descriptions[0] ?? "", "content");
   if (!description) errors.push(`${route}: meta description is empty`);
   if (description) descriptionOwners.set(description.toLowerCase(), [...(descriptionOwners.get(description.toLowerCase()) ?? []), route]);
-  const h1Elements = elements(html, "h1");
+  const h1Elements = renderedElements(html, "h1");
   if (h1Elements.length !== 1) errors.push(`${route}: expected exactly one H1, found ${h1Elements.length}`);
   if (!stripTags(h1Elements[0]?.[1] ?? "")) errors.push(`${route}: H1 is empty`);
   const canonicalLinks = linksByRel(html, "canonical");
