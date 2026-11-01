@@ -69,7 +69,9 @@ import SiteFooter from "../../../../../components/SiteFooter.astro";
   </main>
   <SiteFooter />
 </BaseLayout>
-<script is:inline>
+<script>
+  // @ts-nocheck -- existing legacy client block is plain JS; bundling is required only for the shared locale helper import.
+  import { syncConnectAuthChrome } from "../../../../../lib/connect-auth-chrome";
 (() => {
   const $ = (selector) => document.querySelector(selector);
   // English is the markup default. RU / UK come from ?lang=, then the language saved by the Connect shell.
@@ -84,6 +86,7 @@ import SiteFooter from "../../../../../components/SiteFooter.astro";
     return stored === "ru" || stored === "uk" ? stored : "en";
   };
   const lang = pickLang();
+  syncConnectAuthChrome(lang);
   const T = (key, vars = {}) => String((DICT[lang] && DICT[lang][key]) || EN_MSG[key] || key).replace(/\{(\w+)\}/g, (_, name) => vars[name] ?? "");
   document.documentElement.lang = lang;
   if (lang !== "en") {
