@@ -88,6 +88,7 @@ for(const forbidden of ["token_ciphertext","access_token","HERMES_THREADS_ACCESS
 
 const endpoint=await readFile(new URL("../functions/api/internal-command-center/social.ts",import.meta.url),"utf8");
 const component=await readFile(new URL("../src/components/HermesSocialAcquisition.astro",import.meta.url),"utf8");
+const route=await readFile(new URL("../src/pages/services/hermes-connect/internal/command-center/social.astro",import.meta.url),"utf8");
 assert.match(endpoint,/requireInternalOwner/);
 assert.match(endpoint,/private, no-store/);
 assert.doesNotMatch(endpoint,/onRequestPost/);
@@ -100,6 +101,11 @@ assert.match(component,/Readback/);
 assert.match(component,/CRM/);
 assert.doesNotMatch(component,/Publish selected/);
 assert.doesNotMatch(component,/setInterval\(/);
+assert.match(route,/HermesSocialAcquisition/);
+assert.match(route,/noindex,nofollow,noarchive/);
+assert.match(route,/api\/internal-ai\/status/);
+assert.match(route,/data-social-private hidden/);
+assert.match(route,/← Command Center/);
 
 sqlite.close();
 console.log("Command Center Social Acquisition read model: PASS");
