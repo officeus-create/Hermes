@@ -2,9 +2,13 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 
-const [page, product] = await Promise.all([
+const [page, product, accountApi, clientApi, clientPage, membershipSource] = await Promise.all([
   readFile(new URL("../src/pages/services/hermes-connect/access/index.astro", import.meta.url), "utf8"),
   readFile(new URL("../src/pages/services/hermes-connect/index.astro", import.meta.url), "utf8"),
+  readFile(new URL("../functions/api/hermes-connect/account.ts", import.meta.url), "utf8"),
+  readFile(new URL("../functions/api/hermes-connect/client-view.ts", import.meta.url), "utf8"),
+  readFile(new URL("../src/pages/services/hermes-connect/client-view/index.astro", import.meta.url), "utf8"),
+  readFile(new URL("../functions/api/_lib/company-memberships.mjs", import.meta.url), "utf8"),
 ]);
 
 test("Hermes Connect access routes one account into vertical-specific CRM", () => {
@@ -57,4 +61,23 @@ test("clean access source renders English before runtime translation", () => {
   assert.match(markup, /Repair Shop is the current live pilot/);
   assert.match(markup, /does not confirm activation or customer results/);
   assert.match(markup, /robots="noindex,nofollow"/);
+});
+
+
+test("Client View derives tenant scope from authenticated memberships only", () => {
+  assert.match(accountApi, /listActiveCompanyMemberships/);
+  assert.match(accountApi, /client_view/);
+  assert.match(page, /capabilities\?\.client_view === true/);
+  assert.match(page, /\/services\/hermes-connect\/client-view\//);
+  assert.match(clientApi, /getAuthenticatedSpecialist/);
+  assert.match(clientApi, /listActiveCompanyMemberships/);
+  assert.doesNotMatch(clientApi, /searchParams\.get\(["'](?:company|business|tenant|workspace)/i, "Client View must not trust a client-supplied tenant selector");
+  assert.match(clientApi, /owner_command_center:\s*false/);
+  assert.match(clientApi, /internal_ai:\s*false/);
+  assert.match(clientApi, /cross_tenant_search:\s*false/);
+  assert.match(clientApi, /write_enabled:\s*false/);
+  assert.match(membershipSource, /WHERE specialist_id = \? AND active = 1 AND revoked_at IS NULL/);
+  assert.match(clientPage, /robots="noindex,nofollow"/);
+  assert.match(clientPage, /\/api\/hermes-connect\/client-view/);
+  assert.doesNotMatch(clientPage, /company_id=/i, "Client View page must not construct arbitrary tenant selectors");
 });
