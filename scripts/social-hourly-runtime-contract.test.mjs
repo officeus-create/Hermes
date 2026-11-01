@@ -92,6 +92,7 @@ assert.match(worker,/social_platforms: \["threads", "instagram", "facebook", "x"
 assert.match(runtime,/HERMES_SOCIAL_ACQUISITION_V2/);
 assert.match(runtime,/socialAcquisitionOwnerControl/);
 assert.match(runtime,/social_owner_paused/);
+assert.match(runtime,/social_owner_control_unarmed/);
 assert.match(runtime,/HERMES_AUTOMATION_MODE/);
 assert.match(runtime,/HERMES_AUTOMATION_PUBLISH/);
 assert.match(runtime,/unresolved_previous_publication/);
