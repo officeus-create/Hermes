@@ -140,6 +140,57 @@ async function laneSnapshot(db,lane,tables){
   };
 }
 
+function publicReadiness(raw){
+  if(!raw||raw.success!==true){
+    return{success:false,error_class:clean(raw?.error_class,160)||"social_readiness_access_gap",blockers:[],tokens_returned:false,external_write_performed:false};
+  }
+  const logistics=raw.hermes_logistics||{};
+  const progresso=raw.progressopro||{};
+  return{
+    success:true,
+    observed_at:clean(raw.observed_at,100)||null,
+    write_convergence_ready:Boolean(raw.write_convergence_ready),
+    hae_write_bridge_ready:Boolean(raw.hae_write_bridge_ready),
+    manual_social_studio_provider_converged:Boolean(raw.manual_social_studio_provider_converged),
+    hermes_logistics:{
+      business_lane:"HERMES_LOGISTICS",
+      platform:"threads",
+      expected_account_id:clean(logistics.expected_account_id,160)||null,
+      expected_username:clean(logistics.expected_username,160)||null,
+      account_identity_configured:Boolean(logistics.account_identity_configured),
+      provider_selected:Boolean(logistics.provider_selected),
+      provider_transport:clean(logistics.provider_transport,120)||"UNKNOWN",
+      credential_ready:Boolean(logistics.credential_bridge_resolves&&logistics.ready_for_provider_preflight),
+      ready_for_provider_preflight:Boolean(logistics.ready_for_provider_preflight),
+      error_class:clean(logistics.credential_bridge_error,200)||null,
+    },
+    progressopro:{
+      business_lane:"PROGRESSOPRO",
+      platform:"threads",
+      expected_username:clean(progresso.expected_username,160)||"progressopro",
+      observed_account_id:clean(progresso.observed_account_id,160)||null,
+      observed_username:clean(progresso.observed_username,160)||null,
+      connection_present:Boolean(progresso.connection_present),
+      identity_verified:Boolean(progresso.identity_verified),
+      required_write_scopes_present:Boolean(progresso.required_write_scopes_present),
+      reply_scopes_present:Boolean(progresso.reply_scopes_present),
+      provider_transport:clean(progresso.provider_transport,120)||"UNKNOWN",
+      credential_ready:Boolean(progresso.credential_bridge_resolves&&progresso.ready_for_hae_write_bridge),
+      ready_for_hae_write_bridge:Boolean(progresso.ready_for_hae_write_bridge),
+      error_class:clean(progresso.credential_bridge_error,200)||null,
+    },
+    platform_gates:{
+      threads:clean(raw.platform_gates?.threads,160)||"UNKNOWN",
+      instagram:clean(raw.platform_gates?.instagram,160)||"UNKNOWN",
+      facebook:clean(raw.platform_gates?.facebook,160)||"UNKNOWN",
+      x:clean(raw.platform_gates?.x,160)||"UNKNOWN",
+    },
+    blockers:Array.isArray(raw.blockers)?raw.blockers.map(x=>clean(x,200)).filter(Boolean):[],
+    tokens_returned:false,
+    external_write_performed:false,
+  };
+}
+
 export async function buildCommandCenterSocialSnapshot(env,{nowMs=Date.now()}={}){
   const db=env?.DB;
   const tableNames={
@@ -153,9 +204,9 @@ export async function buildCommandCenterSocialSnapshot(env,{nowMs=Date.now()}={}
 
   let readiness;
   try{
-    readiness=await socialAccountReadinessSnapshot(env,{nowMs});
+    readiness=publicReadiness(await socialAccountReadinessSnapshot(env,{nowMs}));
   }catch{
-    readiness={success:false,error_class:"social_readiness_access_gap",tokens_returned:false,external_write_performed:false};
+    readiness=publicReadiness({success:false,error_class:"social_readiness_access_gap"});
   }
 
   const lanes=[];
