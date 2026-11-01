@@ -353,11 +353,11 @@ export async function buildCommandCenterSocialSnapshot(env,{nowMs=Date.now()}={}
       rule:"70_30_is_a_bounded_experiment_policy_not_an_algorithm_guarantee",
     },
     inbound:{
-      threads_replies_mentions:"NOT_LIVE",
+      threads_replies_mentions:"OWNER_READ_ONLY_SCOPE_GATED",
       instagram_comments_messages:"NOT_LIVE",
       facebook_comments_messages:"NOT_LIVE",
-      unified_inbox:"NOT_WIRED_TO_HAE_SOCIAL_V2",
-      policy:"draft_or_human_review_until_provider_and_policy_gates_are_verified",
+      unified_inbox:"NOT_PERSISTED_TO_UNIFIED_INBOX",
+      policy:"threads_read_only_research_then_PRE_VIKTOR; draft_or_human_review_until_provider_and_policy_gates_are_verified",
     },
     funnel:{
       stages:["content","discovery","owned_visit","qualified_action","crm_evidence","opportunity","contract","verified_revenue"],
