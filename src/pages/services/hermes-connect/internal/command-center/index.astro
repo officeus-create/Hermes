@@ -53,7 +53,7 @@ function renderAiArchitecture(data:any){
   const count=(value:unknown)=>typeof value==="number"&&Number.isSafeInteger(value)&&value>=0?String(value):"UNKNOWN";
   setText("[data-ai-map-runner]",data?.online?t("Online","Онлайн"):t("Offline","Офлайн"));
   setText("[data-ai-map-runner-time]",data?.last_seen_at?stamp(data.last_seen_at):"UNKNOWN");
-  setText("[data-ai-ops-primary]",data?.primary_executor==="mac"?"Mac":"UNKNOWN");
+  setText("[data-ai-ops-primary]",data?.primary_executor==="windows"?(data?.primary_executor_verified?"Windows":t("Windows assigned · runtime UNVERIFIED","Windows назначен · запуск НЕ ПОДТВЕРЖДЁН")):"UNKNOWN");
   for(const [selector,value] of [
     ["[data-ai-ops-phase]",observed(ops?.phase)],
     ["[data-ai-ops-model]",observed(ops?.model)],
@@ -81,7 +81,7 @@ async function loadAll(){
   const status=await jsonFetch("/api/internal-ai/status");
   if(!status.r.ok||!status.d.success){q("[data-private]")!.hidden=true;const access=q("[data-access]")!;access.hidden=false;access.querySelector("strong")!.textContent=status.r.status===401?t("Sign in required","Нужно войти"):t("Owner access required","Нужен доступ владельца");return}
   q("[data-access]")!.hidden=true;q("[data-private]")!.hidden=false;runtime=status.d.runtime||{};const active=status.d.active_task||null;
-  setText("[data-runner-state]",runtime.online?t("Online","Онлайн"):t("Offline","Офлайн"));setText("[data-runner-copy]",runtime.online?t("Mac runner is accepting work","Mac runner принимает работу"):t("Cloud backlog remains safe","Облачная очередь сохранена"));
+  setText("[data-runner-state]",runtime.online?t("Online","Онлайн"):t("Offline","Офлайн"));setText("[data-runner-copy]",runtime.online?t("Mac heartbeat observed; Windows runtime unverified","Heartbeat Mac получен; Windows не подтверждён"):t("Mac heartbeat unavailable; cloud backlog preserved","Heartbeat Mac недоступен; облачная очередь сохранена"));
   renderAiArchitecture(runtime);
   setText("[data-agent-badge]",runtime.online?t("Online","Онлайн"):t("Offline","Офлайн"));setText("[data-agent-status]",runtime.online?t("Online","Онлайн"):t("Offline","Офлайн"));setText("[data-agent-seen]",stamp(runtime.last_seen_at));setText("[data-agent-sha]",runtime.repo_sha||"—");setText("[data-active-task]",active?(String(active.status||"")+(active.id?" · "+String(active.id).slice(-10):"")):t("None","Нет"));
   const [work,taskList,accessList,account,processList]=await Promise.all([jsonFetch("/api/internal-command-center/work-items"),jsonFetch("/api/internal-ai/tasks"),jsonFetch("/api/internal-command-center/access"),jsonFetch("/api/hermes-connect/account"),jsonFetch("/api/internal-command-center/processes")]);
