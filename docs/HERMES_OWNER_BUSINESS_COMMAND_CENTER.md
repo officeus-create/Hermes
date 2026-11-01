@@ -1,6 +1,6 @@
 # Hermes Owner Business Command Center — canonical contract
 
-Status: CURRENT PRIVATE FOUNDATION; public/private unification is implemented in PR #2198 on top of merged owner backlog/project work. Private foundation: canonical PR #2107. #2096 and #2105 remain superseded historical implementations.
+Status: CURRENT CANONICAL SOURCE TRAIN; private foundation originated in merged PR #2107 and the current completion train is tracked by #2106 / #2159 → #2170 → #2219 → #2221 → #2222 → #2232 → #2234 → #2236. #2096, #2105 and other historical competing implementations remain superseded.
 Private route: /services/hermes-connect/internal/command-center/
 Public route: /services/hermes-connect/command-center/
 Private access: server-verified HERMES_INTERNAL_OWNER only; edge middleware must verify capability before serving the static owner workspace asset.
@@ -17,15 +17,18 @@ Public mode explains the product through sample data and never exposes owner rec
 - Projects — project portfolio plus the four Hermes business pillars: Logistics, Marketing, Technology and Academy;
 - Tasks — the durable owner backlog;
 - CRM — a router to existing Hermes Connect vertical/company workspaces; never a second CRM database;
+- Social Acquisition — read-only HAE/social queue, provider/OAuth health, publication receipts and links to the existing Unified Inbox / social connection surfaces; no second publisher;
 - Automations — owner-managed HAE processes;
 - Agents — local/cloud execution state and fallbacks;
-- Evidence — task-linked results, PRs, plugin/runtime execution map, provider health and owner acceptance;
+- Plugins — current role/version capability registry; registered/selected never means executed;
+- Executions — the existing task → executor → capability → evidence map, provider health, department KPIs and GitHub/human-work enrichment;
+- Evidence — task-linked results, PRs and owner acceptance;
 - Reports — Command Center-only HAE receipts for bounded recurring $0 reports;
 - Knowledge — reviewed One Brain source registry and lesson-governance state without copying Drive content into D1;
 - Investor — event-triggered investor-readiness state; no continuous polling or invented finance facts;
 - Access — connected workspaces and owner permission management.
 
-Plugins, executions, provider errors/health and department KPI evidence are deliberately consolidated inside Evidence / Execution Map and Projects rather than duplicated as separate systems. Client View is a separate membership-scoped Hermes Connect surface derived from authenticated active company membership and never exposes owner-only Command Center state.
+Plugins and Executions are separate owner navigation views for clarity, but they still reuse the same owner-only execution read model and canonical HAE/plugin registry. They do not create another plugin store, execution database or runtime. Provider errors/health and department KPI evidence remain projections inside the execution read model. Client View is a separate membership-scoped Hermes Connect surface derived from authenticated active company membership and never exposes owner-only Command Center state.
 
 Sales, Finance and Operations remain operating functions inside the system. They are not additional Hermes business pillars or sub-brands.
 
@@ -159,7 +162,7 @@ The private default view is **Today**, not a long configuration page. The owner 
 - What is blocked?
 - What should I do next?
 
-Configuration is progressively disclosed through Projects, Tasks, CRM, Automations, Agents, Evidence, Reports, Knowledge, Investor and Access. Task capture opens on demand instead of permanently occupying the main page. HAE configuration is not mixed into the daily decision layer. On compact screens the shared shell keeps the primary four actions visible and moves secondary views into the existing More menu instead of adding a second mobile navigation system.
+Configuration is progressively disclosed through Projects, Tasks, CRM, Social, Automations, Agents, Plugins, Executions, Evidence, Reports, Knowledge, Investor and Access. Task capture opens on demand instead of permanently occupying the main page. HAE configuration is not mixed into the daily decision layer. On compact screens the shared shell keeps the primary four actions visible and moves secondary views into the existing More menu instead of adding a second mobile navigation system.
 
 The public and private surfaces share one Command Center shell and the canonical Hermes brand system so they cannot drift into separate products. Pearl/Paper/Ink are the base; violet is Intelligence; the four business-pillar colors are orientation cues only. Primary controls keep 44px touch targets. Large workspace panels use the canonical panel radius.
 
