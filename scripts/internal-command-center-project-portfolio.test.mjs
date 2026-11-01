@@ -8,6 +8,7 @@ const ownerWorkspace = fs.readFileSync("src/components/HermesCommandCenterOwnerW
 const ownerComponent = fs.readFileSync("src/components/HermesOwnerProjectPortfolio.astro", "utf8");
 const publicPage = fs.readFileSync("src/pages/services/hermes-connect/command-center/index.astro", "utf8");
 const publicDemo = fs.readFileSync("src/components/HermesCommandCenterPublicPreview.astro", "utf8");
+const publicActivity = fs.readFileSync("src/components/HermesCommandCenterActivityShowcase.astro", "utf8");
 const publicContent = fs.readFileSync("src/components/HermesCommandCenterPublicContent.astro", "utf8");
 const retiredAiPage = fs.readFileSync("src/pages/services/hermes-connect/ai-command-center.astro", "utf8");
 const portfolio = commandCenterProjectPortfolio();
@@ -47,6 +48,12 @@ assert.match(ownerComponent, /coverageState/,"owner UI must surface partial cove
 assert.match(publicPage, /HermesCommandCenterPublicContent/);
 assert.match(publicContent, /HermesBusinessCommandCenterShell/);
 assert.match(publicContent, /HermesCommandCenterPublicPreview/);
+assert.match(publicContent, /HermesCommandCenterActivityShowcase/, "public Command Center must demonstrate the masked workflow");
+assert.match(publicActivity, /VISUAL SIMULATION · NOT LIVE DATA/, "simulation must never impersonate real-time telemetry");
+assert.match(publicActivity, /data-hcc-activity-toggle/, "public example must offer a working pause control");
+assert.match(publicActivity, /prefers-reduced-motion/, "animated showcase must respect reduced motion");
+assert.doesNotMatch(publicActivity, /\b(fetch|XMLHttpRequest|EventSource|WebSocket)\b/, "public simulation must not fetch private or live operational events");
+assert.doesNotMatch(publicActivity, /WORK_ID|HERMES_INTERNAL_OWNER|127\.0\.0\.1|password|token|secret|credential/i, "public activity must not expose private implementation or identity details");
 assert.match(publicPage, /robots="index,follow,max-image-preview:large"/,"canonical public Command Center must be indexable");
 assert.match(publicContent, /Private production system · public sample/,"public page must state the production/demo boundary");
 assert.match(publicDemo, /SAMPLE DATA/);
