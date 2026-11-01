@@ -20,7 +20,7 @@ function lineField(body, labels) {
   const text = clean(body, 65000);
   for (const label of labels) {
     const escaped = label.replace(/[.*+?^$()|[\]\\{}]/g, "\\$&");
-    const direct = new RegExp("^[-*\\s]*\\*\\*" + escaped + "\\*\\*\\s*[:|]\\s*(.+)$", "im").exec(text);
+    const direct = new RegExp("^[-*\\s]*\\*\\*" + escaped + "(?::\\*\\*|\\*\\*\\s*:)\\s*(.+)$", "im").exec(text);
     if (direct?.[1]) return clean(direct[1].replace(/^\|\s*/, ""), 500);
     const table = new RegExp("^\\|\\s*" + escaped + "\\s*\\|\\s*(.+?)\\s*\\|\\s*$", "im").exec(text);
     if (table?.[1]) return clean(table[1], 500);

@@ -119,6 +119,9 @@ const passport=parseAgentWorkPassport(`## Agent Work Passport
 assert.equal(passport.agent_family,"CHATGPT");
 assert.equal(passport.work_id,"#2106 execution-map continuation");
 assert.equal(passport.scope,"owner-only read model");
+const alternatePassport=parseAgentWorkPassport("**Agent / environment**: ChatGPT\\n**Work ID**: JOB-2");
+assert.equal(alternatePassport.agent_family,"CHATGPT");
+assert.equal(alternatePassport.work_id,"JOB-2");
 
 const normalizedPull=normalizeGithubPull({
   number:2170,title:"Execution map",state:"open",draft:true,html_url:"https://github.com/officeus-create/Hermes/pull/2170",
