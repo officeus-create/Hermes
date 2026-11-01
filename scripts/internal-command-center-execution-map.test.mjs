@@ -15,9 +15,12 @@ import { normalizeGithubPull, observedGithubCheckState, parseAgentWorkPassport, 
 import { buildDepartmentKpis, readDepartmentKpiSources } from "../functions/api/_lib/command-center-department-kpis.mjs";
 
 const readModelEndpointSource=readFileSync(new URL("../functions/api/internal-command-center/execution-map.ts",import.meta.url),"utf8");
+const executionMapUiSource=readFileSync(new URL("../src/components/HermesExecutionMap.astro",import.meta.url),"utf8");
 assert.doesNotMatch(readModelEndpointSource,/\breconcileWorkItems\s*\(/,"Evidence read must not mutate canonical owner work statuses as an incidental side effect");
 assert.match(readModelEndpointSource,/readDepartmentKpiSources\(env\.DB, checkedAt\)/,"Department KPIs must be read from canonical sources through the owner read model");
 assert.match(readModelEndpointSource,/department_kpis/,"Owner read model must expose department KPI projection");
+assert.match(executionMapUiSource,/independent_review_state/,"Execution Map UI must surface independent review evidence separately");
+assert.match(executionMapUiSource,/github\.enrichment_state/,"Execution Map UI must expose GitHub enrichment scope/state");
 
 const registry=[
   {role_id:"hermes-agent-coordinator",plugin_version:"0.1.71",observed_at:"2026-10-27"},
@@ -259,12 +262,14 @@ assert.deepEqual(githubPrivate.pulls,[]);
 const linkedHuman=linkHumanWorkDevelopments(
   {source_state:"CONNECTED",tasks:[{id:"86cbhdh43",custom_id:null,name:"SEO owner"},{id:"86nope",name:"Unlinked"}]},
   {pulls:[
-    {number:2200,title:"SEO fix",url:"https://github.com/officeus-create/Hermes/pull/2200",head_sha:"c".repeat(40),ci_state:"UNKNOWN",review_state:"DRAFT",passport:{work_id:"ClickUp 86cbhdh43",agent_family:"CHATGPT"}},
+    {number:2200,title:"SEO fix",url:"https://github.com/officeus-create/Hermes/pull/2200",head_sha:"c".repeat(40),ci_state:"OBSERVED_CHECKS_ALL_SUCCESS",check_count:6,review_state:"APPROVED_OBSERVED",independent_review_state:"APPROVED_BY_DIFFERENT_LOGIN",passport:{work_id:"ClickUp 86cbhdh43",agent_family:"CHATGPT"}},
     {number:2201,title:"False prefix",url:"https://github.com/officeus-create/Hermes/pull/2201",passport:{work_id:"86cbhdh430",agent_family:"CODEX"}},
   ]},
 );
 assert.equal(linkedHuman.tasks[0].developments.length,1);
 assert.equal(linkedHuman.tasks[0].developments[0].number,2200);
+assert.equal(linkedHuman.tasks[0].developments[0].ci_state,"OBSERVED_CHECKS_ALL_SUCCESS");
+assert.equal(linkedHuman.tasks[0].developments[0].independent_review_state,"APPROVED_BY_DIFFERENT_LOGIN");
 assert.equal(linkedHuman.tasks[1].developments.length,0);
 
 
