@@ -62,7 +62,7 @@ const projects = Object.freeze([
       milestone("plugin-registry", "Canonical plugin registry projection", "done", "PR #2159"),
       milestone("canonicalize", "Owner selected one canonical implementation", "done", "Owner decision: #2159 is canonical"),
       milestone("exact-head-ci", "Canonical exact-head CI", "done", "PR #2159 · 10/10 GREEN"),
-      milestone("independent-qa", "Independent QA", "planned"),
+      milestone("independent-qa", "Independent QA", "active", "Reviewer progressopro requested; no independent approval yet"),
       milestone("production", "Role-scoped production readback", "planned"),
     ],
   },
