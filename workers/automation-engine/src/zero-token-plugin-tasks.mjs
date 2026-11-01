@@ -643,7 +643,9 @@ export function validateZeroTokenPluginTaskInput(jobType, payload) {
   if (jobType === "growth.error.closure.audit") return normalizeErrors(payload);
   if (jobType === "market.car-hauling.snapshot.evaluate") return { current: normalizeMarketSnapshot(payload?.current, "market_current"), previous: payload?.previous == null ? null : normalizeMarketSnapshot(payload.previous, "market_previous") };
   if (jobType === "marketing.mentions.audit") return normalizeMentions(payload);
-  if (jobType === "report.catalog.weekly.build") return normalizeCatalogReport(payload);\n  if (jobType === "report.hr-tech.weekly.build") return normalizeHrTechReport(payload);\n  if (jobType === "report.catalog.weekly.build") return runCatalogReport(payload);\n  if (jobType === "report.hr-tech.weekly.build") return runHrTechReport(payload);\n  if (jobType === "academy.english.practice.build") return runEnglish(payload);
+  if (jobType === "report.catalog.weekly.build") return normalizeCatalogReport(payload);
+  if (jobType === "report.hr-tech.weekly.build") return normalizeHrTechReport(payload);
+  if (jobType === "academy.english.practice.build") return runEnglish(payload);
   if (jobType === "hae.self.improvement.audit") return evaluateHaeSelfImprovementSnapshot(payload);
   if (jobType === "hae.self.repair.packet") return normalizeSelfRepairPacket(payload);
   if (jobType === "hae.self.release.verify") return normalizeHaeSelfReleaseEvidence(payload);
@@ -658,6 +660,8 @@ export function runZeroTokenPluginTask(jobType, payload) {
   if (jobType === "growth.error.closure.audit") return runErrors(payload);
   if (jobType === "market.car-hauling.snapshot.evaluate") return runMarket(payload);
   if (jobType === "marketing.mentions.audit") return runMentions(payload);
+  if (jobType === "report.catalog.weekly.build") return runCatalogReport(payload);
+  if (jobType === "report.hr-tech.weekly.build") return runHrTechReport(payload);
   if (jobType === "academy.english.practice.build") return runEnglish(payload);
   if (jobType === "hae.self.improvement.audit") return evaluateHaeSelfImprovementSnapshot(payload);
   if (jobType === "hae.self.repair.packet") return runSelfRepairPacket(payload);
