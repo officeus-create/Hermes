@@ -84,11 +84,14 @@ assert.match(worker,/messageType === "social\.threads\.plan"/);
 assert.match(worker,/messageType === "social\.threads\.readback"/);
 assert.match(worker,/url\.pathname === "\/v1\/social-account-readiness"/);
 assert.match(worker,/cron\.social_v2_enqueue_failed/);
+assert.match(worker,/cron\.social_v2_owner_paused/);
 assert.match(worker,/cron\.social_v2_readback_recovery_failed/);
 assert.match(worker,/social_business_lanes: \["HERMES_LOGISTICS", "PROGRESSOPRO"\]/);
 assert.match(worker,/social_platforms: \["threads", "instagram", "facebook", "x"\]/);
 
 assert.match(runtime,/HERMES_SOCIAL_ACQUISITION_V2/);
+assert.match(runtime,/socialAcquisitionOwnerControl/);
+assert.match(runtime,/social_owner_paused/);
 assert.match(runtime,/HERMES_AUTOMATION_MODE/);
 assert.match(runtime,/HERMES_AUTOMATION_PUBLISH/);
 assert.match(runtime,/unresolved_previous_publication/);
