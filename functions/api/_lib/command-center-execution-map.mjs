@@ -135,9 +135,21 @@ export function developmentCatalog({ registrySnapshot = {}, registryEvidence = {
   }));
   const systems = [{
     kind: "EXECUTOR",
+    id: "viktor-windows",
+    label: "Hermes AI · VIKTOR · Windows (assigned primary)",
+    status: "RUNTIME_UNVERIFIED",
+    last_seen_at: null,
+    repo_sha: null,
+    runtime_version: null,
+    phase: null,
+    model: null,
+    current_task: null,
+    next_action: null,
+  }, {
+    kind: "EXECUTOR",
     id: "viktor-mac",
-    label: "Hermes AI · VIKTOR · Mac",
-    status: runner?.online ? "RUNNING" : "OFFLINE_OR_UNKNOWN",
+    label: "Hermes AI · VIKTOR · Mac (fallback heartbeat)",
+    status: runner?.online ? "HEARTBEAT_FRESH" : "OFFLINE_OR_UNKNOWN",
     last_seen_at: runner?.last_seen_at || null,
     repo_sha: runner?.repo_sha || null,
     runtime_version: runner?.runtime_version || null,

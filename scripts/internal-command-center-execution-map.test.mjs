@@ -60,7 +60,10 @@ const catalog=developmentCatalog({
 });
 assert.equal(catalog.plugins[0].evidence_state,"STALE_SNAPSHOT");
 assert.equal(catalog.automation[0].max_cost_usd,0);
-assert.equal(catalog.systems[0].status,"RUNNING");
+assert.equal(catalog.systems[0].id,"viktor-windows");
+assert.equal(catalog.systems[0].status,"RUNTIME_UNVERIFIED","primary Windows status requires actual canonical HAE lease evidence");
+assert.equal(catalog.systems[1].id,"viktor-mac");
+assert.equal(catalog.systems[1].status,"HEARTBEAT_FRESH","Mac heartbeat must not be displayed as task execution");
 
 assert.equal(clickupAuthorization("pk_test_readonly"),"pk_test_readonly");
 assert.equal(clickupAuthorization("oauth_test_readonly"),"Bearer oauth_test_readonly");
