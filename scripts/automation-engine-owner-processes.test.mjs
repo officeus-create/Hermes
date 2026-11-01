@@ -58,6 +58,24 @@ sqlite.prepare(`INSERT INTO hermes_automation_processes
   scheduledAt,
 );
 
+sqlite.prepare(`INSERT INTO hermes_automation_processes
+  (process_id,organization_scope,name,job_type,business_lane,workstream,role_id,cadence_hours,timezone,status,max_cost_usd_cents,next_run_at,created_by,created_at,updated_at)
+  VALUES (?,?,?,?,?,?,?,?,?,'active',0,?,?,?,?)`).run(
+  "haep_social_control",
+  "hermes_internal",
+  "Social Acquisition",
+  "social.acquisition.control",
+  "marketing",
+  "marketing",
+  "hermes-marketing-growth",
+  1,
+  "UTC",
+  scheduledAt,
+  "owner",
+  scheduledAt,
+  scheduledAt,
+);
+
 await worker.scheduled({ scheduledTime: Date.parse(scheduledAt), cron: "17 * * * *" }, env, {});
 let process = sqlite.prepare("SELECT * FROM hermes_automation_processes WHERE process_id='haep_gateway'").get();
 assert.equal(process.status, "active");
@@ -73,6 +91,15 @@ assert.equal(jobs[0].policy_version, "hae-owner-process-v1");
 assert.match(jobs[0].payload_json, /"process_id":"haep_gateway"/);
 assert.match(jobs[0].payload_json, /"_role_contract"/);
 assert(queueWrites.some((write) => write.body?.job_id === process.last_job_id));
+
+const socialControl=sqlite.prepare("SELECT * FROM hermes_automation_processes WHERE process_id='haep_social_control'").get();
+assert.equal(socialControl.status,"active");
+assert.equal(socialControl.last_job_id,null,"control-only process must never create a second scheduled job");
+assert.equal(
+  sqlite.prepare("SELECT COUNT(*) AS n FROM hermes_automation_jobs WHERE job_type='social.acquisition.control'").get().n,
+  0,
+  "control-only social process must not enter the HAE job queue",
+);
 
 let event = sqlite.prepare("SELECT * FROM hermes_automation_process_events WHERE process_id='haep_gateway' AND event_type='process.dispatched'").get();
 assert.equal(event.job_id, process.last_job_id);
