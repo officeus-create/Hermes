@@ -4,6 +4,7 @@ import {
   socialAcquisitionV2Enabled,
   socialAcquisitionWritesEnabled,
   verifySocialSourcePage,
+  normalizeSocialCopyCore,
 } from "../workers/automation-engine/src/social-hourly-runtime.mjs";
 
 assert.equal(socialAcquisitionV2Enabled({}),false);
@@ -18,6 +19,17 @@ assert.equal(socialAcquisitionWritesEnabled({
   HERMES_AUTOMATION_MODE:"dry_run",
   HERMES_AUTOMATION_PUBLISH:"enabled",
 }),false);
+
+assert.equal(
+  normalizeSocialCopyCore("Useful hook\nQuestion?\nhttps://hermeslogisticsus.com/a/?utm_source=threads&utm_content=one"),
+  normalizeSocialCopyCore("Useful hook\nQuestion?\nhttps://hermeslogisticsus.com/b/?utm_source=threads&utm_content=two"),
+  "URL/UTM changes must not make identical social copy look unique",
+);
+assert.notEqual(
+  normalizeSocialCopyCore("Useful hook\nQuestion A?\nhttps://hermeslogisticsus.com/a/"),
+  normalizeSocialCopyCore("Useful hook\nQuestion B?\nhttps://hermeslogisticsus.com/a/"),
+  "meaningfully different copy cores must remain distinct",
+);
 
 function sourceResponse({status=200,contentType="text/html; charset=utf-8",body="<!doctype html><html><body>"+("verified source ".repeat(30))+"</body></html>"}={}){
   return {
@@ -104,6 +116,8 @@ assert.match(runtime,/social_source_link_mismatch/);
 assert.match(runtime,/social_source_readback_unavailable/);
 assert.match(runtime,/meta_threads_history_incomplete/);
 assert.match(runtime,/meta_threads_duplicate_existing_post/);
+assert.match(runtime,/meta_threads_duplicate_copy_pattern/);
+assert.match(runtime,/social_recent_topic_collision/);
 assert.match(runtime,/meta_threads_recent_authored_cooldown/);
 assert.match(runtime,/publication\.provider_claimed/);
 assert.match(runtime,/provider_accepted_readback_pending/);
