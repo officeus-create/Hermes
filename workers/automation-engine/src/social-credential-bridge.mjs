@@ -195,9 +195,11 @@ export async function resolveThreadsTransportForLane(env,businessLane,{nowMs=Dat
     const configuredToken=clean(env?.HERMES_THREADS_ACCESS_TOKEN,4096);
     let credential=null;
     if(configuredAccount==="28419597014385166"&&configuredToken.length>=20&&configuredToken.length<=4096){
+      const configuredScopes=[...scopeSet(env?.HERMES_THREADS_GRANTED_SCOPES||"")].sort();
       credential={
         ok:true,source:"hae_worker_secret",accessToken:configuredToken,
         accountId:configuredAccount,username:"hermes.logistics",
+        grantedScopes:configuredScopes.length?configuredScopes:null,
       };
     }else{
       credential=await resolveBusinessSocialThreadsCredential(env,{
@@ -221,6 +223,7 @@ export async function resolveThreadsTransportForLane(env,businessLane,{nowMs=Dat
       accountId:credential.accountId,
       username:credential.username,
       source:credential.source,
+      grantedScopes:Array.isArray(credential.grantedScopes)?credential.grantedScopes:null,
       transport,
     };
   }
@@ -248,6 +251,7 @@ export async function resolveThreadsTransportForLane(env,businessLane,{nowMs=Dat
       accountId:credential.accountId,
       username:credential.username,
       source:credential.source,
+      grantedScopes:Array.isArray(credential.grantedScopes)?credential.grantedScopes:null,
       transport,
     };
   }
