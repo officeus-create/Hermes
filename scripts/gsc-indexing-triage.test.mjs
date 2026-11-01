@@ -11,7 +11,7 @@ assert.match(redirects, /^\/logistics\/ \/paths\/logistics\/ 301$/m, "/logistics
 for (const [legacy, canonical] of [
   ["/resources/rpm-calculator/", "/logistics/resources/rpm-calculator/"],
   ["/tools/load-analyzer/", "/services/hermes-connect/load-analyzer/"],
-  ["/ai-command-center/", "/services/hermes-connect/ai-command-center/"],
+  ["/ai-command-center/", "/services/hermes-connect/command-center/"],
   ["/unified-inbox/", "/services/hermes-connect/unified-inbox/"],
 ]) {
   assert.ok(redirects.includes(`${legacy} ${canonical} 301`), `retired public owner must redirect: ${legacy}`);
