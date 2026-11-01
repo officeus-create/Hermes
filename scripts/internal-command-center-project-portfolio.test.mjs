@@ -18,17 +18,26 @@ assert.ok(portfolio.every((project) => Number.isInteger(project.progress.percent
 assert.ok(portfolio.every((project) => project.eta === null && project.eta_label === "UNKNOWN"), "unproven ETA must stay UNKNOWN");
 assert.ok(portfolio.some((project) => project.id === "investor-intelligence" && project.evidence_level === "HOLD_EVENT_TRIGGER_ONLY"));
 assert.ok(portfolio.some((project) => project.id === "ai-operations" && project.status === "in_progress"), "AI Operations must remain in progress until role-scoped production acceptance");
-assert.ok(portfolio.some((project) => project.id === "hermes-command-center" && project.evidence_level === "SOURCE_MERGED_RUNTIME_UNVERIFIED"), "source merge must not become production verification");
+assert.ok(portfolio.some((project) => project.id === "hermes-command-center" && project.evidence_level === "SOURCE_STACK_CI_GREEN_RUNTIME_UNVERIFIED"), "green source stack must not become production verification");
+assert.ok(portfolio.some((project) => project.id === "ai-operations" && project.evidence_level === "EXACT_HEAD_CI_GREEN_REVIEW_PENDING"), "AI Operations must preserve exact-head CI separately from independent review");
+assert.ok(portfolio.some((project) => project.id === "hae-runtime" && project.evidence_level === "PARTIAL_RUNTIME_PASS_DEPLOYED_SHA_STALE"), "HAE project must surface deployed SHA continuity failure");
+assert.ok(portfolio.some((project) => project.id === "windows-ai" && project.evidence_level === "HISTORICAL_LOCAL_VERIFIED_CURRENT_OFFLINE"), "historical Windows evidence must not be presented as current live runtime");
 
 assert.match(api, /requireInternalOwner/);
 assert.match(api, /Cache-Control.*private, no-store/);
 assert.match(api, /progress_method/);
 assert.match(api, /eta_policy/);
+assert.match(api, /checked_at:checkedAt/,"project API read time must be generated at request time");
+assert.match(api, /snapshot_observed_at:PROJECT_PORTFOLIO_SNAPSHOT_OBSERVED_AT/,"declared snapshot age must be separate from read time");
+assert.match(api, /coverage_state:PROJECT_PORTFOLIO_COVERAGE_STATE/,"project API must declare partial registry coverage");
+assert.doesNotMatch(api,/checked_at:\s*["']2026-10-28/,"stale fixed snapshot time must never impersonate a fresh read");
 assert.match(ownerWorkspace, /HermesOwnerProjectPortfolio/, "project portfolio belongs to the shared owner workspace Projects view");
 assert.match(ownerComponent, /\/api\/internal-command-center\/projects/);
 assert.match(ownerComponent, /role="progressbar"/);
 assert.match(ownerComponent, /Dependencies/);
 assert.match(ownerComponent, /ETA/);
+assert.match(ownerComponent, /declared snapshot/,"owner UI must disclose snapshot age");
+assert.match(ownerComponent, /coverageState/,"owner UI must surface partial coverage rather than imply completeness");
 
 assert.match(publicPage, /HermesCommandCenterPublicContent/);
 assert.match(publicContent, /HermesBusinessCommandCenterShell/);
