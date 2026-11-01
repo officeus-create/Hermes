@@ -11,6 +11,13 @@ const COOLDOWN_MS = (3 * 60 + 15) * 60_000;
 function clean(value,max=2000){
   return String(value??"").replace(/[<>\u0000-\u001f\u007f]/g," ").replace(/\s+/g," ").trim().slice(0,max);
 }
+export function normalizeSocialCopyCore(value){
+  return normalizeThreadsText(value)
+    .replace(/https?:\/\/\S+/gi," ")
+    .toLowerCase()
+    .replace(/\s+/g," ")
+    .trim();
+}
 function addSecondsIso(iso,seconds){
   const base=Number.isFinite(Date.parse(String(iso||"")))?Date.parse(String(iso)):Date.now();
   return new Date(base+seconds*1000).toISOString();
@@ -176,6 +183,10 @@ async function preflightLaneThreads(env,lane,candidate,nowMs=Date.now()){
   if(history.complete!==true)return {ok:false,error_class:"meta_threads_history_incomplete"};
   const normalized=normalizeThreadsText(candidate.body);
   if(history.rows.some(row=>normalizeThreadsText(row.text||"")===normalized))return {ok:false,error_class:"meta_threads_duplicate_existing_post"};
+  const copyCore=normalizeSocialCopyCore(candidate.body);
+  if(copyCore&&history.rows.some(row=>normalizeSocialCopyCore(row.text||"")===copyCore)){
+    return {ok:false,error_class:"meta_threads_duplicate_copy_pattern"};
+  }
   for(const row of history.rows){
     const timestamp=Date.parse(String(row.timestamp||""));
     if(!Number.isFinite(timestamp))return {ok:false,error_class:"meta_threads_invalid_feed"};
@@ -184,6 +195,15 @@ async function preflightLaneThreads(env,lane,candidate,nowMs=Date.now()){
     if(age<COOLDOWN_MS)return {ok:false,error_class:"meta_threads_recent_authored_cooldown"};
   }
   return {ok:true,resolved,history_count:history.rows.length,history_complete:true};
+}
+
+async function recentPublishedTopicCollision(db,candidate,nowMs=Date.now()){
+  const cutoff=new Date(nowMs-12*60*60*1000).toISOString();
+  const row=await db.prepare(`SELECT content_id,state,updated_at FROM hermes_automation_content
+    WHERE account_key=? AND platform='threads' AND template_id=? AND content_id<>? AND updated_at>=?
+      AND state IN ('published_verified','provider_accepted_readback_pending','unknown_outcome_readback_pending','unknown_outcome_unresolved','readback_unverified')
+    ORDER BY updated_at DESC LIMIT 1`).bind(candidate.account_key,candidate.template_id,candidate.content_id,cutoff).first();
+  return row?{blocked:true,content_id:clean(row.content_id,240),state:clean(row.state,120),updated_at:clean(row.updated_at,100)}:{blocked:false};
 }
 
 async function claimPublication(db,candidate,lane){
@@ -239,6 +259,12 @@ export async function processSocialThreadsPlan(env,message,{nowMs=Date.now()}={}
   if(!Number.isSafeInteger(unresolved?.n)||unresolved.n!==0){
     await markPlanTerminal(env.DB,candidate,"preflight_blocked","unresolved_previous_publication");
     return {status:"preflight_blocked",error_class:"unresolved_previous_publication"};
+  }
+
+  const topicCollision=await recentPublishedTopicCollision(env.DB,candidate,nowMs);
+  if(topicCollision.blocked){
+    await markPlanTerminal(env.DB,candidate,"preflight_blocked","social_recent_topic_collision");
+    return {status:"preflight_blocked",error_class:"social_recent_topic_collision",collision:topicCollision};
   }
 
   const sourceReadback=await verifySocialSourcePage(candidate);
