@@ -22,7 +22,7 @@ export const directionStories: Record<DirectionStoryId, DirectionStory> = {
       title: "Who are you today?",
       lead: "Pick the closest answer. You get the right page and one clear next step — no form first.",
       answers: [
-        { title: "Carrier or owner-operator", body: "Load search, dispatch, documents and a clearer operating plan.", cta: "Find work and support", href: "/logistics/carrier/" },
+        { title: "Carrier or owner-operator", body: "Load search, dispatch, documents and a clearer operating plan.", cta: "Find work and support", href: "/logistics/car-hauling-dispatch/" },
         { title: "Shipper or dealer", body: "Move vehicles between dealerships, auctions and locations.", cta: "Move vehicles", href: "/logistics/shipper-dealer/" },
         { title: "Broker", body: "Compatible car-hauling capacity and clear communication.", cta: "Find carrier capacity", href: "/logistics/broker/" },
         { title: "Experienced operator", body: "Build an agency under the Hermes brand and standards.", cta: "Open an agency", href: "/logistics/agency/" },

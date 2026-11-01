@@ -39,7 +39,7 @@ MECHANISM → ONE primary action → measurement on an existing approved event, 
 | 17 | Catalog | `/businesses/*` | 9 | teal product accent | — | — | INTENTIONAL_PRODUCT | #2027 | ✓ | — |
 | 18 | Load Board | `/load-board/` | 38 | night product | — | — | INTENTIONAL_PRODUCT (owner: do not redesign) | #2027 | ✓ | — |
 | 19 | Hermes Connect public | `/services/hermes-connect/*` | 65 | Connect product | — | — | INTENTIONAL_PRODUCT | #2024 | ✓ | — |
-| 20 | Agreements / sign / onboarding | `/contracts/*`, `/sign/*` | — | Pearl (wave A) | — | — | PRIVATE | #2091 | ✓ | — |
+| 20 | Agreements / sign / onboarding | `/contracts/*`, `/sign/*`, `/logistics/carrier-*` | — | Pearl (wave A) + Logistics blue accents (2026-10-29, was violet/pink) | — | — | PRIVATE | #2091 | ✓ | — |
 | 21 | 404 | `/404.html` | — | Pearl | — | home links | CURRENT_BASELINE | #2091 | ✓ | — |
 
 MACRO 2026-10-26 night (after London classification): 3 of 13 commercial/content families `ACCEPTED_LIVE` (Marketing services, brand-intent trust,

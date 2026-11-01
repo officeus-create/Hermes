@@ -130,7 +130,7 @@ assert.match(dealerCrmWorkspace, /Individual weekly schedule/);
 assert.doesNotMatch(dealerCrmWorkspace, privateDealerContactPattern);
 assert.doesNotMatch(dealerCrmWorkspace, /\\.innerHTML\\s*=/);
 assert.match(access, /Dealer Operations/);
-assert.match(access, /<option value="dealer">Dealer<\/option>/);
+assert.match(access, /<option value="dealer" data-i18n="tDealer">Dealer<\/option>/);
 
 console.log("dealer-crm-onboarding-contract: Legacy Toyota dealer profile, full private dealer CRM modules, Transport Request -> Load Board sync, website read-only boundary and Meta owner-auth gates verified");
 
