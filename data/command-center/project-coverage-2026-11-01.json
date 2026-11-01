@@ -1,0 +1,252 @@
+{
+  "schema_version": 1,
+  "snapshot_id": "command-center-project-coverage-2026-11-01",
+  "coverage_status": "PARTIAL",
+  "coverage_reason": "Current canonical sources are identified and sampled, but production Command Center has no safe live Drive connector and active WORK_ID counts are not yet independently accepted per family.",
+  "source_method": "REVIEWED_STATIC_SNAPSHOT_FROM_CURRENT_ONE_BRAIN",
+  "ledger_row_count_observed": 116,
+  "sources": [
+    {
+      "source_class": "ONE_BRAIN_CONTROL_LOOP",
+      "title": "ONE BRAIN CONTROL LOOP — DEPARTMENT + AI REPORTING PROTOCOL — 2026-09-02",
+      "drive_id": "1-F1QU6EKQEdoK0jQucIEabqJ_PUsVIQ5zWiws-BgAQc",
+      "observed_at": "2026-11-01T18:54:50.937Z",
+      "authority": "CURRENT"
+    },
+    {
+      "source_class": "AI_MASTER_OPERATING_BOARD",
+      "title": "AI MASTER OPERATING BOARD — HERMES — CANONICAL — CURRENT",
+      "drive_id": "1zblFM0EGsWqetFxTtDcKq0UFI-Pu8rdUgwrk5Kx-pIg",
+      "observed_at": "2026-10-25T12:28:23.954Z",
+      "authority": "CURRENT"
+    },
+    {
+      "source_class": "EXECUTION_IDEAS_LEDGER",
+      "title": "HERMES EXECUTION & IDEAS LEDGER — CANONICAL — CURRENT",
+      "drive_id": "1Ya2fgHZVISV3XHd_w9JHSJBrizCy-LeKczD9H_qJErc",
+      "observed_at": "2026-11-01T19:07:03.830Z",
+      "authority": "CURRENT"
+    }
+  ],
+  "rules": {
+    "historical_chat_name_is_current_project": false,
+    "old_master_task_registry_is_current_authority": false,
+    "infer_progress_from_issue_or_message_count": false,
+    "infer_eta_without_duration_evidence": false,
+    "infer_business_result_from_ci": false,
+    "active_work_id_count_is_complete": false
+  },
+  "families": [
+    {
+      "id": "website-web",
+      "label": "Hermes Website / WEB",
+      "source_state": "CURRENT_SOURCE_IDENTIFIED",
+      "department": "technology",
+      "representative_work_ids": [
+        "W-20261023-005",
+        "W-20261018-017",
+        "W-20261018-018",
+        "W-20261026-109"
+      ],
+      "active_work_id_count": null,
+      "count_state": "UNKNOWN_NOT_EXHAUSTIVELY_MAPPED",
+      "client_exposure": "NO",
+      "notes": "Current website, accessibility, consent and commercial website-package work is present in the Ledger."
+    },
+    {
+      "id": "search-seo-geo",
+      "label": "Search / SEO / GEO / AI Visibility",
+      "source_state": "CURRENT_SOURCE_IDENTIFIED",
+      "department": "marketing",
+      "representative_work_ids": [
+        "W-20261019-015",
+        "W-20261027-110"
+      ],
+      "active_work_id_count": null,
+      "count_state": "UNKNOWN_NOT_EXHAUSTIVELY_MAPPED",
+      "client_exposure": "SOURCE_POLICY_REQUIRED"
+    },
+    {
+      "id": "sales-carrier-acquisition",
+      "label": "Sales / Carrier acquisition",
+      "source_state": "CURRENT_SOURCE_IDENTIFIED",
+      "department": "sales",
+      "representative_work_ids": [
+        "W-20261020-010",
+        "W-20261028-116",
+        "W-20261026-109"
+      ],
+      "active_work_id_count": null,
+      "count_state": "UNKNOWN_NOT_EXHAUSTIVELY_MAPPED",
+      "client_exposure": "NO"
+    },
+    {
+      "id": "hr-recruiting",
+      "label": "HR / Recruiting",
+      "source_state": "CURRENT_SOURCE_IDENTIFIED",
+      "department": "operations",
+      "representative_work_ids": [
+        "W-20261028-114",
+        "W-20261014-026",
+        "W-20260423-084"
+      ],
+      "active_work_id_count": null,
+      "count_state": "UNKNOWN_NOT_EXHAUSTIVELY_MAPPED",
+      "client_exposure": "NO"
+    },
+    {
+      "id": "hermes-connect",
+      "label": "Hermes Connect",
+      "source_state": "CURRENT_SOURCE_IDENTIFIED",
+      "department": "technology",
+      "representative_work_ids": [
+        "W-20261012-032",
+        "W-20261011-034",
+        "W-20261011-033"
+      ],
+      "active_work_id_count": null,
+      "count_state": "UNKNOWN_NOT_EXHAUSTIVELY_MAPPED",
+      "client_exposure": "MEMBERSHIP_SCOPED_ONLY"
+    },
+    {
+      "id": "catalog",
+      "label": "Hermes Catalog",
+      "source_state": "CURRENT_SOURCE_IDENTIFIED",
+      "department": "operations",
+      "representative_work_ids": [
+        "W-20261025-108",
+        "W-20260927-055"
+      ],
+      "active_work_id_count": null,
+      "count_state": "UNKNOWN_NOT_EXHAUSTIVELY_MAPPED",
+      "client_exposure": "MEMBERSHIP_SCOPED_ONLY"
+    },
+    {
+      "id": "load-board-network",
+      "label": "Load Board / Dealer-Shipper-Load Network",
+      "source_state": "CURRENT_SOURCE_IDENTIFIED",
+      "department": "logistics",
+      "representative_work_ids": [
+        "W-20261012-028",
+        "W-20261012-029",
+        "W-20261024-091",
+        "W-20261024-092",
+        "W-20261024-096"
+      ],
+      "active_work_id_count": null,
+      "count_state": "UNKNOWN_NOT_EXHAUSTIVELY_MAPPED",
+      "client_exposure": "SOURCE_POLICY_REQUIRED"
+    },
+    {
+      "id": "cloudflare-release",
+      "label": "Cloudflare / release infrastructure",
+      "source_state": "CURRENT_SOURCE_IDENTIFIED",
+      "department": "technology",
+      "representative_work_ids": [
+        "W-20261004-050"
+      ],
+      "active_work_id_count": null,
+      "count_state": "UNKNOWN_NOT_EXHAUSTIVELY_MAPPED",
+      "client_exposure": "NO"
+    },
+    {
+      "id": "social-distribution",
+      "label": "Social / Threads / Meta distribution",
+      "source_state": "CURRENT_SOURCE_IDENTIFIED",
+      "department": "marketing",
+      "representative_work_ids": [
+        "W-20261004-047",
+        "W-20261015-024",
+        "W-20260228-087",
+        "W-20261002-052"
+      ],
+      "active_work_id_count": null,
+      "count_state": "UNKNOWN_NOT_EXHAUSTIVELY_MAPPED",
+      "client_exposure": "NO"
+    },
+    {
+      "id": "telegram-messaging",
+      "label": "Telegram / messaging integrations",
+      "source_state": "CURRENT_SOURCE_IDENTIFIED",
+      "department": "marketing",
+      "representative_work_ids": [
+        "W-20260919-056",
+        "W-20260918-059"
+      ],
+      "active_work_id_count": null,
+      "count_state": "UNKNOWN_NOT_EXHAUSTIVELY_MAPPED",
+      "client_exposure": "NO"
+    },
+    {
+      "id": "academy",
+      "label": "Academy",
+      "source_state": "CURRENT_SOURCE_IDENTIFIED",
+      "department": "academy",
+      "representative_work_ids": [
+        "W-20261025-107",
+        "W-20261011-035",
+        "W-20260918-058"
+      ],
+      "active_work_id_count": null,
+      "count_state": "UNKNOWN_NOT_EXHAUSTIVELY_MAPPED",
+      "client_exposure": "MEMBERSHIP_SCOPED_ONLY"
+    },
+    {
+      "id": "progressopro-marketing",
+      "label": "ProgressoPro / Marketing growth",
+      "source_state": "CURRENT_SOURCE_IDENTIFIED",
+      "department": "marketing",
+      "representative_work_ids": [
+        "W-20261004-047",
+        "W-20261015-024",
+        "W-20261005-045",
+        "W-20261001-053"
+      ],
+      "active_work_id_count": null,
+      "count_state": "UNKNOWN_NOT_EXHAUSTIVELY_MAPPED",
+      "client_exposure": "NO"
+    },
+    {
+      "id": "completion-governance",
+      "label": "Completion / execution governance",
+      "source_state": "CURRENT_SOURCE_IDENTIFIED",
+      "department": "operations",
+      "representative_work_ids": [
+        "W-20261023-001",
+        "W-20261021-008",
+        "W-20261024-106"
+      ],
+      "active_work_id_count": null,
+      "count_state": "UNKNOWN_NOT_EXHAUSTIVELY_MAPPED",
+      "client_exposure": "NO"
+    },
+    {
+      "id": "finance-investor",
+      "label": "Finance / Investor",
+      "source_state": "CURRENT_SOURCE_IDENTIFIED",
+      "department": "finance",
+      "representative_work_ids": [
+        "W-20261024-103",
+        "W-20261028-112",
+        "W-20261012-030",
+        "W-20261024-104"
+      ],
+      "active_work_id_count": null,
+      "count_state": "UNKNOWN_NOT_EXHAUSTIVELY_MAPPED",
+      "client_exposure": "NO"
+    },
+    {
+      "id": "hae-command-center",
+      "label": "HAE / Command Center / Hermes AI",
+      "source_state": "CURRENT_SOURCE_IDENTIFIED",
+      "department": "technology",
+      "representative_work_ids": [
+        "W-20261021-008",
+        "W-20261023-001"
+      ],
+      "active_work_id_count": null,
+      "count_state": "UNKNOWN_NOT_EXHAUSTIVELY_MAPPED",
+      "client_exposure": "NO"
+    }
+  ]
+}
