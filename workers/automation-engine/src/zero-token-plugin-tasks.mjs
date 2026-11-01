@@ -157,6 +157,30 @@ export const ZERO_TOKEN_PLUGIN_TASK_CONTRACTS = Object.freeze([
     kpi: ["unique_mention_count", "duplicate_count", "unknown_count"],
   }),
   contract({
+    roleId: "hermes-search-growth",
+    contractVersion: "catalog-weekly-command-center-report-v1",
+    jobType: "report.catalog.weekly.build",
+    lane: "search",
+    trigger: "scheduled_friday_12_or_monday_12_kyiv",
+    input: { observed_at: "ISO-8601", mode: "WEEKLY_REPORT | MONDAY_REMINDER", catalog: "bounded canonical Catalog D1 summary" },
+    steps: ["validate canonical Catalog counts", "preserve UNKNOWN for unavailable duplicate/SEO evidence", "separate implemented from planned", "emit one bounded NEXT action with DONE criteria"],
+    output: "Command Center report payload only; no email/send/publish side effect",
+    kpi: ["catalog_profile_count", "verified_public_count", "open_catalog_work_count", "cost_usd"],
+    cadenceHours: 168,
+  }),
+  contract({
+    roleId: "hermes-agent-coordinator",
+    contractVersion: "hr-tech-weekly-radar-v1",
+    jobType: "report.hr-tech.weekly.build",
+    lane: "operations",
+    trigger: "scheduled_monday_10_kyiv",
+    input: { observed_at: "ISO-8601", period_start: "YYYY-MM-DD", period_end: "YYYY-MM-DD", source_snapshots: "bounded allowlisted public source metadata" },
+    steps: ["validate allowlisted source metadata", "deduplicate source ids and URLs", "classify sourcing/interview/routing relevance deterministically", "emit impact and one practical next step per accepted change"],
+    output: "Command Center HR-tech radar with source, impact and next step; no external write",
+    kpi: ["source_count", "accepted_change_count", "unknown_count", "cost_usd"],
+    cadenceHours: 168,
+  }),
+  contract({
     roleId: "hermes-academy",
     contractVersion: "work-english-practice-v1",
     jobType: "academy.english.practice.build",
@@ -403,6 +427,154 @@ function runMentions(payload) {
   return { unique_mention_count: unique.length, duplicate_count: duplicates.length, unknown_count: unknown.length, new_mention_ids: bounded(unique.map((item) => item.mention_id)), duplicate_mention_ids: bounded(duplicates), unknown_mention_ids: bounded(unknown), raw_page_content_stored: false, cost_usd: 0 };
 }
 
+
+function dateOnly(value, field) {
+  const raw = clean(value, 10);
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(raw) || !Number.isFinite(Date.parse(raw+"T00:00:00Z"))) {
+    throw new Error(field+"_invalid");
+  }
+  return raw;
+}
+
+function normalizeCatalogReport(payload) {
+  const observedAt = iso(payload?.observed_at, "catalog_report_observed_at");
+  const mode = clean(payload?.mode, 32).toUpperCase();
+  if (!["WEEKLY_REPORT","MONDAY_REMINDER"].includes(mode)) throw new Error("catalog_report_mode_invalid");
+  const source = payload?.catalog;
+  if (!source || typeof source !== "object" || Array.isArray(source)) throw new Error("catalog_report_source_required");
+  const metric = (key) => source[key] == null ? null : integer(source[key], "catalog_"+key, 0, 10000000);
+  const state = clean(source.seo_duplicate_risk_state, 80).toUpperCase() || "UNKNOWN";
+  if (!["KNOWN","UNKNOWN","NOT_CONFIGURED","SOURCE_UNAVAILABLE"].includes(state)) throw new Error("catalog_seo_state_invalid");
+  const blockers = array(source.blockers || [], "catalog_blockers", 20).map((item) => clean(item, 240)).filter(Boolean);
+  const nextAction = clean(source.next_action, 300);
+  const doneCriteria = clean(source.done_criteria, 500);
+  if (!nextAction || !doneCriteria) throw new Error("catalog_next_action_required");
+  return {
+    observed_at: observedAt,
+    mode,
+    period_start: dateOnly(payload?.period_start, "catalog_period_start"),
+    period_end: dateOnly(payload?.period_end, "catalog_period_end"),
+    catalog: {
+      catalog_profile_count: metric("catalog_profile_count"),
+      catalog_opt_in_count: metric("catalog_opt_in_count"),
+      verified_public_count: metric("verified_public_count"),
+      self_submitted_count: metric("self_submitted_count"),
+      hermes_connect_company_count: metric("hermes_connect_company_count"),
+      open_catalog_work_count: metric("open_catalog_work_count"),
+      seo_duplicate_risk_count: metric("seo_duplicate_risk_count"),
+      seo_duplicate_risk_state: state,
+      blockers,
+      next_action: nextAction,
+      done_criteria: doneCriteria,
+    },
+  };
+}
+
+function runCatalogReport(payload) {
+  const input = normalizeCatalogReport(payload);
+  const c = input.catalog;
+  const implemented = [
+    { key:"catalog_profiles", label:"Catalog company profiles", value:c.catalog_profile_count, state:c.catalog_profile_count==null?"UNKNOWN":"KNOWN" },
+    { key:"catalog_opt_in", label:"Catalog opt-in profiles", value:c.catalog_opt_in_count, state:c.catalog_opt_in_count==null?"UNKNOWN":"KNOWN" },
+    { key:"verified_public", label:"Verified public companies", value:c.verified_public_count, state:c.verified_public_count==null?"UNKNOWN":"KNOWN" },
+    { key:"hermes_connect", label:"Hermes Connect canonical companies", value:c.hermes_connect_company_count, state:c.hermes_connect_company_count==null?"UNKNOWN":"KNOWN" },
+  ];
+  const planned = [
+    { key:"open_catalog_work", label:"Open Catalog project work", value:c.open_catalog_work_count, state:c.open_catalog_work_count==null?"UNKNOWN":"KNOWN" },
+    { key:"seo_duplicate_risk", label:"SEO duplicate risk", value:c.seo_duplicate_risk_count, state:c.seo_duplicate_risk_state },
+  ];
+  return {
+    report_type:"CATALOG_WEEKLY",
+    delivery_surface:"HERMES_COMMAND_CENTER_ONLY",
+    mode:input.mode,
+    period_start:input.period_start,
+    period_end:input.period_end,
+    implemented,
+    planned,
+    blockers:c.blockers,
+    next_action:c.next_action,
+    done_criteria:c.done_criteria,
+    external_send:false,
+    ai_tokens_used:0,
+    cost_usd:0,
+  };
+}
+
+const HR_TECH_CATEGORIES = new Set(["CANDIDATE_SOURCE","SOCIAL_SOURCE","AI_INTERVIEW","CANDIDATE_ROUTING","OTHER"]);
+function normalizeHrTechReport(payload) {
+  const observedAt = iso(payload?.observed_at, "hr_tech_observed_at");
+  const sourceSnapshots = array(payload?.source_snapshots, "hr_tech_sources", 50).map((item) => {
+    const sourceId = clean(item?.source_id, 100);
+    const url = clean(item?.url, 500);
+    const title = clean(item?.title, 240);
+    const category = clean(item?.category, 60).toUpperCase();
+    if (!sourceId || !/^https:\/\//i.test(url) || !title || !HR_TECH_CATEGORIES.has(category)) throw new Error("hr_tech_source_invalid");
+    return {
+      source_id:sourceId,
+      url,
+      title,
+      category,
+      published_at:item?.published_at==null?null:iso(item.published_at,"hr_tech_published_at"),
+      changed:boolean(item?.changed,"hr_tech_changed"),
+      source_state:clean(item?.source_state,60).toUpperCase()||"UNKNOWN",
+    };
+  });
+  return {
+    observed_at:observedAt,
+    period_start:dateOnly(payload?.period_start,"hr_tech_period_start"),
+    period_end:dateOnly(payload?.period_end,"hr_tech_period_end"),
+    source_snapshots:sourceSnapshots,
+  };
+}
+
+function runHrTechReport(payload) {
+  const input=normalizeHrTechReport(payload);
+  const seen=new Set(), changes=[], unknown=[];
+  const nextByCategory={
+    CANDIDATE_SOURCE:"Review whether the source should enter Hermes Connect candidate acquisition tests; keep qualification human-reviewed.",
+    SOCIAL_SOURCE:"Review the official source/API change before altering Threads or Instagram recruiting intake; do not auto-DM candidates.",
+    AI_INTERVIEW:"Compare the change against the current human-review gate before enabling any interview automation.",
+    CANDIDATE_ROUTING:"Check logistics / sales / marketing routing rules and update only reviewed deterministic mappings.",
+    OTHER:"Record the source and hold implementation until the operational impact is independently verified.",
+  };
+  const impactByCategory={
+    CANDIDATE_SOURCE:"May change candidate discovery volume, cost, eligibility or source quality.",
+    SOCIAL_SOURCE:"May change how recruiting demand can be discovered or attributed on social channels.",
+    AI_INTERVIEW:"May change interview assistance, scoring or evidence requirements; automated hiring decisions remain prohibited.",
+    CANDIDATE_ROUTING:"May change how candidates are assigned across logistics, sales and marketing queues.",
+    OTHER:"Potential HR-tech relevance; impact remains bounded until verified.",
+  };
+  for(const item of input.source_snapshots){
+    const key=item.source_id+"|"+item.url;
+    if(seen.has(key)) continue;
+    seen.add(key);
+    if(item.source_state!=="CONNECTED" && item.source_state!=="UNCHANGED" && item.source_state!=="CHANGED") {
+      unknown.push({source_id:item.source_id,url:item.url,state:item.source_state});
+      continue;
+    }
+    if(!item.changed) continue;
+    changes.push({
+      source_id:item.source_id,url:item.url,title:item.title,category:item.category,published_at:item.published_at,
+      impact:impactByCategory[item.category],
+      next_step:nextByCategory[item.category],
+    });
+  }
+  return {
+    report_type:"HR_TECH_WEEKLY_RADAR",
+    delivery_surface:"HERMES_COMMAND_CENTER_ONLY",
+    period_start:input.period_start,
+    period_end:input.period_end,
+    source_count:seen.size,
+    accepted_change_count:changes.length,
+    unknown_count:unknown.length,
+    changes:bounded(changes,20),
+    unknown_sources:bounded(unknown,20),
+    external_send:false,
+    ai_tokens_used:0,
+    cost_usd:0,
+  };
+}
+
 const ENGLISH_LESSONS = Object.freeze({
   LOGISTICS: Object.freeze([
     ["pickup window", "delivery appointment", "proof of delivery"],
@@ -471,7 +643,7 @@ export function validateZeroTokenPluginTaskInput(jobType, payload) {
   if (jobType === "growth.error.closure.audit") return normalizeErrors(payload);
   if (jobType === "market.car-hauling.snapshot.evaluate") return { current: normalizeMarketSnapshot(payload?.current, "market_current"), previous: payload?.previous == null ? null : normalizeMarketSnapshot(payload.previous, "market_previous") };
   if (jobType === "marketing.mentions.audit") return normalizeMentions(payload);
-  if (jobType === "academy.english.practice.build") return runEnglish(payload);
+  if (jobType === "report.catalog.weekly.build") return normalizeCatalogReport(payload);\n  if (jobType === "report.hr-tech.weekly.build") return normalizeHrTechReport(payload);\n  if (jobType === "report.catalog.weekly.build") return runCatalogReport(payload);\n  if (jobType === "report.hr-tech.weekly.build") return runHrTechReport(payload);\n  if (jobType === "academy.english.practice.build") return runEnglish(payload);
   if (jobType === "hae.self.improvement.audit") return evaluateHaeSelfImprovementSnapshot(payload);
   if (jobType === "hae.self.repair.packet") return normalizeSelfRepairPacket(payload);
   if (jobType === "hae.self.release.verify") return normalizeHaeSelfReleaseEvidence(payload);
