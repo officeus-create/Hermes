@@ -6,12 +6,14 @@ import { cleanConnectionText, upsertCompanyConnection } from "./company-connecti
 import {
   exchangeThreadsAuthorizationCode,
   fetchThreadsProfile,
-  publishThreadsText,
-  readThreadsMedia,
   threadsAuthorizationUrl,
   threadsBrandRuntimeConfig,
-  validateThreadsText,
 } from "./threads-brand-connector.mjs";
+import {
+  createMetaThreadsTransport,
+  validateThreadsText,
+  safeThreadsPermalink,
+} from "../../../shared/social/meta-threads-provider.mjs";
 
 const PROVIDERS = Object.freeze(["facebook", "instagram", "threads"]);
 const PROVIDER_SET = new Set(PROVIDERS);
@@ -199,35 +201,6 @@ export async function ensureBusinessSocialSchema(db) {
   await db.prepare(`
     CREATE INDEX IF NOT EXISTS idx_business_social_creative_intakes_business
     ON hermes_business_social_creative_intakes(business_key, created_at DESC)
-  `).run();
-  await db.prepare(`
-    CREATE TABLE IF NOT EXISTS hermes_business_social_media_assets (
-      id TEXT PRIMARY KEY,
-      business_key TEXT NOT NULL,
-      owner_specialist_id TEXT NOT NULL,
-      intake_id TEXT,
-      mime_type TEXT NOT NULL,
-      width INTEGER NOT NULL,
-      height INTEGER NOT NULL,
-      slide_index INTEGER NOT NULL DEFAULT 0,
-      surface_hint TEXT NOT NULL DEFAULT 'feed',
-      content_sha256 TEXT NOT NULL,
-      content_base64 TEXT NOT NULL,
-      status TEXT NOT NULL DEFAULT 'ready_public',
-      expires_at TEXT NOT NULL,
-      created_at TEXT NOT NULL,
-      updated_at TEXT NOT NULL,
-      UNIQUE(business_key, content_sha256)
-    )
-  `).run();
-  const mediaAssetColumns=await db.prepare("PRAGMA table_info(hermes_business_social_media_assets)").all();
-  const mediaAssetColumnNames=new Set((mediaAssetColumns?.results||[]).map((row)=>String(row.name||"")));
-  if(!mediaAssetColumnNames.has("surface_hint")){
-    await db.prepare("ALTER TABLE hermes_business_social_media_assets ADD COLUMN surface_hint TEXT NOT NULL DEFAULT 'feed'").run();
-  }
-  await db.prepare(`
-    CREATE INDEX IF NOT EXISTS idx_business_social_media_assets_business
-    ON hermes_business_social_media_assets(business_key, created_at DESC)
   `).run();
 }
 
@@ -1006,18 +979,35 @@ export async function publishInstagramCarousel(env, credential, caption, imageUr
 
 export async function publishBusinessThreadsText(credential, text) {
   const validated = validateThreadsText(text);
-  if (!validated.ok) return { ok: false, error_class: validated.error };
+  if (!validated.ok) return { ok: false, error_class: validated.error_class };
   const accessToken = clean(credential?.access_token, 4096);
   const userId = clean(credential?.threads_user_id, 160);
-  if (!accessToken || !userId) return { ok: false, error_class: "authorization_required" };
-  const published = await publishThreadsText(accessToken, userId, validated.text);
+  const expectedUsername = clean(credential?.username, 160).replace(/^@/, "").toLowerCase();
+  if (!accessToken || !userId || !expectedUsername) return { ok: false, error_class: "authorization_required" };
+  const transport = createMetaThreadsTransport({
+    accessToken,
+    accountId: userId,
+    expectedUsername,
+  });
+  if (!transport) return { ok: false, error_class: "threads_transport_invalid" };
+  const identity = await transport.verifyIdentity();
+  if (!identity.ok) return identity;
+  const published = await transport.publishText(validated.text);
   if (!published.ok) return published;
-  const readback = await readThreadsMedia(accessToken, published.media_id);
+  const readback = await transport.readMedia(published.provider_object_id);
+  const permalink = readback.ok ? safeThreadsPermalink(readback.media?.permalink) : null;
+  const exact = Boolean(
+    readback.ok
+    && readback.media?.id === published.provider_object_id
+    && readback.media?.username === expectedUsername
+    && readback.media?.text === validated.text
+    && permalink
+  );
   return {
     ok: true,
-    media_id: published.media_id,
-    permalink: readback.ok ? readback.media.permalink : null,
-    readback_ok: readback.ok,
+    media_id: published.provider_object_id,
+    permalink: exact ? permalink : null,
+    readback_ok: exact,
   };
 }
 
