@@ -24,6 +24,7 @@ legacySqlite.exec("CREATE TABLE hermes_owner_work_items (id TEXT PRIMARY KEY,org
 const legacyDB={prepare:sql=>new Statement(legacySqlite.prepare(sql))};
 await ensureCommandCenterSchema(legacyDB);
 assert(legacySqlite.prepare("PRAGMA table_info(hermes_owner_work_items)").all().some(x=>x.name==="project_id"),"migration must add nullable project_id");
+assert(legacySqlite.prepare("PRAGMA table_info(hermes_owner_work_items)").all().some(x=>x.name==="plugin_route_json"),"legacy D1 migration must add durable plugin route receipt");
 assert.equal(legacySqlite.prepare("SELECT project_id FROM hermes_owner_work_items WHERE id='legacy'").get().project_id,null,"older task remains unassigned");
 await ensureCommandCenterSchema(legacyDB);
 legacySqlite.close();
@@ -49,7 +50,10 @@ const request=(path,{method="GET",body,owner="owner"}={})=>new Request("https://
 });
 async function create(title,workstream="marketing",projectId=null){
   const response=await createWorkItem({request:request("/api/internal-command-center/work-items",{method:"POST",body:{workstream,priority:"p1",title,details:"Synthetic acceptance task: "+title,source:"text",project_id:projectId}}),env:{DB:db}});
-  assert.equal(response.status,201); const payload=await response.json(); assert.equal(payload.work_item.status,"planned"); return payload.work_item;
+  assert.equal(response.status,201); const payload=await response.json(); assert.equal(payload.work_item.status,"planned");
+   assert.equal(payload.work_item.plugin_route?.state,"PLUGIN_SELECTED_NOT_EXECUTED","selection must not claim execution");
+   assert.ok(payload.work_item.plugin_route?.owner?.role_id,"owner role must be selected on create");
+   return payload.work_item;
 }
 async function patch(id,action){
   const response=await mutateWorkItem({request:request("/api/internal-command-center/work-items/"+id,{method:"PATCH",body:{action}}),env:{DB:db},params:{id}});
@@ -146,6 +150,10 @@ assert.equal(dispatched.payload.state,"dispatched");
 assert.equal(dispatched.payload.work_item.status,"in_progress");
 assert.equal(dispatched.payload.task.status,"queued");
 assert(dispatched.payload.work_item.linked_task_id);
+assert.equal(dispatched.payload.work_item.plugin_route?.state,"PLUGIN_SELECTED_NOT_EXECUTED");
+const routedPrompt=sqlite.prepare("SELECT prompt FROM hermes_internal_ai_tasks WHERE id=?").get(dispatched.payload.task.id).prompt;
+assert.match(routedPrompt,/Selected owner capability: hermes-marketing-growth@0\.1\.16/);
+assert.match(routedPrompt,/PLUGIN_SELECTED_NOT_EXECUTED/);
 
 const blockedSecond=await patch(second.id,"dispatch");
 assert.equal(blockedSecond.response.status,409);
