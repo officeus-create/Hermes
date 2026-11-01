@@ -2,8 +2,10 @@ import { SOCIAL_LANES, buildHourlySocialPackage, accountKeyForLane } from "./soc
 import { resolveThreadsTransportForLane } from "./social-credential-bridge.mjs";
 import { normalizeThreadsText, safeThreadsPermalink } from "../../../shared/social/meta-threads-provider.mjs";
 import { pluginRuntimeVersion } from "./plugin-runtime-registry.mjs";
+import { ensureHaeProcessSchema } from "../../../src/lib/hae-process-control.mjs";
 
 const PLATFORM = "threads";
+const SOCIAL_CONTROL_JOB_TYPE = "social.acquisition.control";
 const COOLDOWN_MS = (3 * 60 + 15) * 60_000;
 
 function clean(value,max=2000){
@@ -23,6 +25,26 @@ export function socialAcquisitionWritesEnabled(env){
   return socialAcquisitionV2Enabled(env)
     && String(env?.HERMES_AUTOMATION_MODE||"dry_run")==="live"
     && String(env?.HERMES_AUTOMATION_PUBLISH||"disabled")==="enabled";
+}
+
+export async function socialAcquisitionOwnerControl(db){
+  if(!db)return {configured:false,status:"UNKNOWN",allowed:false,error_class:"database_not_configured"};
+  await ensureHaeProcessSchema(db);
+  const row=await db.prepare(`SELECT process_id,status,updated_at,last_error_class
+    FROM hermes_automation_processes
+    WHERE organization_scope='hermes_internal' AND job_type=? LIMIT 1`).bind(SOCIAL_CONTROL_JOB_TYPE).first();
+  if(!row){
+    return {configured:false,process_id:null,status:"inherited_active",allowed:true,updated_at:null,last_error_class:null};
+  }
+  const status=clean(row.status,40);
+  return {
+    configured:true,
+    process_id:clean(row.process_id,120)||null,
+    status:status||"UNKNOWN",
+    allowed:status==="active",
+    updated_at:clean(row.updated_at,100)||null,
+    last_error_class:clean(row.last_error_class,160)||null,
+  };
 }
 
 export async function verifySocialSourcePage(candidate,{fetchImpl=fetch}={}){
@@ -111,6 +133,8 @@ async function reserveThreadRun(db,lane,slotKey){
 
 export async function enqueueHourlySocialPlans(env,slotKey){
   if(!env?.DB||!env?.AUTOMATION_QUEUE)throw new Error("runtime_not_configured");
+  const control=await socialAcquisitionOwnerControl(env.DB);
+  if(!control.allowed)return {queued:0,drafts:[],control};
   const drafts=await persistHourlySocialPackages(env.DB,slotKey);
   let queued=0;
   for(const lane of SOCIAL_LANES){
@@ -192,6 +216,12 @@ export async function processSocialThreadsPlan(env,message,{nowMs=Date.now()}={}
   if(!/^\d{4}-\d{2}-\d{2}T\d{2}$/.test(slotKey))throw new Error("slot_key_invalid");
   const candidate=await candidateForLane(env.DB,lane,slotKey);
   if(!candidate)throw new Error("social_candidate_missing");
+
+  const ownerControl=await socialAcquisitionOwnerControl(env.DB);
+  if(!ownerControl.allowed){
+    await markPlanTerminal(env.DB,candidate,"social_owner_paused","social_owner_paused");
+    return {status:"social_owner_paused",lane,candidate,control:ownerControl};
+  }
 
   if(!socialAcquisitionWritesEnabled(env)){
     await markPlanTerminal(env.DB,candidate,"social_dry_run_ready");
