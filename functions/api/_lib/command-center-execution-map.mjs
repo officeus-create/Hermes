@@ -194,7 +194,9 @@ export function linkHumanWorkDevelopments(humanWork = {}, githubDevelopments = {
       agent_family: pull?.passport?.agent_family || "UNKNOWN",
       head_sha: pull.head_sha || null,
       ci_state: pull.ci_state || "UNKNOWN",
+      check_count: pull.check_count ?? null,
       review_state: pull.review_state || "UNKNOWN",
+      independent_review_state: pull.independent_review_state || "UNKNOWN",
     }));
     return { ...task, developments };
   });
