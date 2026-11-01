@@ -24,6 +24,44 @@ export function socialAcquisitionWritesEnabled(env){
     && String(env?.HERMES_AUTOMATION_PUBLISH||"disabled")==="enabled";
 }
 
+export async function verifySocialSourcePage(candidate,{fetchImpl=fetch}={}){
+  let url;
+  try{url=new URL(String(candidate?.destination_url||""));}
+  catch{return {ok:false,error_class:"social_source_url_invalid"};}
+  if(url.protocol!=="https:"||url.hostname!=="hermeslogisticsus.com"){
+    return {ok:false,error_class:"social_source_not_canonical"};
+  }
+  if(!String(candidate?.body||"").includes(url.toString())){
+    return {ok:false,error_class:"social_source_link_mismatch"};
+  }
+  let response;
+  try{
+    response=await fetchImpl(url.toString(),{
+      method:"GET",
+      redirect:"manual",
+      headers:{
+        Accept:"text/html,application/xhtml+xml",
+        "User-Agent":"HermesAutomationEngine/1.0 social-source-readonly",
+      },
+    });
+  }catch{
+    return {ok:false,error_class:"social_source_readback_unavailable"};
+  }
+  if(!response?.ok){
+    return {ok:false,error_class:"social_source_http_status",status:Number(response?.status||0)||null};
+  }
+  const contentType=String(response.headers?.get?.("content-type")||"").toLowerCase();
+  if(!contentType.includes("text/html")){
+    return {ok:false,error_class:"social_source_not_html"};
+  }
+  let html="";
+  try{html=await response.text();}catch{return {ok:false,error_class:"social_source_readback_unavailable"};}
+  if(html.length<200||!/(?:<!doctype\s+html|<html\b)/i.test(html)){
+    return {ok:false,error_class:"social_source_invalid_html"};
+  }
+  return {ok:true,source_url:url.toString(),status:response.status};
+}
+
 export async function persistHourlySocialPackages(db,slotKey){
   const now=new Date().toISOString();
   const results=[];
@@ -146,6 +184,12 @@ export async function processSocialThreadsPlan(env,message,{nowMs=Date.now()}={}
   if(!Number.isSafeInteger(unresolved?.n)||unresolved.n!==0){
     await markPlanTerminal(env.DB,candidate,"preflight_blocked","unresolved_previous_publication");
     return {status:"preflight_blocked",error_class:"unresolved_previous_publication"};
+  }
+
+  const sourceReadback=await verifySocialSourcePage(candidate);
+  if(!sourceReadback.ok){
+    await markPlanTerminal(env.DB,candidate,"preflight_blocked",sourceReadback.error_class||"social_source_readback_failed");
+    return {status:"preflight_blocked",error_class:sourceReadback.error_class||"social_source_readback_failed"};
   }
 
   const preflight=await preflightLaneThreads(env,lane,candidate,nowMs);
