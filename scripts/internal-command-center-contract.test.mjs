@@ -8,7 +8,7 @@ const helper=read("functions/api/_lib/internal-command-center.mjs");
 const collection=read("functions/api/internal-command-center/work-items.ts");
 const item=read("functions/api/internal-command-center/work-items/[id].ts");
 const access=read("functions/api/internal-command-center/access.ts");
-const processes=read("functions/api/internal-command-center/processes.ts");
+const processes=read("functions/api/internal-command-center/processes.ts");\nconst reports=read("functions/api/internal-command-center/reports.ts");\nconst intelligence=read("functions/api/internal-command-center/owner-intelligence.ts");
 const processItem=read("functions/api/internal-command-center/processes/[id].ts");
 const processControl=read("src/lib/hae-process-control.mjs");
 const processRuntime=read("workers/automation-engine/src/owner-process-runtime.mjs");
@@ -37,8 +37,19 @@ assert.match(ownerWorkspace,/Execution environment|Среда исполнени
 assert.match(ownerWorkspace,/HAE 24\/7 processes/,"owner must have one visible autonomous-process control surface");
 assert.match(ownerWorkspace,/External sends and paid AI are disabled in this layer/,"first autonomous slice must expose its safe execution boundary");
 assert.match(ownerWorkspace,/data-cc-view="today"/,"owner home must prioritize the Today decision layer");
-for(const key of ["projects","tasks","automations","agents","evidence","access"]) assert.match(ownerWorkspace,new RegExp(`data-cc-view="${key}"`),`owner workspace must expose ${key} view`);
+for(const key of ["projects","tasks","crm","automations","agents","evidence","reports","knowledge","investor","access"]) assert.match(ownerWorkspace,new RegExp(`data-cc-view="${key}"`),`owner workspace must expose ${key} view`);
 assert.match(ownerWorkspace,/data-new-task/,"task capture must be a compact on-demand action instead of a permanent large form");
+assert.match(ownerWorkspace,/Command Center does not create a second CRM/,"CRM owner view must route to existing Hermes Connect workspaces instead of cloning CRM state");
+assert.match(page,/\/api\/internal-command-center\/reports/,"owner workspace must read HAE report receipts");
+assert.match(page,/\/api\/internal-command-center\/owner-intelligence/,"owner workspace must read One Brain/investor governance state");
+assert.match(page,/\/api\/hermes-connect\/account/,"CRM router must reuse the canonical Hermes account portfolio");
+assert.match(reports,/HERMES_COMMAND_CENTER_ONLY/,"reports must be scoped to Command Center delivery");
+assert.match(reports,/max_cost_usd:0/,"reports must remain zero-cost by contract");
+assert.doesNotMatch(reports,/LEAD_EMAIL_SERVICE|send_email|OWNER_ALERT_EMAIL|fetch\(/,"Command Center report readback must not send email or call providers");
+assert.match(intelligence,/commandCenterProjectCoverageSnapshot/,"Knowledge view must reuse reviewed One Brain coverage instead of creating another knowledge store");
+assert.match(intelligence,/EVENT_TRIGGER_ONLY/,"Investor view must preserve event-trigger-only policy");
+assert.match(intelligence,/automatic_promotion:false/,"One Brain lessons must remain independently reviewed");
+assert.doesNotMatch(intelligence,/Google_Drive|drive\.google|docs\.google/,"runtime intelligence endpoint must not carry Drive credentials or fetch documents directly");
 assert.match(commandCss,/min-height:44px/,"Command Center controls must keep 44px touch targets");
 assert.match(commandCss,/--hermes-radius-panel|var\(--hermes-radius-panel\)/,"Command Center must consume the canonical Hermes radius system");
 assert.match(middleware,/requireInternalOwner/,"edge middleware must verify owner access before serving private Command Center HTML");
@@ -57,7 +68,7 @@ assert.doesNotMatch(helper,/SET status = 'done'.*linked_task_id IN/s,"linked exe
 assert.match(helper,/Reuse current Hermes architecture.*do not create a second CRM/s,"dispatched prompts must preserve single-system ownership");
 assert.match(helper,/external communications.*owner approval flow/i,"dispatched prompts must preserve consequential approval gates");
 
-for(const source of [collection,item,access,processes,processItem]){
+for(const source of [collection,item,access,processes,processItem,reports,intelligence]){
   assert.match(source,/requireInternalOwner/,"every command-center API must require HERMES_INTERNAL_OWNER");
   assert.match(source,/Cache-Control.*no-store/,"private APIs must not be cached");
 }
