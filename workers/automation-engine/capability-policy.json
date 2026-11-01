@@ -422,6 +422,20 @@
       "contract_version": "hae-self-release-verify-v1",
       "semantic_required": false,
       "free_ai_policy": "not_required"
+    },
+    {
+      "job_type": "social.reply.prepare",
+      "permission_class": "DRAFT_ONLY",
+      "execution_runtime": "canonical_hae_queue",
+      "external_provider_write": false,
+      "allowed_side_effects": [
+        "d1_job_state",
+        "d1_job_events"
+      ],
+      "submission_auth": "HERMES_AUTOMATION_TOKEN",
+      "retention_class": "business_runtime_evidence",
+      "owner_approval_required": true,
+      "contract_version": "social-reply-prepare-v1"
     }
   ],
   "future_capability_gate": {
