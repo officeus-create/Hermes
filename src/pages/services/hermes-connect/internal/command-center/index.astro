@@ -55,6 +55,27 @@ async function loadCatalogOwnerReport(){
   catalogReportLastPoll=Date.now();
   const res=await jsonFetch("/api/internal-command-center/catalog-weekly-report");
   if(!res.r.ok||!res.d.success){state.textContent=t("Catalog report source unavailable.","Источник отчёта Catalog недоступен.");return}
+  const mondayState=q<HTMLElement>("[data-catalog-monday-state]");
+  const mondayBody=q<HTMLElement>("[data-catalog-monday-body]");
+  const notice=(res.d.monday_notices||[]).find((row:any)=>row.notice);
+  if(mondayState){
+    if(!notice){
+      mondayState.textContent=t("Awaiting first Monday 12:00 Kyiv HAE receipt.","Ожидаем первый понедельничный запуск HAE в 12:00 по Киеву.");
+    }else{
+      const n=notice.notice;
+      const ready=notice.status==="FRIDAY_REPORT_READY";
+      mondayState.textContent=t("Monday notice: ","Уведомление в понедельник: ")+String(notice.monday_date||"—")+
+        " · "+(ready?t("Friday report ready","Пятничный отчёт готов"):t("Friday report missing","Пятничный отчёт отсутствует"));
+      if(mondayBody){
+        mondayBody.textContent=[
+          t("Friday reference: ","Отчёт за пятницу: ")+String(notice.friday_date||"—"),
+          t("Blockers: ","Блокеры: ")+(Array.isArray(n.blockers)?n.blockers.join(", "):"UNKNOWN"),
+          t("NEXT ACTION: ","СЛЕДУЮЩАЯ ЗАДАЧА: ")+String(n.next_action?.task||"UNKNOWN"),
+          "DONE: "+String(n.next_action?.done||"UNKNOWN")
+        ].join("\n");mondayBody.hidden=false;
+      }
+    }
+  }
   const item=(res.d.reports||[]).find((row:any)=>row.state==="ready"&&row.report);
   if(!item){state.textContent=t("Awaiting the first Friday HAE receipt.","Ожидаем первый пятничный receipt HAE.");return}
   const r=item.report;
