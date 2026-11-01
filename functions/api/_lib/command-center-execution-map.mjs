@@ -1,3 +1,4 @@
+import { readWorkItemPluginRoute } from "./internal-command-center.mjs";
 const WORKSTREAM_CAPABILITIES = Object.freeze({
   marketing: Object.freeze(["hermes-agent-coordinator","hermes-marketing-growth","hermes-search-growth"]),
   logistics: Object.freeze(["hermes-agent-coordinator","hermes-dispatch-os"]),
@@ -69,6 +70,7 @@ export function nextActionForWorkItem(item = {}) {
 export function executionProjection(item = {}, registryEntries = []) {
   const linked = Boolean(item.linked_task_id);
   const taskRole = linked ? String(item.linked_task_agent_role || "software_engineer") : null;
+  const selectedRoute = readWorkItemPluginRoute(item);
   return {
     id: String(item.id || ""),
     title: String(item.title || ""),
@@ -86,6 +88,7 @@ export function executionProjection(item = {}, registryEntries = []) {
       plugin_version: null,
       assignment_truth: linked ? "LEGACY_INTERNAL_AI_ROLE" : "NOT_ASSIGNED",
     },
+    plugin_route: selectedRoute,
     eligible_capabilities: eligibleCapabilitiesForWorkstream(item.workstream, registryEntries),
     evidence: {
       repo_sha: item.linked_task_repo_sha || null,

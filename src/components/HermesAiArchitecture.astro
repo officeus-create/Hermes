@@ -13,7 +13,7 @@ const steps = [
   { id: "01", name: l("Owner request / inbound event", "Задание владельца / событие"), note: l("Typed task, CI event, CRM or approved connector", "Ввод, CI, CRM либо разрешённый коннектор") },
   { id: "02", name: "HAE · Worker + Queue + D1", note: l("One WORK_ID, owner of state, cost and permissions", "Единый WORK_ID, состояние, права и бюджет") },
   { id: "03", name: l("Policy router", "Маршрутизатор политик"), note: l("Deterministic rules first; unknown → HOLD", "Сначала правила; неопределённость → HOLD") },
-  { id: "04", name: l("Local / cloud specialist", "Локальный / облачный специалист"), note: l("Mac Qwen or approved free Cloudflare model", "Qwen на Mac либо разрешённая бесплатная модель") },
+  { id: "04", name: l("Local / cloud specialist", "Локальный / облачный специалист"), note: l("Assigned Windows worker (unverified), Mac fallback or approved free model", "Назначенный Windows (не подтверждён), Mac как резерв или разрешённая бесплатная модель") },
   { id: "05", name: l("Independent QA / owner gate", "Независимая QA / допуск владельца"), note: l("Proof before deploy, reply, spend or publish", "Доказательство до релиза, ответа и публикации") },
   { id: "06", name: "Evidence → One Brain", note: l("Promote only independently verified lessons", "Только проверенные уроки в единый мозг") }
 ];
@@ -24,7 +24,7 @@ const models = [
   { id: "whisper", title: "Whisper Large V3 Turbo", name: "@cf/openai/whisper-large-v3-turbo", role: l("Consent-based call and audio transcription", "Расшифровка звонков и аудио при наличии согласия"), stage: l("Later stage · audio/privacy gate", "Позднее · проверка прав на аудио"), tone: "planned", action: "whisper", link: "https://developers.cloudflare.com/ai/models/", linkText: l("Model catalog", "Каталог моделей") }
 ];
 const connections = [
-  { id: "owner", title: "Hermes Connect Owner OS", state: l("Source available; release pending", "Код есть; релиз ожидается"), tone: "review", text: l("Existing owner-gated admin, D1 work queue and one-active-runner control.", "Существующая админка с проверкой владельца, очередью D1 и одним активным исполнителем."), url: "https://github.com/officeus-create/Hermes/pull/2107", cta: l("Owner admin PR", "PR админки") },
+  { id: "owner", title: "Hermes Connect Owner OS", state: l("Source merged; independent runtime readback pending", "Код объединён; независимая проверка production ожидается"), tone: "review", text: l("Unified owner workspace and D1 backlog merged via #2198. Source merge does not establish authenticated production login, access-denial or current deployment acceptance.", "Единая админка и D1 очередь объединены через #2198. Merge не доказывает рабочий вход владельца, отказ посторонним и текущее развёртывание."), url: "https://github.com/officeus-create/Hermes/pull/2198", cta: l("Merged owner workspace", "Объединённая админка") },
   { id: "hae", title: "HAE · Cloudflare", state: l("Worker/AI binding observed", "Worker и AI binding проверены"), tone: "observed", text: l("Existing Worker, Queue and D1. Production is dry_run; publishing disabled. Source PR is not live proof.", "Единый Worker, Queue и D1. Production в dry_run, публикации выключены. PR не доказывает выпуск."), url: "https://github.com/officeus-create/Hermes/issues/2033", cta: l("Runtime evidence", "Доказательства runtime") },
   { id: "access", title: "Cloudflare Access", state: l("Owner E2E + anonymous redirect proven", "Owner E2E и anonymous redirect подтверждены"), tone: "observed", text: l("Owner reached the private app and guarded status endpoint; an anonymous external request redirects to Access. Real unlisted-user denial is still an open acceptance gate.", "Владелец вошёл в приватное приложение и защищённый status endpoint; анонимный внешний запрос уходит в Access. Реальный отказ пользователю вне allowlist ещё остаётся acceptance-gate."), url: "https://dash.cloudflare.com/ec00de0c2f5ffd6fda4034ca98f992f9/one/access-controls/apps", cta: l("Access settings", "Настройки Access") },
   { id: "tunnel", title: "Mac · private Cloudflare Tunnel", state: l("Owner path proven; reboot recovery open", "Owner path подтверждён; reboot recovery открыт"), tone: "review", text: l("The named Tunnel targets the signed-JWT bridge 127.0.0.1:8766, never raw port 8765. Owner E2E and process-crash recovery are proven; full Mac reboot/login recovery is not yet proven.", "Именованный Tunnel ведёт к JWT-мосту 127.0.0.1:8766, а не к raw-порту 8765. Owner E2E и восстановление после падения процесса подтверждены; полный reboot/login Mac ещё не доказан."), url: "https://dash.cloudflare.com/ec00de0c2f5ffd6fda4034ca98f992f9/tunnels", cta: l("Tunnel settings", "Настройки Tunnel") },
@@ -74,7 +74,7 @@ const roles = [
         <div><dt>{l("Phase", "Фаза")}</dt><dd data-ai-ops-phase>UNKNOWN</dd></div>
         <div><dt>{l("Model", "Модель")}</dt><dd data-ai-ops-model>UNKNOWN</dd></div>
         <div><dt>{l("Cycle", "Цикл")}</dt><dd data-ai-ops-cycle>UNKNOWN</dd></div>
-        <div><dt>Windows</dt><dd>{l("Deferred by owner · Mac is primary", "Отложен владельцем · основной Mac")}</dd></div>
+        <div><dt>Windows</dt><dd>{l("Assigned primary · runtime acceptance pending", "Назначен основным · запуск не подтверждён")}</dd></div>
       </dl></article>
       <article class="ai-map__ops-card ai-map__ops-card--wide"><span class="ai-map__mini-label">{l("Current work", "Текущая работа")}</span><h3 data-ai-ops-current>UNKNOWN</h3><p><strong>{l("Next:", "Дальше:")}</strong> <span data-ai-ops-next>UNKNOWN</span></p><p class="ai-map__ops-note">{l("Operational status only. Consequential actions remain behind existing QA / owner gates.", "Только операционный статус. Значимые действия остаются за существующими QA / owner gates.")}</p></article>
       <article class="ai-map__ops-card"><span class="ai-map__mini-label">{l("Self-learning", "Самообучение")}</span><h3 data-ai-ops-training-phase>UNKNOWN</h3><p data-ai-ops-training-task>UNKNOWN</p></article>
@@ -128,7 +128,7 @@ const roles = [
     <div class="ai-map__connection-grid">
       {connections.map((connection) => <article class="ai-map__connection"><div class="ai-map__connection-head"><h3>{connection.title}</h3><span class={"ai-map__flag "+connection.tone}>{connection.state}</span></div><p>{connection.text}</p><a href={connection.url} target="_blank" rel="noopener noreferrer">{connection.cta} ↗</a></article>)}
     </div>
-    <p class="ai-map__footnote">{l("Source snapshot: 27 October 2026. Only Mac runner heartbeat above is refreshed from owner-authenticated API. Provider status must not silently become CONNECTED without authenticated readback.", "Снимок источников: 27 октября 2026. Только heartbeat Mac выше обновляется из API владельца. Статус провайдера не становится CONNECTED без подтверждённого readback.")}</p>
+    <p class="ai-map__footnote">{l("Static integration references are historical. Only the Mac heartbeat above comes from the owner API; Windows remains unverified until a separate authenticated HAE receipt.", "Статические сведения об интеграциях исторические. Из API владельца приходит только heartbeat Mac; Windows остаётся неподтверждённым до отдельной HAE-квитанции.")}</p>
   </div>
   <div id="ai-panel-rollout" data-ai-map-panel="rollout" role="tabpanel" aria-labelledby="ai-tab-rollout" hidden>
     <div class="ai-map__rollout">
@@ -214,7 +214,10 @@ if (root) {
       form.dataset.source = "text";
       const status = form.querySelector<HTMLElement>("[data-capture-status]");
       if (status) status.textContent = "Черновик заполнен. Проверьте задачу и нажмите «Сохранить в очередь»; пока ничего не запущено.";
-      form.scrollIntoView({ behavior: "smooth", block: "center" });
+      // This is only a draft. Open the existing owner capture dialog for review;
+      // never auto-submit, dispatch, approve, publish or charge a provider.
+      const dialog = form.closest("dialog");
+      if (dialog instanceof HTMLDialogElement && !dialog.open) dialog.showModal();
       details.focus({ preventScroll: true });
     });
   });

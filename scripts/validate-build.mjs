@@ -341,6 +341,10 @@ if (!sitemap.includes("/logistics/resources/auction-vehicle-pickup-checklist/"))
 if (!sitemap.includes("/logistics/resources/car-hauler-capacity-checklist/")) throw new Error("Sitemap entry missing for car hauler capacity checklist");
 
 const forbidden = [
+  // Internal engineering jargon that must never reach customers (owner review 2026-10-28).
+  "truthful states",
+  "connect ≠ writable",
+  "deploy ≠ live",
   "guaranteed income",
   "guaranteed employment",
   "10,000+ students",

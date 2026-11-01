@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "base_manifest": "docs/release-manifest-2026-08-01.json",
+  "release_delta": "2026-10-31-hermes-team-view-owner-gated",
+  "generated_at": "2026-10-31T18:50:00Z",
+  "status": "CURRENT_HEAD_PENDING_PRODUCTION",
+  "scope": "Adds one noindex employee Team View page, independently gated at the Cloudflare edge by explicit existing-account viewer permission; the full owner Command Center remains owner-only.",
+  "additions": [
+    {
+      "route": "/services/hermes-connect/internal/team-view/",
+      "source_state": "current_main",
+      "indexability": "noindex",
+      "robots": "noindex,nofollow,noarchive",
+      "canonical": "https://hermeslogisticsus.com/services/hermes-connect/internal/team-view/",
+      "sitemap_owner": null,
+      "source_file": "src/pages/services/hermes-connect/internal/team-view/index.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    }
+  ],
+  "acceptance": {
+    "route_count_added": 1,
+    "indexable_route_count_added": 0,
+    "requires_green_current_head_ci": true,
+    "requires_production_snapshot_reconciliation_after_deploy": true
+  }
+}

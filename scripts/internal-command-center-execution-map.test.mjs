@@ -37,10 +37,20 @@ const projection=executionProjection({
 },registry);
 assert.equal(projection.work_id,"t1");
 assert.equal(projection.executor.plugin_role_id,null);
+assert.equal(projection.plugin_route,null);
 assert.equal(projection.executor.assignment_truth,"LEGACY_INTERNAL_AI_ROLE");
 assert.equal(projection.live_state,"UNKNOWN");
 assert.equal(projection.business_result_state,"UNKNOWN");
 assert.match(nextActionForWorkItem({status:"in_progress",linked_task_status:"completed"}),/Review the execution evidence/);
+
+
+const selectedProjection=executionProjection({
+  id:"w-selected",title:"SEO audit",workstream:"marketing",priority:"p1",status:"planned",
+  plugin_route_json:JSON.stringify({policy_version:"command-center-route-v1",state:"PLUGIN_SELECTED_NOT_EXECUTED",owner:{role_id:"hermes-search-growth",plugin_version:"0.1.13"},helpers:[]}),
+},registry);
+assert.equal(selectedProjection.plugin_route?.owner.role_id,"hermes-search-growth");
+assert.equal(selectedProjection.plugin_route?.state,"PLUGIN_SELECTED_NOT_EXECUTED");
+assert.equal(selectedProjection.executor.plugin_role_id,null,"selected route is not evidence of plugin execution");
 
 const catalog=developmentCatalog({
   registrySnapshot:{source_class:"PRIVATE_PLUGIN_CREATOR_READBACK",entries:registry},
@@ -67,6 +77,7 @@ assert.equal(normalizedClickUp.priority,"urgent");
 assert.equal(normalizedClickUp.url,"https://app.clickup.com/t/86abc");
 assert.deepEqual(normalizedClickUp.assignees,[{id:"42",username:"Operator"}]);
 assert.equal("email" in normalizedClickUp.assignees[0],false);
+assert.equal(normalizeClickUpTask({due_date:null}).due_date,null,"missing ClickUp due date must not become epoch zero");
 
 let missingFetchCalled=false;
 const missing=await readClickUpHumanTasks({},async()=>{missingFetchCalled=true;throw new Error("must_not_call")});

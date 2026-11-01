@@ -1,22 +1,26 @@
 import { jsonResponse } from "../_lib/session.mjs";
-import { INTERNAL_AI_ORGANIZATION_SCOPE, parseRunnerTelemetry, publicTask, requireInternalAiViewer } from "../_lib/internal-ai.mjs";
+import { INTERNAL_AI_ORGANIZATION_SCOPE, isRunnerHeartbeatFresh, parseRunnerTelemetry, publicTask, requireInternalAiViewer } from "../_lib/internal-ai.mjs";
 type Env = { DB?: any };
 const headers = { "Cache-Control": "private, no-store", "X-Robots-Tag": "noindex, nofollow" };
 
 export async function onRequestGet({ request, env }: { request: Request; env: Env }) {
   const viewer = await requireInternalAiViewer(request, env); if (viewer.response) return viewer.response;
   const runner = await env.DB.prepare("SELECT id, last_seen_at, repo_sha, runtime_version, telemetry_json FROM hermes_internal_ai_runner_state WHERE id = 'internal-ai-mac-runner' AND organization_scope = ?").bind(INTERNAL_AI_ORGANIZATION_SCOPE).first();
-  const lastSeen = runner?.last_seen_at ? Date.parse(runner.last_seen_at) : 0;
-  const operations = parseRunnerTelemetry(runner?.telemetry_json);
-  const online = Boolean(lastSeen && Date.now() - lastSeen <= 90000);
+  const online = isRunnerHeartbeatFresh(runner?.last_seen_at);
+  // A stale/future heartbeat must never project prior RUNNING work as current.
+  const operations = online ? parseRunnerTelemetry(runner?.telemetry_json) : null;
 
   if (viewer.access_level === "team") {
+    // Team View is an independently authorized employee surface. Runner
+    // telemetry text is only token-sanitized, not customer/owner-data redacted.
+    // No free-form owner task, phase or model text may cross this boundary.
+    const teamStatusAllowlist = new Set(["IDLE", "RUNNING", "PAUSED", "STOPPED", "OFFLINE", "LEARNING"]);
     const teamOperations = operations ? {
-      status: operations.status ?? null,
-      phase: operations.phase ?? null,
+      status: teamStatusAllowlist.has(operations.status ?? "") ? operations.status : null,
+      phase: null,
       cycle: operations.cycle ?? null,
-      current_task: operations.current_task ?? null,
-      model: operations.model ?? null,
+      current_task: operations.current_task ? "Task active — details private" : null,
+      model: null,
     } : null;
     const countRows = await env.DB.prepare("SELECT status, COUNT(*) AS count FROM hermes_internal_ai_tasks WHERE organization_scope = ? GROUP BY status").bind(INTERNAL_AI_ORGANIZATION_SCOPE).all();
     const taskSummary: Record<string, number> = { total: 0, queued: 0, running: 0, needs_approval: 0, completed: 0, failed: 0, cancelled: 0 };
@@ -34,7 +38,9 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
       runtime: {
         online,
         last_seen_at: runner?.last_seen_at || null,
-        primary_executor: "mac",
+        primary_executor: "windows",
+        primary_executor_verified: false,
+        heartbeat_executor: "mac",
         operations: teamOperations,
       },
       task_summary: taskSummary,
@@ -51,7 +57,9 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
       last_seen_at: runner?.last_seen_at || null,
       repo_sha: runner?.repo_sha || null,
       runtime_version: runner?.runtime_version || null,
-      primary_executor: "mac",
+      primary_executor: "windows",
+        primary_executor_verified: false,
+        heartbeat_executor: "mac",
       operations,
       remote_browser_to_codex: "UNVERIFIED",
     },

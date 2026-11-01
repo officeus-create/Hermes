@@ -3,7 +3,7 @@ import { ensureCommandCenterSchema, reconcileWorkItems } from "../_lib/internal-
 import { developmentCatalog, executionProjection, linkHumanWorkDevelopments } from "../_lib/command-center-execution-map.mjs";
 import { readClickUpHumanTasks } from "../_lib/command-center-clickup.mjs";
 import { readGithubDevelopments } from "../_lib/command-center-github.mjs";
-import { parseRunnerTelemetry, requireInternalOwner } from "../_lib/internal-ai.mjs";
+import { isRunnerHeartbeatFresh, parseRunnerTelemetry, requireInternalOwner } from "../_lib/internal-ai.mjs";
 import { ensureHaeProcessSchema, publicHaeProcess } from "../../../src/lib/hae-process-control.mjs";
 import { pluginRuntimeRegistryEvidenceStatus, pluginRuntimeRegistrySnapshot } from "../../../workers/automation-engine/src/plugin-runtime-registry.mjs";
 
@@ -37,9 +37,8 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
     .catch(async () => env.DB.prepare("SELECT * FROM hermes_automation_processes WHERE organization_scope='hermes_internal' ORDER BY updated_at DESC").all());
 
   const runnerRow = await env.DB.prepare("SELECT id,last_seen_at,repo_sha,runtime_version,telemetry_json FROM hermes_internal_ai_runner_state WHERE id='internal-ai-mac-runner' AND organization_scope='hermes_internal' LIMIT 1").first();
-  const lastSeen = runnerRow?.last_seen_at ? Date.parse(String(runnerRow.last_seen_at)) : 0;
   const runner = {
-    online: Boolean(lastSeen && Date.now() - lastSeen <= 90000),
+    online: isRunnerHeartbeatFresh(runnerRow?.last_seen_at),
     last_seen_at: runnerRow?.last_seen_at || null,
     repo_sha: runnerRow?.repo_sha || null,
     runtime_version: runnerRow?.runtime_version || null,

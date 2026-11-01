@@ -13,9 +13,31 @@ const { ru = false } = Astro.props;
   <p class="portfolio-intro">{ru
     ? "Связи, владельцы, плагины, зависимости и прогресс рассчитаны по объявленным этапам. ETA остаётся UNKNOWN, пока нет доказуемой истории длительности."
     : "Relationships, owners, plugins, dependencies and progress are derived from declared milestones. ETA stays UNKNOWN until duration history can support it."}</p>
+  <form class="owner-project-form" data-owner-project-create>
+    <strong>{ru ? "Новый проект в облаке" : "Create a cloud project"}</strong>
+    <div class="owner-project-grid">
+      <label>{ru?"Название":"Title"}<input name="new_project_title" maxlength="160" required placeholder={ru?"Например, Hermes CRM Земля":"Example: Hermes Land CRM"}/></label>
+      <label>{ru?"Отдел":"Department"}<select name="new_project_department"><option value="technology">Technology</option><option value="logistics">Logistics</option><option value="marketing">Marketing</option><option value="sales">Sales</option><option value="academy">Academy</option><option value="finance">Finance</option><option value="operations">Operations</option></select></label>
+    </div>
+    <label>{ru?"Задача и назначение проекта":"Project purpose"}<textarea name="new_project_purpose" rows="2" maxlength="2000" required placeholder={ru?"Что конструируем, для кого и зачем":"What are we building, for whom and why?"}></textarea></label>
+    <div class="owner-project-actions"><button type="submit">{ru?"Создать проект в D1":"Save new project to D1"}</button><span data-project-create-status role="status"></span></div>
+  </form>
   <div class="portfolio-summary" data-project-summary aria-live="polite"></div>
   <div class="portfolio-filters" data-project-filters aria-label={ru ? "Фильтры проектов" : "Project filters"}></div>
   <div class="portfolio-list" data-project-list><p>{ru ? "Загружаем реестр проектов…" : "Loading project registry…"}</p></div>
+  <dialog class="owner-project-dialog" data-owner-project-dialog>
+    <form data-owner-project-edit>
+      <h3>{ru?"Редактировать облачный проект":"Edit cloud project"}</h3>
+      <p>{ru?"Исходные проекты Hermes нельзя переписывать. Здесь изменяются только созданные вами проекты.":"Canonical Hermes projects are read-only. Only owner-created projects can be edited here."}</p>
+      <input name="edit_project_id" type="hidden"/><input name="edit_project_updated_at" type="hidden"/>
+      <label>{ru?"Название":"Title"}<input name="edit_project_title" maxlength="160" required/></label>
+      <label>{ru?"Отдел":"Department"}<select name="edit_project_department"><option value="technology">Technology</option><option value="logistics">Logistics</option><option value="marketing">Marketing</option><option value="sales">Sales</option><option value="academy">Academy</option><option value="finance">Finance</option><option value="operations">Operations</option></select></label>
+      <label>{ru?"Описание":"Purpose"}<textarea name="edit_project_purpose" rows="5" maxlength="2000" required></textarea></label>
+      <label>{ru?"Статус (со слов владельца)":"Owner-declared status"}<select name="edit_project_status"><option value="planned">Planned</option><option value="in_progress">In progress</option><option value="blocked">Blocked</option><option value="done">Done</option></select></label>
+      <span data-project-edit-status role="status"></span>
+      <div class="owner-project-actions"><button type="button" data-owner-project-edit-cancel>{ru?"Отмена":"Cancel"}</button><button type="submit">{ru?"Сохранить в облаке":"Save to cloud"}</button></div>
+    </form>
+  </dialog>
 </section>
 
 <script>
@@ -40,27 +62,91 @@ roots.forEach(async(root)=>{
       const identity=document.createElement("div");const eyebrow=document.createElement("span");eyebrow.textContent=titleCase(project.department)+" · "+project.evidence_level;const h=document.createElement("h3");h.textContent=project.title;identity.append(eyebrow,h);
       const state=document.createElement("strong");state.className="portfolio-state "+project.status;state.textContent=titleCase(project.status);head.append(identity,state);card.append(head);
       const purpose=document.createElement("p");purpose.className="portfolio-purpose";purpose.textContent=project.purpose;card.append(purpose);
-      const progress=document.createElement("div");progress.className="portfolio-progress";progress.innerHTML=`<div><span>${t("Progress","Прогресс")}</span><strong>${project.progress.percent}%</strong></div><div class="portfolio-track" role="progressbar" aria-label="${t("Project progress","Прогресс проекта")}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${project.progress.percent}"><i style="width:${project.progress.percent}%"></i></div><small>${project.progress.completed}/${project.progress.total} ${t("declared milestones complete","объявленных этапов завершено")}</small>`;card.append(progress);
+      if(project.work_items_summary){const summary=project.work_items_summary;const counters=document.createElement("p");counters.className="portfolio-task-summary";
+        counters.textContent=t("D1 tasks: ","Задачи D1: ")+Number(summary.total||0)+" · "+Number(summary.open||0)+" "+t("unfinished","незавершено")+" · "+Number(summary.done||0)+" "+t("done","закрыто")+" · "+Number(summary.blocked||0)+" "+t("blocked","заблокировано");card.append(counters)}
+      const progress=document.createElement("div");progress.className="portfolio-progress";if(Number.isFinite(project.progress?.percent)){progress.innerHTML=`<div><span>${t("Progress","Прогресс")}</span><strong>${project.progress.percent}%</strong></div><div class="portfolio-track" role="progressbar" aria-label="${t("Project progress","Прогресс проекта")}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${project.progress.percent}"><i style="width:${project.progress.percent}%"></i></div><small>${project.progress.completed}/${project.progress.total} ${t("declared milestones complete","объявленных этапов завершено")}</small>`}else{progress.textContent=t("Progress UNKNOWN · owner-created project","Прогресс UNKNOWN · проект создан владельцем")}card.append(progress);
       const facts=document.createElement("dl");facts.className="portfolio-facts";
       const rows=[[t("Owner","Владелец"),project.owner_role],[t("Agent","Агент"),project.agent_role],[t("Plugins","Плагины"),(project.plugin_roles||[]).join(", ")||"—"],[t("Dependencies","Зависимости"),(project.dependency_ids||[]).join(", ")||t("None","Нет")],["ETA",project.eta_label+" · "+project.eta_basis]];
       rows.forEach(([label,value])=>{const row=document.createElement("div");const dt=document.createElement("dt");dt.textContent=label;const dd=document.createElement("dd");dd.textContent=String(value);row.append(dt,dd);facts.append(row)});card.append(facts);
       if(project.blockers?.length){const blockers=document.createElement("div");blockers.className="portfolio-blockers";const b=document.createElement("strong");b.textContent=t("Current hold","Текущий блокер");const p=document.createElement("p");p.textContent=project.blockers.join(" ");blockers.append(b,p);card.append(blockers)}
       const milestones=document.createElement("ol");milestones.className="portfolio-milestones";(project.milestones||[]).forEach((item:any)=>{const li=document.createElement("li");li.dataset.state=item.state;const mark=document.createElement("i");mark.setAttribute("aria-hidden","true");const label=document.createElement("span");label.textContent=item.label;li.append(mark,label);milestones.append(li)});card.append(milestones);
       const links=document.createElement("div");links.className="portfolio-links";(project.links||[]).forEach((link:any)=>{const href=safeHref(link.href);if(!href)return;const a=document.createElement("a");a.href=href;a.target="_blank";a.rel="noopener noreferrer";a.textContent=link.label+" ↗";links.append(a)});if(links.childElementCount)card.append(links);
+      if(project.editable){const edit=document.createElement("button");edit.type="button";edit.className="owner-project-edit-button";edit.textContent=t("Edit project","Редактировать проект");edit.addEventListener("click",()=>openEdit(project));card.append(edit)}
       list.append(card);
     });
   };
-  try{
-    const response=await fetch("/api/internal-command-center/projects",{credentials:"same-origin",cache:"no-store",headers:{Accept:"application/json"}});const data=await response.json();if(!response.ok||!data.success)throw new Error(String(data.error||"project_registry_unavailable"));projects=data.projects||[];
-    source.textContent=t("Source snapshot · ","Срез источников · ")+new Date(data.checked_at).toLocaleString(ru?"ru-RU":"en-US",{dateStyle:"medium",timeStyle:"short"});
-    const blocked=projects.filter(project=>project.status==="blocked").length;const done=projects.filter(project=>project.status==="done").length;summary.innerHTML=`<article><span>${t("Projects","Проекты")}</span><strong>${projects.length}</strong></article><article><span>${t("Blocked","Заблокировано")}</span><strong>${blocked}</strong></article><article><span>${t("Completed","Завершено")}</span><strong>${done}</strong></article><article><span>${t("ETA policy","Правило ETA")}</span><strong>UNKNOWN</strong></article>`;
-    const values=["all",...new Set(projects.map(project=>project.department)),"blocked","in_progress"];
-    values.forEach(value=>{const button=document.createElement("button");button.type="button";button.dataset.projectFilter=value;button.textContent=value==="all"?t("All","Все"):titleCase(value);button.classList.toggle("active",value===active);button.addEventListener("click",()=>{active=value;filters.querySelectorAll("button").forEach(item=>item.classList.toggle("active",item===button));render()});filters.append(button)});render();
-  }catch(error){source.textContent=t("Registry unavailable","Реестр недоступен");list.textContent=t("The owner project registry could not be loaded. No project status was inferred.","Реестр проектов владельца не загрузился. Статусы не были придуманы.")}
+  const statusCreate=root.querySelector<HTMLElement>("[data-project-create-status]");
+  const statusEdit=root.querySelector<HTMLElement>("[data-project-edit-status]");
+  const createForm=root.querySelector<HTMLFormElement>("[data-owner-project-create]");
+  const editForm=root.querySelector<HTMLFormElement>("[data-owner-project-edit]");
+  const dialog=root.querySelector<HTMLDialogElement>("[data-owner-project-dialog]");
+  const fetchJSON=async(url:string,options:RequestInit={})=>{
+    const response=await fetch(url,{credentials:"same-origin",cache:"no-store",...options,headers:{Accept:"application/json",...(options.body?{"Content-Type":"application/json"}:{}),...(options.headers||{})}});
+    let data:any={};try{data=await response.json()}catch{}
+    return {response,data};
+  };
+  const loadProjects=async()=>{
+    try{
+      let offset:number|null=0;
+      const all:any[]=[];
+      const seen=new Set<number>();
+      let snapshot="UNKNOWN";
+      while(offset!==null && !seen.has(offset)){
+        seen.add(offset);
+        const {response,data}=await fetchJSON("/api/internal-command-center/projects?offset="+offset);
+        if(!response.ok||!data.success)throw new Error(String(data.error||"project_registry_unavailable"));
+        all.push(...(data.projects||[]));
+        if(data.checked_at)snapshot=data.checked_at;
+        offset=Number.isSafeInteger(data.next_offset)?data.next_offset:null;
+      }
+      projects=all;
+      source.textContent=t("D1 cloud projects · canonical snapshot ","Проекты D1 · канонический срез ")+stampSnapshot(snapshot);
+      const blocked=projects.filter(project=>project.status==="blocked").length;
+      const done=projects.filter(project=>project.status==="done").length;
+      summary.innerHTML=`<article><span>${t("Projects","Проекты")}</span><strong>${projects.length}</strong></article><article><span>${t("Blocked","Заблокировано")}</span><strong>${blocked}</strong></article><article><span>${t("Completed","Завершено")}</span><strong>${done}</strong></article><article><span>${t("ETA policy","Правило ETA")}</span><strong>UNKNOWN</strong></article>`;
+      filters.replaceChildren();
+      const values=["all",...new Set(projects.map(project=>project.department)),"blocked","in_progress"];
+      values.forEach(value=>{const button=document.createElement("button");button.type="button";button.dataset.projectFilter=value;button.textContent=value==="all"?t("All","Все"):titleCase(value);button.classList.toggle("active",value===active);button.addEventListener("click",()=>{active=value;filters.querySelectorAll("button").forEach(item=>item.classList.toggle("active",item===button));render()});filters.append(button)});
+      render();
+    }catch(error){source.textContent=t("Cloud project registry unavailable","Облачный реестр недоступен");list.textContent=t("Cannot load projects; no progress was inferred.","Проекты не загружены; прогресс не был выдуман.")}
+  };
+  const stampSnapshot=(date:string)=>{const n=Date.parse(date);return Number.isFinite(n)?new Date(n).toLocaleDateString(ru?"ru-RU":"en-US"):"UNKNOWN"};
+  const openEdit=(project:any)=>{
+    if(!project.editable||!editForm||!dialog)return;
+    for(const [key,value] of Object.entries({edit_project_id:project.id,edit_project_updated_at:project.updated_at||"",edit_project_title:project.title,edit_project_department:project.department,edit_project_purpose:project.purpose,edit_project_status:project.status})){
+      const field=editForm.elements.namedItem(key) as HTMLInputElement|HTMLTextAreaElement|HTMLSelectElement|null;
+      if(field)field.value=String(value);
+    }
+    if(statusEdit)statusEdit.textContent="";
+    dialog.showModal();
+  };
+  createForm?.addEventListener("submit",async(event)=>{
+    event.preventDefault();
+    const data=new FormData(createForm);
+    if(statusCreate)statusCreate.textContent=t("Saving…","Сохраняется…");
+    const result=await fetchJSON("/api/internal-command-center/projects",{method:"POST",body:JSON.stringify({title:data.get("new_project_title"),department:data.get("new_project_department"),purpose:data.get("new_project_purpose")})});
+    if(!result.response.ok){if(statusCreate)statusCreate.textContent=String(result.data.error||"save_failed");return}
+    createForm.reset();active="all";if(statusCreate)statusCreate.textContent=t("Project saved in Cloudflare D1.","Проект сохранён в Cloudflare D1.");
+    await loadProjects();
+  });
+  root.querySelector("[data-owner-project-edit-cancel]")?.addEventListener("click",()=>dialog?.close());
+  editForm?.addEventListener("submit",async(event)=>{
+    event.preventDefault();
+    const data=new FormData(editForm);
+    const id=String(data.get("edit_project_id")||"");
+    if(statusEdit)statusEdit.textContent=t("Saving…","Сохраняется…");
+    const result=await fetchJSON("/api/internal-command-center/projects/"+encodeURIComponent(id),{method:"PATCH",body:JSON.stringify({updated_at:data.get("edit_project_updated_at"),title:data.get("edit_project_title"),department:data.get("edit_project_department"),purpose:data.get("edit_project_purpose"),status:data.get("edit_project_status")})});
+    if(!result.response.ok){if(statusEdit)statusEdit.textContent=result.response.status===409?t("Project changed elsewhere; reopen it.","Проект изменён в другом окне; откройте его заново."):String(result.data.error||"save_failed");return}
+    dialog?.close();await loadProjects();
+  });
+  void loadProjects();
+  const timer=setInterval(()=>void loadProjects(),30000);
+  addEventListener("pagehide",()=>clearInterval(timer),{once:true});
 });
 </script>
 
 <style>
-.project-portfolio{overflow:hidden}.portfolio-kicker{margin:0;color:#2f6bf6;text-transform:uppercase;letter-spacing:.1em;font-size:.72rem;font-weight:850}.portfolio-source{border:1px solid #d7deea;border-radius:999px;padding:.45rem .65rem;color:#59677d;font-size:.72rem;font-weight:800}.portfolio-intro{max-width:850px;color:#687487;line-height:1.55}.portfolio-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.6rem;margin:1rem 0}.portfolio-summary article{display:grid;gap:.2rem;border:1px solid #e0e5ec;border-radius:.8rem;background:#f8faff;padding:.72rem}.portfolio-summary span{color:#7a8494;font-size:.68rem;text-transform:uppercase;letter-spacing:.06em}.portfolio-summary strong{font-size:1.15rem}.portfolio-filters{display:flex;gap:.4rem;overflow:auto;padding:.1rem 0 .7rem}.portfolio-filters button{border:1px solid #d3dae5;border-radius:999px;background:#fff;padding:.48rem .68rem;color:#34435a;font-weight:800;white-space:nowrap}.portfolio-filters button.active{border-color:#172033;background:#172033;color:#fff}.portfolio-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.75rem}.portfolio-card{border:1px solid #dfe5ed;border-radius:.95rem;background:#fff;padding:.9rem;min-width:0}.portfolio-card-head{display:flex;justify-content:space-between;gap:.8rem;align-items:flex-start}.portfolio-card-head>div{min-width:0}.portfolio-card-head span{display:block;color:#7a8494;font-size:.65rem;text-transform:uppercase;letter-spacing:.055em;overflow-wrap:anywhere}.portfolio-card h3{margin:.28rem 0 0;font-size:1.05rem}.portfolio-state{flex:0 0 auto;border-radius:999px;padding:.3rem .5rem;background:#eff3f8;color:#52627a;font-size:.66rem;text-transform:uppercase}.portfolio-state.blocked{background:#fff0eb;color:#9d482c}.portfolio-state.in_progress{background:#edf3ff;color:#2458b8}.portfolio-state.done{background:#eaf8f1;color:#147553}.portfolio-purpose{color:#687487;line-height:1.48}.portfolio-progress>div:first-child{display:flex;justify-content:space-between}.portfolio-progress span,.portfolio-progress small{color:#778294;font-size:.72rem}.portfolio-track{height:7px;margin:.32rem 0;border-radius:999px;background:#edf1f6;overflow:hidden}.portfolio-track i{display:block;height:100%;border-radius:inherit;background:#2f6bf6}.portfolio-facts{display:grid;gap:.3rem;margin:.75rem 0}.portfolio-facts div{display:grid;grid-template-columns:105px 1fr;gap:.55rem}.portfolio-facts dt{color:#7a8494;font-size:.72rem}.portfolio-facts dd{margin:0;color:#34435a;font-size:.75rem;overflow-wrap:anywhere}.portfolio-blockers{border-left:3px solid #d85d3e;background:#fff8f5;padding:.55rem .65rem}.portfolio-blockers strong{font-size:.72rem}.portfolio-blockers p{margin:.2rem 0 0;color:#87503d;font-size:.75rem;line-height:1.4}.portfolio-milestones{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.35rem;margin:.75rem 0;padding:0;list-style:none}.portfolio-milestones li{display:flex;gap:.4rem;align-items:flex-start;color:#5f6c7e;font-size:.72rem;line-height:1.35}.portfolio-milestones i{flex:0 0 auto;width:8px;height:8px;margin-top:.15rem;border-radius:50%;background:#c7cfdb}.portfolio-milestones li[data-state="done"] i{background:#25a475}.portfolio-milestones li[data-state="active"] i{background:#2f6bf6}.portfolio-milestones li[data-state="blocked"] i{background:#d85d3e}.portfolio-links{display:flex;flex-wrap:wrap;gap:.5rem}.portfolio-links a{color:#2458b8;text-decoration:none;font-size:.75rem;font-weight:800}@media(max-width:800px){.portfolio-list{grid-template-columns:1fr}.portfolio-summary{grid-template-columns:repeat(2,1fr)}}@media(max-width:520px){.portfolio-summary{grid-template-columns:1fr 1fr}.portfolio-card-head{flex-direction:column}.portfolio-milestones{grid-template-columns:1fr}.portfolio-facts div{grid-template-columns:90px 1fr}}
+.project-portfolio{overflow:hidden}.portfolio-kicker{margin:0;color:#2f6bf6;text-transform:uppercase;letter-spacing:.1em;font-size:.72rem;font-weight:850}.portfolio-source{border:1px solid #d7deea;border-radius:999px;padding:.45rem .65rem;color:#59677d;font-size:.72rem;font-weight:800}.portfolio-task-summary{color:#4b5b70;font-size:.83rem;font-weight:700;line-height:1.5;margin:.35rem 0 .75rem}.portfolio-intro{max-width:850px;color:#687487;line-height:1.55}.portfolio-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.6rem;margin:1rem 0}.portfolio-summary article{display:grid;gap:.2rem;border:1px solid #e0e5ec;border-radius:.8rem;background:#f8faff;padding:.72rem}.portfolio-summary span{color:#7a8494;font-size:.68rem;text-transform:uppercase;letter-spacing:.06em}.portfolio-summary strong{font-size:1.15rem}.portfolio-filters{display:flex;gap:.4rem;overflow:auto;padding:.1rem 0 .7rem}.portfolio-filters button{border:1px solid #d3dae5;border-radius:999px;background:#fff;padding:.48rem .68rem;color:#34435a;font-weight:800;white-space:nowrap}.portfolio-filters button.active{border-color:#172033;background:#172033;color:#fff}.portfolio-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.75rem}.portfolio-card{border:1px solid #dfe5ed;border-radius:.95rem;background:#fff;padding:.9rem;min-width:0}.portfolio-card-head{display:flex;justify-content:space-between;gap:.8rem;align-items:flex-start}.portfolio-card-head>div{min-width:0}.portfolio-card-head span{display:block;color:#7a8494;font-size:.65rem;text-transform:uppercase;letter-spacing:.055em;overflow-wrap:anywhere}.portfolio-card h3{margin:.28rem 0 0;font-size:1.05rem}.portfolio-state{flex:0 0 auto;border-radius:999px;padding:.3rem .5rem;background:#eff3f8;color:#52627a;font-size:.66rem;text-transform:uppercase}.portfolio-state.blocked{background:#fff0eb;color:#9d482c}.portfolio-state.in_progress{background:#edf3ff;color:#2458b8}.portfolio-state.done{background:#eaf8f1;color:#147553}.portfolio-purpose{color:#687487;line-height:1.48}.portfolio-progress>div:first-child{display:flex;justify-content:space-between}.portfolio-progress span,.portfolio-progress small{color:#778294;font-size:.72rem}.portfolio-track{height:7px;margin:.32rem 0;border-radius:999px;background:#edf1f6;overflow:hidden}.portfolio-track i{display:block;height:100%;border-radius:inherit;background:#2f6bf6}.portfolio-facts{display:grid;gap:.3rem;margin:.75rem 0}.portfolio-facts div{display:grid;grid-template-columns:105px 1fr;gap:.55rem}.portfolio-facts dt{color:#7a8494;font-size:.72rem}.portfolio-facts dd{margin:0;color:#34435a;font-size:.75rem;overflow-wrap:anywhere}.portfolio-blockers{border-left:3px solid #d85d3e;background:#fff8f5;padding:.55rem .65rem}.portfolio-blockers strong{font-size:.72rem}.portfolio-blockers p{margin:.2rem 0 0;color:#87503d;font-size:.75rem;line-height:1.4}.portfolio-milestones{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.35rem;margin:.75rem 0;padding:0;list-style:none}.portfolio-milestones li{display:flex;gap:.4rem;align-items:flex-start;color:#5f6c7e;font-size:.72rem;line-height:1.35}.portfolio-milestones i{flex:0 0 auto;width:8px;height:8px;margin-top:.15rem;border-radius:50%;background:#c7cfdb}.portfolio-milestones li[data-state="done"] i{background:#25a475}.portfolio-milestones li[data-state="active"] i{background:#2f6bf6}.portfolio-milestones li[data-state="blocked"] i{background:#d85d3e}.portfolio-links{display:flex;flex-wrap:wrap;gap:.5rem}.portfolio-links a{color:#2458b8;text-decoration:none;font-size:.75rem;font-weight:800}@media(max-width:800px){.portfolio-list{grid-template-columns:1fr}.portfolio-summary{grid-template-columns:repeat(2,1fr)}}@media(max-width:520px){.portfolio-summary{grid-template-columns:1fr 1fr}.portfolio-card-head{flex-direction:column}.portfolio-milestones{grid-template-columns:1fr}.portfolio-facts div{grid-template-columns:90px 1fr}}
+.owner-project-form,.owner-project-dialog form{display:grid;gap:.7rem}.owner-project-form{padding:.9rem;border:1px solid #d7e2f1;border-radius:.85rem;background:#f7faff;margin:.8rem 0 1rem}.owner-project-form strong{font-size:.95rem}.owner-project-grid{display:grid;grid-template-columns:2fr 1fr;gap:.7rem}.owner-project-form label,.owner-project-dialog label{display:grid;gap:.25rem;font-size:.77rem;font-weight:800}.owner-project-form input,.owner-project-form textarea,.owner-project-form select,.owner-project-dialog input,.owner-project-dialog select,.owner-project-dialog textarea{width:100%;box-sizing:border-box;border:1px solid #cad6e5;border-radius:.65rem;background:#fff;color:#18243a;padding:.65rem;font:inherit}.owner-project-actions{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center}.owner-project-actions button,.owner-project-edit-button{border:1px solid #2458b8;background:#2458b8;color:#fff;border-radius:.65rem;padding:.65rem .9rem;font-weight:800;cursor:pointer}.owner-project-edit-button{margin-top:.7rem;background:#fff;color:#2458b8}.owner-project-dialog{width:min(92vw,640px);max-height:90vh;overflow:auto;border:1px solid #cad6e5;border-radius:1rem;padding:1.1rem;color:#18243a}.owner-project-dialog::backdrop{background:#0b193b99}.owner-project-dialog form>p{color:#667487}.owner-project-dialog h3{margin:0}.owner-project-actions [role="status"]{color:#456077}@media(max-width:600px){.owner-project-grid{grid-template-columns:1fr}}
 </style>
 

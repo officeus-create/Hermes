@@ -4,6 +4,7 @@ const PAGE_SIZE = 100;
 
 const clean = (value, max = 500) => String(value ?? "").replace(/\u0000/g, "").trim().slice(0, max);
 const numberOrNull = (value) => {
+  if (value === null || value === undefined || value === "") return null;
   const number = Number(value);
   return Number.isFinite(number) ? number : null;
 };
