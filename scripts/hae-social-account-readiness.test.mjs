@@ -4,6 +4,7 @@ import { socialAccountReadinessSnapshot } from "../workers/automation-engine/src
 import {
   redactResolvedSocialCredential,
   resolveProgressoproThreadsCredential,
+  resolveThreadsTransportForLane,
 } from "../workers/automation-engine/src/social-credential-bridge.mjs";
 
 function bytesToBase64(bytes){
@@ -19,7 +20,7 @@ async function encryptPayload(keyBytes,payload){
   return "v1."+bytesToBase64(iv)+"."+bytesToBase64(new Uint8Array(encrypted));
 }
 
-function dbWith(row){
+function dbWith(row,businessRows=[]){
   return {
     prepare(sql){
       const normalized=String(sql).replace(/\s+/g," ").trim();
@@ -34,6 +35,10 @@ function dbWith(row){
               if(normalized.includes("FROM sqlite_master")) return {name:args[0]};
               if(normalized.includes("FROM hermes_social_threads_connections")) return row;
               throw new Error("unexpected_bound_sql");
+            },
+            async all(){
+              if(normalized.includes("FROM hermes_business_social_credentials")) return {results:businessRows};
+              throw new Error("unexpected_bound_all_sql");
             },
           };
         },
@@ -62,6 +67,22 @@ const row={
   updated_at:"2026-10-29T01:00:00Z",
 };
 
+const hermesBusinessCiphertext=await encryptPayload(keyBytes,{
+  access_token:"synthetic-hermes-social-studio-token-never-returned",
+  threads_user_id:"28419597014385166",
+});
+const hermesBusinessRows=[{
+  business_key:"owner-company",
+  owner_specialist_id:"owner",
+  state:"connected_write",
+  username:"hermes.logistics",
+  external_account_ref:"28419597014385166",
+  token_ciphertext:hermesBusinessCiphertext,
+  token_expires_at:"2026-12-01T00:00:00Z",
+  granted_scope:"threads_basic threads_content_publish",
+  updated_at:"2026-11-01T04:00:00Z",
+}];
+
 const env={
   DB:dbWith(row),
   HERMES_THREADS_PROVIDER:"meta_direct",
@@ -81,10 +102,9 @@ assert.equal(snapshot.progressopro.token_ciphertext_present,true);
 assert.equal(snapshot.progressopro.hae_token_key_present,false);
 assert.equal(snapshot.progressopro.ready_for_hae_write_bridge,false);
 assert.equal(snapshot.hae_write_bridge_ready,false);
-assert.equal(snapshot.manual_social_studio_provider_converged,false);
+assert.equal(snapshot.manual_social_studio_provider_converged,true);
 assert.ok(snapshot.blockers.includes("progressopro_hae_token_key_bridge_missing"));
 assert.ok(snapshot.blockers.includes("progressopro_provider_transport_not_converged"));
-assert.ok(snapshot.blockers.includes("manual_social_studio_provider_not_converged"));
 assert.equal(snapshot.write_convergence_ready,false);
 
 const serialized=JSON.stringify(snapshot);
@@ -103,14 +123,29 @@ assert.equal(redacted.ok,true);
 assert.equal(redacted.access_token_returned,false);
 assert.equal("accessToken" in redacted,false);
 
+const socialStudioHermesEnv={
+  DB:dbWith(row,hermesBusinessRows),
+  THREADS_BRAND_TOKEN_KEY:bridgeKey,
+};
+const socialStudioHermes=await resolveThreadsTransportForLane(
+  socialStudioHermesEnv,
+  "HERMES_LOGISTICS",
+  {nowMs:Date.parse("2026-11-01T05:00:00Z"),fetchImpl:async()=>{throw new Error("network_not_expected");}}
+);
+assert.equal(socialStudioHermes.ok,true);
+assert.equal(socialStudioHermes.source,"hermes_business_social_credentials");
+assert.equal(socialStudioHermes.accountId,"28419597014385166");
+assert.equal(socialStudioHermes.username,"hermes.logistics");
+assert.doesNotMatch(JSON.stringify(socialStudioHermes),/synthetic-hermes-social-studio-token/);
+
 const bridged=await socialAccountReadinessSnapshot(bridgedEnv,{nowMs:Date.parse("2026-10-29T02:00:00Z")});
 assert.equal(bridged.progressopro.hae_token_key_present,true);
 assert.equal(bridged.progressopro.credential_bridge_resolves,true);
 assert.equal(bridged.progressopro.ready_for_hae_write_bridge,true);
 assert.equal(bridged.progressopro.provider_transport,"shared_meta_threads_provider");
 assert.equal(bridged.hae_write_bridge_ready,true);
-assert.ok(bridged.blockers.includes("manual_social_studio_provider_not_converged"));
-assert.equal(bridged.write_convergence_ready,false);
+assert.equal(bridged.manual_social_studio_provider_converged,true);
+assert.equal(bridged.write_convergence_ready,true);
 assert.doesNotMatch(JSON.stringify(bridged),/synthetic-progressopro-access-token/);
 
 const missing=await socialAccountReadinessSnapshot({
@@ -118,11 +153,10 @@ const missing=await socialAccountReadinessSnapshot({
 },{nowMs:Date.parse("2026-10-29T02:00:00Z")});
 assert.ok(missing.blockers.includes("hermes_logistics_meta_credentials_not_ready"));
 assert.ok(missing.blockers.includes("progressopro_threads_connection_missing"));
-assert.ok(missing.blockers.includes("manual_social_studio_provider_not_converged"));
 
 const worker=await readFile(new URL("../workers/automation-engine/src/index.mjs",import.meta.url),"utf8");
 assert.match(worker,/GET" && url\.pathname === "\/v1\/social-account-readiness"/);
 assert.match(worker,/authorized\(request, env\)/);
 assert.match(worker,/socialAccountReadinessSnapshot\(env\)/);
 
-console.log("HAE social account readiness PASS — two lanes, credential bridge internal, manual provider path still blocks convergence");
+console.log("HAE social account readiness PASS — two lanes, internal credential bridge, shared Threads provider convergence");
