@@ -34,7 +34,7 @@ export async function socialAcquisitionOwnerControl(db){
     FROM hermes_automation_processes
     WHERE organization_scope='hermes_internal' AND job_type=? LIMIT 1`).bind(SOCIAL_CONTROL_JOB_TYPE).first();
   if(!row){
-    return {configured:false,process_id:null,status:"inherited_active",allowed:true,updated_at:null,last_error_class:null};
+    return {configured:false,process_id:null,status:"unconfigured",allowed:true,external_write_allowed:false,updated_at:null,last_error_class:null};
   }
   const status=clean(row.status,40);
   return {
@@ -42,6 +42,7 @@ export async function socialAcquisitionOwnerControl(db){
     process_id:clean(row.process_id,120)||null,
     status:status||"UNKNOWN",
     allowed:status==="active",
+    external_write_allowed:status==="active",
     updated_at:clean(row.updated_at,100)||null,
     last_error_class:clean(row.last_error_class,160)||null,
   };
@@ -226,6 +227,11 @@ export async function processSocialThreadsPlan(env,message,{nowMs=Date.now()}={}
   if(!socialAcquisitionWritesEnabled(env)){
     await markPlanTerminal(env.DB,candidate,"social_dry_run_ready");
     return {status:"social_dry_run_ready",lane,candidate};
+  }
+
+  if(!ownerControl.external_write_allowed){
+    await markPlanTerminal(env.DB,candidate,"social_owner_control_unarmed","social_owner_control_unarmed");
+    return {status:"social_owner_control_unarmed",lane,candidate,control:ownerControl};
   }
 
   const unresolvedSql="SELECT COUNT(*) AS n FROM hermes_automation_publications WHERE account_key=? AND platform='threads' AND status IN ('publishing','provider_accepted_readback_pending','unknown_outcome_readback_pending','unknown_outcome_unresolved','readback_unverified')";
