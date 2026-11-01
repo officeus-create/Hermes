@@ -72,7 +72,10 @@ const {ru=false}=Astro.props;
 
   function render(data){
     q("[data-social-runtime]").textContent=data.runtime?.social_v2==="enabled"?"Social V2":"HOLD";
-    q("[data-social-runtime-copy]").textContent=`${data.runtime?.automation_mode||"UNKNOWN"} · HAE`;
+    const hb=data.health?.last_heartbeat;
+    q("[data-social-runtime-copy]").textContent=hb?.observed_at
+      ?`${data.runtime?.automation_mode||"UNKNOWN"} · heartbeat ${fmt(hb.observed_at)}`
+      :`${data.runtime?.automation_mode||"UNKNOWN"} · heartbeat UNKNOWN`;
     q("[data-social-publish]").textContent=data.runtime?.external_write_enabled?(ru?"ВКЛ":"ON"):(ru?"ВЫКЛ":"OFF");
     q("[data-social-observed]").textContent=fmt(data.observed_at);
 
