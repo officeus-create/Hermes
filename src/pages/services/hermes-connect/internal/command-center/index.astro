@@ -104,6 +104,36 @@ async function loadCatalogOwnerReport(){
   ];
   box.textContent=lines.join("\n");box.hidden=false;
 }
+
+let hrTechRadarLastPoll=0;
+async function loadHrTechRadar(){
+  const box=q<HTMLElement>("[data-hr-tech-radar-body]");
+  const state=q<HTMLElement>("[data-hr-tech-radar-state]");
+  if(!box||!state||Date.now()-hrTechRadarLastPoll<300000)return;
+  hrTechRadarLastPoll=Date.now();
+  const res=await jsonFetch("/api/internal-command-center/hr-tech-radar");
+  if(!res.r.ok||!res.d.success){state.textContent=t("HR-tech radar source unavailable.","Источник HR-tech Radar недоступен.");return}
+  const item=(res.d.reports||[]).find((row:any)=>row.state==="ready"&&row.report);
+  if(!item){state.textContent=t("Awaiting the first Monday 10:00 Kyiv HAE receipt.","Ожидаем первый понедельничный receipt HAE в 10:00 по Киеву.");return}
+  const report=item.report;
+  const counters="LLM "+String(report.llm_calls??"UNKNOWN")+" · IN "+String(report.ai_input_tokens??"UNKNOWN")+" · OUT "+String(report.ai_output_tokens??"UNKNOWN")+" · $"+String(report.paid_ai_cost_usd??"UNKNOWN");
+  state.textContent=t("Latest HR-tech radar: ","Последний HR-tech Radar: ")+String(item.monday_date||"—")+" · "+String(report.state||"UNKNOWN")+" · "+counters;
+  const lines:string[]=[];
+  for(const source of report.sources||[])lines.push("SOURCE · "+String(source.id||"UNKNOWN")+" · "+String(source.state||"UNKNOWN"));
+  for(const entry of report.items||[]){
+    lines.push(
+      "",
+      String(entry.priority||"P?")+" · "+String(entry.topic||"UNKNOWN")+" · "+String(entry.confidence||"UNKNOWN"),
+      String(entry.title||"Official source update"),
+      t("Funnel: ","Воронка: ")+(Array.isArray(entry.funnel_stages)?entry.funnel_stages.join(" → "):"UNKNOWN"),
+      t("Next: ","Дальше: ")+String(entry.next_step||"HUMAN_REVIEW_REQUIRED"),
+      String(entry.source_url||"")
+    );
+  }
+  if(!(report.items||[]).length)lines.push("",t("NO_MATERIAL_CHANGES. Missing source coverage stays explicit below.","NO_MATERIAL_CHANGES. Отсутствующее покрытие источников указано явно."));
+  for(const topic of report.topic_coverage||[])if(topic.state!=="SOURCE_CONFIGURED")lines.push("COVERAGE GAP · "+String(topic.topic||"UNKNOWN")+" · "+String(topic.state||"UNKNOWN"));
+  box.textContent=lines.join("\n");box.hidden=false;
+}
 async function loadAll(){
   const status=await jsonFetch("/api/internal-ai/status");
   if(!status.r.ok||!status.d.success){q("[data-private]")!.hidden=true;const access=q("[data-access]")!;access.hidden=false;access.querySelector("strong")!.textContent=status.r.status===401?t("Sign in required","Нужно войти"):t("Owner access required","Нужен доступ владельца");return}
@@ -127,7 +157,7 @@ async function loadAll(){
   if(taskList.r.ok&&taskList.d.success)tasks=taskList.d.tasks||[]; if(account.r.ok&&account.d.success)renderAccount(account.d);if(processList.r.ok&&processList.d.success)processes=processList.d.processes||[];
   setText("[data-backlog-count]",String(items.filter(x=>!["done","cancelled"].includes(x.status)).length));setText("[data-approval-count]",String(tasks.filter(x=>x.status==="needs_approval").length));
   document.querySelectorAll<HTMLElement>("[data-module]").forEach(card=>{const key=card.dataset.module||"";const count=items.filter(x=>x.workstream===key&&!["done","cancelled"].includes(x.status)).length;const badge=card.querySelector<HTMLElement>(".module-state");if(badge)badge.textContent=count?String(count)+" "+t("open","открыто"):t("Clear","Чисто")});
-  renderItems();renderProcesses();renderOwnerOverview();renderEvidence();void loadCatalogOwnerReport();if(accessList.r.ok&&accessList.d.success)renderOwners(accessList.d);
+  renderItems();renderProcesses();renderOwnerOverview();renderEvidence();void loadCatalogOwnerReport();void loadHrTechRadar();if(accessList.r.ok&&accessList.d.success)renderOwners(accessList.d);
   void loadProjects();
 }
 // Project lookup is optional metadata: never block cloud backlog or HAE processing when it fails.
