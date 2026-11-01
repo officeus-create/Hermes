@@ -25,4 +25,16 @@ test.describe("Public Command Center activity showcase",()=>{
     await showcase.getByRole("button",{name:"Остановить симуляцию"}).click();
     await expect(showcase.getByRole("button",{name:"Воспроизвести симуляцию"})).toHaveAttribute("aria-pressed","true");
   });
+
+  test("respects reduced motion without exposing a nonfunctional control",async({page})=>{
+    await page.emulateMedia({reducedMotion:"reduce"});
+    await page.goto("/services/hermes-connect/command-center/");
+    const showcase=page.locator("[data-hcc-activity-showcase]");
+    await expect(showcase).toBeVisible();
+    await expect(showcase.getByText("VISUAL SIMULATION · NOT LIVE DATA")).toBeVisible();
+    await expect(showcase.locator("[data-hcc-activity-toggle]")).toBeHidden();
+    await expect(showcase.locator("[data-hcc-activity-node]")).toHaveCount(5);
+    const animation=await showcase.locator(".hcc-activity-dot").first().evaluate(el=>getComputedStyle(el).animationName);
+    expect(animation).toBe("none");
+  });
 });
