@@ -67,13 +67,16 @@ const isAcademyPrivateRoute = [
   "/services/hermes-connect/academy/support",
 ].some((prefix) => currentPath === prefix || currentPath.startsWith(`${prefix}/`));
 const isBeautyPrivateRoute = currentPath === "/services/hermes-connect/beauty/workspace" || currentPath.startsWith("/services/hermes-connect/beauty/workspace/");
-const privateWorkspace: "repair" | "academy" | "beauty" | null = isRepairPrivateRoute
+const isClientPrivateRoute = currentPath === "/services/hermes-connect/client-view" || currentPath.startsWith("/services/hermes-connect/client-view/");
+const privateWorkspace: "repair" | "academy" | "beauty" | "client" | null = isRepairPrivateRoute
   ? "repair"
   : isAcademyPrivateRoute
     ? "academy"
     : isBeautyPrivateRoute
       ? "beauty"
-      : null;
+      : isClientPrivateRoute
+        ? "client"
+        : null;
 const publicWorkspace: "repair" | "academy" | "beauty" | "neutral" = currentPath.startsWith("/services/hermes-connect/repair-shops")
   ? "repair"
   : currentPath.startsWith("/services/hermes-connect/academy")
