@@ -119,7 +119,7 @@ assert.equal(
   false,
 );
 const registryObservedAt = pluginRuntimeRegistrySnapshot().observed_at;
-assert.match(registryObservedAt, /^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$/, "A source readback needs an exact UTC instant");
+assert.match(registryObservedAt, /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/, "A source readback needs an exact UTC instant");
 const registryObservedMs = Date.parse(registryObservedAt);
 assert.equal(pluginRuntimeRegistryEvidenceStatus(registryObservedAt).fresh, true);
 assert.equal(pluginRuntimeRegistryEvidenceStatus(new Date(registryObservedMs + 12 * 3600000).toISOString()).fresh, true);
