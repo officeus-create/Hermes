@@ -80,6 +80,8 @@ assert.match(endpoint,/requireInternalOwner/);
 assert.match(endpoint,/private, no-store/);
 assert.doesNotMatch(endpoint,/onRequestPost/);
 assert.match(component,/Social Acquisition/);
+assert.match(component,/Content queue/);
+assert.match(component,/data-social-content/);
 assert.match(component,/api\/internal-command-center\/social/);
 assert.match(component,/Source/);
 assert.match(component,/Readback/);
