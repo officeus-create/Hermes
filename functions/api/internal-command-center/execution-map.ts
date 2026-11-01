@@ -1,6 +1,7 @@
 import { jsonResponse } from "../_lib/session.mjs";
 import { ensureCommandCenterSchema } from "../_lib/internal-command-center.mjs";
 import { developmentCatalog, executionProjection, linkHumanWorkDevelopments } from "../_lib/command-center-execution-map.mjs";
+import { buildDepartmentKpis, readDepartmentKpiSources } from "../_lib/command-center-department-kpis.mjs";
 import { readClickUpHumanTasks } from "../_lib/command-center-clickup.mjs";
 import { readGithubDevelopments } from "../_lib/command-center-github.mjs";
 import { isRunnerHeartbeatFresh, parseRunnerTelemetry, requireInternalOwner } from "../_lib/internal-ai.mjs";
@@ -45,24 +46,38 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
     operations: runnerOnline ? parseRunnerTelemetry(runnerRow?.telemetry_json) : null,
   };
 
+  const checkedAt = new Date().toISOString();
   const registrySnapshot = pluginRuntimeRegistrySnapshot();
-  const registryEvidence = pluginRuntimeRegistryEvidenceStatus(new Date().toISOString());
+  const registryEvidence = pluginRuntimeRegistryEvidenceStatus(checkedAt);
   const processes = (processRows.results || []).map(publicHaeProcess);
   const tasks = (work.results || []).map((item: any) => executionProjection(item, registrySnapshot.entries, registryEvidence));
   const developments = developmentCatalog({ registrySnapshot, registryEvidence, processes, runner });
-  const [human_work_raw, github_developments] = await Promise.all([readClickUpHumanTasks(env), readGithubDevelopments(env)]);
+  const [human_work_raw, github_developments, department_sources] = await Promise.all([
+    readClickUpHumanTasks(env),
+    readGithubDevelopments(env),
+    readDepartmentKpiSources(env.DB, checkedAt),
+  ]);
   const human_work = linkHumanWorkDevelopments(human_work_raw, github_developments);
+  const department_kpis = buildDepartmentKpis({
+    sources: department_sources,
+    githubDevelopments: github_developments,
+    processes,
+    runner,
+    tasks,
+    checkedAt,
+  });
 
   return jsonResponse(200, {
     success: true,
     read_model_owner: "hermes-business-command-center",
     source_policy: "AGGREGATE_CANONICAL_OWNERS_NO_SECOND_TASK_DB",
-    checked_at: new Date().toISOString(),
+    checked_at: checkedAt,
     stage_policy: "QA_PASS, LIVE and BUSINESS_RESULT remain UNKNOWN without separate evidence.",
     tasks,
     developments,
     human_work,
     github_developments,
+    department_kpis,
     registry_evidence: registryEvidence,
   }, headers);
 }
