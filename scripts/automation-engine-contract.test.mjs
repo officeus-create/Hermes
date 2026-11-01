@@ -7,6 +7,8 @@ import {
   buildCarrierThreadsPost,
   buildTrackedUrl,
   publicationEnabled,
+  chicagoSlotKey,
+  isEligibleChicagoSlot,
 } from "../workers/automation-engine/src/index.mjs";
 import {
   publishThreadsTextViaWindsor,
@@ -18,6 +20,32 @@ import {
 assert.equal(ACCOUNT_KEY, "hermes_logistics");
 assert.equal(PLATFORM, "threads");
 assert.ok(CARRIER_THEMES.length >= 6, "Pilot needs enough carrier themes to avoid a tiny rotation");
+
+// Social schedule contract: 06:00 through 01:00 America/Chicago, quiet 02:00-05:59.
+// 2026-10-28 is CDT (UTC-5): exactly 20 eligible local-hour slots.
+const scheduleSlots=[];
+for(let ctHour=0;ctHour<24;ctHour+=1){
+  const instant=new Date(Date.UTC(2026,9,28,ctHour+5,17));
+  const expected=`2026-10-28T${String(ctHour).padStart(2,"0")}`;
+  assert.equal(chicagoSlotKey(instant),expected);
+  scheduleSlots.push({hour:ctHour,eligible:isEligibleChicagoSlot(instant)});
+}
+assert.equal(scheduleSlots.filter(x=>x.eligible).length,20);
+for(const hour of [2,3,4,5])assert.equal(scheduleSlots.find(x=>x.hour===hour)?.eligible,false);
+for(const hour of [0,1,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23]){
+  assert.equal(scheduleSlots.find(x=>x.hour===hour)?.eligible,true);
+}
+
+// DST fallback on 2026-11-01 repeats 01:xx local time. Both UTC wakes must map
+// to the same durable slot key so D1 uniqueness/idempotency suppresses a double post.
+const firstOne=new Date("2026-11-01T06:17:00.000Z");
+const repeatedOne=new Date("2026-11-01T07:17:00.000Z");
+assert.equal(chicagoSlotKey(firstOne),"2026-11-01T01");
+assert.equal(chicagoSlotKey(repeatedOne),"2026-11-01T01");
+assert.equal(isEligibleChicagoSlot(firstOne),true);
+assert.equal(isEligibleChicagoSlot(repeatedOne),true);
+assert.equal(`hae:hermes_logistics:threads:${chicagoSlotKey(firstOne)}`,`hae:hermes_logistics:threads:${chicagoSlotKey(repeatedOne)}`);
+
 
 for (const theme of CARRIER_THEMES) {
   assert.ok(theme.destination.startsWith("/"), "All destinations must be owned Hermes paths");
