@@ -12,7 +12,7 @@ import {
 import { pluginRuntimeVersion } from "../workers/automation-engine/src/plugin-runtime-registry.mjs";
 
 const hash = "a".repeat(64);
-const worker = readFileSync(new URL("../workers/automation-engine/src/index.mjs", import.meta.url), "utf8");
+const worker = readFileSync(new URL("../workers/automation-engine/src/index.mjs", import.meta.url), "utf8");\nconst wrangler = readFileSync(new URL("../workers/automation-engine/wrangler.jsonc.example", import.meta.url), "utf8");
 const fixtures = {
   "dispatch.daily.closeout.audit": { business_date: "2026-10-24", coverage_complete: false, orders: [
     { order_id: "O-1", value_cents: 10000, commission_cents: 700, pickup_at: "2026-10-24T10:00:00Z", delivery_at: null, cancelled: false },
