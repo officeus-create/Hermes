@@ -26,7 +26,7 @@ export async function onRequestPatch({ request, env, params }: { request: Reques
   let row = await getProcess(env.DB, id);
   if (!row) return jsonResponse(404, { success: false, error: "process_not_found" }, headers);
   const template = haeProcessTemplate(row.job_type);
-  const controlOnly = Boolean(template?.control_only);
+  const controlOnly = Boolean(template && "control_only" in template && template.control_only === true);
   let payload: any; try { payload = await request.json(); } catch { return jsonResponse(400, { success: false, error: "invalid_json" }, headers); }
   const action = String(payload?.action || "").trim();
   const now = new Date().toISOString();
