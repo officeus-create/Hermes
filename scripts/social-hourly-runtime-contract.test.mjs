@@ -3,6 +3,7 @@ import { readFile } from "node:fs/promises";
 import {
   socialAcquisitionV2Enabled,
   socialAcquisitionWritesEnabled,
+  verifySocialSourcePage,
 } from "../workers/automation-engine/src/social-hourly-runtime.mjs";
 
 assert.equal(socialAcquisitionV2Enabled({}),false);
@@ -17,6 +18,42 @@ assert.equal(socialAcquisitionWritesEnabled({
   HERMES_AUTOMATION_MODE:"dry_run",
   HERMES_AUTOMATION_PUBLISH:"enabled",
 }),false);
+
+function sourceResponse({status=200,contentType="text/html; charset=utf-8",body="<!doctype html><html><body>"+("verified source ".repeat(30))+"</body></html>"}={}){
+  return {
+    ok:status>=200&&status<300,
+    status,
+    headers:{get:(name)=>String(name).toLowerCase()==="content-type"?contentType:null},
+    async text(){return body;},
+  };
+}
+const validSource="https://hermeslogisticsus.com/logistics/car-hauling-dispatch/?utm_source=threads&utm_medium=organic_social";
+assert.equal((await verifySocialSourcePage(
+  {destination_url:validSource,body:"Current source "+validSource},
+  {fetchImpl:async()=>sourceResponse()},
+)).ok,true);
+let externalFetches=0;
+assert.equal((await verifySocialSourcePage(
+  {destination_url:"https://example.com/path",body:"https://example.com/path"},
+  {fetchImpl:async()=>{externalFetches+=1;return sourceResponse();}},
+)).error_class,"social_source_not_canonical");
+assert.equal(externalFetches,0);
+assert.equal((await verifySocialSourcePage(
+  {destination_url:validSource,body:"missing tracked URL"},
+  {fetchImpl:async()=>sourceResponse()},
+)).error_class,"social_source_link_mismatch");
+assert.equal((await verifySocialSourcePage(
+  {destination_url:validSource,body:"Current source "+validSource},
+  {fetchImpl:async()=>sourceResponse({status:302})},
+)).error_class,"social_source_http_status");
+assert.equal((await verifySocialSourcePage(
+  {destination_url:validSource,body:"Current source "+validSource},
+  {fetchImpl:async()=>sourceResponse({contentType:"application/json"})},
+)).error_class,"social_source_not_html");
+assert.equal((await verifySocialSourcePage(
+  {destination_url:validSource,body:"Current source "+validSource},
+  {fetchImpl:async()=>{throw new Error("network");}},
+)).error_class,"social_source_readback_unavailable");
 
 const worker=await readFile(new URL("../workers/automation-engine/src/index.mjs",import.meta.url),"utf8");
 const runtime=await readFile(new URL("../workers/automation-engine/src/social-hourly-runtime.mjs",import.meta.url),"utf8");
@@ -39,6 +76,10 @@ assert.match(runtime,/HERMES_SOCIAL_ACQUISITION_V2/);
 assert.match(runtime,/HERMES_AUTOMATION_MODE/);
 assert.match(runtime,/HERMES_AUTOMATION_PUBLISH/);
 assert.match(runtime,/unresolved_previous_publication/);
+assert.match(runtime,/verifySocialSourcePage/);
+assert.match(runtime,/social_source_not_canonical/);
+assert.match(runtime,/social_source_link_mismatch/);
+assert.match(runtime,/social_source_readback_unavailable/);
 assert.match(runtime,/meta_threads_history_incomplete/);
 assert.match(runtime,/meta_threads_duplicate_existing_post/);
 assert.match(runtime,/meta_threads_recent_authored_cooldown/);
