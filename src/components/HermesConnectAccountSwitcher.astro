@@ -252,6 +252,12 @@ const t = copy[accountLocale];
           loadboard.hidden = false;
         }
 
+        const client = root.querySelector<HTMLAnchorElement>("[data-workspace-client]");
+        if (clientWorkspace && client) {
+          if (clientWorkspace.href) client.href = withLocale(clientWorkspace.href);
+          client.hidden = false;
+        }
+
         const hr = root.querySelector<HTMLAnchorElement>("[data-workspace-hr]");
         if (hrWorkspace && hr) {
           if (hrWorkspace.href) hr.href = withLocale(hrWorkspace.href);
