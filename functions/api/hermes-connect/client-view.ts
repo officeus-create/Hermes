@@ -1,5 +1,6 @@
 import { getAuthenticatedSpecialist, jsonResponse } from "../_lib/session.mjs";
 import { listActiveCompanyMemberships } from "../_lib/company-memberships.mjs";
+import { parseBusinessRef } from "../_lib/business-identity.mjs";
 import { ensureHermesCompanyProfilesSchema } from "../_lib/hermes-company-profiles.mjs";
 
 type Env = { DB?: any };
@@ -25,11 +26,13 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
 
   const workspaces = [];
   for (const membership of memberships) {
+    const business = parseBusinessRef(membership.companyId);
+    if (!business || business.namespace !== "company") continue;
     const company = await env.DB.prepare(`
       SELECT id,company_name,company_type,city,state,website,catalog_status,load_board_access,updated_at
       FROM hermes_company_profiles
       WHERE id=? LIMIT 1
-    `).bind(membership.companyId).first();
+    `).bind(business.native_id).first();
 
     if (!company) continue;
     workspaces.push({
