@@ -136,6 +136,48 @@ assert.equal(incompleteResult.ok,false);
 assert.equal(incompleteResult.error_class,"meta_threads_history_incomplete");
 
 assert.equal(createMetaThreadsTransport({accessToken:"short",accountId,expectedUsername:username,fetchImpl}),null);
+// Read-only Social Inbox primitives: mentions/search/replies/conversation.
+const discoveryCalls=[];
+const discoveryQueue=[
+  response({data:[{...row("18193000000000001",51),username:"carrier.owner",is_reply:false}],paging:{}}),
+  response({data:[{...row("18193000000000002",52),username:"dealer.group",is_reply:false}]}),
+  response({data:[{...row("18193000000000003",53),username:"carrier.reply",is_reply:true,replied_to:{id:"18170000000000001"},root_post:{id:"18170000000000001"}}],paging:{}}),
+  response({data:[{...row("18193000000000004",54),username:"carrier.reply2",is_reply:true,replied_to:{id:"18193000000000003"},root_post:{id:"18170000000000001"}}],paging:{}}),
+];
+const discovery=createMetaThreadsTransport({
+  accessToken:token,accountId,expectedUsername:username,
+  fetchImpl:async(url,options={})=>{
+    discoveryCalls.push({url:String(url),options});
+    const next=discoveryQueue.shift();
+    if(!next)throw new Error("unexpected_discovery_fetch");
+    return next;
+  },
+});
+const mentions=await discovery.listMentions({limit:20});
+assert.equal(mentions.ok,true);
+assert.equal(mentions.rows[0].username,"carrier.owner");
+const search=await discovery.searchPublic("car hauler",{limit:20});
+assert.equal(search.ok,true);
+assert.equal(search.complete,false);
+assert.equal(search.ranked_results,true);
+const replies=await discovery.listReplies("18170000000000001",{limit:20});
+assert.equal(replies.ok,true);
+assert.equal(replies.rows[0].replied_to.id,"18170000000000001");
+const conversation=await discovery.listConversation("18170000000000001",{limit:20});
+assert.equal(conversation.ok,true);
+assert.equal(conversation.rows[0].root_post.id,"18170000000000001");
+for(const call of discoveryCalls){
+  const url=new URL(call.url);
+  assert.equal(url.hostname,"graph.threads.net");
+  assert.equal(url.searchParams.has("access_token"),false);
+  assert.equal(call.options?.headers?.authorization,"Bearer "+token);
+  assert.equal(call.options?.method,"GET");
+}
+assert.match(discoveryCalls[0].url,/\/me\/mentions/);
+assert.match(discoveryCalls[1].url,/\/keyword_search/);
+assert.match(discoveryCalls[2].url,/18170000000000001\/replies/);
+assert.match(discoveryCalls[3].url,/18170000000000001\/conversation/);
+
 assert.equal(createMetaThreadsTransport({accessToken:token,accountId:"wrong",expectedUsername:username,fetchImpl}),null);
 
 console.log("shared Meta Threads provider PASS — exact text, bounded pagination, identity, publish/reply/readback, no token in URL");
