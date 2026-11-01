@@ -1,7 +1,13 @@
 import { jsonResponse } from "../_lib/session.mjs";
 import { requireInternalOwner } from "../_lib/internal-ai.mjs";
 import { ensureCommandCenterSchema, reconcileWorkItems } from "../_lib/internal-command-center.mjs";
-import { commandCenterProjectPortfolio, validateCommandCenterProjects } from "../_lib/command-center-projects.mjs";
+import {
+  commandCenterProjectPortfolio,
+  PROJECT_PORTFOLIO_COVERAGE_NOTE,
+  PROJECT_PORTFOLIO_COVERAGE_STATE,
+  PROJECT_PORTFOLIO_SNAPSHOT_OBSERVED_AT,
+  validateCommandCenterProjects,
+} from "../_lib/command-center-projects.mjs";
 import { ensureOwnerProjectSchema, normalizeOwnerProjectFields, publicOwnerProject, OWNER_PROJECT_SCOPE } from "../_lib/command-center-owner-projects.mjs";
 
 type Env = { DB?: any };
@@ -14,6 +20,7 @@ const parseOffset=(request:Request)=>{
 
 export async function onRequestGet({ request, env }: { request: Request; env: Env }) {
   const owner = await requireInternalOwner(request, env); if (owner.response) return owner.response;
+  const checkedAt = new Date().toISOString();
   const canonical = commandCenterProjectPortfolio();
   if (validateCommandCenterProjects(canonical).length) return jsonResponse(503, { success:false,error:"project_registry_invalid" },headers);
   await ensureOwnerProjectSchema(env.DB);
@@ -37,7 +44,11 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
     success:true,
     registry_owner:"hermes-business-command-center",
     source_class:"CANONICAL_SNAPSHOT_PLUS_OWNER_D1",
-    checked_at:"2026-10-28T15:30:00+02:00",
+    checked_at:checkedAt,
+    snapshot_observed_at:PROJECT_PORTFOLIO_SNAPSHOT_OBSERVED_AT,
+    coverage_state:PROJECT_PORTFOLIO_COVERAGE_STATE,
+    coverage_note:PROJECT_PORTFOLIO_COVERAGE_NOTE,
+    declared_registry_count:canonical.length,
     progress_method:"completed milestones divided by total declared milestones; owner-created projects use UNKNOWN",
     work_items_method:"live owner D1 status counts; separate from project milestone progress",
     eta_policy:"ETA is UNKNOWN until deterministic or historical duration evidence exists.",
