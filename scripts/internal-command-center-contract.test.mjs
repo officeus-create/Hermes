@@ -11,6 +11,7 @@ const access=read("functions/api/internal-command-center/access.ts");
 const processes=read("functions/api/internal-command-center/processes.ts");
 const reports=read("functions/api/internal-command-center/reports.ts");
 const intelligence=read("functions/api/internal-command-center/owner-intelligence.ts");
+const socialAcquisition=read("functions/api/internal-command-center/social-acquisition.ts");
 const processItem=read("functions/api/internal-command-center/processes/[id].ts");
 const processControl=read("src/lib/hae-process-control.mjs");
 const processRuntime=read("workers/automation-engine/src/owner-process-runtime.mjs");
@@ -39,7 +40,7 @@ assert.match(ownerWorkspace,/Execution environment|Среда исполнени
 assert.match(ownerWorkspace,/HAE 24\/7 processes/,"owner must have one visible autonomous-process control surface");
 assert.match(ownerWorkspace,/External sends and paid AI are disabled in this layer/,"first autonomous slice must expose its safe execution boundary");
 assert.match(ownerWorkspace,/data-cc-view="today"/,"owner home must prioritize the Today decision layer");
-for(const key of ["projects","tasks","crm","automations","agents","plugins","executions","evidence","reports","knowledge","investor","access"]) assert.match(ownerWorkspace,new RegExp(`data-cc-view="${key}"`),`owner workspace must expose ${key} view`);
+for(const key of ["projects","tasks","crm","social","automations","agents","plugins","executions","evidence","reports","knowledge","investor","access"]) assert.match(ownerWorkspace,new RegExp(`data-cc-view="${key}"`),`owner workspace must expose ${key} view`);
 assert.match(ownerWorkspace,/data-new-task/,"task capture must be a compact on-demand action instead of a permanent large form");
 assert.match(ownerWorkspace,/Command Center does not create a second CRM/,"CRM owner view must route to existing Hermes Connect workspaces instead of cloning CRM state");
 assert.match(page,/\/api\/internal-command-center\/reports/,"owner workspace must read HAE report receipts");
@@ -49,6 +50,16 @@ assert.match(page,/REGISTERED CAPABILITY|ЗАРЕГИСТРИРОВАННАЯ В
 assert.match(ownerWorkspace,/separate HAE receipt|отдельным HAE receipt/,"Plugins view must require a separate HAE receipt before claiming execution");
 assert.match(ownerWorkspace,/data-cc-view="executions"[\s\S]*HermesExecutionMap/,"Executions view must reuse the canonical execution map");
 assert.match(page,/\/api\/hermes-connect\/account/,"CRM router must reuse the canonical Hermes account portfolio");
+assert.match(page,/\/api\/internal-command-center\/social-acquisition/,"Social Acquisition must reuse the canonical HAE social read model");
+assert.match(page,/\/api\/internal\/social\/threads\/connections/,"Social Acquisition must reuse existing Threads provider state");
+assert.match(ownerWorkspace,/Social Acquisition/,"owner workspace must expose the Social Acquisition view");
+assert.match(ownerWorkspace,/social\.reply\.prepare/,"Social replies must remain on the existing DRAFT_ONLY capability");
+assert.match(ownerWorkspace,/Carrier Leads[\s\S]*UNKNOWN/,"carrier lead totals must stay UNKNOWN without a canonical aggregate");
+assert.match(socialAcquisition,/READ_ONLY_CANONICAL_HAE_D1_NO_SECOND_SOCIAL_STORE/,"Social Acquisition must be a read model over canonical HAE D1");
+assert.match(socialAcquisition,/automatic_external_publish_authorized:false/,"Command Center must not authorize social publication");
+assert.match(socialAcquisition,/automatic_reply_authorized:false/,"Command Center must not authorize automatic social replies");
+assert.match(socialAcquisition,/reply_permission_class:"DRAFT_ONLY"/,"reply preparation must remain DRAFT_ONLY");
+assert.doesNotMatch(socialAcquisition,/INSERT\s+INTO|UPDATE\s+hermes_automation|DELETE\s+FROM/i,"Social Acquisition readback must not mutate HAE social state");
 assert.match(reports,/HERMES_COMMAND_CENTER_ONLY/,"reports must be scoped to Command Center delivery");
 assert.match(reports,/max_cost_usd:0/,"reports must remain zero-cost by contract");
 assert.doesNotMatch(reports,/LEAD_EMAIL_SERVICE|send_email|OWNER_ALERT_EMAIL|fetch\(/,"Command Center report readback must not send email or call providers");
@@ -74,7 +85,7 @@ assert.doesNotMatch(helper,/SET status = 'done'.*linked_task_id IN/s,"linked exe
 assert.match(helper,/Reuse current Hermes architecture.*do not create a second CRM/s,"dispatched prompts must preserve single-system ownership");
 assert.match(helper,/external communications.*owner approval flow/i,"dispatched prompts must preserve consequential approval gates");
 
-for(const source of [collection,item,access,processes,processItem,reports,intelligence]){
+for(const source of [collection,item,access,processes,processItem,reports,intelligence,socialAcquisition]){
   assert.match(source,/requireInternalOwner/,"every command-center API must require HERMES_INTERNAL_OWNER");
   assert.match(source,/Cache-Control.*no-store/,"private APIs must not be cached");
 }
