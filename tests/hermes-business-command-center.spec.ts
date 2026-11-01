@@ -45,7 +45,7 @@ test.describe("Hermes Business Command Center",()=>{
     await expect(page.locator("[data-runner-state]")).toHaveText("Offline");
     await expect(page.locator("[data-backlog-count]")).toHaveText("1");
     await expect(page.locator("[data-today-list]").getByText("Threads website demand",{exact:true})).toBeVisible();
-    await expect(page.getByText(/Cloud backlog remains safe/)).toBeVisible();
+    await expect(page.locator("[data-runner-copy]")).toHaveText("Mac heartbeat unavailable; cloud backlog preserved");
     await expect(page.getByText("Cloudflare + D1")).toBeVisible();
     await openOwnerView(page,"access");
     await expect(page.locator("[data-account-workspaces]").getByRole("link",{name:/internal ai/i})).toBeVisible();
