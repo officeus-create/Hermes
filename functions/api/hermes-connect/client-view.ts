@@ -35,9 +35,7 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
     workspaces.push({
       business_ref: "company:" + clean(company.id, 160),
       workspace_ref: membership.workspaceId || null,
-      membership_id: membership.membershipId,
       role: membership.role,
-      grant_source: membership.grantSource,
       company: {
         name: clean(company.company_name, 180),
         type: clean(company.company_type, 80),
