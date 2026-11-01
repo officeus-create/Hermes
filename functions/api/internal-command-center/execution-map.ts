@@ -81,6 +81,7 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
     github_developments,
     department_kpis,
     provider_health,
+    plugin_registry: registrySnapshot.entries.map(({ role_id, plugin_version, observed_at }) => ({ role_id, plugin_version, observed_at })),
     registry_evidence: registryEvidence,
   }, headers);
 }
