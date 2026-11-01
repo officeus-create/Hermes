@@ -65,20 +65,25 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     return jsonResponse(403, { success: false, error: "invalid_bootstrap_token" }, noStore);
   }
 
-  const existingOwner = await env.DB
-    .prepare("SELECT specialist_id FROM hermes_internal_owner_access WHERE active = 1 AND capability = 'HERMES_INTERNAL_OWNER' LIMIT 1")
-    .first();
-  if (existingOwner) {
-    return jsonResponse(409, { success: false, error: "internal_owner_already_provisioned" }, noStore);
-  }
-
+  // This one-time claim must be a single atomic SQL write. A separate
+  // SELECT-then-INSERT permits two simultaneous authenticated sessions to
+  // observe "no owner" and both claim owner capability.
   const now = nowIso();
-  await env.DB
+  const claim = await env.DB
     .prepare(`INSERT INTO hermes_internal_owner_access (specialist_id, active, capability, created_at, updated_at)
-      VALUES (?, 1, 'HERMES_INTERNAL_OWNER', ?, ?)
+      SELECT ?, 1, 'HERMES_INTERNAL_OWNER', ?, ?
+      WHERE NOT EXISTS (
+        SELECT 1 FROM hermes_internal_owner_access
+        WHERE active = 1 AND capability = 'HERMES_INTERNAL_OWNER'
+      )
       ON CONFLICT(specialist_id) DO UPDATE SET active = 1, capability = 'HERMES_INTERNAL_OWNER', updated_at = excluded.updated_at`)
     .bind(specialist.id, now, now)
     .run();
+  // Fail closed if the other session won the race or the DB did not provide
+  // the expected write receipt. Never treat a preflight SELECT as a grant.
+  if (Number(claim?.meta?.changes ?? 0) !== 1) {
+    return jsonResponse(409, { success: false, error: "internal_owner_already_provisioned" }, noStore);
+  }
 
   return jsonResponse(201, {
     success: true,

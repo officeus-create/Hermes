@@ -119,10 +119,14 @@ assert.equal(
   false,
 );
 const registryObservedAt = pluginRuntimeRegistrySnapshot().observed_at;
-assert.equal(pluginRuntimeRegistryEvidenceStatus(`${registryObservedAt}T12:00:00Z`).fresh, true);
-const staleRegistryRead = new Date(`${registryObservedAt}T00:00:00Z`);
-staleRegistryRead.setUTCHours(staleRegistryRead.getUTCHours() + 49);
-assert.equal(pluginRuntimeRegistryEvidenceStatus(staleRegistryRead.toISOString()).fresh, false);
+assert.match(registryObservedAt, /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/, "A source readback needs an exact UTC instant");
+const registryObservedMs = Date.parse(registryObservedAt);
+assert.equal(pluginRuntimeRegistryEvidenceStatus(registryObservedAt).fresh, true);
+assert.equal(pluginRuntimeRegistryEvidenceStatus(new Date(registryObservedMs + 12 * 3600000).toISOString()).fresh, true);
+assert.equal(pluginRuntimeRegistryEvidenceStatus(new Date(registryObservedMs + 24 * 3600000).toISOString()).fresh, true);
+assert.equal(pluginRuntimeRegistryEvidenceStatus(new Date(registryObservedMs + 24 * 3600000 + 1).toISOString()).fresh, false);
+assert.equal(pluginRuntimeRegistryEvidenceStatus(new Date(registryObservedMs - 1).toISOString()).fresh, false, "Future-dated source evidence must fail closed");
+assert.equal(pluginRuntimeRegistryEvidenceStatus("invalid-now").reason, "INVALID_EVIDENCE_TIME");
 
 assert.match(pluginRuntimeVersion("hermes-agent-coordinator"), /^\d+\.\d+\.\d+/);
 assert.match(pluginRuntimeVersion("hermes-academy"), /^\d+\.\d+\.\d+/);
