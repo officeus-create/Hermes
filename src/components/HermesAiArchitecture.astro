@@ -13,7 +13,7 @@ const steps = [
   { id: "01", name: l("Owner request / inbound event", "Задание владельца / событие"), note: l("Typed task, CI event, CRM or approved connector", "Ввод, CI, CRM либо разрешённый коннектор") },
   { id: "02", name: "HAE · Worker + Queue + D1", note: l("One WORK_ID, owner of state, cost and permissions", "Единый WORK_ID, состояние, права и бюджет") },
   { id: "03", name: l("Policy router", "Маршрутизатор политик"), note: l("Deterministic rules first; unknown → HOLD", "Сначала правила; неопределённость → HOLD") },
-  { id: "04", name: l("Local / cloud specialist", "Локальный / облачный специалист"), note: l("Mac Qwen or approved free Cloudflare model", "Qwen на Mac либо разрешённая бесплатная модель") },
+  { id: "04", name: l("Local / cloud specialist", "Локальный / облачный специалист"), note: l("Assigned Windows worker (unverified), Mac fallback or approved free model", "Назначенный Windows (не подтверждён), Mac как резерв или разрешённая бесплатная модель") },
   { id: "05", name: l("Independent QA / owner gate", "Независимая QA / допуск владельца"), note: l("Proof before deploy, reply, spend or publish", "Доказательство до релиза, ответа и публикации") },
   { id: "06", name: "Evidence → One Brain", note: l("Promote only independently verified lessons", "Только проверенные уроки в единый мозг") }
 ];
@@ -74,7 +74,7 @@ const roles = [
         <div><dt>{l("Phase", "Фаза")}</dt><dd data-ai-ops-phase>UNKNOWN</dd></div>
         <div><dt>{l("Model", "Модель")}</dt><dd data-ai-ops-model>UNKNOWN</dd></div>
         <div><dt>{l("Cycle", "Цикл")}</dt><dd data-ai-ops-cycle>UNKNOWN</dd></div>
-        <div><dt>Windows</dt><dd>{l("Deferred by owner · Mac is primary", "Отложен владельцем · основной Mac")}</dd></div>
+        <div><dt>Windows</dt><dd>{l("Assigned primary · runtime acceptance pending", "Назначен основным · запуск не подтверждён")}</dd></div>
       </dl></article>
       <article class="ai-map__ops-card ai-map__ops-card--wide"><span class="ai-map__mini-label">{l("Current work", "Текущая работа")}</span><h3 data-ai-ops-current>UNKNOWN</h3><p><strong>{l("Next:", "Дальше:")}</strong> <span data-ai-ops-next>UNKNOWN</span></p><p class="ai-map__ops-note">{l("Operational status only. Consequential actions remain behind existing QA / owner gates.", "Только операционный статус. Значимые действия остаются за существующими QA / owner gates.")}</p></article>
       <article class="ai-map__ops-card"><span class="ai-map__mini-label">{l("Self-learning", "Самообучение")}</span><h3 data-ai-ops-training-phase>UNKNOWN</h3><p data-ai-ops-training-task>UNKNOWN</p></article>
@@ -128,7 +128,7 @@ const roles = [
     <div class="ai-map__connection-grid">
       {connections.map((connection) => <article class="ai-map__connection"><div class="ai-map__connection-head"><h3>{connection.title}</h3><span class={"ai-map__flag "+connection.tone}>{connection.state}</span></div><p>{connection.text}</p><a href={connection.url} target="_blank" rel="noopener noreferrer">{connection.cta} ↗</a></article>)}
     </div>
-    <p class="ai-map__footnote">{l("Source snapshot: 27 October 2026. Only Mac runner heartbeat above is refreshed from owner-authenticated API. Provider status must not silently become CONNECTED without authenticated readback.", "Снимок источников: 27 октября 2026. Только heartbeat Mac выше обновляется из API владельца. Статус провайдера не становится CONNECTED без подтверждённого readback.")}</p>
+    <p class="ai-map__footnote">{l("Static integration references are historical. Only the Mac heartbeat above comes from the owner API; Windows remains unverified until a separate authenticated HAE receipt.", "Статические сведения об интеграциях исторические. Из API владельца приходит только heartbeat Mac; Windows остаётся неподтверждённым до отдельной HAE-квитанции.")}</p>
   </div>
   <div id="ai-panel-rollout" data-ai-map-panel="rollout" role="tabpanel" aria-labelledby="ai-tab-rollout" hidden>
     <div class="ai-map__rollout">
