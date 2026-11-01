@@ -40,8 +40,9 @@ assert.deepEqual([...template.allowed_cadence_hours],[1]);
 
 let control=await socialAcquisitionOwnerControl(DB);
 assert.equal(control.configured,false);
-assert.equal(control.status,"inherited_active");
+assert.equal(control.status,"unconfigured");
 assert.equal(control.allowed,true);
+assert.equal(control.external_write_allowed,false);
 
 const now="2026-11-01T08:00:00.000Z";
 sqlite.prepare(`INSERT INTO hermes_automation_processes
@@ -55,6 +56,7 @@ assert.equal(control.configured,true);
 assert.equal(control.process_id,"haep_social");
 assert.equal(control.status,"paused");
 assert.equal(control.allowed,false);
+assert.equal(control.external_write_allowed,false);
 let publicProcess=publicHaeProcess(sqlite.prepare("SELECT * FROM hermes_automation_processes WHERE process_id='haep_social'").get());
 assert.equal(publicProcess.control_only,true);
 assert.equal(publicProcess.next_run_at,null);
@@ -62,6 +64,7 @@ assert.equal(publicProcess.next_run_at,null);
 sqlite.prepare("UPDATE hermes_automation_processes SET status='active',next_run_at=NULL WHERE process_id='haep_social'").run();
 control=await socialAcquisitionOwnerControl(DB);
 assert.equal(control.allowed,true);
+assert.equal(control.external_write_allowed,true);
 assert.equal(control.status,"active");
 
 const processApi=await readFile(new URL("../functions/api/internal-command-center/processes/[id].ts",import.meta.url),"utf8");
