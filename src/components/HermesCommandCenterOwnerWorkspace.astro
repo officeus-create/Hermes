@@ -105,8 +105,18 @@ const functions=[
     <section class="hcc-panel" data-ai-owner-map><HermesAiArchitecture ru={ru}/></section>
   </section>
 
-  <section class="owner-view" data-cc-view="evidence" hidden>
+  <section class="owner-view" data-cc-view="plugins" hidden>
+    <section class="hcc-panel">
+      <div class="owner-section-head"><div><p class="hcc-sample">Hermes Plugin Workforce</p><h2>{ru?"Плагины и текущие версии":"Plugins and current versions"}</h2><p>{ru?"Это реестр доступных возможностей. Выбор плагина не означает, что он был выполнен: execution подтверждается только отдельным HAE receipt.":"This is the capability registry. Selecting a plugin is not execution: execution is proven only by a separate HAE receipt."}</p></div><span class="owner-cloud-note" data-plugin-registry-state>UNKNOWN</span></div>
+      <div class="workspace-grid" data-plugin-registry><p class="muted">{ru?"Загружаем реестр плагинов…":"Loading plugin registry…"}</p></div>
+    </section>
+  </section>
+
+  <section class="owner-view" data-cc-view="executions" hidden>
     <HermesExecutionMap ru={ru}/>
+  </section>
+
+  <section class="owner-view" data-cc-view="evidence" hidden>
     <section class="hcc-panel owner-evidence-panel">
       <div class="owner-section-head"><div><p class="hcc-sample">Evidence</p><h2>{ru?"Что реально было сделано":"What actually happened"}</h2><p>{ru?"Здесь показываются только task-linked результаты, PR и owner acceptance.":"Only task-linked results, PRs and owner acceptance appear here."}</p></div></div>
       <div class="owner-evidence-list" data-evidence-list><p class="muted">{ru?"Загружаем evidence…":"Loading evidence…"}</p></div>
