@@ -54,6 +54,7 @@ import {
 } from "./plugin-runtime-registry.mjs";
 import { socialAccountReadinessSnapshot } from "./social-account-readiness.mjs";
 import { runSocialReplyPrepare, validateSocialReplyPrepareInput } from "./social-reply-prepare.mjs";
+import { drainSocialReplyPrepareIntake } from "./social-reply-intake-runtime.mjs";
 import {
   socialAcquisitionV2Enabled,
   enqueueHourlySocialPlans,
@@ -2209,6 +2210,16 @@ export default {
         eventType: "cron.owner_process_batch_failed",
         slotKey: chicagoSlotKey(scheduledAt),
         errorClass: safeRuntimeErrorClass(error, "owner_process_batch_failed"),
+      });
+    }
+
+    try {
+      await drainSocialReplyPrepareIntake(env, { createJob: createGenericJob });
+    } catch (error) {
+      await recordRuntimeEvent(env, {
+        eventType: "cron.social_reply_intake_failed",
+        messageType: "social.reply.prepare",
+        errorClass: safeRuntimeErrorClass(error, "social_reply_intake_failed"),
       });
     }
 
