@@ -103,3 +103,18 @@ test('authenticated Hermes account affordance persists site-wide without SSR pri
   assert.doesNotMatch(header, /!privateWorkspace && isHermesConnectRoute && <HermesConnectAccountSwitcher/);
   assert.doesNotMatch(header, /isHermesConnectLanding/);
 });
+
+
+test('membership Client View is a private company workspace from the canonical account payload', async () => {
+  const source = await loadSwitcher();
+  const header = await loadHeader();
+  assert.match(source, /item\?\.key === "client_view"/);
+  assert.match(source, /data-workspace-client data-hc-workspace-link="client" hidden/);
+  assert.match(source, /client:\s*"\/services\/hermes-connect\/client-view\/"/);
+  assert.match(source, /if \(clientWorkspace && client\) client\.hidden = false/);
+  assert.match(source, /entries\.push\(\{ key: "client"/);
+  assert.match(source, /current === "client"/);
+  assert.match(header, /isClientPrivateRoute/);
+  assert.match(header, /"beauty" \| "client" \| null/);
+  assert.match(header, /\? "client"/);
+});
