@@ -1,7 +1,7 @@
 import { jsonResponse } from "../../_lib/session.mjs";
 import { normalizeWorkItemProjectId, validWorkItemProject } from "../../_lib/command-center-work-item-projects.mjs";
 import { ensureInternalAiSchema, INTERNAL_AI_ORGANIZATION_SCOPE, newTaskId, normalizePrompt, nowIso, publicTask, requireInternalOwner } from "../../_lib/internal-ai.mjs";
-import { ensureCommandCenterSchema, normalizeWorkstream, normalizePriority, normalizeWorkItemTitle, normalizeWorkItemDetails, publicWorkItem, reconcileWorkItems, workItemPrompt } from "../../_lib/internal-command-center.mjs";
+import { ensureCommandCenterSchema, normalizeWorkstream, normalizePriority, normalizeWorkItemTitle, normalizeWorkItemDetails, publicWorkItem, reconcileWorkItems, workItemPrompt, selectWorkItemPluginRoute } from "../../_lib/internal-command-center.mjs";
 type Env={DB?:any};
 const headers={"Cache-Control":"private, no-store","X-Robots-Tag":"noindex, nofollow"};
 const sameOriginMutation=(request:Request)=>request.headers.get("Sec-Fetch-Site")!=="cross-site"&&(!request.headers.get("Origin")||request.headers.get("Origin")===new URL(request.url).origin);
@@ -45,11 +45,12 @@ export async function onRequestPatch({request,env,params}:{request:Request;env:E
     if(!title||!details||!workstream||!priority)return jsonResponse(400,{success:false,error:"invalid_work_item_fields"},headers);
     if(!observedAt||observedAt!==String(row.updated_at||""))
       return jsonResponse(409,{success:false,error:"work_item_changed_reload_first",work_item:publicWorkItem(row)},headers);
+    const routeJson=JSON.stringify(selectWorkItemPluginRoute({title,details,workstream}));
     const changed=await env.DB.prepare(`UPDATE hermes_owner_work_items
-      SET title=?,details=?,workstream=?,priority=?,project_id=?,updated_at=?
+      SET title=?,details=?,workstream=?,priority=?,project_id=?,plugin_route_json=?,updated_at=?
       WHERE id=? AND organization_scope=? AND status IN ('planned','ready','blocked')
       AND linked_task_id IS NULL AND updated_at=?`)
-      .bind(title,details,workstream,priority,projectId,now,id,INTERNAL_AI_ORGANIZATION_SCOPE,observedAt).run();
+      .bind(title,details,workstream,priority,projectId,routeJson,now,id,INTERNAL_AI_ORGANIZATION_SCOPE,observedAt).run();
     if(!changed?.meta?.changes)return jsonResponse(409,{success:false,error:"work_item_edit_conflict",work_item:publicWorkItem(await getItem(env.DB,id))},headers);
     return jsonResponse(200,{success:true,work_item:publicWorkItem(await getItem(env.DB,id))},headers);
   }
@@ -61,7 +62,8 @@ export async function onRequestPatch({request,env,params}:{request:Request;env:E
     const reviewRework=String(row.status)==="blocked"&&priorLinkedTaskStatus==="completed"&&Boolean(String(row.blocked_reason||"").trim());
     if(priorLinkedTaskId && ["queued","running","needs_approval"].includes(priorLinkedTaskStatus))return jsonResponse(409,{success:false,error:"work_item_task_active",work_item:publicWorkItem(row)},headers);
     if(priorLinkedTaskId && !["failed","cancelled"].includes(priorLinkedTaskStatus) && !reviewRework)return jsonResponse(409,{success:false,error:"work_item_linkage_unresolved",work_item:publicWorkItem(row)},headers);
-    const prompt=normalizePrompt(workItemPrompt(row)); if(!prompt)return jsonResponse(400,{success:false,error:"work_item_prompt_invalid"},headers);
+    const routeJson=JSON.stringify(selectWorkItemPluginRoute(row));
+    const prompt=normalizePrompt(workItemPrompt({...row,plugin_route_json:routeJson})); if(!prompt)return jsonResponse(400,{success:false,error:"work_item_prompt_invalid"},headers);
     const taskId=newTaskId();
     if(typeof env.DB.batch!=="function")return jsonResponse(503,{success:false,error:"atomic_dispatch_unavailable"},headers);
     const insertedStatement=env.DB.prepare(`INSERT INTO hermes_internal_ai_tasks (id,organization_scope,agent_role,prompt,status,created_by,created_at,updated_at)
@@ -70,10 +72,10 @@ export async function onRequestPatch({request,env,params}:{request:Request;env:E
         SELECT 1 FROM hermes_internal_ai_tasks
         WHERE organization_scope=? AND status IN ('queued','running','needs_approval')
       )`).bind(taskId,INTERNAL_AI_ORGANIZATION_SCOPE,prompt,String(owner.specialist.id),now,now,INTERNAL_AI_ORGANIZATION_SCOPE);
-    const linkStatement=env.DB.prepare(`UPDATE hermes_owner_work_items SET status='in_progress', linked_task_id=?, acceptance_status='not_required', blocked_reason=NULL, completed_at=NULL, accepted_by=NULL, accepted_at=NULL, updated_at=?
+    const linkStatement=env.DB.prepare(`UPDATE hermes_owner_work_items SET status='in_progress', linked_task_id=?, plugin_route_json=?, acceptance_status='not_required', blocked_reason=NULL, completed_at=NULL, accepted_by=NULL, accepted_at=NULL, updated_at=?
       WHERE id=? AND organization_scope=? AND status IN ('planned','ready','blocked') AND (linked_task_id IS NULL OR linked_task_id=?)
       AND EXISTS (SELECT 1 FROM hermes_internal_ai_tasks WHERE id=? AND organization_scope=? AND status='queued' AND runner_id IS NULL)`)
-      .bind(taskId,now,id,INTERNAL_AI_ORGANIZATION_SCOPE,priorLinkedTaskId,taskId,INTERNAL_AI_ORGANIZATION_SCOPE);
+      .bind(taskId,routeJson,now,id,INTERNAL_AI_ORGANIZATION_SCOPE,priorLinkedTaskId,taskId,INTERNAL_AI_ORGANIZATION_SCOPE);
     const cleanupStatement=env.DB.prepare(`DELETE FROM hermes_internal_ai_tasks
       WHERE id=? AND organization_scope=? AND status='queued' AND runner_id IS NULL
       AND NOT EXISTS (SELECT 1 FROM hermes_owner_work_items WHERE organization_scope=? AND linked_task_id=?)`)
