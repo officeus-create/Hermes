@@ -13,11 +13,13 @@ import {
 import { clickupAuthorization, normalizeClickUpTask, readClickUpHumanTasks } from "../functions/api/_lib/command-center-clickup.mjs";
 import { normalizeGithubPull, parseAgentWorkPassport, readGithubDevelopments } from "../functions/api/_lib/command-center-github.mjs";
 import { buildDepartmentKpis, readDepartmentKpiSources } from "../functions/api/_lib/command-center-department-kpis.mjs";
+import { buildProviderHealth } from "../functions/api/_lib/command-center-provider-health.mjs";
 
 const readModelEndpointSource=readFileSync(new URL("../functions/api/internal-command-center/execution-map.ts",import.meta.url),"utf8");
 assert.doesNotMatch(readModelEndpointSource,/\breconcileWorkItems\s*\(/,"Evidence read must not mutate canonical owner work statuses as an incidental side effect");
 assert.match(readModelEndpointSource,/readDepartmentKpiSources\(env\.DB, checkedAt\)/,"Department KPIs must be read from canonical sources through the owner read model");
 assert.match(readModelEndpointSource,/department_kpis/,"Owner read model must expose department KPI projection");
+assert.match(readModelEndpointSource,/provider_health/,"Owner read model must expose provider health without a provider mirror");
 
 const registry=[
   {role_id:"hermes-agent-coordinator",plugin_version:"0.1.71",observed_at:"2026-10-27"},
@@ -254,5 +256,22 @@ assert.equal(byDepartment.get("finance").metrics.find((metric)=>metric.key==="ac
 assert.equal(byDepartment.get("technology").metrics.find((metric)=>metric.key==="approved_open_prs").value,1);
 assert.equal(byDepartment.get("agents").metrics.find((metric)=>metric.key==="runner_state").value,"OFFLINE_OR_UNKNOWN");
 assert.equal(byDepartment.get("operations").metrics.find((metric)=>metric.key==="operations_blocked_work").value,1);
+
+
+const providerHealth=buildProviderHealth({
+  checkedAt:"2026-11-01T19:30:00.000Z",
+  clickup:{source_state:"CONNECTED",checked_at:"2026-11-01T19:29:00.000Z",list_id:"901526433657",tasks:[{id:"a"}],truncated:false},
+  github:{source_state:"AUTH_OR_RATE_LIMIT_FAILED",checked_at:"2026-11-01T19:29:30.000Z",repository:"officeus-create/Hermes",authenticated:true,http_status:403,pulls:[]},
+});
+const clickupHealth=providerHealth.find((item)=>item.id==="clickup");
+const githubHealth=providerHealth.find((item)=>item.id==="github");
+assert.equal(clickupHealth.health,"HEALTHY");
+assert.equal(clickupHealth.item_count,1);
+assert.equal(clickupHealth.credential_exposed,false);
+assert.equal(clickupHealth.writable,false);
+assert.equal(githubHealth.health,"UNAVAILABLE");
+assert.equal(githubHealth.http_status,403);
+assert.equal(githubHealth.authenticated,true);
+assert.equal("token" in githubHealth,false,"Provider health must never expose token material");
 
 console.log("INTERNAL_COMMAND_CENTER_EXECUTION_MAP_PASS");
