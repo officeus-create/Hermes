@@ -32,6 +32,18 @@ export async function verifySocialSourcePage(candidate,{fetchImpl=fetch}={}){
   if(url.protocol!=="https:"||url.hostname!=="hermeslogisticsus.com"){
     return {ok:false,error_class:"social_source_not_canonical"};
   }
+  const accountKey=clean(candidate?.account_key,80);
+  if(accountKey==="hermes_logistics"&&!url.pathname.startsWith("/logistics/")){
+    return {ok:false,error_class:"social_source_lane_mismatch"};
+  }
+  if(accountKey==="progressopro"&&url.pathname.startsWith("/logistics/")){
+    return {ok:false,error_class:"social_source_lane_mismatch"};
+  }
+  if(url.searchParams.get("utm_source")!=="threads"
+    ||url.searchParams.get("utm_medium")!=="organic_social"
+    ||!clean(url.searchParams.get("utm_campaign"),160)){
+    return {ok:false,error_class:"social_source_utm_invalid"};
+  }
   if(!String(candidate?.body||"").includes(url.toString())){
     return {ok:false,error_class:"social_source_link_mismatch"};
   }
