@@ -11,7 +11,7 @@
 1. Owner instruction or authorized event enters the existing Hermes Connect owner backlog / HAE event intake.
 2. HAE remains the **only** authoritative WORK_ID, Cloudflare Worker, Queue/D1 and permission/cost control.
 3. Deterministic routing is attempted first; a classifier is optional and must fail closed on uncertainty.
-4. For approved, bounded tasks: local Hermes AI (Mac + Ollama Qwen 3.5 4B) or an approved free Workers AI model.
+4. Windows YuraValentyuk is the *assigned primary* execution host, not a verified online HAE worker. Mac remains a cold fallback/reference with separate legacy heartbeat telemetry; approved free Workers AI is gated independently.
 5. Independent QA / required owner approval precedes any merge, deploy, sending, posting, data transfer or financial action.
 6. Only accepted evidence-derived lessons can be proposed for promotion to One Brain in Google Drive.
 
@@ -71,10 +71,14 @@ The AI Center reuses the existing authenticated internal-ai-mac-runner heartbeat
 
 Every text field passes through the existing execution sanitizer and every counter is bounded. Missing, malformed, or absent values remain UNKNOWN; they are never converted to zero. The owner status endpoint parses and sanitizes the stored envelope again before returning it.
 
-Mac remains the declared primary executor; Windows is deferred and must not be claimed online. Owner Agents includes a deliberately scrubbed Team View preview. A separate Team View page is available only after explicit server-side employee authorization, and must not expose owner tasks or controls.
+Windows is the assigned primary executor, but its HAE runtime/heartbeat has not been independently accepted. The Mac heartbeat is a separate legacy observation and must not be presented as Windows/HAE readiness. Owner Agents includes a deliberately scrubbed Team View preview. A separate Team View page is available only after explicit server-side employee authorization, and must not expose owner tasks or controls.
 
 This preserves the architecture boundary: one Command Center, one existing runner-state row, one HAE, no second planner, Worker, D1 database, scheduler, or task authority.
 
+## Plugin selection and execution evidence
+
+New owner tasks persist a versioned `plugin_route_json` in the **existing** `hermes_owner_work_items` D1 table. The deterministic route selects a verified registry role and eligible helpers by workstream, with a narrow marketing/search-intent override. Edits reselect; dispatch atomically refreshes the route alongside the existing AI task linkage and adds the route policy to the prompt. Owner cards display the selected role/version and **PLUGIN_SELECTED_NOT_EXECUTED**. No private-plugin tool invocation, actual HAE claim, independent QA, lesson promotion, or provider write is inferred from selection; those need separate runtime receipts. The legacy `software_engineer` internal AI task remains the existing executor and is **not** renamed as a plugin. This source change adds no scheduler, worker, provider access or background job.
+
 ## Team View authorization
 
-Mac remains the declared primary executor and Windows is not a verified live replacement. Team View is separately and explicitly granted on an existing Hermes account, never inferred from email/domain/role. An authorized employee sees runner online/heartbeat, an allowlisted status, bounded cycle, masked current-task presence and safe aggregate task counts. Free-form phase, model, raw current task, backlog details, approvals, repo metadata, access controls, credentials, IPs and local endpoints are excluded. Owner grants/revokes are auditable in the existing D1 and become effective immediately.
+Windows is assigned primary but not live-verified; Mac legacy heartbeat is not proof of the selected Windows executor. Team View is separately and explicitly granted on an existing Hermes account, never inferred from email/domain/role. An authorized employee sees runner online/heartbeat, an allowlisted status, bounded cycle, masked current-task presence and safe aggregate task counts. Free-form phase, model, raw current task, backlog details, approvals, repo metadata, access controls, credentials, IPs and local endpoints are excluded. Owner grants/revokes are auditable in the existing D1 and become effective immediately.
