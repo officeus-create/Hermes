@@ -555,6 +555,7 @@ function runIdForSlot(slotKey) {
 
 const READ_ONLY_GENERIC_JOB_TYPES = new Set([
   "system.health.snapshot",
+  "social.account.readiness",
   "history.coverage.audit",
   ...HISTORICAL_READ_ONLY_JOB_TYPES,
   ...ROLE_CONTRACT_JOB_TYPES,
@@ -929,7 +930,9 @@ async function submitRuntimeProofJob(env, message) {
     throw new Error("runtime_proof_requires_dry_run");
   }
   const jobType = clean(message?.job_type, 120);
-  if (jobType !== "system.health.snapshot") throw new Error("runtime_proof_job_type_not_allowed");
+  if (!["system.health.snapshot", "social.account.readiness"].includes(jobType)) {
+    throw new Error("runtime_proof_job_type_not_allowed");
+  }
   const idempotencyKey = clean(message?.idempotency_key, 240);
   if (!idempotencyKey) throw new Error("idempotency_key_required");
   return createGenericJob(env, {
@@ -1042,6 +1045,13 @@ async function runReadOnlyGenericCapability(env, job) {
     return {
       observed_at: new Date().toISOString(),
       ...runHistoricalLearningPrimitive(job.job_type, payload),
+    };
+  }
+  if (job.job_type === "social.account.readiness") {
+    return {
+      capability: job.job_type,
+      observed_at: new Date().toISOString(),
+      readiness: await socialAccountReadinessSnapshot(env),
     };
   }
   if (job.job_type === "system.health.snapshot") {
