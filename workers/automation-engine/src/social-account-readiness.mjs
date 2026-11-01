@@ -48,6 +48,14 @@ export async function socialAccountReadinessSnapshot(env,{nowMs=Date.now()}={}){
   logistics.credential_bridge_error=resolvedLogistics?.ok?null:(resolvedLogistics?.error_class||"hermes_logistics_credential_bridge_failed");
   logistics.credential_source=resolvedLogistics?.ok?resolvedLogistics.source:logistics.credential_source;
   logistics.ready_for_provider_preflight=Boolean(resolvedLogistics?.ok);
+  logistics.granted_scopes=Array.isArray(resolvedLogistics?.grantedScopes)?resolvedLogistics.grantedScopes:[];
+  logistics.scope_evidence_known=Array.isArray(resolvedLogistics?.grantedScopes);
+  const logisticsScopes=new Set(logistics.granted_scopes);
+  logistics.inbound_scopes={
+    replies:logistics.scope_evidence_known&&["threads_basic","threads_read_replies"].every(scope=>logisticsScopes.has(scope)),
+    mentions:logistics.scope_evidence_known&&["threads_basic","threads_manage_mentions"].every(scope=>logisticsScopes.has(scope)),
+    search:logistics.scope_evidence_known&&["threads_basic","threads_keyword_search"].every(scope=>logisticsScopes.has(scope)),
+  };
 
 
   let progressopro={
@@ -98,6 +106,12 @@ export async function socialAccountReadinessSnapshot(env,{nowMs=Date.now()}={}){
   const progressoproScopes=new Set(progressopro.granted_scopes);
   progressopro.required_write_scopes_present=requiredProgressoproScopes.every(scope=>progressoproScopes.has(scope));
   progressopro.reply_scopes_present=replyProgressoproScopes.every(scope=>progressoproScopes.has(scope));
+  progressopro.scope_evidence_known=progressopro.connection_present;
+  progressopro.inbound_scopes={
+    replies:["threads_basic","threads_read_replies"].every(scope=>progressoproScopes.has(scope)),
+    mentions:["threads_basic","threads_manage_mentions"].every(scope=>progressoproScopes.has(scope)),
+    search:["threads_basic","threads_keyword_search"].every(scope=>progressoproScopes.has(scope)),
+  };
   const resolvedCredential=await resolveThreadsTransportForLane(env,"PROGRESSOPRO",{nowMs,fetchImpl:async()=>{throw new Error("readiness_no_network");}});
   progressopro.credential_bridge_resolves=Boolean(resolvedCredential?.ok);
   progressopro.credential_bridge_error=resolvedCredential?.ok ? null : (resolvedCredential?.error_class || "progressopro_credential_bridge_failed");
