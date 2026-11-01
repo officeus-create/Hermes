@@ -7,6 +7,7 @@ on:
       - "scripts/automation-engine-contract.test.mjs"
       - "scripts/hae-social-reply-preflight.test.mjs"
       - "scripts/hae-social-reply-prepare.test.mjs"
+      - "scripts/hae-social-reply-intake.test.mjs"
       - "scripts/automation-engine-historical-learning.test.mjs"
       - "scripts/automation-engine-role-contracts.test.mjs"
       - "scripts/automation-engine-free-ai-runtime.test.mjs"
@@ -55,6 +56,7 @@ jobs:
           node scripts/automation-engine-contract.test.mjs
           node scripts/hae-social-reply-preflight.test.mjs
           node scripts/hae-social-reply-prepare.test.mjs
+          node scripts/hae-social-reply-intake.test.mjs
           node scripts/automation-engine-historical-learning.test.mjs
           node scripts/automation-engine-role-contracts.test.mjs
           node scripts/automation-engine-free-ai-runtime.test.mjs
