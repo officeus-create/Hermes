@@ -157,7 +157,7 @@ assert.equal(dispatched.payload.task.status,"queued");
 assert(dispatched.payload.work_item.linked_task_id);
 assert.equal(dispatched.payload.work_item.plugin_route?.state,"PLUGIN_SELECTED_NOT_EXECUTED");
 const routedPrompt=sqlite.prepare("SELECT prompt FROM hermes_internal_ai_tasks WHERE id=?").get(dispatched.payload.task.id).prompt;
-assert.match(routedPrompt,/Selected owner capability: hermes-technology-developer@0\.1\.60/);
+assert.match(routedPrompt,/Selected owner capability: hermes-technology-developer@0\.1\.61/);
 assert.match(routedPrompt,/PLUGIN_SELECTED_NOT_EXECUTED/);
 
 const blockedSecond=await patch(second.id,"dispatch");
