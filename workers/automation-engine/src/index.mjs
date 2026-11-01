@@ -2049,6 +2049,179 @@ function buildScheduledHaeSelfImprovementPayload(scheduledAt) {
   return { observed_at: observedAt, coverage_complete: true, findings };
 }
 
+
+const KYIV_TZ = "Europe/Kyiv";
+const HR_TECH_PUBLIC_SOURCES = Object.freeze([
+  Object.freeze({source_id:"linkedin-hiring-release",url:"https://business.linkedin.com/hire/product-update/hire-release",category:"CANDIDATE_SOURCE"}),
+  Object.freeze({source_id:"greenhouse-product-features",url:"https://www.greenhouse.com/product-features",category:"AI_INTERVIEW"}),
+  Object.freeze({source_id:"workable-agent",url:"https://help.workable.com/hc/en-us/articles/38381544828695-Using-the-Workable-Agent",category:"CANDIDATE_ROUTING"}),
+  Object.freeze({source_id:"meta-threads-platform",url:"https://developers.facebook.com/docs/threads/",category:"SOCIAL_SOURCE"}),
+  Object.freeze({source_id:"meta-instagram-platform",url:"https://developers.facebook.com/docs/instagram-platform/",category:"SOCIAL_SOURCE"}),
+]);
+
+function kyivParts(date = new Date()) {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: KYIV_TZ,
+    year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",
+    weekday:"short",hourCycle:"h23",
+  }).formatToParts(date);
+  const value=(type)=>parts.find((part)=>part.type===type)?.value||"";
+  return {year:value("year"),month:value("month"),day:value("day"),hour:Number(value("hour")),minute:Number(value("minute")),weekday:value("weekday")};
+}
+
+function localDateKey(parts) {
+  return `${parts.year}-${parts.month}-${parts.day}`;
+}
+
+function shiftDateKey(dateKey, deltaDays) {
+  const [year,month,day]=String(dateKey).split("-").map(Number);
+  if(!year||!month||!day) throw new Error("report_local_date_invalid");
+  return new Date(Date.UTC(year,month-1,day+deltaDays,12,0,0)).toISOString().slice(0,10);
+}
+
+function htmlTitle(html, fallback) {
+  const match=String(html||"").match(/<title\b[^>]*>([\s\S]*?)<\/title>/i);
+  const text=String(match?.[1]||"").replace(/<[^>]+>/g," ").replace(/&amp;/g,"&").replace(/\s+/g," ").trim();
+  return clean(text,240)||fallback;
+}
+
+async function previousHrTechFingerprints(env) {
+  const row=await env.DB.prepare(`
+    SELECT result_json FROM hermes_automation_jobs
+    WHERE job_type='report.hr-tech.weekly.build' AND state='SUCCEEDED' AND result_json IS NOT NULL
+    ORDER BY completed_at DESC, updated_at DESC LIMIT 1
+  `).first();
+  if(!row?.result_json) return new Map();
+  try {
+    const parsed=JSON.parse(String(row.result_json));
+    const snapshots=Array.isArray(parsed?.result?.source_snapshots)?parsed.result.source_snapshots:[];
+    return new Map(snapshots.map((item)=>[String(item?.source_id||""),String(item?.content_fingerprint||"")]).filter(([id,fingerprint])=>id&&/^[0-9a-f]{64}$/.test(fingerprint)));
+  } catch {
+    return new Map();
+  }
+}
+
+async function buildScheduledHrTechReportPayload(env, scheduledAt) {
+  const parts=kyivParts(scheduledAt);
+  const periodEnd=localDateKey(parts);
+  const previous=await previousHrTechFingerprints(env);
+  const sourceSnapshots=[];
+  for(const source of HR_TECH_PUBLIC_SOURCES) {
+    try {
+      const response=await fetch(source.url,{method:"GET",redirect:"follow",headers:{"user-agent":"HermesAutomationEngine/1.0 hr-tech-readonly"}});
+      if(response.status<200||response.status>=400) {
+        sourceSnapshots.push({...source,title:source.source_id,published_at:null,content_fingerprint:null,changed:false,source_state:"SOURCE_UNAVAILABLE"});
+        continue;
+      }
+      const raw=(await response.text()).slice(0,200000);
+      const normalized=raw.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi," ").replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi," ").replace(/\s+/g," ").trim();
+      const fingerprint=await sha256HexText(normalized);
+      const prior=previous.get(source.source_id)||null;
+      sourceSnapshots.push({
+        ...source,
+        title:htmlTitle(raw,source.source_id),
+        published_at:null,
+        content_fingerprint:fingerprint,
+        changed:Boolean(prior&&prior!==fingerprint),
+        source_state:prior ? (prior===fingerprint?"UNCHANGED":"CHANGED") : "CONNECTED",
+      });
+    } catch {
+      sourceSnapshots.push({...source,title:source.source_id,published_at:null,content_fingerprint:null,changed:false,source_state:"SOURCE_UNAVAILABLE"});
+    }
+  }
+  return {
+    observed_at:scheduledAt.toISOString(),
+    period_start:shiftDateKey(periodEnd,-6),
+    period_end:periodEnd,
+    source_snapshots:sourceSnapshots,
+  };
+}
+
+async function buildScheduledCatalogReportPayload(env, scheduledAt, mode) {
+  const parts=kyivParts(scheduledAt);
+  const periodEnd=localDateKey(parts);
+  let catalog_profile_count=null,catalog_opt_in_count=null,verified_public_count=null,self_submitted_count=null,hermes_connect_company_count=null,open_catalog_work_count=null;
+  const blockers=[];
+  if(await requiredTablesPresent(env.DB,["hermes_company_profiles"])) {
+    const row=await env.DB.prepare(`
+      SELECT COUNT(*) AS total,
+        SUM(CASE WHEN catalog_opt_in=1 THEN 1 ELSE 0 END) AS opted,
+        SUM(CASE WHEN catalog_opt_in=1 AND catalog_status='verified_public' THEN 1 ELSE 0 END) AS verified,
+        SUM(CASE WHEN catalog_opt_in=1 AND catalog_status='self_submitted' THEN 1 ELSE 0 END) AS self_submitted
+      FROM hermes_company_profiles
+    `).first();
+    catalog_profile_count=Number(row?.total||0);
+    catalog_opt_in_count=Number(row?.opted||0);
+    verified_public_count=Number(row?.verified||0);
+    self_submitted_count=Number(row?.self_submitted||0);
+    hermes_connect_company_count=catalog_profile_count;
+  } else {
+    blockers.push("CATALOG_COMPANY_SOURCE_UNAVAILABLE");
+  }
+  if(await requiredTablesPresent(env.DB,["hermes_owner_work_items"])) {
+    const row=await env.DB.prepare(`
+      SELECT COUNT(*) AS open_count FROM hermes_owner_work_items
+      WHERE organization_scope='hermes_internal' AND project_id='catalog' AND status NOT IN ('done','cancelled')
+    `).first();
+    open_catalog_work_count=Number(row?.open_count||0);
+    if(open_catalog_work_count>0) blockers.push("CATALOG_PROJECT_WORK_OPEN");
+  } else {
+    blockers.push("CATALOG_WORK_SOURCE_UNAVAILABLE");
+  }
+  blockers.push("SEO_DUPLICATE_AUDIT_NOT_CONNECTED");
+  let next_action,done_criteria;
+  if(catalog_profile_count===0){
+    next_action="Create or verify the first canonical Catalog company profile through the existing Hermes Connect company source.";
+    done_criteria="DONE when one canonical hermes_company_profiles row is present and its Catalog publication state is source-backed.";
+  } else if(Number(self_submitted_count||0)>0){
+    next_action="Review self-submitted Catalog companies and verify only those with sufficient source evidence.";
+    done_criteria="DONE when each reviewed company is either verified_public with evidence or remains explicitly self_submitted/held.";
+  } else if(Number(open_catalog_work_count||0)>0){
+    next_action="Close the highest-priority open Catalog work item with task-linked evidence.";
+    done_criteria="DONE when the selected Catalog work item reaches accepted/done with canonical evidence and no inferred business result.";
+  } else {
+    next_action="Run a source-backed SEO duplicate/indexability audit before expanding Catalog discovery pages.";
+    done_criteria="DONE when duplicate/indexability risk has a canonical source receipt; UNKNOWN must not be converted to zero.";
+  }
+  return {
+    observed_at:scheduledAt.toISOString(),
+    mode,
+    period_start:shiftDateKey(periodEnd,-6),
+    period_end:periodEnd,
+    catalog:{
+      catalog_profile_count,catalog_opt_in_count,verified_public_count,self_submitted_count,
+      hermes_connect_company_count,open_catalog_work_count,
+      seo_duplicate_risk_count:null,seo_duplicate_risk_state:"UNKNOWN",
+      blockers:[...new Set(blockers)],next_action,done_criteria,
+    },
+  };
+}
+
+async function enqueueScheduledCommandCenterReports(env, scheduledAt) {
+  const parts=kyivParts(scheduledAt);
+  const localDate=localDateKey(parts);
+  const jobs=[];
+  if(parts.weekday==="Mon"&&parts.hour===10) {
+    jobs.push({job_type:"report.hr-tech.weekly.build",lane:"operations",mode:null,payload:await buildScheduledHrTechReportPayload(env,scheduledAt),key:"hr-tech"});
+  }
+  if(parts.weekday==="Mon"&&parts.hour===12) {
+    jobs.push({job_type:"report.catalog.weekly.build",lane:"search",mode:"MONDAY_REMINDER",payload:await buildScheduledCatalogReportPayload(env,scheduledAt,"MONDAY_REMINDER"),key:"catalog-monday"});
+  }
+  if(parts.weekday==="Fri"&&parts.hour===12) {
+    jobs.push({job_type:"report.catalog.weekly.build",lane:"search",mode:"WEEKLY_REPORT",payload:await buildScheduledCatalogReportPayload(env,scheduledAt,"WEEKLY_REPORT"),key:"catalog-friday"});
+  }
+  const results=[];
+  for(const job of jobs){
+    results.push(await createGenericJob(env,{
+      job_type:job.job_type,business_lane:job.lane,account_key:ACCOUNT_KEY,
+      project_key:"command-center-reports",priority:60,max_attempts:3,internal_submission:true,
+      idempotency_key:`hae:command-center-report:${job.key}:${localDate}`,
+      policy_version:"hae-command-center-report-v1",payload:job.payload,
+    }));
+  }
+  return results.length;
+}
+
 async function buildScheduledRoleContractPayload(env, contract, scheduledAt) {
   if (contract.job_type === "search.snapshot.evaluate") return buildScheduledSearchPayload(contract);
   if (contract.job_type === "marketing.content.dedupe.audit") return buildScheduledMarketingPayload(env, contract);
@@ -2123,6 +2296,16 @@ export default {
       ? observedAt
       : new Date(rawScheduledTime);
     await ensureSchema(env.DB);
+    const cronExpression=clean(controller?.cron,80);
+    const reportWake=cronExpression==="0 * * * *";
+    if(reportWake){
+      try {
+        await enqueueScheduledCommandCenterReports(env,scheduledAt);
+      } catch(error) {
+        await recordRuntimeEvent(env,{eventType:"cron.command_center_report_failed",errorClass:safeRuntimeErrorClass(error,"command_center_report_failed")});
+      }
+      return;
+    }
     const eligible = isEligibleChicagoSlot(scheduledAt);
     try {
       await recordCronHeartbeat(env, scheduledAt, observedAt, eligible, controller?.cron);
