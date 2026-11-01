@@ -12,9 +12,12 @@ import {
 } from "../functions/api/_lib/command-center-execution-map.mjs";
 import { clickupAuthorization, normalizeClickUpTask, readClickUpHumanTasks } from "../functions/api/_lib/command-center-clickup.mjs";
 import { normalizeGithubPull, parseAgentWorkPassport, readGithubDevelopments } from "../functions/api/_lib/command-center-github.mjs";
+import { buildDepartmentKpis, readDepartmentKpiSources } from "../functions/api/_lib/command-center-department-kpis.mjs";
 
 const readModelEndpointSource=readFileSync(new URL("../functions/api/internal-command-center/execution-map.ts",import.meta.url),"utf8");
 assert.doesNotMatch(readModelEndpointSource,/\breconcileWorkItems\s*\(/,"Evidence read must not mutate canonical owner work statuses as an incidental side effect");
+assert.match(readModelEndpointSource,/readDepartmentKpiSources\(env\.DB, checkedAt\)/,"Department KPIs must be read from canonical sources through the owner read model");
+assert.match(readModelEndpointSource,/department_kpis/,"Owner read model must expose department KPI projection");
 
 const registry=[
   {role_id:"hermes-agent-coordinator",plugin_version:"0.1.71",observed_at:"2026-10-27"},
@@ -199,5 +202,57 @@ const linkedHuman=linkHumanWorkDevelopments(
 assert.equal(linkedHuman.tasks[0].developments.length,1);
 assert.equal(linkedHuman.tasks[0].developments[0].number,2200);
 assert.equal(linkedHuman.tasks[1].developments.length,0);
+
+
+const missingDepartmentSources=await readDepartmentKpiSources(null,"2026-11-01T18:00:00.000Z");
+assert.equal(missingDepartmentSources.logistics.source_state,"NOT_CONFIGURED");
+assert.equal(missingDepartmentSources.academy.source_state,"NOT_CONFIGURED");
+assert.equal(missingDepartmentSources.finance.source_state,"NOT_CONFIGURED");
+
+const departmentKpis=buildDepartmentKpis({
+  checkedAt:"2026-11-01T18:00:00.000Z",
+  sources:{
+    marketing:{source_state:"PARTIAL_SCOPE",scope:"ACADEMY_BUSINESS_MEASUREMENT_ONLY",evidence:{ok:true,row:{evidence_rows:3}}},
+    logistics:{
+      source_state:"CONNECTED",scope:"LOAD_BOARD_AND_VERIFIED_CARRIER_ACCESS",
+      load_board:{ok:true,row:{active_sources:2,active_loads:11,quarantine_pending:1}},
+      carriers:{ok:true,row:{active_carrier_entitlements:4}},
+    },
+    sales:{
+      source_state:"PARTIAL_SCOPE",scope:"VERTICAL_CRM_PARTIAL_NO_GLOBAL_SALES_ROLLUP",
+      home_services:{ok:true,row:{total_leads:9,progressed_leads:3}},
+      dealer:{ok:false,state:"SOURCE_UNAVAILABLE",row:null},
+    },
+    academy:{
+      source_state:"CONNECTED",scope:"ACADEMY_BUSINESS_CRM",
+      evidence:{ok:true,row:{active_leads:7,active_programs:2,active_participants:5,evidenced_completions:1}},
+    },
+    finance:{
+      source_state:"PARTIAL_SCOPE",scope:"EVIDENCED_ACADEMY_REVENUE_NOT_RECEIVED_CASH",
+      academy_revenue:{ok:true,rows:[{currency:"USD",cents:125000,evidence_rows:2}]},
+    },
+  },
+  githubDevelopments:{source_state:"CONNECTED",pulls:[
+    {state:"open",review_state:"APPROVED"},
+    {state:"open",review_state:"CHANGES_REQUESTED"},
+    {state:"closed",review_state:"APPROVED"},
+  ]},
+  processes:[{status:"active"},{status:"paused"}],
+  runner:{online:false},
+  tasks:[
+    {workstream:"technology",current_stage:"STARTED",work_id:"t1"},
+    {workstream:"operations",current_stage:"BLOCKED",work_id:null},
+    {workstream:"operations",current_stage:"OWNER_GATE",work_id:"t2"},
+  ],
+});
+const byDepartment=new Map(departmentKpis.map((item)=>[item.id,item]));
+assert.equal(byDepartment.get("logistics").metrics.find((metric)=>metric.key==="active_loads").value,11);
+assert.equal(byDepartment.get("sales").metrics.find((metric)=>metric.key==="dealer_customers").state,"UNKNOWN");
+assert.equal(byDepartment.get("marketing").metrics.find((metric)=>metric.key==="global_verified_marketing_kpis").value,null,"Unknown KPI must stay null, never zero");
+assert.equal(byDepartment.get("finance").metrics.find((metric)=>metric.key==="received_cash").state,"UNKNOWN","Evidenced revenue must never be relabeled as received cash");
+assert.equal(byDepartment.get("finance").metrics.find((metric)=>metric.key==="academy_evidenced_revenue_usd").value,125000);
+assert.equal(byDepartment.get("technology").metrics.find((metric)=>metric.key==="approved_open_prs").value,1);
+assert.equal(byDepartment.get("agents").metrics.find((metric)=>metric.key==="runner_state").value,"OFFLINE_OR_UNKNOWN");
+assert.equal(byDepartment.get("operations").metrics.find((metric)=>metric.key==="operations_blocked_work").value,1);
 
 console.log("INTERNAL_COMMAND_CENTER_EXECUTION_MAP_PASS");
