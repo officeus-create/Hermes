@@ -2158,16 +2158,11 @@ async function buildScheduledCatalogReportPayload(env, scheduledAt, mode) {
   } else {
     blockers.push("CATALOG_COMPANY_SOURCE_UNAVAILABLE");
   }
-  if(await requiredTablesPresent(env.DB,["hermes_owner_work_items"])) {
-    const row=await env.DB.prepare(`
-      SELECT COUNT(*) AS open_count FROM hermes_owner_work_items
-      WHERE organization_scope='hermes_internal' AND project_id='catalog' AND status NOT IN ('done','cancelled')
-    `).first();
-    open_catalog_work_count=Number(row?.open_count||0);
-    if(open_catalog_work_count>0) blockers.push("CATALOG_PROJECT_WORK_OPEN");
-  } else {
-    blockers.push("CATALOG_WORK_SOURCE_UNAVAILABLE");
-  }
+  // #2232 identifies the Catalog project family but intentionally leaves active WORK_ID
+  // counts UNKNOWN until exhaustive One Brain/project reconciliation exists. Do not infer
+  // zero open work from the absence of a canonical project_id mapping.
+  open_catalog_work_count=null;
+  blockers.push("CATALOG_WORK_MAPPING_NOT_EXHAUSTIVE");
   blockers.push("SEO_DUPLICATE_AUDIT_NOT_CONNECTED");
   let next_action,done_criteria;
   if(catalog_profile_count===0){
