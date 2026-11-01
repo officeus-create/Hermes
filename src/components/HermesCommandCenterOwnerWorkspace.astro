@@ -68,6 +68,13 @@ const functions=[
     </section>
   </section>
 
+  <section class="owner-view" data-cc-view="crm" hidden>
+    <section class="hcc-panel owner-account-panel">
+      <div class="owner-section-head"><div><p class="hcc-sample">Hermes Connect · CRM</p><h2>{ru?"Клиентские и операционные пространства":"Customer and operating workspaces"}</h2><p>{ru?"Command Center не создаёт второй CRM. Здесь маршрутизируются только уже существующие Hermes Connect workspaces, доступные текущему аккаунту.":"Command Center does not create a second CRM. This view routes only to existing Hermes Connect workspaces already available to the current account."}</p></div><span class="owner-cloud-note">{ru?"Один аккаунт · существующие CRM":"One account · existing CRMs"}</span></div>
+      <div class="workspace-grid" data-crm-workspaces><p class="muted">{ru?"Загружаем CRM-пространства…":"Loading CRM workspaces…"}</p></div>
+    </section>
+  </section>
+
   <section class="owner-view" data-cc-view="automations" hidden>
     <section class="hcc-panel process-control" data-process-control>
       <div class="owner-section-head"><div><p class="hcc-sample">{ru?"Автоматизация":"Automation"}</p><h2>{ru?"Процессы HAE 24/7":"HAE 24/7 processes"}</h2><p>{ru?"Проверенные процессы создаются на паузе и включаются отдельно. Внешние отправки и платный AI в этом слое отключены.":"Verified processes start paused and are activated separately. External sends and paid AI are disabled in this layer."}</p></div><span class="owner-cloud-note">D1 · Queue · $0 default</span></div>
@@ -103,6 +110,29 @@ const functions=[
     <section class="hcc-panel owner-evidence-panel">
       <div class="owner-section-head"><div><p class="hcc-sample">Evidence</p><h2>{ru?"Что реально было сделано":"What actually happened"}</h2><p>{ru?"Здесь показываются только task-linked результаты, PR и owner acceptance.":"Only task-linked results, PRs and owner acceptance appear here."}</p></div></div>
       <div class="owner-evidence-list" data-evidence-list><p class="muted">{ru?"Загружаем evidence…":"Loading evidence…"}</p></div>
+    </section>
+  </section>
+
+  <section class="owner-view" data-cc-view="reports" hidden>
+    <section class="hcc-panel">
+      <div class="owner-section-head"><div><p class="hcc-sample">{ru?"Отчёты HAE · $0":"HAE reports · $0"}</p><h2>{ru?"Регулярные owner-отчёты":"Recurring owner reports"}</h2><p>{ru?"Результат появляется только здесь, в Command Center. Email/публикация и платный AI отключены.":"Results appear only here in Command Center. Email/publication and paid AI are disabled."}</p></div><span class="owner-cloud-note">Europe/Kyiv · D1 receipt</span></div>
+      <div class="workspace-grid" data-report-schedules><p class="muted">{ru?"Загружаем расписания…":"Loading schedules…"}</p></div>
+      <div class="owner-evidence-list" data-report-list><p class="muted">{ru?"Пока нет подтверждённых report receipts.":"No verified report receipts yet."}</p></div>
+    </section>
+  </section>
+
+  <section class="owner-view" data-cc-view="knowledge" hidden>
+    <section class="hcc-panel">
+      <div class="owner-section-head"><div><p class="hcc-sample">One Brain</p><h2>{ru?"Знания, уроки и источник истины":"Knowledge, lessons and source authority"}</h2><p>{ru?"Здесь нет копии One Brain. Показывается только реестр канонических источников и состояние governance.":"This is not a copy of One Brain. It shows only the canonical source registry and governance state."}</p></div><span class="owner-cloud-note" data-knowledge-state>UNKNOWN</span></div>
+      <div class="workspace-grid" data-knowledge-sources><p class="muted">{ru?"Загружаем реестр источников…":"Loading source registry…"}</p></div>
+      <div class="owner-today-list" data-learning-state></div>
+    </section>
+  </section>
+
+  <section class="owner-view" data-cc-view="investor" hidden>
+    <section class="hcc-panel">
+      <div class="owner-section-head"><div><p class="hcc-sample">{ru?"Финансы · Investor Intelligence":"Finance · Investor Intelligence"}</p><h2>{ru?"Инвесторская готовность по событию":"Event-triggered investor readiness"}</h2><p>{ru?"Нет постоянного polling и нет выдуманных финансов. Работа активируется только при новом проверенном finance/legal/owner evidence.":"No continuous polling and no invented financials. Work activates only on fresh verified finance/legal/owner evidence."}</p></div><span class="owner-cloud-note" data-investor-state>UNKNOWN</span></div>
+      <div class="owner-today-list" data-investor-details><p class="muted">{ru?"Загружаем investor state…":"Loading investor state…"}</p></div>
     </section>
   </section>
 
