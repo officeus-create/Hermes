@@ -13,6 +13,8 @@ const nav=[
   {key:"crm",label:"CRM"},
   {key:"automations",label:ru?"Автоматизации":"Automations"},
   {key:"agents",label:ru?"Агенты":"Agents"},
+  {key:"plugins",label:ru?"Плагины":"Plugins"},
+  {key:"executions",label:ru?"Исполнения":"Executions"},
   {key:"evidence",label:"Evidence"},
   {key:"reports",label:ru?"Отчёты":"Reports"},
   {key:"knowledge",label:ru?"Знания":"Knowledge"},
@@ -88,7 +90,7 @@ async function loadAll(){
   setText("[data-runner-state]",runtime.online?t("Online","Онлайн"):t("Offline","Офлайн"));setText("[data-runner-copy]",runtime.online?t("Mac heartbeat observed; Windows runtime unverified","Heartbeat Mac получен; Windows не подтверждён"):t("Mac heartbeat unavailable; cloud backlog preserved","Heartbeat Mac недоступен; облачная очередь сохранена"));
   renderAiArchitecture(runtime);
   setText("[data-agent-badge]",runtime.online?t("Online","Онлайн"):t("Offline","Офлайн"));setText("[data-agent-status]",runtime.online?t("Online","Онлайн"):t("Offline","Офлайн"));setText("[data-agent-seen]",stamp(runtime.last_seen_at));setText("[data-agent-sha]",runtime.repo_sha||"—");setText("[data-active-task]",active?(String(active.status||"")+(active.id?" · "+String(active.id).slice(-10):"")):t("None","Нет"));
-  const [work,taskList,accessList,account,processList,reportList,intelligence]=await Promise.all([
+  const [work,taskList,accessList,account,processList,reportList,intelligence,executionMap]=await Promise.all([
     jsonFetch("/api/internal-command-center/work-items"),
     jsonFetch("/api/internal-ai/tasks"),
     jsonFetch("/api/internal-command-center/access"),
@@ -96,6 +98,7 @@ async function loadAll(){
     jsonFetch("/api/internal-command-center/processes"),
     jsonFetch("/api/internal-command-center/reports"),
     jsonFetch("/api/internal-command-center/owner-intelligence"),
+    jsonFetch("/api/internal-command-center/execution-map"),
   ]);
   if(work.r.ok&&work.d.success){
     const all:WorkItem[]=[...(work.d.work_items||[])];
@@ -115,6 +118,7 @@ async function loadAll(){
   if(processList.r.ok&&processList.d.success)processes=processList.d.processes||[];
   if(reportList.r.ok&&reportList.d.success)renderReports(reportList.d);
   if(intelligence.r.ok&&intelligence.d.success)renderIntelligence(intelligence.d);
+  if(executionMap.r.ok&&executionMap.d.success)renderPluginRegistry(executionMap.d);
   setText("[data-backlog-count]",String(items.filter(x=>!["done","cancelled"].includes(x.status)).length));setText("[data-approval-count]",String(tasks.filter(x=>x.status==="needs_approval").length));
   document.querySelectorAll<HTMLElement>("[data-module]").forEach(card=>{const key=card.dataset.module||"";const count=items.filter(x=>x.workstream===key&&!["done","cancelled"].includes(x.status)).length;const badge=card.querySelector<HTMLElement>(".module-state");if(badge)badge.textContent=count?String(count)+" "+t("open","открыто"):t("Clear","Чисто")});
   renderItems();renderProcesses();renderOwnerOverview();renderEvidence();if(accessList.r.ok&&accessList.d.success)renderOwners(accessList.d);
@@ -161,8 +165,16 @@ function renderEvidence(){
   if(!rows.length){const p=document.createElement("p");p.className="muted";p.textContent=t("No task-linked evidence yet.","Пока нет evidence, привязанного к задачам.");box.append(p);return}
   rows.forEach(item=>{const card=document.createElement("article");card.className="owner-evidence-item";const body=document.createElement("div");const title=document.createElement("strong");title.textContent=item.title;const meta=document.createElement("small");meta.textContent=(item.linked_task_status||item.status)+" · "+stamp(item.updated_at||item.created_at);body.append(title,meta);if(item.linked_task_output_summary){const p=document.createElement("p");p.textContent=item.linked_task_output_summary;body.append(p)}const pr=safePr(item.linked_task_pr_url);if(pr){const a=document.createElement("a");a.href=pr;a.target="_blank";a.rel="noopener";a.textContent="PR ↗";body.append(a)}const state=document.createElement("span");state.textContent=item.accepted_at?t("ACCEPTED","ПРИНЯТО"):item.status==="awaiting_acceptance"?t("REVIEW","ПРОВЕРКА"):t("EVIDENCE","EVIDENCE");card.append(body,state);box.append(card)});
 }
+function renderPluginRegistry(data:any){
+  const box=q("[data-plugin-registry]");if(!box)return;box.replaceChildren();
+  const rows=Array.isArray(data?.plugin_registry)?data.plugin_registry:[];
+  const evidence=data?.registry_evidence||{};
+  setText("[data-plugin-registry-state]",evidence.fresh===true?t("FRESH","АКТУАЛЬНО"):String(evidence.reason||"UNKNOWN"));
+  if(!rows.length){const p=document.createElement("p");p.className="muted";p.textContent=t("Plugin registry unavailable; no capability was inferred.","Реестр плагинов недоступен; возможности не были придуманы.");box.append(p);return}
+  rows.forEach((item:any)=>{const card=document.createElement("article");card.className="workspace-card";const title=document.createElement("strong");title.textContent=String(item.role_id||"UNKNOWN");const version=document.createElement("span");version.textContent="@"+String(item.plugin_version||"UNKNOWN");const note=document.createElement("small");note.textContent=t("REGISTERED CAPABILITY · execution requires a separate HAE receipt","ЗАРЕГИСТРИРОВАННАЯ ВОЗМОЖНОСТЬ · выполнение требует отдельного HAE receipt");card.append(title,version,note);box.append(card)});
+}
 function switchView(view:string){
-  const valid=new Set(["today","projects","tasks","crm","automations","agents","evidence","reports","knowledge","investor","access"]);
+  const valid=new Set(["today","projects","tasks","crm","automations","agents","plugins","executions","evidence","reports","knowledge","investor","access"]);
   const next=valid.has(view)?view:"today";
   document.querySelectorAll<HTMLElement>("[data-cc-view]").forEach(section=>{const active=section.dataset.ccView===next;section.hidden=!active;section.classList.toggle("is-active",active)});
   document.querySelectorAll<HTMLButtonElement>("[data-cc-nav]").forEach(button=>{const active=button.dataset.ccNav===next;button.classList.toggle("is-active",active);button.setAttribute("aria-current",active?"page":"false")});
