@@ -12,6 +12,7 @@ on:
           - verify
           - provision_dry_run
           - runtime_readonly_proof
+          - social_readiness_proof
           - schema_snapshot
       target_sha:
         description: Exact current main SHA
@@ -39,7 +40,8 @@ jobs:
             (
               startsWith(github.event.comment.body, 'HAE_VERIFY ') ||
               startsWith(github.event.comment.body, 'HAE_PROVISION_DRY_RUN ') ||
-              startsWith(github.event.comment.body, 'HAE_RUNTIME_READONLY_PROOF ')
+              startsWith(github.event.comment.body, 'HAE_RUNTIME_READONLY_PROOF ') ||
+              startsWith(github.event.comment.body, 'HAE_SOCIAL_READINESS_PROOF ')
             )
           ) ||
           (
@@ -74,6 +76,7 @@ jobs:
               verify) OPERATION="verify" ;;
               provision_dry_run) OPERATION="provision_dry_run" ;;
               runtime_readonly_proof) OPERATION="runtime_readonly_proof" ;;
+              social_readiness_proof) OPERATION="social_readiness_proof" ;;
               schema_snapshot) OPERATION="schema_snapshot" ;;
               *) echo "unsupported_operation"; exit 1 ;;
             esac
@@ -85,6 +88,7 @@ jobs:
               HAE_VERIFY) OPERATION="verify" ;;
               HAE_PROVISION_DRY_RUN) OPERATION="provision_dry_run" ;;
               HAE_RUNTIME_READONLY_PROOF) OPERATION="runtime_readonly_proof" ;;
+              HAE_SOCIAL_READINESS_PROOF) OPERATION="social_readiness_proof" ;;
               HAE_SCHEMA_SNAPSHOT) OPERATION="schema_snapshot" ;;
               *) echo "unsupported_comment_command"; exit 1 ;;
             esac
