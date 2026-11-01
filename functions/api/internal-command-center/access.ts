@@ -25,7 +25,11 @@ export async function onRequestPost({request,env}:{request:Request;env:Env}){
  await ensureInternalAiSchema(env.DB); await ensureCommandCenterSchema(env.DB);
  let payload:any;try{payload=await request.json()}catch{return jsonResponse(400,{success:false,error:"invalid_json"},headers)}
  const action=String(payload?.action||"").trim(),email=normalizeEmail(payload?.email);
- const capability=String(payload?.capability||"owner")==="team_view"?"team_view":"owner";
+ const hasCapability=Object.prototype.hasOwnProperty.call(payload||{},"capability");
+ const requestedCapability=String(payload?.capability??"").trim();
+ if(hasCapability&&!["owner","team_view"].includes(requestedCapability))return jsonResponse(400,{success:false,error:"invalid_capability"},headers);
+ // Backward-compatible omission means owner; any explicit unknown value fails closed.
+ const capability=requestedCapability==="team_view"?"team_view":"owner";
  if(!["grant","revoke"].includes(action))return jsonResponse(400,{success:false,error:"invalid_action"},headers);
  if(!email)return jsonResponse(400,{success:false,error:"invalid_email"},headers);
  const target=await env.DB.prepare("SELECT id,email,name,role FROM specialists WHERE lower(email)=? LIMIT 1").bind(email).first();
@@ -33,33 +37,39 @@ export async function onRequestPost({request,env}:{request:Request;env:Env}){
  const now=nowIso();
 
  if(capability==="team_view"){
-   if(action==="revoke"){
-     const revoked=await env.DB.prepare("UPDATE hermes_internal_team_view_access SET active=0,updated_at=? WHERE specialist_id=? AND active=1").bind(now,String(target.id)).run();
-     if(Number(revoked?.meta?.changes||0)!==1)return jsonResponse(409,{success:false,error:"team_view_inactive"},headers);
-   }else{
-     await env.DB.prepare(`INSERT INTO hermes_internal_team_view_access (specialist_id,active,created_at,updated_at)
+   const mutation=action==="revoke"
+     ?env.DB.prepare("UPDATE hermes_internal_team_view_access SET active=0,updated_at=? WHERE specialist_id=? AND active=1").bind(now,String(target.id))
+     :env.DB.prepare(`INSERT INTO hermes_internal_team_view_access (specialist_id,active,created_at,updated_at)
        VALUES (?,1,?,?)
-       ON CONFLICT(specialist_id) DO UPDATE SET active=1,updated_at=excluded.updated_at`).bind(String(target.id),now,now).run();
-   }
-   await env.DB.prepare("INSERT INTO hermes_internal_team_view_access_audit (organization_scope,actor_specialist_id,target_specialist_id,action,created_at) VALUES (?,?,?,?,?)").bind(INTERNAL_AI_ORGANIZATION_SCOPE,String(owner.specialist.id),String(target.id),action,now).run();
+       ON CONFLICT(specialist_id) DO UPDATE SET active=1,updated_at=excluded.updated_at`).bind(String(target.id),now,now);
+   const audit=env.DB.prepare(`INSERT INTO hermes_internal_team_view_access_audit
+     (organization_scope,actor_specialist_id,target_specialist_id,action,created_at)
+     SELECT ?,?,?,?,? WHERE changes()=1`).bind(INTERNAL_AI_ORGANIZATION_SCOPE,String(owner.specialist.id),String(target.id),action,now);
+   let results:any[];
+   try{results=await env.DB.batch([mutation,audit])}catch{return jsonResponse(503,{success:false,error:"access_mutation_failed"},headers)}
+   if(Number(results?.[0]?.meta?.changes||0)!==1)return jsonResponse(409,{success:false,error:action==="revoke"?"team_view_inactive":"access_mutation_failed"},headers);
+   if(Number(results?.[1]?.meta?.changes||0)!==1)return jsonResponse(503,{success:false,error:"access_audit_missing"},headers);
    return jsonResponse(200,{success:true,action,capability,target:{specialist_id:String(target.id),email:String(target.email||email),name:target.name||null,role:target.role||null}},headers);
  }
 
- if(action==="revoke"){
-   if(String(target.id)===String(owner.specialist.id))return jsonResponse(409,{success:false,error:"cannot_revoke_current_owner"},headers);
-   const revoked=await env.DB.prepare(`UPDATE hermes_internal_owner_access
+ if(action==="revoke"&&String(target.id)===String(owner.specialist.id))return jsonResponse(409,{success:false,error:"cannot_revoke_current_owner"},headers);
+ const mutation=action==="revoke"
+   ?env.DB.prepare(`UPDATE hermes_internal_owner_access
      SET active=0,updated_at=?
      WHERE specialist_id=? AND capability='HERMES_INTERNAL_OWNER' AND active=1
        AND EXISTS (
          SELECT 1 FROM hermes_internal_owner_access other
          WHERE other.active=1 AND other.capability='HERMES_INTERNAL_OWNER' AND other.specialist_id<>?
-       )`).bind(now,String(target.id),String(target.id)).run();
-   if(Number(revoked?.meta?.changes||0)!==1)return jsonResponse(409,{success:false,error:"cannot_remove_last_owner_or_inactive_owner"},headers);
- } else {
-   await env.DB.prepare(`INSERT INTO hermes_internal_owner_access (specialist_id,active,capability,created_at,updated_at)
+       )`).bind(now,String(target.id),String(target.id))
+   :env.DB.prepare(`INSERT INTO hermes_internal_owner_access (specialist_id,active,capability,created_at,updated_at)
      VALUES (?,1,'HERMES_INTERNAL_OWNER',?,?)
-     ON CONFLICT(specialist_id) DO UPDATE SET active=1, capability='HERMES_INTERNAL_OWNER', updated_at=excluded.updated_at`).bind(String(target.id),now,now).run();
- }
- await env.DB.prepare("INSERT INTO hermes_internal_owner_access_audit (organization_scope,actor_specialist_id,target_specialist_id,action,created_at) VALUES (?,?,?,?,?)").bind(INTERNAL_AI_ORGANIZATION_SCOPE,String(owner.specialist.id),String(target.id),action,now).run();
+     ON CONFLICT(specialist_id) DO UPDATE SET active=1, capability='HERMES_INTERNAL_OWNER', updated_at=excluded.updated_at`).bind(String(target.id),now,now);
+ const audit=env.DB.prepare(`INSERT INTO hermes_internal_owner_access_audit
+   (organization_scope,actor_specialist_id,target_specialist_id,action,created_at)
+   SELECT ?,?,?,?,? WHERE changes()=1`).bind(INTERNAL_AI_ORGANIZATION_SCOPE,String(owner.specialist.id),String(target.id),action,now);
+ let results:any[];
+ try{results=await env.DB.batch([mutation,audit])}catch{return jsonResponse(503,{success:false,error:"access_mutation_failed"},headers)}
+ if(Number(results?.[0]?.meta?.changes||0)!==1)return jsonResponse(409,{success:false,error:action==="revoke"?"cannot_remove_last_owner_or_inactive_owner":"access_mutation_failed"},headers);
+ if(Number(results?.[1]?.meta?.changes||0)!==1)return jsonResponse(503,{success:false,error:"access_audit_missing"},headers);
  return jsonResponse(200,{success:true,action,capability,target:{specialist_id:String(target.id),email:String(target.email||email),name:target.name||null,role:target.role||null}},headers);
 }
