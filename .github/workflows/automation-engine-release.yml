@@ -756,6 +756,207 @@ jobs:
           if-no-files-found: error
           retention-days: 7
 
+
+      - name: Run private social account readiness proof
+        if: steps.request.outputs.operation == 'social_readiness_proof'
+        id: social_readiness
+        shell: bash
+        env:
+          DB_ID: ${{ steps.d1.outputs.database_id }}
+          TARGET_SHA: ${{ steps.request.outputs.target_sha }}
+        run: |
+          set -euo pipefail
+
+          CURRENT_MAIN="$(gh api "repos/${GITHUB_REPOSITORY}/branches/main" --jq '.commit.sha')"
+          if [[ "$CURRENT_MAIN" != "$TARGET_SHA" ]]; then
+            echo "stale_main_before_social_readiness_proof target=$TARGET_SHA current=$CURRENT_MAIN"
+            exit 1
+          fi
+
+          d1_query() {
+            local sql="$1"
+            local params_json="$2"
+            local output="$3"
+            local body
+            body="$(jq -nc --arg sql "$sql" --argjson params "$params_json" '{sql:$sql,params:$params}')"
+            local http
+            http="$(curl -sS -o "$output" -w '%{http_code}' \
+              -X POST \
+              "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/d1/database/${DB_ID}/query" \
+              -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+              -H 'Content-Type: application/json' \
+              --data "$body")"
+            if [[ "$http" != "200" ]] || [[ "$(jq -r '.success // false' "$output")" != "true" ]]; then
+              echo "hae_social_readiness_d1_query_failed http=$http"
+              exit 1
+            fi
+            if [[ "$(jq -r '.result[0].success // true' "$output")" != "true" ]]; then
+              echo "hae_social_readiness_d1_statement_failed"
+              exit 1
+            fi
+          }
+
+          proof_dir="${RUNNER_TEMP}/hae-social-readiness"
+          mkdir -p "$proof_dir"
+          idempotency_key="hae:social-readiness:${TARGET_SHA}:${GITHUB_RUN_ID}:${GITHUB_RUN_ATTEMPT}"
+
+          queues_json="$proof_dir/queues.json"
+          curl -fsS \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/queues" \
+            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            -H 'Content-Type: application/json' > "$queues_json"
+          queue_id="$(jq -r '.result[] | select(.queue_name == "hermes-automation") | .queue_id' "$queues_json" | head -n1)"
+          if [[ -z "$queue_id" || "$queue_id" == "null" ]]; then
+            echo "hae_social_readiness_queue_missing"
+            exit 1
+          fi
+          echo "::add-mask::$queue_id"
+
+          submit_body="$(jq -nc --arg key "$idempotency_key" '{
+            body: {
+              type: "job.submit.runtime_proof",
+              job_type: "social.account.readiness",
+              idempotency_key: $key
+            }
+          }')"
+          http="$(curl -sS -o "$proof_dir/queue-submit.json" -w '%{http_code}' \
+            -X POST \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/queues/${queue_id}/messages" \
+            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            -H 'Content-Type: application/json' \
+            --data "$submit_body")"
+          if [[ "$http" != "200" ]] || [[ "$(jq -r '.success // false' "$proof_dir/queue-submit.json")" != "true" ]]; then
+            echo "hae_social_readiness_queue_submit_failed http=$http"
+            exit 1
+          fi
+
+          lookup_sql="SELECT job_id,job_type,state,attempt_count,idempotency_key,result_json,last_error_class,completed_at FROM hermes_automation_jobs WHERE idempotency_key=? LIMIT 1"
+          lookup_params="$(jq -nc --arg key "$idempotency_key" '[$key]')"
+          job_id=""
+          state=""
+          for attempt in $(seq 1 24); do
+            d1_query "$lookup_sql" "$lookup_params" "$proof_dir/job.json"
+            job_id="$(jq -r '.result[0].results[0].job_id // empty' "$proof_dir/job.json")"
+            state="$(jq -r '.result[0].results[0].state // empty' "$proof_dir/job.json")"
+            if [[ "$state" == "SUCCEEDED" && -n "$job_id" ]]; then
+              break
+            fi
+            if [[ "$state" == "FAILED" || "$state" == "BLOCKED" ]]; then
+              error_class="$(jq -r '.result[0].results[0].last_error_class // "unknown"' "$proof_dir/job.json")"
+              echo "hae_social_readiness_job_terminal_failure state=$state error_class=$error_class"
+              exit 1
+            fi
+            if [[ "$attempt" -eq 24 ]]; then
+              echo "hae_social_readiness_job_timeout state=$state"
+              exit 1
+            fi
+            sleep 5
+          done
+
+          result_json="$(jq -r '.result[0].results[0].result_json // empty' "$proof_dir/job.json")"
+          if [[ -z "$result_json" ]]; then
+            echo "hae_social_readiness_result_missing"
+            exit 1
+          fi
+          printf '%s' "$result_json" > "$proof_dir/result-raw.json"
+
+          jq -e '
+            .capability == "social.account.readiness"
+            and .readiness.success == true
+            and .readiness.tokens_returned == false
+            and .readiness.external_write_performed == false
+            and .readiness.provider_contract == "shared/social/meta-threads-provider.mjs"
+            and .readiness.manual_social_studio_provider_converged == true
+            and .readiness.social_business_lanes == ["HERMES_LOGISTICS","PROGRESSOPRO"]
+          ' "$proof_dir/result-raw.json" >/dev/null || {
+            echo "hae_social_readiness_safety_contract_failed"
+            exit 1
+          }
+
+          CURRENT_MAIN="$(gh api "repos/${GITHUB_REPOSITORY}/branches/main" --jq '.commit.sha')"
+          if [[ "$CURRENT_MAIN" != "$TARGET_SHA" ]]; then
+            echo "stale_main_during_social_readiness_proof target=$TARGET_SHA current=$CURRENT_MAIN"
+            exit 1
+          fi
+
+          jq -n \
+            --arg target_sha "$TARGET_SHA" \
+            --arg job_id "$job_id" \
+            --arg key "$idempotency_key" \
+            --slurpfile result "$proof_dir/result-raw.json" \
+            '{
+              target_sha: $target_sha,
+              evidence_class: "HAE_SOCIAL_ACCOUNT_READINESS",
+              read_only_job: {
+                job_id: $job_id,
+                job_type: "social.account.readiness",
+                idempotency_key: $key,
+                permission_class: "READ_ONLY",
+                state: "SUCCEEDED",
+                external_provider_write: false
+              },
+              readiness: {
+                observed_at: $result[0].readiness.observed_at,
+                social_business_lanes: $result[0].readiness.social_business_lanes,
+                provider_contract: $result[0].readiness.provider_contract,
+                tokens_returned: $result[0].readiness.tokens_returned,
+                external_write_performed: $result[0].readiness.external_write_performed,
+                write_convergence_ready: $result[0].readiness.write_convergence_ready,
+                hae_write_bridge_ready: $result[0].readiness.hae_write_bridge_ready,
+                manual_social_studio_provider_converged: $result[0].readiness.manual_social_studio_provider_converged,
+                blockers: $result[0].readiness.blockers,
+                hermes_logistics: {
+                  business_lane: $result[0].readiness.hermes_logistics.business_lane,
+                  platform: $result[0].readiness.hermes_logistics.platform,
+                  credential_source: $result[0].readiness.hermes_logistics.credential_source,
+                  provider_transport: $result[0].readiness.hermes_logistics.provider_transport,
+                  expected_account_id: $result[0].readiness.hermes_logistics.expected_account_id,
+                  expected_username: $result[0].readiness.hermes_logistics.expected_username,
+                  credential_bridge_resolves: $result[0].readiness.hermes_logistics.credential_bridge_resolves,
+                  credential_bridge_error: $result[0].readiness.hermes_logistics.credential_bridge_error,
+                  ready_for_provider_preflight: $result[0].readiness.hermes_logistics.ready_for_provider_preflight,
+                  granted_scopes: $result[0].readiness.hermes_logistics.granted_scopes,
+                  inbound_scopes: $result[0].readiness.hermes_logistics.inbound_scopes,
+                  external_write_enabled: $result[0].readiness.hermes_logistics.external_write_enabled
+                },
+                progressopro: {
+                  business_lane: $result[0].readiness.progressopro.business_lane,
+                  platform: $result[0].readiness.progressopro.platform,
+                  credential_source: $result[0].readiness.progressopro.credential_source,
+                  provider_transport: $result[0].readiness.progressopro.provider_transport,
+                  expected_username: $result[0].readiness.progressopro.expected_username,
+                  connection_present: $result[0].readiness.progressopro.connection_present,
+                  identity_verified: $result[0].readiness.progressopro.identity_verified,
+                  observed_account_id: $result[0].readiness.progressopro.observed_account_id,
+                  observed_username: $result[0].readiness.progressopro.observed_username,
+                  granted_scopes: $result[0].readiness.progressopro.granted_scopes,
+                  token_ciphertext_present: $result[0].readiness.progressopro.token_ciphertext_present,
+                  token_expiry_state: $result[0].readiness.progressopro.token_expiry_state,
+                  hae_token_key_present: $result[0].readiness.progressopro.hae_token_key_present,
+                  credential_bridge_resolves: $result[0].readiness.progressopro.credential_bridge_resolves,
+                  credential_bridge_error: $result[0].readiness.progressopro.credential_bridge_error,
+                  ready_for_hae_write_bridge: $result[0].readiness.progressopro.ready_for_hae_write_bridge,
+                  inbound_scopes: $result[0].readiness.progressopro.inbound_scopes,
+                  external_write_enabled: $result[0].readiness.progressopro.external_write_enabled
+                }
+              }
+            }' > "$proof_dir/hae-social-readiness-evidence.json"
+
+          blockers="$(jq -c '.readiness.blockers' "$proof_dir/hae-social-readiness-evidence.json")"
+          ready="$(jq -r '.readiness.write_convergence_ready' "$proof_dir/hae-social-readiness-evidence.json")"
+          echo "job_id=$job_id" >> "$GITHUB_OUTPUT"
+          echo "write_convergence_ready=$ready" >> "$GITHUB_OUTPUT"
+          echo "HAE social readiness proof PASS job=$job_id write_convergence_ready=$ready blockers=$blockers"
+
+      - name: Upload sanitized social readiness evidence
+        if: steps.request.outputs.operation == 'social_readiness_proof'
+        uses: actions/upload-artifact@v4
+        with:
+          name: hae-social-readiness-evidence
+          path: ${{ runner.temp }}/hae-social-readiness/hae-social-readiness-evidence.json
+          if-no-files-found: error
+          retention-days: 14
+
       - name: Remove generated config
         if: always()
         run: rm -f workers/automation-engine/wrangler.production.generated.jsonc
