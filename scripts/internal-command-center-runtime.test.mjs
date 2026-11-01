@@ -8,7 +8,7 @@ import { onRequestGet as listAiTasks } from "../functions/api/internal-ai/tasks.
 import { onRequestGet as listProjects, onRequestPost as createProject } from "../functions/api/internal-command-center/projects.ts";
 import { onRequestPatch as editProject } from "../functions/api/internal-command-center/projects/[id].ts";
 import { ensureInternalAiSchema } from "../functions/api/_lib/internal-ai.mjs";
-import { ensureCommandCenterSchema } from "../functions/api/_lib/internal-command-center.mjs";
+import { ensureCommandCenterSchema, selectWorkItemPluginRoute } from "../functions/api/_lib/internal-command-center.mjs";
 import { onRequest as commandCenterMiddleware } from "../functions/_middleware.js";
 
 class Statement {
@@ -18,6 +18,11 @@ class Statement {
   async first(){return this.statement.get(...this.args)??null}
   async all(){return{results:this.statement.all(...this.args)}}
 }
+const seoRoute=selectWorkItemPluginRoute({workstream:"marketing",title:"Technical SEO Bing indexation",details:"Check canonical indexability"});
+assert.equal(seoRoute.owner.role_id,"hermes-search-growth","marketing/search intent must route to the verified search specialist");
+assert.equal(seoRoute.state,"PLUGIN_SELECTED_NOT_EXECUTED","selection alone must not imply execution");
+assert.ok(seoRoute.helpers.some(x=>x.role_id==="hermes-agent-coordinator"));
+assert.equal(selectWorkItemPluginRoute({workstream:"finance",title:"Reconcile invoices"}).owner.role_id,"hermes-agent-coordinator","workstreams without a verified runtime plugin use Coordinator, not a fictitious Finance worker");
 // Backwards-compatible migration: real older D1 rows may have no project column.
 const legacySqlite=new DatabaseSync(":memory:");
 legacySqlite.exec("CREATE TABLE hermes_owner_work_items (id TEXT PRIMARY KEY,organization_scope TEXT,status TEXT,priority TEXT,created_at TEXT); INSERT INTO hermes_owner_work_items VALUES ('legacy','hermes_internal','planned','p2','2026-10-01');");
