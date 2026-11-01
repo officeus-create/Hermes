@@ -106,3 +106,22 @@ Only the registry observed_at and nine existing role version identities, plus ma
 Review gates: exact-head HAE contracts/Website/quality CI, independent QA and reviewer approval, protected merge, production/runtime readback, followed by controlled #2067 -> #2070 -> #2068 -> #2069. Chat routing skill cannot globally hook ChatGPT, retrain model weights, or start a daemon by itself.
 
 Work passport: ChatGPT / 2026-11-01 / PR #2190 / provider evidence sync / reviewer progressopro / HOLD_RELEASE until independent QA.
+
+
+## 2026-11-01 00:39:08.064Z — exact new provider readback provenance
+
+Authenticated `Plugin_Creator.list_owned_personal_plugins(limit=50)` completed at UTC `2026-11-01T00:39:08.064Z`. Response inventory had **28** plugins total, **27** Hermes plugins. Comparison to the runtime allowlist gives **9/9 exact role IDs and versions matched**, no new roles and no missing roles. This timestamp is the actual completed connector response observation, superseding the earlier synthetic-looking `2026-10-31T23:35:25.000Z`; do not use the latter as a factual provider timestamp.
+
+| HAE runtime role | Provider release ID | Version |
+| --- | --- | --- |
+| hermes-automatic-engineer | pluginrel_6ae3b4334288819187d3babb65723545 | 0.1.34 |
+| hermes-agent-coordinator | pluginrel_6ae6794228848191b2aa8e2144a4712c | 0.1.82 |
+| hermes-technology-developer | pluginrel_6ae3b45bf9d881919d1ae2bd207f46ea | 0.1.60 |
+| hermes-qa-evidence-auditor | pluginrel_6ae6758821048191a9999fb60f5570da | 0.1.17 |
+| hermes-knowledge-curator | pluginrel_6ae675a3ef9881919df6264fdcb1ed9c | 0.1.89 |
+| hermes-marketing-growth | pluginrel_6ae63cc17d2c8191bc07f876956b17d1 | 0.1.14 |
+| hermes-search-growth | pluginrel_6ae6750b30a48191863239618c5eabd5 | 0.1.13 |
+| hermes-academy | pluginrel_6ae3ba1061f0819183d0b1216f1365b7 | 0.1.14 |
+| hermes-dispatch-os | pluginrel_6ae3b49243648191a085db018d74e22c | 0.1.26 |
+
+The exact UTC instant is a **snapshot timestamp**, not an automatically refreshing feed. After the existing 24-hour freshness bound, the registry truth is `STALE_OR_FUTURE` until a new authenticated provider readback is accepted, not `LIVE`. This source sync makes no claim that the plugins are loaded by a 24/7 HAE Worker. No provider permission change, plugin update, Cloudflare deployment, Queue/D1 write or paid model invocation.
