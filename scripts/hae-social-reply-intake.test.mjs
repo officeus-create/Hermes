@@ -57,14 +57,14 @@ const replay=await drainSocialReplyPrepareIntake(env,{createJob});
 assert.equal(replay,0);
 assert.equal(createCalls.length,1);
 
-assert.rejects(
+await assert.rejects(
   ()=>createSocialReplyPrepareIntake(db,{...base,business_lane:"ACADEMY"},{idempotencyKey:key+":bad"}),
   /social_business_lane_invalid/
 );
-assert.rejects(
+await assert.rejects(
   ()=>createSocialReplyPrepareIntake(db,{...base,text:"x".repeat(501)},{idempotencyKey:key+":long"}),
   /social_reply_text_invalid/
 );
 
 sqlite.close();
-console.log("HAE social reply intake PASS — D1 owner intake -> HAE createJob, duplicate suppressed, no Pages Queue/token");
+console.log("HAE social reply intake PASS — D1 owner intake -> HAE createJob, duplicate suppressed, no direct Pages runtime handoff");
