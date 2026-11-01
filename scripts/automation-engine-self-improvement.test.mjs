@@ -128,7 +128,12 @@ assert.equal(pluginRuntimeRegistryEvidenceStatus(new Date(registryObservedMs + 2
 assert.equal(pluginRuntimeRegistryEvidenceStatus(new Date(registryObservedMs - 1).toISOString()).fresh, false, "Future-dated source evidence must fail closed");
 assert.equal(pluginRuntimeRegistryEvidenceStatus("invalid-now").reason, "INVALID_EVIDENCE_TIME");
 
-assert.equal(pluginRuntimeVersion("hermes-automatic-engineer"), "0.1.35");\nassert.equal(pluginRuntimeVersion("hermes-agent-coordinator"), "0.1.86");\nassert.equal(pluginRuntimeVersion("hermes-technology-developer"), "0.1.61");\nassert.equal(pluginRuntimeVersion("hermes-qa-evidence-auditor"), "0.1.20");\nassert.equal(pluginRuntimeVersion("hermes-knowledge-curator"), "0.1.91");\nassert.match(pluginRuntimeVersion("hermes-agent-coordinator"), /^\d+\.\d+\.\d+/);
+assert.equal(pluginRuntimeVersion("hermes-automatic-engineer"), "0.1.35");
+assert.equal(pluginRuntimeVersion("hermes-agent-coordinator"), "0.1.86");
+assert.equal(pluginRuntimeVersion("hermes-technology-developer"), "0.1.61");
+assert.equal(pluginRuntimeVersion("hermes-qa-evidence-auditor"), "0.1.20");
+assert.equal(pluginRuntimeVersion("hermes-knowledge-curator"), "0.1.91");
+assert.match(pluginRuntimeVersion("hermes-agent-coordinator"), /^\d+\.\d+\.\d+/);
 assert.match(pluginRuntimeVersion("hermes-academy"), /^\d+\.\d+\.\d+/);
 assert.equal(pluginRuntimeRegistrySnapshot().source_class, "PRIVATE_PLUGIN_CREATOR_READBACK");
 assert.throws(() => pluginRuntimeVersion("hermes-unknown-role"), /plugin_runtime_version_unverified/);
