@@ -2142,3 +2142,114 @@ ai_name: Codex; role: delegated Academy owner; contribution_type: Implementation
 - Tests: `npm run build` PASS — 435 pages built. Focused Playwright PASS — 12/12 across desktop + mobile for existing case visual contract and new funnel analytics contract.
 - Status: SOURCE/LOCAL VERIFIED only. Keep Coverage row 11 `PARTIAL` until merge, deployment and 1440/390 production readback.
 - Next: open bounded PR; then take Resources/Guides as a separate family slice using the existing SEO/website/carrier/vehicle-transport analytics owners rather than adding a second tracker.
+
+## 2026-10-28 — Claude Code — carrier (car hauling) SEO audit slice
+
+- Branch: `claude/beautiful-mendel-lknlyq` from current main.
+- Audit evidence (GSC via connector, 2026-07-31 → 2026-10-28): carrier queries ("car hauler dispatch", "car hauler load board", "car hauling loads") rank at positions ~40–80 with 0 clicks; the only carrier clicks come from `/careers/car-hauling-dispatcher/` (pos 6) and the capacity checklist (pos 8). Google AI Overview citations: hermeslogisticsus.com 0, resolute-logistics.com 212.
+- Fixed in this slice: 33 carrier-cluster meta descriptions no longer cut off with "…" (25 car-hauler-loads markets via `CarHaulerGeoPage.astro`, the markets hub, owner-operator / new-authority / fleet-owner dispatch support, two carrier resources); `/logistics/` (parent of every carrier URL) now 301s to `/paths/logistics/` instead of 404; the Logistics hub service-guide list now leads with carrier pages and links the car-hauler-loads markets hub.
+- Owner decisions open: markets hub title/H1 still "Car Hauler Operating Markets & Route-Fit Research" (proposed "Car Hauler Loads by Market"); `/load-board/?role=*` variants are indexed as separate URLs despite the canonical; thin `/logistics/carrier/` overlaps `/logistics/car-hauling-dispatch/`; recruiting phone +1 (414) 269-7377 vs the one-public-phone rule.
+- Next: re-read GSC positions for the carrier query set on 2026-11-23.
+
+## 2026-10-27 — ChatGPT/Codex — Business Command Center owner-acceptance boundary
+
+- Agent/task owner: ChatGPT/Codex; bounded continuation of the existing Business Command Center, not a new admin, queue, runtime, brain, or system of record.
+- Branch/commit/PR: `feat/hermes-business-command-center-main2-20261026`; implementation commit `9322213b`; existing canonical PR [#2107](https://github.com/officeus-create/Hermes/pull/2107). No merge or deploy performed.
+- Files changed: the existing Command Center D1 helper and work-item mutation route, existing owner page, Command Center state/runtime/contract/browser tests, canonical Command Center contract, and error register.
+- Behavior delivered: a completed Internal AI execution now projects as `awaiting_acceptance`; only an authenticated owner can accept it and create `accepted_by`/`accepted_at`/completion receipts. `Needs rework` records a reason and safely dispatches a replacement through the same canonical AI queue. Generic completion cannot bypass linked-result acceptance. Existing D1 tables gain the additive columns safely, including concurrent first-read protection; review timestamps do not drift on polling.
+- Ecosystem scorecard: **Primary outcome** — truthful task state and owner control. **Conversion/revenue** — no claim or automated action added. **Knowledge** — `SUCCEEDED != ACCEPTED` recorded as a reusable rule. **AI/automation** — preserves HAE as runtime and plugins/agents as workers behind one queue. **Data/privacy** — only internal owner specialist id/time receipts; no public or analytics payload change. **Architecture** — additive reuse of `hermes_owner_work_items` and `hermes_internal_ai_tasks`; no duplicate service/database. **Deferred** — process graph, richer owner/agent/plugin assignment, dependencies, percent/timing/ETA, execution history aggregation, and localhost graceful fallback remain separate bounded slices on #2107/#2125.
+- Verification on implementation state: `npm run build` PASS (436 pages); `npm test` PASS; focused Command Center contract/state/runtime PASS; focused Playwright PASS 14/14 desktop/mobile. Required full `npm run test:e2e` completed 2,518 PASS / 16 expected skips / 10 timeouts, all in five unrelated public-page interaction scenarios and reproduced sequentially; recorded as `ERR-E2E-INTERACTION-STABILITY-20261027`. No Command Center test failed.
+- Risks/assumptions: #2107 remains unreleased and its D1 table is expected to be created or additively upgraded on first authorized use. Full-suite public interaction instability prevents a whole-repository green E2E claim. Exact-head CI is required after push; production acceptance remains unknown until owner-authorized merge/deploy/readback.
+- Recommended next task/owner: visual owner repairs the five public-page stability failures on its own branch. Command Center owner then reviews #2107 plus stacked architecture PR #2125; next Codex slice should add canonical dependency/owner/plugin fields and truthful progress/timing projections without creating a second task registry.
+
+## 2026-10-28 — ChatGPT/Codex — owner-configurable HAE 24/7 processes
+
+- Agent/task owner: ChatGPT/Codex; bounded continuation of the existing Business Command Center and HAE runtime. No second admin, scheduler, queue, database, brain, or task registry was created.
+- Branch/PR: `feat/hermes-business-command-center-main2-20261026`; existing canonical PR [#2107](https://github.com/officeus-create/Hermes/pull/2107). No merge or deploy performed.
+- Behavior delivered: the owner can create a process paused, choose an allowlisted cadence, activate it, request the next hourly HAE tick, and pause future runs while preserving evidence. The Command Center shows the role contract, cadence, status, next run, last run, last job state, and last error. Six initial templates are deterministic/read-only and zero-cost-first; arbitrary prompts/payloads, semantic paid work, provider writes, and external sends are not exposed.
+- Runtime/data ownership: `hermes_automation_processes` and immutable `hermes_automation_process_events` live in the existing production D1. The existing hourly HAE Cron leases due rows and writes idempotent jobs through the existing HAE Queue/generic-job executor. A configured process replaces that job type's built-in schedule, preventing duplicate runs. It does not depend on an open chat, browser, Mac, or Windows session.
+- Ecosystem scorecard: **Primary outcome** — a real owner control plane for bounded autonomous work. **Conversion/revenue** — no claim, send, or customer mutation added. **Knowledge** — absolute UTC timing, lease, event and error receipts are durable. **AI/automation** — HAE remains the sole runtime and plugin roles remain versioned worker contracts. **Data/privacy** — private owner metadata only; no public or analytics payload change. **Architecture** — additive reuse of the canonical D1, Queue and Command Center. **Deferred** — arbitrary business workflows and all consequential/external-write capabilities require separate contracts and owner gates.
+- Verification on implementation state: process API/runtime/SQLite/contract tests PASS; `npm run build` PASS (436 pages); `npm test` PASS; focused Command Center Playwright PASS 16/16 desktop/mobile. Full `npm run test:e2e`: 2,520 PASS / 16 expected skips / the same 10 unrelated public-page stability timeouts already tracked as `ERR-E2E-INTERACTION-STABILITY-20261027`; no Command Center test failed.
+- Collision/risk note: stacked draft PR #2125 overlaps the Command Center page/helper area and must rebase after #2107. PRs #2137/#2138 do not overlap this runtime slice. Source is not production evidence: exact-head CI, independent QA, owner-authorized merge/deploy of both Pages and HAE Worker, and authenticated D1/Queue/readback are still required.
+- Recommended next task/owner: independent QA verifies the process lease/idempotency boundary on the exact PR head; owner then decides whether to authorize merge/deploy. After production readback, add consequential capabilities one versioned contract at a time rather than opening an arbitrary forever-task surface.
+
+## 2026-10-28 — ChatGPT/Codex — local AI Agents handoff with device-safe fallback
+
+- Scope: continuation of the existing Business Command Center PR #2107; closes the requested navigation gap to `http://127.0.0.1:8765/ai-agents/?utm_source=chatgpt.com` without exposing the local service through a public tunnel or making it a second runtime.
+- Local readback: the exact AI Agents route and `/api/health` both returned HTTP 200 on this Mac; health reported `HERMES_AI_COCKPIT`, worker `RUNNING`, bind `127.0.0.1`, and provider actions disabled. This is current-device evidence only, not production/cloud evidence.
+- Behavior: a private Command Center card opens the exact loopback URL in a separate tab and always preserves the canonical cloud AI status/queue link as fallback for phones or other computers. The online page performs no localhost probe and requires no CSP weakening. HAE remains independent of the browser/local tab.
+- Verification: local-agents security contract PASS; full Command Center contract PASS; `npm run build` PASS (436 pages); focused Command Center Playwright PASS 18/18 desktop/mobile. No merge, deploy, owner-access mutation, provider action, or tunnel change performed.
+- Coordination: stacked AI Architecture PR #2125 is zero-behind #2107 and exact-head CI green before this slice. After #2107 receives this commit, #2125 must take one normal parent sync and retain its rule that Cloudflare Tunnel may target only the authenticated 8766 bridge, never raw port 8765. A browser loopback link is not a tunnel destination.
+
+## 2026-10-28 — ChatGPT/Codex — unified project portfolio + safe public Command Center preview
+
+- Scope: continued existing Business Command Center PR #2107; no separate admin, task registry, runtime, database or brain was created. Three supplied cross-chat reports were treated as planning evidence and reconciled against current source/PR state.
+- Private owner result: added one owner-gated project projection API and a client-rendered portfolio inside the existing Command Center. Ten real project families now expose department, purpose, accountable role, agent, plugin roles, parent/dependencies/relations, blocker, milestone-derived progress and evidence links. Internal project data is not present in generated public HTML.
+- Truth boundary: progress is completed milestones / total milestones. ETA is `UNKNOWN` because comparable completed-history evidence is absent; no dates or percentages are invented. The divergent #2125/#2159 AI Operations continuations remain an explicit blocker in `ERR-AI-OPS-CANONICAL-PR-20261028`.
+- Public product result: the existing `/services/hermes-connect/ai-command-center/` reference page now includes a clearly labelled synthetic CRM/project demo and one scoped contact CTA. It contains no internal project names, PRs, owner capability, localhost details or credentials and does not claim a live customer account.
+- Access decision: no shared `office` login or reused chat password was added. The existing Hermes identity plus `HERMES_INTERNAL_OWNER` capability remains authoritative; any credential written in chat must be treated as compromised and rotated outside repository work.
+- Verification on implementation state: registry/public-safety contracts PASS; `npm run build` PASS (436 pages, 0 errors); `npm test` PASS; focused Command Center Playwright PASS 22/22 desktop/mobile. Full `npm run test:e2e` completed with 2,525 PASS / 16 expected skips / 11 timeouts: the 10 already tracked public interaction-stability failures plus one concurrent Repair booking i18n timeout. A one-worker rerun passed that Repair scenario on both projects and reproduced only the same 10 known failures (42 PASS / 10 timeouts). No Command Center scenario failed. Exact-head CI is still required before a release claim.
+- Ecosystem scorecard: **Primary outcome** — one truthful map for projects and relationships. **Conversion/revenue** — synthetic preview routes prospective buyers to the existing contact funnel without false proof. **Knowledge** — cross-chat intent becomes explicit registry fields and evidence rules. **AI/automation** — HAE remains runtime; agents/plugins are roles, not new schedulers. **Data/privacy** — internal registry is owner-only/no-store and public demo is synthetic. **Architecture** — additive projection in the canonical Command Center. **Deferred** — live aggregation from canonical systems, selected #2125/#2159 continuation, production identity provisioning, merge/deploy and production readback.
+- Next minimal path: pass full E2E and exact-head CI, obtain maintainer decision on #2125 vs #2159, review #2107, then owner-authorize merge/deploy and perform authenticated production D1/HAE/readback. No merge or deploy was performed in this slice.
+
+## 2026-10-29 — Claude Code — sign-in pages: Russian for Access, Academy, Academy Business, Home Services
+
+- Branch: `claude/beautiful-mendel-lknlyq` from main `cef0d59`.
+- Added Russian to the general Access page, Academy learner sign-in and Academy Business sign-in; Home Services access got a full RU + UK dictionary (it had none). `syncConnectAuthChrome` now supports `ru` (header labels, `/ru/` home link). Access page still resolves English unless `?lang=` is explicit (existing clean-route contract); Academy pages also honour the saved language.
+- Tests: new `scripts/connect-auth-language.test.mjs` (in `npm test`); existing `connect-auth-language-regression` 27/27; `npm test` exit 0; Playwright (desktop + mobile) 40/40 on auth-language, Home Services owner access, MZM managed reviewer and Academy business specs; RU/UK pages checked at 390 px with no horizontal overflow.
+- Google button (`HermesGoogleSignIn.astro`): divider, status and error copy now follow the page language (EN/RU/UK) and are read at use time. Website Factory already has Russian via `?lang=ru` (`public/scripts/website-factory-locale.mjs`); its Ukrainian is not translated (owner: later).
+- Next action — owner: Ukrainian for Website Factory when wanted; a real Google round-trip needs the owner's authorized account.
+
+## 2026-10-29 — Claude Code — carrier funnel pages: Logistics blue instead of violet/pink
+
+- Branch: `claude/carrier-funnel-brand` from main `cef0d59` (separate from #2174 by owner direction).
+- Audit evidence: live crawl of 291 sitemap URLs (no duplicate title/description, one H1, valid JSON-LD) and screenshots at 1280 px showed the carrier funnel pages (offer, onboarding, agreement, agreement-v3, sign, carrier) using violet/magenta/teal accents. Violet `#7C5CFF` is reserved for Hermes Intelligence/Connect in the brand book.
+- Changed: accent colours of those six pages and `CarrierContractJourney.astro` mapped to the Logistics blue scale; low-contrast labels in the offer value strip fixed; brand book and coverage matrix updated. Green/amber status colours kept. `download.astro` (Hermes Connect, violet by design) untouched.
+- Tests: `npm run build` ok, `npm test` exit 0, Playwright desktop + mobile 44/44 on the carrier specs.
+- Left for the owner: cookie banner covering the first-screen CTA at 1280×800; public "ChatGPT" mentions on `/privacy/` and `/services/hermes-connect/` (intentional integration or leak?). Small catalog findings (two connect profile pages without og:image, `/ru/privacy/` without JSON-LD) are not in this PR.
+- Next action — Claude: read back the six pages on the live site at 1440 and 390 after deploy.
+
+## 2026-10-29 — Claude Code — Access page: header Sign in no longer a dead link, registration is signposted
+
+- Owner report: on `/services/hermes-connect/access/` "Sign in" did nothing and registration seemed impossible. Reproduced on live: the header Sign in links to the same page (no-op there), and registration only exists behind the business-type cards, with nothing pointing to them from the form. The form itself, the 401 message and the success redirect were verified working (mocked success → `/services/hermes-connect/`).
+- Fix: header/mobile Sign in on this page focuses the email field; a hint under the form ("No account yet? Choose your business type to register →", EN/RU/UK) jumps to the type cards (`#new-business`). No change to the sign-in or registration APIs.
+- Branch `claude/access-signin-fix-main`, replayed onto main `0c8c9d3` after #2174 and #2179 were merged (the earlier stacked PR #2178 is superseded).
+- Tests: `npm test` exit 0; Playwright desktop + mobile 22/22 on auth-language and account specs; manual desktop and 390 px check of focus and anchor.
+- Next action — owner: confirm which account/method failed if the problem persists after this fix (password vs Google).
+
+## 2026-10-30 — Claude Code — chat-wide audit (gate ledger) and lessons
+
+- Method: 12 runnable gates (unlazy skill, outside the repo) against the live site and `main`. Result: 11 met, 1 unmet. Unmet = the Access page sign-in fix (not on `main`/live; PRs #2178 and #2186 were closed without merge) → re-opened as #2197. Met: Russian Access page and Home Services, carrier funnel without violet, homepage jargon gone, catalog og:image and `/ru/privacy/` JSON-LD live, retired phone absent, `/logistics/` 301, Load Board RU/UK, Website Factory Google hook, lead Worker not exposed on workers.dev.
+- Open and not code: owner decision on the cookie banner covering the first CTA; Website Factory Ukrainian; a real Google round-trip (needs the owner's account); Gmail intake stays off until OAuth is verified; GSC recheck 2026-11-10 (trigger armed) and carrier positions 2026-11-23; `#2041` supersede (owner).
+- New finding: the internal carrier call script (Drive "SCRIPT CALL CARRIER.docx") makes claims the public site deliberately does not make: gross increase "$1,500 to $4,000", "$2,500–$6,000 per year in taxes", rate markup "10–20%", "multiple accounts / work in pairs", plus a personal first name. Public pages disclaim income guarantees. Recommend the owner reviews the script (tax and earnings claims) before it is used with carriers; nothing from it was copied to the site.
+- Lessons to keep (process):
+  1. Do not stack a PR on a branch another agent may merge or rewrite; open against `main` and keep the diff small. Stacked #2178 was stranded when #2174 merged.
+  2. Before reporting a fix as done, check the live page or `main` for the exact marker, not only CI green. Use a grep gate.
+  3. A shared file like `docs/AI_HANDOFF.md` conflicts constantly; append, then merge `main` last.
+  4. Bundled Astro scripts do not appear in the HTML; check the `_astro/*.js` file for strings in dictionaries.
+  5. `gate-check` `EXPECT:` needs `/regex/` form; plain text is a substring.
+  6. Header links that point at the current page are dead clicks; give them an action on that page.
+- Next action — owner: merge or close #2197; answer the cookie-banner and Website Factory questions. Claude: read #2197 live after merge; keep the two scheduled rechecks.
+
+## 2026-10-30 — Claude Code — Website Factory in Ukrainian
+
+- `public/scripts/website-factory-locale.mjs` now carries a Ukrainian dictionary (177 strings, same keys as the Russian one), Ukrainian number/label patterns, localized handoff sentence and "Видалити" labels, and the private-context banner in Ukrainian. The Russian runtime was generalized (`dictionary`, `normalizeLocalizedRuntime`) with no change to Russian output.
+- Tests: `connect-auth-language.test.mjs` asserts uk keys equal ru keys; new Playwright case `Ukrainian Website Factory …` (desktop + mobile) next to the Russian one; `website-factory-design4` and the Russian case still pass; `npm test` exit 0.
+- Not touched: Website Factory markup, API, auth; Command Center.
+- Next action — owner: native-speaker read of the Ukrainian wording if it will be shown to clients.
+
+## 2026-10-30 — Claude Code — cookie notice no longer covers left hero actions on wide screens
+
+- Finding (design audit 2026-10-29): at 1280×800 the analytics notice (960 px wide bar at bottom) sat over the left-aligned primary hero buttons on the dispatch and geo pages.
+- Change: `TrackingConsent.astro` only — from 1101 px up the notice is 560 px wide, single column, aligned right; text, choices, storage and consent logic unchanged; tablet and mobile layouts untouched.
+- Checked at 1280×800 on `/`, `/logistics/car-hauling-dispatch/`, `/logistics/car-hauler-loads/chicago-il/`: no overlap with the first hero actions. `npm test` exit 0; Playwright consent and repair-public-design specs 20/20 (desktop + mobile).
+- Next action — Claude: read back the live pages at 1280 after deploy.
+
+## 2026-11-01 — Claude Code — localized Logistics owner pages: direct dispatch call path
+
+- Business goal (owner, ongoing): a Russian-speaking car-hauling carrier who needs a dispatcher must be able to call. Primary-source check of live main: `/ru/logistics/` (and the uk/es/it/fr logistics owner pages) had no phone and no tel link — email only. The approved dispatch phone +1 (351) 777-5337 was present on `/contacts/`, `/logistics/car-hauling-dispatch/`, `/logistics/owner-operator-dispatch-support/` but not on the localized carrier funnel.
+- Verified the retired 262 number is NOT in the repo or on live production anywhere; the "262 on owner-operator/new-authority pages" seen in search was stale index results, not current production. No change needed there.
+- Change: `LocalizedDirectionOwnerPage.astro` now renders a localized "Позвонить диспетчеру · <phone>" (uk/ru/es/it/fr) click-to-call in the hero actions and the contact card, using `site.publicPhones[0]` (single source of truth), gated to `directionId === "logistics"` only. Marketing/Academy/Technology localized pages stay email-only. tel: link, no network/form — preview-first contract untouched.
+- Tests: extended `scripts/localized-owner-parity.test.mjs` (each non-en logistics owner must carry the dispatch tel; other directions must not). `npm run build` 0 errors; `npm test` exit 0. Browser check at 1440 and 390 on `/ru/logistics/`: two call buttons, correct href/label, email preserved, no horizontal overflow.
+- Not done here (owner decisions / larger scope): English `/paths/logistics/` has no tel link (deliberately demotes carrier links — owner call on the English hero); phone-click GA4 event not added (E16: owner must mark GA4 key events first — no speculative event invented); Command Center / HAE untouched per owner.
+- Next action — Claude: read back `/ru/logistics/` live after merge.

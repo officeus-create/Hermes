@@ -117,6 +117,17 @@ import "../../../../../../styles/hermes-academy-app.css";
       ownerLocation:"Країна / місто",catalogOpt:"За бажанням додати бізнес у Hermes Catalog. Публічно показуються лише дані бізнесу; учні, заявки, CRM, платежі та приватні контакти не публікуються.",openCrm:"Зберегти та відкрити Academy CRM",
       businessAcademy:"Бізнес-академія",onlineSchool:"Онлайн-школа",courses:"Курси",businessClub:"Бізнес-клуб",coaching:"Коучинг / менторство",corporateAcademy:"Корпоративна академія"
     },
+    ru: {
+      back:"← Hermes Connect",eyebrow:"Hermes Connect · бизнес Академии",title:"CRM, которая подстраивается под академию, курсы или бизнес-клуб.",
+      lead:"Один аккаунт Hermes, но разные рабочие модули для разных типов бизнеса. CRM Академии охватывает лиды, консультации, учеников, потоки, уроки, задания, проверки, маркетинг, HR и удержание.",
+      note:"Это отдельный сценарий для владельца учебного бизнеса. Если вы хотите учиться как ученик, используйте вход для учеников.",learner:"Я хочу учиться →",catalog:"Открыть Каталог Hermes →",
+      secure:"Защищённый аккаунт Hermes",checking:"Проверяем вашу сессию…",signed:"Вход выполнен",hello:"Добро пожаловать,",profileNext:"Заполните профиль учебного бизнеса. После этого откроется CRM Академии.",
+      create:"Создать аккаунт",login:"Войти",fullName:"Имя и фамилия",password:"Пароль",createOwner:"Создать аккаунт владельца",secureLogin:"Безопасный вход",
+      step2:"Шаг 2 · Учебный бизнес",setupTitle:"Настройте вашу CRM Академии.",setupLead:"Эти данные задают название рабочего пространства и тип CRM. Публикация в Каталоге — отдельное согласие; закрытые данные учеников и CRM туда не попадают.",
+      businessName:"Название академии / курсов",businessType:"Тип бизнеса",city:"Город",region:"Область / регион",country:"Код страны",timezone:"Часовой пояс",website:"Сайт · необязательно",phone:"Телефон · необязательно",
+      ownerLocation:"Страна / город",catalogOpt:"По желанию добавьте бизнес в Каталог Hermes. Публично могут быть показаны название, тип, местоположение, сайт и рабочий телефон; ученики, лиды, записи CRM и платежи никогда не публикуются.",openCrm:"Сохранить и открыть CRM Академии",
+      businessAcademy:"Бизнес-академия",onlineSchool:"Онлайн-школа",courses:"Курсы",businessClub:"Бизнес-клуб",coaching:"Коучинг / наставничество",corporateAcademy:"Корпоративная академия"
+    },
     en: {
       back:"← Hermes Connect",eyebrow:"Hermes Connect · Academy Business",title:"A CRM adapted to an academy, courses, or a business club.",
       lead:"One Hermes account, with different modules for different businesses. Academy CRM focuses on leads, consultations, learners, cohorts, lessons, assignments, reviews, marketing, HR, and retention.",
@@ -135,13 +146,14 @@ import "../../../../../../styles/hermes-academy-app.css";
   // Match the shared Connect shell: explicit choice, then saved choice, then English.
   let savedLanguage: string | null = null;
   try { savedLanguage = window.localStorage.getItem("hermes-connect-language"); } catch {}
-  let lang: Lang = (params.has("lang") ? params.get("lang") : savedLanguage) === "uk" ? "uk" : "en";
+  const wantedLanguage = params.has("lang") ? params.get("lang") : savedLanguage;
+  let lang: Lang = wantedLanguage === "uk" || wantedLanguage === "ru" ? wantedLanguage : "en";
   const applyLanguage=(next:Lang)=>{
     syncConnectAuthChrome(next);
     lang=next; document.documentElement.lang=next; try{localStorage.setItem("hermes-connect-language",next)}catch{}
     document.querySelectorAll<HTMLAnchorElement>('main a[href^="/services/hermes-connect/"]:not([lang])').forEach(link=>{const url=new URL(link.getAttribute("href")||"/",window.location.origin);url.searchParams.set("lang",next);link.href=url.pathname+url.search+url.hash;});
-    document.querySelectorAll<HTMLElement>("[data-i18n]").forEach(node=>{const key=node.dataset.i18n as keyof typeof dictionary.uk; const value=dictionary[next][key]; if(value) node.textContent=value;});
-    document.querySelectorAll<HTMLOptionElement>("[data-i18n-option]").forEach(node=>{const key=node.dataset.i18nOption as keyof typeof dictionary.uk; const value=dictionary[next][key]; if(value) node.textContent=value;});
+    document.querySelectorAll<HTMLElement>("[data-i18n]").forEach(node=>{const key=node.dataset.i18n as keyof typeof dictionary.en; const value=dictionary[next][key]; if(value) node.textContent=value;});
+    document.querySelectorAll<HTMLOptionElement>("[data-i18n-option]").forEach(node=>{const key=node.dataset.i18nOption as keyof typeof dictionary.en; const value=dictionary[next][key]; if(value) node.textContent=value;});
   };
   applyLanguage(lang);
 

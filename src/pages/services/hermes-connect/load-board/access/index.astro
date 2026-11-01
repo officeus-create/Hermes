@@ -12,15 +12,15 @@ import SiteHeader from "../../../../../components/SiteHeader.astro";
   <main id="main-content" class="lb-access">
     <section class="lb-access-hero">
       <div class="lb-access-shell">
-        <a class="lb-back" href="/load-board/">← Back to Load Board preview</a>
-        <p class="lb-kicker">Hermes Connect · Load Board access</p>
-        <h1>One Hermes account. One company. Access matched to your role.</h1>
-        <p class="lb-lead">The public Load Board is the curtain view. Create or sign in to your Hermes account, add the company you operate with, and follow the correct workspace. Carrier-only freight access requires separate Hermes approval.</p>
-        <div class="lb-flow" aria-label="Load Board access steps">
-          <div><strong>1</strong><span>Hermes account</span><small>Create one or sign in</small></div>
-          <div><strong>2</strong><span>Company</span><small>Add operating company facts</small></div>
-          <div><strong>3</strong><span>Hermes Catalog</span><small>Optional self-submitted listing</small></div>
-          <div><strong>4</strong><span>Load Board</span><small>Approved carrier access</small></div>
+        <a class="lb-back" href="/load-board/" data-i18n="back">← Back to Load Board preview</a>
+        <p class="lb-kicker" data-i18n="kicker">Hermes Connect · Load Board access</p>
+        <h1 data-i18n="title">One Hermes account. One company. Access matched to your role.</h1>
+        <p class="lb-lead" data-i18n="lead">The public Load Board is the curtain view. Create or sign in to your Hermes account, add the company you operate with, and follow the correct workspace. Carrier-only freight access requires separate Hermes approval.</p>
+        <div class="lb-flow" aria-label="Load Board access steps" data-i18n-aria="flowLabel">
+          <div><strong>1</strong><span data-i18n="f1">Hermes account</span><small data-i18n="f1s">Create one or sign in</small></div>
+          <div><strong>2</strong><span data-i18n="f2">Company</span><small data-i18n="f2s">Add operating company facts</small></div>
+          <div><strong>3</strong><span data-i18n="f3">Hermes Catalog</span><small data-i18n="f3s">Optional self-submitted listing</small></div>
+          <div><strong>4</strong><span data-i18n="f4">Load Board</span><small data-i18n="f4s">Approved carrier access</small></div>
         </div>
       </div>
     </section>
@@ -29,91 +29,92 @@ import SiteHeader from "../../../../../components/SiteHeader.astro";
       <div class="lb-access-shell lb-access-grid">
         <div class="lb-access-card" data-auth-card>
           <div class="lb-card-head">
-            <p class="lb-kicker">Step 1</p>
-            <h2>Your Hermes account</h2>
-            <p data-auth-state>Checking whether you are already signed in…</p>
+            <p class="lb-kicker" data-i18n="step1">Step 1</p>
+            <h2 data-i18n="acct">Your Hermes account</h2>
+            <p data-auth-state data-i18n="checking">Checking whether you are already signed in…</p>
           </div>
 
           <div class="lb-social-auth" data-social-auth hidden>
-            <div class="lb-google-button" data-google-auth-button aria-label="Continue with Google"></div>
-            <div class="lb-or" aria-hidden="true"><span></span><small>or continue with email</small><span></span></div>
+            <div class="lb-google-button" data-google-auth-button aria-label="Continue with Google" data-i18n-aria="googleAria"></div>
+            <div class="lb-or" aria-hidden="true"><span></span><small data-i18n="orEmail">or continue with email</small><span></span></div>
           </div>
 
           <div class="lb-tabs" data-auth-tabs>
-            <button type="button" class="is-active" data-auth-tab="register">Create account</button>
-            <button type="button" data-auth-tab="login">Sign in</button>
+            <button type="button" class="is-active" data-auth-tab="register" data-i18n="tabRegister">Create account</button>
+            <button type="button" data-auth-tab="login" data-i18n="tabLogin">Sign in</button>
           </div>
 
           <form class="lb-form" data-register-form>
-            <label>Full name<input name="name" autocomplete="name" required minlength="2" /></label>
-            <label>Email<input name="email" type="email" autocomplete="email" required /></label>
-            <label>Password<input name="password" type="password" autocomplete="new-password" required minlength="8" /></label>
-            <label>Your role
+            <label><span class="lb-t" data-i18n="name">Full name</span><input name="name" autocomplete="name" required minlength="2" /></label>
+            <label><span class="lb-t" data-i18n="email">Email</span><input name="email" type="email" autocomplete="email" required /></label>
+            <label><span class="lb-t" data-i18n="password">Password</span><input name="password" type="password" autocomplete="new-password" required minlength="8" /></label>
+            <label><span class="lb-t" data-i18n="role">Your role</span>
               <select name="role" required>
-                <option value="Carrier">Carrier</option>
-                <option value="Owner-Operator">Owner-Operator</option>
-                <option value="Dispatcher">Dispatcher</option>
-                <option value="Fleet Owner">Fleet Owner</option>
-                <option value="Dealer Operations">Dealer</option>
-                <option value="Shipper Operations">Shipper</option>
-                <option value="Broker Operations">Broker</option>
+                <option value="Carrier" data-i18n="rCarrier">Carrier</option>
+                <option value="Owner-Operator" data-i18n="rOwnerOp">Owner-Operator</option>
+                <option value="Dispatcher" data-i18n="rDispatcher">Dispatcher</option>
+                <option value="Fleet Owner" data-i18n="rFleet">Fleet Owner</option>
+                <option value="Dealer Operations" data-i18n="rDealer">Dealer</option>
+                <option value="Shipper Operations" data-i18n="rShipper">Shipper</option>
+                <option value="Broker Operations" data-i18n="rBroker">Broker</option>
               </select>
             </label>
-            <label>City / location<input name="location" required minlength="2" placeholder="Chicago, IL" /></label>
-            <button class="lb-primary" type="submit">Create Hermes account</button>
+            <label><span class="lb-t" data-i18n="location">City / location</span><input name="location" required minlength="2" placeholder="Chicago, IL" /></label>
+            <button class="lb-primary" type="submit" data-i18n="createBtn">Create Hermes account</button>
           </form>
 
           <form class="lb-form" data-login-form hidden>
-            <label>Email<input name="email" type="email" autocomplete="email" required /></label>
-            <label>Password<input name="password" type="password" autocomplete="current-password" required /></label>
-            <button class="lb-primary" type="submit">Sign in to Hermes</button>
+            <label><span class="lb-t" data-i18n="email">Email</span><input name="email" type="email" autocomplete="email" required /></label>
+            <label><span class="lb-t" data-i18n="password">Password</span><input name="password" type="password" autocomplete="current-password" required /></label>
+            <button class="lb-primary" type="submit" data-i18n="loginBtn">Sign in to Hermes</button>
           </form>
           <p class="lb-message" data-auth-message role="status"></p>
         </div>
 
         <div class="lb-access-card" data-company-card hidden>
           <div class="lb-card-head">
-            <p class="lb-kicker">Step 2</p>
-            <h2>Register the company you operate with</h2>
-            <p>Company registration does not by itself unlock restricted carrier freight. If you opt in to Hermes Catalog, only the safe public facts below are listed before verification.</p>
+            <p class="lb-kicker" data-i18n="step2">Step 2</p>
+            <h2 data-i18n="companyH">Register the company you operate with</h2>
+            <p data-i18n="companyP">Company registration does not by itself unlock restricted carrier freight. If you opt in to Hermes Catalog, only the safe public facts below are listed before verification.</p>
           </div>
           <form class="lb-form" data-company-form>
-            <label>Company name<input name="companyName" required minlength="2" /></label>
-            <label>Company type
+            <label><span class="lb-t" data-i18n="companyName">Company name</span><input name="companyName" required minlength="2" /></label>
+            <label><span class="lb-t" data-i18n="companyType">Company type</span>
               <select name="companyType" required>
-                <option value="carrier">Carrier</option>
-                <option value="owner_operator">Owner-Operator</option>
-                <option value="fleet">Fleet</option>
-                <option value="dispatcher">Dispatcher / dispatch company</option>
-                <option value="broker">Broker</option>
-                <option value="shipper">Shipper</option>
-                <option value="dealer">Dealer</option>
-                <option value="other">Other</option>
+                <option value="carrier" data-i18n="tCarrier">Carrier</option>
+                <option value="owner_operator" data-i18n="tOwnerOp">Owner-Operator</option>
+                <option value="fleet" data-i18n="tFleet">Fleet</option>
+                <option value="dispatcher" data-i18n="tDispatcher">Dispatcher / dispatch company</option>
+                <option value="broker" data-i18n="tBroker">Broker</option>
+                <option value="shipper" data-i18n="tShipper">Shipper</option>
+                <option value="dealer" data-i18n="tDealer">Dealer</option>
+                <option value="other" data-i18n="tOther">Other</option>
               </select>
             </label>
             <div class="lb-form-row">
-              <label>City<input name="city" required minlength="2" /></label>
-              <label>State<input name="state" required maxlength="2" minlength="2" placeholder="IL" /></label>
+              <label><span class="lb-t" data-i18n="city">City</span><input name="city" required minlength="2" /></label>
+              <label><span class="lb-t" data-i18n="state">State</span><input name="state" required maxlength="2" minlength="2" placeholder="IL" /></label>
             </div>
-            <label>Website <span>optional</span><input name="website" inputmode="url" placeholder="yourcompany.com" /></label>
-            <label>MC / USDOT <span>optional · private</span><input name="authorityNumber" autocomplete="off" /></label>
-            <label class="lb-check"><input name="catalogOptIn" type="checkbox" checked /><span><strong>Add my company to Hermes Catalog.</strong> Company name, category, city and state can appear immediately as “Self-submitted · verification pending.” Private authority/account data is not published. A dedicated SEO/GEO company page is not created until verification.</span></label>
-            <button class="lb-primary" type="submit">Save company & continue</button>
+            <label><span class="lb-t" data-i18n="website">Website</span> <span data-i18n="optional">optional</span><input name="website" inputmode="url" placeholder="yourcompany.com" /></label>
+            <label><span class="lb-t" data-i18n="phone">Phone for a callback</span> <span data-i18n="phoneNote">optional · not published</span><input name="callbackPhone" type="tel" autocomplete="tel" inputmode="tel" placeholder="+1 312 555 0100" /></label>
+            <label><span class="lb-t" data-i18n="authority">MC / USDOT</span> <span data-i18n="optionalPrivate">optional · private</span><input name="authorityNumber" autocomplete="off" /></label>
+            <label class="lb-check"><input name="catalogOptIn" type="checkbox" checked /><span><strong data-i18n="catalogStrong">Add my company to Hermes Catalog.</strong><span class="lb-ct" data-i18n="catalogText"> Company name, category, city and state can appear immediately as “Self-submitted · verification pending.” Private authority/account data is not published. A dedicated SEO/GEO company page is not created until verification.</span></span></label>
+            <button class="lb-primary" type="submit" data-i18n="saveBtn">Save company & continue</button>
           </form>
           <p class="lb-message" data-company-message role="status"></p>
         </div>
 
         <aside class="lb-access-side">
-          <p class="lb-kicker">What happens next</p>
-          <h2>This is one connected Hermes loop.</h2>
+          <p class="lb-kicker" data-i18n="next">What happens next</p>
+          <h2 data-i18n="loopH">This is one connected Hermes loop.</h2>
           <ol>
-            <li><strong>Preview.</strong> You can see the Load Board interface and truthful aggregate inventory before registering.</li>
-            <li><strong>Register.</strong> The same Hermes identity is used across Hermes Connect.</li>
-            <li><strong>Company.</strong> Your operating company becomes the access owner for the Load Board.</li>
-            <li><strong>Catalog.</strong> If you opt in, a safe self-submitted company card can appear in Hermes Catalog while verification is pending.</li>
-            <li><strong>Operate.</strong> Dealers and shippers may manage their own requests. Carriers need Hermes approval and an assigned dispatcher before requesting loads.</li>
+            <li><strong data-i18n="n1s">Preview.</strong><span class="lb-ct" data-i18n="n1"> You can see the Load Board interface and truthful aggregate inventory before registering.</span></li>
+            <li><strong data-i18n="n2s">Register.</strong><span class="lb-ct" data-i18n="n2"> The same Hermes identity is used across Hermes Connect.</span></li>
+            <li><strong data-i18n="n3s">Company.</strong><span class="lb-ct" data-i18n="n3"> Your operating company becomes the access owner for the Load Board.</span></li>
+            <li><strong data-i18n="n4s">Catalog.</strong><span class="lb-ct" data-i18n="n4"> If you opt in, a safe self-submitted company card can appear in Hermes Catalog while verification is pending.</span></li>
+            <li><strong data-i18n="n5s">Operate.</strong><span class="lb-ct" data-i18n="n5"> Dealers and shippers may manage their own requests. Carriers need Hermes approval and an assigned dispatcher before requesting loads.</span></li>
           </ol>
-          <a href="/businesses/">See Hermes Catalog →</a>
+          <a href="/businesses/" data-i18n="seeCatalog">See Hermes Catalog →</a>
         </aside>
       </div>
     </section>
@@ -121,6 +122,30 @@ import SiteHeader from "../../../../../components/SiteHeader.astro";
 
   <script is:inline>
     (() => {
+      // Language: explicit ?lang= wins, then the Connect language the visitor last chose, else English.
+      const DICT = {"en": {"back": "← Back to Load Board preview", "kicker": "Hermes Connect · Load Board access", "title": "One Hermes account. One company. Access matched to your role.", "lead": "The public Load Board is the curtain view. Create or sign in to your Hermes account, add the company you operate with, and follow the correct workspace. Carrier-only freight access requires separate Hermes approval.", "flowLabel": "Load Board access steps", "f1": "Hermes account", "f1s": "Create one or sign in", "f2": "Company", "f2s": "Add operating company facts", "f3": "Hermes Catalog", "f3s": "Optional self-submitted listing", "f4": "Load Board", "f4s": "Approved carrier access", "step1": "Step 1", "acct": "Your Hermes account", "checking": "Checking whether you are already signed in…", "orEmail": "or continue with email", "tabRegister": "Create account", "tabLogin": "Sign in", "name": "Full name", "email": "Email", "password": "Password", "role": "Your role", "rCarrier": "Carrier", "rOwnerOp": "Owner-Operator", "rDispatcher": "Dispatcher", "rFleet": "Fleet Owner", "rDealer": "Dealer", "rShipper": "Shipper", "rBroker": "Broker", "location": "City / location", "createBtn": "Create Hermes account", "loginBtn": "Sign in to Hermes", "step2": "Step 2", "companyH": "Register the company you operate with", "companyP": "Company registration does not by itself unlock restricted carrier freight. If you opt in to Hermes Catalog, only the safe public facts below are listed before verification.", "companyName": "Company name", "companyType": "Company type", "tCarrier": "Carrier", "tOwnerOp": "Owner-Operator", "tFleet": "Fleet", "tDispatcher": "Dispatcher / dispatch company", "tBroker": "Broker", "tShipper": "Shipper", "tDealer": "Dealer", "tOther": "Other", "city": "City", "state": "State", "website": "Website", "optional": "optional", "authority": "MC / USDOT", "optionalPrivate": "optional · private", "catalogStrong": "Add my company to Hermes Catalog.", "catalogText": " Company name, category, city and state can appear immediately as “Self-submitted · verification pending.” Private authority/account data is not published. A dedicated SEO/GEO company page is not created until verification.", "saveBtn": "Save company & continue", "next": "What happens next", "loopH": "This is one connected Hermes loop.", "n1s": "Preview.", "n1": " You can see the Load Board interface and truthful aggregate inventory before registering.", "n2s": "Register.", "n2": " The same Hermes identity is used across Hermes Connect.", "n3s": "Company.", "n3": " Your operating company becomes the access owner for the Load Board.", "n4s": "Catalog.", "n4": " If you opt in, a safe self-submitted company card can appear in Hermes Catalog while verification is pending.", "n5s": "Operate.", "n5": " Dealers and shippers may manage their own requests. Carriers need Hermes approval and an assigned dispatcher before requesting loads.", "seeCatalog": "See Hermes Catalog →", "signedInAs": "Signed in as {name}.", "hermesUser": "Hermes user", "createOrSign": "Create a Hermes account or sign in to continue.", "googleSigning": "Signing in securely with Google…", "googleCreated": "Google account verified. Add your company to continue.", "googleVerified": "Google identity verified.", "e_existing_account_signin_required": "This email already has a Hermes account. Sign in with your password or email below first; then you can connect Google.", "e_provider_identity_conflict": "This Google account is already connected to a different Hermes account. Use your email below or contact support.", "googleFailed": "Google sign-in could not be completed: {error}", "creating": "Creating your Hermes account…", "created": "Account created. Add your company for role-specific review.", "emailTaken": "This email already has a Hermes account. Use Sign in.", "createFailed": "Could not create account: {error}", "signing": "Signing in…", "signedIn": "Signed in. Add or confirm your company.", "signFailed": "Could not sign in: {error}", "saving": "Saving company and checking your workspace route…", "savedCatalog": "Company saved in Hermes Catalog as verification-pending. Opening the correct workspace…", "saved": "Company saved. Opening your workspace…", "savedRestricted": "Company saved. Carrier-only freight remains restricted until verified Hermes approval.", "saveFailed": "Could not save company: {error}", "googleAria": "Continue with Google", "badLogin": "Email or password is incorrect.", "tryAgain": "Something went wrong. Please try again in a moment.", "phone": "Phone for a callback", "phoneNote": "optional · not published"}, "ru": {"back": "← Назад к обзору Load Board", "kicker": "Hermes Connect · доступ к Load Board", "title": "Один аккаунт Hermes. Одна компания. Доступ по вашей роли.", "lead": "Публичный Load Board — это витрина. Создайте аккаунт Hermes или войдите, добавьте компанию, с которой вы работаете, и перейдите в нужное рабочее пространство. Доступ к грузам только для перевозчиков требует отдельного одобрения Hermes.", "flowLabel": "Шаги доступа к Load Board", "f1": "Аккаунт Hermes", "f1s": "Создайте или войдите", "f2": "Компания", "f2s": "Добавьте данные компании", "f3": "Каталог Hermes", "f3s": "Необязательная публикация", "f4": "Load Board", "f4s": "Одобренный доступ перевозчика", "step1": "Шаг 1", "acct": "Ваш аккаунт Hermes", "checking": "Проверяем, выполнен ли уже вход…", "orEmail": "или продолжите по email", "tabRegister": "Создать аккаунт", "tabLogin": "Войти", "name": "Имя и фамилия", "email": "Email", "password": "Пароль", "role": "Ваша роль", "rCarrier": "Перевозчик", "rOwnerOp": "Владелец-оператор", "rDispatcher": "Диспетчер", "rFleet": "Владелец автопарка", "rDealer": "Дилер", "rShipper": "Грузоотправитель", "rBroker": "Брокер", "location": "Город / местоположение", "createBtn": "Создать аккаунт Hermes", "loginBtn": "Войти в Hermes", "step2": "Шаг 2", "companyH": "Зарегистрируйте компанию, с которой вы работаете", "companyP": "Регистрация компании сама по себе не открывает ограниченные грузы для перевозчиков. Если вы выберете публикацию в Каталоге Hermes, до проверки будут показаны только безопасные публичные данные ниже.", "companyName": "Название компании", "companyType": "Тип компании", "tCarrier": "Перевозчик", "tOwnerOp": "Владелец-оператор", "tFleet": "Автопарк", "tDispatcher": "Диспетчер / диспетчерская компания", "tBroker": "Брокер", "tShipper": "Грузоотправитель", "tDealer": "Дилер", "tOther": "Другое", "city": "Город", "state": "Штат", "website": "Сайт", "optional": "необязательно", "authority": "MC / USDOT", "optionalPrivate": "необязательно · не публикуется", "catalogStrong": "Добавить мою компанию в Каталог Hermes.", "catalogText": " Название, категория, город и штат сразу появятся с пометкой «Заявлено компанией · проверка не завершена». Данные о праве на перевозки и аккаунте не публикуются. Отдельная страница компании не создаётся до проверки.", "saveBtn": "Сохранить компанию и продолжить", "next": "Что дальше", "loopH": "Это один связанный контур Hermes.", "n1s": "Обзор.", "n1": " Вы видите интерфейс Load Board и достоверные сводные данные до регистрации.", "n2s": "Регистрация.", "n2": " Один и тот же аккаунт Hermes работает во всём Hermes Connect.", "n3s": "Компания.", "n3": " Ваша компания становится владельцем доступа к Load Board.", "n4s": "Каталог.", "n4": " Если вы согласитесь, безопасная карточка компании может появиться в Каталоге Hermes до завершения проверки.", "n5s": "Работа.", "n5": " Дилеры и грузоотправители сами управляют своими заявками. Перевозчикам нужны одобрение Hermes и назначенный диспетчер, прежде чем запрашивать грузы.", "seeCatalog": "Открыть Каталог Hermes →", "signedInAs": "Вы вошли как {name}.", "hermesUser": "пользователь Hermes", "createOrSign": "Создайте аккаунт Hermes или войдите, чтобы продолжить.", "googleSigning": "Безопасный вход через Google…", "googleCreated": "Аккаунт Google подтверждён. Добавьте компанию, чтобы продолжить.", "googleVerified": "Аккаунт Google подтверждён.", "e_existing_account_signin_required": "У этого email уже есть аккаунт Hermes. Сначала войдите по паролю или email ниже, затем подключите Google.", "e_provider_identity_conflict": "Этот аккаунт Google уже подключён к другому аккаунту Hermes. Войдите по email ниже или обратитесь в поддержку.", "googleFailed": "Не удалось войти через Google: {error}", "creating": "Создаём аккаунт Hermes…", "created": "Аккаунт создан. Добавьте компанию для проверки по вашей роли.", "emailTaken": "У этого email уже есть аккаунт Hermes. Нажмите «Войти».", "createFailed": "Не удалось создать аккаунт: {error}", "signing": "Входим…", "signedIn": "Вход выполнен. Добавьте или подтвердите компанию.", "signFailed": "Не удалось войти: {error}", "saving": "Сохраняем компанию и подбираем рабочее пространство…", "savedCatalog": "Компания сохранена в Каталоге Hermes, проверка не завершена. Открываем нужное пространство…", "saved": "Компания сохранена. Открываем рабочее пространство…", "savedRestricted": "Компания сохранена. Грузы только для перевозчиков остаются закрытыми до одобрения Hermes.", "saveFailed": "Не удалось сохранить компанию: {error}", "googleAria": "Продолжить через Google", "badLogin": "Неверный email или пароль.", "tryAgain": "Что-то пошло не так. Попробуйте ещё раз чуть позже.", "phone": "Телефон для обратного звонка", "phoneNote": "необязательно · не публикуется"}, "uk": {"back": "← Назад до огляду Load Board", "kicker": "Hermes Connect · доступ до Load Board", "title": "Один акаунт Hermes. Одна компанія. Доступ за вашою роллю.", "lead": "Публічний Load Board — це вітрина. Створіть акаунт Hermes або увійдіть, додайте компанію, з якою ви працюєте, і перейдіть до потрібного робочого простору. Доступ до вантажів лише для перевізників потребує окремого схвалення Hermes.", "flowLabel": "Кроки доступу до Load Board", "f1": "Акаунт Hermes", "f1s": "Створіть або увійдіть", "f2": "Компанія", "f2s": "Додайте дані компанії", "f3": "Каталог Hermes", "f3s": "Необов’язкова публікація", "f4": "Load Board", "f4s": "Схвалений доступ перевізника", "step1": "Крок 1", "acct": "Ваш акаунт Hermes", "checking": "Перевіряємо, чи вже виконано вхід…", "orEmail": "або продовжте через email", "tabRegister": "Створити акаунт", "tabLogin": "Увійти", "name": "Ім’я та прізвище", "email": "Email", "password": "Пароль", "role": "Ваша роль", "rCarrier": "Перевізник", "rOwnerOp": "Власник-оператор", "rDispatcher": "Диспетчер", "rFleet": "Власник автопарку", "rDealer": "Дилер", "rShipper": "Відправник вантажу", "rBroker": "Брокер", "location": "Місто / розташування", "createBtn": "Створити акаунт Hermes", "loginBtn": "Увійти до Hermes", "step2": "Крок 2", "companyH": "Зареєструйте компанію, з якою ви працюєте", "companyP": "Реєстрація компанії сама по собі не відкриває обмежені вантажі для перевізників. Якщо ви оберете публікацію в Каталозі Hermes, до перевірки буде показано лише безпечні публічні дані нижче.", "companyName": "Назва компанії", "companyType": "Тип компанії", "tCarrier": "Перевізник", "tOwnerOp": "Власник-оператор", "tFleet": "Автопарк", "tDispatcher": "Диспетчер / диспетчерська компанія", "tBroker": "Брокер", "tShipper": "Відправник вантажу", "tDealer": "Дилер", "tOther": "Інше", "city": "Місто", "state": "Штат", "website": "Сайт", "optional": "необов’язково", "authority": "MC / USDOT", "optionalPrivate": "необов’язково · не публікується", "catalogStrong": "Додати мою компанію до Каталогу Hermes.", "catalogText": " Назва, категорія, місто та штат одразу з’являться з позначкою «Заявлено компанією · перевірка не завершена». Дані про право на перевезення й акаунт не публікуються. Окрема сторінка компанії не створюється до перевірки.", "saveBtn": "Зберегти компанію й продовжити", "next": "Що далі", "loopH": "Це один пов’язаний контур Hermes.", "n1s": "Огляд.", "n1": " Ви бачите інтерфейс Load Board і достовірні зведені дані до реєстрації.", "n2s": "Реєстрація.", "n2": " Той самий акаунт Hermes працює в усьому Hermes Connect.", "n3s": "Компанія.", "n3": " Ваша компанія стає власником доступу до Load Board.", "n4s": "Каталог.", "n4": " Якщо ви погодитесь, безпечна картка компанії може з’явитися в Каталозі Hermes до завершення перевірки.", "n5s": "Робота.", "n5": " Дилери та відправники самі керують своїми заявками. Перевізникам потрібні схвалення Hermes і призначений диспетчер, перш ніж запитувати вантажі.", "seeCatalog": "Відкрити Каталог Hermes →", "signedInAs": "Ви увійшли як {name}.", "hermesUser": "користувач Hermes", "createOrSign": "Створіть акаунт Hermes або увійдіть, щоб продовжити.", "googleSigning": "Безпечний вхід через Google…", "googleCreated": "Акаунт Google підтверджено. Додайте компанію, щоб продовжити.", "googleVerified": "Акаунт Google підтверджено.", "e_existing_account_signin_required": "Для цього email уже є акаунт Hermes. Спершу увійдіть за паролем або email нижче, потім підключіть Google.", "e_provider_identity_conflict": "Цей акаунт Google уже підключено до іншого акаунта Hermes. Увійдіть через email нижче або зверніться до підтримки.", "googleFailed": "Не вдалося увійти через Google: {error}", "creating": "Створюємо акаунт Hermes…", "created": "Акаунт створено. Додайте компанію для перевірки за вашою роллю.", "emailTaken": "Для цього email уже є акаунт Hermes. Натисніть «Увійти».", "createFailed": "Не вдалося створити акаунт: {error}", "signing": "Входимо…", "signedIn": "Вхід виконано. Додайте або підтвердьте компанію.", "signFailed": "Не вдалося увійти: {error}", "saving": "Зберігаємо компанію та добираємо робочий простір…", "savedCatalog": "Компанію збережено в Каталозі Hermes, перевірка не завершена. Відкриваємо потрібний простір…", "saved": "Компанію збережено. Відкриваємо робочий простір…", "savedRestricted": "Компанію збережено. Вантажі лише для перевізників залишаються закритими до схвалення Hermes.", "saveFailed": "Не вдалося зберегти компанію: {error}", "googleAria": "Продовжити через Google", "badLogin": "Неправильний email або пароль.", "tryAgain": "Щось пішло не так. Спробуйте ще раз трохи згодом.", "phone": "Телефон для зворотного дзвінка", "phoneNote": "необов’язково · не публікується"}};
+      const pickLang = () => {
+        const wanted = (new URLSearchParams(location.search).get('lang') || '').toLowerCase();
+        if (DICT[wanted]) return wanted;
+        let stored = '';
+        try { stored = localStorage.getItem('hermes-connect-language') || ''; } catch {}
+        if (stored === 'ru' || stored === 'uk') return stored;
+        return 'en';
+      };
+      const lang = pickLang();
+      const T = (key, vars = {}) => String((DICT[lang] && DICT[lang][key]) || DICT.en[key] || key).replace(/\{(\w+)\}/g, (_, name) => vars[name] ?? '');
+      document.documentElement.lang = lang;
+      // The Connect chrome says this page is English-only; once translated that notice would be false.
+      if (lang !== 'en') {
+        const dropEnglishOnlyNotice = () => document.querySelectorAll('[data-hc-english-only]').forEach((node) => node.remove());
+        dropEnglishOnlyNotice();
+        // The shared Connect chrome adds the notice after DOM ready, so keep removing it briefly.
+        const watcher = new MutationObserver(dropEnglishOnlyNotice);
+        watcher.observe(document.documentElement, { childList: true, subtree: true });
+        window.setTimeout(() => watcher.disconnect(), 6000);
+      }
+      document.querySelectorAll('[data-i18n]').forEach((node) => { node.textContent = T(node.dataset.i18n); });
+      document.querySelectorAll('[data-i18n-aria]').forEach((node) => node.setAttribute('aria-label', T(node.dataset.i18nAria)));
       const authCard = document.querySelector('[data-auth-card]');
       const companyCard = document.querySelector('[data-company-card]');
       const authState = document.querySelector('[data-auth-state]');
@@ -151,7 +176,7 @@ import SiteHeader from "../../../../../components/SiteHeader.astro";
           window.location.assign("/services/hermes-connect/load-board/role-preview/");
           return;
         }
-        if (authState) authState.textContent = `Signed in as ${specialist?.name || specialist?.email || 'Hermes user'}.`;
+        if (authState) authState.textContent = T('signedInAs', { name: specialist?.name || specialist?.email || T('hermesUser') });
         if (authCard instanceof HTMLElement) authCard.classList.add('is-complete');
         if (authTabs instanceof HTMLElement) authTabs.hidden = true;
         if (socialAuth instanceof HTMLElement) socialAuth.hidden = true;
@@ -184,7 +209,7 @@ import SiteHeader from "../../../../../components/SiteHeader.astro";
           return;
         }
         const script = document.createElement('script');
-        script.src = `https://accounts.google.com/gsi/client?hl=${(document.documentElement.lang || 'en').slice(0, 2)}`;
+        script.src = `https://accounts.google.com/gsi/client?hl=${lang}`;
         script.async = true;
         script.defer = true;
         script.dataset.hermesGoogleIdentity = '';
@@ -206,18 +231,19 @@ import SiteHeader from "../../../../../components/SiteHeader.astro";
             callback: async (response) => {
               const credential = String(response?.credential || '');
               if (!credential) return;
-              message(authMessage, 'Signing in securely with Google…');
+              message(authMessage, T('googleSigning'));
               try {
                 const payload = await json('/api/auth/google', { method: 'POST', body: JSON.stringify({ credential }) });
-                message(authMessage, payload.state === 'created' ? 'Google account verified. Add your company to continue.' : 'Google identity verified.');
+                message(authMessage, payload.state === 'created' ? T('googleCreated') : T('googleVerified'));
                 await showCompany(payload.specialist);
               } catch (error) {
-                message(authMessage, `Google sign-in could not be completed: ${error.message}`, true);
+                const refusal = ['existing_account_signin_required', 'provider_identity_conflict'].includes(error.message) ? T('e_' + error.message) : '';
+                message(authMessage, refusal || T('googleFailed', { error: error.message }), true);
               }
             },
           });
           globalThis.google.accounts.id.renderButton(googleButton, {
-            type: 'standard', theme: 'outline', size: 'large', text: 'continue_with', shape: 'rectangular', logo_alignment: 'left', width: 320, locale: (document.documentElement.lang || 'en').slice(0, 2),
+            type: 'standard', theme: 'outline', size: 'large', text: 'continue_with', shape: 'rectangular', logo_alignment: 'left', width: 320, locale: lang,
           });
         } catch {
           // Social providers are optional. Email/password stays available if provider discovery or Google is unavailable.
@@ -238,16 +264,16 @@ import SiteHeader from "../../../../../components/SiteHeader.astro";
         const data = new FormData(registerForm);
         const button = registerForm.querySelector('button[type="submit"]');
         if (button instanceof HTMLButtonElement) button.disabled = true;
-        message(authMessage, 'Creating your Hermes account…');
+        message(authMessage, T('creating'));
         try {
           const payload = await json('/api/auth/register', { method: 'POST', body: JSON.stringify({
             name: data.get('name'), email: data.get('email'), password: data.get('password'), role: data.get('role'), location: data.get('location'),
             bio: 'Hermes Connect Load Board access account for carrier operations and company registration.',
           }) });
-          message(authMessage, 'Account created. Add your company for role-specific review.');
+          message(authMessage, T('created'));
           await showCompany(payload.specialist);
         } catch (error) {
-          const text = error?.payload?.error === 'email_already_registered' ? 'This email already has a Hermes account. Use Sign in.' : `Could not create account: ${error.message}`;
+          const text = error?.payload?.error === 'email_already_registered' ? T('emailTaken') : T('createFailed', { error: error.message });
           message(authMessage, text, true);
         } finally { if (button instanceof HTMLButtonElement) button.disabled = false; }
       });
@@ -258,13 +284,13 @@ import SiteHeader from "../../../../../components/SiteHeader.astro";
         const data = new FormData(loginForm);
         const button = loginForm.querySelector('button[type="submit"]');
         if (button instanceof HTMLButtonElement) button.disabled = true;
-        message(authMessage, 'Signing in…');
+        message(authMessage, T('signing'));
         try {
           await json('/api/auth/login', { method: 'POST', body: JSON.stringify({ email: data.get('email'), password: data.get('password') }) });
           const me = await json('/api/auth/me');
-          message(authMessage, 'Signed in. Add or confirm your company.');
+          message(authMessage, T('signedIn'));
           await showCompany(me.specialist);
-        } catch (error) { message(authMessage, `Could not sign in: ${error.message}`, true); }
+        } catch (error) { message(authMessage, error.status === 401 ? T('badLogin') : error.status >= 500 ? T('tryAgain') : T('signFailed', { error: error.message }), true); }
         finally { if (button instanceof HTMLButtonElement) button.disabled = false; }
       });
 
@@ -274,13 +300,13 @@ import SiteHeader from "../../../../../components/SiteHeader.astro";
         const data = new FormData(companyForm);
         const button = companyForm.querySelector('button[type="submit"]');
         if (button instanceof HTMLButtonElement) button.disabled = true;
-        message(companyMessage, 'Saving company and checking your workspace route…');
+        message(companyMessage, T('saving'));
         try {
           const payload = await json('/api/hermes-connect/company', { method: 'POST', body: JSON.stringify({
             companyName: data.get('companyName'), companyType: data.get('companyType'), city: data.get('city'), state: data.get('state'),
-            website: data.get('website'), authorityNumber: data.get('authorityNumber'), catalogOptIn: data.get('catalogOptIn') === 'on',
+            website: data.get('website'), authorityNumber: data.get('authorityNumber'), callbackPhone: data.get('callbackPhone'), catalogOptIn: data.get('catalogOptIn') === 'on',
           }) });
-          message(companyMessage, payload.catalog?.listed ? 'Company saved in Hermes Catalog as verification-pending. Opening the correct workspace…' : 'Company saved. Opening your workspace…');
+          message(companyMessage, payload.catalog?.listed ? T('savedCatalog') : T('saved'));
           const companyType = String(data.get('companyType') || '');
           const sourceIntent = new URLSearchParams(window.location.search).get('source');
           const nextUrl = ['dealer','shipper'].includes(companyType)
@@ -288,9 +314,9 @@ import SiteHeader from "../../../../../components/SiteHeader.astro";
             : ['carrier','owner_operator','fleet'].includes(companyType)
               ? '/services/hermes-connect/load-board/carrier/'
               : (sourceIntent === 'post-load' ? '/load-board/?post=load#live-marketplace' : '/load-board/');
-          message(companyMessage, 'Company saved. Carrier-only freight remains restricted until verified Hermes approval.');
+          message(companyMessage, T('savedRestricted'));
           window.location.assign(nextUrl);
-        } catch (error) { message(companyMessage, `Could not save company: ${error.message}`, true); }
+        } catch (error) { message(companyMessage, T('saveFailed', { error: error.message }), true); }
         finally { if (button instanceof HTMLButtonElement) button.disabled = false; }
       });
 
@@ -303,7 +329,7 @@ import SiteHeader from "../../../../../components/SiteHeader.astro";
           const me = await json('/api/auth/me');
           await showCompany(me.specialist);
         } catch {
-          if (authState) authState.textContent = 'Create a Hermes account or sign in to continue.';
+          if (authState) authState.textContent = T('createOrSign');
           await setupSocialAuth();
         }
       })();
@@ -311,6 +337,6 @@ import SiteHeader from "../../../../../components/SiteHeader.astro";
   </script>
 
   <style>
-    .lb-access{background:var(--hermes-pearl);color:var(--hermes-ink);min-height:100vh}.lb-access-shell{width:min(1120px,calc(100% - 32px));margin:0 auto}.lb-access-hero{padding:72px 0 44px;background:radial-gradient(circle at 85% 5%,rgba(124,92,255,.10),transparent 28rem),radial-gradient(circle at 12% 35%,rgba(90,200,250,.08),transparent 24rem),var(--hermes-pearl);color:var(--hermes-ink);border-bottom:1px solid var(--hermes-line-light-soft)}.lb-back{display:inline-block;margin-bottom:32px;color:var(--hermes-muted);text-decoration:none;font-weight:750}.lb-kicker{margin:0 0 10px;text-transform:uppercase;letter-spacing:.12em;font-size:.72rem;font-weight:900;color:var(--hermes-violet)}.lb-access-hero .lb-kicker{color:var(--hermes-violet)}.lb-access-hero h1{margin:0;max-width:860px;font-size:clamp(2.4rem,6vw,5.2rem);line-height:.95;letter-spacing:-.045em}.lb-lead{max-width:780px;margin:22px 0 0;color:var(--hermes-muted);font-size:1.05rem;line-height:1.7}.lb-flow{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:34px}.lb-flow>div{padding:16px;border:1px solid var(--hermes-line-light);border-radius:16px;background:rgba(255,255,255,.78);box-shadow:var(--hermes-shadow-card);display:grid;gap:5px}.lb-flow strong{font-size:1.5rem}.lb-flow span{font-weight:850}.lb-flow small{color:var(--hermes-muted)}.lb-access-body{padding:44px 0 80px}.lb-access-grid{display:grid;grid-template-columns:1fr 1fr .86fr;gap:16px;align-items:start}.lb-access-card,.lb-access-side{background:#fff;border:1px solid #dfe4ef;border-radius:20px;padding:24px;box-shadow:0 12px 32px rgba(20,31,60,.06)}.lb-access-card.is-complete{border-color:#a8d7c3}.lb-card-head h2,.lb-access-side h2{margin:0 0 8px;font-size:1.55rem}.lb-card-head p:last-child,.lb-access-side{line-height:1.6;color:#58647d}.lb-social-auth{display:grid;gap:12px;margin:20px 0 16px}.lb-social-auth[hidden]{display:none}.lb-google-button{min-height:44px;display:flex;justify-content:center}.lb-or{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px;color:#7a859c}.lb-or span{height:1px;background:#e0e5ef}.lb-or small{font-size:.7rem;font-weight:750;text-transform:uppercase;letter-spacing:.08em}.lb-tabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:5px;margin:20px 0;background:#eef1f7;border-radius:12px}.lb-tabs button{border:0;border-radius:9px;padding:10px;background:transparent;font-weight:800;color:#647089;cursor:pointer}.lb-tabs button.is-active{background:#fff;color:#0d1833;box-shadow:0 2px 8px rgba(20,31,60,.08)}.lb-form{display:grid;gap:14px}.lb-form label{display:grid;gap:6px;font-size:.78rem;font-weight:850;color:#35415b}.lb-form label span{font-weight:600;color:#7a859c}.lb-form input,.lb-form select{width:100%;box-sizing:border-box;border:1px solid #cfd6e4;border-radius:11px;padding:11px 12px;background:#fff;color:#0d1833;font:inherit;font-weight:600}.lb-form-row{display:grid;grid-template-columns:1fr 92px;gap:10px}.lb-check{display:grid!important;grid-template-columns:auto 1fr;align-items:start;gap:10px!important;padding:12px;border:1px solid #e0e5ef;border-radius:12px;background:#f9fafc}.lb-check input{width:auto;margin-top:3px}.lb-check span{line-height:1.5}.lb-primary{border:0;border-radius:12px;padding:13px 16px;background:var(--hermes-obsidian);color:#fff;font-weight:900;cursor:pointer}.lb-primary:disabled{opacity:.55;cursor:wait}.lb-message{min-height:1.35em;margin:14px 0 0;color:#197a55;font-size:.78rem;font-weight:750}.lb-message[data-error="true"]{color:#b33c43}.lb-access-side{position:sticky;top:18px}.lb-access-side ol{padding-left:20px}.lb-access-side li{margin:.75rem 0}.lb-access-side a{color:var(--hermes-violet);font-weight:850;text-decoration:none}@media(max-width:980px){.lb-access-grid{grid-template-columns:1fr 1fr}.lb-access-side{grid-column:1/-1;position:static}.lb-flow{grid-template-columns:1fr 1fr}}@media(max-width:680px){.lb-access-hero{padding-top:52px}.lb-access-grid{grid-template-columns:1fr}.lb-access-side{grid-column:auto}.lb-flow{grid-template-columns:1fr}.lb-form-row{grid-template-columns:1fr}.lb-access-card,.lb-access-side{padding:19px}}
+    .lb-access{background:var(--hermes-pearl);color:var(--hermes-ink);min-height:100vh}.lb-access-shell{width:min(1120px,calc(100% - 32px));margin:0 auto}.lb-access-hero{padding:72px 0 44px;background:radial-gradient(circle at 85% 5%,rgba(124,92,255,.10),transparent 28rem),radial-gradient(circle at 12% 35%,rgba(90,200,250,.08),transparent 24rem),var(--hermes-pearl);color:var(--hermes-ink);border-bottom:1px solid var(--hermes-line-light-soft)}.lb-back{display:inline-block;margin-bottom:32px;color:var(--hermes-muted);text-decoration:none;font-weight:750}.lb-kicker{margin:0 0 10px;text-transform:uppercase;letter-spacing:.12em;font-size:.72rem;font-weight:900;color:var(--hermes-violet)}.lb-access-hero .lb-kicker{color:var(--hermes-violet)}.lb-access-hero h1{margin:0;max-width:860px;font-size:clamp(2.4rem,6vw,5.2rem);line-height:.95;letter-spacing:-.045em}.lb-lead{max-width:780px;margin:22px 0 0;color:var(--hermes-muted);font-size:1.05rem;line-height:1.7}.lb-flow{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:34px}.lb-flow>div{padding:16px;border:1px solid var(--hermes-line-light);border-radius:16px;background:rgba(255,255,255,.78);box-shadow:var(--hermes-shadow-card);display:grid;gap:5px}.lb-flow strong{font-size:1.5rem}.lb-flow span{font-weight:850}.lb-flow small{color:var(--hermes-muted)}.lb-access-body{padding:44px 0 80px}.lb-access-grid{display:grid;grid-template-columns:1fr 1fr .86fr;gap:16px;align-items:start}.lb-access-card,.lb-access-side{background:#fff;border:1px solid #dfe4ef;border-radius:20px;padding:24px;box-shadow:0 12px 32px rgba(20,31,60,.06)}.lb-access-card.is-complete{border-color:#a8d7c3}.lb-card-head h2,.lb-access-side h2{margin:0 0 8px;font-size:1.55rem}.lb-card-head p:last-child,.lb-access-side{line-height:1.6;color:#58647d}.lb-social-auth{display:grid;gap:12px;margin:20px 0 16px}.lb-social-auth[hidden]{display:none}.lb-google-button{min-height:44px;display:flex;justify-content:center}.lb-or{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px;color:#7a859c}.lb-or span{height:1px;background:#e0e5ef}.lb-or small{font-size:.7rem;font-weight:750;text-transform:uppercase;letter-spacing:.08em}.lb-tabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:5px;margin:20px 0;background:#eef1f7;border-radius:12px}.lb-tabs button{border:0;border-radius:9px;padding:10px;background:transparent;font-weight:800;color:#647089;cursor:pointer}.lb-tabs button.is-active{background:#fff;color:#0d1833;box-shadow:0 2px 8px rgba(20,31,60,.08)}.lb-form{display:grid;gap:14px}.lb-form label{display:grid;gap:6px;font-size:.78rem;font-weight:850;color:#35415b}.lb-form label span{font-weight:600;color:#7a859c}.lb-form label .lb-t{font-weight:850;color:#35415b}.lb-check .lb-ct,.lb-access-side .lb-ct{font-weight:inherit;color:inherit}.lb-form input,.lb-form select{width:100%;box-sizing:border-box;border:1px solid #cfd6e4;border-radius:11px;padding:11px 12px;background:#fff;color:#0d1833;font:inherit;font-weight:600}.lb-form-row{display:grid;grid-template-columns:1fr 92px;gap:10px}.lb-check{display:grid!important;grid-template-columns:auto 1fr;align-items:start;gap:10px!important;padding:12px;border:1px solid #e0e5ef;border-radius:12px;background:#f9fafc}.lb-check input{width:auto;margin-top:3px}.lb-check span{line-height:1.5}.lb-primary{border:0;border-radius:12px;padding:13px 16px;background:var(--hermes-obsidian);color:#fff;font-weight:900;cursor:pointer}.lb-primary:disabled{opacity:.55;cursor:wait}.lb-message{min-height:1.35em;margin:14px 0 0;color:#197a55;font-size:.78rem;font-weight:750}.lb-message[data-error="true"]{color:#b33c43}.lb-access-side{position:sticky;top:18px}.lb-access-side ol{padding-left:20px}.lb-access-side li{margin:.75rem 0}.lb-access-side a{color:var(--hermes-violet);font-weight:850;text-decoration:none}@media(max-width:980px){.lb-access-grid{grid-template-columns:1fr 1fr}.lb-access-side{grid-column:1/-1;position:static}.lb-flow{grid-template-columns:1fr 1fr}}@media(max-width:680px){.lb-access-hero{padding-top:52px}.lb-access-grid{grid-template-columns:1fr}.lb-access-side{grid-column:auto}.lb-flow{grid-template-columns:1fr}.lb-form-row{grid-template-columns:1fr}.lb-access-card,.lb-access-side{padding:19px}}
   </style>
 </BaseLayout>
