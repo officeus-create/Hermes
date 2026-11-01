@@ -39,7 +39,9 @@ const functions=[
       <article class="hcc-card"><span>{ru?"На приёмке":"Acceptance"}</span><strong data-approval-count>0</strong><small>{ru?"AI-задачи ждут решения":"AI tasks awaiting decision"}</small></article>
     </section>
     <section class="hcc-panel" data-catalog-owner-report>
-      <div class="owner-section-head"><div><p class="hcc-sample">Hermes Catalog · HAE</p><h2>{ru?"Еженедельный отчёт — пятница, 12:00 Киев":"Weekly owner report — Friday, 12:00 Kyiv"}</h2><p>{ru?"Без платного AI; только проверенные данные, блокеры и одна следующая задача.":"No paid AI; evidence, blockers, and one next action."}</p></div><span class="owner-cloud-note">D1 · $0 AI</span></div>
+      <div class="owner-section-head"><div><p class="hcc-sample">Hermes Catalog · HAE</p><h2>{ru?"Отчёт: пятница, 12:00 · Уведомление: понедельник, 12:00 Киев":"Report: Friday, 12:00 · Notice: Monday, 12:00 Kyiv"}</h2><p>{ru?"Без платного AI; только проверенные данные, блокеры и одна следующая задача.":"No paid AI; evidence, blockers, and one next action."}</p></div><span class="owner-cloud-note">D1 · $0 AI</span></div>
+      <p class="muted" data-catalog-monday-state role="status">{ru?"Понедельник, 12:00 Киев — уведомление о пятничном отчёте.":"Monday, 12:00 Kyiv — Friday report reminder."}</p>
+      <pre data-catalog-monday-body style="white-space:pre-wrap;overflow-wrap:anywhere;font:inherit" hidden></pre>
       <p class="muted" data-catalog-weekly-state>{ru?"Ожидаем первый проверенный пятничный запуск.":"Awaiting the first verified Friday run."}</p>
       <pre data-catalog-weekly-body style="white-space:pre-wrap;overflow-wrap:anywhere;font:inherit" hidden></pre>
       <a class="owner-text-link" href="https://github.com/officeus-create/Hermes/issues/2209" target="_blank" rel="noopener noreferrer">{ru?"Техническая задача и критерии DONE":"Implementation task and DONE criteria"}</a>
