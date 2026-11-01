@@ -198,6 +198,7 @@ export async function buildCommandCenterSocialSnapshot(env,{nowMs=Date.now()}={}
     runs:"hermes_automation_runs",
     publications:"hermes_automation_publications",
     runtimeEvents:"hermes_automation_runtime_events",
+    heartbeats:"hermes_automation_heartbeats",
   };
   const tables={};
   for(const [key,name] of Object.entries(tableNames))tables[key]=await tableExists(db,name);
@@ -211,6 +212,26 @@ export async function buildCommandCenterSocialSnapshot(env,{nowMs=Date.now()}={}
 
   const lanes=[];
   for(const lane of Object.keys(LANE_ACCOUNT))lanes.push(await laneSnapshot(db,lane,tables));
+
+  let latestHeartbeat=null;
+  if(tables.heartbeats){
+    const row=await db.prepare(`SELECT trigger_type,cron_expression,scheduled_at,observed_at,execution_lag_ms,chicago_slot_key,
+      eligible,source_sha,automation_mode,publication_config,publication_enabled
+      FROM hermes_automation_heartbeats ORDER BY scheduled_at DESC LIMIT 1`).first();
+    latestHeartbeat=row?{
+      trigger_type:clean(row.trigger_type,80)||null,
+      cron_expression:clean(row.cron_expression,120)||null,
+      scheduled_at:clean(row.scheduled_at,100)||null,
+      observed_at:clean(row.observed_at,100)||null,
+      execution_lag_ms:countOrNull(row.execution_lag_ms),
+      chicago_slot_key:clean(row.chicago_slot_key,40)||null,
+      eligible:Number(row.eligible)===1,
+      source_sha:clean(row.source_sha,80)||null,
+      automation_mode:clean(row.automation_mode,40)||null,
+      publication_config:clean(row.publication_config,40)||null,
+      publication_enabled:Number(row.publication_enabled)===1,
+    }:null;
+  }
 
   let recentPublications=[];
   if(tables.publications){
@@ -247,6 +268,13 @@ export async function buildCommandCenterSocialSnapshot(env,{nowMs=Date.now()}={}
     },
     readiness,
     lanes,
+    health:{
+      last_heartbeat:latestHeartbeat,
+      queue_depth:"UNKNOWN",
+      dlq_depth:"UNKNOWN",
+      provider_health:readiness?.write_convergence_ready===true?"PREFLIGHT_READY":"HOLD_OR_UNKNOWN",
+      last_inbound_event:"NOT_LIVE",
+    },
     recent_publications:recentPublications,
     inbound:{
       threads_replies_mentions:"NOT_LIVE",
@@ -265,6 +293,7 @@ export async function buildCommandCenterSocialSnapshot(env,{nowMs=Date.now()}={}
       runs:tables.runs?"AVAILABLE":"UNKNOWN",
       publications:tables.publications?"AVAILABLE":"UNKNOWN",
       runtime_events:tables.runtimeEvents?"AVAILABLE":"UNKNOWN",
+      heartbeats:tables.heartbeats?"AVAILABLE":"UNKNOWN",
     },
   };
 }
