@@ -90,17 +90,21 @@ roots.forEach(async(root)=>{
       let offset:number|null=0;
       const all:any[]=[];
       const seen=new Set<number>();
-      let snapshot="UNKNOWN";
+      let readAt="UNKNOWN";
+      let snapshotObserved="UNKNOWN";
+      let coverageState="UNKNOWN";
       while(offset!==null && !seen.has(offset)){
         seen.add(offset);
         const {response,data}=await fetchJSON("/api/internal-command-center/projects?offset="+offset);
         if(!response.ok||!data.success)throw new Error(String(data.error||"project_registry_unavailable"));
         all.push(...(data.projects||[]));
-        if(data.checked_at)snapshot=data.checked_at;
+        if(data.checked_at&&readAt==="UNKNOWN")readAt=data.checked_at;
+        if(data.snapshot_observed_at)snapshotObserved=data.snapshot_observed_at;
+        if(data.coverage_state)coverageState=data.coverage_state;
         offset=Number.isSafeInteger(data.next_offset)?data.next_offset:null;
       }
       projects=all;
-      source.textContent=t("D1 cloud projects · canonical snapshot ","Проекты D1 · канонический срез ")+stampSnapshot(snapshot);
+      source.textContent=t("Read ","Чтение ")+stampSnapshot(readAt)+" · "+t("declared snapshot ","объявленный срез ")+stampSnapshot(snapshotObserved)+" · "+String(coverageState).replaceAll("_"," ");
       const blocked=projects.filter(project=>project.status==="blocked").length;
       const done=projects.filter(project=>project.status==="done").length;
       summary.innerHTML=`<article><span>${t("Projects","Проекты")}</span><strong>${projects.length}</strong></article><article><span>${t("Blocked","Заблокировано")}</span><strong>${blocked}</strong></article><article><span>${t("Completed","Завершено")}</span><strong>${done}</strong></article><article><span>${t("ETA policy","Правило ETA")}</span><strong>UNKNOWN</strong></article>`;
