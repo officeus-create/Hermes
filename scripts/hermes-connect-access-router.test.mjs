@@ -71,6 +71,8 @@ test("Client View derives tenant scope from authenticated memberships only", () 
   assert.match(page, /\/services\/hermes-connect\/client-view\//);
   assert.match(clientApi, /getAuthenticatedSpecialist/);
   assert.match(clientApi, /listActiveCompanyMemberships/);
+  assert.match(clientApi, /parseBusinessRef\(membership\.companyId\)/,"Client View must resolve canonical business refs before company lookup");
+  assert.match(clientApi, /bind\(business\.native_id\)/,"Company table lookup must use the native company id only after server-side membership resolution");
   assert.doesNotMatch(clientApi, /searchParams\.get\(["'](?:company|business|tenant|workspace)/i, "Client View must not trust a client-supplied tenant selector");
   assert.match(clientApi, /owner_command_center:\s*false/);
   assert.match(clientApi, /internal_ai:\s*false/);
