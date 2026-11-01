@@ -155,6 +155,10 @@ const {ru=false}=Astro.props;
       const ready=lane.lane==="HERMES_LOGISTICS"?readiness?.ready_for_provider_preflight:readiness?.ready_for_hae_write_bridge;
       const policy=lane.plugin_policy_receipt?.policy||"UNKNOWN";
       const latest=lane.latest_verified_publication;
+      const inboundScopes=readiness?.inbound_scopes||{};
+      const inboundScopeText=readiness?.scope_evidence_known
+        ?`R:${inboundScopes.replies?"ready":"hold"} · M:${inboundScopes.mentions?"ready":"hold"} · S:${inboundScopes.search?"ready":"hold"}`
+        :"R/M/S: UNKNOWN";
       return `<article class="social-lane">
         <div class="social-lane-head"><div><p>${esc(laneName(lane.lane))}</p><h3>${esc(lane.account_key)}</h3></div>${badge(ready===true?"PROVIDER READY":ready===false?"PROVIDER HOLD":"UNKNOWN")}</div>
         <ul class="social-platforms">${states}</ul>
@@ -162,6 +166,7 @@ const {ru=false}=Astro.props;
           <div><dt>${ru?"Последний HAE run":"Latest HAE run"}</dt><dd>${esc(lane.latest_run?.status||"UNKNOWN")}</dd></div>
           <div><dt>${ru?"Unresolved":"Unresolved"}</dt><dd>${lane.unresolved_publications===null?"UNKNOWN":esc(lane.unresolved_publications)}</dd></div>
           <div><dt>${ru?"Plugin policy":"Plugin policy"}</dt><dd>${esc(policy)}</dd></div>
+          <div><dt>${ru?"Inbound scopes":"Inbound scopes"}</dt><dd>${esc(inboundScopeText)}</dd></div>
           <div><dt>${ru?"Последний verified post":"Latest verified post"}</dt><dd>${safeHref(latest?.permalink)?`<a data-social-url="${esc(safeHref(latest.permalink))}" target="_blank" rel="noreferrer">${esc(latest.provider_post_id||"open")}</a>`:"UNKNOWN"}</dd></div>
         </dl>
       </article>`;
