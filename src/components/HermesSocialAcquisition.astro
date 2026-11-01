@@ -68,6 +68,11 @@ const {ru=false}=Astro.props;
   const safeHref=(value)=>{
     try{const url=new URL(String(value||""));return url.protocol==="https:"&&socialHosts.has(url.hostname)?url.href:null}catch{return null}
   };
+  const hydrateLinks=()=>root.querySelectorAll("a[data-social-url]").forEach((node)=>{
+    const href=safeHref(node.getAttribute("data-social-url"));
+    if(href)node.setAttribute("href",href);
+    else node.replaceWith(document.createTextNode("UNKNOWN"));
+  });
   const label=(value)=>String(value??"UNKNOWN").replaceAll("_"," ");
   const badge=(value)=>`<span class="social-badge" data-state="${esc(String(value||"UNKNOWN").toLowerCase())}">${esc(label(value))}</span>`;
   const fmt=(value)=>{
@@ -115,7 +120,7 @@ const {ru=false}=Astro.props;
           <div><dt>${ru?"Последний HAE run":"Latest HAE run"}</dt><dd>${esc(lane.latest_run?.status||"UNKNOWN")}</dd></div>
           <div><dt>${ru?"Unresolved":"Unresolved"}</dt><dd>${lane.unresolved_publications===null?"UNKNOWN":esc(lane.unresolved_publications)}</dd></div>
           <div><dt>${ru?"Plugin policy":"Plugin policy"}</dt><dd>${esc(policy)}</dd></div>
-          <div><dt>${ru?"Последний verified post":"Latest verified post"}</dt><dd>${safeHref(latest?.permalink)?`<a href="${esc(safeHref(latest.permalink))}" target="_blank" rel="noreferrer">${esc(latest.provider_post_id||"open")}</a>`:"UNKNOWN"}</dd></div>
+          <div><dt>${ru?"Последний verified post":"Latest verified post"}</dt><dd>${safeHref(latest?.permalink)?`<a data-social-url="${esc(safeHref(latest.permalink))}" target="_blank" rel="noreferrer">${esc(latest.provider_post_id||"open")}</a>`:"UNKNOWN"}</dd></div>
         </dl>
       </article>`;
     }).join("");
@@ -129,17 +134,17 @@ const {ru=false}=Astro.props;
     q("[data-social-content]").innerHTML=contentItems.length?contentItems.map(item=>`<article class="social-content-item">
       <div class="social-content-meta"><strong>${esc(laneName(item.lane))} · ${esc(platformNames[item.platform]||item.platform)}</strong>${badge(item.state)}</div>
       <p>${esc(item.body||"")}</p>
-      <footer><span>${esc(item.topic||"UNKNOWN")} · ${esc(item.slot_key||"UNKNOWN")}</span>${safeHref(item.destination_url)?`<a href="${esc(safeHref(item.destination_url))}" target="_blank" rel="noreferrer">${ru?"Проверить source":"Verify source"}</a>`:`<span>${ru?"Source HOLD":"Source HOLD"}</span>`}</footer>
+      <footer><span>${esc(item.topic||"UNKNOWN")} · ${esc(item.slot_key||"UNKNOWN")}</span>${safeHref(item.destination_url)?`<a data-social-url="${esc(safeHref(item.destination_url))}" target="_blank" rel="noreferrer">${ru?"Проверить source":"Verify source"}</a>`:`<span>${ru?"Source HOLD":"Source HOLD"}</span>`}</footer>
     </article>`).join(""):`<p class="muted">${ru?"HAE drafts пока не зафиксированы":"No HAE drafts recorded yet"}</p>`;
 
     const pubs=(data.recent_publications||[]);
     q("[data-social-publications]").innerHTML=pubs.length?pubs.slice(0,10).map(pub=>`<article>
       <div><strong>${esc(laneName(pub.account_key==="progressopro"?"PROGRESSOPRO":"HERMES_LOGISTICS"))} · ${esc(platformNames[pub.platform]||pub.platform)}</strong><small>${esc(fmt(pub.updated_at))}</small></div>
       ${badge(pub.status)}
-      <span>${safeHref(pub.permalink)?`<a href="${esc(safeHref(pub.permalink))}" target="_blank" rel="noreferrer">${esc(pub.provider_post_id||"provider")}</a>`:esc(pub.last_error_class||pub.provider_post_id||"no verified permalink")}</span>
+      <span>${safeHref(pub.permalink)?`<a data-social-url="${esc(safeHref(pub.permalink))}" target="_blank" rel="noreferrer">${esc(pub.provider_post_id||"provider")}</a>`:esc(pub.last_error_class||pub.provider_post_id||"no verified permalink")}</span>
     </article>`).join(""):`<p class="muted">${ru?"Пока нет publication receipts":"No publication receipts yet"}</p>`;
 
-    const inbound=data.inbound||{};
+    hydrateLinks();\n\n    const inbound=data.inbound||{};
     q("[data-social-inbound]").textContent=`Threads: ${label(inbound.threads_replies_mentions)} · Instagram: ${label(inbound.instagram_comments_messages)} · Facebook: ${label(inbound.facebook_comments_messages)} · Inbox: ${label(inbound.unified_inbox)}`;
     q("[data-social-status]").textContent=(data.readiness?.blockers||[]).length
       ?`${ru?"Блокеры":"Blockers"}: ${data.readiness.blockers.join(", ")}`
