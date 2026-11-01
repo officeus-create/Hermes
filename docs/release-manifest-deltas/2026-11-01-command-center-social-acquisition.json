@@ -7,7 +7,7 @@
   "additions": [
     {
       "route": "/services/hermes-connect/internal/command-center/social/",
-      "source_state": "current_pr",
+      "source_state": "current_main",
       "indexability": "noindex",
       "robots": "noindex,nofollow,noarchive",
       "canonical": "https://hermeslogisticsus.com/services/hermes-connect/internal/command-center/social/",
