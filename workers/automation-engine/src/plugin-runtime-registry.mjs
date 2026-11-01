@@ -1,7 +1,7 @@
 // Exact authenticated Plugin Creator readback instant, not the UTC date at midnight.
 // A date-only midnight surrogate makes a fresh late-UTC readback falsely stale after rollover.
 // This is bounded release evidence, NOT proof of runtime loading or automatic refreshing.
-const OBSERVED_AT = "2026-10-31T23:35:25.000Z";
+const OBSERVED_AT = "2026-11-01T00:39:08.064Z";
 
 export const PLUGIN_RUNTIME_REGISTRY = Object.freeze({
   "hermes-automatic-engineer": Object.freeze({ version: "0.1.34", observed_at: OBSERVED_AT }),
