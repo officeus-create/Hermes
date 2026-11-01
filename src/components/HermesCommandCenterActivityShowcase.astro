@@ -38,7 +38,7 @@ const entries=[
       <div class="hcc-activity-visual-label"><span class="hcc-activity-indicator" aria-hidden="true"></span>{ru?"Схема работы · пример":"Workflow diagram · illustration"}</div>
       <ol class="hcc-activity-pipeline" aria-label={ru?"Пять демонстрационных этапов":"Five illustrative stages"}>
         {stages.map((stage,index)=>
-          <li data-hcc-activity-node style={"--stage-index:"+index}>
+          <li data-hcc-activity-node style={"--stage-delay:"+(index*2)+"s"}>
             <span class="hcc-activity-number">{"0"+(index+1)}</span>
             <span class="hcc-activity-dot" aria-hidden="true"></span>
             <strong>{stage.title}</strong>
@@ -82,7 +82,7 @@ document.querySelectorAll<HTMLElement>("[data-hcc-activity-showcase]").forEach(r
 .hcc-activity-eyebrow{margin:0 0:.5rem;font:800 .72rem var(--font-mono,monospace);letter-spacing:.09em;color:#cdbdff}
 .hcc-activity-head h2{font-family:var(--font-display,sans-serif);font-size:clamp(1.65rem,3.2vw,2.8rem);line-height:1.07;letter-spacing:-.04em;margin:0 0:.7rem;color:#fff}
 .hcc-activity-head p:not(.hcc-activity-eyebrow){margin:0;color:#ccd4e8;line-height:1.6}
-.hcc-activity-toggle{flex:0 0 auto;min-height:44px;padding:.6rem .9rem;border:1px solid #7887ad;border-radius:12px;color:#f3f5ff;background:#252e4d;font:750 .86rem inherit;cursor:pointer}
+.hcc-activity-toggle{flex:0 0 auto;min-height:44px;padding:.6rem .9rem;border:1px solid #7887ad;border-radius:12px;color:#f3f5ff;background:#252e4d;font-size:.86rem;font-weight:750;font-family:inherit;cursor:pointer}
 .hcc-activity-toggle:hover,.hcc-activity-toggle:focus-visible{border-color:#d4c6ff;outline-offset:3px}
 .hcc-activity-body{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(250px,1fr);gap:.85rem}
 .hcc-activity-visual,.hcc-activity-log{min-width:0;border:1px solid #3a4564;border-radius:18px;background:rgba(9,15,31,.7);padding:1rem}
@@ -91,7 +91,7 @@ document.querySelectorAll<HTMLElement>("[data-hcc-activity-showcase]").forEach(r
 .hcc-activity-pipeline{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:.4rem;list-style:none;margin:2rem 0 0;padding:0}
 .hcc-activity-pipeline li{display:flex;flex-direction:column;align-items:flex-start;gap:.35rem;min-width:0;padding:.8rem .55rem;border:1px solid #3c4766;border-radius:13px;background:rgba(29,39,67,.78)}
 .hcc-activity-number{font:700 .7rem var(--font-mono,monospace);color:#bcb0e9}
-.hcc-activity-dot{display:block;width:12px;height:12px;margin:.4rem 0;border:2px solid #a993ff;border-radius:50%;background:#353052;animation:hcc-activity-pulse 10s infinite both;animation-delay:calc(var(--stage-index) * 2s)}
+.hcc-activity-dot{display:block;width:12px;height:12px;margin:.4rem 0;border:2px solid #a993ff;border-radius:50%;background:#353052;animation:hcc-activity-pulse 10s infinite both;animation-delay:var(--stage-delay)}
 .hcc-activity-pipeline strong{font-size:.83rem;overflow-wrap:anywhere;color:#fff}
 .hcc-activity-pipeline small{color:#b8c3dc;font-size:.72rem;line-height:1.4;overflow-wrap:anywhere}
 .hcc-activity-track{height:5px;overflow:hidden;margin:1.4rem 0 1.1rem;border-radius:999px;background:#333d5b}
