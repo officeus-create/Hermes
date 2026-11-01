@@ -11,7 +11,7 @@ import {
   stageChainForWorkItem,
 } from "../functions/api/_lib/command-center-execution-map.mjs";
 import { clickupAuthorization, normalizeClickUpTask, readClickUpHumanTasks } from "../functions/api/_lib/command-center-clickup.mjs";
-import { normalizeGithubPull, parseAgentWorkPassport, readGithubDevelopments } from "../functions/api/_lib/command-center-github.mjs";
+import { normalizeGithubPull, observedGithubCheckState, parseAgentWorkPassport, projectGithubReviews, readGithubDevelopments } from "../functions/api/_lib/command-center-github.mjs";
 import { buildDepartmentKpis, readDepartmentKpiSources } from "../functions/api/_lib/command-center-department-kpis.mjs";
 
 const readModelEndpointSource=readFileSync(new URL("../functions/api/internal-command-center/execution-map.ts",import.meta.url),"utf8");
@@ -163,6 +163,33 @@ assert.equal(normalizedPull.review_state,"DRAFT");
 assert.equal(normalizedPull.ci_state,"UNKNOWN");
 assert.equal(normalizedPull.head_sha,"a".repeat(40));
 
+assert.equal(observedGithubCheckState([]),"NO_CHECKS_OBSERVED");
+assert.equal(observedGithubCheckState([{status:"in_progress",conclusion:null}]),"CHECKS_RUNNING");
+assert.equal(observedGithubCheckState([{status:"completed",conclusion:"failure"}]),"CHECKS_FAILED_OR_CANCELLED");
+assert.equal(observedGithubCheckState([
+  {status:"completed",conclusion:"success"},
+  {status:"completed",conclusion:"success"},
+]),"OBSERVED_CHECKS_ALL_SUCCESS");
+assert.equal(observedGithubCheckState([
+  {status:"completed",conclusion:"success"},
+  {status:"completed",conclusion:"skipped"},
+]),"OBSERVED_CHECKS_COMPLETED_MIXED","Skipped/neutral observations must not be promoted to all-success");
+
+const approvedProjection=projectGithubReviews([
+  {id:1,user:{login:"progressopro"},state:"COMMENTED",submitted_at:"2026-11-01T10:00:00Z"},
+  {id:2,user:{login:"progressopro"},state:"APPROVED",submitted_at:"2026-11-01T11:00:00Z"},
+], "officeus-create", false);
+assert.equal(approvedProjection.review_state,"APPROVED_OBSERVED");
+assert.equal(approvedProjection.independent_review_state,"APPROVED_BY_DIFFERENT_LOGIN");
+assert.deepEqual(approvedProjection.approving_reviewers,["progressopro"]);
+
+const changedProjection=projectGithubReviews([
+  {id:1,user:{login:"progressopro"},state:"APPROVED",submitted_at:"2026-11-01T10:00:00Z"},
+  {id:2,user:{login:"progressopro"},state:"CHANGES_REQUESTED",submitted_at:"2026-11-01T12:00:00Z"},
+], "officeus-create", false);
+assert.equal(changedProjection.review_state,"CHANGES_REQUESTED");
+assert.equal(changedProjection.independent_review_state,"CHANGES_REQUESTED_BY_DIFFERENT_LOGIN");
+
 let githubRequest=null;
 const github=await readGithubDevelopments({},async(url,options)=>{
   githubRequest={url,options};
@@ -182,6 +209,43 @@ assert.equal(github.rate_limit_remaining,59);
 assert.match(githubRequest.url,/\/repos\/officeus-create\/Hermes\/pulls/);
 assert.equal("Authorization" in githubRequest.options.headers,false);
 assert.equal(github.pulls[0].passport.agent_family,"CHATGPT");
+
+assert.equal(github.enrichment_state,"AUTH_REQUIRED");
+assert.equal(github.pulls[0].enrichment_state,"AUTH_REQUIRED");
+
+const enrichedCalls=[];
+const enrichedGithub=await readGithubDevelopments(
+  {HERMES_GITHUB_READ_TOKEN:"read-token"},
+  async(url,options)=>{
+    enrichedCalls.push({url,method:options.method,authorization:options.headers.Authorization});
+    const headers={get:(name)=>name.toLowerCase()==="x-ratelimit-remaining"?"4990":null};
+    if(url.includes("/commits/")&&url.includes("/check-runs")){
+      return {ok:true,status:200,headers,json:async()=>({check_runs:[
+        {status:"completed",conclusion:"success"},
+        {status:"completed",conclusion:"success"},
+      ]})};
+    }
+    if(url.includes("/pulls/2170/reviews")){
+      return {ok:true,status:200,headers,json:async()=>[
+        {id:1,user:{login:"progressopro"},state:"APPROVED",submitted_at:"2026-11-01T12:00:00Z"},
+      ]};
+    }
+    return {ok:true,status:200,headers,json:async()=>[{
+      number:2170,title:"Execution map",state:"open",draft:false,html_url:"https://github.com/officeus-create/Hermes/pull/2170",
+      user:{login:"officeus-create"},requested_reviewers:[],
+      head:{ref:"chatgpt/test",sha:"c".repeat(40)},base:{ref:"main"},
+      updated_at:"2026-11-01T11:00:00Z",body:"**Agent / environment:** ChatGPT",
+    }]};
+  },
+);
+assert.equal(enrichedGithub.enrichment_state,"ENRICHED");
+assert.equal(enrichedGithub.enriched_pull_count,1);
+assert.equal(enrichedGithub.pulls[0].ci_state,"OBSERVED_CHECKS_ALL_SUCCESS");
+assert.equal(enrichedGithub.pulls[0].check_count,2);
+assert.equal(enrichedGithub.pulls[0].review_state,"APPROVED_OBSERVED");
+assert.equal(enrichedGithub.pulls[0].independent_review_state,"APPROVED_BY_DIFFERENT_LOGIN");
+assert.ok(enrichedCalls.every((call)=>call.method==="GET"),"GitHub development enrichment must remain read-only GET");
+assert.ok(enrichedCalls.every((call)=>call.authorization==="Bearer read-token"),"Authenticated enrichment must reuse the read token only");
 
 let githubAuthHeader=null;
 const githubPrivate=await readGithubDevelopments({HERMES_GITHUB_READ_TOKEN:"read-token"},async(_url,options)=>{
