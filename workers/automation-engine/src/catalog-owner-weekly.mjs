@@ -9,8 +9,14 @@ export function fridayKyivSlot(date){
   const p=local(new Date(date));
   return p.weekday==="Fri"&&p.hour==="12" ? p.year+"-"+p.month+"-"+p.day : null;
 }
+// Monday is a notification based on the preceding Friday receipt, never a second AI audit.
+export function mondayKyivSlot(date){
+  const p=local(new Date(date));
+  return p.weekday==="Mon"&&p.hour==="12" ? p.year+"-"+p.month+"-"+p.day : null;
+}
 export async function ensureCatalogWeeklyOwnerSchema(db){
   await db.prepare("CREATE TABLE IF NOT EXISTS hermes_catalog_owner_weekly_reports (report_key TEXT PRIMARY KEY, organization_scope TEXT NOT NULL, week_date TEXT NOT NULL, state TEXT NOT NULL, report_json TEXT, checked_at TEXT, source_sha TEXT, lease_until TEXT, attempts INTEGER NOT NULL DEFAULT 0, updated_at TEXT NOT NULL)").run();
+  await db.prepare("CREATE TABLE IF NOT EXISTS hermes_catalog_owner_monday_notices (notice_key TEXT PRIMARY KEY, organization_scope TEXT NOT NULL, monday_date TEXT NOT NULL, friday_date TEXT NOT NULL, status TEXT NOT NULL, notice_json TEXT NOT NULL, created_at TEXT NOT NULL)").run();
 }
 async function exists(db,name){
   return !!(await db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name=? LIMIT 1").bind(name).first());
@@ -113,4 +119,36 @@ export async function runCatalogWeeklyOwnerReport(env,when=new Date(),fetcher=fe
     await env.DB.prepare("UPDATE hermes_catalog_owner_weekly_reports SET state='pending',lease_until=NULL,updated_at=? WHERE report_key=? AND organization_scope=? AND lease_until=?").bind(new Date().toISOString(),key,ORG,lease).run();
     return {status:"RETRYABLE_FAILURE",key};
   }
+}
+
+/**
+ * Owner-only Monday 12:00 Kyiv notice. Reuses Friday evidence; NEVER calls GitHub,
+ * the public site, a model, email or chat. Exact Friday date prevents stale reports
+ * being presented as current. D1 primary key makes replays/retries idempotent.
+ */
+export async function runCatalogMondayOwnerNotice(env,when=new Date()){
+  const monday=mondayKyivSlot(when);
+  if(!monday||!env?.DB)return {status:"NOT_DUE"};
+  await ensureCatalogWeeklyOwnerSchema(env.DB);
+  const friday=new Date(Date.parse(monday+"T00:00:00Z")-3*86400000).toISOString().slice(0,10);
+  const previous=await env.DB.prepare("SELECT state,report_json,checked_at,source_sha FROM hermes_catalog_owner_weekly_reports WHERE report_key=? AND organization_scope=? LIMIT 1").bind("catalog-owner:"+friday,ORG).first();
+  let report=null;
+  if(previous?.state==="ready"&&previous.report_json){
+    try{report=JSON.parse(previous.report_json);}catch{report=null;}
+  }
+  const status=report?"FRIDAY_REPORT_READY":"FRIDAY_REPORT_MISSING";
+  const notice={
+    type:"catalog_owner_monday_notice_v1",
+    monday_date:monday,friday_date:friday,status,
+    checked_at:new Date().toISOString(),destination:"private_command_center",
+    paid_ai_cost_usd:0,llm_calls:0,
+    friday_report_key:report?"catalog-owner:"+friday:null,
+    friday_checked_at:report?previous.checked_at:null,
+    friday_source_sha:report?previous.source_sha:null,
+    blockers:report?(Array.isArray(report.blockers)?report.blockers:[]):["friday_report_not_ready"],
+    next_action:report?.next_action||{task:"Restore Friday Hermes Catalog owner report.",done:"A ready D1 report for "+friday+" is visible to the authenticated owner in Command Center."}
+  };
+  const result=await env.DB.prepare("INSERT OR IGNORE INTO hermes_catalog_owner_monday_notices (notice_key,organization_scope,monday_date,friday_date,status,notice_json,created_at) VALUES (?,?,?,?,?,?,?)")
+    .bind("catalog-monday:"+monday,ORG,monday,friday,status,JSON.stringify(notice),notice.checked_at).run();
+  return {status:Number(result?.meta?.changes||0)===1?"READY":"ALREADY_EXISTS",key:"catalog-monday:"+monday,source_status:status};
 }
