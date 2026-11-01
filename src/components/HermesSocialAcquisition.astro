@@ -11,7 +11,11 @@ const {ru=false}=Astro.props;
         ?"Один контент-конвейер для Hermes Logistics и ProgressoPro. Здесь показываются только D1/HAE/provider-состояния, которые можно доказать."
         :"One content pipeline for Hermes Logistics and ProgressoPro. This view shows only D1/HAE/provider states that can be evidenced."}</p>
     </div>
-    <button type="button" class="hcc-secondary" data-social-refresh>{ru?"Обновить":"Refresh"}</button>
+    <div class="social-actions">
+      <span class="social-control-state" data-social-control-state>—</span>
+      <button type="button" class="hcc-secondary" data-social-control disabled>{ru?"Пауза":"Pause"}</button>
+      <button type="button" class="hcc-secondary" data-social-refresh>{ru?"Обновить":"Refresh"}</button>
+    </div>
   </div>
 
   <div class="social-kpis">
@@ -73,6 +77,7 @@ const {ru=false}=Astro.props;
   };
   const platformNames={threads:"Threads",instagram:"Instagram",facebook:"Facebook",x:"X"};
   const laneName=(lane)=>lane==="HERMES_LOGISTICS"?"Hermes Logistics":"ProgressoPro";
+  let currentControl=null;
 
   function render(data){
     q("[data-social-runtime]").textContent=data.runtime?.social_v2==="enabled"?"Social V2":"HOLD";
@@ -82,6 +87,16 @@ const {ru=false}=Astro.props;
       :`${data.runtime?.automation_mode||"UNKNOWN"} · heartbeat UNKNOWN`;
     q("[data-social-publish]").textContent=data.runtime?.external_write_enabled?(ru?"ВКЛ":"ON"):(ru?"ВЫКЛ":"OFF");
     q("[data-social-observed]").textContent=fmt(data.observed_at);
+    currentControl=data.runtime?.owner_control||null;
+    const controlButton=q("[data-social-control]");
+    const controlState=q("[data-social-control-state]");
+    if(controlState)controlState.textContent=currentControl?.configured
+      ?`${ru?"Control":"Control"}: ${label(currentControl.status)}`
+      :`${ru?"Control":"Control"}: ${currentControl?.allowed===true?"INHERIT ACTIVE":"UNKNOWN"}`;
+    if(controlButton){
+      controlButton.disabled=currentControl?.allowed!==true&&currentControl?.configured!==true;
+      controlButton.textContent=currentControl?.allowed===true?(ru?"Пауза":"Pause"):(ru?"Возобновить":"Resume");
+    }
 
     const laneHtml=(data.lanes||[]).map((lane)=>{
       const states=Object.entries(lane.platform_states||{}).map(([platform,state])=>
@@ -139,11 +154,41 @@ const {ru=false}=Astro.props;
       q("[data-social-status]").textContent=`${ru?"Readback недоступен":"Readback unavailable"}: ${error?.message||"UNKNOWN"}`;
     }
   }
+  async function toggleControl(){
+    const button=q("[data-social-control]");
+    if(button)button.disabled=true;
+    q("[data-social-status]").textContent=ru?"Обновляем owner control…":"Updating owner control…";
+    try{
+      if(!currentControl?.configured){
+        const response=await fetch("/api/internal-command-center/processes",{
+          method:"POST",credentials:"same-origin",
+          headers:{Accept:"application/json","Content-Type":"application/json"},
+          body:JSON.stringify({job_type:"social.acquisition.control",cadence_hours:1,name:"Social Acquisition"}),
+        });
+        const data=await response.json().catch(()=>({}));
+        if(!response.ok||!data.success)throw new Error(data.error||"social_control_create_failed");
+      }else{
+        const action=currentControl.allowed===true?"pause":"activate";
+        const response=await fetch("/api/internal-command-center/processes/"+encodeURIComponent(currentControl.process_id),{
+          method:"PATCH",credentials:"same-origin",
+          headers:{Accept:"application/json","Content-Type":"application/json"},
+          body:JSON.stringify({action}),
+        });
+        const data=await response.json().catch(()=>({}));
+        if(!response.ok||!data.success)throw new Error(data.error||"social_control_update_failed");
+      }
+      await load();
+    }catch(error){
+      q("[data-social-status]").textContent=`${ru?"Control недоступен":"Control unavailable"}: ${error?.message||"UNKNOWN"}`;
+      if(button)button.disabled=false;
+    }
+  }
+  q("[data-social-control]")?.addEventListener("click",toggleControl);
   q("[data-social-refresh]")?.addEventListener("click",load);
   load();
 })();
 </script>
 
 <style>
-.social-acquisition{display:grid;gap:1rem}.social-head,.social-subhead,.social-lane-head{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem}.social-head h2,.social-subhead h3,.social-lane h3{margin:.2rem 0}.social-head p,.social-subhead p,.social-lane p{margin:0}.social-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.75rem}.social-kpis article,.social-lane,.social-recent,.social-inbound{border:1px solid rgba(93,105,123,.18);border-radius:18px;padding:1rem;background:rgba(255,255,255,.64)}.social-kpis span,.social-kpis small,.social-platforms small{display:block;color:#667085}.social-kpis strong{display:block;font-size:1.35rem;margin:.25rem 0}.social-pipeline{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:.35rem}.social-pipeline span{display:flex;gap:.4rem;align-items:center;padding:.55rem .65rem;border-radius:12px;background:rgba(35,62,89,.06);font-size:.78rem}.social-pipeline b{display:grid;place-items:center;width:1.35rem;height:1.35rem;border-radius:50%;background:#17324d;color:white;font-size:.68rem}.social-lanes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.8rem}.social-platforms{list-style:none;padding:0;margin:1rem 0;display:grid;gap:.45rem}.social-platforms li{display:grid;grid-template-columns:90px 1fr auto;align-items:center;gap:.5rem}.social-lane dl{display:grid;gap:.5rem;margin:0}.social-lane dl div{display:grid;grid-template-columns:140px 1fr;gap:.6rem}.social-lane dt{color:#667085}.social-lane dd{margin:0;overflow-wrap:anywhere}.social-badge{display:inline-flex;width:max-content;padding:.25rem .5rem;border-radius:999px;background:rgba(102,112,133,.12);font-size:.7rem;font-weight:700;text-transform:uppercase}.social-badge[data-state*="ready"],.social-badge[data-state*="verified"]{background:rgba(3,152,85,.12);color:#027a48}.social-badge[data-state*="hold"],.social-badge[data-state*="unknown"],.social-badge[data-state*="unverified"]{background:rgba(247,144,9,.12);color:#b54708}.social-content-queue{border:1px solid rgba(93,105,123,.18);border-radius:18px;padding:1rem;background:rgba(255,255,255,.64)}.social-content-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.65rem}.social-content-item{padding:.8rem;border:1px solid rgba(93,105,123,.12);border-radius:14px;background:rgba(255,255,255,.5)}.social-content-meta,.social-content-item footer{display:flex;justify-content:space-between;gap:.6rem;align-items:center}.social-content-item p{white-space:pre-wrap;overflow-wrap:anywhere}.social-content-item footer{font-size:.72rem;color:#667085}.social-content-item footer a{font-weight:700}.social-publications{display:grid;gap:.5rem}.social-publications article{display:grid;grid-template-columns:1fr auto minmax(120px,.65fr);gap:.6rem;align-items:center;padding:.65rem 0;border-top:1px solid rgba(93,105,123,.12)}.social-publications article:first-child{border-top:0}.social-publications small{display:block;color:#667085}.social-publications span:last-child{overflow-wrap:anywhere}.social-inbound{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem}.social-inbound p{max-width:68ch}.social-status{margin:0;color:#667085;overflow-wrap:anywhere}@media(max-width:900px){.social-kpis{grid-template-columns:repeat(2,1fr)}.social-pipeline{grid-template-columns:repeat(4,1fr)}.social-lanes{grid-template-columns:1fr}.social-content-list{grid-template-columns:1fr}.social-publications article{grid-template-columns:1fr}.social-inbound{display:block}}@media(max-width:520px){.social-kpis{grid-template-columns:1fr}.social-pipeline{grid-template-columns:repeat(2,1fr)}.social-head{display:block}.social-head button{margin-top:.75rem}.social-platforms li{grid-template-columns:80px 1fr}.social-platforms small{display:none}.social-lane dl div{grid-template-columns:1fr}}
+.social-acquisition{display:grid;gap:1rem}.social-actions{display:flex;align-items:center;justify-content:flex-end;gap:.5rem;flex-wrap:wrap}.social-control-state{font-size:.75rem;color:#667085}.social-head,.social-subhead,.social-lane-head{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem}.social-head h2,.social-subhead h3,.social-lane h3{margin:.2rem 0}.social-head p,.social-subhead p,.social-lane p{margin:0}.social-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.75rem}.social-kpis article,.social-lane,.social-recent,.social-inbound{border:1px solid rgba(93,105,123,.18);border-radius:18px;padding:1rem;background:rgba(255,255,255,.64)}.social-kpis span,.social-kpis small,.social-platforms small{display:block;color:#667085}.social-kpis strong{display:block;font-size:1.35rem;margin:.25rem 0}.social-pipeline{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:.35rem}.social-pipeline span{display:flex;gap:.4rem;align-items:center;padding:.55rem .65rem;border-radius:12px;background:rgba(35,62,89,.06);font-size:.78rem}.social-pipeline b{display:grid;place-items:center;width:1.35rem;height:1.35rem;border-radius:50%;background:#17324d;color:white;font-size:.68rem}.social-lanes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.8rem}.social-platforms{list-style:none;padding:0;margin:1rem 0;display:grid;gap:.45rem}.social-platforms li{display:grid;grid-template-columns:90px 1fr auto;align-items:center;gap:.5rem}.social-lane dl{display:grid;gap:.5rem;margin:0}.social-lane dl div{display:grid;grid-template-columns:140px 1fr;gap:.6rem}.social-lane dt{color:#667085}.social-lane dd{margin:0;overflow-wrap:anywhere}.social-badge{display:inline-flex;width:max-content;padding:.25rem .5rem;border-radius:999px;background:rgba(102,112,133,.12);font-size:.7rem;font-weight:700;text-transform:uppercase}.social-badge[data-state*="ready"],.social-badge[data-state*="verified"]{background:rgba(3,152,85,.12);color:#027a48}.social-badge[data-state*="hold"],.social-badge[data-state*="unknown"],.social-badge[data-state*="unverified"]{background:rgba(247,144,9,.12);color:#b54708}.social-content-queue{border:1px solid rgba(93,105,123,.18);border-radius:18px;padding:1rem;background:rgba(255,255,255,.64)}.social-content-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.65rem}.social-content-item{padding:.8rem;border:1px solid rgba(93,105,123,.12);border-radius:14px;background:rgba(255,255,255,.5)}.social-content-meta,.social-content-item footer{display:flex;justify-content:space-between;gap:.6rem;align-items:center}.social-content-item p{white-space:pre-wrap;overflow-wrap:anywhere}.social-content-item footer{font-size:.72rem;color:#667085}.social-content-item footer a{font-weight:700}.social-publications{display:grid;gap:.5rem}.social-publications article{display:grid;grid-template-columns:1fr auto minmax(120px,.65fr);gap:.6rem;align-items:center;padding:.65rem 0;border-top:1px solid rgba(93,105,123,.12)}.social-publications article:first-child{border-top:0}.social-publications small{display:block;color:#667085}.social-publications span:last-child{overflow-wrap:anywhere}.social-inbound{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem}.social-inbound p{max-width:68ch}.social-status{margin:0;color:#667085;overflow-wrap:anywhere}@media(max-width:900px){.social-kpis{grid-template-columns:repeat(2,1fr)}.social-pipeline{grid-template-columns:repeat(4,1fr)}.social-lanes{grid-template-columns:1fr}.social-content-list{grid-template-columns:1fr}.social-publications article{grid-template-columns:1fr}.social-inbound{display:block}}@media(max-width:520px){.social-kpis{grid-template-columns:1fr}.social-pipeline{grid-template-columns:repeat(2,1fr)}.social-head{display:block}.social-head button{margin-top:.75rem}.social-platforms li{grid-template-columns:80px 1fr}.social-platforms small{display:none}.social-lane dl div{grid-template-columns:1fr}}
 </style>
