@@ -2,6 +2,7 @@ import { jsonResponse } from "../_lib/session.mjs";
 import { ensureCommandCenterSchema } from "../_lib/internal-command-center.mjs";
 import { developmentCatalog, executionProjection, linkHumanWorkDevelopments } from "../_lib/command-center-execution-map.mjs";
 import { buildDepartmentKpis, readDepartmentKpiSources } from "../_lib/command-center-department-kpis.mjs";
+import { buildProviderHealth } from "../_lib/command-center-provider-health.mjs";
 import { readClickUpHumanTasks } from "../_lib/command-center-clickup.mjs";
 import { readGithubDevelopments } from "../_lib/command-center-github.mjs";
 import { isRunnerHeartbeatFresh, parseRunnerTelemetry, requireInternalOwner } from "../_lib/internal-ai.mjs";
@@ -58,6 +59,7 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
     readDepartmentKpiSources(env.DB, checkedAt),
   ]);
   const human_work = linkHumanWorkDevelopments(human_work_raw, github_developments);
+  const provider_health = buildProviderHealth({ clickup: human_work_raw, github: github_developments, checkedAt });
   const department_kpis = buildDepartmentKpis({
     sources: department_sources,
     githubDevelopments: github_developments,
@@ -78,6 +80,7 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
     human_work,
     github_developments,
     department_kpis,
+    provider_health,
     registry_evidence: registryEvidence,
   }, headers);
 }
