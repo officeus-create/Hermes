@@ -53,7 +53,7 @@ roots.forEach(async(root)=>{
   const filters=root.querySelector<HTMLElement>("[data-project-filters]")!;
   const source=root.querySelector<HTMLElement>("[data-project-source]")!;
   const coverage=root.querySelector<HTMLElement>("[data-project-coverage]")!;
-  const coverageState=root.querySelector<HTMLElement>("[data-project-coverage-state]")!;
+  const coverageStateEl=root.querySelector<HTMLElement>("[data-project-coverage-state]")!;
   const coverageCount=root.querySelector<HTMLElement>("[data-project-coverage-count]")!;
   const coverageCopy=root.querySelector<HTMLElement>("[data-project-coverage-copy]")!;
   const coverageFamilies=root.querySelector<HTMLElement>("[data-project-coverage-families]")!;
@@ -107,7 +107,7 @@ roots.forEach(async(root)=>{
         if(data.checked_at&&readAt==="UNKNOWN")readAt=data.checked_at;
         if(data.snapshot_observed_at)snapshotObserved=data.snapshot_observed_at;
         if(data.coverage_state)coverageState=data.coverage_state;
-        if(offset===0&&data.project_coverage){const c=data.project_coverage;coverage.hidden=false;coverageState.textContent=String(c.coverage_status||"UNKNOWN");coverageCount.textContent=String(c.ledger_row_count_observed??"UNKNOWN")+" WORK_ID";coverageCopy.textContent=String(c.coverage_reason||"");coverageFamilies.replaceChildren();(c.families||[]).forEach((family:any)=>{const chip=document.createElement("span");chip.textContent=String(family.label||family.id||"Project family")+" · "+String(family.source_state||"UNKNOWN");coverageFamilies.append(chip)})}
+        if(offset===0&&data.project_coverage){const c=data.project_coverage;coverage.hidden=false;coverageStateEl.textContent=String(c.coverage_status||"UNKNOWN");coverageCount.textContent=String(c.ledger_row_count_observed??"UNKNOWN")+" WORK_ID";coverageCopy.textContent=String(c.coverage_reason||"");coverageFamilies.replaceChildren();(c.families||[]).forEach((family:any)=>{const chip=document.createElement("span");chip.textContent=String(family.label||family.id||"Project family")+" · "+String(family.source_state||"UNKNOWN");coverageFamilies.append(chip)})}
         offset=Number.isSafeInteger(data.next_offset)?data.next_offset:null;
       }
       projects=all;
