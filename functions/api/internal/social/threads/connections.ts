@@ -29,8 +29,10 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
     provider: "threads",
     architecture_owner: "github_issue_1018_growth_bridge",
     runtime_configured: Boolean(threadsBrandRuntimeConfig(env)),
-    hermes_logistics_provider: "windsor_only",
+    social_business_lanes: ["HERMES_LOGISTICS", "PROGRESSOPRO"],
+    hermes_logistics_provider: "shared_meta_via_hae_pending",
     hermes_logistics_custom_connector_allowed: false,
+    legacy_direct_publish_enabled: false,
     connections: await listThreadsConnections(env.DB, env),
   }, headers);
 }
