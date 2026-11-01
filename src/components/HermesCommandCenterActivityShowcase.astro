@@ -64,15 +64,18 @@ const entries=[
   </div>
 </section>
 <script>
-document.querySelectorAll<HTMLElement>("[data-hcc-activity-showcase]").forEach(root=>{
-  const control=root.querySelector<HTMLButtonElement>("[data-hcc-activity-toggle]");
-  if(!control) return;
-  control.addEventListener("click",()=>{
-    const paused=root.classList.toggle("is-paused");
-    control.setAttribute("aria-pressed",String(paused));
-    control.textContent=paused?(control.dataset.labelPlay||"Play simulation"):(control.dataset.labelPause||"Pause simulation");
-    control.setAttribute("aria-label",control.textContent);
-  });
+// The Russian tree is swapped from an inert template at page load.
+// Delegate on the stable document, not to nodes that can be replaced before module evaluation.
+document.addEventListener("click",event=>{
+  const target=event.target;
+  if(!(target instanceof Element)) return;
+  const control=target.closest<HTMLButtonElement>("[data-hcc-activity-toggle]");
+  const root=control?.closest<HTMLElement>("[data-hcc-activity-showcase]");
+  if(!control||!root) return;
+  const paused=root.classList.toggle("is-paused");
+  control.setAttribute("aria-pressed",String(paused));
+  control.textContent=paused?(control.dataset.labelPlay||"Play simulation"):(control.dataset.labelPause||"Pause simulation");
+  control.setAttribute("aria-label",control.textContent);
 });
 </script>
 <style>
