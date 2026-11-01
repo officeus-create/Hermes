@@ -48,7 +48,7 @@ import {
   enqueueDueOwnerProcesses,
   ownerManagedJobTypes,
 } from "./owner-process-runtime.mjs";
-import { runCatalogWeeklyOwnerReport } from "./catalog-owner-weekly.mjs";
+import { runCatalogWeeklyOwnerReport, runCatalogMondayOwnerNotice } from "./catalog-owner-weekly.mjs";
 import {
   pluginRuntimeRegistryEvidenceStatus,
   pluginRuntimeRegistrySnapshot,
@@ -2123,22 +2123,24 @@ export default {
     const scheduledAt = rawScheduledTime === null
       ? observedAt
       : new Date(rawScheduledTime);
-    // The two Friday UTC clock ticks are for Kyiv DST alignment only.
-    // They do not run the existing social or generic schedules a second time.
-    const fridayClockTick = scheduledAt.getUTCDay() === 5
+    // Monday/Friday :00 UTC ticks only serve owner Catalog; preserve all other HAE jobs.
+    // Europe/Kyiv guard inside the handlers selects 12:00 local across DST.
+    const ownerCatalogClockTick = [1, 5].includes(scheduledAt.getUTCDay())
       && [9, 10].includes(scheduledAt.getUTCHours())
       && scheduledAt.getUTCMinutes() === 0;
-    if (fridayClockTick || ["0 9 * * 5", "0 10 * * 5"].includes(String(controller?.cron || ""))) {
+    if (ownerCatalogClockTick || ["0 9 * * 1", "0 10 * * 1", "0 9 * * 5", "0 10 * * 5"].includes(String(controller?.cron || ""))) {
       await runCatalogWeeklyOwnerReport(env, scheduledAt);
+      await runCatalogMondayOwnerNotice(env, scheduledAt);
       return;
     }
     await ensureSchema(env.DB);
     try {
       await runCatalogWeeklyOwnerReport(env, scheduledAt);
+      await runCatalogMondayOwnerNotice(env, scheduledAt);
     } catch (error) {
       await recordRuntimeEvent(env, {
-        eventType: "cron.catalog_owner_report_failed",
-        errorClass: safeRuntimeErrorClass(error, "catalog_owner_report_failed"),
+        eventType: "cron.catalog_owner_schedule_failed",
+        errorClass: safeRuntimeErrorClass(error, "catalog_owner_schedule_failed"),
       });
     }
     const eligible = isEligibleChicagoSlot(scheduledAt);
