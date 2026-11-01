@@ -9,6 +9,7 @@ import {
   validateCommandCenterProjects,
 } from "../_lib/command-center-projects.mjs";
 import { ensureOwnerProjectSchema, normalizeOwnerProjectFields, publicOwnerProject, OWNER_PROJECT_SCOPE } from "../_lib/command-center-owner-projects.mjs";
+import { commandCenterProjectCoverageSnapshot } from "../_lib/command-center-project-coverage.mjs";
 
 type Env = { DB?: any };
 const headers = { "Cache-Control": "private, no-store", "X-Robots-Tag": "noindex, nofollow" };
@@ -52,6 +53,7 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
     progress_method:"completed milestones divided by total declared milestones; owner-created projects use UNKNOWN",
     work_items_method:"live owner D1 status counts; separate from project milestone progress",
     eta_policy:"ETA is UNKNOWN until deterministic or historical duration evidence exists.",
+    project_coverage:offset===0?commandCenterProjectCoverageSnapshot():null,
     projects:[...(offset===0?canonical.map(project=>({...project,work_items_summary:summaryFor(project.id)})):[]),
       ...rows.slice(0,100).map((row:any)=>({...publicOwnerProject(row),work_items_summary:summaryFor(String(row.id))}))],
     next_offset:rows.length>100?offset+100:null,
