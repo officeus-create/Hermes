@@ -406,3 +406,15 @@ const homeFooterGroups = [
   .footer-social-icon svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
   .footer-social a:is(:hover, :focus-visible) .footer-social-icon { background: color-mix(in srgb, currentColor 12%, transparent); transform: translateY(-2px); }
 </style>
+
+<style is:global>
+  /* HermesConnectLauncher is a separate Astro component: SiteFooter's scoped
+     :where() rules cannot reach its generated elements. Keep its computed ink
+     readable over the shared dark footer on every public route. */
+  body .site-footer .hc-launcher-panel p,
+  body .site-footer .hc-launcher-panel strong,
+  body .site-footer .hc-launcher-panel a,
+  body .site-footer .footer-location {
+    color: #eef0f5 !important;
+  }
+</style>
