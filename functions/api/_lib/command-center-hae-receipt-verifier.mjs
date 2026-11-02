@@ -1,7 +1,10 @@
+import { roleContractSha256 } from "../../../workers/automation-engine/src/role-contracts.mjs";
+
 // #2220: pure source-side verification for a future authenticated Command Center
 // -> canonical HAE Queue/Worker/D1 readback. This module NEVER dispatches, writes
 // to D1, authorizes a provider operation or independently attests transport.
-const HASH = /^sha256:[a-f0-9]{64}$/;
+// HAE roleContractSha256() stores an unprefixed, lowercase 64-char hex digest.
+const HASH = /^[a-f0-9]{64}$/;
 const JOB_ID = /^job:[a-f0-9-]{36}$/i;
 const NONEMPTY = /^[a-zA-Z0-9][a-zA-Z0-9._:-]{2,239}$/;
 const ROUTE_POLICY = "command-center-route-v1";
@@ -27,7 +30,7 @@ function parseObject(raw) {
 // route from the persisted owner item and HAE D1; browser fields are untrusted.
 // A MATCHED_SOURCE_ONLY outcome means the rows are structurally consistent,
 // not that a live authenticated D1 readback, independent QA or deploy occurred.
-export function verifyCommandCenterHaeReceipt({
+export async function verifyCommandCenterHaeReceipt({
   workItem, registryEntries, registryEvidence, binding, haeJob, jobEvents,
   roleContract,
 } = {}) {
@@ -72,6 +75,11 @@ export function verifyCommandCenterHaeReceipt({
       !NONEMPTY.test(String(roleContract.contract_version || "")) ||
       !HASH.test(String(binding?.contract_sha256 || ""))) {
     return hold("ROLE_CONTRACT_NOT_ELIGIBLE");
+  }
+  // Never trust a caller-supplied digest even if payload and result agree.
+  const independentlyComputedSha = await roleContractSha256(roleContract);
+  if (binding.contract_sha256 !== independentlyComputedSha) {
+    return hold("ROLE_CONTRACT_SHA_MISMATCH");
   }
   if (!haeJob ||
       haeJob.job_id !== binding.hae_job_id ||
