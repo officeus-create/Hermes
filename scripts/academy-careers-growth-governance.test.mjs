@@ -49,6 +49,10 @@ assert.ok(academyService, "Academy Service schema is required");
 assert.deepEqual(academyService.serviceType, ["U.S. Logistics Operations", "Marketing", "IT & AI", "Sales", "COO / Operations"]);
 
 assert.equal(publicVacancyRegistry.length, 2);
+const pausedDispatcher = publicVacancyRegistry.find((item) => item.slug === "car-hauling-dispatcher");
+assert.equal(pausedDispatcher?.status, "paused");
+assert.equal(pausedDispatcher?.applicationPath, undefined);
+assert.equal(pausedDispatcher?.submissionUrl, undefined);
 const wisconsinIsCurrent = verifiedOpenVacancies.some((item) => item.slug === "wisconsin-owner-operators");
 assert.equal(verifiedOpenVacancies.length, wisconsinIsCurrent ? 1 : 0);
 assert.ok(careers.includes(wisconsinIsCurrent ? "Verified public vacancies are open." : "No verified public vacancy is listed today."));
