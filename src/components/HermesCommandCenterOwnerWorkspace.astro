@@ -22,6 +22,35 @@ const functions=[
 <div class="owner-workspace" data-private hidden>
   <div class="owner-toast" data-owner-toast role="status" hidden></div>
   <section class="owner-view is-active" data-cc-view="today">
+    <section class="hcc-panel owner-today-focus">
+      <div class="owner-section-head">
+        <div><p class="hcc-sample">Live Operations</p><h2>{ru?"Что реально работает сейчас":"What is actually running now"}</h2><p>{ru?"Четыре ключевых контура. UNKNOWN и блокеры показываются явно — без декоративных зелёных статусов.":"Four critical operating loops. UNKNOWN and blockers stay explicit — no decorative green states."}</p></div>
+        <button type="button" class="hcc-primary" data-new-task>+ {ru?"Новая задача":"New task"}</button>
+      </div>
+      <div class="owner-live-grid">
+        <article class="owner-live-card">
+          <div><span class="owner-live-kicker">Threads</span><strong data-live-threads-title>UNKNOWN</strong><small data-live-threads-detail>{ru?"Проверяем provider и HAE social readback…":"Checking provider and HAE social readback…"}</small></div>
+          <span class="owner-live-state" data-live-threads-state>UNKNOWN</span>
+          <button type="button" data-open-view="social">{ru?"Открыть Threads":"Open Threads"}</button>
+        </article>
+        <article class="owner-live-card">
+          <div><span class="owner-live-kicker">HAE</span><strong data-live-hae-title>UNKNOWN</strong><small data-live-hae-detail>{ru?"Проверяем канонический runtime и процессы…":"Checking canonical runtime and processes…"}</small></div>
+          <span class="owner-live-state" data-live-hae-state>UNKNOWN</span>
+          <button type="button" data-open-view="hae">{ru?"Открыть HAE":"Open HAE"}</button>
+        </article>
+        <article class="owner-live-card">
+          <div><span class="owner-live-kicker">{ru?"Автоматизации":"Automations"}</span><strong data-live-automation-title>UNKNOWN</strong><small data-live-automation-detail>{ru?"Проверяем активные процессы и следующий запуск…":"Checking active processes and next run…"}</small></div>
+          <span class="owner-live-state" data-live-automation-state>UNKNOWN</span>
+          <button type="button" data-open-view="automations">{ru?"Открыть автоматизации":"Open automations"}</button>
+        </article>
+        <article class="owner-live-card">
+          <div><span class="owner-live-kicker">Hermes AI</span><strong data-live-ai-title>UNKNOWN</strong><small data-live-ai-detail>{ru?"Проверяем executor heartbeat и активную задачу…":"Checking executor heartbeat and active task…"}</small></div>
+          <span class="owner-live-state" data-live-ai-state>UNKNOWN</span>
+          <button type="button" data-open-view="agents">{ru?"Открыть Hermes AI":"Open Hermes AI"}</button>
+        </article>
+      </div>
+    </section>
+
     <div class="owner-decision-grid" aria-label={ru?"Сводка владельца":"Owner summary"}>
       <article><span>{ru?"Нужно моё решение":"Needs my decision"}</span><strong data-today-decision>0</strong><small>{ru?"Результаты ждут приёмки":"Results awaiting acceptance"}</small></article>
       <article><span>{ru?"Выполняется":"Running now"}</span><strong data-today-running>0</strong><small>{ru?"AI-задачи и активные процессы":"AI tasks and active processes"}</small></article>
@@ -30,7 +59,7 @@ const functions=[
     </div>
 
     <section class="hcc-panel owner-today-focus">
-      <div class="owner-section-head"><div><p class="hcc-sample">{ru?"Сегодня":"Today"}</p><h2>{ru?"Что требует внимания сейчас":"What needs attention now"}</h2></div><button type="button" class="hcc-primary" data-new-task>+ {ru?"Новая задача":"New task"}</button></div>
+      <div class="owner-section-head"><div><p class="hcc-sample">{ru?"Требует внимания":"Needs attention"}</p><h2>{ru?"Что требует решения сейчас":"What needs a decision now"}</h2></div></div>
       <div class="owner-today-list" data-today-list><p class="muted">{ru?"Загружаем текущую работу…":"Loading current work…"}</p></div>
     </section>
 
@@ -94,6 +123,23 @@ const functions=[
         <a class="hcc-secondary" href="/load-board/">{ru?"Carrier / Load Board":"Carrier / Load Board"}</a>
       </div>
       <p class="muted">{ru?"Ответы остаются DRAFT_ONLY через social.reply.prepare. Внешняя публикация требует отдельного owner/provider gate.":"Replies remain DRAFT_ONLY through social.reply.prepare. External publication requires its separate owner/provider gate."}</p>
+    </section>
+  </section>
+
+  <section class="owner-view" data-cc-view="hae" hidden>
+    <section class="hcc-panel process-control">
+      <div class="owner-section-head">
+        <div><p class="hcc-sample">Hermes Automation Engine</p><h2>{ru?"Канонический runtime HAE":"Canonical HAE runtime"}</h2><p>{ru?"Один scheduler, одна D1/Queue/Worker цепочка. Локальный AI — только исполнитель поверх HAE, не второй runtime.":"One scheduler and one D1/Queue/Worker chain. Local AI is execution capacity on top of HAE, never a second runtime."}</p></div>
+        <span class="owner-cloud-note" data-hae-runtime-state>UNKNOWN</span>
+      </div>
+      <div class="owner-hae-runtime">
+        <article><span>{ru?"Runtime owner":"Runtime owner"}</span><strong data-hae-owner>UNKNOWN</strong></article>
+        <article><span>{ru?"Цикл":"Loop"}</span><strong data-hae-loop>UNKNOWN</strong></article>
+        <article><span>{ru?"Активные процессы":"Active processes"}</span><strong data-hae-active>UNKNOWN</strong></article>
+        <article><span>{ru?"Автоматический AI cost":"Automatic AI cost"}</span><strong data-hae-cost>UNKNOWN</strong></article>
+      </div>
+      <div class="owner-evidence-list" data-hae-recent><p class="muted">{ru?"Загружаем последние HAE процессы…":"Loading recent HAE processes…"}</p></div>
+      <div class="owner-head-actions"><button type="button" class="hcc-secondary" data-open-view="automations">{ru?"Открыть управление процессами":"Open process controls"}</button><button type="button" class="hcc-secondary" data-open-view="executions">{ru?"Открыть executions / receipts":"Open executions / receipts"}</button></div>
     </section>
   </section>
 
