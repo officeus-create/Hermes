@@ -14,6 +14,12 @@
     "/logistics/carrier-agreement/*",
     "/logistics/carrier-onboarding",
     "/logistics/carrier-onboarding/*",
-    "/contracts/*"
+    "/contracts/*",
+    "/logistics/car-hauler-loads",
+    "/logistics/car-hauler-loads/*",
+    "/services/website-redesign",
+    "/services/website-redesign/*",
+    "/services/seo-for-independent-auto-dealers",
+    "/services/seo-for-independent-auto-dealers/*"
   ]
 }
