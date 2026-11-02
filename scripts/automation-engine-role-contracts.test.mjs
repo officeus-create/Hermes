@@ -294,6 +294,10 @@ const ccDenials=[
   [{jobEvents:[]},"DURABLE_SUCCESS_EVENT_UNVERIFIED"],
   [{jobEvents:[...ccEvents,...ccEvents]},"DURABLE_SUCCESS_EVENT_UNVERIFIED"],
   [{roleContract:{...ccRole,permission_class:"EXTERNAL_WRITE"}},"ROLE_CONTRACT_NOT_ELIGIBLE"],
+  [{roleContract:{...ccRole,kpi:["caller-forged-kpi"]}},"ROLE_CONTRACT_NOT_CANONICAL"],
+  [{haeJob:{...ccJob,result_json:JSON.stringify({capability:ccRole.job_type,external_write:false,role_contract:ccIdentity,semantic_execution:{cost_usd:0,budget_usd:0,usage_id:"synthetic"}})}},"RECEIPT_COST_OR_PROVIDER_WRITE_UNVERIFIED"],
+  [{haeJob:{...ccJob,result_json:JSON.stringify({capability:ccRole.job_type,external_write:false,role_contract:ccIdentity,result:{provider_write_performed:true}})}},"RECEIPT_COST_OR_PROVIDER_WRITE_UNVERIFIED"],
+  [{haeJob:{...ccJob,result_json:JSON.stringify({capability:ccRole.job_type,external_write:false,role_contract:ccIdentity,provider_write_performed:true})}},"RECEIPT_COST_OR_PROVIDER_WRITE_UNVERIFIED"],
   [{haeJob:{...ccJob,result_json:"{}"}},"RECEIPT_ROLE_CONTRACT_MISMATCH"],
   [{workItem:{...ccWorkItem,linked_task_id:null}},"OWNER_WORK_ITEM_UNVERIFIED"],
   [{workItem:{...ccWorkItem,plugin_route_json:JSON.stringify({
