@@ -48,6 +48,17 @@ on:
       - 'src/pages/services/website-development/**'
       - 'src/pages/services/auto-repair-website-design/**'
       - 'src/pages/logistics/car-hauler-loads/**'
+      # Redesigns of carrier agreement, signing, paid support and free Load Board intake
+      # must trigger visual evidence, not just generic Hermes Connect component changes.
+      - 'src/pages/carrier/**'
+      - 'src/pages/sign/**'
+      - 'src/pages/logistics/carrier-offer/**'
+      - 'src/pages/logistics/carrier-agreement/**'
+      - 'src/pages/logistics/carrier-onboarding/**'
+      - 'src/pages/contracts/**'
+      - 'src/pages/load-board.astro'
+      - 'src/pages/logistics/request-vehicle-transport/**'
+      - 'src/pages/services/hermes-connect/load-board/**'
       - 'src/pages/services/seo/**'
       - 'src/pages/services/local-seo/**'
       - 'src/pages/services/seo-for-*/**'
