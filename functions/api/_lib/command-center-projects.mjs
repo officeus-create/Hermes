@@ -213,7 +213,7 @@ const projects = Object.freeze([
     id: "windows-ai",
     title: "Hermes AI on Windows",
     department: "technology",
-    purpose: "Add a persistent execution host without creating a second HAE.",
+    purpose: "Operate the assigned primary local Hermes AI executor and cockpit without creating a second HAE, and prove sustained unattended continuity."
     owner_role: "hermes-technology-developer",
     agent_role: "Hermes AI Windows runner",
     plugin_roles: ["hermes-private-network", "hermes-security-engineering"],
@@ -228,8 +228,10 @@ const projects = Object.freeze([
     milestones: [
       milestone("package", "Portable migration package", "done"),
       milestone("bootstrap", "Windows bootstrap and watchdog", "done"),
+      milestone("cockpit-ui", "Hermes AI cockpit controls, Hermes branding and Command Center/HAE synchronization", "blocked", "Windows host currently offline; no fresh interactive acceptance"),
       milestone("receipt", "Accepted Windows runtime receipt", "blocked"),
-      milestone("hae-work", "Consume and return one HAE job", "planned"),
+      milestone("hae-work", "Consume and return one canonical HAE job", "planned"),
+      milestone("continuity-90d", "90-day unattended continuity with durable runtime receipts", "blocked", "Continuity clock cannot start while Windows is offline; heartbeat alone is insufficient"),
     ],
   },
   {
