@@ -103,7 +103,8 @@ test.describe("Academy and careers governance", () => {
     await expect(page.getByText("Madison", { exact: true })).toBeVisible();
     await expect(page.getByText("No forced dispatch. No invented income promise.", { exact: true })).toBeVisible();
     await expect(page.getByText("Power Only — trailer and operating arrangement reviewed individually", { exact: true })).toHaveCount(0);
-    await expect(page.getByText(/Hermes Logistics LLC works as an agent with multiple transportation companies/)).toBeVisible();
+    await expect(page.getByText(/Hermes Logistics LLC continuously recruits Wisconsin owner-operators/)).toBeVisible();
+    await expect(page.getByText(/We work as an agent with multiple transportation companies/)).toBeVisible();
     const companyDriverFaq = page.locator("details").filter({ hasText: "Is this a company-driver job?" });
     await companyDriverFaq.locator("summary").click();
     await expect(companyDriverFaq.getByText("No. This recruiting page is for Wisconsin owner-operators with their own commercial truck and trailer. Equipment, operating fit, experience, and safety history are reviewed individually before onboarding.", { exact: true })).toBeVisible();
