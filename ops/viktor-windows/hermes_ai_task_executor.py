@@ -128,6 +128,16 @@ def github_pr_audit(task):
  main_ahead_by=int(compare.get("ahead_by") or 0) if isinstance(compare,dict) and not compare.get("_error") else None
  main_behind_by=int(compare.get("behind_by") or 0) if isinstance(compare,dict) and not compare.get("_error") else None
  base_sync_required=bool(current_base_sha and main_ahead_by and main_ahead_by>0)
+ merge_base_sha=str((((compare or {}).get("merge_base_commit") or {}).get("sha") or ""))
+ pr_paths=[];main_delta_paths=[];overlap_paths=[];path_overlap_verified=False
+ if base_sync_required and merge_base_sha:
+  pr_files=http_json(f"https://api.github.com/repos/{REPO}/pulls/{n}/files?per_page=100")
+  main_delta=http_json(f"https://api.github.com/repos/{REPO}/compare/{merge_base_sha}...{current_base_sha}")
+  if isinstance(pr_files,list) and isinstance(main_delta,dict) and not main_delta.get("_error"):
+   pr_paths=sorted({str(x.get("filename")) for x in pr_files if (x or {}).get("filename")})
+   main_delta_paths=sorted({str(x.get("filename")) for x in (main_delta.get("files") or []) if (x or {}).get("filename")})
+   overlap_paths=sorted(set(pr_paths)&set(main_delta_paths))
+   path_overlap_verified=True
  reviews=http_json(f"https://api.github.com/repos/{REPO}/pulls/{n}/reviews")
  requested=[str((x or {}).get("login") or "") for x in (pr.get("requested_reviewers") or []) if (x or {}).get("login")]
  author=str(((pr.get("user") or {}).get("login") or ""))
@@ -141,12 +151,21 @@ def github_pr_audit(task):
  changes=sorted(login for login,state in latest.items() if state=="CHANGES_REQUESTED")
  if failed:status="CI_FAILED_EXACT_HEAD"
  elif pending:status="CI_PENDING_EXACT_HEAD"
- elif workflows and base_sync_required:status="CI_GREEN_RECONCILE_REQUIRED"
+ elif workflows and base_sync_required and not path_overlap_verified:status="CI_GREEN_RECONCILE_UNVERIFIED"
+ elif workflows and base_sync_required and overlap_paths:status="CI_GREEN_RECONCILE_REQUIRED"
+ elif workflows and base_sync_required:status="CI_GREEN_SAFE_REPLAY_CANDIDATE"
  elif workflows and changes:status="CI_GREEN_CHANGES_REQUESTED"
  elif workflows and approved:status="CI_GREEN_REVIEW_APPROVED"
  elif workflows:status="CI_GREEN_REVIEW_PENDING"
  else:status="NO_PULL_REQUEST_WORKFLOWS"
- return {"status":status,"pr":n,"state":pr.get("state"),"draft":pr.get("draft"),"mergeable":pr.get("mergeable"),"mergeable_state":pr.get("mergeable_state"),"head_sha":head,"base_ref":base_ref,"current_base_sha":current_base_sha or None,"base_compare_status":compare_status or None,"main_ahead_of_pr_by":main_ahead_by,"main_behind_pr_by":main_behind_by,"base_sync_required":base_sync_required,"workflow_count":len(workflows),"workflows":workflows,"requested_reviewers":requested,"independent_review_approved":bool(approved),"approved_by":approved,"changes_requested_by":changes}
+ return {"status":status,"pr":n,"state":pr.get("state"),"draft":pr.get("draft"),"mergeable":pr.get("mergeable"),"mergeable_state":pr.get("mergeable_state"),
+         "head_sha":head,"base_ref":base_ref,"current_base_sha":current_base_sha or None,"merge_base_sha":merge_base_sha or None,
+         "base_compare_status":compare_status or None,"main_ahead_of_pr_by":main_ahead_by,"main_behind_pr_by":main_behind_by,
+         "base_sync_required":base_sync_required,"path_overlap_verified":path_overlap_verified,
+         "pr_file_count":len(pr_paths),"main_delta_file_count":len(main_delta_paths),"overlap_paths":overlap_paths,
+         "stale_delta_class":("OVERLAP_RECONCILE" if overlap_paths else "NON_OVERLAP_REPLAY" if base_sync_required and path_overlap_verified else "UNVERIFIED" if base_sync_required else "CURRENT_BASE"),
+         "workflow_count":len(workflows),"workflows":workflows,"requested_reviewers":requested,
+         "independent_review_approved":bool(approved),"approved_by":approved,"changes_requested_by":changes}
 
 def github_issue_audit(task):
  n=issue_number(task)
