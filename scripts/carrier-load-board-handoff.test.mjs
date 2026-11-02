@@ -12,7 +12,8 @@ assert.match(source, /does not create an account or sign a contract/);
 for (const name of ["carrier_role", "carrier_company_name", "carrier_contact_name", "authority_number", "equipment_class", "carrier_email", "carrier_phone", "capacity_units", "available_from", "origin_location", "origin_radius", "carrier_consent"]) {
   assert.match(source, new RegExp('name="' + name + '"'), name);
 }
-assert.match(source, /data-vehicle-form/);\nassert.match(source, /data-send-vehicle-lead/);
+assert.match(source, /data-vehicle-form/);
+assert.match(source, /data-send-vehicle-lead/);
 assert.match(source, /No account, email, call, CRM write, or dispatcher assignment is created in preview mode/);
 assert.match(source, /const canonicalProductionHost = /);
 assert.match(source, /\/api\/logistics-lead/);
