@@ -25,7 +25,7 @@ KEYWORDS={
  "SEO_GEO_AEO":("seo","geo","aeo","gsc","bing","search","index","query","sitemap","hreflang","canonical","schema","semrush","traffic"),
 }
 PROGRAM_ID="VIKTOR_EVIDENCE_FACTORY_90D"
-PROMPT_VERSION="3"
+PROMPT_VERSION="4"
 
 def now():
  return datetime.datetime.now(datetime.timezone.utc)
@@ -79,11 +79,12 @@ def match_lane(lane,row):
  blob=(" ".join([source_id(row),source_text(row),source_url(row)])).lower()
  return sum(1 for k in KEYWORDS[lane] if k in blob)
 
-def choose_source(lane,processed):
+def choose_source(lane,processed,quarantined=None):
+ quarantined=set(quarantined or ())
  best=None
  for filename,row in iter_sources():
   fp=fingerprint(row)
-  if fp in processed:continue
+  if fp in processed or fp in quarantined:continue
   score=match_lane(lane,row)
   clean_bonus=4 if filename=="HERMES_AI_CURRENT_TRANSFER_CORPUS_20261028.jsonl" else (2 if filename=="VIKTOR_CRITICAL_CASES.jsonl" else 0)
   rank=(score+clean_bonus, clean_bonus, -len(source_text(row)))
@@ -136,6 +137,23 @@ def normalize_model_output(lane,out):
  return normalized,{"lane_normalized":model_lane!=lane,"model_lane":model_lane,
                     "confidence_normalized":confidence_normalized,"model_confidence":model_confidence}
 
+def record_rejection(st,fp,error):
+ rejections=st.setdefault("rejections",{})
+ item=rejections.get(fp) or {}
+ same=item.get("prompt_version")==PROMPT_VERSION and item.get("error")==error
+ count=(int(item.get("count",0))+1) if same else 1
+ item={"prompt_version":PROMPT_VERSION,"error":str(error),"count":count,"updated_at_utc":now().isoformat()}
+ rejections[fp]=item
+ quarantined=False
+ if count>=2:
+  st.setdefault("quarantined",{})[fp]={**item,"reason":"REPEATED_DETERMINISTIC_REJECTION"}
+  quarantined=True
+ return quarantined
+
+def clear_rejection(st,fp):
+ st.setdefault("rejections",{}).pop(fp,None)
+ st.setdefault("quarantined",{}).pop(fp,None)
+
 def validate(lane,out):
  if not isinstance(out,dict):return False,"NOT_OBJECT"
  if out.get("lane")!=lane:return False,"LANE_MISMATCH"
@@ -163,10 +181,11 @@ def run_once(llm=local_llm):
  except ValueError:end_dt=None
  if end_dt and now()>=end_dt:
   return {"status":"PROGRAM_COMPLETE_TIMEBOX","program_id":PROGRAM_ID,"end_at_utc":end}
- st=jread(STATE,{"lane_cursor":0,"processed":[],"useful_receipts":0,"model_calls":0})
+ st=jread(STATE,{"lane_cursor":0,"processed":[],"useful_receipts":0,"model_calls":0,"rejections":{},"quarantined":{}})
  processed=set(st.get("processed") or [])
+ active_quarantine={fp for fp,item in (st.get("quarantined") or {}).items() if (item or {}).get("prompt_version")==PROMPT_VERSION}
  lane=LANES[int(st.get("lane_cursor",0))%len(LANES)]
- chosen=choose_source(lane,processed)
+ chosen=choose_source(lane,processed,active_quarantine)
  if not chosen:
   # No churn: advance lane, do not call model, wait for genuinely new corpus.
   st["lane_cursor"]=(int(st.get("lane_cursor",0))+1)%len(LANES);st["updated_at_utc"]=now().isoformat()
@@ -177,6 +196,7 @@ def run_once(llm=local_llm):
  normalization={"lane_normalized":False,"model_lane":lane}
  status="MODEL_ANALYSIS_SOURCE_ONLY"
  error=None
+ quarantined_after_rejection=False
  try:
   result=llm(prompt_for(lane,row))
   result,normalization=normalize_model_output(lane,result)
@@ -184,10 +204,13 @@ def run_once(llm=local_llm):
   if not ok:status="MODEL_OUTPUT_REJECTED";error=reason
  except Exception as exc:
   status="MODEL_ERROR";error=type(exc).__name__
- # Consume source fingerprint even on model error? No: preserve for retry later.
+ # Successful analysis consumes the source. Deterministic validation rejection
+ # is retried once, then quarantined for this prompt version to prevent churn.
  if status=="MODEL_ANALYSIS_SOURCE_ONLY":
-  processed.add(fp)
+  processed.add(fp);clear_rejection(st,fp)
   st["useful_receipts"]=int(st.get("useful_receipts",0))+1
+ elif status=="MODEL_OUTPUT_REJECTED":
+  quarantined_after_rejection=record_rejection(st,fp,error)
  st["model_calls"]=int(st.get("model_calls",0))+1
  st["lane_cursor"]=(int(st.get("lane_cursor",0))+1)%len(LANES)
  st["processed"]=sorted(processed)
@@ -201,10 +224,13 @@ def run_once(llm=local_llm):
           "model_lane":normalization.get("model_lane"),
           "confidence_normalized":bool(normalization.get("confidence_normalized")),
           "model_confidence":normalization.get("model_confidence"),
+          "quarantined_after_rejection":quarantined_after_rejection,
           "external_writes":0,"provider_writes":0,"production_mutations":0,"hae_work_id":None}
  append(receipt)
+ active_quarantine={fp for fp,item in (st.get("quarantined") or {}).items() if (item or {}).get("prompt_version")==PROMPT_VERSION}
  return {"status":status,"lane":lane,"source_id":source_id(row),"processed_count":len(processed),
-         "useful_receipts":st["useful_receipts"],"model_calls":st["model_calls"],"error":error}
+         "useful_receipts":st["useful_receipts"],"model_calls":st["model_calls"],"error":error,
+         "quarantined_after_rejection":quarantined_after_rejection,"quarantined_count":len(active_quarantine)}
 
 def selftest():
  fake={"id":"X","text":"HAE D1 Queue runtime receipt missing exact SHA","source_url":"test://x","asof":"2026-10-29"}
@@ -218,6 +244,12 @@ def selftest():
  assert normalized["confidence"]=="LOW" and meta["confidence_normalized"] is True
  contradiction={"lane":"HAE_COMMAND_CENTER_QA","confidence":"LOW","finding_type":"NO_DEFECT_EVIDENCE","exact_evidence":"A real TOCTOU race was verified and acceptance remains open."}
  assert validate("HAE_COMMAND_CENTER_QA",contradiction)==(False,"NO_DEFECT_CONTRADICTS_EVIDENCE")
+ q={}
+ assert record_rejection(q,"fp-test","NO_DEFECT_CONTRADICTS_EVIDENCE") is False
+ assert record_rejection(q,"fp-test","NO_DEFECT_CONTRADICTS_EVIDENCE") is True
+ assert q["quarantined"]["fp-test"]["prompt_version"]==PROMPT_VERSION
+ clear_rejection(q,"fp-test")
+ assert "fp-test" not in q["quarantined"] and "fp-test" not in q["rejections"]
  assert len(LANES)==5 and LANES.count("HAE_COMMAND_CENTER_QA")==2 and LANES.count("INVESTOR_INTELLIGENCE")==2 and LANES.count("SEO_GEO_AEO")==1
  print("VIKTOR_EVIDENCE_FACTORY_SELFTEST_PASS weights=40/40/20 no_external_writes")
 
