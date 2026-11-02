@@ -90,7 +90,7 @@ test("footer grouped navigation keeps opaque high-contrast computed paint", asyn
       ".footer-meta > span",
       ".hc-launcher-panel p",
     ];
-    const rgb = (text: string) => (text.match(/[\\d.]+/g) ?? []).map(Number).slice(0, 3);
+    const rgb = (text: string) => (text.match(/[\d.]+/g) ?? []).map(Number).slice(0, 3);
     const luminance = (color: number[]) => {
       const linear = color.map((channel) => {
         const value = channel / 255;
