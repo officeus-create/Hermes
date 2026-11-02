@@ -30,10 +30,11 @@ for (const route of routes) {
       };
     });
 
-    expect(paint.opacity).toBe("1");
-    expect(paint.backgroundAlpha).toBe(1);
-    expect(paint.backdropFilter === "none" || paint.backdropFilter === "").toBe(true);
-    expect(paint.webkitBackdropFilter === "none" || paint.webkitBackdropFilter === "").toBe(true);
+    expect(paint).toMatchObject({
+      opacity: "1",
+      backgroundAlpha: 1,
+    });
+    expect([paint.backdropFilter, paint.webkitBackdropFilter].filter((value) => value && value !== "none")).toEqual([]);
     expect(paint.backgroundColor).not.toBe("rgba(0, 0, 0, 0)");
   });
 }
@@ -77,6 +78,6 @@ test("footer grouped navigation keeps opaque high-contrast computed paint", asyn
   expect(paint.color).toBe("rgb(217, 220, 227)");
   expect(paint.footerBackground).toBe("rgb(5, 11, 43)");
   expect(paint.opacity).toBe("1");
-  expect(paint.ancestors.every((item) => item.opacity === "1")).toBe(true);
-  expect(paint.ancestors.every((item) => item.filter === "none")).toBe(true);
+  expect(paint.ancestors.filter((item) => item.opacity !== "1")).toEqual([]);
+  expect(paint.ancestors.filter((item) => item.filter !== "none")).toEqual([]);
 });
