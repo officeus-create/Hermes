@@ -31,6 +31,7 @@ Before a material Hermes task, use the existing **Hermes Agent Coordinator** rou
 2. `hermes-search-growth` + `hermes-seo-organic-specialist` (Google/Bing technical organic search); `hermes-geo-ai-visibility-specialist` only for true GEO/AI visibility.
 3. `hermes-knowledge-curator` — proven reusable lessons in **One Brain**, not a new memory database.
 4. `hermes-qa-evidence-auditor` — independent source/exact-head/production/provider verification; it is not the source-code author.
+5. Ecosystem assurance roles, when available: `hermes-github-auditor`, `hermes-cloudflare-auditor`, `hermes-drive-auditor`, and `hermes-website-auditor`. These roles discover and classify drift; they do not replace the domain implementation owner, Search Growth, Security, or HAE release authority.
 
 **Current 2026-11-02 GSC evidence:** `data/seo/gsc-discovered-owner-snapshot-2026-11-02.json` contains all 130 discovered-not-indexed URLs from the owner export. The canonical state/task owner remains `docs/design/SEARCH_ERROR_MATRIX.md` E3/E25 and `docs/design/TASK_QUEUE.md`. A snapshot dated 2026-10-23 is **not** live November indexing. The 130 pages have sitemap owners (129 static + one dynamic Connect Catalog profile); the search-quality/intent decision remains open. Do not repeat blanket IndexNow submits, mass noindex, fake local evidence or URL launches.
 
