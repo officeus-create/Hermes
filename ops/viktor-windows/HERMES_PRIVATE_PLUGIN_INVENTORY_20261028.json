@@ -1,0 +1,317 @@
+{
+  "schema": "HERMES_PRIVATE_PLUGIN_INVENTORY_V1",
+  "observed_at": "2026-10-28T22:57:30.251432+00:00",
+  "source": "Authenticated Plugin Creator full snapshot 2026-10-28; Core-4 exact version/skill refresh 2026-11-02",
+  "count": 28,
+  "rules": [
+    "Plugins are durable role knowledge/contracts, not a second runtime.",
+    "HAE remains the single execution engine; One Brain remains the canonical cross-company truth.",
+    "Use existing plugin before proposing a new role.",
+    "Private/sensitive domains are not investor evidence unless explicitly authorized and relevant."
+  ],
+  "plugins": [
+    {
+      "plugin_id": "plugins_6add3a1d29e081918fd9fb376867c990",
+      "name": "hermes-geo-ai-visibility-specialist",
+      "version": "0.1.1",
+      "current_release_id": "pluginrel_6adf216649688191ab26b2fafb0d1de4",
+      "description": "Private Hermes GEO/AI visibility specialist under hermes-search-growth. Owns real observations of ChatGPT, Gemini, Copilot, Perplexity, Google AI surfaces and other retrieval systems: mentions, citations, recommendations, source eligibility, entity consistency and AI share-of-voice methodology. Does not simulate visibility, own traditional Google/Bing SEO, write code or claim revenue without CRM evidence.",
+      "scope": "USER",
+      "discoverability": "PRIVATE",
+      "investor_use": "DOMAIN_EVIDENCE"
+    },
+    {
+      "plugin_id": "plugins_6add3a1454e0819188b4a3c002b30285",
+      "name": "hermes-seo-organic-specialist",
+      "version": "0.1.1",
+      "current_release_id": "pluginrel_6adf1f60c8ac8191a04dffea5c7a9051",
+      "description": "Private Hermes organic-search specialist under hermes-search-growth. Owns Google/Bing technical and semantic organic evidence: indexability, canonical/robots/sitemaps/hreflang/schema, query-to-page ownership, internal linking, snippets/CTR and page-survival decisions. Does not own GEO/AI visibility, code implementation, local-profile publication or business-result truth.",
+      "scope": "USER",
+      "discoverability": "PRIVATE",
+      "investor_use": "DOMAIN_EVIDENCE"
+    },
+    {
+      "plugin_id": "plugins_6add1cd402788191b0ff243d1605a597",
+      "name": "hermes-investor-relations",
+      "version": "0.1.2",
+      "current_release_id": "pluginrel_6ade73952e5c8191aaad6cfcb76133c7",
+      "description": "Private Hermes investor-relations architect: composes evidence-backed EN/RU investor offers, capital pathways, deal-room requirements and investor segmentation from canonical One Brain and verified Hermes portfolio evidence. Does not replace Knowledge Curator audits, Finance, Legal, HAE or the technology release owner.",
+      "scope": "USER",
+      "discoverability": "PRIVATE",
+      "investor_use": "PRIMARY_CONTROL_OR_EVIDENCE"
+    },
+    {
+      "plugin_id": "plugins_6adc701b726881919bfd68cc135a2785",
+      "name": "hermes-workforce-enablement",
+      "version": "0.1.4",
+      "current_release_id": "pluginrel_6adccbf057208191863565a31347bdc2",
+      "description": "Private Hermes Workforce Enablement owner for role-specific SOPs, active-employee onboarding, competency certification, change rollouts and knowledge freshness at large organizational scale. Curator supplies validated lessons; domain owners supply operating truth; Academy owns pedagogy/courses; HR owns employment decisions.",
+      "scope": "USER",
+      "discoverability": "PRIVATE",
+      "investor_use": "DOMAIN_EVIDENCE"
+    },
+    {
+      "plugin_id": "plugins_6adbe63657688191b05a63e24f378cd6",
+      "name": "hermes-security-engineering",
+      "version": "0.1.1",
+      "current_release_id": "pluginrel_6adcc9823a888191bbae03b9365f0570",
+      "description": "Private Hermes Security Engineering owner for application/cloud threat modeling, vulnerability and dependency triage, secret-exposure incident coordination, security control requirements and security acceptance. Technology implements product fixes; Access Governor owns entitlements; QA independently verifies evidence.",
+      "scope": "USER",
+      "discoverability": "PRIVATE",
+      "investor_use": "PRIMARY_CONTROL_OR_EVIDENCE"
+    },
+    {
+      "plugin_id": "plugins_6adbe3d22ba08191af000581c67a64a5",
+      "name": "hermes-access-identity-governor",
+      "version": "0.1.1",
+      "current_release_id": "pluginrel_6adbe564d9f881918252d4171a080e67",
+      "description": "Private Hermes identity and access governance owner for human and digital workers. Defines least-privilege entitlements, named-account and connector scope policy, grant/review/revoke lifecycle, tenant boundaries and access evidence without implementing auth code or autonomously changing credentials.",
+      "scope": "USER",
+      "discoverability": "PRIVATE",
+      "investor_use": "PRIMARY_CONTROL_OR_EVIDENCE"
+    },
+    {
+      "plugin_id": "plugins_6adbe0ff25c881919716f063e76cdf2e",
+      "name": "hermes-qa-evidence-auditor",
+      "version": "0.1.24",
+      "current_release_id": "pluginrel_6ae8e572d6008191977a1d6031983ba2",
+      "description": "Private Hermes independent QA and evidence auditor. Verifies claimed delivery, semantics, source truth, runtime state and business-result boundaries across Hermes work without becoming the implementation writer or approving its own changes.",
+      "scope": "USER",
+      "discoverability": "PRIVATE",
+      "investor_use": "PRIMARY_CONTROL_OR_EVIDENCE",
+      "training_status": "WINDOWS_RUNTIME_UNATTENDED_TRUTH_20261102_RELEASED",
+      "training_skill": "windows-runtime-unattended-truth-20261102"
+    },
+    {
+      "plugin_id": "plugins_6adbb1cdbb9c819191b37ae4df6797ec",
+      "name": "hermes-compliance-operations",
+      "version": "0.1.2",
+      "current_release_id": "pluginrel_6adcce9127488191ad7a20e8eace3b66",
+      "description": "Private Hermes compliance operations specialist for evidence-backed U.S. logistics regulatory, entity, insurance, contract, privacy/data-flow and remote-operations checks; prepares review packets and holds, but does not provide legal advice or autonomously file, sign, bind coverage or change authority.",
+      "scope": "USER",
+      "discoverability": "PRIVATE",
+      "investor_use": "PRIMARY_CONTROL_OR_EVIDENCE"
+    },
+    {
+      "plugin_id": "plugins_6adb9fb469a4819198224387995f0163",
+      "name": "hermes-finance-accounting",
+      "version": "0.1.3",
+      "current_release_id": "pluginrel_6adc795c1ca881918c723a2039079599",
+      "description": "Private Hermes Finance & Accounting controller for company-wide invoice/transaction reconciliation, AP/AR rollups, billing and cash evidence, P&L-ready classifications, unit-economics inputs and accountant handoff; no autonomous money movement or filings.",
+      "scope": "USER",
+      "discoverability": "PRIVATE",
+      "investor_use": "PRIMARY_CONTROL_OR_EVIDENCE"
+    },
+    {
+      "plugin_id": "plugins_6adb94b7d6988191bb3f4608ced11293",
+      "name": "hermes-marketing-growth",
+      "version": "0.1.8",
+      "current_release_id": "pluginrel_6adfb8bee8d08191ab68257393e1846a",
+      "description": "Private Hermes/ProgressoPro Marketing & Social Growth director for Instagram, Facebook, Threads, TikTok and X growth experiments, distribution, attribution and qualified-demand handoff. Search, Telegram, News, Sales, Design and Website Pricing retain their own domains.",
+      "scope": "USER",
+      "discoverability": "PRIVATE",
+      "investor_use": "DOMAIN_EVIDENCE"
+    },
+    {
+      "plugin_id": "plugins_6adb897a707081918cc54dda5fcec4d2",
+      "name": "hermes-search-growth",
+      "version": "0.1.8",
+      "current_release_id": "pluginrel_6adf457ac2d88191bef1b3604887a3d3",
+      "description": "Private Hermes Search & AI Visibility director for SEO, GEO, AEO and LLMO. Owns canonical/indexation/search architecture, money-page demand mapping, AI visibility measurement and evidence-backed growth from impressions to qualified opportunity without taking over design, code or sales truth.",
+      "scope": "USER",
+      "discoverability": "PRIVATE",
+      "investor_use": "DOMAIN_EVIDENCE"
+    },
+    {
+      "plugin_id": "plugins_6adb884d92648191bbe819e3142018fe",
+      "name": "hermes-knowledge-curator",
+      "version": "0.1.94",
+      "current_release_id": "pluginrel_6ae8e57816d88191a18ae6fb6f2d4cd7",
+      "description": "Private Hermes knowledge curator for ChatGPT, Codex, Claude and later authorized company communication archives. Classifies historical evidence, extracts reusable rules and contradictions, maps each lesson to the correct existing owner, and raises staffing gaps without making staffing decisions.",
+      "scope": "USER",
+      "discoverability": "PRIVATE",
+      "investor_use": "PRIMARY_CONTROL_OR_EVIDENCE",
+      "training_status": "WINDOWS_RUNTIME_UNATTENDED_TRUTH_20261102_RELEASED",
+      "training_skill": "windows-runtime-unattended-truth-20261102"
+    },
+    {
+      "plugin_id": "plugins_6adb88440d148191af347376b4131f5e",
+      "name": "hermes-ceo",
+      "version": "0.1.1",
+      "current_release_id": "pluginrel_6adb97940ce88191a3bdc0ae9d91dcdb",
+      "description": "Private Hermes CEO governance plugin for strategy, priority, capital allocation, organizational design and final approval of new, merged or retired digital employee roles. It consumes evidence and proposals; it does not replace department execution.",
+      "scope": "USER",
+      "discoverability": "PRIVATE",
+      "investor_use": "PRIMARY_CONTROL_OR_EVIDENCE"
+    },
+    {
+      "plugin_id": "plugins_6adb883b09b88191ae18319f985758d0",
+      "name": "hermes-coo",
+      "version": "0.1.5",
+      "current_release_id": "pluginrel_6adbe174af3481919d072198fca787d3",
+      "description": "Private Hermes Chief Operating Officer for end-to-end operating design, cross-department ownership, KPI, bottleneck removal and digital workforce staffing. Approves operational necessity for new digital roles and prevents duplicate systems.",
+      "scope": "USER",
+      "discoverability": "PRIVATE",
+      "investor_use": "PRIMARY_CONTROL_OR_EVIDENCE"
+    },
+    {
+      "plugin_id": "plugins_6adb883342e0819191d0a7f7e1c45a13",
+      "name": "hermes-recruiter",
+      "version": "0.1.2",
+      "current_release_id": "pluginrel_6adccf40238c81919ffce4be5a4655d3",
+      "description": "Private Hermes recruiter for human talent and future digital employees. Converts verified recurring work and capacity bottlenecks into evidence-backed role requisitions, searches existing capabilities first, defines skill/KPI/evaluation packs, and hands creation/hiring proposals to HR, COO and CEO gates.",
+      "scope": "USER",
+      "discoverability": "PRIVATE",
+      "investor_use": "DOMAIN_EVIDENCE"
+    },
+    {
+      "plugin_id": "plugins_6ad34326bb5c81919836416cb3ec7aae",
+      "name": "personal-health-os",
+      "version": "0.4.0",
+      "current_release_id": "pluginrel_6ad34c61eb5c81918e52e96fb6580bcf",
+      "description": "Hermes Health private-by-design coaching and future multi-tenant fitness CRM blueprints. Shared instructions contain no personal medical records; connected user data requires verified authorization and external per-user vault.",
+      "scope": "USER",
+      "discoverability": "PRIVATE",
+      "investor_use": "EXCLUDE_PRIVATE_SENSITIVE"
+    },
+    {
+      "plugin_id": "plugins_6ad2804c3ed8819198d38e420797c2b4",
+      "name": "hermes-telegram-growth-manager",
+      "version": "0.3.1",
+      "current_release_id": "pluginrel_6adb48e55f3c8191b1384df783347c9e",
+      "description": "Private Hermes Telegram specialist for the complete ecosystem: community growth, existing bots/workrooms, Approval Gateway, Academy/HR, safe historical learning, operations/group lifecycle, Hermes Connect alerts, runtime governance, Insights/SEO and attribution. No live Telegram session by default.",
+      "scope": "USER",
+      "discoverability": "PRIVATE",
+      "investor_use": "DOMAIN_EVIDENCE"
+    },
+    {
+      "plugin_id": "plugins_6acf865dbc3c8191a21ca0da11dfb094",
+      "name": "hermes-agent-coordinator",
+      "version": "0.1.89",
+      "current_release_id": "pluginrel_6ae8e5627e0c81918ba70e7aef1bd776",
+      "description": "Private Hermes digital staff dispatcher. Routes work through one canonical business/search/visual owner, protects ecosystem architecture, maintains evidence-backed handoffs and prevents duplicate systems or writers.",
+      "scope": "USER",
+      "discoverability": "PRIVATE",
+      "investor_use": "PRIMARY_CONTROL_OR_EVIDENCE",
+      "training_status": "WINDOWS_RUNTIME_UNATTENDED_TRUTH_20261102_RELEASED",
+      "training_skill": "windows-runtime-unattended-truth-20261102"
+    },
+    {
+      "plugin_id": "plugins_6acf5d95089c8191b5cb4a786148a0c1",
+      "name": "hermes-sales",
+      "version": "0.1.19",
+      "current_release_id": "pluginrel_6adedafe7818819199fd96e6e0be5713",
+      "description": "Private Hermes Sales director, supervised seller coach and future omnichannel prospect conversational owner (Instagram, Threads, Facebook, X, Telegram, email); connections/actions only as separately verified and owner authorized.",
+      "scope": "USER",
+      "discoverability": "PRIVATE",
+      "investor_use": "DOMAIN_EVIDENCE"
+    },
+    {
+      "plugin_id": "plugins_6acf3466650c8191960248cd2a96d49e",
+      "name": "hermes-news",
+      "version": "0.1.2",
+      "current_release_id": "pluginrel_6acf3f58803081919825ce84079cb15a",
+      "description": "Hermes editorial intelligence specialist for source-backed Insights, dated industry news, entity authority, RSS and controlled editorial production with human approval.",
+      "scope": "USER",
+      "discoverability": "PRIVATE",
+      "investor_use": "DOMAIN_EVIDENCE"
+    },
+    {
+      "plugin_id": "plugins_6acf345dede881918978f13ab23f4310",
+      "name": "hermes-catalog",
+      "version": "0.1.5",
+      "current_release_id": "pluginrel_6adb9f60365881918fb6aa58fc1de331",
+      "description": "Hermes public business catalog and entity publishing specialist for owner-verified Company profiles, publication gates, local SEO, real inquiries and Connect CRM handoff.",
+      "scope": "USER",
+      "discoverability": "PRIVATE",
+      "investor_use": "DOMAIN_EVIDENCE"
+    },
+    {
+      "plugin_id": "plugins_6acf3453cfa48191884198be23defd3c",
+      "name": "hermes-technology-developer",
+      "version": "0.1.56",
+      "current_release_id": "pluginrel_6adf1eb6cd848191a097c4f98167e55f",
+      "description": "Hermes IT engineering director for Astro, Cloudflare, D1, Hermes Website Factory, APIs, production QA and maintainable product architecture; distinct from shared Automation Engineer.",
+      "scope": "USER",
+      "discoverability": "PRIVATE",
+      "investor_use": "DOMAIN_EVIDENCE"
+    },
+    {
+      "plugin_id": "plugins_6acf344acf8481919ecb846796ea59ee",
+      "name": "hermes-academy",
+      "version": "0.1.12",
+      "current_release_id": "pluginrel_6adbb08361288191b8e0a1dfabe2f666",
+      "description": "Hermes learning director for practice-based U.S. logistics and marketing courses, assessment, reviewer evidence, learning progression and honest qualification handoff to HR.",
+      "scope": "USER",
+      "discoverability": "PRIVATE",
+      "investor_use": "DOMAIN_EVIDENCE"
+    },
+    {
+      "plugin_id": "plugins_6acf343b2738819194bff27b7452102d",
+      "name": "hermes-hr",
+      "version": "0.1.12",
+      "current_release_id": "pluginrel_6adc788ad0dc8191819c884a6720c2ee",
+      "description": "Hermes HR lead for candidate acquisition, training communities and Academy-to-Sales human-gated handoff; planned social/email/Telegram communications with no live sends.",
+      "scope": "USER",
+      "discoverability": "PRIVATE",
+      "investor_use": "DOMAIN_EVIDENCE"
+    },
+    {
+      "plugin_id": "plugins_6ace33b7a780819181a6ce85eac06f05",
+      "name": "hermes-private-network",
+      "version": "0.1.0",
+      "current_release_id": "pluginrel_6ace33bc94908191a4da1fc849915240",
+      "description": "Private Hermes VPN architect for compliant free-first WireGuard/Headscale planning, Wisconsin egress, global employee access, secure onboarding and operational evidence.",
+      "scope": "USER",
+      "discoverability": "PRIVATE",
+      "investor_use": "DOMAIN_EVIDENCE"
+    },
+    {
+      "plugin_id": "plugins_6ace1c27c458819186989a5aa3ef87b5",
+      "name": "hermes-automatic-engineer",
+      "version": "0.1.36",
+      "current_release_id": "pluginrel_6ae8e56a4f1c8191ba099d7880587162",
+      "description": "Private Hermes automation implementation, reliability, release QA, migration and completion engineer for the shared Cloudflare-native Hermes Automation Engine.",
+      "scope": "USER",
+      "discoverability": "PRIVATE",
+      "investor_use": "DOMAIN_EVIDENCE",
+      "latest_verified_skill": "local-free-ai-runtime-recovery",
+      "release_readback": "VERIFIED_2026-10-28",
+      "training_status": "WINDOWS_RUNTIME_UNATTENDED_TRUTH_20261102_RELEASED",
+      "training_skill": "windows-runtime-unattended-truth-20261102"
+    },
+    {
+      "plugin_id": "plugins_6acccd5a49d48191932fc106919bf824",
+      "name": "hermes-dispatch-os",
+      "version": "0.1.23",
+      "current_release_id": "pluginrel_6ae0dfa6c7808191a154fd1a5853f2f1",
+      "description": "Private Hermes Logistics operating brain for dispatch, carriers, owner-operators, Load Board, load sources, telephony, invoicing, finance reconciliation, KPI diagnostics and logistics automation handoff.",
+      "scope": "USER",
+      "discoverability": "PRIVATE",
+      "investor_use": "DOMAIN_EVIDENCE"
+    },
+    {
+      "plugin_id": "plugins_6acc9a1fe78c8191b7d149f2689029f8",
+      "name": "hermes-design-hub",
+      "version": "0.2.63",
+      "current_release_id": "pluginrel_6adf7814a558819180d2f8ef1ac71fe9",
+      "description": "Private Hermes design and Website Factory specialist for visual systems, original web experiences, cinematic living media, business/search architecture guardrails, UX/motion/assets, responsive/accessibility QA and evidence-driven release.",
+      "scope": "USER",
+      "discoverability": "PRIVATE",
+      "investor_use": "DOMAIN_EVIDENCE"
+    }
+  ],
+  "training_update_20261029": {
+    "status": "CORE_4_RELEASED",
+    "rule": "Domain plugins remain routed through current capabilities; no version bump without behavioral delta.",
+    "source": "Plugin Creator verified releases + Windows Hermes AI closure manifest"
+  },
+  "snapshot_scope": "FULL_28_PLUGIN_SNAPSHOT_20261028_WITH_CORE4_REFRESH_20261102",
+  "core4_refreshed_at": "2026-11-02T19:41:10.831244+00:00",
+  "core4_refresh_names": [
+    "hermes-agent-coordinator",
+    "hermes-automatic-engineer",
+    "hermes-qa-evidence-auditor",
+    "hermes-knowledge-curator"
+  ]
+}
