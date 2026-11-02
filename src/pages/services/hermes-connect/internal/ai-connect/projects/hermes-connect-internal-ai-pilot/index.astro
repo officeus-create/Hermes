@@ -10,7 +10,7 @@ const isRu=Astro.url.searchParams.get("lang")==="ru";const suffix=isRu?"?lang=ru
 ---
 <BaseLayout title={isRu?"Внутренний AI-пилот | Hermes Connect":"Internal AI Pilot | Hermes Connect"} description="Private Hermes Connect internal AI pilot workspace." robots="noindex,nofollow">
 <SiteHeader activePath="/paths/technology/"/><HermesConnectExperience/><HermesConnectInternalAiNav/>
-<main class="project-page"><div class="shell">
+<main id="main-content" tabindex="-1" class="project-page"><div class="shell">
 <a class="back" href={`/services/hermes-connect/internal/ai-connect/projects/${suffix}`}><ArrowLeft size={15}/>{isRu?"Все проекты":"All projects"}</a>
 <header class="hero"><div><p class="kicker"><FolderKanban size={15}/>{isRu?"Текущий проект":"Current project"}</p><h1>Hermes Connect · Internal AI Pilot</h1><p>{isRu?"Цель — доказать полный безопасный цикл управления AI из кабинета: задача → outbound runner → Hermes Codex → branch/PR/evidence → результат или owner approval.":"Prove the full safe cabinet-controlled AI loop: task → outbound runner → Hermes Codex → branch/PR/evidence → result or owner approval."}</p></div><span class="badge"><ShieldCheck size={16}/>{isRu?"Только для владельца":"Internal owner only"}</span></header>
 <HermesConnectAccountSwitcher current="ai"/>
