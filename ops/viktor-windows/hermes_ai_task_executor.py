@@ -61,6 +61,38 @@ def issue_number(task):
  n=task.get("issue")
  return int(n) if isinstance(n,int) or (isinstance(n,str) and n.isdigit()) else None
 
+def plugin_use_receipt(task):
+ inventory=load_json(ROOT/"HERMES_PRIVATE_PLUGIN_INVENTORY_20261028.json",{})
+ registry=load_json(ROOT/"skill_registry_v4.json",{})
+ by_name={str(p.get("name")):p for p in inventory.get("plugins",[]) if isinstance(p,dict)}
+ skill_ids={str(x.get("id")) for x in registry.get("skills",[]) if isinstance(x,dict)}
+ routes=list(task.get("plugin_route") or [])
+ if not routes:
+  return {"status":"NO_PLUGIN_ROUTE_DECLARED","plugin_execution_claimed":False}
+ selected=[]; version_drift=False; projected=0; projection_missing=False
+ for route in routes:
+  name=str(route.get("plugin") or "")
+  declared=str(route.get("version") or "")
+  current=by_name.get(name) or {}
+  current_version=str(current.get("version") or "")
+  projection=str(route.get("local_skill_projection") or "")
+  projection_present=bool(projection and projection in skill_ids)
+  if declared!=current_version or not current_version:version_drift=True
+  if projection:
+   projected+=1
+   if not projection_present:projection_missing=True
+  selected.append({"plugin":name,"declared_version":declared,"current_version":current_version,
+                   "release_id":current.get("current_release_id"),"version_match":declared==current_version and bool(current_version),
+                   "local_skill_projection":projection or None,"projection_present":projection_present})
+ if version_drift:status="PLUGIN_VERSION_DRIFT"
+ elif projection_missing:status="PLUGIN_PROJECTION_MISSING"
+ elif projected==len(routes):status="SKILL_APPLIED_LOCAL_PROJECTION"
+ elif projected>0:status="PLUGIN_ROUTE_WITH_PARTIAL_LOCAL_PROJECTION"
+ else:status="PLUGIN_ROUTE_SELECTED"
+ return {"status":status,"inventory_observed_at":inventory.get("observed_at"),"registry_version":registry.get("version"),
+         "selected":selected,"plugin_execution_claimed":False,
+         "meaning":"Local VIKTOR applied versioned plugin knowledge projections; this is not a ChatGPT plugin runtime execution receipt."}
+
 def github_pr_audit(task):
  n=pr_number(task)
  if not n:return {"status":"NO_PR_REFERENCE"}
@@ -230,7 +262,10 @@ def run_cycle(max_tasks=3):
   task=tasks[idx]
   try:result=execute(task,dependency_pending=bool(task.get("dependency")))
   except Exception as exc:result={"status":"EXECUTOR_ERROR","error":type(exc).__name__,"detail":str(exc)[:300]}
-  row={"at":stamp(),"task_id":task.get("id"),"issue":task.get("issue"),"safe_next":task.get("safe_next"),"result":result,"external_actions":0,"provider_writes":0,"production_mutations":0,"one_brain_writes":0}
+  plugin_receipt=plugin_use_receipt(task)
+  row={"at":stamp(),"task_id":task.get("id"),"issue":task.get("issue"),"safe_next":task.get("safe_next"),
+       "plugin_use_receipt":plugin_receipt,"result":result,
+       "external_actions":0,"provider_writes":0,"production_mutations":0,"one_brain_writes":0}
   append_jsonl(RECEIPTS,row);out.append(row)
  st["cursor"]=(start+len(out))%len(tasks);st["updated_at"]=stamp();save_json(STATE,st)
  return {"status":"READ_ONLY_TASKS_EXECUTED","count":len(out),"tasks":out,"next_cursor":st["cursor"]}
@@ -240,6 +275,9 @@ def selftest():
  tasks=m.get("tasks") or []
  assert tasks and all(t.get("can_write") is False for t in tasks)
  assert all(t.get("safe_next") in SAFE_ACTIONS for t in tasks)
+ assert all(t.get("plugin_route") for t in tasks)
+ plugin_receipts=[plugin_use_receipt(t) for t in tasks]
+ assert all(r.get("status") not in {"PLUGIN_VERSION_DRIFT","PLUGIN_PROJECTION_MISSING","NO_PLUGIN_ROUTE_DECLARED"} for r in plugin_receipts)
  assert not (SAFE_ACTIONS & {"SEND","DEPLOY","MERGE","PUBLISH","PROVIDER_WRITE"})
  blocked=execute({"id":"TEST_DEP","safe_next":"OFFLINE_HISTORICAL_REPLAY","can_write":False,"dependency":["UPSTREAM"]},dependency_pending=True)
  assert blocked["status"]=="DEPENDENCY_GATE_WAIT"
