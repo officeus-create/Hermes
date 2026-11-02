@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
+import vm from "node:vm";
 const root = process.cwd();
 const layout = fs.readFileSync(path.join(root, "src/layouts/BaseLayout.astro"), "utf8");
 const consent = fs.readFileSync(path.join(root, "src/components/TrackingConsent.astro"), "utf8");
@@ -37,6 +38,77 @@ assert.match(conversionEnhancer, /event:\s*"carrier_dispatch_page_view"/);
 assert.match(conversionEnhancer, /service_group:\s*"car_hauling_dispatch"/);
 assert.match(conversionEnhancer, /carrierDispatchMeasurementStarted\s*\|\|\s*!analyticsConsentGranted\(\)\s*\|\|\s*!isCarrierDispatchPath\(\)/);
 assert.match(conversionEnhancer, /if\s*\(analyticsConsentGranted\(\)\)\s*setupCarrierDispatchMeasurement\(\)/);
+const ruLogisticsOwner = fs.readFileSync(path.join(root, "src/components/LocalizedDirectionOwnerPage.astro"), "utf8");
+const ruDirectionCopy = fs.readFileSync(path.join(root, "src/data/localized-direction-copy.ts"), "utf8");
+assert.match(ruLogisticsOwner, /locale === "ru" && directionId === "logistics"/);
+assert.match(ruLogisticsOwner, /href=\{site\.publicPhones\[0\]\.href\}/);
+assert.match(ruLogisticsOwner, /site\.publicPhones\[0\]\.value/);
+assert.match(ruDirectionCopy, /Диспетчер для Car Hauling — 1–10 автомобилей/);
+assert.match(ruDirectionCopy, /href: "\/logistics\/car-hauling-dispatch\//);
+
+// Executable, non-networked phone-click checks on the production enhancer.
+const simulateLogisticsPhoneClick = ({
+  pathname = "/logistics/car-hauling-dispatch/",
+  consent = true,
+  href = "tel:+13517775337",
+  trusted = true,
+} = {}) => {
+  const calls = [];
+  let clickHandler;
+  let anchor;
+  class MockElement { closest() { return anchor; } }
+  class MockAnchor extends MockElement {
+    constructor(value) { super(); this.href = value; }
+    getAttribute(name) { return name === "href" ? this.href : null; }
+    hasAttribute() { return false; }
+    get dataset() { return {}; }
+  }
+  anchor = new MockAnchor(href);
+  const pageDocument = {
+    readyState: "loading",
+    documentElement: { dataset: { analyticsConsent: consent ? "granted" : "denied" } },
+    addEventListener(name, handler) { if (name === "click") clickHandler = handler; },
+  };
+  const pageWindow = {
+    location: { pathname, origin: "https://hermeslogisticsus.com" },
+    addEventListener() {},
+    gtag(...args) { calls.push(args); },
+  };
+  vm.runInNewContext(conversionEnhancer, {
+    document: pageDocument,
+    window: pageWindow,
+    Element: MockElement,
+    HTMLAnchorElement: MockAnchor,
+    URL,
+  });
+  assert.equal(typeof clickHandler, "function");
+  clickHandler({ isTrusted: trusted, target: new MockElement() });
+  return JSON.parse(JSON.stringify(calls));
+};
+assert.deepEqual(simulateLogisticsPhoneClick(), [[
+  "event", "logistics_phone_click", {
+    page_path: "/logistics/car-hauling-dispatch/",
+    locale: "en",
+    service_group: "car_hauling_dispatch",
+    cta_type: "dispatch_phone",
+  },
+]]);
+assert.deepEqual(simulateLogisticsPhoneClick({ pathname: "/ru/logistics/" }), [[
+  "event", "logistics_phone_click", {
+    page_path: "/ru/logistics/",
+    locale: "ru",
+    service_group: "ru_logistics",
+    cta_type: "dispatch_phone",
+  },
+]]);
+for (const rejected of [
+  { consent: false },
+  { trusted: false },
+  { href: "tel:+12623023626" },
+  { pathname: "/" },
+  { href: "https://hermeslogisticsus.com/contacts/" },
+]) assert.deepEqual(simulateLogisticsPhoneClick(rejected), []);
+
 const allowed = new Set(["event", "page_group", "page_path", "module_id", "platform_id", "category_id"]);
 const files = ["public/demos/hermes-connect/app.mjs","public/demos/hermes-connect/load-analyzer/app.mjs","public/demos/hermes-connect/search-opportunity-radar/app.mjs","public/demos/hermes-connect/revenue-dashboard/app.mjs","public/demos/hermes-connect/multi-car-planner/app.mjs","public/demos/hermes-connect/logistics-seo-analyzer/app.mjs"];
 for (const f of files) { const source = fs.readFileSync(path.join(root,f),"utf8"); const payloads=[...source.matchAll(/window\.dataLayer\.push\(\{([\s\S]*?)\}\);/g)]; assert.ok(payloads.length>=1); for(const p of payloads){ const body=p[1]; const explicit=[...body.matchAll(/^\s*([A-Za-z_][A-Za-z0-9_]*)\s*:/gm)].map(m=>m[1]); const keys=new Set([...explicit,...(/^\s*event\s*,/m.test(body)?["event"]:[])]); assert.ok(keys.has("event")); for(const k of keys) assert.ok(allowed.has(k),`${f}: ${k}`); }}
