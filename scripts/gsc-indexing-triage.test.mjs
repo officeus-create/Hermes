@@ -62,6 +62,13 @@ const slashVariant = classifyUrl("https://hermeslogisticsus.com/es", sitemaps);
 assert.equal(slashVariant.category, "EXPECTED_EXCLUSION_CANONICAL_VARIANT");
 assert.equal(slashVariant.normalized, "https://hermeslogisticsus.com/es/");
 
+for (const tool of ["roi-calculator", "proposal-builder", "unified-inbox", "rate-negotiator"]) {
+  const url = `https://hermeslogisticsus.com/services/hermes-connect/${tool}/?lang=es`;
+  const classified = classifyUrl(url, sitemaps);
+  assert.equal(classified.category, "EXPECTED_EXCLUSION_NOINDEX_REFERENCE", "Retired public reference tool remains noindex: " + url);
+  assert.equal(sitemaps.has(classified.normalized), false, "Reference capability must not be added to search sitemap");
+}
+
 const unknown = classifyUrl("https://hermeslogisticsus.com/gb/london/academy/old-program/", sitemaps);
 assert.equal(unknown.category, "MANUAL_REVIEW");
 
