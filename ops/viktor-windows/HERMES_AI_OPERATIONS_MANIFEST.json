@@ -1,6 +1,6 @@
 {
   "schema": "HERMES_AI_CAPABILITY_MANIFEST_V1",
-  "updated_at": "2026-11-02T19:42:22.686819+00:00",
+  "updated_at": "2026-11-02T19:47:37.517011+00:00",
   "authority": "SOURCE_ONLY_ADVISORY_NOT_CANONICAL",
   "source_policy": "2026-11-02 owner directive: recover Windows Hermes AI, preserve prior 16 directions, execute easy-to-hard through existing worker; no second HAE/runtime; local read-only first.",
   "product_name": "Hermes AI",
@@ -51,7 +51,20 @@
       "gate": "HOLD_RELEASE",
       "safe_next": "READ_ONLY_PR_AND_TESTS",
       "artifact": "SITE/OWNER_COMMAND_CENTER",
-      "can_write": false
+      "can_write": false,
+      "plugin_route": [
+        {
+          "plugin": "hermes-technology-developer",
+          "version": "0.1.61",
+          "release_id": "pluginrel_6ae79700414c81919d0e16fbd2eb6a76"
+        },
+        {
+          "plugin": "hermes-qa-evidence-auditor",
+          "version": "0.1.24",
+          "release_id": "pluginrel_6ae8e572d6008191977a1d6031983ba2",
+          "local_skill_projection": "WINDOWS_RUNTIME_TRUTH"
+        }
+      ]
     },
     {
       "id": "AI_ARCHITECTURE_ADMIN",
@@ -69,7 +82,15 @@
       "gate": "WAIT_CANONICAL_2236",
       "safe_next": "EVENT_TRIGGER_ONLY",
       "artifact": "SITE/AI_ARCHITECTURE",
-      "can_write": false
+      "can_write": false,
+      "plugin_route": [
+        {
+          "plugin": "hermes-agent-coordinator",
+          "version": "0.1.89",
+          "release_id": "pluginrel_6ae8e5627e0c81918ba70e7aef1bd776",
+          "local_skill_projection": "WINDOWS_RUNTIME_TRUTH"
+        }
+      ]
     },
     {
       "id": "COMMAND_CENTER_EXECUTION_MAP",
@@ -87,7 +108,15 @@
       "gate": "WAIT_CANONICAL_2236",
       "safe_next": "EVENT_TRIGGER_ONLY",
       "artifact": "SITE/EXECUTION_MAP",
-      "can_write": false
+      "can_write": false,
+      "plugin_route": [
+        {
+          "plugin": "hermes-agent-coordinator",
+          "version": "0.1.89",
+          "release_id": "pluginrel_6ae8e5627e0c81918ba70e7aef1bd776",
+          "local_skill_projection": "WINDOWS_RUNTIME_TRUTH"
+        }
+      ]
     },
     {
       "id": "VIKTOR_LOCAL_ADMIN_UI_AUDIT",
@@ -103,7 +132,20 @@
       "gate": "PASS_LOCAL",
       "safe_next": "LOCAL_DASHBOARD_AUDIT",
       "artifact": "VIKTOR/LOCAL_ADMIN_UI",
-      "can_write": false
+      "can_write": false,
+      "plugin_route": [
+        {
+          "plugin": "hermes-design-hub",
+          "version": "0.2.68",
+          "release_id": "pluginrel_6ae86ef633f88191a5ff311a1b887701"
+        },
+        {
+          "plugin": "hermes-qa-evidence-auditor",
+          "version": "0.1.24",
+          "release_id": "pluginrel_6ae8e572d6008191977a1d6031983ba2",
+          "local_skill_projection": "WINDOWS_RUNTIME_TRUTH"
+        }
+      ]
     },
     {
       "id": "HAE_CANONICAL_RUNTIME",
@@ -119,7 +161,21 @@
       "gate": "HOLD_ACCEPTANCE",
       "safe_next": "READ_ONLY_LIVE_WORKFLOW_REVIEW",
       "artifact": "HAE/CANONICAL_RUNTIME",
-      "can_write": false
+      "can_write": false,
+      "plugin_route": [
+        {
+          "plugin": "hermes-automatic-engineer",
+          "version": "0.1.36",
+          "release_id": "pluginrel_6ae8e56a4f1c8191ba099d7880587162",
+          "local_skill_projection": "WINDOWS_RUNTIME_TRUTH"
+        },
+        {
+          "plugin": "hermes-qa-evidence-auditor",
+          "version": "0.1.24",
+          "release_id": "pluginrel_6ae8e572d6008191977a1d6031983ba2",
+          "local_skill_projection": "WINDOWS_RUNTIME_TRUTH"
+        }
+      ]
     },
     {
       "id": "HAE_FREE_AI_RUNTIME",
@@ -135,7 +191,21 @@
       "gate": "HOLD_ACTIVATION",
       "safe_next": "READ_ONLY_PR_AND_TESTS",
       "artifact": "HAE/FREE_AI",
-      "can_write": false
+      "can_write": false,
+      "plugin_route": [
+        {
+          "plugin": "hermes-automatic-engineer",
+          "version": "0.1.36",
+          "release_id": "pluginrel_6ae8e56a4f1c8191ba099d7880587162",
+          "local_skill_projection": "WINDOWS_RUNTIME_TRUTH"
+        },
+        {
+          "plugin": "hermes-qa-evidence-auditor",
+          "version": "0.1.24",
+          "release_id": "pluginrel_6ae8e572d6008191977a1d6031983ba2",
+          "local_skill_projection": "WINDOWS_RUNTIME_TRUTH"
+        }
+      ]
     },
     {
       "id": "HAE_SELF_REPAIR",
@@ -151,7 +221,26 @@
       "gate": "HOLD_ACCEPTANCE",
       "safe_next": "READ_ONLY_PR_AND_TESTS",
       "artifact": "HAE/SELF_REPAIR",
-      "can_write": false
+      "can_write": false,
+      "plugin_route": [
+        {
+          "plugin": "hermes-automatic-engineer",
+          "version": "0.1.36",
+          "release_id": "pluginrel_6ae8e56a4f1c8191ba099d7880587162",
+          "local_skill_projection": "WINDOWS_RUNTIME_TRUTH"
+        },
+        {
+          "plugin": "hermes-technology-developer",
+          "version": "0.1.61",
+          "release_id": "pluginrel_6ae79700414c81919d0e16fbd2eb6a76"
+        },
+        {
+          "plugin": "hermes-qa-evidence-auditor",
+          "version": "0.1.24",
+          "release_id": "pluginrel_6ae8e572d6008191977a1d6031983ba2",
+          "local_skill_projection": "WINDOWS_RUNTIME_TRUTH"
+        }
+      ]
     },
     {
       "id": "HAE_SELF_LESSONS",
@@ -167,7 +256,21 @@
       "gate": "EVENT_OR_REVIEW_GATE",
       "safe_next": "EVENT_TRIGGER_ONLY",
       "artifact": "HAE/SELF_LEARNING",
-      "can_write": false
+      "can_write": false,
+      "plugin_route": [
+        {
+          "plugin": "hermes-knowledge-curator",
+          "version": "0.1.94",
+          "release_id": "pluginrel_6ae8e57816d88191a18ae6fb6f2d4cd7",
+          "local_skill_projection": "WINDOWS_RUNTIME_TRUTH"
+        },
+        {
+          "plugin": "hermes-qa-evidence-auditor",
+          "version": "0.1.24",
+          "release_id": "pluginrel_6ae8e572d6008191977a1d6031983ba2",
+          "local_skill_projection": "WINDOWS_RUNTIME_TRUTH"
+        }
+      ]
     },
     {
       "id": "WINDOWS_HAE_NODE_CONTRACT",
@@ -183,7 +286,27 @@
       "gate": "HOLD_REVIEW_AND_RELEASE",
       "safe_next": "READ_ONLY_PR_AND_TESTS",
       "artifact": "HAE/WINDOWS_CAPACITY",
-      "can_write": false
+      "can_write": false,
+      "plugin_route": [
+        {
+          "plugin": "hermes-automatic-engineer",
+          "version": "0.1.36",
+          "release_id": "pluginrel_6ae8e56a4f1c8191ba099d7880587162",
+          "local_skill_projection": "WINDOWS_RUNTIME_TRUTH"
+        },
+        {
+          "plugin": "hermes-agent-coordinator",
+          "version": "0.1.89",
+          "release_id": "pluginrel_6ae8e5627e0c81918ba70e7aef1bd776",
+          "local_skill_projection": "WINDOWS_RUNTIME_TRUTH"
+        },
+        {
+          "plugin": "hermes-qa-evidence-auditor",
+          "version": "0.1.24",
+          "release_id": "pluginrel_6ae8e572d6008191977a1d6031983ba2",
+          "local_skill_projection": "WINDOWS_RUNTIME_TRUTH"
+        }
+      ]
     },
     {
       "id": "AGENT_WORK_PASSPORT",
@@ -199,7 +322,21 @@
       "gate": "HOLD_REVIEW",
       "safe_next": "READ_ONLY_PR_AND_TESTS",
       "artifact": "GOVERNANCE/WORK_PASSPORT",
-      "can_write": false
+      "can_write": false,
+      "plugin_route": [
+        {
+          "plugin": "hermes-agent-coordinator",
+          "version": "0.1.89",
+          "release_id": "pluginrel_6ae8e5627e0c81918ba70e7aef1bd776",
+          "local_skill_projection": "WINDOWS_RUNTIME_TRUTH"
+        },
+        {
+          "plugin": "hermes-qa-evidence-auditor",
+          "version": "0.1.24",
+          "release_id": "pluginrel_6ae8e572d6008191977a1d6031983ba2",
+          "local_skill_projection": "WINDOWS_RUNTIME_TRUTH"
+        }
+      ]
     },
     {
       "id": "PLUGIN_CAPABILITY_TRAINING",
@@ -215,7 +352,27 @@
       "gate": "LOCAL_READ_ONLY",
       "safe_next": "READ_ONLY_CAPABILITY_REGISTRY",
       "artifact": "PLUGINS/CAPABILITY_MAP",
-      "can_write": false
+      "can_write": false,
+      "plugin_route": [
+        {
+          "plugin": "hermes-agent-coordinator",
+          "version": "0.1.89",
+          "release_id": "pluginrel_6ae8e5627e0c81918ba70e7aef1bd776",
+          "local_skill_projection": "WINDOWS_RUNTIME_TRUTH"
+        },
+        {
+          "plugin": "hermes-knowledge-curator",
+          "version": "0.1.94",
+          "release_id": "pluginrel_6ae8e57816d88191a18ae6fb6f2d4cd7",
+          "local_skill_projection": "WINDOWS_RUNTIME_TRUTH"
+        },
+        {
+          "plugin": "hermes-qa-evidence-auditor",
+          "version": "0.1.24",
+          "release_id": "pluginrel_6ae8e572d6008191977a1d6031983ba2",
+          "local_skill_projection": "WINDOWS_RUNTIME_TRUTH"
+        }
+      ]
     },
     {
       "id": "INVESTOR_RELATIONS_READINESS",
@@ -231,7 +388,15 @@
       "gate": "EVENT_OR_OWNER_GATE",
       "safe_next": "EVENT_TRIGGER_ONLY",
       "artifact": "INVESTOR/READINESS",
-      "can_write": false
+      "can_write": false,
+      "plugin_route": [
+        {
+          "plugin": "hermes-investor-relations",
+          "version": "0.1.7",
+          "release_id": "pluginrel_6ae490dc5b5c81919091927e11215cea",
+          "local_skill_projection": "INVESTOR_EVIDENCE_ROUTING_20261102"
+        }
+      ]
     },
     {
       "id": "SOCIAL_THREADS_HAE",
@@ -247,7 +412,15 @@
       "gate": "PUBLISH_HOLD",
       "safe_next": "EVENT_TRIGGER_ONLY",
       "artifact": "MARKETING/THREADS_HAE",
-      "can_write": false
+      "can_write": false,
+      "plugin_route": [
+        {
+          "plugin": "hermes-marketing-growth",
+          "version": "0.1.17",
+          "release_id": "pluginrel_6ae86ed90b3881918219aa2d4a9e33b1",
+          "local_skill_projection": "THREADS_AUTOMATION_ROUTING_20261102"
+        }
+      ]
     },
     {
       "id": "SEO_GEO_DISCOVERY",
@@ -263,7 +436,15 @@
       "gate": "READ_ONLY",
       "safe_next": "READ_ONLY_SEARCH_EVIDENCE",
       "artifact": "SEARCH/SEO_GEO",
-      "can_write": false
+      "can_write": false,
+      "plugin_route": [
+        {
+          "plugin": "hermes-search-growth",
+          "version": "0.1.14",
+          "release_id": "pluginrel_6ae836f5f2008191a0d4d6bf468c8ec9",
+          "local_skill_projection": "SEARCH_PLUGIN_ROUTING_20261102"
+        }
+      ]
     },
     {
       "id": "CARRIER_LOAD_BOARD",
@@ -279,7 +460,15 @@
       "gate": "READ_ONLY",
       "safe_next": "READ_ONLY_LIVE_WORKFLOW_REVIEW",
       "artifact": "LOGISTICS/LOAD_BOARD",
-      "can_write": false
+      "can_write": false,
+      "plugin_route": [
+        {
+          "plugin": "hermes-dispatch-os",
+          "version": "0.1.26",
+          "release_id": "pluginrel_6ae3b49243648191a085db018d74e22c",
+          "local_skill_projection": "DISPATCH_LOAD_BOARD_ROUTING_20261102"
+        }
+      ]
     },
     {
       "id": "WEBSITE_CRM_FUNNEL",
@@ -295,7 +484,15 @@
       "gate": "READ_ONLY",
       "safe_next": "READ_ONLY_PIPELINE_AUDIT",
       "artifact": "SALES/WEBSITE_CRM",
-      "can_write": false
+      "can_write": false,
+      "plugin_route": [
+        {
+          "plugin": "hermes-sales",
+          "version": "0.1.24",
+          "release_id": "pluginrel_6ae63d88c454819198590803738009bc",
+          "local_skill_projection": "SALES_PIPELINE_ROUTING_20261102"
+        }
+      ]
     },
     {
       "id": "ACADEMY_COMPLETION",
@@ -311,7 +508,15 @@
       "gate": "READ_ONLY",
       "safe_next": "READ_ONLY_LEARNER_FUNNEL_AUDIT",
       "artifact": "ACADEMY/COMPLETION",
-      "can_write": false
+      "can_write": false,
+      "plugin_route": [
+        {
+          "plugin": "hermes-academy",
+          "version": "0.1.14",
+          "release_id": "pluginrel_6ae3ba1061f0819183d0b1216f1365b7",
+          "local_skill_projection": "ACADEMY_EVIDENCE_ROUTING_20261102"
+        }
+      ]
     },
     {
       "id": "PLUGIN_RUNTIME_CONSUMPTION_20261102",
@@ -327,7 +532,27 @@
       "gate": "HAE_RUNTIME_CONSUMPTION_PENDING",
       "safe_next": "EVENT_TRIGGER_ONLY",
       "artifact": "PLUGINS/RUNTIME_CONSUMPTION",
-      "can_write": false
+      "can_write": false,
+      "plugin_route": [
+        {
+          "plugin": "hermes-agent-coordinator",
+          "version": "0.1.89",
+          "release_id": "pluginrel_6ae8e5627e0c81918ba70e7aef1bd776",
+          "local_skill_projection": "WINDOWS_RUNTIME_TRUTH"
+        },
+        {
+          "plugin": "hermes-knowledge-curator",
+          "version": "0.1.94",
+          "release_id": "pluginrel_6ae8e57816d88191a18ae6fb6f2d4cd7",
+          "local_skill_projection": "WINDOWS_RUNTIME_TRUTH"
+        },
+        {
+          "plugin": "hermes-qa-evidence-auditor",
+          "version": "0.1.24",
+          "release_id": "pluginrel_6ae8e572d6008191977a1d6031983ba2",
+          "local_skill_projection": "WINDOWS_RUNTIME_TRUTH"
+        }
+      ]
     }
   ],
   "background_programs": [
@@ -653,5 +878,7 @@
     "internal_ai_current_runner_identity": "internal-ai-mac-runner",
     "internal_ai_windows_visibility": "PR_2249_SOURCE_CI_GREEN_REVIEW_PENDING",
     "viktor_offhost_source": "PR_2255_SOURCE_PR_OPEN"
-  }
+  },
+  "plugin_inventory_observed_at": "2026-11-02T19:46:00+00:00",
+  "plugin_inventory_count": 28
 }
