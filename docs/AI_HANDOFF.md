@@ -2260,3 +2260,10 @@ ai_name: Codex; role: delegated Academy owner; contribution_type: Implementation
 - Tests: extended `scripts/localized-owner-parity.test.mjs` (each non-en logistics owner must carry the dispatch tel; other directions must not). `npm run build` 0 errors; `npm test` exit 0. Browser check at 1440 and 390 on `/ru/logistics/`: two call buttons, correct href/label, email preserved, no horizontal overflow.
 - Not done here (owner decisions / larger scope): English `/paths/logistics/` has no tel link (deliberately demotes carrier links — owner call on the English hero); phone-click GA4 event not added (E16: owner must mark GA4 key events first — no speculative event invented); Command Center / HAE untouched per owner.
 - Next action — Claude: read back `/ru/logistics/` live after merge.
+
+## 2026-11-01 — Claude Code — call line on the remaining carrier dispatch-support pages
+
+- Finding: `LogisticsCommercialPage` shows the approved desk phone only when a page sets `phoneDesk`. owner-operator-dispatch-support and car-hauling-dispatch had it; fleet-owner-dispatch-support and new-authority-car-hauler-support (carrier-facing) and auction-vehicle-pickup (shipper-facing) did not — no call line.
+- Change: added `phoneDesk: "dispatch"` to the two carrier support pages and `phoneDesk: "shippers"` to auction-vehicle-pickup. One line each; same approved number +1 (351) 777-5337; no design/markup change (the component already renders the desk line).
+- Tests: `npm run build` 0 errors; `npm test` exit 0; built HTML of all three pages now carries the tel link.
+- Next action — Claude: live readback after merge.
