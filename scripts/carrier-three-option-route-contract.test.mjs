@@ -31,10 +31,10 @@ for(const [route, content] of [["carrier", carrier],["sign", sign],["agreement",
   assert.match(content, /<CarrierPlanCards /,"Plan selector not rendered on " + route);
   assert.match(content, /carrier-support-options|sign-support-options|agreement-support-options/);
 }
-assert.match(carrier, /href="\/carrier\/#carrier-support-options" data-commercial-primary-cta/);
-assert.match(sign, /href="#sign-support-options" data-commercial-primary-cta/);
-assert.match(agreement, /href="#agreement-support-options" data-carrier-context-link data-contract-esign/);
-assert.match(offer, /href="#plans" data-primary-choice="agreement"/);
+assert.match(carrier, /href="\/logistics\/carrier-onboarding\/" data-commercial-primary-cta/);
+assert.match(sign, /href="\/logistics\/carrier-onboarding\/" data-commercial-primary-cta/);
+assert.match(agreement, /href="\/logistics\/carrier-onboarding\/" data-carrier-context-link data-contract-esign/);
+assert.match(offer, /href="\/logistics\/carrier-onboarding\/" data-primary-choice="agreement"/);
 assert.match(viewer, /Direct PDF download/);
 assert.match(viewer, /href=\{pdfAssetPath\} download=/);
 assert.match(onboarding, /selected_plan/);
