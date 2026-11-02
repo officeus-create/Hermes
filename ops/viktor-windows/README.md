@@ -10,7 +10,7 @@ This directory is an **off-host source/recovery snapshot** of the active Windows
 
 ## Included
 This snapshot contains recovery-critical **source/configuration**, not a full executable machine image:
-- 15 Python files selected from the actual local import/dependency graph and runtime entrypoints;
+- Python source selected from the actual local import/dependency graph and runtime entrypoints;
 - watchdog + healthcheck PowerShell;
 - local dashboard source;
 - bounded operations manifest;
@@ -23,11 +23,19 @@ The plugin inventory keeps its full-snapshot timestamp at 2026-10-28; only Coord
 - `viktor_live/` state, logs and receipts;
 - corpora / historical chat data / sealed or nonsealed test fixtures;
 - Ollama models;
-- .venv and binaries;
+- .venv and binaries (rebuild from `requirements-lock.txt`);
 - .env files, API tokens, passwords, cookies, credentials and provider sessions;
 - same-disk Recovery copies.
 
-A 19-file recovery-source hardcoded-secret scan returned 0 findings. The two later-added registry/inventory files were separately scanned and also returned 0 findings.
+Recovery source is secret-scanned before promotion. Re-run the scan after every source delta; an older scan never proves a newer snapshot.
+
+## Rebuild environment
+- Python runtime observed on source host: **3.12.10**.
+- Python packages: install from `requirements-lock.txt`; this includes `tzdata==2026.6`, required for `ZoneInfo("Europe/Kyiv")` on this Windows host.
+- Ollama runtime observed: **0.40.12**.
+- Local model observed and watchdog-pinned: **qwen2.5:1.5b-instruct**.
+- Use the VIKTOR virtualenv for runtime/task probes. System Python without the locked dependencies is a verifier-environment mismatch and must not be reported as a VIKTOR product failure.
+- Model weights and credentials remain excluded from source control.
 
 ## Current truth at snapshot
 - Windows runtime: LOCAL_LIVE / SESSION_GUARDED.
