@@ -22,10 +22,11 @@ assert.ok(portfolio.every((project) => Number.isInteger(project.progress.percent
 assert.ok(portfolio.every((project) => project.eta === null && project.eta_label === "UNKNOWN"), "unproven ETA must stay UNKNOWN");
 assert.ok(portfolio.some((project) => project.id === "investor-intelligence" && project.evidence_level === "HOLD_EVENT_TRIGGER_ONLY"));
 assert.ok(portfolio.some((project) => project.id === "ai-operations" && project.status === "in_progress"), "AI Operations must remain in progress until role-scoped production acceptance");
-assert.ok(portfolio.some((project) => project.id === "hermes-command-center" && project.evidence_level === "SOURCE_STACK_CI_GREEN_RUNTIME_UNVERIFIED"), "green source stack must not become production verification");
-assert.ok(portfolio.some((project) => project.id === "ai-operations" && project.evidence_level === "EXACT_HEAD_CI_GREEN_REVIEW_PENDING"), "AI Operations must preserve exact-head CI separately from independent review");
-assert.ok(portfolio.some((project) => project.id === "hae-runtime" && project.evidence_level === "PARTIAL_RUNTIME_PASS_DEPLOYED_SHA_STALE"), "HAE project must surface deployed SHA continuity failure");
+assert.ok(portfolio.some((project) => project.id === "hermes-command-center" && project.evidence_level === "SOURCE_RELEASE_CANDIDATE_REVIEW_PENDING"), "release-candidate source must not become production verification");
+assert.ok(portfolio.some((project) => project.id === "ai-operations" && project.evidence_level === "SOURCE_RELEASE_CANDIDATE_REVIEW_PENDING"), "AI Operations must remain a release candidate until protected review and runtime acceptance");
+assert.ok(portfolio.some((project) => project.id === "hae-runtime" && project.evidence_level === "CURRENT_MAIN_RUNTIME_READONLY_PROOF_ACCEPTED_RELEASE_PENDING"), "HAE project must separate accepted current-main runtime proof from the unmerged Command Center release");
 assert.ok(portfolio.some((project) => project.id === "windows-ai" && project.evidence_level === "HISTORICAL_LOCAL_VERIFIED_CURRENT_OFFLINE"), "historical Windows evidence must not be presented as current live runtime");
+assert.ok(portfolio.some((project) => project.id === "mac-ai" && project.evidence_level === "HOST_ONLINE_FALLBACK_RUNTIME_UNVERIFIED"), "Mac host liveness must remain separate from Hermes AI/HAE execution proof");
 
 assert.match(api, /requireInternalOwner/);
 assert.match(api, /Cache-Control.*private, no-store/);
