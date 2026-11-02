@@ -486,7 +486,7 @@ const languageLinks = siteLocales.filter((language) => !isCatalogLocaleRoute || 
     .site-header[data-approved-visual-shell="true"]:not([data-home-portal]) {
       border: 1px solid rgba(17,19,24,.07);
       border-radius: 999px;
-      background: rgba(255,255,255,.92);
+      background: #fff;
       box-shadow: 0 10px 30px rgba(10,22,79,.07);
       backdrop-filter: blur(18px);
     }
@@ -520,7 +520,7 @@ const languageLinks = siteLocales.filter((language) => !isCatalogLocaleRoute || 
   }
   .site-header[data-approved-visual-shell="true"]:has(> .direction-product-nav)::before {
     position:absolute;z-index:-1;inset:0 0 auto;height:62px;border:1px solid rgba(17,19,24,.07);border-radius:999px;
-    background:rgba(255,255,255,.92);box-shadow:0 10px 30px rgba(10,22,79,.07);backdrop-filter:blur(18px);content:"";
+    background:#fff;box-shadow:0 10px 30px rgba(10,22,79,.07);content:"";
   }
   .site-header[data-approved-visual-shell="true"]:has(> .direction-product-nav) .desktop-nav {
     justify-self:center;max-width:100%;min-width:0;margin:0;gap:2px;overflow-x:auto;scrollbar-width:none;
@@ -535,7 +535,7 @@ const languageLinks = siteLocales.filter((language) => !isCatalogLocaleRoute || 
   .site-header[data-approved-visual-shell="true"]:has(> .direction-product-nav) .header-login-link{min-height:40px;padding:10px 14px;border:0;font-size:.94rem;font-weight:600}
   .site-header[data-approved-visual-shell="true"]:has(> .direction-product-nav) .header-cta{min-height:46px;padding:0 22px;border-radius:999px;background:#0a164f;color:#fff;font-size:.94rem}
   .site-header[data-approved-visual-shell="true"]> .direction-product-nav{
-    position:relative;top:auto;grid-column:1/-1;width:calc(100% - 56px);margin:-1px 28px 0;padding:0 14px 0 18px;border:1px solid rgba(17,19,24,.06);border-top:0;border-radius:0 0 18px 18px;background:rgba(255,255,255,.9);color:#111318;box-shadow:none;backdrop-filter:blur(18px);overflow:hidden;
+    position:relative;top:auto;grid-column:1/-1;width:calc(100% - 56px);margin:-1px 28px 0;padding:0 14px 0 18px;border:1px solid rgba(17,19,24,.06);border-top:0;border-radius:0 0 18px 18px;background:#fff;color:#111318;box-shadow:none;overflow:hidden;
   }
   .site-header[data-approved-visual-shell="true"]> .direction-product-nav .direction-product-nav__inner{width:100%;max-width:none;min-height:54px;margin:0;padding:0}
   @media(max-width:1100px){
@@ -555,6 +555,13 @@ const languageLinks = siteLocales.filter((language) => !isCatalogLocaleRoute || 
   .site-header[data-home-portal="true"],
   .header-connect-mark { margin-right: .4rem; }
   .site-header[data-approved-visual-shell="true"] {
+    /* The approved public shell is a light pill. Keep its surface deterministic instead of
+       relying on hero imagery/transparency, so navigation contrast is stable on every route. */
+    border: 1px solid #e7e9ed;
+    border-radius: 999px;
+    background: #fff;
+    color: #111318;
+    box-shadow: 0 10px 30px rgba(10,22,79,.07);
     /* Approved Claude Design palette on Home and the four direction pages (their heroes and
        submenus already use --dir-*). Real product/Connect colors remain unchanged. */
     --nav-logistics: var(--dir-logistics, var(--hermes-logistics));
