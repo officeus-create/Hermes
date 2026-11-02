@@ -231,13 +231,12 @@ assert.throws(()=>runRoleContractPrimitive("hae.self.patch.propose",patchPayload
 
 console.log("HAE plugin role contracts PASS: 15 zero-model + 2 free-only semantic contracts");
 
-// #2220 source-only: selected role is never treated as executed without
-// a matching canonical job, exact contract hash and durable success event.
-const ccRole = roleContractForJobType("work.portfolio.reconcile");
+// #2220: fixture-only matching does not grant an authenticated runtime receipt.
+const ccRole=roleContractForJobType("work.portfolio.reconcile");
 assert.ok(ccRole);
-const ccSha = "sha256:"+"a".repeat(64);
-const ccJobId = "job:12345678-1234-1234-1234-123456789abc";
-const ccWorkItem = {
+const ccSha=await roleContractSha256(ccRole); // exact HAE unprefixed SHA digest
+const ccJobId="job:12345678-1234-1234-1234-123456789abc";
+const ccWorkItem={
   id:"hcwi_12345678-1234-1234-1234-123456789abc",
   organization_scope:"hermes_internal",
   linked_task_id:"hait_12345678-1234-1234-1234-123456789abc",
@@ -248,17 +247,17 @@ const ccWorkItem = {
     helpers:[],
   }),
 };
-const ccRegistry = [{role_id:ccRole.role_id,plugin_version:ccRole.plugin_version}];
-const ccBinding = {
+const ccRegistry=[{role_id:ccRole.role_id,plugin_version:ccRole.plugin_version}];
+const ccBinding={
   work_item_id:ccWorkItem.id,linked_task_id:ccWorkItem.linked_task_id,
   hae_job_id:ccJobId,idempotency_key:"hae:command-center:fixture-1",
   job_type:ccRole.job_type,contract_sha256:ccSha,
 };
-const ccIdentity = {
+const ccIdentity={
   role_id:ccRole.role_id,plugin_version:ccRole.plugin_version,
   contract_version:ccRole.contract_version,sha256:ccSha,
 };
-const ccJob = {
+const ccJob={
   job_id:ccJobId,job_type:ccRole.job_type,idempotency_key:ccBinding.idempotency_key,
   state:"SUCCEEDED",payload_json:JSON.stringify({_role_contract:ccIdentity}),
   result_json:JSON.stringify({
@@ -266,32 +265,38 @@ const ccJob = {
     result:{snapshot_state:"SOURCE_FIXTURE_ONLY"},
   }),
 };
-const ccEvents = [{job_id:ccJobId,event_type:"job.succeeded",to_state:"SUCCEEDED"}];
-const ccBase = {
+const ccEvents=[{job_id:ccJobId,event_type:"job.succeeded",to_state:"SUCCEEDED"}];
+const ccBase={
   workItem:ccWorkItem,registryEntries:ccRegistry,registryEvidence:{fresh:true},
   binding:ccBinding,haeJob:ccJob,jobEvents:ccEvents,roleContract:ccRole,
 };
-const ccInspect = (patch={}) => verifyCommandCenterHaeReceipt({...ccBase,...patch});
-assert.equal(ccInspect().state,"MATCHED_SOURCE_ONLY");
-assert.equal(ccInspect().source_only,true);
-assert.equal(ccInspect().helper_execution_verified,false);
-assert.equal(ccInspect({registryEvidence:{fresh:false}}).reason,"REGISTRY_SNAPSHOT_UNVERIFIED");
-assert.equal(ccInspect({registryEntries:[{...ccRegistry[0],plugin_version:"0.0.0"}]}).reason,"PLUGIN_ROUTE_VERSION_DRIFT");
-assert.equal(ccInspect({workItem:{...ccWorkItem,organization_scope:"external"}}).reason,"OWNER_WORK_ITEM_UNVERIFIED");
-assert.equal(ccInspect({workItem:{...ccWorkItem,plugin_route_json:"{oops"}}).reason,"ROUTE_NOT_VERIFIED");
-assert.equal(ccInspect({binding:{...ccBinding,hae_job_id:"job:22222222-2222-2222-2222-222222222222"}}).reason,"CANONICAL_JOB_IDENTITY_MISMATCH");
-assert.equal(ccInspect({haeJob:{...ccJob,state:"RUNNING"}}).reason,"NO_SUCCEEDED_HAE_JOB");
-assert.equal(ccInspect({haeJob:{...ccJob,job_type:"another.job"}}).reason,"CANONICAL_JOB_IDENTITY_MISMATCH");
-assert.equal(ccInspect({haeJob:{...ccJob,result_json:JSON.stringify({
-  capability:ccRole.job_type,external_write:false,role_contract:{...ccIdentity,plugin_version:"0.0.0"},
-})}}).reason,"RECEIPT_ROLE_CONTRACT_MISMATCH");
-assert.equal(ccInspect({haeJob:{...ccJob,result_json:JSON.stringify({
-  capability:ccRole.job_type,external_write:true,role_contract:ccIdentity,
-})}}).reason,"RECEIPT_PERMISSION_OR_CAPABILITY_MISMATCH");
-assert.equal(ccInspect({jobEvents:[]}).reason,"DURABLE_SUCCESS_EVENT_UNVERIFIED");
-assert.equal(ccInspect({jobEvents:[...ccEvents,...ccEvents]}).reason,"DURABLE_SUCCESS_EVENT_UNVERIFIED");
-assert.equal(ccInspect({roleContract:{...ccRole,permission_class:"EXTERNAL_WRITE"}}).reason,"ROLE_CONTRACT_NOT_ELIGIBLE");
-assert.equal(ccInspect({haeJob:{...ccJob,result_json:"{}"}}).reason,"RECEIPT_ROLE_CONTRACT_MISMATCH");
-assert.equal(ccInspect({workItem:{...ccWorkItem,linked_task_id:null}}).reason,"OWNER_WORK_ITEM_UNVERIFIED");
-console.log("HAE Command Center receipt guard PASS: synthetic matching/denials; no runtime dispatch");
-
+const inspectCc=(patch={})=>verifyCommandCenterHaeReceipt({...ccBase,...patch});
+const matched=await inspectCc();
+assert.equal(matched.state,"MATCHED_SOURCE_ONLY");
+assert.equal(matched.source_only,true);
+assert.equal(matched.helper_execution_verified,false);
+const ccDenials=[
+  [{registryEvidence:{fresh:false}},"REGISTRY_SNAPSHOT_UNVERIFIED"],
+  [{registryEntries:[{...ccRegistry[0],plugin_version:"0.0.0"}]},"PLUGIN_ROUTE_VERSION_DRIFT"],
+  [{workItem:{...ccWorkItem,organization_scope:"external"}},"OWNER_WORK_ITEM_UNVERIFIED"],
+  [{workItem:{...ccWorkItem,plugin_route_json:"{oops"}},"ROUTE_NOT_VERIFIED"],
+  [{binding:{...ccBinding,hae_job_id:"job:22222222-2222-2222-2222-222222222222"}},"CANONICAL_JOB_IDENTITY_MISMATCH"],
+  [{binding:{...ccBinding,contract_sha256:"b".repeat(64)}},"ROLE_CONTRACT_SHA_MISMATCH"],
+  [{haeJob:{...ccJob,state:"RUNNING"}},"NO_SUCCEEDED_HAE_JOB"],
+  [{haeJob:{...ccJob,job_type:"another.job"}},"CANONICAL_JOB_IDENTITY_MISMATCH"],
+  [{haeJob:{...ccJob,result_json:JSON.stringify({capability:ccRole.job_type,external_write:false,role_contract:{...ccIdentity,plugin_version:"0.0.0"}})}},"RECEIPT_ROLE_CONTRACT_MISMATCH"],
+  [{haeJob:{...ccJob,result_json:JSON.stringify({capability:ccRole.job_type,external_write:true,role_contract:ccIdentity})}},"RECEIPT_PERMISSION_OR_CAPABILITY_MISMATCH"],
+  [{jobEvents:[]},"DURABLE_SUCCESS_EVENT_UNVERIFIED"],
+  [{jobEvents:[...ccEvents,...ccEvents]},"DURABLE_SUCCESS_EVENT_UNVERIFIED"],
+  [{roleContract:{...ccRole,permission_class:"EXTERNAL_WRITE"}},"ROLE_CONTRACT_NOT_ELIGIBLE"],
+  [{haeJob:{...ccJob,result_json:"{}"}},"RECEIPT_ROLE_CONTRACT_MISMATCH"],
+  [{workItem:{...ccWorkItem,linked_task_id:null}},"OWNER_WORK_ITEM_UNVERIFIED"],
+  [{workItem:{...ccWorkItem,plugin_route_json:JSON.stringify({
+    ...JSON.parse(ccWorkItem.plugin_route_json),
+    helpers:[{role_id:"hermes-qa-evidence-auditor",plugin_version:"0.0.0"}],
+  })}},"HELPER_ROUTE_VERSION_DRIFT"],
+];
+for (const [patch,reason] of ccDenials) {
+  assert.equal((await inspectCc(patch)).reason,reason,reason);
+}
+console.log("HAE Command Center receipt guard PASS: synthetic source-only match + "+ccDenials.length+" denials");
