@@ -46,8 +46,6 @@ export const publicVacancyRegistry: PublicVacancyRecord[] = [
     datePosted: "2026-02-26",
     reviewedAt: "2026-09-15",
     expiresAt: "2026-09-18",
-    applicationPath: "/logistics/apply/?for=career&role=car-hauling-dispatcher&source=hermes_careers",
-    submissionUrl: "https://www.work.ua/jobs/7362244/",
     ownerApprovedForPublication: true,
   },
   {
