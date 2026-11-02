@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 const read = (path) => readFile(new URL("../" + path, import.meta.url), "utf8");
 
-const [cards, carrier, sign, agreement, offer, onboarding, viewer, enhancer, middleware] = await Promise.all([
+const [cards, carrier, sign, agreement, offer, onboarding, viewer, enhancer, middleware, routes, headers] = await Promise.all([
   "src/components/CarrierPlanCards.astro",
   "src/pages/carrier/index.astro",
   "src/pages/sign/index.astro",
@@ -11,7 +11,9 @@ const [cards, carrier, sign, agreement, offer, onboarding, viewer, enhancer, mid
   "src/pages/logistics/carrier-onboarding/index.astro",
   "src/pages/contracts/carrier-agreement-v3/index.astro",
   "src/components/CarrierContractSafetyEnhancer.astro",
-  "functions/api/_middleware.ts"
+  "functions/api/_middleware.ts",
+  "public/_routes.json",
+  "public/_headers"
 ].map(read));
 for (const [plan, rate] of [["essential","6%"], ["pro","8%"], ["custom","Your %"]]) {
   assert.match(cards, new RegExp('key: "' + plan + '"'), 'Missing plan ' + plan);
@@ -40,4 +42,12 @@ assert.match(enhancer, /percentage\.readOnly\s*=\s*true/);
 for (const raw of ["rate", "mc", "usdot", "signer_email"]) {
   assert.ok(!cards.includes("searchParams.get("+raw), "No sensitive URL parameter allowed");
 }
+const pagesRoutes=JSON.parse(routes);
+assert.deepEqual(pagesRoutes.include,["/*"]);
+for(const path of ["/carrier/*","/sign/*","/logistics/carrier-offer/*","/logistics/carrier-agreement/*","/logistics/carrier-onboarding/*","/contracts/*"]) {
+  assert.ok(pagesRoutes.exclude.includes(path),`Missing static Pages bypass: ${path}`);
+}
+assert.ok(!pagesRoutes.exclude.some((path)=>path.startsWith("/api/") || path === "/*"),"Contract API and private middleware must remain active.");
+assert.match(headers, /Strict-Transport-Security/);
+assert.match(headers, /\/contracts\/\*/);
 console.log("Carrier three-option route contract OK: 6%, 8%, custom, prominent entry points, consent flow and direct PDF fallback");

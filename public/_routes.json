@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "include": [
+    "/*"
+  ],
+  "exclude": [
+    "/carrier",
+    "/carrier/*",
+    "/sign",
+    "/sign/*",
+    "/logistics/carrier-offer",
+    "/logistics/carrier-offer/*",
+    "/logistics/carrier-agreement",
+    "/logistics/carrier-agreement/*",
+    "/logistics/carrier-onboarding",
+    "/logistics/carrier-onboarding/*",
+    "/contracts/*"
+  ]
+}
