@@ -26,6 +26,30 @@ function parseObject(raw) {
   } catch { return null; }
 }
 
+// The same logical Command Center attempt must always resolve to the same
+// HAE idempotency identity. Include owner scope, existing Internal AI attempt,
+// selected role, policy, job contract and exact digest; no browser-provided key.
+export async function commandCenterHaeIdempotencyKey({ workItem, route, roleContract, contractSha } = {}) {
+  if (workItem?.organization_scope !== "hermes_internal" ||
+      !NONEMPTY.test(String(workItem?.id || "")) ||
+      !NONEMPTY.test(String(workItem?.linked_task_id || "")) ||
+      route?.policy_version !== ROUTE_POLICY ||
+      route?.owner?.role_id !== roleContract?.role_id ||
+      route?.owner?.plugin_version !== roleContract?.plugin_version ||
+      !NONEMPTY.test(String(roleContract?.job_type || "")) ||
+      !NONEMPTY.test(String(roleContract?.contract_version || "")) ||
+      !HASH.test(String(contractSha || ""))) return null;
+  const identity = JSON.stringify([
+    "hermes-command-center-hae-v1", workItem.organization_scope,
+    workItem.id, workItem.linked_task_id, route.policy_version,
+    route.owner.role_id, route.owner.plugin_version,
+    roleContract.job_type, roleContract.contract_version, contractSha,
+  ]);
+  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(identity));
+  const hex = [...new Uint8Array(digest)].map(x=>x.toString(16).padStart(2,"0")).join("");
+  return "hae:cc:v1:" + hex;
+}
+
 // Inputs MUST be retrieved by a separately authenticated owner-only server
 // route from the persisted owner item and HAE D1; browser fields are untrusted.
 // A MATCHED_SOURCE_ONLY outcome means the rows are structurally consistent,
@@ -80,6 +104,12 @@ export async function verifyCommandCenterHaeReceipt({
   const independentlyComputedSha = await roleContractSha256(roleContract);
   if (binding.contract_sha256 !== independentlyComputedSha) {
     return hold("ROLE_CONTRACT_SHA_MISMATCH");
+  }
+  const canonicalIdempotency = await commandCenterHaeIdempotencyKey({
+    workItem, route, roleContract, contractSha: independentlyComputedSha,
+  });
+  if (!canonicalIdempotency || canonicalIdempotency !== binding.idempotency_key) {
+    return hold("IDEMPOTENCY_BINDING_MISMATCH");
   }
   if (!haeJob ||
       haeJob.job_id !== binding.hae_job_id ||
