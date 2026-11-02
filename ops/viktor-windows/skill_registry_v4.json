@@ -1,5 +1,5 @@
 {
-  "version": "1.2.0",
+  "version": "1.3.0",
   "skills": [
     {
       "id": "SOURCE",
@@ -106,6 +106,90 @@
         "hermes-knowledge-curator": "0.1.94"
       },
       "runtime_projection": "LOCAL_POLICY_CONSUMPTION_ONLY_HAE_CONSUMPTION_SEPARATE"
+    },
+    {
+      "id": "SEARCH_PLUGIN_ROUTING_20261102",
+      "name": "Search evidence + current-main repair truth",
+      "rule": "Normalize search evidence SOURCE→DATE→PAGE/QUERY→OBSERVATION→METRIC→PROBLEM→HYPOTHESIS→TEST→RESULT→LESSON→CONFIDENCE. Historical warnings are candidates until current-main reproduction. CODED, indexed/live, traffic and qualified revenue are separate; revenue requires CRM evidence.",
+      "source_plugin": "hermes-search-growth",
+      "source_version": "0.1.14",
+      "source_skills": [
+        "viktor-search-evidence-ingestion",
+        "current-main-seo-error-repair"
+      ],
+      "contract_version": "search_plugin_routing_20261102",
+      "runtime_projection": "LOCAL_VERSIONED_PLUGIN_SKILL_PROJECTION",
+      "source_readback_date": "2026-11-02"
+    },
+    {
+      "id": "DISPATCH_LOAD_BOARD_ROUTING_20261102",
+      "name": "Load Board source/rights/freshness truth",
+      "rule": "PUBLIC_DISCOVERY != HERMES_LIVE_INVENTORY. ACCOUNT_CONFIRMED, RIGHTS_CONFIRMED, CONNECTION_VERIFIED, fresh AVAILABLE load and entitled visibility are separate gates. Prefer authorized API/email/CSV; no scraping authenticated boards, no hidden contacts, no stale/assigned load presented as open.",
+      "source_plugin": "hermes-dispatch-os",
+      "source_version": "0.1.26",
+      "source_skills": [
+        "load-board-first-live-user",
+        "load-board-source-activation"
+      ],
+      "contract_version": "dispatch_load_board_routing_20261102",
+      "runtime_projection": "LOCAL_VERSIONED_PLUGIN_SKILL_PROJECTION",
+      "source_readback_date": "2026-11-02"
+    },
+    {
+      "id": "SALES_PIPELINE_ROUTING_20261102",
+      "name": "Web/CRM sales pipeline truth",
+      "rule": "Use RAW_SOURCE→VERIFIED_COMPANY→CONTACT_VALIDATED→REACHABLE_ELIGIBLE→HUMAN_CONVERSATION→QUALIFIED_NEED→PROPOSAL_REVIEW→ACCEPTED_CONTRACT→ACTIVATED_REAL_USER→REVENUE_VERIFIED. PUBLIC_URL or CRM registration is not client/revenue; CONTACT != CONSENT; no AI outbound without explicit authorization.",
+      "source_plugin": "hermes-sales",
+      "source_version": "0.1.24",
+      "source_skills": [
+        "web-crm-sales",
+        "pipeline-intelligence"
+      ],
+      "contract_version": "sales_pipeline_routing_20261102",
+      "runtime_projection": "LOCAL_VERSIONED_PLUGIN_SKILL_PROJECTION",
+      "source_readback_date": "2026-11-02"
+    },
+    {
+      "id": "ACADEMY_EVIDENCE_ROUTING_20261102",
+      "name": "Academy current evidence truth",
+      "rule": "Keep SOURCE_VERIFIED, TESTED, MERGED, DEPLOYED, LIVE_VERIFIED and REAL_OUTCOME_VERIFIED separate. Anonymous 401 proves access boundary only; simulated practice is sample evidence; owner/company identity and authenticated real save/reload remain separate gates. No second LMS or synthetic paid-student outcomes.",
+      "source_plugin": "hermes-academy",
+      "source_version": "0.1.14",
+      "source_skills": [
+        "current-evidence",
+        "hr-sales-evidence-handoff"
+      ],
+      "contract_version": "academy_evidence_routing_20261102",
+      "runtime_projection": "LOCAL_VERSIONED_PLUGIN_SKILL_PROJECTION",
+      "source_readback_date": "2026-11-02"
+    },
+    {
+      "id": "THREADS_AUTOMATION_ROUTING_20261102",
+      "name": "Threads prepare-vs-publish truth",
+      "rule": "PREPARE_AUTOMATIC is READ_ONLY/DRAFT_ONLY through existing HAE and external_write=false. Publish/reply/DM is PUBLISH_GATED until separately authorized provider write with account identity, idempotency and provider readback. CONNECTED != DATA_READY; DATA_PAUSED != ZERO; keep Hermes Logistics and ProgressoPro lanes separate.",
+      "source_plugin": "hermes-marketing-growth",
+      "source_version": "0.1.17",
+      "source_skills": [
+        "threads-safe-automation",
+        "social-hourly-content-factory"
+      ],
+      "contract_version": "threads_automation_routing_20261102",
+      "runtime_projection": "LOCAL_VERSIONED_PLUGIN_SKILL_PROJECTION",
+      "source_readback_date": "2026-11-02"
+    },
+    {
+      "id": "INVESTOR_EVIDENCE_ROUTING_20261102",
+      "name": "Investor source-passport truth",
+      "rule": "VIKTOR is researcher, not evidence authority. Every investor claim resolves to original source passport; UNKNOWN financial/customer proof stays UNKNOWN, never zero. CI/merge/deploy are not adoption/revenue; local model analysis is not independent validation. Incomplete passport creates verification queue, not promotional wording.",
+      "source_plugin": "hermes-investor-relations",
+      "source_version": "0.1.7",
+      "source_skills": [
+        "viktor-investor-source-passport-ingestion",
+        "evidence-audit-triad"
+      ],
+      "contract_version": "investor_evidence_routing_20261102",
+      "runtime_projection": "LOCAL_VERSIONED_PLUGIN_SKILL_PROJECTION",
+      "source_readback_date": "2026-11-02"
     }
   ]
 }
