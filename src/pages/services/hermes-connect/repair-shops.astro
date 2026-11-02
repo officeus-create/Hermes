@@ -375,10 +375,8 @@ const schema = [
     --repair-focus-muted: #aeb9ca;
     min-height: 70vh;
     color: var(--hermes-ink, #0b0d12);
-    background:
-      radial-gradient(circle at 82% 4%, rgba(30,136,255,.08), transparent 28rem),
-      radial-gradient(circle at 12% 2%, rgba(124,92,255,.07), transparent 26rem),
-      var(--hermes-pearl, #f7f6f3);
+    /* Real opaque paint is critical for browser/axe contrast evaluation. */
+    background: var(--hermes-pearl, #f7f6f3);
   }
 
   .repair-shell { width: min(1160px, calc(100% - 2rem)); margin: 0 auto; }
@@ -404,7 +402,7 @@ const schema = [
   .repair-trust span { display: flex; align-items: center; gap: .4rem; min-height: 34px; padding: .42rem .65rem; border: 1px solid rgba(11,13,18,.08); border-radius: 999px; background: rgba(255,255,255,.58); }
   .repair-trust svg { color: var(--hermes-success, #28b487); }
 
-  .repair-live-card { padding: 1.35rem; color: #f7f6f3; border: 1px solid rgba(255,255,255,.08); border-radius: 28px; background: radial-gradient(circle at 90% 0%, rgba(30,136,255,.18), transparent 16rem), radial-gradient(circle at 20% 100%, rgba(124,92,255,.15), transparent 18rem), var(--repair-focus); box-shadow: 0 32px 90px rgba(23,32,51,.20); }
+  .repair-live-card { padding: 1.35rem; color: #f7f6f3; border: 1px solid rgba(255,255,255,.08); border-radius: 28px; background: var(--repair-focus); box-shadow: 0 32px 90px rgba(23,32,51,.20); }
   .repair-live-card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; padding-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,.08); }
   .repair-live-card-head > div { display: grid; gap: .25rem; }
   .repair-live-card-head small { color: #96a9c9; font-size: .64rem; font-weight: 850; letter-spacing: .13em; }
