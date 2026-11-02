@@ -21,6 +21,25 @@ This file is read by Codex, Cursor, Claude, ChatGPT, and other coding agents wor
 Before asking the owner for history, inspect the current branch, recent commits, open PRs, the project-state file, and the error register. Do not repeat work already recorded as complete.
 
 
+## Hermes plugin preflight for all repository agents
+
+**Applies to Codex, Claude Code, Cursor, ChatGPT and other agents that actually read this repository file**; this document cannot intercept every unrelated ChatGPT conversation or start plugins while a chat is closed. Do not claim it does. For unattended execution, HAE must consume versioned reviewed contracts under its existing scheduler, with receipts and permissions.
+
+Before a material Hermes task, use the existing **Hermes Agent Coordinator** routing constitution and identify one domain owner, one implementation writer, and an independent QA owner. Where private plugins are available, discover/load their **current released skills** before making changes; do not rely on a dated plugin-version guess. At minimum, Search Console / Bing / SEO/GEO work routes through:
+
+1. `hermes-agent-coordinator` — routing, nonduplication, HAE delegation, accurate plugin-use receipts.
+2. `hermes-search-growth` + `hermes-seo-organic-specialist` (Google/Bing technical organic search); `hermes-geo-ai-visibility-specialist` only for true GEO/AI visibility.
+3. `hermes-knowledge-curator` — proven reusable lessons in **One Brain**, not a new memory database.
+4. `hermes-qa-evidence-auditor` — independent source/exact-head/production/provider verification; it is not the source-code author.
+5. Ecosystem assurance roles, when available: `hermes-github-auditor`, `hermes-cloudflare-auditor`, `hermes-drive-auditor`, and `hermes-website-auditor`. These roles discover and classify drift; they do not replace the domain implementation owner, Search Growth, Security, or HAE release authority.
+
+**Current 2026-11-02 GSC evidence:** `data/seo/gsc-discovered-owner-snapshot-2026-11-02.json` contains all 130 discovered-not-indexed URLs from the owner export. The canonical state/task owner remains `docs/design/SEARCH_ERROR_MATRIX.md` E3/E25 and `docs/design/TASK_QUEUE.md`. A snapshot dated 2026-10-23 is **not** live November indexing. The 130 pages have sitemap owners (129 static + one dynamic Connect Catalog profile); the search-quality/intent decision remains open. Do not repeat blanket IndexNow submits, mass noindex, fake local evidence or URL launches.
+
+Required plugin-use receipt in a material PR/handoff:
+`TASK | DOMAIN_OWNER_PLUGIN@RELEASE | COORDINATOR@RELEASE | SKILLS_ACTUALLY_READ | TOOLS_ACTUALLY_RUN | WRITER | INDEPENDENT_QA | SOURCE_DATE/DRIVE_FILE | EXACT_HEAD_CI | MERGE/DEPLOY | PROVIDER_RECHECK | LEARNED_RULE | NEXT_ACTION`.
+
+A plugin being registered, discovered, or read is **not** evidence that its runtime executed. If a specialist cannot be invoked via the available tools, say `SKILL_APPLIED / PLUGIN_NOT_EXECUTED`. Record genuinely repeatable rules as a reviewed plugin skill or One Brain lesson, then have HAE take responsibility for any approved continuous trigger. Never allow one role to approve its own unreviewed code.
+
 ## Completion Architect operating contract
 
 Hermes work is completion-first, revenue-first, and evidence-first. Use this source precedence when facts conflict:

@@ -1,0 +1,255 @@
+{
+  "schemaVersion": 1,
+  "kind": "AUTHENTICATED_PROVIDER_HISTORICAL_SNAPSHOT",
+  "owner": "Hermes Search Growth / SEO Organic Specialist",
+  "property": "sc-domain:hermeslogisticsus.com",
+  "exportDate": "2026-11-02",
+  "gscLastChartDate": "2026-10-23",
+  "issue": "Discovered - currently not indexed",
+  "observedExcludedUrls": 130,
+  "originalArchive": {
+    "name": "hermeslogisticsus.com-Coverage-Drilldown-2026-11-02 (1).zip",
+    "sha256": "5e626a65b3787c5cd8167a0167698e4a8f38bbc12a55951a74261aa645987636",
+    "driveId": "14eSYWiEQLxNnrpys_xtAauhMGnSpb1Bp",
+    "member": "Таблица.csv",
+    "originalSourceRows": 130
+  },
+  "handoff": {
+    "driveId": "19Uac9JyDIIspjFY6Er0h6kqhZAEmlGRs",
+    "title": "HERMES_GSC_FORENSIC_HANDOFF_2026-11-02.md"
+  },
+  "sitemapEvidence": {
+    "staticOwnersOnMain": 129,
+    "liveDynamicOwners": 1,
+    "dynamicSitemap": "https://hermeslogisticsus.com/sitemap-connect-catalog.xml",
+    "dynamicOwner": "https://hermeslogisticsus.com/businesses/connect/company/mzm-junk-removal/",
+    "totalOwnerPaths": 130,
+    "claim": "Each reported URL has an owner in the published static or runtime sitemap; inclusion alone never guarantees indexing."
+  },
+  "groups": [
+    {
+      "id": "london_localized",
+      "description": "London and localized London",
+      "count": 39,
+      "urls": [
+        "https://hermeslogisticsus.com/gb/london/academy/apply/",
+        "https://hermeslogisticsus.com/gb/london/academy/freight-dispatcher-training/",
+        "https://hermeslogisticsus.com/gb/london/academy/load-planner-training/",
+        "https://hermeslogisticsus.com/gb/london/academy/shipper-dealer-sales-training/",
+        "https://hermeslogisticsus.com/gb/london/beauty-salon-marketing/",
+        "https://hermeslogisticsus.com/gb/london/car-detailing-marketing/",
+        "https://hermeslogisticsus.com/gb/london/cleaning-company-marketing/",
+        "https://hermeslogisticsus.com/gb/london/content-reels-scripts/",
+        "https://hermeslogisticsus.com/gb/london/contractor-marketing/",
+        "https://hermeslogisticsus.com/gb/london/crm-automation/",
+        "https://hermeslogisticsus.com/gb/london/dental-clinic-marketing/",
+        "https://hermeslogisticsus.com/gb/london/google-business-profile/",
+        "https://hermeslogisticsus.com/gb/london/guides/b2-english-us-logistics/",
+        "https://hermeslogisticsus.com/gb/london/guides/digital-growth-system/",
+        "https://hermeslogisticsus.com/gb/london/guides/dispatcher-vs-load-planner/",
+        "https://hermeslogisticsus.com/gb/london/guides/local-seo-london/",
+        "https://hermeslogisticsus.com/gb/london/guides/social-media-strategy/",
+        "https://hermeslogisticsus.com/gb/london/guides/training-curriculum/",
+        "https://hermeslogisticsus.com/gb/london/guides/us-logistics-roles/",
+        "https://hermeslogisticsus.com/gb/london/guides/website-seo-funnel/",
+        "https://hermeslogisticsus.com/gb/london/home-services-marketing/",
+        "https://hermeslogisticsus.com/gb/london/it-web-development/",
+        "https://hermeslogisticsus.com/gb/london/landing-page-development/",
+        "https://hermeslogisticsus.com/gb/london/local-seo/",
+        "https://hermeslogisticsus.com/gb/london/logistics-company-marketing/",
+        "https://hermeslogisticsus.com/gb/london/marketing-audit/",
+        "https://hermeslogisticsus.com/gb/london/marketing/",
+        "https://hermeslogisticsus.com/gb/london/meta-ads/",
+        "https://hermeslogisticsus.com/gb/london/restaurant-marketing/",
+        "https://hermeslogisticsus.com/gb/london/seo-services/",
+        "https://hermeslogisticsus.com/gb/london/social-media-management/",
+        "https://hermeslogisticsus.com/gb/london/website-development/",
+        "https://hermeslogisticsus.com/ru/gb/london/it-web-development/",
+        "https://hermeslogisticsus.com/ru/gb/london/marketing/",
+        "https://hermeslogisticsus.com/ru/gb/london/us-logistics-training/",
+        "https://hermeslogisticsus.com/ua/gb/london/",
+        "https://hermeslogisticsus.com/ua/gb/london/it-web-development/",
+        "https://hermeslogisticsus.com/ua/gb/london/marketing/",
+        "https://hermeslogisticsus.com/ua/gb/london/us-logistics-training/"
+      ]
+    },
+    {
+      "id": "car_hauler_markets",
+      "description": "Car-hauler city pages and hub",
+      "count": 24,
+      "urls": [
+        "https://hermeslogisticsus.com/logistics/car-hauler-loads/",
+        "https://hermeslogisticsus.com/logistics/car-hauler-loads/auburn-wa/",
+        "https://hermeslogisticsus.com/logistics/car-hauler-loads/aurora-co/",
+        "https://hermeslogisticsus.com/logistics/car-hauler-loads/bridgeton-mo/",
+        "https://hermeslogisticsus.com/logistics/car-hauler-loads/brighton-co/",
+        "https://hermeslogisticsus.com/logistics/car-hauler-loads/chicago-heights-il/",
+        "https://hermeslogisticsus.com/logistics/car-hauler-loads/chicago-il/",
+        "https://hermeslogisticsus.com/logistics/car-hauler-loads/colorado-springs-co/",
+        "https://hermeslogisticsus.com/logistics/car-hauler-loads/commerce-city-co/",
+        "https://hermeslogisticsus.com/logistics/car-hauler-loads/fremont-ca/",
+        "https://hermeslogisticsus.com/logistics/car-hauler-loads/graham-wa/",
+        "https://hermeslogisticsus.com/logistics/car-hauler-loads/kansas-city-mo-ks/",
+        "https://hermeslogisticsus.com/logistics/car-hauler-loads/lynnwood-wa/",
+        "https://hermeslogisticsus.com/logistics/car-hauler-loads/marysville-wa/",
+        "https://hermeslogisticsus.com/logistics/car-hauler-loads/pueblo-co/",
+        "https://hermeslogisticsus.com/logistics/car-hauler-loads/puyallup-wa/",
+        "https://hermeslogisticsus.com/logistics/car-hauler-loads/renton-wa/",
+        "https://hermeslogisticsus.com/logistics/car-hauler-loads/rogersville-mo/",
+        "https://hermeslogisticsus.com/logistics/car-hauler-loads/seattle-wa/",
+        "https://hermeslogisticsus.com/logistics/car-hauler-loads/springfield-mo/",
+        "https://hermeslogisticsus.com/logistics/car-hauler-loads/st-louis-mo/",
+        "https://hermeslogisticsus.com/logistics/car-hauler-loads/tacoma-wa/",
+        "https://hermeslogisticsus.com/logistics/car-hauler-loads/topeka-ks/",
+        "https://hermeslogisticsus.com/logistics/car-hauler-loads/university-park-il/"
+      ]
+    },
+    {
+      "id": "business_catalog",
+      "description": "Hermes Catalog / business listings",
+      "count": 25,
+      "urls": [
+        "https://hermeslogisticsus.com/businesses/alabama/brookwood/diamondback-truck-trailer-repair-brookwood/",
+        "https://hermeslogisticsus.com/businesses/alaska/palmer/gold-standard-diesel-and-fleet/",
+        "https://hermeslogisticsus.com/businesses/arkansas/",
+        "https://hermeslogisticsus.com/businesses/arkansas/cedarville/the-dapper-wrench/",
+        "https://hermeslogisticsus.com/businesses/arkansas/guy/clendenins-auto-repair/",
+        "https://hermeslogisticsus.com/businesses/arkansas/little-rock/smart-bubble-mobile-auto-body-repair/",
+        "https://hermeslogisticsus.com/businesses/california/",
+        "https://hermeslogisticsus.com/businesses/california/colton/westrux-international-colton/",
+        "https://hermeslogisticsus.com/businesses/california/riverside/freightfix-riverside-county/",
+        "https://hermeslogisticsus.com/businesses/connect/company/mzm-junk-removal/",
+        "https://hermeslogisticsus.com/businesses/illinois/",
+        "https://hermeslogisticsus.com/businesses/illinois/crystal-lake/carss-crystal-lake/",
+        "https://hermeslogisticsus.com/businesses/illinois/east-dundee/dieselhub-service-east-dundee/",
+        "https://hermeslogisticsus.com/businesses/iowa/bedford/hawhee-truck-repair-bedford/",
+        "https://hermeslogisticsus.com/businesses/oklahoma/tulsa/holt-truck-centers-tulsa/",
+        "https://hermeslogisticsus.com/businesses/south-dakota/mitchell/ag-diesel-mitchell/",
+        "https://hermeslogisticsus.com/businesses/texas/dallas/legacy-toyota-of-dallas/",
+        "https://hermeslogisticsus.com/businesses/ukraine/",
+        "https://hermeslogisticsus.com/businesses/ukraine/bila-tserkva/kons-na-bis/",
+        "https://hermeslogisticsus.com/businesses/ukraine/chaiky/",
+        "https://hermeslogisticsus.com/businesses/ukraine/chaiky/chayka-store/",
+        "https://hermeslogisticsus.com/businesses/ukraine/chaiky/mangal-i-kazan/",
+        "https://hermeslogisticsus.com/businesses/ukraine/chaiky/trimmo-ii/",
+        "https://hermeslogisticsus.com/businesses/ukraine/irpin/cvit-vyshni/",
+        "https://hermeslogisticsus.com/businesses/wyoming/glenrock/iron-nation-services/"
+      ]
+    },
+    {
+      "id": "academy_countries",
+      "description": "Academy country pages",
+      "count": 12,
+      "urls": [
+        "https://hermeslogisticsus.com/academy/countries/moldova/",
+        "https://hermeslogisticsus.com/academy/countries/moldova/en/",
+        "https://hermeslogisticsus.com/academy/countries/morocco/",
+        "https://hermeslogisticsus.com/academy/countries/morocco/en/",
+        "https://hermeslogisticsus.com/academy/countries/philippines/",
+        "https://hermeslogisticsus.com/academy/countries/philippines/en/",
+        "https://hermeslogisticsus.com/academy/countries/romania/",
+        "https://hermeslogisticsus.com/academy/countries/romania/en/",
+        "https://hermeslogisticsus.com/academy/countries/tajikistan/",
+        "https://hermeslogisticsus.com/academy/countries/tajikistan/en/",
+        "https://hermeslogisticsus.com/academy/countries/vietnam/",
+        "https://hermeslogisticsus.com/academy/countries/vietnam/en/"
+      ]
+    },
+    {
+      "id": "logistics_resources",
+      "description": "Logistics guides and calculators",
+      "count": 8,
+      "urls": [
+        "https://hermeslogisticsus.com/logistics/resources/",
+        "https://hermeslogisticsus.com/logistics/resources/broker-setup-packet-checklist/",
+        "https://hermeslogisticsus.com/logistics/resources/car-hauler-jobs-owner-operator-guide/",
+        "https://hermeslogisticsus.com/logistics/resources/dispatch-service-vs-self-dispatch/",
+        "https://hermeslogisticsus.com/logistics/resources/factoring-vs-direct-payment-calculator/",
+        "https://hermeslogisticsus.com/logistics/resources/new-authority-car-hauler-readiness-checklist/",
+        "https://hermeslogisticsus.com/logistics/resources/rpm-calculator/",
+        "https://hermeslogisticsus.com/logistics/resources/wisconsin-car-shipping-cost-guide/"
+      ]
+    },
+    {
+      "id": "insights",
+      "description": "Insights / content",
+      "count": 6,
+      "urls": [
+        "https://hermeslogisticsus.com/insights/logistics/diesel-price-route-planning-september-2026/",
+        "https://hermeslogisticsus.com/insights/logistics/fmcsa-fuel-hours-of-service-waiver-september-2026/",
+        "https://hermeslogisticsus.com/insights/marketing/cloudflare-disallow-ai-training-search-visibility-september-2026/",
+        "https://hermeslogisticsus.com/insights/marketing/meta-one-business-creator-tools-september-2026/",
+        "https://hermeslogisticsus.com/insights/marketing/organic-social-before-paid-ads-meta-learning/",
+        "https://hermeslogisticsus.com/insights/technology/i-am-vision/"
+      ]
+    },
+    {
+      "id": "other",
+      "description": "Other service, career, localized, logistics pages",
+      "count": 16,
+      "urls": [
+        "https://hermeslogisticsus.com/careers/wisconsin-owner-operators/",
+        "https://hermeslogisticsus.com/it/academy/us-logistics-operations/",
+        "https://hermeslogisticsus.com/load-board/equipment/car-hauler/",
+        "https://hermeslogisticsus.com/logistics/broker/",
+        "https://hermeslogisticsus.com/logistics/direct-vehicle-transport-network/",
+        "https://hermeslogisticsus.com/logistics/port-vehicle-pickup/",
+        "https://hermeslogisticsus.com/opportunities/",
+        "https://hermeslogisticsus.com/paths/logistics/customers/luxury-classic-vehicle/",
+        "https://hermeslogisticsus.com/ru/privacy/",
+        "https://hermeslogisticsus.com/services/auto-repair-website-design/",
+        "https://hermeslogisticsus.com/services/hermes-connect/load-analyzer/",
+        "https://hermeslogisticsus.com/services/hermes-connect/support/",
+        "https://hermeslogisticsus.com/services/seo-for-auto-repair-shops/",
+        "https://hermeslogisticsus.com/terms/",
+        "https://hermeslogisticsus.com/ua/academy/apply/",
+        "https://hermeslogisticsus.com/ua/academy/marketing/"
+      ]
+    }
+  ],
+  "reviewPolicy": {
+    "defaultDisposition": "PENDING_EVIDENCE",
+    "prohibitedAutomaticActions": [
+      "NOINDEX",
+      "DELETE",
+      "MERGE",
+      "REDIRECT",
+      "BULK_INDEXING_REQUEST"
+    ],
+    "triageFields": [
+      "lastConfirmedProductionStatus",
+      "canonicalOwner",
+      "indexability",
+      "queryDemand",
+      "originalContentAndOperatingTruth",
+      "usefulVisitorAction",
+      "internalLinks",
+      "ownerDecision",
+      "providerRecrawlDate"
+    ],
+    "nextAction": "Investigate 2 crawled-not-indexed commercial service URLs and 130 discovered URL families; retain original pages while evidence is incomplete."
+  },
+  "crawledNotIndexed": [
+    {
+      "url": "https://hermeslogisticsus.com/services/website-redesign/",
+      "disposition": "PENDING_GOOGLE_URL_INSPECTION",
+      "reason": "Commercial indexable public owner; 200/index,follow/self-canonical independently verified 2026-11-02. Fresh 2026-11-03 bounded production probe reproduced intermittent HTTP 503 / Cloudflare error 1102 before subsequent 200; resolve runtime availability before content edits."
+    },
+    {
+      "url": "https://hermeslogisticsus.com/services/seo-for-independent-auto-dealers/",
+      "disposition": "PENDING_GOOGLE_URL_INSPECTION",
+      "reason": "Commercial indexable public owner; 200/index,follow/self-canonical independently verified 2026-11-02. Fresh 2026-11-03 bounded production probe reproduced intermittent HTTP 503 / Cloudflare error 1102 before subsequent 200; resolve runtime availability before content edits."
+    },
+    {
+      "url": "https://hermeslogisticsus.com/business-growth/",
+      "disposition": "EXPECTED_NOINDEX",
+      "reason": "Intentional noindex public handoff"
+    }
+  ],
+  "notes": [
+    "The GSC export contains 1970-01-01 placeholder crawl dates, not actual Google fetch timestamps.",
+    "No mass deindexing or new 130-page launch; technical eligibility does not entail indexing.",
+    "129 static owners were reproduced from main public sitemap files; one current dynamic owner independently verified in the live connect-catalog sitemap.",
+    "2026-11-03 production recheck observed intermittent Cloudflare 1102/503 on both crawled-not-indexed commercial owners and on at least one discovered car-hauler owner; runtime stability is a higher-priority confounder than speculative page-copy changes."
+  ]
+}
