@@ -1,0 +1,25 @@
+name: Carrier Load Board Agreement Handoff
+on:
+  pull_request:
+    paths:
+      - "src/pages/load-board.astro"
+      - "scripts/carrier-load-board-handoff.test.mjs"
+      - ".github/workflows/carrier-load-board-handoff.yml"
+  push:
+    branches: [main]
+    paths:
+      - "src/pages/load-board.astro"
+      - "scripts/carrier-load-board-handoff.test.mjs"
+      - ".github/workflows/carrier-load-board-handoff.yml"
+permissions:
+  contents: read
+jobs:
+  verify-handoff:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: node scripts/carrier-load-board-handoff.test.mjs
