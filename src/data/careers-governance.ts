@@ -17,6 +17,8 @@ export interface PublicVacancyRecord {
   datePosted?: string;
   reviewedAt?: string;
   expiresAt?: string;
+  /** Owner-confirmed continuous recruitment; no synthetic rolling expiration. */
+  alwaysOpen?: boolean;
   applicationPath?: string;
   submissionUrl?: string;
   submissionLabel?: string;
@@ -58,18 +60,18 @@ export const publicVacancyRegistry: PublicVacancyRecord[] = [
     descriptionSourceIds: [
       "100hires:492060",
       "owner:2026-10-03:wisconsin-owner-operator-campaign",
-      "owner:2026-10-03:public-recruiting-phone-confirmed",
       "owner:2026-10-08:ongoing-truck-trailer-recruiting",
-      "owner:2026-10-08:hermes-logistics-llc-contracting-phone",
       "owner:2026-10-08:individual-terms-dispatch-load-board-infrastructure",
+      "owner:2026-10-19:permanent-open-recruiting",
+      "owner:2026-10-19:yuri-owner-operator-interview-phone-authorized",
+      "owner:2026-10-19:company-email-fallback-verified",
     ],
     compensationSourceIds: ["owner:2026-10-08:individual-compensation-review"],
     datePosted: "2026-10-03",
-    reviewedAt: "2026-10-08",
-    expiresAt: "2026-10-15",
+    reviewedAt: "2026-10-19",
+    alwaysOpen: true,
     applicationPath: "/careers/wisconsin-owner-operators/#apply",
-    submissionUrl: "https://100hires.com/j/G4ek3eN",
-    submissionLabel: "100Hires",
+    submissionUrl: "https://hermeslogisticsus.com/careers/wisconsin-owner-operators/#apply",
     sourceDirectoryUrl: "https://100hires.com/c/hermeslogisticsus-com",
     ownerApprovedForPublication: true,
   },
@@ -87,7 +89,7 @@ export const careerInquiryFields = [
 export const careerPublicBoundaries = [
   "A general careers inquiry is not an application to a verified open vacancy unless a specific approved role page is published.",
   "Submitting information does not guarantee review timing, interview, training access, team placement, employment, contract, compensation, promotion, or future work.",
-  "JobPosting schema is allowed only for an owner-approved verified-open role with complete description, employment type, location, real submission URL, review date, and valid-through date.",
+  "JobPosting requires an owner-approved verified-open opportunity and real application method. Finite openings need an expiry; owner-confirmed continuous recruiting may omit validThrough while genuinely open.",
   "Salary, commission, benefits, schedule, country eligibility, and role status are not published without current approved evidence.",
   "Do not place identity documents, financial information, credentials, passwords, private company records, or sensitive personal details in a public URL or analytics event.",
 ] as const;
@@ -124,8 +126,10 @@ export function isVacancyEligibleForJobPosting(
     && record.descriptionSourceIds.some((sourceId) => sourceId.trim())
     && validDate(record.datePosted)
     && validDate(record.reviewedAt)
-    && validDate(record.expiresAt)
-    && record.expiresAt! >= referenceDate
+    && record.reviewedAt! <= referenceDate
+    && (record.alwaysOpen === true
+      ? (!record.expiresAt && record.descriptionSourceIds.includes(`owner:${record.reviewedAt}:permanent-open-recruiting`))
+      : (validDate(record.expiresAt) && record.expiresAt! >= referenceDate))
     && Boolean(record.applicationPath?.startsWith("/"))
     && validHttpsUrl(record.submissionUrl);
 }
