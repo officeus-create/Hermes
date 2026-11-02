@@ -42,6 +42,17 @@ export const DEFAULT_SCREENSHOT_ROUTES = Object.freeze([
   { id: "hermes-connect-web-app", path: "/demos/hermes-connect/" },
   { id: "hermes-connect-workspace", path: "/demos/hermes-connect/workspace.html" },
   { id: "hermes-connect-mark-preview", path: "/demos/hermes-connect/mark-preview.html" },
+  { id: "contacts", path: "/contacts/" },
+  { id: "company-information", path: "/company-information/" },
+  { id: "terms", path: "/terms/" },
+  { id: "opportunities", path: "/opportunities/" },
+  { id: "academy-country-philippines", path: "/academy/countries/philippines/" },
+  { id: "insights-index", path: "/insights/" },
+  { id: "insight-organic-social", path: "/insights/marketing/organic-social-before-paid-ads-meta-learning/" },
+  { id: "london-website-development", path: "/gb/london/website-development/" },
+  { id: "dealer-seo", path: "/services/seo-for-independent-auto-dealers/" },
+  { id: "car-hauler-tacoma", path: "/logistics/car-hauler-loads/tacoma-wa/" },
+  { id: "new-authority-resource", path: "/logistics/resources/new-authority-car-hauler-readiness-checklist/" },
 ]);
 
 export const SCREENSHOT_VIEWPORTS = Object.freeze([
