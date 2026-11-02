@@ -89,6 +89,10 @@ const mustCapture = [
   "/load-board/", "/services/hermes-connect/load-board/access/",
   "/logistics/request-vehicle-transport/", "/businesses/",
   "/services/hermes-connect/", "/services/hermes-connect/repair-shops/",
+  "/contacts/", "/company-information/", "/terms/", "/opportunities/",
+  "/academy/countries/philippines/", "/insights/", "/insights/marketing/organic-social-before-paid-ads-meta-learning/",
+  "/gb/london/website-development/", "/services/seo-for-independent-auto-dealers/",
+  "/logistics/car-hauler-loads/tacoma-wa/", "/logistics/resources/new-authority-car-hauler-readiness-checklist/",
 ];
 for (const path of mustCapture) {
   assert.ok(snapshotRoutes.has(path), `Missing critical screenshot route: ${path}`);
