@@ -58,6 +58,17 @@ assert.equal(routeMap.get("beauty-workspace"), "/services/hermes-connect/beauty/
 assert.equal(routeMap.get("beauty-social"), "/services/hermes-connect/beauty/workspace/social/");
 assert.equal(routeMap.get("hermes-connect-workspace"), "/demos/hermes-connect/workspace.html");
 assert.equal(routeMap.get("hermes-connect-mark-preview"), "/demos/hermes-connect/mark-preview.html");
+assert.equal(routeMap.get("contacts"), "/contacts/");
+assert.equal(routeMap.get("company-information"), "/company-information/");
+assert.equal(routeMap.get("terms"), "/terms/");
+assert.equal(routeMap.get("opportunities"), "/opportunities/");
+assert.equal(routeMap.get("academy-country-philippines"), "/academy/countries/philippines/");
+assert.equal(routeMap.get("insights-index"), "/insights/");
+assert.equal(routeMap.get("insight-organic-social"), "/insights/marketing/organic-social-before-paid-ads-meta-learning/");
+assert.equal(routeMap.get("london-website-development"), "/gb/london/website-development/");
+assert.equal(routeMap.get("dealer-seo"), "/services/seo-for-independent-auto-dealers/");
+assert.equal(routeMap.get("car-hauler-tacoma"), "/logistics/car-hauler-loads/tacoma-wa/");
+assert.equal(routeMap.get("new-authority-resource"), "/logistics/resources/new-authority-car-hauler-readiness-checklist/");
 assert.equal(screenshotFileName("ru-overview", "desktop"), "ru-overview--desktop.png");
 assert.equal(screenshotFileName("ru-overview", "mobile"), "ru-overview--mobile.png");
 assert.equal(screenshotFileName("path-logistics", "desktop"), "path-logistics--desktop.png");
