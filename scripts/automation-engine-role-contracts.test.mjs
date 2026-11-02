@@ -1,4 +1,4 @@
-import {verifyCommandCenterHaeReceipt} from "../functions/api/_lib/command-center-hae-receipt-verifier.mjs";
+import {verifyCommandCenterHaeReceipt,commandCenterHaeIdempotencyKey} from "../functions/api/_lib/command-center-hae-receipt-verifier.mjs";
 import assert from "node:assert/strict";
 import {
   CAPABILITY_GRAPH_ROLE_CONTRACT_JOB_TYPES,
@@ -248,9 +248,12 @@ const ccWorkItem={
   }),
 };
 const ccRegistry=[{role_id:ccRole.role_id,plugin_version:ccRole.plugin_version}];
+const ccKey=await commandCenterHaeIdempotencyKey({workItem:ccWorkItem,route:JSON.parse(ccWorkItem.plugin_route_json),roleContract:ccRole,contractSha:ccSha});
+assert.match(ccKey,/^hae:cc:v1:[a-f0-9]{64}$/);
+assert.equal(ccKey,await commandCenterHaeIdempotencyKey({workItem:ccWorkItem,route:JSON.parse(ccWorkItem.plugin_route_json),roleContract:ccRole,contractSha:ccSha}));
 const ccBinding={
   work_item_id:ccWorkItem.id,linked_task_id:ccWorkItem.linked_task_id,
-  hae_job_id:ccJobId,idempotency_key:"hae:command-center:fixture-1",
+  hae_job_id:ccJobId,idempotency_key:ccKey,
   job_type:ccRole.job_type,contract_sha256:ccSha,
 };
 const ccIdentity={
@@ -282,6 +285,8 @@ const ccDenials=[
   [{workItem:{...ccWorkItem,plugin_route_json:"{oops"}},"ROUTE_NOT_VERIFIED"],
   [{binding:{...ccBinding,hae_job_id:"job:22222222-2222-2222-2222-222222222222"}},"CANONICAL_JOB_IDENTITY_MISMATCH"],
   [{binding:{...ccBinding,contract_sha256:"b".repeat(64)}},"ROLE_CONTRACT_SHA_MISMATCH"],
+  [{binding:{...ccBinding,idempotency_key:"hae:cc:v1:"+"e".repeat(64)}},"IDEMPOTENCY_BINDING_MISMATCH"],
+  [{workItem:{...ccWorkItem,id:"hcwi_98765432-1234-1234-1234-123456789abc"}},"CANONICAL_JOB_BINDING_UNVERIFIED"],
   [{haeJob:{...ccJob,state:"RUNNING"}},"NO_SUCCEEDED_HAE_JOB"],
   [{haeJob:{...ccJob,job_type:"another.job"}},"CANONICAL_JOB_IDENTITY_MISMATCH"],
   [{haeJob:{...ccJob,result_json:JSON.stringify({capability:ccRole.job_type,external_write:false,role_contract:{...ccIdentity,plugin_version:"0.0.0"}})}},"RECEIPT_ROLE_CONTRACT_MISMATCH"],
