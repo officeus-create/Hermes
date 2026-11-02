@@ -16,8 +16,13 @@ const title = vacancyIsCurrent
 const metaDescription = vacancyIsCurrent
   ? "Apply for the verified remote full-time Car Hauling Dispatcher opening supporting U.S. carrier operations. International candidates with experience or a clear entry-level starting point may apply."
   : "Car Hauling Dispatcher role scope and the Hermes recruiting process. The vacancy is not published as open until a fresh owner review confirms it.";
-const applicationUrl = new URL(vacancy.applicationPath!, Astro.site).toString();
-const workUaApplicationUrl = "https://www.work.ua/jobs/7362244/";
+const applicationUrl = vacancyIsCurrent && vacancy.applicationPath
+  ? new URL(vacancy.applicationPath, Astro.site).toString()
+  : null;
+const externalApplicationUrl = vacancyIsCurrent ? vacancy.submissionUrl ?? null : null;
+if (vacancyIsCurrent && (!applicationUrl || !externalApplicationUrl)) {
+  throw new Error("An eligible Car Hauling Dispatcher vacancy must expose current application routes.");
+}
 
 const responsibilities = [
   "Support car-hauling dispatch work for U.S.-market carrier operations.",
@@ -106,7 +111,7 @@ const schema = [
             <div class="career-job-actions">
               {vacancyIsCurrent ? (
                 <>
-                  <a class="button button-primary" href={workUaApplicationUrl} rel="noopener noreferrer" data-external-job-apply>Apply on Work.ua <ArrowRight size={18} aria-hidden="true" /></a>
+                  <a class="button button-primary" href={externalApplicationUrl!} rel="noopener noreferrer" data-external-job-apply>Apply on Work.ua <ArrowRight size={18} aria-hidden="true" /></a>
                   <a class="button" href={vacancy.applicationPath}>Prepare Hermes application preview</a>
                 </>
               ) : (
@@ -163,14 +168,14 @@ const schema = [
               : "The previous verified-open publication window has ended. Review current vacancies or submit only a general careers inquiry until this role is explicitly verified open again."}</p>
           </div>
           {vacancyIsCurrent ? (
-            <a class="button button-primary" href={workUaApplicationUrl} rel="noopener noreferrer" data-external-job-apply>Apply on Work.ua <ArrowRight size={18} aria-hidden="true" /></a>
+            <a class="button button-primary" href={externalApplicationUrl!} rel="noopener noreferrer" data-external-job-apply>Apply on Work.ua <ArrowRight size={18} aria-hidden="true" /></a>
           ) : (
             <a class="button button-primary" href="/logistics/careers/">Check current vacancies <ArrowRight size={18} aria-hidden="true" /></a>
           )}
         </div>
       </section>
 
-      {vacancyIsCurrent && <template data-application-url={applicationUrl}></template>}
+      {vacancyIsCurrent && applicationUrl && <template data-application-url={applicationUrl}></template>}
     </main>
     <SiteFooter />
   </div>
