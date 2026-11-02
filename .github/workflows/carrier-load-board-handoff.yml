@@ -22,4 +22,4 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
-      - run: node scripts/carrier-load-board-handoff.test.mjs
+      - run: node --experimental-strip-types scripts/carrier-load-board-handoff.test.mjs
