@@ -1,0 +1,52 @@
+{
+  "export_received_at": "2026-11-02",
+  "gsc_report_latest_chart_date": "2026-10-23",
+  "property": "sc-domain:hermeslogisticsus.com",
+  "inputs": [
+    "Coverage-2026-11-02.zip (aggregates)",
+    "Coverage-Drilldown-2026-11-02.zip (61 canonical alternatives)"
+  ],
+  "report_totals": {
+    "indexed": 149,
+    "not_indexed": 267
+  },
+  "page_indexing_reasons": {
+    "alternate_page_with_proper_canonical": 61,
+    "excluded_by_noindex": 60,
+    "discovered_currently_not_indexed": 130,
+    "crawled_currently_not_indexed": 3,
+    "not_found_404": 7,
+    "page_with_redirect": 4,
+    "unauthorized_401": 1,
+    "forbidden_403": 1
+  },
+  "url_level_coverage": {
+    "alternate_page_with_proper_canonical": 61,
+    "excluded_by_noindex": null,
+    "discovered_currently_not_indexed": null,
+    "crawled_currently_not_indexed": null,
+    "not_found_404": null,
+    "page_with_redirect": null,
+    "unauthorized_401": null,
+    "forbidden_403": null
+  },
+  "canonical_query_variant_paths": {
+    "/load-board/": 32,
+    "/academy/apply/": 6,
+    "/paths/marketing/": 4,
+    "/services/hermes-connect/repair-shops/plan/": 3,
+    "/paths/technology/": 2,
+    "/services/hermes-connect/roi-calculator/": 2,
+    "/services/hermes-connect/proposal-builder/": 2,
+    "/services/hermes-connect/unified-inbox/": 2,
+    "/services/hermes-connect/load-analyzer/": 2,
+    "/services/hermes-connect/rate-negotiator/": 2,
+    "/logistics/apply/": 2,
+    "/": 1,
+    "/academy/us-logistics-operations/": 1
+  },
+  "canonical_query_variants_decision": "EXPECTED_EXCLUSIONS: preserve the clean canonical owner, functional form prefill, locale and campaign params; do not publish parameter variants as independent sitemap owners.",
+  "other_reasons_decision": "NOT_VERIFIED_AT_URL_LEVEL: aggregate-only counts are not independent defects; require separate per-reason URL exports and current live/source inspection before changing code or requesting indexing.",
+  "historical_404_context": "Existing previously validated seven example URLs include intentional 301/410/405 and Cloudflare-managed 404, but the owner 2026-11-02 aggregate does not prove the exact current seven are identical.",
+  "enforcement": "Never claim Google indexation from CI or merge. Do not auto-validate or bulk-request indexing."
+}
