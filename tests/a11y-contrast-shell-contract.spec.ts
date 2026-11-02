@@ -77,7 +77,8 @@ test("footer grouped navigation keeps opaque high-contrast computed paint", asyn
     };
   });
 
-  expect(paint.color).toBe("rgb(217, 220, 227)");
+  // Contrast acceptance is assessed against the actual computed background below;
+  // do not pin a specific valid design-token RGB value.
   expect(paint.footerBackground).toBe("rgb(5, 11, 43)");
   const foregroundRatios = await footer.evaluate((root) => {
     const selectors = [
