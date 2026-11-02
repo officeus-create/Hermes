@@ -1,7 +1,7 @@
 // HAE existing plugin registry: source-only comparison with an independent
 // Plugin Creator release inventory. This does NOT establish runtime/plugin
 // compatibility or grant permission to update any plugin.
-import { pluginRuntimeRegistrySnapshot } from "./plugin-runtime-registry.mjs";
+import { pluginRuntimeRegistrySnapshot, pluginRuntimeRegistryEvidenceStatus } from "./plugin-runtime-registry.mjs";
 
 const ID = /^hermes-[a-z0-9-]{2,70}$/;
 const SEMVER = /^\d+\.\d+\.\d+(?:[-+][a-zA-Z0-9.-]+)?$/;
@@ -60,9 +60,11 @@ export function planPluginReleaseReconciliation(input = {}, nowIso) {
   }
   for (const roleId of actual.keys())if (!registered.has(roleId))unknown.push(roleId);
 
+  const registeredEvidence = pluginRuntimeRegistryEvidenceStatus(nowIso);
   const complete = input.inventory_complete === true && input.redaction_verified === true &&
     missing.length === 0 && unknown.length === 0;
   const status = !fresh ? "HOLD_STALE_READBACK" :
+    !registeredEvidence.fresh ? "HOLD_STALE_REGISTERED_REGISTRY" :
     !complete ? "HOLD_INCOMPLETE_OR_UNREDACTED" :
     mismatches.length ? "HOLD_VERSION_DRIFT_REVIEW" : "HOLD_RUNTIME_COMPATIBILITY_PROOF";
 
@@ -72,6 +74,8 @@ export function planPluginReleaseReconciliation(input = {}, nowIso) {
     registered_roles:registered.size, observed_roles:actual.size,
     missing_roles:missing, unknown_roles:unknown, version_mismatches:mismatches,
     registered_inventory_observed_at:expected.observed_at,
+    registered_inventory_fresh:registeredEvidence.fresh,
+    registered_inventory_age_hours:registeredEvidence.age_hours,
     proof_limit:"CALLER_PROVIDED_METADATA_NOT_INDEPENDENTLY_ATTESTED",
     requires_external_provider_release_readback:true,
     requires_runtime_role_contract_test:true,
