@@ -233,12 +233,12 @@
     {
       "url": "https://hermeslogisticsus.com/services/website-redesign/",
       "disposition": "PENDING_GOOGLE_URL_INSPECTION",
-      "reason": "Commercial indexable public owner; 200/index,follow/self-canonical independently verified 2026-11-02"
+      "reason": "Commercial indexable public owner; 200/index,follow/self-canonical independently verified 2026-11-02. Fresh 2026-11-03 bounded production probe reproduced intermittent HTTP 503 / Cloudflare error 1102 before subsequent 200; resolve runtime availability before content edits."
     },
     {
       "url": "https://hermeslogisticsus.com/services/seo-for-independent-auto-dealers/",
       "disposition": "PENDING_GOOGLE_URL_INSPECTION",
-      "reason": "Commercial indexable public owner; 200/index,follow/self-canonical independently verified 2026-11-02"
+      "reason": "Commercial indexable public owner; 200/index,follow/self-canonical independently verified 2026-11-02. Fresh 2026-11-03 bounded production probe reproduced intermittent HTTP 503 / Cloudflare error 1102 before subsequent 200; resolve runtime availability before content edits."
     },
     {
       "url": "https://hermeslogisticsus.com/business-growth/",
@@ -249,6 +249,7 @@
   "notes": [
     "The GSC export contains 1970-01-01 placeholder crawl dates, not actual Google fetch timestamps.",
     "No mass deindexing or new 130-page launch; technical eligibility does not entail indexing.",
-    "129 static owners were reproduced from main public sitemap files; one current dynamic owner independently verified in the live connect-catalog sitemap."
+    "129 static owners were reproduced from main public sitemap files; one current dynamic owner independently verified in the live connect-catalog sitemap.",
+    "2026-11-03 production recheck observed intermittent Cloudflare 1102/503 on both crawled-not-indexed commercial owners and on at least one discovered car-hauler owner; runtime stability is a higher-priority confounder than speculative page-copy changes."
   ]
 }
