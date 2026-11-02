@@ -45,8 +45,21 @@
     "/": 1,
     "/academy/us-logistics-operations/": 1
   },
-  "canonical_query_variants_decision": "EXPECTED_EXCLUSIONS: preserve the clean canonical owner, functional form prefill, locale and campaign params; do not publish parameter variants as independent sitemap owners.",
+  "canonical_query_variants_decision": "EXPECTED_EXCLUSIONS: 53 resolve to published canonical sitemap owners; 8 resolve to four intentionally noindex reference tools. Preserve functioning query prefill, locale, campaign params; do not publish variants or noindex reference tools as separate search owners.",
   "other_reasons_decision": "NOT_VERIFIED_AT_URL_LEVEL: aggregate-only counts are not independent defects; require separate per-reason URL exports and current live/source inspection before changing code or requesting indexing.",
   "historical_404_context": "Existing previously validated seven example URLs include intentional 301/410/405 and Cloudflare-managed 404, but the owner 2026-11-02 aggregate does not prove the exact current seven are identical.",
-  "enforcement": "Never claim Google indexation from CI or merge. Do not auto-validate or bulk-request indexing."
+  "enforcement": "Never claim Google indexation from CI or merge. Do not auto-validate or bulk-request indexing.",
+  "canonical_query_variant_resolution": {
+    "expected_variants_of_current_sitemap_owner": 53,
+    "expected_variants_of_intentionally_noindex_public_reference_tool": 8,
+    "current_public_owner_defects_confirmed_by_this_export": 0,
+    "note": "This categorization applies to the provided canonical-alternate drilldown only, not other GSC exclusion categories.",
+    "noindex_reference_base_paths": [
+      "/services/hermes-connect/roi-calculator/",
+      "/services/hermes-connect/proposal-builder/",
+      "/services/hermes-connect/unified-inbox/",
+      "/services/hermes-connect/rate-negotiator/"
+    ],
+    "base_route_live_evidence": "2026-11-02: each returned HTTP 200 with noindex,follow and a self-canonical; remains deliberately absent from static sitemap."
+  }
 }
