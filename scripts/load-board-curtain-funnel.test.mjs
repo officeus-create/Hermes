@@ -127,4 +127,13 @@ assert.equal(releaseDelta.additions?.[0]?.indexability, "noindex");
 assert.equal(releaseDelta.acceptance?.route_count_added, 1);
 assert.equal(releaseDelta.acceptance?.indexable_route_count_added, 0);
 
+// An unavailable Map control is not a working view toggle. Disable it instead of
+// presenting a clickable action, and route "access" copy to actual carrier intake.
+assert.match(livePilot, /disabled aria-disabled="true" aria-pressed="false" title="Map view is not available in this pilot"/);
+assert.match(livePilot, /\/load-board\/\?role=carrier#carrier-access/);
+assert.match(livePilot, /Request carrier access/);
+assert.doesNotMatch(livePilot, /Create load alert<\/a>/);
+assert.doesNotMatch(livePilot, /general Hermes freight marketplace/i);
+assert.match(livePilot, /verified carrier dispatch services across equipment types/);
+
 console.log("Load Board curtain funnel contract passed: truthful aggregate count, locked preview, Hermes account + company access, account portfolio workspace, safe Catalog listing and noindex registration flow are wired.");
