@@ -18,6 +18,7 @@ const processRuntime=read("workers/automation-engine/src/owner-process-runtime.m
 const haeWorker=read("workers/automation-engine/src/index.mjs");
 const nav=read("src/components/HermesConnectInternalAiNav.astro");
 const ownerWorkspace=read("src/components/HermesCommandCenterOwnerWorkspace.astro");
+const commandCenterShell=read("src/components/HermesBusinessCommandCenterShell.astro");
 const shell=read("src/components/HermesBusinessCommandCenterShell.astro");
 const middleware=read("functions/_middleware.js");
 const commandCss=read("src/styles/hermes-business-command-center.css");
@@ -40,7 +41,12 @@ assert.match(ownerWorkspace,/Execution environment|Среда исполнени
 assert.match(ownerWorkspace,/HAE 24\/7 processes/,"owner must have one visible autonomous-process control surface");
 assert.match(ownerWorkspace,/External sends and paid AI are disabled in this layer/,"first autonomous slice must expose its safe execution boundary");
 assert.match(ownerWorkspace,/data-cc-view="today"/,"owner home must prioritize the Today decision layer");
-for(const key of ["projects","tasks","crm","social","automations","agents","plugins","executions","evidence","reports","knowledge","investor","access"]) assert.match(ownerWorkspace,new RegExp(`data-cc-view="${key}"`),`owner workspace must expose ${key} view`);
+for(const selector of ["data-live-threads-state","data-live-hae-state","data-live-automation-state","data-live-ai-state"]) assert.match(ownerWorkspace,new RegExp(selector),`owner Overview must expose ${selector}`);
+assert.match(ownerWorkspace,/data-cc-view="hae"[\s\S]*data-hae-runtime-state/,"HAE must have a dedicated owner runtime view");
+assert.match(commandCenterShell,/hcc-private-sidebar/,"private Command Center must use a persistent owner sidebar shell");
+for(const label of ["Work","Operations","System","Admin"]) assert.match(commandCenterShell,new RegExp(label),`private sidebar must expose ${label} grouping`);
+assert.match(commandCenterShell,/hcc-private-nav-drawer/,"private navigation must collapse through the responsive owner drawer contract");
+for(const key of ["projects","tasks","crm","social","hae","automations","agents","plugins","executions","evidence","reports","knowledge","investor","access"]) assert.match(ownerWorkspace,new RegExp(`data-cc-view="${key}"`),`owner workspace must expose ${key} view`);
 assert.match(ownerWorkspace,/data-new-task/,"task capture must be a compact on-demand action instead of a permanent large form");
 assert.match(ownerWorkspace,/Command Center does not create a second CRM/,"CRM owner view must route to existing Hermes Connect workspaces instead of cloning CRM state");
 assert.match(page,/\/api\/internal-command-center\/reports/,"owner workspace must read HAE report receipts");
