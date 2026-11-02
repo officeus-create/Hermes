@@ -1,6 +1,6 @@
 {
   "schema": "HERMES_AI_CAPABILITY_MANIFEST_V1",
-  "updated_at": "2026-11-02T19:47:37.517011+00:00",
+  "updated_at": "2026-11-02T21:03:34.059269+00:00",
   "authority": "SOURCE_ONLY_ADVISORY_NOT_CANONICAL",
   "source_policy": "2026-11-02 owner directive: recover Windows Hermes AI, preserve prior 16 directions, execute easy-to-hard through existing worker; no second HAE/runtime; local read-only first.",
   "product_name": "Hermes AI",
@@ -56,7 +56,8 @@
         {
           "plugin": "hermes-technology-developer",
           "version": "0.1.61",
-          "release_id": "pluginrel_6ae79700414c81919d0e16fbd2eb6a76"
+          "release_id": "pluginrel_6ae79700414c81919d0e16fbd2eb6a76",
+          "local_skill_projection": "TECHNOLOGY_COMMAND_CENTER_ROUTING_20261102"
         },
         {
           "plugin": "hermes-qa-evidence-auditor",
