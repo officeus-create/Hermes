@@ -48,14 +48,72 @@ async function readLocalSitemapUrls() {
   return sitemapUrls;
 }
 
+// Search Console CSV can contain commas, spaces, and even embedded newlines
+// inside quoted URL fields (e.g. "Green \nBay, WI"). A whitespace regex
+// silently truncated those URLs and led to incorrect triage evidence.
+function csvFirstColumnValues(input) {
+  const values = [];
+  let firstValue = "";
+  let column = 0;
+  let inQuotes = false;
+  let atFieldStart = true;
+  for (let i = 0; i < input.length; i += 1) {
+    const char = input[i];
+    if (char === '"') {
+      if (inQuotes && input[i + 1] === '"') {
+        if (column === 0) firstValue += '"';
+        i += 1;
+      } else if (inQuotes) {
+        inQuotes = false;
+      } else if (atFieldStart) {
+        inQuotes = true;
+      } else if (column === 0) {
+        firstValue += char;
+      }
+      atFieldStart = false;
+      continue;
+    }
+    if (!inQuotes && (char === "," || char === ";" || char === "\t")) {
+      column += 1;
+      atFieldStart = true;
+      continue;
+    }
+    if (!inQuotes && (char === "\r" || char === "\n")) {
+      if (char === "\r" && input[i + 1] === "\n") i += 1;
+      values.push(firstValue.trim());
+      firstValue = "";
+      column = 0;
+      atFieldStart = true;
+      continue;
+    }
+    if (column === 0) firstValue += char;
+    atFieldStart = false;
+  }
+  if (firstValue || column !== 0) values.push(firstValue.trim());
+  return values;
+}
+
 function extractUrls(text) {
   const urls = new Set();
-  for (const match of text.matchAll(/https?:\/\/hermeslogisticsus\.com[^\s,"'<>]*/gi)) {
+  const input = text.replace(/^\uFEFF/, "");
+  const header = input.split(/\r?\n/, 1)[0]?.trim() ?? "";
+  if (/^(?:URL|Page|Страница|raw_url)[,;\t]/i.test(header)) {
+    // Use the complete first CSV column, not the first line/whitespace token.
+    // Other columns (crawl date, status) are evidence metadata, never URLs.
+    for (const firstValue of csvFirstColumnValues(input).slice(1)) {
+      if (/^https?:\/\/hermeslogisticsus\.com(?:[/?#]|$)/i.test(firstValue)) urls.add(firstValue);
+      else if (firstValue.startsWith("/")) urls.add(SITE_ORIGIN + firstValue);
+    }
+    return [...urls];
+  }
+
+  // Preserve backward compatibility for a plain list or unstructured excerpt.
+  for (const match of input.matchAll(/https?:\/\/hermeslogisticsus\.com[^\s,"'<>]*/gi)) {
     urls.add(match[0].replace(/[)\]}]+$/g, ""));
   }
-  for (const line of text.split(/\r?\n/)) {
+  for (const line of input.split(/\r?\n/)) {
     const first = line.split(/[\t,;]/)[0]?.trim().replace(/^"|"$/g, "");
-    if (first?.startsWith("/")) urls.add(`${SITE_ORIGIN}${first}`);
+    if (first?.startsWith("/")) urls.add(SITE_ORIGIN + first);
   }
   return [...urls];
 }
