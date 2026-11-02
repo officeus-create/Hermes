@@ -9,6 +9,7 @@ import subprocess
 import sys
 import urllib.parse
 import urllib.request
+import urllib.error
 
 ROOT=pathlib.Path(__file__).resolve().parent
 RUN=ROOT/"viktor_live"
@@ -16,6 +17,8 @@ OPS=RUN/"operations"
 MANIFEST=ROOT/"HERMES_AI_OPERATIONS_MANIFEST.json"
 STATE=OPS/"task_executor_state.json"
 RECEIPTS=OPS/"task_receipts.jsonl"
+GITHUB_CACHE=OPS/"github_read_cache.json"
+HTTP_META={}
 SAFE_ACTIONS={
  "READ_ONLY_GITHUB_REVIEW","REVIEW_EXISTING_PR","READ_ONLY_PR_AND_TESTS",
  "WRITE_TEST_CASES_PROPOSAL","OFFLINE_HISTORICAL_REPLAY",
@@ -46,12 +49,59 @@ def append_jsonl(path,row):
  path.parent.mkdir(parents=True,exist_ok=True)
  with path.open("a",encoding="utf-8") as f:f.write(json.dumps(row,ensure_ascii=False)+"\n")
 
-def http_json(url):
+def _cache_age_seconds(fetched_at):
+ try:
+  dt=datetime.datetime.fromisoformat(str(fetched_at).replace("Z","+00:00"))
+  if dt.tzinfo is None:dt=dt.replace(tzinfo=datetime.timezone.utc)
+  return max(0,int((datetime.datetime.now(datetime.timezone.utc)-dt).total_seconds()))
+ except (TypeError,ValueError):
+  return None
+
+def _github_cache():
+ data=load_json(GITHUB_CACHE,{"entries":{}})
+ if not isinstance(data,dict):data={"entries":{}}
+ if not isinstance(data.get("entries"),dict):data["entries"]={}
+ return data
+
+def _save_github_cache(data):
+ entries=data.get("entries") or {}
+ ranked=sorted(entries.items(),key=lambda item:str((item[1] or {}).get("fetched_at") or ""),reverse=True)[:100]
+ save_json(GITHUB_CACHE,{"version":1,"entries":dict(ranked),"updated_at":stamp()})
+
+def http_json(url,ttl_seconds=600):
+ cache=_github_cache();entry=(cache.get("entries") or {}).get(url) or {}
+ age=_cache_age_seconds(entry.get("fetched_at"))
+ if entry.get("payload") is not None and age is not None and age<=ttl_seconds:
+  HTTP_META[url]={"state":"FRESH_CACHE","age_seconds":age}
+  return entry["payload"]
  req=urllib.request.Request(url,headers={"Accept":"application/vnd.github+json","User-Agent":"HermesAI-ReadOnly-Executor"})
  try:
-  with urllib.request.urlopen(req,timeout=12) as r:return json.load(r)
+  with urllib.request.urlopen(req,timeout=12) as r:
+   payload=json.load(r)
+  cache["entries"][url]={"fetched_at":stamp(),"payload":payload}
+  _save_github_cache(cache)
+  HTTP_META[url]={"state":"LIVE_READBACK","age_seconds":0}
+  return payload
+ except urllib.error.HTTPError as exc:
+  is_rate_limit=exc.code==403
+  if is_rate_limit and entry.get("payload") is not None:
+   HTTP_META[url]={"state":"STALE_RATE_LIMIT_FALLBACK","age_seconds":age}
+   return entry["payload"]
+  HTTP_META[url]={"state":"RATE_LIMITED" if is_rate_limit else "HTTP_ERROR","http_status":exc.code,"age_seconds":age}
+  return {"_error":"HTTPError","_message":("rate limit exceeded" if is_rate_limit else str(exc)[:240]),"_rate_limited":is_rate_limit}
  except Exception as exc:
+  if entry.get("payload") is not None:
+   HTTP_META[url]={"state":"STALE_TRANSPORT_FALLBACK","age_seconds":age,"error":type(exc).__name__}
+   return entry["payload"]
+  HTTP_META[url]={"state":"TRANSPORT_ERROR","error":type(exc).__name__}
   return {"_error":type(exc).__name__,"_message":str(exc)[:240]}
+
+def cache_truth(urls):
+ states=[HTTP_META.get(url) or {} for url in urls]
+ stale=[s for s in states if str(s.get("state","")).startswith("STALE_")]
+ limited=[s for s in states if s.get("state")=="RATE_LIMITED"]
+ ages=[int(s["age_seconds"]) for s in states if isinstance(s.get("age_seconds"),int)]
+ return {"states":states,"stale":bool(stale),"rate_limited":bool(limited),"max_age_seconds":max(ages) if ages else 0}
 
 def pr_number(task):
  m=re.search(r"/pull/(\d+)",str(task.get("evidence","")))
@@ -96,8 +146,19 @@ def plugin_use_receipt(task):
 def github_pr_audit(task):
  n=pr_number(task)
  if not n:return {"status":"NO_PR_REFERENCE"}
- pr=http_json(f"https://api.github.com/repos/{REPO}/pulls/{n}")
- if pr.get("_error"):return {"status":"SOURCE_ERROR","source":"github_pr","detail":pr}
+ used_urls=[]
+ def get(url,ttl=600):
+  used_urls.append(url)
+  return http_json(url,ttl)
+ pr=get(f"https://api.github.com/repos/{REPO}/pulls/{n}",300)
+ if pr.get("_error"):
+  truth=cache_truth(used_urls)
+  return {"status":"SOURCE_RATE_LIMITED" if truth["rate_limited"] else "SOURCE_ERROR","source":"github_pr","detail":pr,
+          "release_allowed":False,"source_cache_state":truth}
+ initial_truth=cache_truth(used_urls)
+ if initial_truth["stale"]:
+  return {"status":"SOURCE_RATE_LIMITED_STALE_CACHE","source":"github_pr","pr":n,"release_allowed":False,
+          "canonical_next":"WAIT_SOURCE_REFRESH_OR_AUTHENTICATED_READBACK","source_cache_state":initial_truth}
  head=((pr.get("head") or {}).get("sha") or "")
  state=pr.get("state")
  # Terminal PR state is source evidence only; old green CI must never make a closed PR look active.
@@ -111,7 +172,7 @@ def github_pr_audit(task):
   return {"status":"PR_STATE_UNVERIFIED","pr":n,"state":state,"head_sha":head or None,
           "release_allowed":False,"canonical_next":"READ_ONLY_SOURCE_RECHECK"}
  q=urllib.parse.urlencode({"head_sha":head,"event":"pull_request","per_page":100})
- runs=http_json(f"https://api.github.com/repos/{REPO}/actions/runs?{q}")
+ runs=get(f"https://api.github.com/repos/{REPO}/actions/runs?{q}",300)
  workflows=[]
  for x in runs.get("workflow_runs",[]) if isinstance(runs,dict) else []:
   if x.get("head_sha")!=head:continue
@@ -119,11 +180,11 @@ def github_pr_audit(task):
  pending=[x for x in workflows if x["status"]!="completed"]
  failed=[x for x in workflows if x["status"]=="completed" and x["conclusion"] not in ("success","skipped","neutral")]
  base_ref=str((pr.get("base") or {}).get("ref") or "main")
- base_branch=http_json(f"https://api.github.com/repos/{REPO}/branches/{urllib.parse.quote(base_ref,safe='')}")
+ base_branch=get(f"https://api.github.com/repos/{REPO}/branches/{urllib.parse.quote(base_ref,safe='')}",300)
  current_base_sha=str((((base_branch or {}).get("commit") or {}).get("sha") or ""))
  compare={}
  if current_base_sha:
-  compare=http_json(f"https://api.github.com/repos/{REPO}/compare/{head}...{current_base_sha}")
+  compare=get(f"https://api.github.com/repos/{REPO}/compare/{head}...{current_base_sha}",300)
  compare_status=str(compare.get("status") or "") if isinstance(compare,dict) else ""
  main_ahead_by=int(compare.get("ahead_by") or 0) if isinstance(compare,dict) and not compare.get("_error") else None
  main_behind_by=int(compare.get("behind_by") or 0) if isinstance(compare,dict) and not compare.get("_error") else None
@@ -131,14 +192,14 @@ def github_pr_audit(task):
  merge_base_sha=str((((compare or {}).get("merge_base_commit") or {}).get("sha") or ""))
  pr_paths=[];main_delta_paths=[];overlap_paths=[];path_overlap_verified=False
  if base_sync_required and merge_base_sha:
-  pr_files=http_json(f"https://api.github.com/repos/{REPO}/pulls/{n}/files?per_page=100")
-  main_delta=http_json(f"https://api.github.com/repos/{REPO}/compare/{merge_base_sha}...{current_base_sha}")
+  pr_files=get(f"https://api.github.com/repos/{REPO}/pulls/{n}/files?per_page=100",900)
+  main_delta=get(f"https://api.github.com/repos/{REPO}/compare/{merge_base_sha}...{current_base_sha}",900)
   if isinstance(pr_files,list) and isinstance(main_delta,dict) and not main_delta.get("_error"):
    pr_paths=sorted({str(x.get("filename")) for x in pr_files if (x or {}).get("filename")})
    main_delta_paths=sorted({str(x.get("filename")) for x in (main_delta.get("files") or []) if (x or {}).get("filename")})
    overlap_paths=sorted(set(pr_paths)&set(main_delta_paths))
    path_overlap_verified=True
- reviews=http_json(f"https://api.github.com/repos/{REPO}/pulls/{n}/reviews")
+ reviews=get(f"https://api.github.com/repos/{REPO}/pulls/{n}/reviews",300)
  requested=[str((x or {}).get("login") or "") for x in (pr.get("requested_reviewers") or []) if (x or {}).get("login")]
  author=str(((pr.get("user") or {}).get("login") or ""))
  latest={}
@@ -158,6 +219,9 @@ def github_pr_audit(task):
  elif workflows and approved:status="CI_GREEN_REVIEW_APPROVED"
  elif workflows:status="CI_GREEN_REVIEW_PENDING"
  else:status="NO_PULL_REQUEST_WORKFLOWS"
+ truth=cache_truth(used_urls)
+ if truth["stale"]:
+  status="SOURCE_RATE_LIMITED_STALE_CACHE"
  return {"status":status,"pr":n,"state":pr.get("state"),"draft":pr.get("draft"),"mergeable":pr.get("mergeable"),"mergeable_state":pr.get("mergeable_state"),
          "head_sha":head,"base_ref":base_ref,"current_base_sha":current_base_sha or None,"merge_base_sha":merge_base_sha or None,
          "base_compare_status":compare_status or None,"main_ahead_of_pr_by":main_ahead_by,"main_behind_pr_by":main_behind_by,
@@ -165,14 +229,27 @@ def github_pr_audit(task):
          "pr_file_count":len(pr_paths),"main_delta_file_count":len(main_delta_paths),"overlap_paths":overlap_paths,
          "stale_delta_class":("OVERLAP_RECONCILE" if overlap_paths else "NON_OVERLAP_REPLAY" if base_sync_required and path_overlap_verified else "UNVERIFIED" if base_sync_required else "CURRENT_BASE"),
          "workflow_count":len(workflows),"workflows":workflows,"requested_reviewers":requested,
-         "independent_review_approved":bool(approved),"approved_by":approved,"changes_requested_by":changes}
+         "independent_review_approved":bool(approved) if not truth["stale"] else False,
+         "approved_by":approved if not truth["stale"] else [],"changes_requested_by":changes,
+         "release_allowed":False if truth["stale"] else None,
+         "source_cache_state":truth,
+         "canonical_next":"WAIT_SOURCE_REFRESH_OR_AUTHENTICATED_READBACK" if truth["stale"] else None}
 
 def github_issue_audit(task):
  n=issue_number(task)
  if not n:return {"status":"NO_ISSUE_REFERENCE"}
- d=http_json(f"https://api.github.com/repos/{REPO}/issues/{n}")
- if d.get("_error"):return {"status":"SOURCE_ERROR","source":"github_issue","detail":d}
- return {"status":"READ_ONLY_SOURCE_REVIEWED","issue":n,"state":d.get("state"),"title":d.get("title"),"updated_at":d.get("updated_at")}
+ url=f"https://api.github.com/repos/{REPO}/issues/{n}"
+ d=http_json(url,600)
+ truth=cache_truth([url])
+ if d.get("_error"):
+  return {"status":"SOURCE_RATE_LIMITED" if truth["rate_limited"] else "SOURCE_ERROR","source":"github_issue","detail":d,
+          "source_cache_state":truth}
+ if truth["stale"]:
+  return {"status":"SOURCE_RATE_LIMITED_STALE_CACHE","issue":n,"state":d.get("state"),"title":d.get("title"),
+          "updated_at":d.get("updated_at"),"release_allowed":False,
+          "canonical_next":"WAIT_SOURCE_REFRESH_OR_AUTHENTICATED_READBACK","source_cache_state":truth}
+ return {"status":"READ_ONLY_SOURCE_REVIEWED","issue":n,"state":d.get("state"),"title":d.get("title"),"updated_at":d.get("updated_at"),
+         "source_cache_state":truth}
 
 def local_dashboard_audit():
  path=ROOT/"viktor_dashboard.html"
