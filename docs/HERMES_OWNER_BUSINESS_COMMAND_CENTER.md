@@ -1,6 +1,6 @@
 # Hermes Owner Business Command Center — canonical contract
 
-Status: CURRENT CANONICAL SOURCE TRAIN; private foundation originated in merged PR #2107 and the current completion train is tracked by #2106 / #2159 → #2170 → #2219 → #2221 → #2222 → #2232 → #2234 → #2236. #2096, #2105 and other historical competing implementations remain superseded.
+Status: CURRENT CANONICAL SOURCE TRAIN; private foundation originated in merged PR #2107. The former stacked completion train #2159 → #2170 → #2219 → #2221 → #2222 → #2232 → #2234 has been reconciled into the single current release candidate #2236 tracked by #2106. Those parent/replay PRs are provenance only; #2096, #2105 and other historical competing implementations remain superseded.
 Private route: /services/hermes-connect/internal/command-center/
 Public route: /services/hermes-connect/command-center/
 Private access: server-verified HERMES_INTERNAL_OWNER only; edge middleware must verify capability before serving the static owner workspace asset.
@@ -42,19 +42,19 @@ The only new durable owner-domain record is hermes_owner_work_items: a private p
 
 Owner-configured recurring execution remains inside the same canonical HAE data plane. `hermes_automation_processes` stores bounded process definitions and `hermes_automation_process_events` stores their immutable activation, pause, dispatch and error receipts. These tables reuse the existing Hermes Connect production D1 and the existing HAE Queue; they are not another scheduler or task registry.
 
-## Mac / outage behavior
+## Local executor / outage behavior
 
-Cloudflare Pages + D1 own command-center state. The Mac is an outbound AI runner, not the database and not the web server.
+Cloudflare Pages + D1 own command-center state. Hermes AI local execution is outbound-only: Windows YuraValentyuk is the assigned primary executor when connected, while Mac is a cold fallback/reference. Neither local host is the database, web server, scheduler or canonical HAE control plane.
 
-If the Mac loses power:
+If the assigned local executor is offline:
 1. the private web Command Center can remain reachable;
 2. owner work items remain durable in D1;
 3. owner may continue capturing/planning work;
 4. no new runner work is falsely reported as online;
 5. one existing active AI task remains canonical;
-6. when the Mac returns, it reconnects through the existing runner heartbeat/claim flow.
+6. when an assigned local executor returns, it reconnects through the existing runner heartbeat/claim flow and must prove canonical WORK_ID → lease → execution → durable receipt before being called HAE-integrated.
 
-Do not create a second scheduler just to compensate for a disconnected Mac.
+Do not create a second scheduler just to compensate for a disconnected local executor.
 
 ## Task flow
 
@@ -64,7 +64,7 @@ OWNER IDEA / DICTATION
 → optional ready
 → owner presses Run
 → existing Internal AI task (queued)
-→ outbound Mac runner
+→ outbound Hermes AI runner (Windows assigned primary; Mac fallback/reference)
 → isolated Codex task branch
 → sanitized result / PR / evidence
 → work item enters `awaiting_acceptance`
@@ -124,7 +124,7 @@ Every project record states its department, purpose, accountable role, execution
 
 The canonical public page is `/services/hermes-connect/command-center/`. It is a synthetic, read-only product demonstration using sample projects/tasks only. It exposes no internal project, customer, credential or authorization data. The historical `/services/hermes-connect/ai-command-center/` identity is retired as a competing product name and redirects/transitions to Business Command Center; Hermes Intelligence is a layer inside the product, not a second Command Center.
 
-The current registry records the unresolved AI Operations architecture collision between stacked PRs #2125 and #2159 as a blocker. Neither branch is silently selected as canonical. Owner/maintainer review must choose the surviving delta before merge.
+The historical AI Operations collision is resolved: #2125 is superseded, and #2159 plus its stacked completion children were reconciled into #2236. Do not reopen those old branches as competing writers; current release review occurs on #2236.
 
 ## Voice
 
