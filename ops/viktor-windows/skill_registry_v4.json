@@ -1,5 +1,5 @@
 {
-  "version": "1.3.0",
+  "version": "1.4.0",
   "skills": [
     {
       "id": "SOURCE",
@@ -188,6 +188,21 @@
         "evidence-audit-triad"
       ],
       "contract_version": "investor_evidence_routing_20261102",
+      "runtime_projection": "LOCAL_VERSIONED_PLUGIN_SKILL_PROJECTION",
+      "source_readback_date": "2026-11-02"
+    },
+    {
+      "id": "TECHNOLOGY_COMMAND_CENTER_ROUTING_20261102",
+      "name": "Technology Developer Command Center read-model truth",
+      "rule": "Reuse canonical Hermes session/membership/connectors and HAE stores; never create a second auth, tenant, provider-health mirror or task runtime for Command Center. Resolve tenant scope server-side. NOT_CONFIGURED, auth failure, rate limit, provider unavailable and UNKNOWN remain distinct and never become healthy/zero. Reconcile current main and one active writer; CODED/CI_GREEN/REVIEWED/MERGED/DEPLOYED/LIVE_VERIFIED remain separate. Require independent QA and authenticated production readback before LIVE_VERIFIED.",
+      "source_plugin": "hermes-technology-developer",
+      "source_version": "0.1.61",
+      "source_skills": [
+        "command-center-read-model-implementation",
+        "completion-truth-gates",
+        "current-evidence"
+      ],
+      "contract_version": "technology_command_center_routing_20261102",
       "runtime_projection": "LOCAL_VERSIONED_PLUGIN_SKILL_PROJECTION",
       "source_readback_date": "2026-11-02"
     }
