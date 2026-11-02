@@ -44,10 +44,11 @@ for (const raw of ["rate", "mc", "usdot", "signer_email"]) {
 }
 const pagesRoutes=JSON.parse(routes);
 assert.deepEqual(pagesRoutes.include,["/*"]);
-for(const path of ["/carrier/*","/sign/*","/logistics/carrier-offer/*","/logistics/carrier-agreement/*","/logistics/carrier-onboarding/*","/contracts/*"]) {
+for(const path of ["/carrier/*","/sign/*","/logistics/carrier-offer/*","/logistics/carrier-agreement/*","/logistics/carrier-onboarding/*","/contracts/*","/logistics/car-hauler-loads/*","/services/website-redesign/*","/services/seo-for-independent-auto-dealers/*"]) {
   assert.ok(pagesRoutes.exclude.includes(path),`Missing static Pages bypass: ${path}`);
 }
 assert.ok(!pagesRoutes.exclude.some((path)=>path.startsWith("/api/") || path === "/*"),"Contract API and private middleware must remain active.");
+for (const protectedPath of ["/sitemap-connect-catalog.xml","/services/hermes-connect/internal/command-center/*","/businesses/*"]) assert.ok(!pagesRoutes.exclude.includes(protectedPath),`Protected/dynamic route must stay in Pages Functions: ${protectedPath}`);
 assert.match(headers, /Strict-Transport-Security/);
 assert.match(headers, /\/contracts\/\*/);
 console.log("Carrier three-option route contract OK: 6%, 8%, custom, prominent entry points, consent flow and direct PDF fallback");
