@@ -4,7 +4,7 @@
 
 **Scope:** one new **AI System Architecture** section **inside the existing owner-gated Command Center** at `/services/hermes-connect/internal/command-center/?lang=ru`. No new planner, Worker, D1 database, second admin, credentials store, or public LLM endpoint.
 
-**Canonical implementation:** PR [#2159](https://github.com/officeus-create/Hermes/pull/2159) now targets the protected `main` that already includes merged #2107 and the deployed unified owner workspace #2198. #2125 is superseded; do not create a competing AI Operations layer.
+**Canonical implementation:** PR [#2236](https://github.com/officeus-create/Hermes/pull/2236) is the single current Command Center release candidate on top of current `main`. It reconciles the former #2159 AI Operations line and its stacked completion children into one release surface. #2159 and #2125 are provenance/superseded only; do not create a competing AI Operations layer.
 
 ## The actual control flow
 
@@ -50,13 +50,13 @@ The Mac is allowed to be offline; it does **not** own a second cloud queue. Loca
 - Unknown / stale provider state is not CONNECTED. Fail closed, never estimate live costs or task counts.
 - AI architecture task presets do not automatically POST, dispatch or approve anything. Team View uses the existing `/api/internal-ai/status` and `/api/internal-command-center/access` endpoints plus two narrowly scoped grant/audit tables in the existing production D1; it creates no second DB, scheduler or identity.
 - Desktop/390px mobile, Astro build, command center contract and dedicated architecture interaction test must pass.
-- #2159 was safely rebased after #2107 and #2198 were merged and released; merge requires exact-head CI and protected review. Employee grants remain explicit, owner-authorized, logged and revocable; no automatic production access.
+- #2236 is the current release candidate; merge requires exact-head CI and independent protected review. Employee grants remain explicit, owner-authorized, logged and revocable; no automatic production access.
 - Definition of LIVE_VERIFIED: real authenticated owner-gated page on production domain, anonymous denial, delegated-user denial, tab controls, owner task draft, no unapproved writes, mobile/desktop readback.
 
 ## Implementation ownership
 
 - Owner admin: [Command Center #2107](https://github.com/officeus-create/Hermes/pull/2107)
-- AI Operations layer: [#2159](https://github.com/officeus-create/Hermes/pull/2159) — the only canonical continuation; #2125 is superseded
+- Command Center / AI Operations release candidate: [#2236](https://github.com/officeus-create/Hermes/pull/2236) — single canonical continuation; #2159 and #2125 are superseded provenance
 - Private Mac gateway (separate): [#2088](https://github.com/officeus-create/Hermes/pull/2088)
 - HAE canonical runtime and learning: [#2033](https://github.com/officeus-create/Hermes/issues/2033)
 - Workers Free runtime readback: [#2137](https://github.com/officeus-create/Hermes/pull/2137) — source safety gate #2123 is merged
