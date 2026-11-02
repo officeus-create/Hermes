@@ -79,6 +79,36 @@ test("footer grouped navigation keeps opaque high-contrast computed paint", asyn
 
   expect(paint.color).toBe("rgb(217, 220, 227)");
   expect(paint.footerBackground).toBe("rgb(5, 11, 43)");
+  const foregroundRatios = await footer.evaluate((root) => {
+    const selectors = [
+      ".footer-brand span",
+      ".footer-intro > p:not(.footer-brand)",
+      ".footer-link-group h2",
+      ".footer-link-group a",
+      ".footer-contacts a",
+      ".footer-meta > span",
+      ".hc-launcher-panel p",
+    ];
+    const rgb = (text: string) => (text.match(/[\\d.]+/g) ?? []).map(Number).slice(0, 3);
+    const luminance = (color: number[]) => {
+      const linear = color.map((channel) => {
+        const value = channel / 255;
+        return value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4;
+      });
+      return linear[0] * 0.2126 + linear[1] * 0.7152 + linear[2] * 0.0722;
+    };
+    const bg = luminance(rgb(getComputedStyle(root).backgroundColor));
+    return selectors.map((selector) => {
+      const element = root.querySelector(selector);
+      if (!element) throw new Error(`Footer contrast selector absent: ${selector}`);
+      const color = luminance(rgb(getComputedStyle(element).color));
+      return { selector, contrast: (Math.max(color, bg) + 0.05) / (Math.min(color, bg) + 0.05) };
+    });
+  });
+  for (const { selector, contrast } of foregroundRatios) {
+    expect(contrast, `Computed footer contrast too low at ${selector}`).toBeGreaterThanOrEqual(4.5);
+  }
+
   expect(paint.opacity).toBe("1");
   expect(paint.ancestors.filter((item) => item.opacity !== "1")).toEqual([]);
   expect(paint.ancestors.filter((item) => item.filter !== "none")).toEqual([]);
