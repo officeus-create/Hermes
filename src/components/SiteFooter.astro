@@ -311,6 +311,20 @@ const homeFooterGroups = [
     background-color: #050b2b !important;
     color: #fff;
   }
+  /* Homepage route-shells can override descendant ink independently of the footer shell.
+     Keep shared foreground and background on the same contrast surface. */
+  :global(body) .site-footer :where(
+    .footer-brand, .footer-brand span,
+    .footer-intro > p,
+    .footer-link-group h2, .footer-link-group a,
+    .footer-contacts-label, .footer-contacts a,
+    .footer-social a, .footer-social a span,
+    .footer-meta > span, .footer-meta a,
+    .hc-launcher-panel p, .hc-launcher-panel strong,
+    .hc-launcher-panel a, .hc-launcher-panel-head > span
+  ) {
+    color: #eef0f5 !important;
+  }
   .footer-primary-nav--grouped {
     grid-column: 2 / 5;
     display: grid;
