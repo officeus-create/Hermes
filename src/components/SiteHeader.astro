@@ -947,6 +947,30 @@ const languageLinks = siteLocales.filter((language) => !isCatalogLocaleRoute || 
   }
 }
 
+  /* Accessibility guard for every audited desktop/tablet viewport. Older route-specific
+     body:has(...) shells use translucent backgrounds below 1101px; keep the approved header's
+     actual parent surface and primary controls deterministic so contrast does not depend on hero paint. */
+  :root body .site-header[data-approved-visual-shell="true"] {
+    background: #fff;
+    color: #111318;
+  }
+  :root body .site-header[data-approved-visual-shell="true"] .wordmark,
+  :root body .site-header[data-approved-visual-shell="true"] .nav-primary-link,
+  :root body .site-header[data-approved-visual-shell="true"] .header-login-link,
+  :root body .site-header[data-approved-visual-shell="true"] .desktop-products-menu > summary,
+  :root body .site-header[data-approved-visual-shell="true"] .language-menu > summary {
+    color: #111318;
+  }
+  :root body .site-header[data-approved-visual-shell="true"] .nav-primary-link,
+  :root body .site-header[data-approved-visual-shell="true"] .header-login-link,
+  :root body .site-header[data-approved-visual-shell="true"] .header-cta {
+    opacity: 1;
+  }
+  :root body .site-header[data-approved-visual-shell="true"] .header-cta {
+    background: #0a164f;
+    color: #fff;
+  }
+
   /* Approved Claude Design header — ONE panel for Home, the four directions and Products,
      so the header never changes place between pages. Glass pill, mark + HERMES, directions
      with hopping stripes, Products dropping down below, quiet Sign in / language and the
