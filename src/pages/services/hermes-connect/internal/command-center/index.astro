@@ -7,20 +7,21 @@ import HermesCommandCenterOwnerWorkspace from "../../../../../components/HermesC
 import "../../../../../styles/hermes-business-command-center.css";
 const ru=Astro.url.searchParams.get("lang")==="ru";
 const nav=[
-  {key:"today",label:ru?"Сегодня":"Today"},
+  {key:"today",label:ru?"Обзор":"Overview"},
   {key:"projects",label:ru?"Проекты":"Projects"},
   {key:"tasks",label:ru?"Задачи":"Tasks"},
-  {key:"crm",label:"CRM"},
-  {key:"social",label:ru?"Соцсети":"Social"},
+  {key:"social",label:"Threads"},
+  {key:"hae",label:"HAE"},
   {key:"automations",label:ru?"Автоматизации":"Automations"},
-  {key:"agents",label:ru?"Агенты":"Agents"},
+  {key:"agents",label:"Hermes AI"},
   {key:"plugins",label:ru?"Плагины":"Plugins"},
   {key:"executions",label:ru?"Исполнения":"Executions"},
-  {key:"evidence",label:"Evidence"},
+  {key:"evidence",label:ru?"Evidence / QA":"Evidence / QA"},
+  {key:"knowledge",label:"One Brain"},
   {key:"reports",label:ru?"Отчёты":"Reports"},
-  {key:"knowledge",label:ru?"Знания":"Knowledge"},
+  {key:"crm",label:"CRM"},
+  {key:"access",label:ru?"Accounts & Access":"Accounts & Access"},
   {key:"investor",label:"Investor"},
-  {key:"access",label:ru?"Доступ":"Access"},
 ];
 ---
 <BaseLayout title={ru?"Business Command Center | Hermes Connect":"Business Command Center | Hermes Connect"} description={ru?"Закрытое рабочее пространство владельца Hermes: решения, проекты, CRM, задачи, AI, автоматизация, отчёты, знания и evidence.":"Private Hermes owner workspace for decisions, projects, CRM, tasks, AI, automation, reports, knowledge and evidence."} robots="noindex,nofollow,noarchive" htmlLang={ru?"ru":"en"}>
@@ -48,7 +49,7 @@ type HaeProcess={id:string;name:string;job_type:string;business_lane:string;work
 const isRu=new URLSearchParams(location.search).get("lang")==="ru";
 const q=<T extends HTMLElement=HTMLElement>(s:string)=>document.querySelector<T>(s);
 const t=(en:string,ru:string)=>isRu?ru:en;
-let items:WorkItem[]=[],processes:HaeProcess[]=[],filter="open",projectFilter="all",searchTerm="",runtime:any=null,tasks:any[]=[],projects:{id:string;title:string;department:string}[]=[];
+let items:WorkItem[]=[],processes:HaeProcess[]=[],filter="open",projectFilter="all",searchTerm="",runtime:any=null,processRuntime:any=null,socialSnapshot:any=null,threadsSnapshot:any=null,tasks:any[]=[],projects:{id:string;title:string;department:string}[]=[];
 const stamp=(v?:string|null)=>v?new Date(v).toLocaleString(isRu?"ru-RU":"en-US",{dateStyle:"medium",timeStyle:"short"}):"—";
 async function jsonFetch(url:string,options:RequestInit={}){const r=await fetch(url,{credentials:"same-origin",cache:"no-store",...options,headers:{Accept:"application/json",...(options.body?{"Content-Type":"application/json"}:{}),...(options.headers||{})}});let d:any={};try{d=await r.json()}catch{}return{r,d}}
 function setText(sel:string,value:string){const n=q(sel);if(n)n.textContent=value}
@@ -88,7 +89,7 @@ async function loadAll(){
   const status=await jsonFetch("/api/internal-ai/status");
   if(!status.r.ok||!status.d.success){q("[data-private]")!.hidden=true;const access=q("[data-access]")!;access.hidden=false;access.querySelector("strong")!.textContent=status.r.status===401?t("Sign in required","Нужно войти"):t("Owner access required","Нужен доступ владельца");return}
   q("[data-access]")!.hidden=true;q("[data-private]")!.hidden=false;runtime=status.d.runtime||{};const active=status.d.active_task||null;
-  setText("[data-runner-state]",runtime.online?t("Online","Онлайн"):t("Offline","Офлайн"));setText("[data-runner-copy]",runtime.online?t("Mac heartbeat observed; Windows runtime unverified","Heartbeat Mac получен; Windows не подтверждён"):t("Mac heartbeat unavailable; cloud backlog preserved","Heartbeat Mac недоступен; облачная очередь сохранена"));
+  setText("[data-runner-state]",runtime.online?t("Online","Онлайн"):t("Offline","Офлайн"));setText("[data-runner-copy]",runtime.online?t("Internal AI runner heartbeat observed","Получен heartbeat Internal AI runner"):t("Internal AI runner heartbeat unavailable; cloud backlog preserved","Heartbeat Internal AI runner недоступен; облачная очередь сохранена"));
   renderAiArchitecture(runtime);
   setText("[data-agent-badge]",runtime.online?t("Online","Онлайн"):t("Offline","Офлайн"));setText("[data-agent-status]",runtime.online?t("Online","Онлайн"):t("Offline","Офлайн"));setText("[data-agent-seen]",stamp(runtime.last_seen_at));setText("[data-agent-sha]",runtime.repo_sha||"—");setText("[data-active-task]",active?(String(active.status||"")+(active.id?" · "+String(active.id).slice(-10):"")):t("None","Нет"));
   const [work,taskList,accessList,account,processList,reportList,intelligence,socialAcquisition,threadsConnections]=await Promise.all([
@@ -117,10 +118,10 @@ async function loadAll(){
   }
   if(taskList.r.ok&&taskList.d.success)tasks=taskList.d.tasks||[];
   if(account.r.ok&&account.d.success)renderAccount(account.d);
-  if(processList.r.ok&&processList.d.success)processes=processList.d.processes||[];
+  if(processList.r.ok&&processList.d.success){processes=processList.d.processes||[];processRuntime=processList.d}else{processRuntime=null}
   if(reportList.r.ok&&reportList.d.success)renderReports(reportList.d);
   if(intelligence.r.ok&&intelligence.d.success)renderIntelligence(intelligence.d);
-  renderSocialAcquisition(socialAcquisition.r.ok&&socialAcquisition.d.success?socialAcquisition.d:null,threadsConnections.r.ok&&threadsConnections.d.success?threadsConnections.d:null);
+  socialSnapshot=socialAcquisition.r.ok&&socialAcquisition.d.success?socialAcquisition.d:null;threadsSnapshot=threadsConnections.r.ok&&threadsConnections.d.success?threadsConnections.d:null;renderSocialAcquisition(socialSnapshot,threadsSnapshot);
   setText("[data-backlog-count]",String(items.filter(x=>!["done","cancelled"].includes(x.status)).length));setText("[data-approval-count]",String(tasks.filter(x=>x.status==="needs_approval").length));
   document.querySelectorAll<HTMLElement>("[data-module]").forEach(card=>{const key=card.dataset.module||"";const count=items.filter(x=>x.workstream===key&&!["done","cancelled"].includes(x.status)).length;const badge=card.querySelector<HTMLElement>(".module-state");if(badge)badge.textContent=count?String(count)+" "+t("open","открыто"):t("Clear","Чисто")});
   renderItems();renderProcesses();renderOwnerOverview();renderEvidence();if(accessList.r.ok&&accessList.d.success)renderOwners(accessList.d);
@@ -191,7 +192,7 @@ function renderPluginRegistry(data:any){
   rows.forEach((item:any)=>{const card=document.createElement("article");card.className="workspace-card";const title=document.createElement("strong");title.textContent=String(item.role_id||"UNKNOWN");const version=document.createElement("span");version.textContent="@"+String(item.plugin_version||"UNKNOWN");const note=document.createElement("small");note.textContent=t("REGISTERED CAPABILITY · execution requires a separate HAE receipt","ЗАРЕГИСТРИРОВАННАЯ ВОЗМОЖНОСТЬ · выполнение требует отдельного HAE receipt");card.append(title,version,note);box.append(card)});
 }
 function switchView(view:string){
-  const valid=new Set(["today","projects","tasks","crm","social","automations","agents","plugins","executions","evidence","reports","knowledge","investor","access"]);
+  const valid=new Set(["today","projects","tasks","crm","social","hae","automations","agents","plugins","executions","evidence","reports","knowledge","investor","access"]);
   const next=valid.has(view)?view:"today";
   document.querySelectorAll<HTMLElement>("[data-cc-view]").forEach(section=>{const active=section.dataset.ccView===next;section.hidden=!active;section.classList.toggle("is-active",active)});
   document.querySelectorAll<HTMLButtonElement>("[data-cc-nav]").forEach(button=>{const active=button.dataset.ccNav===next;button.classList.toggle("is-active",active);button.setAttribute("aria-current",active?"page":"false")});
