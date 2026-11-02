@@ -1,14 +1,15 @@
 const AUTH_ENDPOINT = "https://threads.com/oauth/authorize";
-const SHORT_TOKEN_ENDPOINT = "https://graph.threads.com/oauth/access_token";
-const LONG_TOKEN_ENDPOINT = "https://graph.threads.com/access_token";
-const REFRESH_TOKEN_ENDPOINT = "https://graph.threads.com/refresh_access_token";
-const GRAPH_BASE = "https://graph.threads.com/v1.0/";
+const SHORT_TOKEN_ENDPOINT = "https://graph.threads.net/oauth/access_token";
+const LONG_TOKEN_ENDPOINT = "https://graph.threads.net/access_token";
+const REFRESH_TOKEN_ENDPOINT = "https://graph.threads.net/refresh_access_token";
+const GRAPH_BASE = "https://graph.threads.net/v1.0/";
 const STATE_TTL_MS = 10 * 60 * 1000;
 const DEFAULT_SCOPES = [
   "threads_basic",
   "threads_content_publish",
   "threads_read_replies",
   "threads_manage_replies",
+  "threads_manage_mentions",
   "threads_manage_insights",
 ];
 
@@ -89,8 +90,10 @@ export function threadsBrandScopes(env) {
     "threads_content_publish",
     "threads_read_replies",
     "threads_manage_replies",
+    "threads_manage_mentions",
     "threads_manage_insights",
     "threads_keyword_search",
+    "threads_profile_discovery",
   ]);
   const scopes = [];
   for (const scope of raw) {
@@ -501,9 +504,34 @@ export async function publishThreadsText(accessToken, userId, text) {
   return { ok: true, media_id: clean(result.data.id, 160) };
 }
 
+export async function publishThreadsReply(accessToken, userId, text, replyToId) {
+  const targetId = clean(replyToId, 160);
+  if (!/^[0-9]{6,40}$/.test(targetId)) return { ok:false, error_class:"invalid_reply_target" };
+  const url = new URL(`${clean(userId, 160)}/threads`, GRAPH_BASE);
+  const result = await providerJson(url.toString(), {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded", Accept: "application/json" },
+    body: new URLSearchParams({
+      media_type: "TEXT",
+      text,
+      reply_to_id: targetId,
+      auto_publish_text: "true",
+      access_token: String(accessToken),
+    }),
+  });
+  if (!result.ok || !result.data?.id) {
+    return {
+      ok: false,
+      error_class: result.network_error ? "provider_outcome_unknown" : "provider_rejected",
+      provider_status: result.status,
+    };
+  }
+  return { ok:true, media_id:clean(result.data.id,160), reply_to_id:targetId };
+}
+
 export async function readThreadsMedia(accessToken, mediaId) {
   const url = new URL(clean(mediaId, 160), GRAPH_BASE);
-  url.searchParams.set("fields", "id,media_product_type,media_type,permalink,username,text,timestamp,is_quote_post,is_reply,reposted_post");
+  url.searchParams.set("fields", "id,media_product_type,media_type,permalink,username,text,timestamp,is_quote_post,is_reply,reposted_post,replied_to,root_post");
   url.searchParams.set("access_token", String(accessToken));
   const result = await providerJson(url.toString(), { headers: { Accept: "application/json" } });
   if (!result.ok || !result.data?.id) {
@@ -521,6 +549,8 @@ export async function readThreadsMedia(accessToken, mediaId) {
       timestamp: clean(result.data.timestamp, 100),
       is_quote_post: Boolean(result.data.is_quote_post),
       is_reply: Boolean(result.data.is_reply),
+      replied_to: result.data.replied_to && result.data.replied_to.id ? { id: clean(result.data.replied_to.id, 160) } : null,
+      root_post: result.data.root_post && result.data.root_post.id ? { id: clean(result.data.root_post.id, 160) } : null,
       reposted_post: result.data.reposted_post || null,
     },
   };
