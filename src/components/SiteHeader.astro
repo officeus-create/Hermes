@@ -510,7 +510,7 @@ const languageLinks = siteLocales.filter((language) => !isCatalogLocaleRoute || 
     margin:0;
     padding:0 8px 0 20px;
     border:0;
-    background:transparent;
+    background:#fff;
     box-shadow:none;
     backdrop-filter:none;
     transform:translateX(-50%);
@@ -955,7 +955,7 @@ const languageLinks = siteLocales.filter((language) => !isCatalogLocaleRoute || 
     :root body .site-header[data-approved-visual-shell="true"] {
       position: fixed; top: 12px; left: 50%; right: auto; transform: translateX(-50%);
       width: min(1488px, calc(100% - 48px)); max-width: none; min-height: 64px; margin: 0;
-      padding: 0 10px 0 22px; border: 0; border-radius: 999px; background: transparent;
+      padding: 0 10px 0 22px; border: 0; border-radius: 999px; background: #fff;
       box-shadow: none; backdrop-filter: none; isolation: isolate;
       display: grid; grid-template-columns: auto minmax(0, 1fr) auto; grid-template-rows: 64px auto;
       align-items: center; column-gap: 18px;
@@ -963,8 +963,8 @@ const languageLinks = siteLocales.filter((language) => !isCatalogLocaleRoute || 
     :root body .site-header[data-approved-visual-shell="true"]::before {
       position: absolute; z-index: -1; inset: 0 0 auto; height: 64px; content: "";
       border: 1px solid rgba(17, 19, 24, .07); border-radius: 999px;
-      background: rgba(255, 255, 255, .92); box-shadow: 0 10px 30px rgba(10, 22, 79, .07);
-      backdrop-filter: blur(18px) saturate(1.04);
+      background: #fff; box-shadow: 0 10px 30px rgba(10, 22, 79, .07);
+      backdrop-filter: none;
     }
     :root body .site-header[data-approved-visual-shell="true"] .desktop-nav {
       justify-self: center; display: flex; align-items: center; gap: 4px; margin: 0; overflow: visible;
