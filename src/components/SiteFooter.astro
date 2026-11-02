@@ -305,6 +305,12 @@ const homeFooterGroups = [
 <RussianLocaleIntegrity />
 
 <style>
+  /* The public footer uses light navigation copy. Prevent route-shell CSS from
+     repainting its shared backing surface white and breaking WCAG contrast. */
+  :global(body) .site-footer {
+    background-color: #050b2b !important;
+    color: #fff;
+  }
   .footer-primary-nav--grouped {
     grid-column: 2 / 5;
     display: grid;
