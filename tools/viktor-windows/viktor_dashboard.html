@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Hermes AI · AI Agents</title>
+<style>
+:root{font:14px/1.46 -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif;color:#172338;background:#f5f7fb}
+*{box-sizing:border-box}body{margin:0}button,textarea{font:inherit}button{cursor:pointer}
+.shell{display:grid;grid-template-columns:242px minmax(400px,1fr) 315px;height:100vh;min-height:690px}
+aside{background:#fff;border-right:1px solid #e6ebf2;padding:24px 16px}
+.brand{display:flex;align-items:center;gap:10px;padding:8px 7px 27px}
+.logo{display:grid;place-items:center;width:38px;height:38px;border-radius:13px;color:white;background:#174dae;font-size:18px;font-weight:800;box-shadow:0 5px 12px #1948a02b}
+.brand strong{font-size:16px;letter-spacing:-.35px}.brand small{display:block;color:#718095;font-size:11px;letter-spacing:1.3px}
+.nav{display:flex;align-items:center;gap:12px;width:100%;padding:12px 13px;margin:5px 0;border:0;border-radius:11px;background:transparent;color:#617087;font-weight:650;text-align:left}
+.nav.active{background:#eaf1ff;color:#1e57b8}.nav svg{width:18px;height:18px}
+.sidebar-note{margin-top:30px;padding:16px;background:#f6f8fc;border-radius:14px;color:#6d7990;font-size:12px}
+.sidebar-note strong{color:#1c355a;display:block;margin-bottom:6px}
+main{display:flex;flex-direction:column;min-width:0;background:#fafbfe}
+.top{padding:21px 28px;border-bottom:1px solid #e8edf4;background:#fff;display:flex;align-items:center;justify-content:space-between}
+.top h1{margin:0;font-size:20px;letter-spacing:-.5px}.top p{margin:4px 0 0;color:#79879a;font-size:12px}
+.status-pill{background:#e7f6ee;color:#247b49;font-weight:750;padding:8px 11px;border-radius:20px;font-size:12px;white-space:nowrap}
+.status-pill.off{color:#a36918;background:#fff5e5}
+.scroller{flex:1;overflow-y:auto;padding:26px 35px;display:flex;flex-direction:column;gap:14px}
+.intro{max-width:680px;padding:20px 23px;border:1px solid #dce7f7;background:#f1f6fe;border-radius:16px;color:#33516e}
+.intro b{font-size:17px;color:#152f5b;display:block;margin-bottom:6px}
+.intro p{margin:0}
+.message{max-width:80%;padding:15px 18px;border-radius:16px;white-space:pre-wrap;overflow-wrap:anywhere}
+.message.user{align-self:flex-end;color:#fff;background:#1d56ac;border-bottom-right-radius:4px}
+.message.assistant{align-self:flex-start;background:#fff;border:1px solid #e1e9f4;border-bottom-left-radius:4px;box-shadow:0 2px 7px #142b5008}
+.message .who{font-size:11px;font-weight:750;opacity:.75;margin-bottom:7px}
+.empty-tip{align-self:center;color:#9aa6b8;font-size:12px;margin:16px 0}
+.compose{padding:18px 28px 24px;background:white;border-top:1px solid #e6eaf1}
+.quick{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.quick button{color:#4b6587;background:#f5f8fd;border:1px solid #e0e7f1;border-radius:17px;font-size:12px;padding:7px 12px}
+.input-wrap{display:flex;gap:11px;align-items:flex-end;padding:8px;background:#fff;border:1px solid #cfd9e7;border-radius:15px;box-shadow:0 2px 9px #102f6010}
+textarea{flex:1;border:0;outline:0;resize:vertical;min-height:48px;max-height:170px;padding:10px;line-height:1.45;background:transparent;color:#16243a}
+.send{border:0;border-radius:11px;background:#2057af;color:#fff;font-weight:750;padding:12px 20px}.send:disabled{background:#9aa9bc;cursor:not-allowed}
+.hint{color:#8b98aa;font-size:11px;margin-top:9px}
+.metrics{background:#fff;border-left:1px solid #e5ebf4;padding:24px 19px;overflow-y:auto}
+.metrics h2{font-size:14px;margin:4px 0 19px}
+.section-title{font-weight:800;color:#7c8aa0;font-size:10px;letter-spacing:1.2px;text-transform:uppercase;margin:25px 0 10px}
+.kpis{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.kpi{background:#f6f8fc;padding:15px 11px;border-radius:12px}.kpi strong{font-size:23px;display:block;color:#193f80}.kpi span{font-size:11px;color:#6f8097}
+.info{padding:14px;border:1px solid #e4ebf4;border-radius:12px;background:#fcfdff}
+.info .lbl{font-size:11px;color:#8491a4;margin-bottom:7px}.info b{display:block;font-size:13px;margin-bottom:6px}.info p{margin:0;color:#53677f;font-size:12px;overflow-wrap:anywhere}
+.activity{display:flex;flex-direction:column;gap:12px}.activity .event{display:flex;gap:8px;border-bottom:1px solid #eef1f6;padding-bottom:9px}
+.dot{border-radius:50%;flex-shrink:0;width:7px;height:7px;margin-top:6px;background:#4d86ca}
+.ev-label{font-weight:700;font-size:11px}.ev-detail{color:#77869a;font-size:11px;overflow-wrap:anywhere}
+.time{font-size:10px;color:#96a2b4;margin-top:2px}
+footer{padding-top:20px;font-size:11px;color:#8693a5}
+@media(max-width:1090px){.shell{grid-template-columns:205px minmax(320px,1fr)}.metrics{display:none}}
+@media(max-width:700px){.shell{display:flex;flex-direction:column;height:100dvh;min-height:0}aside{display:none}.top{padding:15px}.scroller{padding:17px}.compose{padding:13px}.message{max-width:94%}}
+</style></head>
+<body>
+<div class="shell">
+<aside>
+<div class="brand"><div class="logo">H</div><div><strong>HERMES AI</strong><small>AI COMMAND CENTER</small></div></div>
+<button type="button" class="nav active" data-prompt="Какие следующие задачи Hermes AI?">◉ &nbsp; Центр агента</button>
+<button type="button" class="nav" data-prompt="Что ты изучил из аудитов Hermes сегодня?">◷ &nbsp; История обучения</button>
+<button type="button" class="nav" data-prompt="Что ещё требует доказательства и независимой проверки?">✓ &nbsp; Независимая QA</button>
+<button type="button" class="nav" data-prompt="Какие повторяющиеся ошибки наших ИИ ты обнаружил?">▣ &nbsp; Архив аудитов</button>
+<button type="button" class="nav" data-prompt="Покажи Hermes Investment Intelligence W-20261024-103 и текущий checkpoint">◈ &nbsp; Investor Intelligence</button>
+<button type="button" class="nav" data-prompt="Какие приватные Hermes-плагины подключены и как ты их используешь?">⌘ &nbsp; Плагины / Digital Staff</button>
+<div class="sidebar-note"><strong>Локальная лаборатория Windows</strong>Эта панель работает на Windows через локальный Ollama. Облачный HAE остаётся единственным scheduler/Queue/D1-контуром. Внешние публикации, изменения production и платные модели запрещены без отдельного gate.</div>
+</aside>
+<main>
+<div class="top"><div><h1>Диалог с Hermes AI</h1><p>Практическая работа · Воронки продаж · HAE CI</p></div><div id="pill" class="status-pill off">Проверяем состояние</div></div>
+<div id="scroller" class="scroller">
+<div class="intro"><b>Hermes AI</b><p>Я изучаю текущий ChatGPT/One Brain transfer, роли приватных Hermes-плагинов, реальные публичные пути Hermes и готовность HAE. Investor Intelligence ведётся отдельным read-only контуром W-20261024-103. Никаких автоматических публикаций, отправок, merge/deploy или инвестиционного outreach.</p></div>
+<div class="empty-tip">Исторические источники и локальная модель · без внешних сервисов</div>
+</div>
+<div class="compose">
+<div class="quick"><button data-prompt="Какие следующие задачи Hermes AI?">План Hermes AI</button><button data-prompt="Какое качество обучения, слепые тесты и coached?">Качество обучения</button><button data-prompt="Что ты изучил из аудитов Hermes сегодня?">Что изучено</button><button data-prompt="Какие повторяющиеся ошибки наших ИИ ты обнаружил?">Ошибки ИИ</button><button data-prompt="Что ещё требует доказательства и независимой проверки?">Что проверить</button><button data-prompt="Покажи Hermes Investment Intelligence W-20261024-103 и текущий checkpoint">Инвесторы</button><button data-prompt="Какие приватные Hermes-плагины подключены и как ты их используешь?">Плагины</button></div>
+<div class="input-wrap"><textarea id="query" maxlength="2000" placeholder="Напишите Hermes AI... (Enter — отправить, Shift+Enter — новая строка)"></textarea><button id="send" class="send">Отправить</button></div>
+<div class="hint">Localhost · Windows YuraValentyuk · быстрые ответы из аудитов · /ai вопрос — локальный эксперимент · обучение 24/7 · power-guarded</div>
+</div></main>
+<section class="metrics">
+<h2>Работа агента <span style="color:#8da0bb">/ Live</span></h2>
+<div class="kpis">
+<div class="kpi"><strong id="cycles">—</strong><span>Циклов</span></div>
+<div class="kpi"><strong id="tests">—</strong><span>Тестов</span></div>
+<div class="kpi"><strong id="pass">—</strong><span>PASS</span></div>
+<div class="kpi"><strong id="fail">—</strong><span>На доработку</span></div>
+<div class="kpi"><strong id="sources">—</strong><span>Источников изучено</span></div>
+</div>
+<div class="section-title">Практическая работа · live read-only</div>
+<div class="info"><b id="workmode">Ожидаем рабочего окна</b><p id="workdetails">Сайт: read-only conversion QA. HAE: текущий manifest и source/CI readback. Никаких merge/deploy/provider writes.</p></div>
+<div class="section-title">HAE integration · fail-closed</div>
+<div class="info"><b id="haeclient">Проверяем readiness...</b><p id="haedetail">Windows остаётся локальным read-only worker до review/release и canonical D1 receipt.</p></div>
+<div class="section-title">Качество модели · не production</div>
+<div class="info"><b id="blind">—</b><p id="coached">Исторические тесты с обратной связью не равны независимым результатам.</p></div>
+<div class="section-title">Незнакомые задачи · без подсказок</div>
+<div class="info"><b id="transfer">Проверка ещё не завершена</b><p id="transferexplain">Тесты H01–H16 выполняются только по одному разу. Исторические ответы заранее не передаются модели.</p></div>
+<div class="section-title">Саморазвитие · proposals only</div>
+<div class="info"><b id="selftasks">Готовим регрессионную очередь</b><p>Предложения на улучшение без самостоятельного изменения production и создания второй HAE.</p></div>
+<div class="section-title">Investor Intelligence · read-only</div>
+<div class="info"><b id="investorstatus">Загрузка investor lane...</b><p id="investorcheckpoint">W-20261024-103</p></div>
+<div class="section-title">Плагины / Digital Staff</div>
+<div class="info"><b id="pluginsstatus">Загрузка plugin registry...</b><p id="pluginroles">Роли будут прочитаны из authenticated Plugin Creator snapshot.</p></div>
+<div class="section-title">Следующая работа HAE · proposals only</div>
+<div class="info"><div class="lbl" id="opsfresh">—</div><div id="opsnext">Загрузка очереди...</div></div>
+<div class="section-title">Текущая задача</div>
+<div class="info"><div class="lbl" id="phase">Фаза: —</div><b id="case">—</b><p id="task">Ожидаем первый цикл</p></div>
+<div class="section-title">Последний вывод</div>
+<div class="info"><div class="lbl" id="model">Модель: —</div><p id="lesson">Нет подтверждённого результата</p></div>
+<div class="section-title">События</div>
+<div id="activity" class="activity"><div class="ev-detail">Загрузка событий...</div></div>
+<footer id="deadline">Учебный цикл: 24/7 · power guard · localhost</footer>
+</section></div>
+<script>
+const scroller=document.getElementById('scroller'),q=document.getElementById('query'),send=document.getElementById('send');
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function bubble(who,text){const el=document.createElement('div');el.className='message '+who;el.innerHTML='<div class="who">'+(who==='user'?'Вы':'HERMES AI · LOCAL')+'</div><div class="msgbody"></div>';el.querySelector('.msgbody').textContent=text;scroller.append(el);scroller.scrollTop=scroller.scrollHeight;return el}
+async function ops(){
+ try{
+  const r=await fetch('/api/operations',{cache:'no-store'});
+  if(!r.ok)throw new Error(r.status);
+  const o=await r.json(),z=o.quality||{};
+  document.getElementById('blind').textContent='Без подсказки: '+(z.blind_pass||0)+'/'+(z.blind_tests||0);
+  document.getElementById('coached').textContent='После исправления: '+(z.coached_pass||0)+'/'+(z.coached_tests||0)+' · точность самостоятельного агента ещё не доказана.';
+  const g=o.generalization||{};
+  document.getElementById('transfer').textContent='Новые задачи: '+(g.sealed_unseen_passed??0)+'/'+(g.sealed_unseen_tested??0)+' PASS';
+  document.getElementById('transferexplain').textContent='С ответом модели: '+(g.sealed_answered_count??0)+' · ошибок/тайм-аутов runtime: '+(g.sealed_runtime_failure_count??0)+' · экзамен: '+(g.sealed_exam_paused?'ПАУЗА до устранения тайм-аутов':'идёт')+' · осталось: '+Math.max(0,(g.heldout_coverage_total||16)-(g.sealed_unseen_tested||0));
+  const goals=o.learning_backlog?.tasks||[];
+  document.getElementById('selftasks').textContent=goals.length+' проверяемых улучшений (без автозаписи)';
+  const iv=o.investor||{},pl=o.plugins||{};
+  document.getElementById('investorstatus').textContent=(iv.program_id||'W-20261024-103')+' · '+(iv.phase||'SOURCE_ONLY');
+  document.getElementById('investorcheckpoint').textContent='Pointer: '+(iv.current_pointer||'UNKNOWN')+' · gate: '+(iv.gate||'UNKNOWN')+' · trained: '+(iv.trained?'YES':'NO — readback/QA required');
+  document.getElementById('pluginsstatus').textContent=(pl.count||0)+' приватных плагинов · snapshot '+(pl.observed_at||'—');
+  document.getElementById('pluginroles').textContent=(pl.primary||[]).slice(0,6).map(x=>x.name+' '+(x.version||'')+(x.latest_verified_skill?' ↳ '+x.latest_verified_skill:'')).join(' · ')||'Registry unavailable';
+  document.getElementById('opsfresh').textContent=(o.stale?'Снимок устарел · требуется обновление':'Снимок GitHub '+o.reviewed_at)+' · действий 0';
+  document.getElementById('opsnext').textContent=(o.next_tasks||[]).slice(0,3).map(t=>t.id+': '+t.safe_next).join('\n');
+  document.getElementById('opsnext').style.whiteSpace='pre-wrap';
+ }catch(e){document.getElementById('opsfresh').textContent='Реестр задач недоступен'}
+}
+async function status(){
+ try{const r=await fetch('/api/status',{cache:'no-store'});if(!r.ok)throw new Error(r.status);const d=await r.json(),s=d.worker||{};
+ const running=s.status==='RUNNING';const pill=document.getElementById('pill');pill.textContent=running?'● Работает сейчас':s.status==='PAUSED_POWER_GUARD'?'Пауза · power guard':'● '+(s.status||'Не запущен');pill.classList.toggle('off',!running);
+ for(const [id,key] of [['cycles','cycle'],['tests','tested'],['pass','passed'],['fail','failed'],['sources','sources_reviewed']])document.getElementById(id).textContent=s[key]??0;
+ const w=s.last_operation||{},sw=w.website||{},gh=w.hae_ci||{},wr=d.windows_runtime||{};
+ document.getElementById('workmode').textContent=s.operational_mode?'Рабочий режим: '+s.operational_mode:'Режим подготовлен';
+ document.getElementById('workdetails').textContent='Проверка сайта: '+(sw.result||'ожидается')+(sw.passed!==undefined?' · PASS '+sw.passed+'/6':'')+' · HAE PR: '+(gh.status||'ожидается')+' · проверки read-only, без отправок';
+ const haeReady=wr.hae_node_client_present&&wr.hae_node_enabled&&wr.hae_node_api_configured&&wr.hae_node_token_configured;
+ const haeState=!wr.hae_node_client_present?'Клиент HAE node отсутствует':!wr.hae_node_enabled?'Код готов · activation HOLD':!wr.hae_node_api_configured||!wr.hae_node_token_configured?'Конфигурация HAE node неполная':'Настроен · ждём canonical D1 canary';
+ document.getElementById('haeclient').textContent=haeState;
+ document.getElementById('haedetail').textContent='client '+(wr.hae_node_client_present?'YES':'NO')+' · enabled '+(wr.hae_node_enabled?'YES':'NO')+' · API '+(wr.hae_node_api_configured?'YES':'NO')+' · token '+(wr.hae_node_token_configured?'YES':'NO')+' · worker heartbeat '+(wr.worker_heartbeat_age_seconds??'UNKNOWN')+'s · '+(wr.external_bind||'bind UNKNOWN')+' · production writes '+(wr.production_write_authorized?'ENABLED':'OFF')+(haeReady?' · receipt still required':'');
+ document.getElementById('phase').textContent='Фаза: '+(s.phase||'—');
+ document.getElementById('case').textContent=s.case_id||'Очередь исторических заданий';
+ document.getElementById('task').textContent=s.current_task||'—';
+ document.getElementById('model').textContent='Модель: '+(s.model||'—');
+ document.getElementById('lesson').textContent=s.last_lesson||'Первый вывод появится после цикла';
+ document.getElementById('deadline').textContent=(s.run_mode||'LOCAL_READ_ONLY')+' · deadline: '+(s.deadline||'none')+' · Источник: localhost';
+ document.getElementById('activity').innerHTML=(d.events||[]).slice().reverse().slice(0,12).map(e=>'<div class="event"><i class="dot"></i><div><div class="ev-label">'+esc(e.kind)+'</div><div class="ev-detail">'+esc(e.details)+'</div><div class="time">'+esc(e.at)+'</div></div></div>').join('')||'<span class="ev-detail">Нет событий</span>';
+ }catch(e){document.getElementById('pill').textContent='Нет связи с локальным сервером'}
+}
+async function submit(){
+ const prompt=q.value.trim();if(!prompt||send.disabled)return;
+ q.value='';bubble('user',prompt);send.disabled=true;send.textContent='Думает...';const typing=bubble('assistant','Анализирую локальные документы...');
+ try{const r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:prompt})});const o=await r.json();typing.querySelector('.msgbody').textContent=o.reply||o.error||'Нет ответа';}
+ catch(e){typing.querySelector('.msgbody').textContent='Соединение прервано. Проверьте состояние Ollama.'}
+ finally{send.disabled=false;send.textContent='Отправить';status()}
+}
+send.onclick=submit;q.onkeydown=e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();submit()}};
+document.querySelectorAll('[data-prompt]').forEach(b=>b.onclick=()=>{q.value=b.dataset.prompt;submit()});
+status();ops();setInterval(status,5000);setInterval(ops,30000);
+</script></body></html>
