@@ -1,4 +1,4 @@
-import { roleContractSha256 } from "../../../workers/automation-engine/src/role-contracts.mjs";
+import { roleContractForJobType, roleContractSha256 } from "../../../workers/automation-engine/src/role-contracts.mjs";
 
 // #2220: pure source-side verification for a future authenticated Command Center
 // -> canonical HAE Queue/Worker/D1 readback. This module NEVER dispatches, writes
@@ -100,8 +100,15 @@ export async function verifyCommandCenterHaeReceipt({
       !HASH.test(String(binding?.contract_sha256 || ""))) {
     return hold("ROLE_CONTRACT_NOT_ELIGIBLE");
   }
+  // A caller-supplied contract object is NOT an execution authority. Independently
+  // resolve the canonical allowlisted contract from the HAE source registry.
+  const canonicalContract = roleContractForJobType(binding.job_type);
+  if (!canonicalContract ||
+      await roleContractSha256(canonicalContract) !== await roleContractSha256(roleContract)) {
+    return hold("ROLE_CONTRACT_NOT_CANONICAL");
+  }
   // Never trust a caller-supplied digest even if payload and result agree.
-  const independentlyComputedSha = await roleContractSha256(roleContract);
+  const independentlyComputedSha = await roleContractSha256(canonicalContract);
   if (binding.contract_sha256 !== independentlyComputedSha) {
     return hold("ROLE_CONTRACT_SHA_MISMATCH");
   }
@@ -139,6 +146,19 @@ export async function verifyCommandCenterHaeReceipt({
       payload?.external_provider_write === true ||
       roleContract?.semantic_required && roleContract.free_ai_policy !== "free_only_wait_if_unavailable") {
     return hold("RECEIPT_PERMISSION_OR_CAPABILITY_MISMATCH");
+  }
+  // A D1 SUCCEEDED state cannot waive the zero-paid-inference / no-provider-write
+  // requirement. Semantic jobs need a canonical zero-cost usage receipt;
+  // deterministic jobs must not masquerade as semantic executions.
+  const semanticUsage = receipt.semantic_execution;
+  if (receipt.provider_write_performed === true ||
+      receipt.result?.provider_write_performed === true ||
+      (canonicalContract.semantic_required
+        ? !semanticUsage || typeof semanticUsage !== "object" ||
+          semanticUsage.cost_usd !== 0 || semanticUsage.budget_usd !== 0 ||
+          typeof semanticUsage.usage_id !== "string" || !semanticUsage.usage_id.trim()
+        : semanticUsage != null)) {
+    return hold("RECEIPT_COST_OR_PROVIDER_WRITE_UNVERIFIED");
   }
   const successEvents = Array.isArray(jobEvents) ? jobEvents.filter(event =>
     event?.job_id === binding.hae_job_id &&
