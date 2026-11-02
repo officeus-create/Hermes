@@ -53,7 +53,7 @@ const projects = Object.freeze([
     started_at: "2026-10-27T00:00:00.000Z",
     target_at: null,
     blockers: ["PR #2236 is the single current AI Operations/Command Center release candidate; fresh exact-head CI, independent review, protected release and authenticated production readback remain."],
-    evidence_level: "EXACT_HEAD_CI_GREEN_REVIEW_PENDING",
+    evidence_level: "SOURCE_RELEASE_CANDIDATE_REVIEW_PENDING",
     links: [{ label: "PR #2236", href: "https://github.com/officeus-create/Hermes/pull/2236" }],
     milestones: [
       milestone("architecture", "AI architecture view", "done", "PR #2236"),
