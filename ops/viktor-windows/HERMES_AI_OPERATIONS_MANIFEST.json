@@ -1,0 +1,625 @@
+{
+  "schema": "HERMES_AI_CAPABILITY_MANIFEST_V1",
+  "updated_at": "2026-11-02T18:12:14.945Z",
+  "authority": "SOURCE_ONLY_ADVISORY_NOT_CANONICAL",
+  "source_policy": "2026-11-02 owner directive: recover Windows Hermes AI, preserve prior 16 directions, execute easy-to-hard through existing worker; no second HAE/runtime; local read-only first.",
+  "product_name": "Hermes AI",
+  "canonical": "One Brain + existing Cloudflare HAE D1/Queue/Worker/DLQ; no second runtime",
+  "mac_role": "cold rollback/reference only; Hermes AI worker/server/bridge/tunnel and Ollama autostart disabled by owner-directed offload",
+  "cloud_role": "Existing HAE owns job scheduling/idempotency/evidence/capability routing; Windows/Mac never become a second scheduler or source of truth",
+  "mission": "Find unfinished business/site/system workflows, provide one cause, safe fix proposal, independent test and provider readback, learn from accepted repairs; create agents only for verified gaps",
+  "operating_constraints": {
+    "paid_model_usd": 0,
+    "can_mutate_production": false,
+    "can_send_outbound": false,
+    "can_change_cloudflare": false,
+    "can_create_new_scheduler": false,
+    "can_create_new_one_brain": false,
+    "can_promote_lessons_unreviewed": false,
+    "requires_exact_SHA": true,
+    "requires_primary_writer_lock": true,
+    "requires_independent_acceptance": true,
+    "delivery_default": "DRAFT_ONLY",
+    "full_chat_archive_coverage": false
+  },
+  "acceptance_levels": [
+    "SOURCE_ONLY",
+    "CODED",
+    "CI_GREEN",
+    "MERGED",
+    "DEPLOYED",
+    "RUNTIME_PROVED",
+    "BUSINESS_VERIFIED"
+  ],
+  "priority_order": [
+    "SITE_SEO_GEO",
+    "CARRIER_CAR_HAULING",
+    "WEBSITES_CRM_INBOUND"
+  ],
+  "tasks": [
+    {
+      "id": "OWNER_COMMAND_CENTER",
+      "direction": "TECHNOLOGY",
+      "issue": 2106,
+      "phase": "CURRENT_RELEASE_PR_OPEN_RECONCILE_AND_REVIEW_REQUIRED",
+      "priority": 0,
+      "dependency": [],
+      "owner": "Hermes Owner OS",
+      "role": "Technology Developer",
+      "evidence": "https://github.com/officeus-create/Hermes/pull/2236",
+      "required": "Canonical release PR #2236 head b31b4e83d7d6c13ebf952e9c41f7dde1111b53be remains open. Fresh main observed 2026-11-02 at 12013d7ef1db641ba74e95aca367ee8eb11a13a3; re-read behind/overlap, reconcile current main and owner UX, exact-head CI + independent approval before protected merge.",
+      "gate": "HOLD_RELEASE",
+      "safe_next": "READ_ONLY_PR_AND_TESTS",
+      "artifact": "SITE/OWNER_COMMAND_CENTER",
+      "can_write": false
+    },
+    {
+      "id": "AI_ARCHITECTURE_ADMIN",
+      "direction": "TECHNOLOGY",
+      "issue": 2159,
+      "phase": "SUPERSEDED_BY_COMMAND_CENTER_2236",
+      "priority": 0,
+      "dependency": [
+        "OWNER_COMMAND_CENTER"
+      ],
+      "owner": "Hermes Owner OS",
+      "role": "Agent Coordinator",
+      "evidence": "https://github.com/officeus-create/Hermes/pull/2236",
+      "required": "Historical donor PR is closed/unmerged. Preserve its accepted semantics only through canonical #2236/current-main reconciliation; do not reopen stale branch or create duplicate writer.",
+      "gate": "WAIT_CANONICAL_2236",
+      "safe_next": "EVENT_TRIGGER_ONLY",
+      "artifact": "SITE/AI_ARCHITECTURE",
+      "can_write": false
+    },
+    {
+      "id": "COMMAND_CENTER_EXECUTION_MAP",
+      "direction": "TECHNOLOGY",
+      "issue": 2170,
+      "phase": "SUPERSEDED_BY_COMMAND_CENTER_2236",
+      "priority": 0,
+      "dependency": [
+        "AI_ARCHITECTURE_ADMIN"
+      ],
+      "owner": "Hermes Owner OS",
+      "role": "Agent Coordinator",
+      "evidence": "https://github.com/officeus-create/Hermes/pull/2236",
+      "required": "Historical donor PR is closed/unmerged. Preserve its accepted semantics only through canonical #2236/current-main reconciliation; do not reopen stale branch or create duplicate writer.",
+      "gate": "WAIT_CANONICAL_2236",
+      "safe_next": "EVENT_TRIGGER_ONLY",
+      "artifact": "SITE/EXECUTION_MAP",
+      "can_write": false
+    },
+    {
+      "id": "VIKTOR_LOCAL_ADMIN_UI_AUDIT",
+      "direction": "TECHNOLOGY",
+      "issue": null,
+      "phase": "LOCAL_AUDIT_PASS",
+      "priority": 0,
+      "dependency": [],
+      "owner": "Hermes AI / Windows",
+      "role": "Design Hub + QA Evidence Auditor",
+      "evidence": "LOCAL:C:\\Hermes\\Viktor\\viktor_dashboard.html",
+      "required": "Audit PASS 2026-11-02: dashboard HTTP 200; 13 quick-actions; stale Mac copy removed; sidebar navigation interactive; external/provider writes 0.",
+      "gate": "PASS_LOCAL",
+      "safe_next": "LOCAL_DASHBOARD_AUDIT",
+      "artifact": "VIKTOR/LOCAL_ADMIN_UI",
+      "can_write": false
+    },
+    {
+      "id": "HAE_CANONICAL_RUNTIME",
+      "direction": "AUTOMATION",
+      "issue": 2033,
+      "phase": "G1_SAME_SHA_DURABLE_RECEIPT_PENDING",
+      "priority": 0,
+      "dependency": [],
+      "owner": "HAE Automation Owner",
+      "role": "Automatic Engineer",
+      "evidence": "https://github.com/officeus-create/Hermes/issues/2033",
+      "required": "Single persistent HAE remains Cloudflare D1/Queue/Worker/DLQ. Reconcile current main/deployed same-SHA natural cron/receipt evidence; do not infer LIVE from source equivalence.",
+      "gate": "HOLD_ACCEPTANCE",
+      "safe_next": "READ_ONLY_LIVE_WORKFLOW_REVIEW",
+      "artifact": "HAE/CANONICAL_RUNTIME",
+      "can_write": false
+    },
+    {
+      "id": "HAE_FREE_AI_RUNTIME",
+      "direction": "AUTOMATION",
+      "issue": 2123,
+      "phase": "EXACT_HEAD_CI_GREEN_INDEPENDENT_REVIEW_PENDING",
+      "priority": 0,
+      "dependency": [],
+      "owner": "HAE Automation Owner",
+      "role": "AI Runtime Auditor",
+      "evidence": "https://github.com/officeus-create/Hermes/pull/2137",
+      "required": "Current head 93ac52bd3d389d9f3bb3768f6bf97bbb3f21c021; 4/4 observed exact-head workflows SUCCESS; independent review=0. Keep activation fail-closed until reviewed Cloudflare Free-plan readback.",
+      "gate": "HOLD_ACTIVATION",
+      "safe_next": "READ_ONLY_PR_AND_TESTS",
+      "artifact": "HAE/FREE_AI",
+      "can_write": false
+    },
+    {
+      "id": "HAE_SELF_REPAIR",
+      "direction": "AUTOMATION",
+      "issue": 2068,
+      "phase": "SOURCE_MERGED_RUNTIME_ACCEPTANCE_PENDING",
+      "priority": 1,
+      "dependency": [],
+      "owner": "HAE Developer",
+      "role": "Technology Developer",
+      "evidence": "https://github.com/officeus-create/Hermes/pull/2138",
+      "required": "Self-repair sensor/source merged historically; do not call learning complete until accepted repair evidence and later runtime consumption close G2.",
+      "gate": "HOLD_ACCEPTANCE",
+      "safe_next": "READ_ONLY_PR_AND_TESTS",
+      "artifact": "HAE/SELF_REPAIR",
+      "can_write": false
+    },
+    {
+      "id": "HAE_SELF_LESSONS",
+      "direction": "AUTOMATION",
+      "issue": 2069,
+      "phase": "WAIT_REVIEWED_LESSON_AND_RUNTIME_CONSUMPTION",
+      "priority": 1,
+      "dependency": [],
+      "owner": "Knowledge Curator",
+      "role": "Knowledge Curator",
+      "evidence": "https://github.com/officeus-create/Hermes/issues/2069",
+      "required": "Promote only independently accepted lessons with version/eval delta; later HAE job must prove consumption. Local proposals are not learned.",
+      "gate": "EVENT_OR_REVIEW_GATE",
+      "safe_next": "EVENT_TRIGGER_ONLY",
+      "artifact": "HAE/SELF_LEARNING",
+      "can_write": false
+    },
+    {
+      "id": "WINDOWS_HAE_NODE_CONTRACT",
+      "direction": "AUTOMATION",
+      "issue": 2250,
+      "phase": "SOURCE_PR_OPEN_HAE_CONTRACT_GREEN_REVIEW_PENDING",
+      "priority": 0,
+      "dependency": [],
+      "owner": "HAE Automation Owner",
+      "role": "Automatic Engineer",
+      "evidence": "https://github.com/officeus-create/Hermes/pull/2250",
+      "required": "PR #2250 implements a disabled-by-default outbound VIKTOR-WINDOWS semantic READ_ONLY canary against the existing HAE D1/WAITING_FREE_AI path. HAE contract workflow is GREEN on current head; remaining exact-head checks + independent approval + protected release are required before secret provisioning or one real READ_ONLY canary. hae_d1_written=false until that canary.",
+      "gate": "HOLD_REVIEW_AND_RELEASE",
+      "safe_next": "READ_ONLY_PR_AND_TESTS",
+      "artifact": "HAE/WINDOWS_CAPACITY",
+      "can_write": false
+    },
+    {
+      "id": "AGENT_WORK_PASSPORT",
+      "direction": "GOVERNANCE",
+      "issue": 2166,
+      "phase": "CI_GREEN_REVIEW_PENDING",
+      "priority": 1,
+      "dependency": [],
+      "owner": "Agent Coordinator",
+      "role": "Agent Coordinator",
+      "evidence": "https://github.com/officeus-create/Hermes/pull/2166",
+      "required": "Observed Website + quality workflows SUCCESS; independent review=0. Preserve actual contributor/chat/work ID/evidence without exposing internal attribution publicly.",
+      "gate": "HOLD_REVIEW",
+      "safe_next": "READ_ONLY_PR_AND_TESTS",
+      "artifact": "GOVERNANCE/WORK_PASSPORT",
+      "can_write": false
+    },
+    {
+      "id": "PLUGIN_CAPABILITY_TRAINING",
+      "direction": "GOVERNANCE",
+      "issue": 2085,
+      "phase": "CORE_4_BEHAVIORAL_DELTA_RELEASED_DOMAIN_ROUTING_ACTIVE",
+      "priority": 1,
+      "dependency": [],
+      "owner": "Agent Coordinator",
+      "role": "Agent Coordinator",
+      "evidence": "LOCAL:HERMES_PRIVATE_PLUGIN_INVENTORY_20261028.json",
+      "required": "Four core plugins were released with Windows-primary/HAE-only skill; remaining domain plugins are routed by existing capabilities and should not receive fake version bumps without behavioral delta.",
+      "gate": "LOCAL_READ_ONLY",
+      "safe_next": "READ_ONLY_CAPABILITY_REGISTRY",
+      "artifact": "PLUGINS/CAPABILITY_MAP",
+      "can_write": false
+    },
+    {
+      "id": "INVESTOR_RELATIONS_READINESS",
+      "direction": "FINANCE",
+      "issue": 2055,
+      "phase": "EVENT_TRIGGER_ONLY_DRAFT_NOT_DEPLOYED",
+      "priority": 1,
+      "dependency": [],
+      "owner": "Founder / CEO",
+      "role": "Investor Intelligence",
+      "evidence": "https://github.com/officeus-create/Hermes/pull/2055",
+      "required": "Keep W-20261024-103 current; analyze evidence and application readiness only. No outreach/publication/financial claims until material G1-G5 or owner gate.",
+      "gate": "EVENT_OR_OWNER_GATE",
+      "safe_next": "EVENT_TRIGGER_ONLY",
+      "artifact": "INVESTOR/READINESS",
+      "can_write": false
+    },
+    {
+      "id": "SOCIAL_THREADS_HAE",
+      "direction": "MARKETING",
+      "issue": 2033,
+      "phase": "CANONICAL_SOCIAL_REPLAY_MERGED_PROVIDER_WRITE_GATED",
+      "priority": 2,
+      "dependency": [],
+      "owner": "Social Distribution Owner",
+      "role": "Marketing Growth",
+      "evidence": "https://github.com/officeus-create/Hermes/pull/2229",
+      "required": "#2229 is merged canonical source. DRAFT_ONLY social.reply.prepare/read-only research may continue through existing HAE. Live Threads publish/reply/DM remains owner/provider/OAuth/readback gated; no second publisher.",
+      "gate": "PUBLISH_HOLD",
+      "safe_next": "EVENT_TRIGGER_ONLY",
+      "artifact": "MARKETING/THREADS_HAE",
+      "can_write": false
+    },
+    {
+      "id": "SEO_GEO_DISCOVERY",
+      "direction": "MARKETING",
+      "issue": null,
+      "phase": "FRESH_EVIDENCE_REVIEW",
+      "priority": 2,
+      "dependency": [],
+      "owner": "SEO/GEO Owner",
+      "role": "SEO GEO Analyst",
+      "evidence": "LOCAL:hermes_ai_operational_qa.py",
+      "required": "Review source evidence and produce bounded opportunities; no invented traffic/revenue result.",
+      "gate": "READ_ONLY",
+      "safe_next": "READ_ONLY_SEARCH_EVIDENCE",
+      "artifact": "SEARCH/SEO_GEO",
+      "can_write": false
+    },
+    {
+      "id": "CARRIER_LOAD_BOARD",
+      "direction": "LOGISTICS",
+      "issue": 2034,
+      "phase": "SOURCE_REVIEW_ACTIVE",
+      "priority": 2,
+      "dependency": [],
+      "owner": "Load Board Product Owner",
+      "role": "Logistics Operations",
+      "evidence": "https://github.com/officeus-create/Hermes/issues/2034",
+      "required": "Review canonical Load Board pilot/source state and identify one safe next check; no provider/customer action.",
+      "gate": "READ_ONLY",
+      "safe_next": "READ_ONLY_LIVE_WORKFLOW_REVIEW",
+      "artifact": "LOGISTICS/LOAD_BOARD",
+      "can_write": false
+    },
+    {
+      "id": "WEBSITE_CRM_FUNNEL",
+      "direction": "SALES",
+      "issue": 1883,
+      "phase": "SOURCE_REVIEW_ACTIVE",
+      "priority": 2,
+      "dependency": [],
+      "owner": "Sales Owner",
+      "role": "Sales Coach",
+      "evidence": "https://github.com/officeus-create/Hermes/issues/1883",
+      "required": "Review existing CRM funnel/source state and conversion evidence boundary; synthetic records are not revenue.",
+      "gate": "READ_ONLY",
+      "safe_next": "READ_ONLY_PIPELINE_AUDIT",
+      "artifact": "SALES/WEBSITE_CRM",
+      "can_write": false
+    },
+    {
+      "id": "ACADEMY_COMPLETION",
+      "direction": "ACADEMY",
+      "issue": 1724,
+      "phase": "SOURCE_REVIEW_ACTIVE",
+      "priority": 2,
+      "dependency": [],
+      "owner": "Academy Completion Owner",
+      "role": "Academy Coach",
+      "evidence": "https://github.com/officeus-create/Hermes/issues/1724",
+      "required": "Review Academy CRM/completion funnel and identify evidence-backed next action; no invented learner outcome.",
+      "gate": "READ_ONLY",
+      "safe_next": "READ_ONLY_LEARNER_FUNNEL_AUDIT",
+      "artifact": "ACADEMY/COMPLETION",
+      "can_write": false
+    }
+  ],
+  "background_programs": [
+    {
+      "id": "VIKTOR_EVIDENCE_FACTORY_90D",
+      "enabled": true,
+      "host_policy": "WINDOWS_PRIMARY_MAC_QA_ONLY",
+      "mode": "LOCAL_READ_ONLY_SINGLE_EXISTING_WORKER",
+      "start_at_utc": "2026-10-28T22:05:00Z",
+      "end_at_utc": "2027-01-29T00:00:00Z",
+      "weights": {
+        "HAE_COMMAND_CENTER_QA": 40,
+        "INVESTOR_INTELLIGENCE": 40,
+        "SEO_GEO_AEO": 20
+      },
+      "cadence": "ONE_NEW_SOURCE_MAX_PER_EXISTING_WORKER_CYCLE",
+      "sources": [
+        "HERMES_AI_CURRENT_TRANSFER_CORPUS_20261028.jsonl",
+        "VIKTOR_CRITICAL_CASES.jsonl",
+        "VIKTOR_SOURCE_CORPUS_STAGE.jsonl",
+        "VIKTOR_ALL_AUDIT_CASES.jsonl"
+      ],
+      "output": "viktor_live/evidence_factory/receipts.jsonl",
+      "dedupe": "SHA256_SOURCE_ID_PLUS_TEXT",
+      "usefulness_rule": [
+        "NEW_REPRODUCIBLE_ERROR",
+        "NEW_SOURCE_PASSPORT",
+        "NEW_CONTRADICTION",
+        "NEW_REGRESSION_TEST",
+        "NEW_INVESTOR_FACT",
+        "NEW_SEO_GEO_LESSON",
+        "NEW_SAFE_NEXT_ACTION"
+      ],
+      "safety": [
+        "NO_SEND",
+        "NO_PUBLISH",
+        "NO_MERGE",
+        "NO_DEPLOY",
+        "NO_PROVIDER_WRITE",
+        "NO_PAID_MODEL",
+        "NO_NEW_HAE",
+        "NO_NEW_QUEUE",
+        "NO_NEW_SCHEDULER",
+        "NO_FAKE_WORK_ID",
+        "UNKNOWN_IS_NOT_ZERO"
+      ],
+      "hae_work_id": null,
+      "production_write_authorized": false
+    }
+  ],
+  "completed_evidence": [
+    {
+      "id": "HAE_T4_RECEIPT_GATE",
+      "ref": "PR #2084",
+      "state": "MERGED",
+      "proof": "verified T4 receipt contract already accepted in canonical HAE evidence"
+    },
+    {
+      "id": "HAE_ECOSYSTEM_LEARNING",
+      "ref": "PR #2085",
+      "state": "MERGED",
+      "proof": "ecosystem-learning source inventory and fail-closed agent preflight on main"
+    },
+    {
+      "id": "HAE_SELF_BACKLOG",
+      "ref": "PR #2086",
+      "state": "MERGED",
+      "proof": "deterministic bounded self-backlog planner on main"
+    },
+    {
+      "id": "HAE_CI_SENSOR_SOURCE",
+      "ref": "PR #2090",
+      "state": "MERGED",
+      "proof": "GitHub/CI event sensor intake source on main; runtime receipt remains separate proof"
+    },
+    {
+      "id": "HAE_FREE_AI_GATE",
+      "ref": "PR #2123",
+      "state": "MERGED",
+      "proof": "Workers Free attestation + approved GLM allowlist fail-closed source on main"
+    },
+    {
+      "id": "HAE_SELF_PATCH_CONTRACT",
+      "ref": "PR #2131",
+      "state": "MERGED",
+      "proof": "free-only bounded self-patch proposal contract on main"
+    },
+    {
+      "id": "HAE_REPAIR_EVIDENCE_ROUTER",
+      "ref": "PR #2132",
+      "state": "MERGED",
+      "proof": "authenticated CI repair evidence routes into bounded self-patch proposal path"
+    },
+    {
+      "id": "HAE_INDEPENDENT_QA_RECEIPT",
+      "ref": "PR #2136",
+      "state": "MERGED",
+      "proof": "independent QA receipt persists without unlocking HOLD_RELEASE"
+    },
+    {
+      "id": "SEARCH_ERRORS_CURRENT_FIX",
+      "ref": "PR #2134",
+      "state": "MERGED",
+      "proof": "current Bing/GSC errors and owner-approved Logistics desk phone fix reached main"
+    },
+    {
+      "id": "HAE_BOUNDED_REPAIR_EXECUTOR",
+      "ref": "PR #2130",
+      "state": "MERGED",
+      "proof": "PATCH_ONLY bounded repair executor merged; no GitHub write/merge/deploy"
+    },
+    {
+      "id": "HAE_VERIFIED_PATCH_EXECUTION",
+      "ref": "PR #2135",
+      "state": "MERGED",
+      "proof": "verified semantic patch now executes through bounded executor to HOLD_INDEPENDENT_QA with zero provider writes"
+    },
+    {
+      "id": "WINDOWS_RUNTIME_RECOVERY_20261102",
+      "ref": "LOCAL:C:\\Hermes\\Viktor",
+      "state": "LOCAL_RUNTIME_RECOVERED",
+      "proof": "2026-11-02: Desktop Commander corporate device online; dashboard HTTP 200; Ollama qwen2.5:1.5b-instruct ready; viktor_worker.py indentation regression repaired with backup; py_compile PASS; worker restarted; production_write_authorized=false."
+    },
+    {
+      "id": "VIKTOR_LOCAL_ADMIN_UI_AUDIT_20261102",
+      "ref": "LOCAL:viktor_live/operations/task_receipts.jsonl",
+      "state": "PASS",
+      "proof": "dashboard HTTP 200; 13 quick-actions; findings=[]; stale_copy=[]; external/provider writes=0"
+    },
+    {
+      "id": "WINDOWS_HAE_NODE_LOCAL_CONTRACT_20261102",
+      "ref": "LOCAL:viktor_live/qa/work_contract_executor_selftest.jsonl",
+      "state": "LOCAL_CONTRACT_PASS_ONLY",
+      "proof": "LEASE_ACCEPTED, IDEMPOTENT_REPLAY, STALE_FENCE_REJECTED, NODE_ID_REJECTED, LOCAL_COMPLETION_RECORDED; hash chain valid; hae_d1_written=false; release_allowed=false"
+    },
+    {
+      "id": "WINDOWS_HAE_ADAPTER_PROPOSAL_20261102",
+      "ref": "LOCAL:C:\\Hermes\\Viktor\\proposals\\windows-hae-node-adapter-20261102\\DESIGN.md",
+      "state": "LOCAL_PROPOSAL_READY",
+      "proof": "Same HAE D1/Queue; VIKTOR-WINDOWS unique identity; claim only WAITING_FREE_AI semantic READ_ONLY jobs; node-scoped auth; fenced lease; server-side completion validation; no direct D1/paid/provider writes."
+    }
+  ],
+  "windows_role": "primary local/free semantic capacity on YURAVALENTYUK; existing Hermes AI worker/dashboard/Ollama/watchdog; NOT canonical persistence; HAE WORK_ID integration still required",
+  "owner_check_window": "Owner may leave this bounded read-only queue running for 24-72 hours and inspect manually later. No reminder or new scheduler.",
+  "closure_goal_id": "HERMES-AUTONOMY-COMMAND-CENTER-V1",
+  "closure_status": "HANDOFF_TO_WINDOWS_PRIMARY_READ_ONLY_IN_PROGRESS",
+  "plugin_training": {
+    "status": "CORE_BEHAVIORAL_DELTA_RELEASED_AND_DOMAIN_ROUTING_MAPPED",
+    "trained_core_plugins": {
+      "hermes-agent-coordinator": {
+        "version": "0.1.88",
+        "status": "CURRENT_VERIFIED_2026-11-02"
+      },
+      "hermes-automatic-engineer": {
+        "version": "0.1.35",
+        "status": "CURRENT_VERIFIED_2026-11-02"
+      },
+      "hermes-qa-evidence-auditor": {
+        "version": "0.1.22",
+        "status": "CURRENT_VERIFIED_2026-11-02"
+      },
+      "hermes-knowledge-curator": {
+        "version": "0.1.93",
+        "status": "CURRENT_VERIFIED_2026-11-02"
+      }
+    },
+    "shared_skill": "hermes-ai-windows-primary-20261029",
+    "domain_routing": {
+      "command_center": [
+        "hermes-agent-coordinator",
+        "hermes-technology-developer",
+        "hermes-qa-evidence-auditor"
+      ],
+      "hae": [
+        "hermes-automatic-engineer",
+        "hermes-technology-developer",
+        "hermes-qa-evidence-auditor",
+        "hermes-knowledge-curator"
+      ],
+      "investor": [
+        "hermes-investor-relations",
+        "hermes-finance-accounting",
+        "hermes-qa-evidence-auditor"
+      ],
+      "seo_geo": [
+        "hermes-search-growth",
+        "hermes-seo-organic-specialist",
+        "hermes-geo-ai-visibility-specialist"
+      ],
+      "access_security": [
+        "hermes-access-identity-governor",
+        "hermes-security-engineering",
+        "hermes-qa-evidence-auditor"
+      ],
+      "logistics": [
+        "hermes-dispatch-os"
+      ],
+      "sales_crm": [
+        "hermes-sales"
+      ],
+      "academy": [
+        "hermes-academy"
+      ],
+      "design": [
+        "hermes-design-hub"
+      ]
+    },
+    "promotion_rule": "No local proposal is LEARNED until source evidence + failure mechanism + regression/negative test + independent QA + version/eval delta + later runtime consumption."
+  },
+  "third_lane_training_handoff": {
+    "status": "INGESTED_TO_WINDOWS_TRANSFER_CORPUS",
+    "source": "ChatGPT owner directive 2026-10-29",
+    "corpus_ids": [
+      "HERMES-AI-THIRD-LANE-001",
+      "HERMES-AI-THIRD-LANE-002",
+      "HERMES-AI-THIRD-LANE-003",
+      "HERMES-AI-THIRD-LANE-004",
+      "HERMES-AI-THIRD-LANE-005",
+      "HERMES-AI-THIRD-LANE-006",
+      "HERMES-AI-THIRD-LANE-007"
+    ],
+    "boundaries": [
+      "NO_TAKEOVER_MAC_WINDOWS_WIRING",
+      "NO_2107_2159_2170_SOURCE_WRITE",
+      "NO_COMMAND_CENTER_PRODUCTION_DEPLOY",
+      "READ_ONLY_QA_ALLOWED"
+    ],
+    "queue": [
+      "PLUGIN_LEARNING_VERSION_HYGIENE",
+      "INVESTOR_INTELLIGENCE_EVIDENCE",
+      "SEO_GEO_AEO_PROVIDER_EVIDENCE",
+      "STALE_POINTER_OLD_PR_RECONCILIATION",
+      "INDEPENDENT_HAE_SEARCH_QA",
+      "ONE_BRAIN_LESSONS_AFTER_PROOF"
+    ],
+    "version_precedence": "FRESH_VERIFIED_PLUGIN_INVENTORY_OVERRIDES_HISTORICAL_CHAT_SNAPSHOT",
+    "promotion_rule": "SOURCE_ONLY until independent evidence gate; plugin release != task completion; VIKTOR local task != HAE WORK_ID; UNKNOWN != 0"
+  },
+  "execution_sequence": {
+    "goal_id": "HERMES-AUTONOMY-COMMAND-CENTER-V1",
+    "work_id": "W-20261021-008",
+    "order": [
+      {
+        "stage": "W0",
+        "state": "RUNTIME_RECOVERED_LOCAL",
+        "tasks": [
+          "WINDOWS_RUNTIME_RECOVERY_20261102"
+        ],
+        "rule": "dashboard+Ollama+model+worker+watchdog; no production writes"
+      },
+      {
+        "stage": "W1",
+        "state": "ACTIVE",
+        "tasks": [
+          "VIKTOR_LOCAL_ADMIN_UI_AUDIT"
+        ],
+        "rule": "local UI/buttons/logo/copy/accessibility audit before broader work"
+      },
+      {
+        "stage": "W2",
+        "state": "QUEUED",
+        "tasks": [
+          "PLUGIN_CAPABILITY_TRAINING",
+          "SEO_GEO_DISCOVERY",
+          "CARRIER_LOAD_BOARD",
+          "WEBSITE_CRM_FUNNEL",
+          "ACADEMY_COMPLETION",
+          "SOCIAL_THREADS_HAE",
+          "INVESTOR_RELATIONS_READINESS"
+        ],
+        "rule": "read-only evidence/research; no send/publish/revenue claims"
+      },
+      {
+        "stage": "W3",
+        "state": "QUEUED",
+        "tasks": [
+          "OWNER_COMMAND_CENTER",
+          "AI_ARCHITECTURE_ADMIN",
+          "COMMAND_CENTER_EXECUTION_MAP",
+          "HAE_CANONICAL_RUNTIME",
+          "HAE_FREE_AI_RUNTIME",
+          "AGENT_WORK_PASSPORT",
+          "HAE_SELF_REPAIR",
+          "HAE_SELF_LESSONS"
+        ],
+        "rule": "Command Center/HAE truth and QA; no merge/deploy"
+      },
+      {
+        "stage": "W4",
+        "state": "HOLD_ACCEPTANCE",
+        "tasks": [
+          "WINDOWS_HAE_NODE_CONTRACT"
+        ],
+        "rule": "real canonical WORK_ID -> lease/fencing -> Windows execution -> D1 receipt -> independent QA"
+      }
+    ]
+  },
+  "domain_plugin_versions": {
+    "hermes-marketing-growth": "0.1.17",
+    "hermes-design-hub": "0.2.68"
+  },
+  "current_source_checkpoint": {
+    "observed_at": "2026-11-02",
+    "main_sha": "12013d7ef1db641ba74e95aca367ee8eb11a13a3",
+    "command_center_pr": 2236,
+    "command_center_head": "b31b4e83d7d6c13ebf952e9c41f7dde1111b53be",
+    "social_canonical_pr": 2229,
+    "windows_hae_adapter": "MISSING_UNIQUE_WINDOWS_NODE_D1_ADAPTER",
+    "internal_ai_current_runner_identity": "internal-ai-mac-runner"
+  }
+}
