@@ -1,5 +1,5 @@
 {
-  "version": "1.4.0",
+  "version": "1.5.0",
   "skills": [
     {
       "id": "SOURCE",
@@ -203,6 +203,36 @@
         "current-evidence"
       ],
       "contract_version": "technology_command_center_routing_20261102",
+      "runtime_projection": "LOCAL_VERSIONED_PLUGIN_SKILL_PROJECTION",
+      "source_readback_date": "2026-11-02"
+    },
+    {
+      "id": "DESIGN_OWNER_UX_ROUTING_20261102",
+      "name": "Design Hub owner/admin UX truth",
+      "rule": "Treat private Command Center/VIKTOR admin as an operating workspace, not marketing. Stable sidebar, compact status, one workspace, truthful Running/Needs attention/Offline/Unknown states. No fake/demo metrics in private UI; UNKNOWN!=0, heartbeat!=HAE execution, CI_GREEN!=LIVE. Preserve keyboard/mobile/reduced-motion/accessibility and verify exact changed source before live claims.",
+      "source_plugin": "hermes-design-hub",
+      "source_version": "0.2.68",
+      "source_skills": [
+        "command-center-owner-ux",
+        "completion-truth-gates",
+        "visual-craft-review"
+      ],
+      "contract_version": "design_owner_ux_routing_20261102",
+      "runtime_projection": "LOCAL_VERSIONED_PLUGIN_SKILL_PROJECTION",
+      "source_readback_date": "2026-11-02"
+    },
+    {
+      "id": "TECHNOLOGY_VERIFIED_REPAIR_ROUTING_20261102",
+      "name": "Technology Developer verified self-repair boundary",
+      "rule": "For repair work, reproduce current behavior first, classify product defect vs verifier drift/observation mismatch/access gap, make the smallest current-main diff, preserve one writer, run exact-head negative/regression tests, and keep CODED→CI_GREEN→INDEPENDENT_QA→MERGED→DEPLOYED→LIVE_VERIFIED separate. Never mutate valid product behavior just to satisfy stale verification; no production/credential/provider writes without gate.",
+      "source_plugin": "hermes-technology-developer",
+      "source_version": "0.1.61",
+      "source_skills": [
+        "spec-to-verified-release",
+        "production-verifier-drift",
+        "completion-truth-gates"
+      ],
+      "contract_version": "technology_verified_repair_routing_20261102",
       "runtime_projection": "LOCAL_VERSIONED_PLUGIN_SKILL_PROJECTION",
       "source_readback_date": "2026-11-02"
     }
