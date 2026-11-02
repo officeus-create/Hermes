@@ -13,6 +13,17 @@ const PRIVATE_PATHS = [
 ];
 const LEGACY_PATHS = [/^\/uk\/london(\/|$)/, /^\/academy\/$/];
 
+/* Current public reference tools removed from sitemap on 2026-10-06.
+   Live base pages returned 200 + self-canonical + noindex,follow on 2026-11-02.
+   Their language-parameter variants are intentional exclusions, not missing owners. */
+const NOINDEX_CONNECT_REFERENCE_PATHS = new Set([
+  "/services/hermes-connect/roi-calculator/",
+  "/services/hermes-connect/proposal-builder/",
+  "/services/hermes-connect/unified-inbox/",
+  "/services/hermes-connect/rate-negotiator/",
+]);
+
+
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
 function ensureTrailingSlash(pathname) {
@@ -140,6 +151,9 @@ export function classifyUrl(raw, sitemapUrls) {
   }
   if (LEGACY_PATHS.some((pattern) => pattern.test(pathName))) {
     return { raw, category: "REDIRECT_OR_REMOVE_LEGACY", reason: "retired_route_family", normalized: cleanUrl };
+  }
+  if (NOINDEX_CONNECT_REFERENCE_PATHS.has(pathName)) {
+    return { raw, category: "EXPECTED_EXCLUSION_NOINDEX_REFERENCE", reason: "nonindexable_public_reference_tool", normalized: cleanUrl };
   }
   if (hasOnlyTracking && sitemapUrls.has(cleanUrl)) {
     return { raw, category: "EXPECTED_EXCLUSION_TRACKING", reason: "tracking_variant_of_current_owner", normalized: cleanUrl };
