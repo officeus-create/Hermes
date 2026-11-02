@@ -133,6 +133,10 @@ assert.match(livePilot, /disabled aria-disabled="true" aria-pressed="false" titl
 assert.match(livePilot, /\/load-board\/\?role=carrier#carrier-access/);
 assert.match(livePilot, /Request carrier access/);
 assert.doesNotMatch(livePilot, /Create load alert<\/a>/);
+// The public pilot does not persist searches or grant an account when a visitor clicks a CTA.
+assert.doesNotMatch(livePilot, /save the searches that matter/i);
+assert.doesNotMatch(livePilot, /Create free access<\/a>/);
+assert.match(livePilot, /Request free access<\/a>/);
 assert.doesNotMatch(livePilot, /general Hermes freight marketplace/i);
 assert.match(livePilot, /verified carrier dispatch services across equipment types/);
 
