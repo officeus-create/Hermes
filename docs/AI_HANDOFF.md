@@ -2245,6 +2245,15 @@ ai_name: Codex; role: delegated Academy owner; contribution_type: Implementation
 - Checked at 1280×800 on `/`, `/logistics/car-hauling-dispatch/`, `/logistics/car-hauler-loads/chicago-il/`: no overlap with the first hero actions. `npm test` exit 0; Playwright consent and repair-public-design specs 20/20 (desktop + mobile).
 - Next action — Claude: read back the live pages at 1280 after deploy.
 
+## 2026-11-01 — Claude Code — localized Logistics owner pages: direct dispatch call path
+
+- Business goal (owner, ongoing): a Russian-speaking car-hauling carrier who needs a dispatcher must be able to call. Primary-source check of live main: `/ru/logistics/` (and the uk/es/it/fr logistics owner pages) had no phone and no tel link — email only. The approved dispatch phone +1 (351) 777-5337 was present on `/contacts/`, `/logistics/car-hauling-dispatch/`, `/logistics/owner-operator-dispatch-support/` but not on the localized carrier funnel.
+- Verified the retired 262 number is NOT in the repo or on live production anywhere; the "262 on owner-operator/new-authority pages" seen in search was stale index results, not current production. No change needed there.
+- Change: `LocalizedDirectionOwnerPage.astro` now renders a localized "Позвонить диспетчеру · <phone>" (uk/ru/es/it/fr) click-to-call in the hero actions and the contact card, using `site.publicPhones[0]` (single source of truth), gated to `directionId === "logistics"` only. Marketing/Academy/Technology localized pages stay email-only. tel: link, no network/form — preview-first contract untouched.
+- Tests: extended `scripts/localized-owner-parity.test.mjs` (each non-en logistics owner must carry the dispatch tel; other directions must not). `npm run build` 0 errors; `npm test` exit 0. Browser check at 1440 and 390 on `/ru/logistics/`: two call buttons, correct href/label, email preserved, no horizontal overflow.
+- Not done here (owner decisions / larger scope): English `/paths/logistics/` has no tel link (deliberately demotes carrier links — owner call on the English hero); phone-click GA4 event not added (E16: owner must mark GA4 key events first — no speculative event invented); Command Center / HAE untouched per owner.
+- Next action — Claude: read back `/ru/logistics/` live after merge.
+
 ## 2026-11-01 — Claude Code — call line on the remaining carrier dispatch-support pages
 
 - Finding: `LogisticsCommercialPage` shows the approved desk phone only when a page sets `phoneDesk`. owner-operator-dispatch-support and car-hauling-dispatch had it; fleet-owner-dispatch-support and new-authority-car-hauler-support (carrier-facing) and auction-vehicle-pickup (shipper-facing) did not — no call line.
