@@ -18,9 +18,9 @@ assert.match(baseLayout, /href="#main-content"/, "Skip link must keep its canoni
 
 for (const path of targetPaths) {
   const source = await readFile(new URL("../" + path, import.meta.url), "utf8");
-  const main = [...source.matchAll(/<main\\b[^>]*>/g)].map(x => x[0]);
+  const main = [...source.matchAll(/<main\b[^>]*>/g)].map(x => x[0]);
   assert.equal(main.length, 1, path + ": must have exactly one main landmark");
-  assert.match(main[0], /\\bid="main-content"/, path + ": skip-to-content target is missing");
-  assert.match(main[0], /\\btabindex="-1"/, path + ": programmatic keyboard focus target is missing");
+  assert.match(main[0], /\bid="main-content"/, path + ": skip-to-content target is missing");
+  assert.match(main[0], /\btabindex="-1"/, path + ": programmatic keyboard focus target is missing");
 }
 console.log("Private workspace skip links: " + targetPaths.length + " source landmarks verified.");
