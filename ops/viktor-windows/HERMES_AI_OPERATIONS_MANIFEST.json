@@ -1,6 +1,6 @@
 {
   "schema": "HERMES_AI_CAPABILITY_MANIFEST_V1",
-  "updated_at": "2026-11-02T18:12:14.945Z",
+  "updated_at": "2026-11-02T19:42:22.686819+00:00",
   "authority": "SOURCE_ONLY_ADVISORY_NOT_CANONICAL",
   "source_policy": "2026-11-02 owner directive: recover Windows Hermes AI, preserve prior 16 directions, execute easy-to-hard through existing worker; no second HAE/runtime; local read-only first.",
   "product_name": "Hermes AI",
@@ -312,6 +312,22 @@
       "safe_next": "READ_ONLY_LEARNER_FUNNEL_AUDIT",
       "artifact": "ACADEMY/COMPLETION",
       "can_write": false
+    },
+    {
+      "id": "PLUGIN_RUNTIME_CONSUMPTION_20261102",
+      "direction": "GOVERNANCE",
+      "issue": null,
+      "phase": "LOCAL_RUNTIME_CONSUMED_HAE_CONSUMPTION_PENDING",
+      "priority": 0,
+      "dependency": [],
+      "owner": "Agent Coordinator",
+      "role": "Hermes AI / VIKTOR",
+      "evidence": "LOCAL:skill_registry_v4.json + HERMES_PRIVATE_PLUGIN_INVENTORY_20261028.json",
+      "required": "Local VIKTOR consumed exact core plugin versions and windows-runtime-unattended-truth-20261102 with receipt. Do not call company learning complete until a later canonical HAE job proves consumption.",
+      "gate": "HAE_RUNTIME_CONSUMPTION_PENDING",
+      "safe_next": "EVENT_TRIGGER_ONLY",
+      "artifact": "PLUGINS/RUNTIME_CONSUMPTION",
+      "can_write": false
     }
   ],
   "background_programs": [
@@ -452,6 +468,12 @@
       "ref": "LOCAL:C:\\Hermes\\Viktor\\proposals\\windows-hae-node-adapter-20261102\\DESIGN.md",
       "state": "LOCAL_PROPOSAL_READY",
       "proof": "Same HAE D1/Queue; VIKTOR-WINDOWS unique identity; claim only WAITING_FREE_AI semantic READ_ONLY jobs; node-scoped auth; fenced lease; server-side completion validation; no direct D1/paid/provider writes."
+    },
+    {
+      "id": "PLUGIN_RUNTIME_CONSUMPTION_20261102",
+      "ref": "LOCAL:viktor_live/operations/task_receipts.jsonl",
+      "state": "LOCAL_RUNTIME_CONSUMED",
+      "proof": "RUNTIME_CONSUMPTION_VERIFIED_LOCAL; skill windows-runtime-unattended-truth-20261102; Coordinator 0.1.89, Automatic Engineer 0.1.36, QA 0.1.24, Curator 0.1.94; exact_versions=true; external/provider writes=0; HAE runtime consumption remains false."
     }
   ],
   "windows_role": "primary local/free semantic capacity on YURAVALENTYUK; existing Hermes AI worker/dashboard/Ollama/watchdog; NOT canonical persistence; HAE WORK_ID integration still required",
@@ -459,26 +481,30 @@
   "closure_goal_id": "HERMES-AUTONOMY-COMMAND-CENTER-V1",
   "closure_status": "HANDOFF_TO_WINDOWS_PRIMARY_READ_ONLY_IN_PROGRESS",
   "plugin_training": {
-    "status": "CORE_BEHAVIORAL_DELTA_RELEASED_AND_DOMAIN_ROUTING_MAPPED",
+    "status": "CORE_4_WINDOWS_RUNTIME_TRUTH_LOCAL_RUNTIME_CONSUMED_HAE_CONSUMPTION_PENDING",
     "trained_core_plugins": {
       "hermes-agent-coordinator": {
-        "version": "0.1.88",
-        "status": "CURRENT_VERIFIED_2026-11-02"
+        "version": "0.1.89",
+        "release_id": "pluginrel_6ae8e5627e0c81918ba70e7aef1bd776",
+        "status": "REGISTRY_READBACK_VERIFIED_2026-11-02"
       },
       "hermes-automatic-engineer": {
-        "version": "0.1.35",
-        "status": "CURRENT_VERIFIED_2026-11-02"
+        "version": "0.1.36",
+        "release_id": "pluginrel_6ae8e56a4f1c8191ba099d7880587162",
+        "status": "REGISTRY_READBACK_VERIFIED_2026-11-02"
       },
       "hermes-qa-evidence-auditor": {
-        "version": "0.1.22",
-        "status": "CURRENT_VERIFIED_2026-11-02"
+        "version": "0.1.24",
+        "release_id": "pluginrel_6ae8e572d6008191977a1d6031983ba2",
+        "status": "REGISTRY_READBACK_VERIFIED_2026-11-02"
       },
       "hermes-knowledge-curator": {
-        "version": "0.1.93",
-        "status": "CURRENT_VERIFIED_2026-11-02"
+        "version": "0.1.94",
+        "release_id": "pluginrel_6ae8e57816d88191a18ae6fb6f2d4cd7",
+        "status": "REGISTRY_READBACK_VERIFIED_2026-11-02"
       }
     },
-    "shared_skill": "hermes-ai-windows-primary-20261029",
+    "shared_skill": "windows-runtime-unattended-truth-20261102",
     "domain_routing": {
       "command_center": [
         "hermes-agent-coordinator",
@@ -519,7 +545,10 @@
         "hermes-design-hub"
       ]
     },
-    "promotion_rule": "No local proposal is LEARNED until source evidence + failure mechanism + regression/negative test + independent QA + version/eval delta + later runtime consumption."
+    "promotion_rule": "No local proposal is LEARNED until source evidence + failure mechanism + regression/negative test + independent QA + version/eval delta + later runtime consumption.",
+    "local_runtime_consumed_at": "2026-11-02T19:42:00.319649+00:00",
+    "local_runtime_receipt": "viktor_live/operations/task_receipts.jsonl#PLUGIN_RUNTIME_CONSUMPTION_20261102",
+    "hae_runtime_consumption_proven": false
   },
   "third_lane_training_handoff": {
     "status": "INGESTED_TO_WINDOWS_TRANSFER_CORPUS",
@@ -566,6 +595,7 @@
         "stage": "W1",
         "state": "ACTIVE",
         "tasks": [
+          "PLUGIN_RUNTIME_CONSUMPTION_20261102",
           "VIKTOR_LOCAL_ADMIN_UI_AUDIT"
         ],
         "rule": "local UI/buttons/logo/copy/accessibility audit before broader work"
@@ -615,11 +645,13 @@
   },
   "current_source_checkpoint": {
     "observed_at": "2026-11-02",
-    "main_sha": "12013d7ef1db641ba74e95aca367ee8eb11a13a3",
+    "main_sha": "8fbc0e942a1d9c43a7758feaf3e0f188eba170f9",
     "command_center_pr": 2236,
     "command_center_head": "b31b4e83d7d6c13ebf952e9c41f7dde1111b53be",
     "social_canonical_pr": 2229,
-    "windows_hae_adapter": "MISSING_UNIQUE_WINDOWS_NODE_D1_ADAPTER",
-    "internal_ai_current_runner_identity": "internal-ai-mac-runner"
+    "windows_hae_adapter": "PR_2250_SOURCE_CI_GREEN_REVIEW_PENDING_DISABLED",
+    "internal_ai_current_runner_identity": "internal-ai-mac-runner",
+    "internal_ai_windows_visibility": "PR_2249_SOURCE_CI_GREEN_REVIEW_PENDING",
+    "viktor_offhost_source": "PR_2255_SOURCE_PR_OPEN"
   }
 }
