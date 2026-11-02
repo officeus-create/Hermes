@@ -1,0 +1,35 @@
+name: Secondary workspace skip-link contract
+on:
+  pull_request:
+    paths:
+      - "src/components/BusinessSocialConnectionsWorkspace.astro"
+      - "src/components/HermesConnectVerticalPreview.astro"
+      - "src/pages/services/hermes-connect/demos/**"
+      - "src/pages/services/hermes-connect/internal/ai-connect/projects/**"
+      - "src/pages/services/hermes-connect/internal/prospects/**"
+      - "src/pages/services/hermes-connect/repair-shops/catalog.astro"
+      - "scripts/secondary-workspace-skip-links.test.mjs"
+      - ".github/workflows/secondary-workspace-skip-links.yml"
+  push:
+    branches: [main]
+    paths:
+      - "src/components/BusinessSocialConnectionsWorkspace.astro"
+      - "src/components/HermesConnectVerticalPreview.astro"
+      - "src/pages/services/hermes-connect/demos/**"
+      - "src/pages/services/hermes-connect/internal/ai-connect/projects/**"
+      - "src/pages/services/hermes-connect/internal/prospects/**"
+      - "src/pages/services/hermes-connect/repair-shops/catalog.astro"
+      - "scripts/secondary-workspace-skip-links.test.mjs"
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: node scripts/secondary-workspace-skip-links.test.mjs
