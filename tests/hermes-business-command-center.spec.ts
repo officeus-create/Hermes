@@ -164,7 +164,7 @@ test.describe("Hermes Business Command Center",()=>{
       return route.fulfill(json({success:true,work_item:{...reviewItem,status:"done",accepted_by:"owner-1",accepted_at:"2026-10-27T12:00:00.000Z"}}));
     });
     await page.goto("/services/hermes-connect/internal/command-center/");
-    await page.getByRole("button",{name:"Tasks",exact:true}).click();
+    await openOwnerView(page,"tasks");
     await expect(page.getByText("Execution finished. Review the evidence before accepting the business result.")).toBeVisible();
     await expect(page.locator("[data-work-list] .output-summary")).toContainText("PR and test evidence are ready for review.");
     await page.getByRole("button",{name:"Accept result"}).click();
