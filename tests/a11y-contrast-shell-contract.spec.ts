@@ -52,8 +52,8 @@ test("footer grouped navigation keeps opaque high-contrast computed paint", asyn
 
   const paint = await heading.evaluate((node) => {
     const ancestors = [];
-    let current = node;
-    while (current && current instanceof HTMLElement) {
+    let current: HTMLElement | null = node instanceof HTMLElement ? node : null;
+    while (current) {
       const style = getComputedStyle(current);
       ancestors.push({
         tag: current.tagName,
@@ -66,7 +66,9 @@ test("footer grouped navigation keeps opaque high-contrast computed paint", asyn
       current = current.parentElement;
     }
     const style = getComputedStyle(node);
-    const footerStyle = getComputedStyle(document.querySelector(".site-footer"));
+    const footerNode = document.querySelector(".site-footer");
+    if (!(footerNode instanceof HTMLElement)) throw new Error("Footer is missing from the rendered page");
+    const footerStyle = getComputedStyle(footerNode);
     return {
       color: style.color,
       opacity: style.opacity,
