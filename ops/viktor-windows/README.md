@@ -51,3 +51,12 @@ This directory alone is **not** complete disaster recovery and must not be descr
 
 ## Recovery rule
 Restore source only after verifying hashes/diff and current runtime contract. Do not copy secrets into this directory. Rebuild dependencies from trusted sources rather than copying unknown binaries. A restored Windows worker must remain fail-closed on external/provider writes until current HAE/owner gates are re-read.
+
+
+## Unattended bootstrap checkpoint — 2026-11-02
+- Current production-local watchdog remains `InteractiveToken` and therefore `SESSION_GUARDED`, not unattended 24/7.
+- A bounded S4U registration probe from the connected remote session failed with Windows Task Scheduler `Access is denied` (0x80070005). This is `ADMIN_ELEVATION_GATE`, not a reason to request or persist the Windows password.
+- `bootstrap/ENABLE_VIKTOR_UNATTENDED_S4U.ps1` is fail-closed: it requires an Administrator session, creates a separate S4U task, runs a local runtime canary, and disables the legacy InteractiveToken task only after S4U + zero task result + fresh runtime receipt are proven.
+- `bootstrap/ROLLBACK_VIKTOR_UNATTENDED_S4U.ps1` removes the S4U task and re-enables the legacy watchdog.
+- Even after S4U configuration, `UNATTENDED_24_7_VERIFIED` remains false until logout/reboot startup and at least two post-start heartbeats/receipts are independently read back.
+- No plaintext Windows password, provider token, HAE token, model binary, log, receipt or customer data is stored in this snapshot.
