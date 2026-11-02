@@ -146,7 +146,62 @@ async function loadProjects(){
   renderItems();renderOwnerOverview();
 }
 function priorityRank(value:string){return ({p0:0,p1:1,p2:2,p3:3} as Record<string,number>)[value]??9}
+function liveTone(selector:string,tone:"good"|"warn"|"bad"|"neutral"){
+  const node=q<HTMLElement>(selector);if(!node)return;
+  node.classList.toggle("is-good",tone==="good");
+  node.classList.toggle("is-warn",tone==="warn");
+  node.classList.toggle("is-bad",tone==="bad");
+}
+function renderLiveOperations(){
+  const providers=Array.isArray(threadsSnapshot?.connections)?threadsSnapshot.connections:[];
+  const verifiedProviders=providers.filter((item:any)=>item?.identity_verified===true).length;
+  const socialConnected=socialSnapshot?.content_queue?.source_state==="CONNECTED"||socialSnapshot?.publication_receipts?.source_state==="CONNECTED";
+  const threadsState=threadsSnapshot?.success&&providers.length?(verifiedProviders===providers.length?t("Connected","Подключено"):t("Needs attention","Требует внимания")):(threadsSnapshot?.success?t("Not configured","Не настроено"):"UNKNOWN");
+  setText("[data-live-threads-title]",providers.length?String(providers.length)+" "+t("connection(s)","подключений"):"UNKNOWN");
+  setText("[data-live-threads-detail]",providers.length
+    ? (socialConnected?t("Provider identity and HAE social read model available; publishing stays separately gated.","Provider identity и HAE social read model доступны; публикация остаётся отдельным gate."):t("Provider identity observed; HAE social rows remain UNKNOWN until their source read succeeds.","Provider identity виден; HAE social rows остаются UNKNOWN до успешного чтения источника."))
+    : t("No verified provider connection was returned by the current owner read.","Текущий owner read не вернул подтверждённого provider connection."));
+  setText("[data-live-threads-state]",threadsState);
+  liveTone("[data-live-threads-state]",threadsState===t("Connected","Подключено")?"good":threadsState==="UNKNOWN"?"neutral":"warn");
+
+  const haeObserved=processRuntime?.runtime_owner==="hermes-automation-engine";
+  const active=processes.filter((process)=>process.status==="active").length;
+  const blockedProcesses=processes.filter((process)=>process.status==="blocked");
+  setText("[data-live-hae-title]",haeObserved?"Hermes Automation Engine":"UNKNOWN");
+  setText("[data-live-hae-detail]",haeObserved
+    ? String(active)+" "+t("active process(es)","активных процессов")+" · "+String(processRuntime?.tick_interval||"UNKNOWN")+" · "+t("chat required: ","чат нужен: ")+(processRuntime?.normal_loop_requires_chat===false?t("no","нет"):"UNKNOWN")
+    : t("HAE owner read model unavailable; runtime state remains UNKNOWN.","HAE owner read model недоступен; runtime state остаётся UNKNOWN."));
+  setText("[data-live-hae-state]",haeObserved?t("Configured","Настроен"):"UNKNOWN");
+  liveTone("[data-live-hae-state]",haeObserved?"warn":"neutral");
+
+  const nextRuns=processes.map((process)=>process.next_run_at).filter(Boolean).sort();
+  const autoState=blockedProcesses.length?t("Needs attention","Требует внимания"):active?t("Running","Работает"):processes.length?t("Paused","На паузе"):"UNKNOWN";
+  setText("[data-live-automation-title]",active?String(active)+" "+t("active","активно"):processes.length?String(processes.length)+" "+t("configured","настроено"):"UNKNOWN");
+  setText("[data-live-automation-detail]",blockedProcesses.length
+    ? String(blockedProcesses.length)+" "+t("blocked · open Automations for the exact error.","заблокировано · откройте Automations для точной ошибки.")
+    : nextRuns[0]?t("Next run: ","Следующий запуск: ")+stamp(nextRuns[0]):t("No verified next run timestamp.","Нет подтверждённого времени следующего запуска."));
+  setText("[data-live-automation-state]",autoState);
+  liveTone("[data-live-automation-state]",blockedProcesses.length?"bad":active?"good":processes.length?"warn":"neutral");
+
+  const aiOnline=runtime?.online===true;
+  const aiName=String(runtime?.display_name||runtime?.runner_id||runtime?.primary_executor||t("Internal AI runner","Internal AI runner"));
+  const aiReady=runtime?.task_executor_ready===true||runtime?.primary_executor_verified===true;
+  setText("[data-live-ai-title]",aiOnline?aiName:t("No fresh runner heartbeat","Нет свежего heartbeat runner"));
+  setText("[data-live-ai-detail]",aiOnline
+    ? (aiReady?t("Task-capable executor verified","Task-capable executor подтверждён"):t("Heartbeat observed; task execution is not independently verified","Heartbeat получен; выполнение задач отдельно не подтверждено"))+" · "+t("last seen ","последняя связь ")+stamp(runtime?.last_seen_at)
+    : t("Cloud backlog remains available even when the local executor is offline.","Облачная очередь остаётся доступной, даже если локальный executor offline."));
+  setText("[data-live-ai-state]",aiOnline?(aiReady?t("Running","Работает"):t("Heartbeat only","Только heartbeat")):t("Offline","Офлайн"));
+  liveTone("[data-live-ai-state]",aiOnline&&aiReady?"good":aiOnline?"warn":"bad");
+
+  setText("[data-hae-runtime-state]",haeObserved?t("CONFIGURED · runtime receipt separate","НАСТРОЕН · runtime receipt отдельно"):"UNKNOWN");
+  setText("[data-hae-owner]",String(processRuntime?.runtime_owner||"UNKNOWN"));
+  setText("[data-hae-loop]",String(processRuntime?.tick_interval||"UNKNOWN"));
+  setText("[data-hae-active]",haeObserved?String(active):"UNKNOWN");
+  setText("[data-hae-cost]",typeof processRuntime?.automatic_paid_ai_cost_usd==="number"?"$"+String(processRuntime.automatic_paid_ai_cost_usd):"UNKNOWN");
+  const recent=q("[data-hae-recent]");if(recent){recent.replaceChildren();const rows=[...processes].sort((a,b)=>String(b.last_run_at||"").localeCompare(String(a.last_run_at||""))).slice(0,5);if(!rows.length){const p=document.createElement("p");p.className="muted";p.textContent=t("No owner-managed HAE processes returned by the current read.","Текущий read не вернул owner-managed процессы HAE.");recent.append(p)}else rows.forEach((process)=>{const row=document.createElement("article");row.className="owner-evidence-item";const body=document.createElement("div");const title=document.createElement("strong");title.textContent=process.name;const meta=document.createElement("small");meta.textContent=process.status+" · "+process.job_type+" · "+(process.last_job_state||"NO RECEIPT");body.append(title,meta);if(process.last_error_class){const error=document.createElement("p");error.textContent=process.last_error_class;body.append(error)}const state=document.createElement("span");state.textContent=process.last_job_state||process.status;row.append(body,state);recent.append(row)})}
+}
 function renderOwnerOverview(){
+  renderLiveOperations();
   const pending=items.filter(item=>item.status==="awaiting_acceptance");
   const runningTasks=tasks.filter((task:any)=>["queued","running"].includes(String(task.status))).length;
   const activeProcesses=processes.filter(process=>process.status==="active").length;
@@ -199,6 +254,7 @@ function switchView(view:string){
   const url=new URL(location.href);if(next==="today")url.searchParams.delete("view");else url.searchParams.set("view",next);history.replaceState(null,"",url);
 }
 document.querySelectorAll<HTMLButtonElement>("[data-cc-nav]").forEach(button=>button.addEventListener("click",()=>{switchView(button.dataset.ccNav||"today");button.closest("details")?.removeAttribute("open")}));
+document.querySelectorAll<HTMLButtonElement>("[data-open-view]").forEach(button=>button.addEventListener("click",()=>switchView(button.dataset.openView||"today")));
 const captureDialog=q<HTMLDialogElement>("[data-capture-dialog]");
 document.querySelectorAll<HTMLButtonElement>("[data-new-task]").forEach(button=>button.addEventListener("click",()=>captureDialog?.showModal()));
 q("[data-capture-cancel]")?.addEventListener("click",()=>captureDialog?.close());
