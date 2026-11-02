@@ -1,0 +1,34 @@
+name: Private workspace skip links
+
+on:
+  pull_request:
+    paths:
+      - "src/pages/services/hermes-connect/repair-shops/**"
+      - "src/pages/services/hermes-connect/internal/ai-connect/**"
+      - "src/pages/services/hermes-connect/internal/registrations/**"
+      - "src/layouts/BaseLayout.astro"
+      - "scripts/private-workspace-skip-link-contract.test.mjs"
+      - ".github/workflows/private-workspace-skip-links.yml"
+  push:
+    branches: [main]
+    paths:
+      - "src/pages/services/hermes-connect/repair-shops/**"
+      - "src/pages/services/hermes-connect/internal/ai-connect/**"
+      - "src/pages/services/hermes-connect/internal/registrations/**"
+      - "src/layouts/BaseLayout.astro"
+      - "scripts/private-workspace-skip-link-contract.test.mjs"
+
+permissions:
+  contents: read
+
+jobs:
+  preserve-private-skip-links:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: node scripts/private-workspace-skip-link-contract.test.mjs
