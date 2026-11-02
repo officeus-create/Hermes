@@ -176,7 +176,30 @@ def execute(task,dependency_pending=False):
   return {"status":"EVENT_OR_OWNER_GATE_WAIT","polled_external_sources":False,"release_allowed":False,"next_trigger":"G1-G5 or material buyer/customer/provider/product-stage/revenue/cash event"}
  if action=="READ_ONLY_CAPABILITY_REGISTRY":
   reg=load_json(ROOT/"skill_registry_v4.json",{})
-  return {"status":"CAPABILITY_REGISTRY_REVIEWED","registry_type":type(reg).__name__,"top_level_keys":sorted(reg.keys()) if isinstance(reg,dict) else [],"new_agent_created":False}
+  inventory=load_json(ROOT/"HERMES_PRIVATE_PLUGIN_INVENTORY_20261028.json",{})
+  manifest=load_json(MANIFEST,{})
+  expected={
+   "hermes-agent-coordinator":"0.1.89",
+   "hermes-automatic-engineer":"0.1.36",
+   "hermes-qa-evidence-auditor":"0.1.24",
+   "hermes-knowledge-curator":"0.1.94",
+  }
+  plugin_versions={str(p.get("name")):str(p.get("version")) for p in inventory.get("plugins",[]) if isinstance(p,dict)}
+  skill_ids=[str(x.get("id")) for x in reg.get("skills",[]) if isinstance(x,dict)]
+  training=(manifest.get("plugin_training") or {})
+  trained=training.get("trained_core_plugins") or {}
+  manifest_versions={name:str((trained.get(name) or {}).get("version")) for name in expected}
+  exact_versions=all(plugin_versions.get(name)==version and manifest_versions.get(name)==version for name,version in expected.items())
+  skill_ok="WINDOWS_RUNTIME_TRUTH" in skill_ids and training.get("shared_skill")=="windows-runtime-unattended-truth-20261102"
+  return {"status":"RUNTIME_CONSUMPTION_VERIFIED_LOCAL" if exact_versions and skill_ok else "CAPABILITY_REGISTRY_DRIFT",
+          "registry_version":reg.get("version"),"skill_id":"windows-runtime-unattended-truth-20261102",
+          "skill_projection_present":skill_ok,"core_plugin_versions":{name:plugin_versions.get(name) for name in expected},
+          "manifest_plugin_versions":manifest_versions,"exact_versions":exact_versions,
+          "inventory_observed_at":inventory.get("observed_at"),
+          "inventory_snapshot_scope":inventory.get("snapshot_scope"),
+          "core4_refreshed_at":inventory.get("core4_refreshed_at"),
+          "new_agent_created":False,
+          "hae_runtime_consumption_proven":False,"external_actions":0,"provider_writes":0}
  if action=="LOCAL_WORK_CONTRACT_SELFTEST":
   from hae_windows_node_contract import selftest as work_contract_selftest
   return work_contract_selftest(RUN/"qa"/"work_contract_executor_selftest.jsonl")
