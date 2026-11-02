@@ -13,7 +13,7 @@ const suffix = isRu ? "?lang=ru" : "";
   <SiteHeader activePath="/paths/technology/" />
   <HermesConnectExperience />
   <HermesConnectInternalAiNav />
-  <main class="ai-activity-page"><div class="shell">
+  <main id="main-content" tabindex="-1" class="ai-activity-page"><div class="shell">
     <header class="hero"><div><p class="kicker"><Sparkles size={15}/> AI Connect · {isRu?"активность":"activity"}</p><h1>{isRu?"Активность":"Activity"}</h1><p>{isRu?"История внутренних AI-задач: безопасные результаты, ветки, PR, evidence и остановки на подтверждение. Исходные секреты и credentials здесь не отображаются.":"Internal AI task history: sanitized results, branches, PRs, evidence and approval stops. Raw secrets and credentials are never rendered here."}</p></div><span class="badge"><ShieldCheck size={16}/>{isRu?"Только для владельца":"Internal owner only"}</span></header>
     <HermesConnectAccountSwitcher current="ai" />
     <section class="access" data-access role="status"><strong>{isRu?"Проверяем доступ…":"Checking internal access…"}</strong><p>{isRu?"Активность откроется после проверки HERMES_INTERNAL_OWNER.":"Activity opens after HERMES_INTERNAL_OWNER is verified."}</p></section>
