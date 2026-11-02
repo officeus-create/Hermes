@@ -18,7 +18,7 @@ for (const width of [390, 1280]) {
     await page.goto("/businesses/");
     const findings = await page.locator("#global-markets").evaluate((root, selectors) => {
       function rgb(raw: string): number[] {
-        const values = (raw.match(/[\\d.]+/g) ?? []).map(Number);
+        const values = (raw.match(/[0-9.]+/g) ?? []).map(Number);
         if (values.length < 3 || values.slice(0, 3).some((value) => !Number.isFinite(value))) {
           throw new Error(`Unparseable computed CSS color: ${raw}`);
         }
