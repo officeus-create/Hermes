@@ -1,6 +1,7 @@
 ---
 import { ArrowRight, Check, Download, FileSignature, Mail, Printer, ShieldCheck, X } from "@lucide/astro";
 import BaseLayout from "../../../layouts/BaseLayout.astro";
+import CarrierPlanCards from "../../../components/CarrierPlanCards.astro";
 import SiteHeader from "../../../components/SiteHeader.astro";
 import SiteFooter from "../../../components/SiteFooter.astro";
 
@@ -31,7 +32,7 @@ const schema = {
           <h1>Read the important terms without legal fog.</h1>
           <p class="agreement-lead">The first screen explains the proposed commercial relationship in about 60 seconds. The attorney-review PDF is available for detailed review and download.</p>
           <div class="agreement-actions">
-            <a class="button agreement-primary" href="/logistics/carrier-onboarding/" data-carrier-context-link data-contract-esign>Complete review packet <FileSignature size={18} aria-hidden="true" /></a>
+            <a class="button agreement-primary" href="#agreement-support-options" data-carrier-context-link data-contract-esign>Complete review packet <FileSignature size={18} aria-hidden="true" /></a>
             <a class="button button-ghost" href={pdfReviewPath}>Open full agreement <ArrowRight size={18} aria-hidden="true" /></a>
             <button class="button button-ghost" type="button" data-print-page><Printer size={18} aria-hidden="true" />Print this summary</button>
           </div>
@@ -49,6 +50,8 @@ const schema = {
       <article><ShieldCheck size={21} aria-hidden="true" /><h3>Limited administrative authority</h3><p>Hermes supports dispatch administration and is not granted authority to broker, re-broker, transport, or control safety.</p></article>
       <article><Check size={21} aria-hidden="true" /><h3>Clear termination path</h3><p>The proposed v3 structure allows termination with written notice while previously completed work and earned fees are reconciled.</p></article>
     </div></div></section>
+
+    <CarrierPlanCards id="agreement-support-options" heading="Select a service model before signing." />
 
     <section class="section scope-section" aria-labelledby="scope-title"><div class="shell"><div class="section-heading agreement-heading"><p class="eyebrow">Authority boundary</p><h2 id="scope-title">What Hermes may do - and what it may not do.</h2></div><div class="scope-grid"><article class="scope-yes"><Check size={28} aria-hidden="true" /><h3>Hermes may support</h3><ul><li>Load and market research</li><li>Communication and negotiation within carrier instructions</li><li>Rate-confirmation and ordinary document coordination</li><li>Lane, deadhead, scheduling, and carrier-development research when selected</li><li>Invoice and proof-of-delivery follow-up</li></ul></article><article class="scope-no"><X size={28} aria-hidden="true" /><h3>Hermes may not take over</h3><ul><li>Final load acceptance or rejection</li><li>Drivers, equipment, maintenance, safety, insurance, or compliance</li><li>Brokerage, re-brokering, or holding out as the motor carrier</li><li>Automatic receipt or ownership of freight funds</li><li>Passwords, bank data, W-9s, CDL images, VIN lists, or shipment documents through the public signing URL</li></ul></article></div></div></section>
 

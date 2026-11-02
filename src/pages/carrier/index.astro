@@ -1,6 +1,7 @@
 ---
 import { ArrowRight, Check, Clipboard, FileSignature, Mail, MessageSquareText, ShieldCheck } from "@lucide/astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import CarrierPlanCards from "../../components/CarrierPlanCards.astro";
 import DirectionProductNav from "../../components/DirectionProductNav.astro";
 import SiteHeader from "../../components/SiteHeader.astro";
 import SiteFooter from "../../components/SiteFooter.astro";
@@ -43,7 +44,7 @@ const schema = {
             <span><ShieldCheck size={17} aria-hidden="true" />No passwords, W-9, bank data, or CDL image here</span>
           </div>
           <div class="carrier-entry-actions">
-            <a class="button carrier-primary" href="/logistics/carrier-onboarding/" data-commercial-primary-cta data-service-group="carrier_contract">
+            <a class="button carrier-primary" href="/carrier/#carrier-support-options" data-commercial-primary-cta data-service-group="carrier_contract">
               Review & sign packet <FileSignature size={18} aria-hidden="true" />
             </a>
             <a class="button carrier-secondary" href="/logistics/carrier-offer/">See what Hermes handles</a>
@@ -65,6 +66,8 @@ const schema = {
         </aside>
       </div>
     </section>
+
+    <CarrierPlanCards id="carrier-support-options" heading="Choose one of three carrier agreements." />
 
     <section class="section carrier-confidence" aria-labelledby="carrier-confidence-title">
       <div class="shell">

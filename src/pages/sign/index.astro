@@ -1,6 +1,7 @@
 ---
 import { ArrowRight, Check, FileSignature, Mail, MessageSquareText, ShieldCheck } from "@lucide/astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import CarrierPlanCards from "../../components/CarrierPlanCards.astro";
 import SiteHeader from "../../components/SiteHeader.astro";
 import SiteFooter from "../../components/SiteFooter.astro";
 
@@ -42,7 +43,7 @@ const schema = {
             <span><Check size={17} aria-hidden="true" />Freight payments stay with your company</span>
           </div>
           <div class="sign-actions">
-            <a class="button sign-primary" href={onboardingPath} data-commercial-primary-cta data-service-group="carrier_contract">
+            <a class="button sign-primary" href="#sign-support-options" data-commercial-primary-cta data-service-group="carrier_contract">
               Continue to carrier packet <ArrowRight size={18} aria-hidden="true" />
             </a>
             <a class="button sign-secondary" href={agreementPath}>Review the agreement first</a>
@@ -54,7 +55,7 @@ const schema = {
         <aside class="sign-decision-card" aria-label="Choose the next step">
           <p class="eyebrow">Choose the next step</p>
           <h2>Ready now, or reviewing first?</h2>
-          <a class="decision decision-ready" href={onboardingPath}>
+          <a class="decision decision-ready" href="#sign-support-options">
             <FileSignature size={23} aria-hidden="true" />
             <span><strong>I’m ready to continue</strong><small>Choose the service model, confirm the company, and create the signed review/onboarding packet.</small></span>
             <ArrowRight size={18} aria-hidden="true" />
@@ -72,6 +73,8 @@ const schema = {
         </aside>
       </div>
     </section>
+
+    <CarrierPlanCards id="sign-support-options" heading="Compare the three ways to work with Hermes." />
 
     <section class="section sign-summary" aria-labelledby="sign-summary-title">
       <div class="shell">
