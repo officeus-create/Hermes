@@ -75,6 +75,29 @@ assert.deepEqual(extracted.sort(), [
   "https://hermeslogisticsus.com/gb/london/marketing/",
 ].sort());
 
+
+/* 2026-11-02 owner GSC alternate-canonical drilldown export regression:
+   the quoted first column can contain internal commas and embedded newlines.
+   Preserve the entire URL; Google correctly excludes the query variants. */
+const exported = [
+  "URL,Последнее сканирование",
+  '"https://hermeslogisticsus.com/load-board/?role=carrier&area=Green Bay, WI",2026-08-11',
+  '"https://hermeslogisticsus.com/load-board/?role=private_party&origin=Eau \nClaire, WI",2026-08-10',
+  '"https://hermeslogisticsus.com/academy/apply/?program=us-logistics-operations&utm_source=london&utm_medium=organic",2026-09-04',
+  'https://hermeslogisticsus.com/paths/marketing/?service=seo,2026-10-16',
+  'https://hermeslogisticsus.com/paths/marketing/?service=seo,2026-10-16',
+].join("\r\n");
+const exportedUrls = extractUrls("\uFEFF" + exported);
+assert.equal(exportedUrls.length, 4, "Quoted, multiline and duplicate GSC CSV rows must be read exactly once");
+assert.ok(exportedUrls.includes("https://hermeslogisticsus.com/load-board/?role=carrier&area=Green Bay, WI"));
+assert.ok(exportedUrls.includes("https://hermeslogisticsus.com/load-board/?role=private_party&origin=Eau \nClaire, WI"));
+for (const url of exportedUrls) {
+  const result = classifyUrl(url, sitemaps);
+  assert.equal(result.category, "EXPECTED_EXCLUSION_CANONICAL_VARIANT", "GSC query variants are not indexable owners: " + url);
+  assert.ok(sitemaps.has(result.normalized), "GSC variant must resolve to a current canonical sitemap owner");
+}
+assert.equal(extractUrls("Дата,Затронутые страницы\n2026-10-23,61").length, 0, "GSC chart data is not a list of URLs");
+
 console.log(`GSC indexing triage contract passed with ${sitemaps.size} current sitemap URL(s).`);
 
 assert.match(redirects, /^\/paths\/logistics\/broker-capacity\/ \/paths\/logistics\/brokers\/carrier-capacity\/ 301$/m, "retired broker-capacity path must redirect to the current broker carrier-capacity owner");
