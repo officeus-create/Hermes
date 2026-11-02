@@ -43,6 +43,12 @@ assert.equal(routeMap.get("auto-repair-website-design"), "/services/auto-repair-
 assert.equal(routeMap.get("website-redesign"), "/services/website-redesign/");
 assert.equal(routeMap.get("carrier-sales"), "/carrier/");
 assert.equal(routeMap.get("carrier-signing"), "/sign/");
+assert.equal(routeMap.get("carrier-offer"), "/logistics/carrier-offer/");
+assert.equal(routeMap.get("carrier-agreement"), "/logistics/carrier-agreement/");
+assert.equal(routeMap.get("carrier-agreement-pdf"), "/contracts/carrier-agreement-v3/");
+assert.equal(routeMap.get("carrier-onboarding"), "/logistics/carrier-onboarding/");
+assert.equal(routeMap.get("load-board-access"), "/services/hermes-connect/load-board/access/");
+assert.equal(routeMap.get("vehicle-transport-request"), "/logistics/request-vehicle-transport/");
 assert.equal(routeMap.get("repair-shops"), "/services/hermes-connect/repair-shops/");
 assert.equal(routeMap.get("repair-shop-auth"), "/services/hermes-connect/repair-shops/auth/");
 assert.equal(routeMap.get("repair-shop-plan"), "/services/hermes-connect/repair-shops/plan/");
