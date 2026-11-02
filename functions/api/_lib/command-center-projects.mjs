@@ -213,7 +213,7 @@ const projects = Object.freeze([
     id: "windows-ai",
     title: "Hermes AI on Windows",
     department: "technology",
-    purpose: "Operate the assigned primary local Hermes AI executor and cockpit without creating a second HAE, and prove sustained unattended continuity."
+    purpose: "Operate the assigned primary local Hermes AI executor and cockpit without creating a second HAE, and prove sustained unattended continuity.",
     owner_role: "hermes-technology-developer",
     agent_role: "Hermes AI Windows runner",
     plugin_roles: ["hermes-private-network", "hermes-security-engineering"],
