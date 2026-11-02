@@ -9,7 +9,15 @@ This directory is an **off-host source/recovery snapshot** of the active Windows
 - Windows HAE integration remains disabled until reviewed release + scoped credentials + one real READ_ONLY canonical D1 canary.
 
 ## Included
-Only recovery-critical source/config files selected from the actual Python import graph and runtime entrypoints.
+This snapshot contains recovery-critical **source/configuration**, not a full executable machine image:
+- 15 Python files selected from the actual local import/dependency graph and runtime entrypoints;
+- watchdog + healthcheck PowerShell;
+- local dashboard source;
+- bounded operations manifest;
+- local policy/skill registry;
+- private plugin inventory snapshot used by the local read-only capability audit.
+
+The plugin inventory keeps its full-snapshot timestamp at 2026-10-28; only Coordinator / Automatic Engineer / QA Auditor / Knowledge Curator have an exact 2026-11-02 Core-4 refresh.
 
 ## Explicitly excluded
 - `viktor_live/` state, logs and receipts;
@@ -19,7 +27,7 @@ Only recovery-critical source/config files selected from the actual Python impor
 - .env files, API tokens, passwords, cookies, credentials and provider sessions;
 - same-disk Recovery copies.
 
-A 19-file hardcoded-secret scan returned 0 findings before this snapshot was created.
+A 19-file recovery-source hardcoded-secret scan returned 0 findings. The two later-added registry/inventory files were separately scanned and also returned 0 findings.
 
 ## Current truth at snapshot
 - Windows runtime: LOCAL_LIVE / SESSION_GUARDED.
@@ -30,5 +38,8 @@ A 19-file hardcoded-secret scan returned 0 findings before this snapshot was cre
 - Development/nonsealed policy regression: 20/20. Independent generalization is not proven; sealed holdout unavailable.
 - Off-host version control is the purpose of this snapshot; runtime deployment remains separate.
 
+## Recovery limits
+This directory alone is **not** complete disaster recovery and must not be described as such. It intentionally excludes local model weights, Python virtualenv/binaries, source corpora/test fixtures and mutable runtime receipts/state. Those dependencies must be rebuilt or restored from their authorized canonical sources before the worker can be accepted as recovered.
+
 ## Recovery rule
-Restore source only after verifying hashes/diff and current runtime contract. Do not copy secrets into this directory. A restored Windows worker must remain fail-closed on external/provider writes until current HAE/owner gates are re-read.
+Restore source only after verifying hashes/diff and current runtime contract. Do not copy secrets into this directory. Rebuild dependencies from trusted sources rather than copying unknown binaries. A restored Windows worker must remain fail-closed on external/provider writes until current HAE/owner gates are re-read.
