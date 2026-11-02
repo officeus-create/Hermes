@@ -45,7 +45,11 @@ RULES = (
     ),
     (
         "STOP_REAUDIT",
-        (r"два последовательн.*аудит|повторить трет",),
+        (
+            r"два последовательн.*аудит|два аудит.*подряд",
+            r"(?:трет|повтор).*(?:одинаков|тот же).*аудит",
+            r"повтор.*аудит.*без нов.*(?:измен|evidence|доказ)",
+        ),
         "Unchanged evidence must not generate an endless duplicate audit loop.",
     ),
     (
@@ -109,6 +113,24 @@ RULES = (
 
 def classify(question: str) -> dict:
     text = " ".join(str(question).lower().split())
+    # Reuse an existing canonical work item when the evidence/cause is unchanged.
+    # This is distinct from STOP_REAUDIT: reuse answers "create another issue/queue?",
+    # while stop-reaudit answers "repeat the same unchanged audit again?".
+    reuse_existing_patterns = (
+        r"идентичн.*(?:отчет|задач|issue).*(?:без нов.*evidence|без нов.*доказ)",
+        r"(?:без нов.*evidence|без нов.*доказ).*(?:нов.*очеред|создавать.*(?:issue|задач|очеред))",
+        r"тот же дефект.*(?:нов.*очеред|создавать.*(?:issue|задач|очеред))",
+        r"дубликат.*(?:issue|задач|очеред).*(?:без нов|тот же)",
+    )
+    if any(re.search(pattern, text, re.IGNORECASE) for pattern in reuse_existing_patterns):
+        return {
+            "decision": "REUSE_EXISTING",
+            "confidence": "HIGH",
+            "matched_rule": "REUSE_EXISTING_PRECEDENCE",
+            "matched_pattern_count": 1,
+            "rationale": "Unchanged cause/evidence should reuse the canonical work item instead of creating duplicate queue or issue state.",
+            "semantic_model_required": False,
+        }
     # PLAN_ONLY takes precedence when the artifact is explicitly a plan/test-plan
     # and no execution occurred. This prevents the generic NOT_RUN rule from
     # collapsing "planned but not executed" into "test execution unknown".
