@@ -123,7 +123,7 @@ const schema = [
           <p>For current carrier-acquisition work, Hermes is prioritizing practical route-fit research around Western and Upstate New York—including Rochester, Buffalo, Le Roy, Akron, and the surrounding operating area—toward Georgia, Atlanta / North Georgia, North Carolina, and South Carolina where the carrier's actual equipment, capacity, timing, and destination preferences fit.</p>
           <p>This is a search and operating-context priority, not a live-load claim. It does not publish private carrier history, identify a truck's current location, promise freight in any market, or guarantee rates, backhauls, lane consistency, utilization, or revenue.</p>
         </div>
-        <div class="hub-priority-grid" aria-label="Current car-hauler operating-priority context">
+        <div class="hub-priority-grid" role="group" aria-label="Current car-hauler operating-priority context">
           <article><strong>Western / Upstate New York</strong><span>Rochester · Buffalo · Le Roy · Akron · surrounding operating area</span></article>
           <article><strong>Southeast</strong><span>Georgia · Atlanta / North Georgia · North Carolina · South Carolina</span></article>
           <article><strong>Carrier-controlled fit</strong><span>Equipment · open spaces · deadhead · timing · destination · final load approval</span></article>
@@ -159,7 +159,7 @@ const schema = [
           <p>A practical carrier search can combine origin, destination, radius, route direction, open capacity, vehicle type or condition, payment terms, pickup/delivery timing, deadhead, and source eligibility. Hermes can coordinate that research within the approved carrier scope.</p>
           <a href={dispatchPath} data-carrier-geo-cta="dispatch_details">Review the full car-hauling dispatch scope<ArrowRight size={16} aria-hidden="true" /></a>
         </div>
-        <div class="platform-grid" aria-label="Industry source examples">
+        <div class="platform-grid" role="group" aria-label="Industry source examples">
           {carHaulerPlatformExamples.map((platform) => <span>{platform}</span>)}
           <span>Broker & dealer portals</span><span>Auction transport networks</span><span>Direct shipper / dealer research</span>
         </div>

@@ -40,7 +40,7 @@ const preview = [
         {context === "technology" && <a class="button" href="/case/it-development/">See how Hermes builds products</a>}
         {context === "logistics" && <a class="button" href="/paths/logistics/find-your-path/">Choose logistics path</a>}
       </div>
-      <div class="load-board-spotlight__features" aria-label="Load Board capabilities">
+      <div class="load-board-spotlight__features" role="group" aria-label="Load Board capabilities">
         <span><Search size={15} aria-hidden="true" /> Lane & equipment search</span>
         <span><BellRing size={15} aria-hidden="true" /> Fresh-load alerts</span>
         <span><Gauge size={15} aria-hidden="true" /> Rate & market context</span>
@@ -49,7 +49,7 @@ const preview = [
       </div>
     </div>
 
-    <div class="load-board-spotlight__board" aria-label="Hermes Load Board preview">
+    <div class="load-board-spotlight__board" role="group" aria-label="Hermes Load Board preview">
       <div class="load-board-spotlight__board-head">
         <div><strong>Freight activity</strong><span>Public preview · live feed connects when source permission allows</span></div>
         <span class="load-board-spotlight__pulse"><i></i> Updating</span>
