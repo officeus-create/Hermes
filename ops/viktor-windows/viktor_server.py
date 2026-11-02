@@ -25,11 +25,35 @@ def status():
    data["current_task"]="Historical training case active — legacy text encoding"
    data["current_task_encoding"]="LEGACY_MOJIBAKE_RAW_PRESERVED"
   return data
- except (FileNotFoundError,ValueError):return {"status":"STARTING","deadline":None,"run_mode":"CONTINUOUS_24_7_READ_ONLY_POWER_GUARDED","current_task":"Starting local lab"}
+ except (FileNotFoundError,ValueError):return {"status":"STARTING","deadline":None,"run_mode":"CONTINUOUS_READ_ONLY_SESSION_GUARDED","current_task":"Starting local lab"}
 def runtime_receipt():
  p=RUN/"windows_runtime_receipt.json"
  try:return json.loads(p.read_text(encoding="utf-8-sig"))
  except (FileNotFoundError,ValueError):return {"status":"UNAVAILABLE"}
+
+def local_health():
+ r=runtime_receipt()
+ if r.get("status")=="UNAVAILABLE":
+  return {"severity":"UNKNOWN","evidence_class":"LOCAL_RUNTIME_ONLY","reason":"runtime_receipt_unavailable"}
+ age=None
+ try:
+  observed=datetime.fromisoformat(str(r.get("at") or "").replace("Z","+00:00"))
+  now=datetime.now(observed.tzinfo) if observed.tzinfo else datetime.now()
+  age=max(0,int((now-observed).total_seconds()))
+ except (TypeError,ValueError):
+  pass
+ heartbeat=r.get("worker_heartbeat_age_seconds")
+ healthy=(r.get("dashboard_http")==200 and r.get("ollama_ready") is True and r.get("model_ready") is True
+          and int(r.get("server_processes") or 0)==1 and int(r.get("worker_processes") or 0)==1
+          and isinstance(heartbeat,(int,float)) and heartbeat<=1200)
+ if age is None:return {"severity":"UNKNOWN","evidence_class":"LOCAL_RUNTIME_ONLY","reason":"receipt_timestamp_invalid"}
+ if age>180:return {"severity":"STALE","evidence_class":"LOCAL_RUNTIME_ONLY","receipt_age_seconds":age}
+ return {"severity":"LOCAL_HEALTHY" if healthy else "DEGRADED","evidence_class":"LOCAL_RUNTIME_ONLY",
+         "receipt_age_seconds":age,"worker_heartbeat_age_seconds":heartbeat,
+         "dashboard_http":r.get("dashboard_http"),"ollama_ready":r.get("ollama_ready"),
+         "model_ready":r.get("model_ready"),"server_processes":r.get("server_processes"),
+         "worker_processes":r.get("worker_processes"),"production_write_authorized":False,
+         "hae_execution_proven":False}
 
 def tail(name,limit=25):
  p=RUN/name
@@ -218,9 +242,7 @@ class H(BaseHTTPRequestHandler):
    if not HTML.exists():return self.respond({"error":"DASHBOARD_NOT_FOUND"},500)
    return self.respond(HTML.read_bytes(),mime="text/html; charset=utf-8")
   if path=="/api/status":
-   health_path=RUN/"health_15m.json"
-   try:health=json.loads(health_path.read_text(encoding="utf-8"))
-   except (FileNotFoundError,ValueError):health={"severity":"UNKNOWN"}
+   health=local_health()
    return self.respond(json.dumps({"worker":status(),"windows_runtime":runtime_receipt(),"health_15m":health,"events":tail("events.jsonl",20),
       "chat_mode":"LOCAL_ONLY_NO_EXTERNAL_ACTIONS",
       "cloud_hae":"SEPARATE_CLOUDFLARE_RUNTIME"},ensure_ascii=False))
