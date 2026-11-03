@@ -25,6 +25,7 @@ export async function ensureCommandCenterSchema(db) {
     linked_task_id TEXT,
     project_id TEXT,
     plugin_route_json TEXT,
+    hae_job_id TEXT,
     completed_at TEXT,
     acceptance_status TEXT NOT NULL DEFAULT 'not_required' CHECK (acceptance_status IN ('not_required','awaiting','accepted')),
     accepted_by TEXT,
@@ -39,6 +40,7 @@ export async function ensureCommandCenterSchema(db) {
     ["accepted_at","TEXT"],
     ["project_id","TEXT"],
     ["plugin_route_json","TEXT"],
+    ["hae_job_id","TEXT"],
   ]) if(!names.has(name)) {
     try { await db.prepare(`ALTER TABLE hermes_owner_work_items ADD COLUMN ${name} ${definition}`).run(); }
     catch(error) {
@@ -87,7 +89,7 @@ export function publicWorkItem(row){
   if(!row)return null;
   const status=String(row.status)==="in_progress"&&String(row.acceptance_status)==="awaiting"?"awaiting_acceptance":String(row.status);
   return {
-    id:String(row.id), workstream:String(row.workstream), priority:String(row.priority), title:String(row.title), details:String(row.details), project_id:row.project_id||null, plugin_route:readWorkItemPluginRoute(row),
+    id:String(row.id), workstream:String(row.workstream), priority:String(row.priority), title:String(row.title), details:String(row.details), project_id:row.project_id||null, plugin_route:readWorkItemPluginRoute(row), hae_job_id:row.hae_job_id||null,
     source:String(row.source||"text"), status, acceptance_status:String(row.acceptance_status||"not_required"), created_at:row.created_at||null, updated_at:row.updated_at||null,
     linked_task_id:row.linked_task_id||null, completed_at:row.completed_at||null,
     accepted_by:row.accepted_by||null, accepted_at:row.accepted_at||null, blocked_reason:row.blocked_reason||null,
