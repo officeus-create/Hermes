@@ -1,5 +1,9 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { evaluateIndependentHeartbeat, runIndependentHeartbeatWatch } from "./hae-independent-heartbeat-watch.mjs";
+
+const workflow=readFileSync(".github/workflows/hae-independent-heartbeat-watch.yml","utf8");
+assert.match(workflow,/persist-credentials:\s*false/,"watchdog checkout must not persist the issues-write GitHub credential");
 
 const current = "a".repeat(40);
 const staleSha = "b".repeat(40);
