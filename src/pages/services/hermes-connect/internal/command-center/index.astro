@@ -37,7 +37,7 @@ const nav=[
 
 <script>
 type WorkItem={id:string;project_id?:string|null;workstream:string;priority:string;title:string;details:string;source:string;status:string;created_at?:string;updated_at?:string;completed_at?:string|null;accepted_by?:string|null;accepted_at?:string|null;linked_task_id?:string|null;linked_task_status?:string|null;linked_task_pr_url?:string|null;linked_task_output_summary?:string|null;blocked_reason?:string|null};
-type HaeAuditSummary={capability?:string|null;source_status?:string|null;coverage_complete?:boolean|null;access_gap?:boolean;p0_count?:number|null;open_count?:number|null;unowned_count?:number|null;repeated_regression_count?:number|null;http_error_count?:number|null;canonical_defect_count?:number|null;redirect_drift_count?:number|null};
+type HaeAuditSummary={capability?:string|null;source_status?:string|null;coverage_complete?:boolean|null;access_gap?:boolean;p0_count?:number|null;open_count?:number|null;unowned_count?:number|null;repeated_regression_count?:number|null;blocked_finding_count?:number|null;writer_state_unverified_count?:number|null;routing_blocked_reason?:string|null;http_error_count?:number|null;canonical_defect_count?:number|null;redirect_drift_count?:number|null};
 type HaeProcess={id:string;name:string;job_type:string;business_lane:string;workstream:string;role_id?:string|null;cadence_hours:number|null;status:string;managed_by?:string;attention_required?:boolean;audit_summary?:HaeAuditSummary|null;next_run_at?:string|null;last_run_at?:string|null;last_job_id?:string|null;last_job_state?:string|null;last_job_completed_at?:string|null;last_error_class?:string|null;template_label:string;template_label_ru:string};
 const isRu=new URLSearchParams(location.search).get("lang")==="ru";
 const q=<T extends HTMLElement=HTMLElement>(s:string)=>document.querySelector<T>(s);
@@ -202,8 +202,9 @@ function processAuditText(process:HaeProcess){
   const a=process.audit_summary;if(!a)return "";const parts:string[]=[];
   if(a.source_status)parts.push("source="+a.source_status);
   if(a.coverage_complete===false)parts.push(t("coverage incomplete","покрытие неполное"));
-  const metrics:Array<[string,number|null|undefined]>=[[t("P0","P0"),a.p0_count],[t("unowned","без владельца"),a.unowned_count],[t("repeated","повторные"),a.repeated_regression_count],[t("HTTP","HTTP"),a.http_error_count],[t("canonical","canonical"),a.canonical_defect_count],[t("redirects","redirects"),a.redirect_drift_count]];
+  const metrics:Array<[string,number|null|undefined]>=[[t("P0","P0"),a.p0_count],[t("unowned","без владельца"),a.unowned_count],[t("repeated","повторные"),a.repeated_regression_count],[t("blocked","заблокировано"),a.blocked_finding_count],[t("writer unknown","writer неизвестен"),a.writer_state_unverified_count],[t("HTTP","HTTP"),a.http_error_count],[t("canonical","canonical"),a.canonical_defect_count],[t("redirects","redirects"),a.redirect_drift_count]];
   metrics.forEach(([label,value])=>{if(Number(value||0)>0)parts.push(label+"="+String(value))});
+  if(a.routing_blocked_reason)parts.push(a.routing_blocked_reason);
   return parts.join(" · ");
 }
 function appendProcessMetric(list:HTMLElement,label:string,value:string){const wrap=document.createElement("div");const dt=document.createElement("dt");dt.textContent=label;const dd=document.createElement("dd");dd.textContent=value;wrap.append(dt,dd);list.append(wrap)}
