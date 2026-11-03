@@ -1,6 +1,7 @@
 import { ensureHermesCompanyProfilesSchema } from "./hermes-company-profiles.mjs";
 import { ensureLoadBoardSchema } from "./load-board-schema.mjs";
 import { specialistHasInternalOwnerCapability } from "./load-board-market-posts.mjs";
+import { ensureCompanyMembershipSchema } from "./company-memberships.mjs";
 
 export const privateWorkspaceHeaders = Object.freeze({
   "Cache-Control": "private, no-store",
@@ -97,15 +98,35 @@ export async function ensureCarrierDispatchWorkspaceSchema(db) {
 export async function getOwnedCarrier(db, specialist) {
   if (!specialist) return null;
   await ensureCarrierDispatchWorkspaceSchema(db);
-  const result = await db.prepare(`
-    SELECT c.id,c.company_name,c.company_type,c.load_board_access,e.status AS entitlement_status,
-      e.agreement_state,e.agreement_version,e.agreement_sha256,e.agreement_effective_at,
-      e.trial_start_date,e.trial_end_date,e.authority_status,e.insurance_status,e.source_rights_status,e.evidence_id
+  const columns=`
+    c.id,c.company_name,c.company_type,c.load_board_access,e.status AS entitlement_status,
+    e.agreement_state,e.agreement_version,e.agreement_sha256,e.agreement_effective_at,
+    e.trial_start_date,e.trial_end_date,e.authority_status,e.insurance_status,e.source_rights_status,e.evidence_id
+  `;
+  const owned=await db.prepare(`
+    SELECT ${columns}, 'owner' AS access_role, 'owner_relation' AS access_source
     FROM hermes_company_profiles c
     LEFT JOIN hermes_carrier_board_entitlements e ON e.company_id=c.id
     WHERE c.owner_specialist_id=? LIMIT 1
   `).bind(specialist.id).first();
-  return result && CARRIER_TYPES.has(String(result.company_type)) ? result : null;
+  if(owned && CARRIER_TYPES.has(String(owned.company_type))) return owned;
+
+  // Drivers never self-select a carrier tenant. They inherit only one active,
+  // non-revoked company membership and the carrier's effective entitlement.
+  if(!/\bdriver\b/i.test(String(specialist.role||""))) return null;
+  await ensureCompanyMembershipSchema(db);
+  const delegated=await db.prepare(`
+    SELECT ${columns},m.role AS access_role,'delegated_driver_membership' AS access_source
+    FROM hermes_company_memberships m
+    JOIN hermes_company_profiles c ON m.business_ref=('company:' || c.id)
+    LEFT JOIN hermes_carrier_board_entitlements e ON e.company_id=c.id
+    WHERE m.specialist_id=? AND m.active=1 AND m.revoked_at IS NULL
+      AND m.role IN ('member','read_only')
+      AND c.company_type IN ('carrier','owner_operator','fleet')
+    ORDER BY m.updated_at DESC LIMIT 2
+  `).bind(specialist.id).all();
+  const rows=delegated.results||[];
+  return rows.length===1 ? rows[0] : null;
 }
 export async function authorizedCarrier(db, specialist) {
   const company = await getOwnedCarrier(db, specialist);
