@@ -1,6 +1,6 @@
 import { getAuthenticatedSpecialist, jsonResponse } from "../_lib/session.mjs";
 import { ensureLoadBoardSchema } from "../_lib/load-board-schema.mjs";
-import { specialistHasLoadBoardAccess } from "../_lib/hermes-company-profiles.mjs";
+import { authorizedCarrier } from "../_lib/carrier-dispatch-workspace.mjs";
 
 type Env = { DB?: any };
 
@@ -23,7 +23,7 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
   await ensureLoadBoardSchema(env.DB);
 
   const specialist = await getAuthenticatedSpecialist(request, env.DB);
-  const carrierCandidate = await specialistHasLoadBoardAccess(env.DB, specialist);
+  const carrierCandidate = Boolean(await authorizedCarrier(env.DB, specialist));
   const url = new URL(request.url);
   const recordType = String(url.searchParams.get("type") || "").trim();
   const equipment = String(url.searchParams.get("equipment") || "").trim();
