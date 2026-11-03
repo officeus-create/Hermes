@@ -124,6 +124,13 @@ VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)`).bind(
   "idem:nonsemantic","hae-readonly-v1","{}",t0,t0
 ).run();
 
+await DB.prepare(`INSERT INTO hermes_automation_jobs
+(job_id,job_type,business_lane,priority,state,current_step,available_at,attempt_count,max_attempts,idempotency_key,policy_version,payload_json,created_at,updated_at)
+VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)`).bind(
+  "job:wrong-lane","search.defect.prioritize","automation",95,"WAITING_FREE_AI","free_ai",t0,0,1,
+  "idem:wrong-lane","hae-free-ai-v1",JSON.stringify(payload),t0,t0
+).run();
+
 const claim=await claimWindowsNodeJob(env,{
   node_id:WINDOWS_NODE_ID,contract_version:WINDOWS_NODE_CONTRACT_VERSION,model:"qwen2.5:1.5b-instruct",
 },t0);
@@ -137,6 +144,9 @@ assert.ok(claim.lease.semantic_request.system_prompt);
 assert.ok(claim.lease.semantic_request.user_prompt);
 let nonsemantic=await DB.prepare("SELECT state FROM hermes_automation_jobs WHERE job_id='job:nonsemantic'").first();
 assert.equal(nonsemantic.state,"WAITING_FREE_AI");
+
+const wrongLane=await DB.prepare("SELECT state FROM hermes_automation_jobs WHERE job_id='job:wrong-lane'").first();
+assert.equal(wrongLane.state,"WAITING_FREE_AI","same job type in the wrong business lane must never be leased");
 
 const replayClaim=await claimWindowsNodeJob(env,{
   node_id:WINDOWS_NODE_ID,contract_version:WINDOWS_NODE_CONTRACT_VERSION,model:"qwen2.5:1.5b-instruct",
@@ -195,6 +205,12 @@ assert.equal(usageRows.results[0].cost_usd,0);
 let successEvents=await DB.prepare("SELECT * FROM hermes_automation_job_events WHERE job_id=? AND event_type='job.windows_node_succeeded'").bind(claim.lease.job_id).all();
 assert.equal(successEvents.results.length,1);
 
+canonicalSuccessEvents=await DB.prepare("SELECT * FROM hermes_automation_job_events WHERE job_id=? AND event_type='job.succeeded'").bind(claim.lease.job_id).all();
+assert.equal(canonicalSuccessEvents.results.length,1);
+
+let canonicalSuccessEvents=await DB.prepare("SELECT * FROM hermes_automation_job_events WHERE job_id=? AND event_type='job.succeeded'").bind(claim.lease.job_id).all();
+assert.equal(canonicalSuccessEvents.results.length,1,"Windows semantic completion must emit the canonical durable success event");
+
 const replayComplete=await completeWindowsNodeJob(env,{
   node_id:WINDOWS_NODE_ID,contract_version:WINDOWS_NODE_CONTRACT_VERSION,
   job_id:claim.lease.job_id,lease_id:claim.lease.lease_id,fence:claim.lease.fence,
@@ -229,6 +245,15 @@ const claim2=await claimWindowsNodeJob(env,{
 },new Date(Date.parse(t0)+6000).toISOString());
 assert.equal(claim2.status,"LEASE_ACCEPTED");
 assert.equal(claim2.lease.job_id,"job:semantic-expire");
+
+await DB.prepare("UPDATE hermes_automation_node_leases SET state='COMPLETING' WHERE job_id=? AND state='ACTIVE'")
+  .bind(claim2.lease.job_id).run();
+const completingClaim=await claimWindowsNodeJob(env,{
+  node_id:WINDOWS_NODE_ID,contract_version:WINDOWS_NODE_CONTRACT_VERSION,model:"qwen2.5:1.5b-instruct",
+},new Date(Date.parse(t0)+7000).toISOString());
+assert.equal(completingClaim.status,"LEASE_COMPLETING","COMPLETING must fence the node from a second lease");
+assert.equal(completingClaim.lease,null);
+
 const afterExpiry=new Date(Date.parse(claim2.lease.lease_until)+1000).toISOString();
 const recovered=await recoverExpiredWindowsNodeLeases(DB,afterExpiry);
 assert.equal(recovered,1);
@@ -239,5 +264,8 @@ assert.equal(expiredJob.attempt_count,0);
 assert.equal(expiredJob.last_error_class,"windows_node_lease_expired");
 const expiredLease=await DB.prepare("SELECT state FROM hermes_automation_node_leases WHERE job_id=?").bind(claim2.lease.job_id).first();
 assert.equal(expiredLease.state,"EXPIRED");
+
+const expiredEvent=await DB.prepare("SELECT * FROM hermes_automation_job_events WHERE job_id=? AND event_type='job.windows_node_lease_expired'").bind(claim2.lease.job_id).all();
+assert.equal(expiredEvent.results.length,1,"expired COMPLETING lease must recover the canonical job without deadlocking the node");
 
 console.log("HAE Windows semantic node canary: PASS");
