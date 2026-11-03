@@ -13,13 +13,17 @@ import {
 } from "../workers/automation-engine/src/role-contracts.mjs";
 import { pluginRuntimeVersion } from "../workers/automation-engine/src/plugin-runtime-registry.mjs";
 
-assert.equal(ROLE_CONTRACTS.length, 17, "Runtime must expose fifteen deterministic contracts plus two free-only semantic contracts");
+assert.equal(ROLE_CONTRACTS.length, 21, "Runtime must expose nineteen deterministic contracts plus two free-only semantic contracts");
 assert.deepEqual(
   [...ROLE_CONTRACT_JOB_TYPES].sort(),
   [
     "academy.english.practice.build",
     "ai.gateway.readiness.audit",
     "dispatch.daily.closeout.audit",
+    "drive.governance.audit",
+    "github.ecosystem.audit",
+    "cloudflare.runtime.audit",
+    "website.route.audit",
     "growth.error.closure.audit",
     "hae.self.improvement.audit",
     "hae.self.repair.packet",
@@ -68,6 +72,11 @@ assert.ok(roleContractForJobType("marketing.content.dedupe.audit").runtime_confi
 assert.equal(roleContractForJobType("logistics.source.freshness.audit").runtime_config.max_age_minutes, 1440);
 assert.equal(roleContractForJobType("ai.gateway.readiness.audit").runtime_config.cadence_hours, 24);
 assert.equal(roleContractForJobType("academy.english.practice.build").runtime_config.cadence_hours, 24);
+assert.equal(roleContractForJobType("website.route.audit").role_id, "hermes-website-auditor");
+assert.equal(roleContractForJobType("website.route.audit").runtime_config.cadence_hours, 6);
+assert.equal(roleContractForJobType("github.ecosystem.audit").role_id, "hermes-github-auditor");
+assert.equal(roleContractForJobType("cloudflare.runtime.audit").role_id, "hermes-cloudflare-auditor");
+assert.equal(roleContractForJobType("drive.governance.audit").role_id, "hermes-drive-auditor");
 assert.equal(roleContractForJobType("work.portfolio.reconcile").plugin_version, pluginRuntimeVersion("hermes-agent-coordinator"));
 assert.equal(roleContractForJobType("hae.self.improvement.audit").plugin_version, pluginRuntimeVersion("hermes-automatic-engineer"));
 assert.equal(roleContractForJobType("hae.self.release.verify").role_id, "hermes-qa-evidence-auditor");
@@ -80,7 +89,7 @@ assert.equal(roleContractForJobType("hae.self.patch.propose").runtime_config.max
 assert.equal(CAPABILITY_GRAPH_ROLE_CONTRACT_JOB_TYPES.length, ROLE_CONTRACT_JOB_TYPES.length - 2);
 assert.equal(roleContractForJobType("knowledge.evidence.audit").role_id, "hermes-knowledge-curator");
 assert.equal(roleContractForJobType("knowledge.evidence.audit").plugin_version, pluginRuntimeVersion("hermes-knowledge-curator"));
-assert.equal(ROLE_CONTRACTS.filter((contract) => !contract.semantic_required).length, 15);
+assert.equal(ROLE_CONTRACTS.filter((contract) => !contract.semantic_required).length, 19);
 assert.equal(ROLE_CONTRACTS.filter((contract) => contract.semantic_required).length, 2);
 
 const searchInput = {
