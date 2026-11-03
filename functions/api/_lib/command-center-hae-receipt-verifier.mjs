@@ -121,6 +121,7 @@ export async function verifyCommandCenterHaeReceipt({
   if (!haeJob ||
       haeJob.job_id !== binding.hae_job_id ||
       haeJob.job_type !== binding.job_type ||
+      haeJob.business_lane !== canonicalContract.business_lane ||
       haeJob.idempotency_key !== binding.idempotency_key) {
     return hold("CANONICAL_JOB_IDENTITY_MISMATCH");
   }
