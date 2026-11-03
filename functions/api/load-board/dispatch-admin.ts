@@ -19,8 +19,10 @@ export async function onRequestGet(context:Context){
   const auth=await owner(context);if(auth.error)return auth.error;
   const rows=await context.env.DB.prepare(`
     SELECT c.id,c.company_name,c.company_type,c.state,c.load_board_access,
-      e.status AS entitlement,a.status AS assignment_status,
-      a.dispatcher_specialist_id,s.name AS dispatcher_name,a.business_phone
+      e.status AS entitlement,e.agreement_state,e.agreement_version,e.agreement_sha256,
+      e.agreement_effective_at,e.trial_start_date,e.trial_end_date,
+      e.authority_status,e.insurance_status,e.source_rights_status,e.evidence_id,e.revoked_at,
+      a.status AS assignment_status,a.dispatcher_specialist_id,s.name AS dispatcher_name,a.business_phone
     FROM hermes_company_profiles c
     LEFT JOIN hermes_carrier_board_entitlements e ON e.company_id=c.id
     LEFT JOIN hermes_carrier_dispatch_assignments a ON a.carrier_company_id=c.id
@@ -32,6 +34,19 @@ export async function onRequestGet(context:Context){
     id:c.id,name:c.company_name,type:c.company_type,state:c.state,
     loadBoardAccess:Boolean(c.load_board_access),
     entitlement:c.entitlement||"not_approved",
+    agreement:{
+      state:c.agreement_state||"PENDING_CONTRACT",
+      version:c.agreement_version||null,
+      sha256:c.agreement_sha256||null,
+      effectiveAt:c.agreement_effective_at||null,
+      trialStartDate:c.trial_start_date||null,
+      trialEndDate:c.trial_end_date||null,
+      authority:c.authority_status||"pending",
+      insurance:c.insurance_status||"pending",
+      sourceRights:c.source_rights_status||"pending",
+      evidenceId:c.evidence_id||null,
+      revokedAt:c.revoked_at||null,
+    },
     assignment:c.assignment_status==="active" ? {dispatcherId:c.dispatcher_specialist_id,
       name:c.dispatcher_name,phone:c.business_phone}:null,
   }))});
@@ -54,32 +69,87 @@ export async function onRequestPost(context:Context){
   if(action==="grant" && Number(company.load_board_access)!==1)
     return reply(409,{success:false,error:"company_load_board_disabled"});
   const now=new Date().toISOString();
-  if(action==="grant"||action==="revoke"){
+  if(action==="revoke"){
     await db.prepare(`
       INSERT INTO hermes_carrier_board_entitlements
-      (company_id,status,reviewed_by_specialist_id,reviewed_at,note)
-      VALUES(?,?,?,?,?)
-      ON CONFLICT(company_id) DO UPDATE SET status=excluded.status,
+      (company_id,status,reviewed_by_specialist_id,reviewed_at,note,agreement_state,revoked_at)
+      VALUES(?,'revoked',?,?,?,'CARRIER_REVOKED',?)
+      ON CONFLICT(company_id) DO UPDATE SET status='revoked',
       reviewed_by_specialist_id=excluded.reviewed_by_specialist_id,
-      reviewed_at=excluded.reviewed_at,note=excluded.note
-    `).bind(companyId,action==="grant"?"active":"revoked",auth.user.id,now,safeWorkspaceText(body.note,200)||null).run();
-    if(action==="revoke"){
-      // Revocation cuts access immediately. Historical requests remain for audit.
-      await db.prepare(`
-        UPDATE hermes_carrier_dispatch_assignments SET status='revoked',updated_at=?
-        WHERE carrier_company_id=?
-      `).bind(now,companyId).run();
-    }
+      reviewed_at=excluded.reviewed_at,note=excluded.note,
+      agreement_state='CARRIER_REVOKED',revoked_at=excluded.revoked_at
+    `).bind(companyId,auth.user.id,now,safeWorkspaceText(body.note,200)||null,now).run();
+    // Revocation cuts access immediately. Historical requests remain for audit.
+    await db.prepare(`
+      UPDATE hermes_carrier_dispatch_assignments SET status='revoked',updated_at=?
+      WHERE carrier_company_id=?
+    `).bind(now,companyId).run();
     return reply(200,{success:true,action,carrierCompanyId:companyId,outboundPerformed:false});
+  }
+  if(action==="grant"){
+    const agreementState=String(body.agreementState||"").trim().toUpperCase();
+    if(!["TRIAL_ACTIVE","ONGOING_EFFECTIVE"].includes(agreementState))
+      return reply(400,{success:false,error:"effective_agreement_state_required"});
+    const agreementVersion=safeWorkspaceText(body.agreementVersion,120);
+    const agreementSha=String(body.agreementSha256||"").trim().toLowerCase();
+    const agreementEffectiveAt=safeWorkspaceText(body.agreementEffectiveAt,40);
+    const effectiveMs=Date.parse(agreementEffectiveAt);
+    const evidenceId=cleanWorkspaceId(body.evidenceId);
+    if(!agreementVersion || /draft|review/i.test(agreementVersion) || !/^[a-f0-9]{64}$/.test(agreementSha) ||
+       !Number.isFinite(effectiveMs) || !evidenceId ||
+       body.authorityVerified!==true || body.insuranceVerified!==true || body.sourceRightsVerified!==true)
+      return reply(400,{success:false,error:"signed_agreement_authority_insurance_source_rights_evidence_required"});
+    let trialStartDate="";
+    let trialEndDate="";
+    if(agreementState==="TRIAL_ACTIVE"){
+      trialStartDate=safeWorkspaceText(body.trialStartDate,10);
+      trialEndDate=safeWorkspaceText(body.trialEndDate,10);
+      if(!/^\d{4}-\d{2}-\d{2}$/.test(trialStartDate)||!/^\d{4}-\d{2}-\d{2}$/.test(trialEndDate))
+        return reply(400,{success:false,error:"trial_window_required"});
+      const start=new Date(`${trialStartDate}T00:00:00.000Z`);
+      const expectedEnd=new Date(start.getTime()+13*86400000).toISOString().slice(0,10);
+      if(Number.isNaN(start.getTime())||trialEndDate!==expectedEnd||trialEndDate<now.slice(0,10))
+        return reply(409,{success:false,error:"trial_not_current_or_not_14_days"});
+      if(body.noAutomaticContinuationConfirmed!==true)
+        return reply(400,{success:false,error:"no_automatic_continuation_confirmation_required"});
+    }
+    await db.prepare(`
+      INSERT INTO hermes_carrier_board_entitlements
+      (company_id,status,reviewed_by_specialist_id,reviewed_at,note,
+       agreement_state,agreement_version,agreement_sha256,agreement_effective_at,
+       trial_start_date,trial_end_date,authority_status,insurance_status,source_rights_status,evidence_id,revoked_at)
+      VALUES(?,'active',?,?,?,?,?,?,?,?,?,'verified','verified','verified',?,NULL)
+      ON CONFLICT(company_id) DO UPDATE SET status='active',
+      reviewed_by_specialist_id=excluded.reviewed_by_specialist_id,
+      reviewed_at=excluded.reviewed_at,note=excluded.note,
+      agreement_state=excluded.agreement_state,agreement_version=excluded.agreement_version,
+      agreement_sha256=excluded.agreement_sha256,agreement_effective_at=excluded.agreement_effective_at,
+      trial_start_date=excluded.trial_start_date,trial_end_date=excluded.trial_end_date,
+      authority_status='verified',insurance_status='verified',source_rights_status='verified',
+      evidence_id=excluded.evidence_id,revoked_at=NULL
+    `).bind(companyId,auth.user.id,now,safeWorkspaceText(body.note,200)||null,
+      agreementState,agreementVersion,agreementSha,agreementEffectiveAt,
+      trialStartDate||null,trialEndDate||null,evidenceId).run();
+    return reply(200,{success:true,action,carrierCompanyId:companyId,agreementState,
+      trialEndDate:trialEndDate||null,outboundPerformed:false});
   }
   if(action==="unassign"){
     await db.prepare("UPDATE hermes_carrier_dispatch_assignments SET status='revoked',updated_at=? WHERE carrier_company_id=?")
       .bind(now,companyId).run();
     return reply(200,{success:true,action,carrierCompanyId:companyId,outboundPerformed:false});
   }
-  const entitlement=await db.prepare("SELECT status FROM hermes_carrier_board_entitlements WHERE company_id=?")
-    .bind(companyId).first();
-  if(entitlement?.status!=="active")return reply(409,{success:false,error:"carrier_approval_required"});
+  const entitlement=await db.prepare(`
+    SELECT status,agreement_state,agreement_sha256,authority_status,insurance_status,source_rights_status,
+      trial_end_date,evidence_id FROM hermes_carrier_board_entitlements WHERE company_id=?`
+  ).bind(companyId).first();
+  const today=now.slice(0,10);
+  const agreementEffective=entitlement?.agreement_state==="ONGOING_EFFECTIVE" ||
+    (entitlement?.agreement_state==="TRIAL_ACTIVE" && String(entitlement?.trial_end_date||"")>=today);
+  if(entitlement?.status!=="active" || !agreementEffective ||
+     entitlement?.authority_status!=="verified" || entitlement?.insurance_status!=="verified" ||
+     entitlement?.source_rights_status!=="verified" || !/^[a-f0-9]{64}$/.test(String(entitlement?.agreement_sha256||"")) ||
+     !String(entitlement?.evidence_id||""))
+    return reply(409,{success:false,error:"effective_carrier_agreement_and_verification_required"});
   const dispatcherId=cleanWorkspaceId(body.dispatcherId);
   const phone=safeWorkspaceText(body.businessPhone,32);
   if(!dispatcherId || !/^\+?[0-9\s()\-]{10,30}$/.test(phone) || phone.replace(/\D/g,"").length<10)
