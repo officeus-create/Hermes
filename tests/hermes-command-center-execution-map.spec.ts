@@ -64,7 +64,7 @@ test.describe("Command Center capability execution map", () => {
 
     await page.goto("/services/hermes-connect/internal/command-center/");
     await expect(page.locator("[data-private]")).toBeVisible();
-    const direct = page.locator('.hcc-nav > [data-cc-nav="executions"]:visible');
+    const direct = page.locator('.hcc-nav [data-cc-nav="executions"]:visible');
     if (await direct.count()) await direct.first().click();
     else {
       const more = page.locator("details.hcc-private-nav-drawer");
@@ -77,7 +77,7 @@ test.describe("Command Center capability execution map", () => {
     await expect(page.locator("[data-execution-list]")).toContainText("SNAPSHOT_VERSION_MATCHED_NOT_EXECUTED");
     await expect(page.locator("[data-execution-list]")).toContainText("UNASSIGNED");
     await expect(page.locator("[data-development-list]")).toContainText("RUNTIME_UNVERIFIED");
-    const pluginDirect=page.locator('.hcc-nav > [data-cc-nav="plugins"]:visible');
+    const pluginDirect=page.locator('.hcc-nav [data-cc-nav="plugins"]:visible');
     if(await pluginDirect.count()) await pluginDirect.first().click(); else { const more=page.locator("details.hcc-private-nav-drawer"); if(!(await more.getAttribute("open"))) await more.locator("summary").click(); await more.locator('[data-cc-nav="plugins"]').click(); }
     await expect(page.locator('[data-cc-view="plugins"] [data-plugin-registry]')).toContainText("hermes-technology-developer");
     await expect(page.locator('[data-cc-view="plugins"] [data-plugin-registry]')).toContainText("@0.1.61");
