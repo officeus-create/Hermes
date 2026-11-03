@@ -63,6 +63,7 @@ import { haeSelfRepairPacketReplayMatches } from "./hae-self-improvement.mjs";
 import { verifyGithubCIQueueEnvelope } from "./github-ci-runtime-intake.mjs";
 import { verifyGithubCIPatchProposalEnvelope } from "./github-ci-patch-runtime-intake.mjs";
 import { verifyGithubCIIndependentQaEnvelope } from "./github-ci-independent-qa-runtime-intake.mjs";
+import { buildWebsiteAuditSnapshot } from "./website-audit-source.mjs";
 import { materializeIndependentQaReceipt } from "./hae-independent-qa-receipt.mjs";
 import { socialAccountReadinessSnapshot } from "./social-account-readiness.mjs";
 import { socialReplyPreflight } from "./social-reply-preflight.mjs";
@@ -2061,7 +2062,8 @@ async function buildScheduledSearchPayload(contract) {
       const contentType = response.headers.get("content-type") || "";
       const html = contentType.toLowerCase().includes("text/html") ? await response.text() : "";
       const xRobots = String(response.headers.get("x-robots-tag") || "").toLowerCase();
-      const canonical = extractCanonicalFromHtml(html, url);
+      const finalUrl = response.url || url;
+      const canonical = extractCanonicalFromHtml(html, finalUrl);
       const indexable = response.status >= 200
         && response.status < 400
         && !/(^|[,\s])noindex([,\s]|$)/.test(xRobots)
@@ -2070,6 +2072,7 @@ async function buildScheduledSearchPayload(contract) {
         url,
         status: response.status,
         canonical,
+        final_url: finalUrl,
         indexable,
         in_sitemap: null,
       };
@@ -2078,6 +2081,7 @@ async function buildScheduledSearchPayload(contract) {
         url,
         status: 599,
         canonical: "",
+        final_url: url,
         indexable: false,
         in_sitemap: null,
       };
@@ -2186,6 +2190,26 @@ function buildScheduledHaeSelfImprovementPayload(scheduledAt) {
 
 async function buildScheduledRoleContractPayload(env, contract, scheduledAt) {
   if (contract.job_type === "search.snapshot.evaluate") return buildScheduledSearchPayload(contract);
+  if (contract.job_type === "audit.website.journey") {
+    const canonicalUrls = Array.isArray(contract?.runtime_config?.target_urls)
+      ? contract.runtime_config.target_urls.slice(0, 20)
+      : [];
+    const statusOnlyUrls = Array.isArray(contract?.runtime_config?.status_only_urls)
+      ? contract.runtime_config.status_only_urls.slice(0, 20)
+      : [];
+    const probeContract = {
+      runtime_config: {
+        target_urls: [...canonicalUrls, ...statusOnlyUrls],
+      },
+    };
+    const snapshot = await buildScheduledSearchPayload(probeContract);
+    return buildWebsiteAuditSnapshot({
+      pages: snapshot.pages,
+      canonicalUrls,
+      statusOnlyUrls,
+      observedAt: new Date().toISOString(),
+    });
+  }
   if (contract.job_type === "marketing.content.dedupe.audit") return buildScheduledMarketingPayload(env, contract);
   if (contract.job_type === "logistics.source.freshness.audit") return buildScheduledLogisticsPayload(env, contract);
   if (contract.job_type === "ai.gateway.readiness.audit") {
