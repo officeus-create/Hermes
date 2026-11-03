@@ -48,7 +48,7 @@ function bounded(values, limit = 100) {
   return values.slice(0, limit);
 }
 
-function contract({ roleId, contractVersion, jobType, lane, trigger, input, steps, output, kpi, cadenceHours = null }) {
+function contract({ roleId, contractVersion, jobType, lane, trigger, input, steps, output, kpi, cadenceHours = null, runtimeConfig = null, preconditions = null, ownerGate = "authorized_source_adapter_required" }) {
   return Object.freeze({
     role_id: roleId,
     plugin_version: pluginRuntimeVersion(roleId),
@@ -60,17 +60,20 @@ function contract({ roleId, contractVersion, jobType, lane, trigger, input, step
     free_ai_policy: "not_required",
     trigger,
     input_schema: input,
-    runtime_config: cadenceHours == null
-      ? { scheduled: false, max_cost_usd: 0 }
-      : { scheduled: true, cadence_hours: cadenceHours, max_cost_usd: 0 },
-    preconditions: [
+    runtime_config: Object.freeze({
+      ...(cadenceHours == null
+        ? { scheduled: false, max_cost_usd: 0 }
+        : { scheduled: true, cadence_hours: cadenceHours, max_cost_usd: 0 }),
+      ...(runtimeConfig && typeof runtimeConfig === "object" ? runtimeConfig : {}),
+    }),
+    preconditions: preconditions || [
       "authorized adapter supplies bounded current metadata",
       "payload contains no credentials, raw messages, customer PII or unbounded content",
     ],
     deterministic_steps: steps,
     output_schema: output,
     kpi,
-    owner_gate: "authorized_source_adapter_required",
+    owner_gate: ownerGate,
     readback: "structured result_json receipt with cost_usd=0",
     failure: "fail_closed_on_invalid_or_incomplete_evidence",
     retention: "business_runtime_evidence",
@@ -133,6 +136,66 @@ export const ZERO_TOKEN_PLUGIN_TASK_CONTRACTS = Object.freeze([
     steps: ["classify unresolved and stale errors", "reject closure without evidence", "identify one bounded next candidate"],
     output: "open/stale/unowned/closure-candidate ids",
     kpi: ["open_count", "stale_count", "unowned_count", "closure_candidate_count"],
+  }),
+  contract({
+    roleId: "hermes-website-auditor",
+    contractVersion: "website-route-audit-v1",
+    jobType: "website.route.audit",
+    lane: "website",
+    trigger: "scheduled_public_route_snapshot",
+    input: { pages: "bounded public route metadata: url/final_url/status/canonical/indexable" },
+    steps: ["verify critical public routes", "classify HTTP failures and redirect drift", "classify missing or mismatched canonicals", "emit no external writes"],
+    output: "route coverage + HTTP/redirect/canonical defect ids",
+    kpi: ["evaluated_count", "http_error_count", "redirect_drift_count", "canonical_defect_count"],
+    cadenceHours: 6,
+    runtimeConfig: {
+      target_urls: [
+        "https://hermeslogisticsus.com/",
+        "https://hermeslogisticsus.com/load-board/",
+        "https://hermeslogisticsus.com/logistics/car-hauling-dispatch/",
+        "https://hermeslogisticsus.com/logistics/carrier-agreement/",
+        "https://hermeslogisticsus.com/services/hermes-connect/repair-shops/booking/",
+        "https://hermeslogisticsus.com/services/seo/",
+      ],
+    },
+    preconditions: [
+      "HAE fetches bounded public hermeslogisticsus.com route metadata only",
+      "no credentials, cookies, private response bodies or provider writes are allowed",
+    ],
+    ownerGate: "none",
+  }),
+  contract({
+    roleId: "hermes-github-auditor",
+    contractVersion: "github-ecosystem-audit-v1",
+    jobType: "github.ecosystem.audit",
+    lane: "technology",
+    trigger: "authenticated_github_adapter_snapshot",
+    input: { observed_at: "ISO-8601", coverage_complete: "boolean", source_status: "VERIFIED|PARTIAL|ACCESS_GAP", adapter_receipt_id: "string", findings: "bounded PR/CI/release metadata findings" },
+    steps: ["require authenticated current repository evidence", "separate stale green CI from exact-head readiness", "group recurring regression keys", "never infer merge/deploy from CI alone"],
+    output: "source coverage + open/P0/unowned/repeated-regression finding ids",
+    kpi: ["open_count", "p0_count", "unowned_count", "repeated_regression_count"],
+  }),
+  contract({
+    roleId: "hermes-cloudflare-auditor",
+    contractVersion: "cloudflare-runtime-audit-v1",
+    jobType: "cloudflare.runtime.audit",
+    lane: "technology",
+    trigger: "authenticated_cloudflare_adapter_snapshot",
+    input: { observed_at: "ISO-8601", coverage_complete: "boolean", source_status: "VERIFIED|PARTIAL|ACCESS_GAP", adapter_receipt_id: "string", findings: "bounded Pages/Workers/Queue/D1/runtime findings" },
+    steps: ["require authenticated provider evidence", "separate deployment SHA from runtime readiness", "group recurring runtime regression keys", "fail closed when logs or route evidence are unavailable"],
+    output: "source coverage + open/P0/unowned/repeated-regression finding ids",
+    kpi: ["open_count", "p0_count", "unowned_count", "repeated_regression_count"],
+  }),
+  contract({
+    roleId: "hermes-drive-auditor",
+    contractVersion: "drive-governance-audit-v1",
+    jobType: "drive.governance.audit",
+    lane: "knowledge",
+    trigger: "authenticated_drive_adapter_snapshot",
+    input: { observed_at: "ISO-8601", coverage_complete: "boolean", source_status: "VERIFIED|PARTIAL|ACCESS_GAP", adapter_receipt_id: "string", findings: "bounded canonical/stale/duplicate/provenance findings" },
+    steps: ["require authenticated Drive metadata", "detect conflicting CURRENT/canonical truth", "group recurring governance regression keys", "never delete unique historical evidence automatically"],
+    output: "source coverage + open/P0/unowned/repeated-regression finding ids",
+    kpi: ["open_count", "p0_count", "unowned_count", "repeated_regression_count"],
   }),
   contract({
     roleId: "hermes-dispatch-os",
@@ -365,6 +428,95 @@ function runErrors(payload) {
   return { open_count: open.length, stale_count: stale.length, unowned_count: unowned.length, closure_candidate_count: candidates.length, stale_error_ids: bounded(stale), unowned_error_ids: bounded(unowned), closure_candidate_ids: bounded(candidates), automatic_closure_performed: false, cost_usd: 0 };
 }
 
+const PROVIDER_AUDIT_SOURCE_STATUSES = new Set(["VERIFIED", "PARTIAL", "ACCESS_GAP"]);
+const PROVIDER_AUDIT_FINDING_STATUSES = new Set(["OPEN", "FIXED", "HOLD", "UNKNOWN"]);
+const PROVIDER_AUDIT_SEVERITIES = new Set(["P0", "P1", "P2"]);
+
+function normalizeProviderAudit(payload, prefix) {
+  const observedAt = iso(payload?.observed_at, `${prefix}_observed_at`);
+  const coverageComplete = boolean(payload?.coverage_complete, `${prefix}_coverage_complete`);
+  const sourceStatus = clean(payload?.source_status, 40).toUpperCase();
+  const adapterReceiptId = clean(payload?.adapter_receipt_id, 200);
+  if (!PROVIDER_AUDIT_SOURCE_STATUSES.has(sourceStatus)) throw new Error(`${prefix}_source_status_invalid`);
+  if (!adapterReceiptId) throw new Error(`${prefix}_adapter_receipt_id_required`);
+  if (coverageComplete && sourceStatus !== "VERIFIED") throw new Error(`${prefix}_coverage_status_conflict`);
+  const findings = array(payload?.findings, `${prefix}_findings`, 200).map((item) => {
+    const findingId = clean(item?.finding_id, 160);
+    const severity = clean(item?.severity, 20).toUpperCase();
+    const status = clean(item?.status, 20).toUpperCase();
+    const evidenceRef = clean(item?.evidence_ref, 1000);
+    if (!findingId || !PROVIDER_AUDIT_SEVERITIES.has(severity) || !PROVIDER_AUDIT_FINDING_STATUSES.has(status) || !evidenceRef) {
+      throw new Error(`${prefix}_finding_invalid`);
+    }
+    return {
+      finding_id: findingId, severity, status, owner: clean(item?.owner, 120) || null, evidence_ref: evidenceRef,
+      regression_key: clean(item?.regression_key, 160) || null,
+    };
+  });
+  return { observed_at: observedAt, coverage_complete: coverageComplete, source_status: sourceStatus, adapter_receipt_id: adapterReceiptId, findings };
+}
+
+function runProviderAudit(payload, prefix) {
+  const input = normalizeProviderAudit(payload, prefix);
+  const open = input.findings.filter((item) => item.status !== "FIXED");
+  const regressionCounts = new Map();
+  for (const item of open) {
+    if (!item.regression_key) continue;
+    regressionCounts.set(item.regression_key, (regressionCounts.get(item.regression_key) || 0) + 1);
+  }
+  const repeated = [...regressionCounts.entries()].filter(([, count]) => count > 1).map(([key]) => key);
+  const p0 = open.filter((item) => item.severity === "P0").map((item) => item.finding_id);
+  const unowned = open.filter((item) => !item.owner).map((item) => item.finding_id);
+  return {
+    observed_at: input.observed_at, coverage_complete: input.coverage_complete, source_status: input.source_status, adapter_receipt_id: input.adapter_receipt_id,
+    access_gap: input.source_status === "ACCESS_GAP", open_count: open.length, p0_count: p0.length, unowned_count: unowned.length,
+    repeated_regression_count: repeated.length, open_finding_ids: bounded(open.map((item) => item.finding_id)),
+    p0_finding_ids: bounded(p0), unowned_finding_ids: bounded(unowned), repeated_regression_keys: bounded(repeated),
+    automatic_fix_performed: false, cost_usd: 0,
+  };
+}
+
+function normalizedWebsiteUrl(value, field, hermesOnly = true) {
+  const raw = clean(value, 1000);
+  if (!raw) throw new Error(`${field}_required`);
+  let parsed;
+  try { parsed = new URL(raw); } catch { throw new Error(`${field}_invalid`); }
+  if (parsed.protocol !== "https:") throw new Error(`${field}_invalid`);
+  if (hermesOnly && !["hermeslogisticsus.com", "www.hermeslogisticsus.com"].includes(parsed.hostname.toLowerCase())) throw new Error(`${field}_invalid`);
+  parsed.hash = "";
+  return parsed.toString();
+}
+
+function normalizeWebsite(payload) {
+  const pages = array(payload?.pages, "website_pages", 100).map((item) => {
+    const url = normalizedWebsiteUrl(item?.url, "website_url");
+    const finalUrl = normalizedWebsiteUrl(item?.final_url || item?.url, "website_final_url");
+    const status = integer(item?.status, "website_status", 100, 599);
+    let canonical = "";
+    if (clean(item?.canonical, 1000)) canonical = normalizedWebsiteUrl(item.canonical, "website_canonical", false);
+    return { url, final_url: finalUrl, status, canonical, indexable: boolean(item?.indexable, "website_indexable") };
+  });
+  return { pages };
+}
+
+function runWebsite(payload) {
+  const input = normalizeWebsite(payload);
+  const httpErrors = []; const redirects = []; const missingCanonical = []; const canonicalMismatch = [];
+  for (const page of input.pages) {
+    if (page.status >= 400) httpErrors.push(page.url);
+    if (page.final_url !== page.url) redirects.push(page.url);
+    if (page.indexable && !page.canonical) missingCanonical.push(page.url);
+    if (page.canonical && page.canonical !== page.final_url) canonicalMismatch.push(page.url);
+  }
+  return {
+    evaluated_count: input.pages.length, http_error_count: httpErrors.length, redirect_drift_count: redirects.length,
+    missing_canonical_count: missingCanonical.length, canonical_mismatch_count: canonicalMismatch.length,
+    canonical_defect_count: missingCanonical.length + canonicalMismatch.length, http_error_urls: bounded(httpErrors),
+    redirect_drift_urls: bounded(redirects), missing_canonical_urls: bounded(missingCanonical), canonical_mismatch_urls: bounded(canonicalMismatch),
+    external_writes: 0, cost_usd: 0,
+  };
+}
+
 const MARKET_METRICS = ["dealer_demand_index", "shipper_demand_index", "carrier_availability_index", "rate_cents_per_mile"];
 
 function normalizeMarketSnapshot(value, prefix) {
@@ -469,6 +621,10 @@ export function validateZeroTokenPluginTaskInput(jobType, payload) {
   if (jobType === "technology.release.radar") return normalizeTechnology(payload);
   if (jobType === "ai.gateway.readiness.audit") return normalizeGateway(payload);
   if (jobType === "growth.error.closure.audit") return normalizeErrors(payload);
+  if (jobType === "website.route.audit") return normalizeWebsite(payload);
+  if (jobType === "github.ecosystem.audit") return normalizeProviderAudit(payload, "github");
+  if (jobType === "cloudflare.runtime.audit") return normalizeProviderAudit(payload, "cloudflare");
+  if (jobType === "drive.governance.audit") return normalizeProviderAudit(payload, "drive");
   if (jobType === "market.car-hauling.snapshot.evaluate") return { current: normalizeMarketSnapshot(payload?.current, "market_current"), previous: payload?.previous == null ? null : normalizeMarketSnapshot(payload.previous, "market_previous") };
   if (jobType === "marketing.mentions.audit") return normalizeMentions(payload);
   if (jobType === "academy.english.practice.build") return runEnglish(payload);
@@ -484,6 +640,10 @@ export function runZeroTokenPluginTask(jobType, payload) {
   if (jobType === "technology.release.radar") return runTechnology(payload);
   if (jobType === "ai.gateway.readiness.audit") return runGateway(payload);
   if (jobType === "growth.error.closure.audit") return runErrors(payload);
+  if (jobType === "website.route.audit") return runWebsite(payload);
+  if (jobType === "github.ecosystem.audit") return runProviderAudit(payload, "github");
+  if (jobType === "cloudflare.runtime.audit") return runProviderAudit(payload, "cloudflare");
+  if (jobType === "drive.governance.audit") return runProviderAudit(payload, "drive");
   if (jobType === "market.car-hauling.snapshot.evaluate") return runMarket(payload);
   if (jobType === "marketing.mentions.audit") return runMentions(payload);
   if (jobType === "academy.english.practice.build") return runEnglish(payload);
