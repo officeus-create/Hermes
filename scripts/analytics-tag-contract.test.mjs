@@ -22,6 +22,12 @@ assert.equal((layout.match(loaderPattern) ?? []).length, 0); assert.match(layout
 for (const productionHost of ["hermeslogisticsus.com", "www.hermeslogisticsus.com", "connect.hermeslogisticsus.com"]) { assert.ok(consent.includes(`"${productionHost}"`)); assert.ok(connectConsent.includes(`"${productionHost}"`)); }
 assert.match(consent, /PRODUCTION_ANALYTICS_HOSTS/); assert.match(consent, /analyticsDeliveryAllowed/); assert.match(consent, /analyticsDeliveryStatus/); assert.match(consent, /disabled-non-production/); assert.match(consent, /disabled-automation/); assert.match(consent, /navigator\.webdriver\s*===\s*true/); assert.match(consent, /_hermes_ga4_smoke/); assert.match(consent, /if \(deliveryStatus !== "ga4"\)/);
 for (const syntheticMarker of ["hermes_synthetic", "production_smoke", "campaign_source", "campaign_medium", "campaign_name"]) assert.ok(consent.includes(syntheticMarker));
+const withdrawalHandler = consent.match(/decline\?\.addEventListener\("click",[\s\S]*?\n    \}\);/)?.[0] ?? "";
+assert.ok(withdrawalHandler, "canonical consent withdrawal handler must exist");
+assert.match(withdrawalHandler, /stopGoogleAnalyticsForWithdrawal\(\)/);
+assert.match(consent, /const stopGoogleAnalyticsForWithdrawal\s*=\s*\(\)\s*=>\s*\{[\s\S]*?setGoogleAnalyticsDisabled\(true\)[\s\S]*?script\[data-hermes-ga4\][\s\S]*?\.remove\(\)/);
+assert.doesNotMatch(withdrawalHandler, /(?:window\.)?gtag\s*\(/, "withdrawal must not call gtag after the user revokes analytics");
+assert.doesNotMatch(consent, /const denyGoogleConsent\b/);
 assert.match(layout, /CLARITY_BLOCKED_PATH_PREFIXES/); assert.match(layout, /\/services\/hermes-connect/); assert.match(layout, /\/logistics\/carrier-onboarding/); assert.match(layout, /\/logistics\/apply/); assert.match(layout, /\/sign/);
 assert.match(consent, /CLARITY_PRODUCTION_HOSTS/); assert.match(consent, /clarityDeliveryStatus/); assert.match(consent, /_hermes_clarity_smoke/); assert.match(consent, /clarityProjectId\s*=\s*"yiumce2dne"/); assert.match(consent, /dataset\.hermesClarity/); assert.match(consent, /consentv2/); assert.match(consent, /ad_Storage:\s*"denied"/); assert.match(consent, /analytics_Storage:\s*"granted"/); assert.match(consent, /analytics_Storage:\s*"denied"/);
 for (const requiredAnalyticsCspHost of ["https://www.google.com", "https://*.clarity.ms", "https://c.bing.com"]) assert.ok(headers.includes(requiredAnalyticsCspHost));
