@@ -21,6 +21,7 @@ on:
       - "scripts/automation-engine-zero-token-plugin-tasks.test.mjs"
       - "scripts/automation-engine-self-improvement.test.mjs"
       - "scripts/hae-plugin-release-drift-preflight.test.mjs"
+      - "scripts/hae-schedule-audit-gaps.test.mjs"
       - "scripts/automation-engine-self-backlog.test.mjs"
       - "scripts/automation-engine-self-release-gate.test.mjs"
       - "workers/automation-engine/src/zero-token-plugin-tasks.mjs"
@@ -74,6 +75,7 @@ jobs:
           node scripts/automation-engine-zero-token-plugin-tasks.test.mjs
           node scripts/automation-engine-self-improvement.test.mjs
           node scripts/hae-plugin-release-drift-preflight.test.mjs
+          node scripts/hae-schedule-audit-gaps.test.mjs
           node scripts/automation-engine-self-backlog.test.mjs
           node scripts/automation-engine-self-release-gate.test.mjs
           node scripts/automation-engine-capability-policy.test.mjs
