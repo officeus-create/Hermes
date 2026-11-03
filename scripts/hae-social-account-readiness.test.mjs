@@ -158,5 +158,21 @@ const worker=await readFile(new URL("../workers/automation-engine/src/index.mjs"
 assert.match(worker,/GET" && url\.pathname === "\/v1\/social-account-readiness"/);
 assert.match(worker,/authorized\(request, env\)/);
 assert.match(worker,/socialAccountReadinessSnapshot\(env\)/);
+assert.match(worker,/"social\.account\.readiness"/);
+assert.match(worker,/\["system\.health\.snapshot", "social\.account\.readiness"\]\.includes\(jobType\)/);
 
-console.log("HAE social account readiness PASS — two lanes, internal credential bridge, shared Threads provider convergence");
+const capabilityPolicy=JSON.parse(await readFile(new URL("../workers/automation-engine/capability-policy.json",import.meta.url),"utf8"));
+const readinessPolicy=capabilityPolicy.capabilities.find((entry)=>entry.job_type==="social.account.readiness");
+assert.equal(readinessPolicy?.permission_class,"READ_ONLY");
+assert.equal(readinessPolicy?.external_provider_write,false);
+assert.deepEqual(readinessPolicy?.allowed_side_effects,["d1_job_state","d1_job_events"]);
+
+const releaseWorkflow=await readFile(new URL("../.github/workflows/automation-engine-release.yml",import.meta.url),"utf8");
+assert.match(releaseWorkflow,/HAE_SOCIAL_READINESS_PROOF/);
+assert.match(releaseWorkflow,/social_readiness_proof/);
+assert.match(releaseWorkflow,/job_type: "social\.account\.readiness"/);
+assert.match(releaseWorkflow,/\.readiness\.tokens_returned == false/);
+assert.match(releaseWorkflow,/\.readiness\.external_write_performed == false/);
+assert.match(releaseWorkflow,/name: hae-social-readiness-evidence/);
+
+console.log("HAE social account readiness PASS — two lanes, internal credential bridge, shared Threads provider convergence, read-only production proof contract");
