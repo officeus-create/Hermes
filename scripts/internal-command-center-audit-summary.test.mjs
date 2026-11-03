@@ -4,7 +4,13 @@ const now="2026-11-03T08:00:00.000Z";
 const result=(x)=>JSON.stringify(x);
 const full=HAE_AUDIT_JOB_TYPES.map((job_type,index)=>({
   job_type,state:"SUCCEEDED",updated_at:"2026-11-03T07:30:00.000Z",completed_at:"2026-11-03T07:30:00.000Z",
-  result_json:result({observed_at:"2026-11-03T07:29:00.000Z",coverage_complete:true,source_authenticated:true,open_count:index===0?2:0,p0_count:0,p1_count:index===0?1:0,finding_ids:["private-id-must-not-project"]}),
+  result_json:result({
+    capability:job_type,
+    observed_at:"2026-11-03T07:30:00.000Z",
+    external_write:false,
+    role_contract:{role_id:"auditor",plugin_version:"0.1.2",contract_version:"v1",sha256:"sha256:test"},
+    result:{observed_at:"2026-11-03T07:29:00.000Z",coverage_complete:true,source_authenticated:true,open_count:index===0?2:0,p0_count:0,p1_count:index===0?1:0,finding_ids:["private-id-must-not-project"]},
+  }),
 }));
 const summary=summarizeHaeAudits(full,now);
 assert.equal(summary.status,"P1");
@@ -19,7 +25,7 @@ assert.equal(missing.status,"NOT_RUN");
 assert.equal(missing.not_run_count,4);
 assert.equal(missing.stale_count,4);
 
-const partial=summarizeHaeAudits(full.map((row,index)=>index===1?{...row,result_json:result({coverage_complete:false,source_authenticated:false})}:row),now);
+const partial=summarizeHaeAudits(full.map((row,index)=>index===1?{...row,result_json:result({capability:row.job_type,observed_at:"2026-11-03T07:30:00.000Z",result:{observed_at:"2026-11-03T07:29:00.000Z",coverage_complete:false,source_authenticated:false}})}:row),now);
 assert.equal(partial.status,"P1");
 assert.equal(partial.partial_count,1);
 
