@@ -20,6 +20,8 @@
     "/services/website-redesign",
     "/services/website-redesign/*",
     "/services/seo-for-independent-auto-dealers",
-    "/services/seo-for-independent-auto-dealers/*"
+    "/services/seo-for-independent-auto-dealers/*",
+    "/services/hermes-connect/repair-shops/booking",
+    "/services/hermes-connect/repair-shops/booking/*"
   ]
 }
