@@ -432,7 +432,7 @@ const AUDITOR_JOB_TYPES = new Set([
 ]);
 const AUDIT_SEVERITIES = new Set(["P0", "P1", "P2", "P3"]);
 const AUDIT_STATUSES = new Set(["OPEN", "HOLD", "CLOSED", "UNKNOWN"]);
-const AUDIT_SECRET_LIKE = /(?:sk-(?:proj-)?[A-Za-z0-9_-]{12,}|ghp_[A-Za-z0-9]{12,}|AIza[0-9A-Za-z_-]{20,}|xox[baprs]-[A-Za-z0-9-]{10,}|AKIA[0-9A-Z]{16}|Authorization:\\s*Bearer\\s+[A-Za-z0-9._-]{12,}|\\b\\d{6,12}:[A-Za-z0-9_-]{30,50}\\b|BEGIN [A-Z ]*PRIVATE KEY)/i;
+const AUDIT_SECRET_LIKE = /(?:sk-(?:proj-)?[A-Za-z0-9_-]{12,}|ghp_[A-Za-z0-9]{12,}|AIza[0-9A-Za-z_-]{20,}|xox[baprs]-[A-Za-z0-9-]{10,}|AKIA[0-9A-Z]{16}|Authorization:\s*Bearer\s+[A-Za-z0-9._-]{12,}|\b\d{6,12}:[A-Za-z0-9_-]{30,50}\b|BEGIN [A-Z ]*PRIVATE KEY)/i;
 
 function validateAuditorSnapshot(jobType, payload) {
   if (!payload || typeof payload !== "object" || Array.isArray(payload)) throw new Error("audit_snapshot_object_required");
