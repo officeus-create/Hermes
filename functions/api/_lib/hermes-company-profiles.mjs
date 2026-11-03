@@ -84,25 +84,10 @@ export function roleCanUseLoadBoard(role) {
 }
 
 export async function specialistHasLoadBoardAccess(db, specialist) {
-  if (!specialist) return false;
-  await ensureHermesCompanyProfilesSchema(db);
-  // A self-selected company type or load_board_access registration flag is not carrier verification.
-  await db.prepare(`
-    CREATE TABLE IF NOT EXISTS hermes_carrier_board_entitlements (
-      company_id TEXT PRIMARY KEY,
-      status TEXT NOT NULL CHECK(status IN ('active','revoked')),
-      reviewed_by_specialist_id TEXT NOT NULL,
-      reviewed_at TEXT NOT NULL,
-      note TEXT
-    )
-  `).run();
-  const company = await db.prepare(`
-    SELECT c.load_board_access,c.company_type,e.status AS entitlement
-    FROM hermes_company_profiles c
-    LEFT JOIN hermes_carrier_board_entitlements e ON e.company_id=c.id
-    WHERE c.owner_specialist_id=? LIMIT 1
-  `).bind(specialist.id).first();
-  return Number(company?.load_board_access)===1 &&
-    ['carrier','owner_operator','fleet'].includes(String(company?.company_type||'')) &&
-    company?.entitlement==='active';
+  // Compatibility wrapper only. The carrier-dispatch module owns the canonical
+  // effective-agreement + source-rights + assigned-dispatcher authorization gate.
+  // Dynamic import avoids a static module cycle because that module also consumes
+  // company-profile schema helpers from this file.
+  const { authorizedCarrier } = await import("./carrier-dispatch-workspace.mjs");
+  return Boolean(await authorizedCarrier(db, specialist));
 }
