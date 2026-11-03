@@ -29,7 +29,7 @@
   },
   "capabilities": [
     {
-      "job_type": "system.health.snapshot",
+      "job_type": "academy.english.practice.build",
       "permission_class": "READ_ONLY",
       "execution_runtime": "canonical_hae_queue",
       "external_provider_write": false,
@@ -38,22 +38,202 @@
         "d1_job_events"
       ],
       "submission_auth": "HERMES_AUTOMATION_TOKEN",
-      "retention_class": "technical_runtime_evidence"
+      "retention_class": "business_runtime_evidence",
+      "role_id": "hermes-academy",
+      "plugin_version": "0.1.14",
+      "contract_version": "work-english-practice-v1",
+      "semantic_required": false,
+      "free_ai_policy": "not_required"
+    },
+    {
+      "job_type": "ai.gateway.readiness.audit",
+      "permission_class": "READ_ONLY",
+      "execution_runtime": "canonical_hae_queue",
+      "external_provider_write": false,
+      "allowed_side_effects": [
+        "d1_job_state",
+        "d1_job_events"
+      ],
+      "submission_auth": "HERMES_AUTOMATION_TOKEN",
+      "retention_class": "technical_runtime_evidence",
+      "role_id": "hermes-automatic-engineer",
+      "plugin_version": "0.1.36",
+      "contract_version": "ai-gateway-readiness-v1",
+      "semantic_required": false,
+      "free_ai_policy": "not_required"
+    },
+    {
+      "job_type": "audit.cloudflare.runtime",
+      "permission_class": "READ_ONLY",
+      "execution_runtime": "canonical_hae_queue",
+      "external_provider_write": false,
+      "allowed_side_effects": [
+        "d1_job_state",
+        "d1_job_events"
+      ],
+      "submission_auth": "HERMES_AUTOMATION_TOKEN",
+      "retention_class": "technical_runtime_evidence",
+      "role_id": "hermes-cloudflare-auditor",
+      "plugin_version": "0.1.2",
+      "contract_version": "cloudflare-audit-snapshot-v1",
+      "semantic_required": false,
+      "free_ai_policy": "not_required"
+    },
+    {
+      "job_type": "audit.drive.truth",
+      "permission_class": "READ_ONLY",
+      "execution_runtime": "canonical_hae_queue",
+      "external_provider_write": false,
+      "allowed_side_effects": [
+        "d1_job_state",
+        "d1_job_events"
+      ],
+      "submission_auth": "HERMES_AUTOMATION_TOKEN",
+      "retention_class": "business_runtime_evidence",
+      "role_id": "hermes-drive-auditor",
+      "plugin_version": "0.1.2",
+      "contract_version": "drive-audit-snapshot-v1",
+      "semantic_required": false,
+      "free_ai_policy": "not_required"
+    },
+    {
+      "job_type": "audit.github.snapshot",
+      "permission_class": "READ_ONLY",
+      "execution_runtime": "canonical_hae_queue",
+      "external_provider_write": false,
+      "allowed_side_effects": [
+        "d1_job_state",
+        "d1_job_events"
+      ],
+      "submission_auth": "HERMES_AUTOMATION_TOKEN",
+      "retention_class": "technical_runtime_evidence",
+      "role_id": "hermes-github-auditor",
+      "plugin_version": "0.1.2",
+      "contract_version": "github-audit-snapshot-v1",
+      "semantic_required": false,
+      "free_ai_policy": "not_required"
+    },
+    {
+      "job_type": "audit.website.journey",
+      "permission_class": "READ_ONLY",
+      "execution_runtime": "canonical_hae_queue",
+      "external_provider_write": false,
+      "allowed_side_effects": [
+        "d1_job_state",
+        "d1_job_events"
+      ],
+      "submission_auth": "HERMES_AUTOMATION_TOKEN",
+      "retention_class": "technical_runtime_evidence",
+      "role_id": "hermes-website-auditor",
+      "plugin_version": "0.1.2",
+      "contract_version": "website-audit-snapshot-v1",
+      "semantic_required": false,
+      "free_ai_policy": "not_required"
+    },
+    {
+      "job_type": "dispatch.daily.closeout.audit",
+      "permission_class": "READ_ONLY",
+      "execution_runtime": "canonical_hae_queue",
+      "external_provider_write": false,
+      "allowed_side_effects": [
+        "d1_job_state",
+        "d1_job_events"
+      ],
+      "submission_auth": "HERMES_AUTOMATION_TOKEN",
+      "retention_class": "business_runtime_evidence",
+      "role_id": "hermes-dispatch-os",
+      "plugin_version": "0.1.26",
+      "contract_version": "dispatch-daily-closeout-v1",
+      "semantic_required": false,
+      "free_ai_policy": "not_required"
+    },
+    {
+      "job_type": "growth.error.closure.audit",
+      "permission_class": "READ_ONLY",
+      "execution_runtime": "canonical_hae_queue",
+      "external_provider_write": false,
+      "allowed_side_effects": [
+        "d1_job_state",
+        "d1_job_events"
+      ],
+      "submission_auth": "HERMES_AUTOMATION_TOKEN",
+      "retention_class": "business_runtime_evidence",
+      "role_id": "hermes-marketing-growth",
+      "plugin_version": "0.1.17",
+      "contract_version": "growth-error-closure-v1",
+      "semantic_required": false,
+      "free_ai_policy": "not_required"
+    },
+    {
+      "job_type": "hae.self.improvement.audit",
+      "permission_class": "READ_ONLY",
+      "execution_runtime": "canonical_hae_queue",
+      "external_provider_write": false,
+      "allowed_side_effects": [
+        "d1_job_state",
+        "d1_job_events"
+      ],
+      "submission_auth": "HERMES_AUTOMATION_TOKEN",
+      "retention_class": "technical_runtime_evidence",
+      "role_id": "hermes-automatic-engineer",
+      "plugin_version": "0.1.36",
+      "contract_version": "hae-self-improvement-audit-v1",
+      "semantic_required": false,
+      "free_ai_policy": "not_required"
+    },
+    {
+      "job_type": "hae.self.patch.propose",
+      "permission_class": "READ_ONLY",
+      "execution_runtime": "canonical_hae_queue",
+      "external_provider_write": false,
+      "allowed_side_effects": [
+        "d1_job_state",
+        "d1_job_events"
+      ],
+      "submission_auth": "HERMES_AUTOMATION_TOKEN",
+      "retention_class": "technical_runtime_evidence",
+      "role_id": "hermes-automatic-engineer",
+      "plugin_version": "0.1.36",
+      "contract_version": "hae-self-patch-propose-v1",
+      "semantic_required": true,
+      "free_ai_policy": "free_only_wait_if_unavailable"
+    },
+    {
+      "job_type": "hae.self.release.verify",
+      "permission_class": "READ_ONLY",
+      "execution_runtime": "canonical_hae_queue",
+      "external_provider_write": false,
+      "allowed_side_effects": [
+        "d1_job_state",
+        "d1_job_events"
+      ],
+      "submission_auth": "HERMES_AUTOMATION_TOKEN",
+      "retention_class": "technical_runtime_evidence",
+      "role_id": "hermes-qa-evidence-auditor",
+      "plugin_version": "0.1.24",
+      "contract_version": "hae-self-release-verify-v1",
+      "semantic_required": false,
+      "free_ai_policy": "not_required"
+    },
+    {
+      "job_type": "hae.self.repair.packet",
+      "permission_class": "READ_ONLY",
+      "execution_runtime": "canonical_hae_queue",
+      "external_provider_write": false,
+      "allowed_side_effects": [
+        "d1_job_state",
+        "d1_job_events"
+      ],
+      "submission_auth": "HERMES_AUTOMATION_TOKEN",
+      "retention_class": "technical_runtime_evidence",
+      "role_id": "hermes-automatic-engineer",
+      "plugin_version": "0.1.36",
+      "contract_version": "hae-self-repair-packet-v1",
+      "semantic_required": false,
+      "free_ai_policy": "not_required"
     },
     {
       "job_type": "history.coverage.audit",
-      "permission_class": "READ_ONLY",
-      "execution_runtime": "canonical_hae_queue",
-      "external_provider_write": false,
-      "allowed_side_effects": [
-        "d1_job_state",
-        "d1_job_events"
-      ],
-      "submission_auth": "HERMES_AUTOMATION_TOKEN",
-      "retention_class": "technical_runtime_evidence"
-    },
-    {
-      "job_type": "history.source.normalize",
       "permission_class": "READ_ONLY",
       "execution_runtime": "canonical_hae_queue",
       "external_provider_write": false,
@@ -77,18 +257,6 @@
       "retention_class": "technical_runtime_evidence"
     },
     {
-      "job_type": "history.social.normalize",
-      "permission_class": "READ_ONLY",
-      "execution_runtime": "canonical_hae_queue",
-      "external_provider_write": false,
-      "allowed_side_effects": [
-        "d1_job_state",
-        "d1_job_events"
-      ],
-      "submission_auth": "HERMES_AUTOMATION_TOKEN",
-      "retention_class": "technical_runtime_evidence"
-    },
-    {
       "job_type": "history.experiment.evaluate",
       "permission_class": "READ_ONLY",
       "execution_runtime": "canonical_hae_queue",
@@ -101,7 +269,7 @@
       "retention_class": "technical_runtime_evidence"
     },
     {
-      "job_type": "search.snapshot.evaluate",
+      "job_type": "history.social.normalize",
       "permission_class": "READ_ONLY",
       "execution_runtime": "canonical_hae_queue",
       "external_provider_write": false,
@@ -110,15 +278,22 @@
         "d1_job_events"
       ],
       "submission_auth": "HERMES_AUTOMATION_TOKEN",
-      "retention_class": "business_runtime_evidence",
-      "role_id": "hermes-search-growth",
-      "plugin_version": "0.1.13",
-      "contract_version": "search-snapshot-evaluate-v1",
-      "semantic_required": false,
-      "free_ai_policy": "not_required"
+      "retention_class": "technical_runtime_evidence"
     },
     {
-      "job_type": "marketing.content.dedupe.audit",
+      "job_type": "history.source.normalize",
+      "permission_class": "READ_ONLY",
+      "execution_runtime": "canonical_hae_queue",
+      "external_provider_write": false,
+      "allowed_side_effects": [
+        "d1_job_state",
+        "d1_job_events"
+      ],
+      "submission_auth": "HERMES_AUTOMATION_TOKEN",
+      "retention_class": "technical_runtime_evidence"
+    },
+    {
+      "job_type": "knowledge.evidence.audit",
       "permission_class": "READ_ONLY",
       "execution_runtime": "canonical_hae_queue",
       "external_provider_write": false,
@@ -128,9 +303,9 @@
       ],
       "submission_auth": "HERMES_AUTOMATION_TOKEN",
       "retention_class": "business_runtime_evidence",
-      "role_id": "hermes-marketing-growth",
-      "plugin_version": "0.1.16",
-      "contract_version": "marketing-content-dedupe-v1",
+      "role_id": "hermes-knowledge-curator",
+      "plugin_version": "0.1.95",
+      "contract_version": "knowledge-evidence-audit-v1",
       "semantic_required": false,
       "free_ai_policy": "not_required"
     },
@@ -152,125 +327,6 @@
       "free_ai_policy": "not_required"
     },
     {
-      "job_type": "search.defect.prioritize",
-      "permission_class": "READ_ONLY",
-      "execution_runtime": "canonical_hae_queue",
-      "external_provider_write": false,
-      "allowed_side_effects": [
-        "d1_job_state",
-        "d1_job_events"
-      ],
-      "submission_auth": "HERMES_AUTOMATION_TOKEN",
-      "retention_class": "business_runtime_evidence",
-      "role_id": "hermes-search-growth",
-      "plugin_version": "0.1.13",
-      "contract_version": "search-defect-prioritize-v1",
-      "semantic_required": true,
-      "free_ai_policy": "free_only_wait_if_unavailable"
-    },
-    {
-      "job_type": "work.portfolio.reconcile",
-      "permission_class": "READ_ONLY",
-      "execution_runtime": "canonical_hae_queue",
-      "external_provider_write": false,
-      "allowed_side_effects": [
-        "d1_job_state",
-        "d1_job_events"
-      ],
-      "submission_auth": "HERMES_AUTOMATION_TOKEN",
-      "retention_class": "business_runtime_evidence",
-      "role_id": "hermes-agent-coordinator",
-      "plugin_version": "0.1.85",
-      "contract_version": "work-portfolio-reconcile-v1",
-      "semantic_required": false,
-      "free_ai_policy": "not_required"
-    },
-    {
-      "job_type": "dispatch.daily.closeout.audit",
-      "permission_class": "READ_ONLY",
-      "execution_runtime": "canonical_hae_queue",
-      "external_provider_write": false,
-      "allowed_side_effects": [
-        "d1_job_state",
-        "d1_job_events"
-      ],
-      "submission_auth": "HERMES_AUTOMATION_TOKEN",
-      "retention_class": "business_runtime_evidence",
-      "role_id": "hermes-dispatch-os",
-      "plugin_version": "0.1.26",
-      "contract_version": "dispatch-daily-closeout-v1",
-      "semantic_required": false,
-      "free_ai_policy": "not_required"
-    },
-    {
-      "job_type": "knowledge.evidence.audit",
-      "permission_class": "READ_ONLY",
-      "execution_runtime": "canonical_hae_queue",
-      "external_provider_write": false,
-      "allowed_side_effects": [
-        "d1_job_state",
-        "d1_job_events"
-      ],
-      "submission_auth": "HERMES_AUTOMATION_TOKEN",
-      "retention_class": "business_runtime_evidence",
-      "role_id": "hermes-knowledge-curator",
-      "plugin_version": "0.1.90",
-      "contract_version": "knowledge-evidence-audit-v1",
-      "semantic_required": false,
-      "free_ai_policy": "not_required"
-    },
-    {
-      "job_type": "technology.release.radar",
-      "permission_class": "READ_ONLY",
-      "execution_runtime": "canonical_hae_queue",
-      "external_provider_write": false,
-      "allowed_side_effects": [
-        "d1_job_state",
-        "d1_job_events"
-      ],
-      "submission_auth": "HERMES_AUTOMATION_TOKEN",
-      "retention_class": "business_runtime_evidence",
-      "role_id": "hermes-automatic-engineer",
-      "plugin_version": "0.1.34",
-      "contract_version": "technology-release-radar-v1",
-      "semantic_required": false,
-      "free_ai_policy": "not_required"
-    },
-    {
-      "job_type": "ai.gateway.readiness.audit",
-      "permission_class": "READ_ONLY",
-      "execution_runtime": "canonical_hae_queue",
-      "external_provider_write": false,
-      "allowed_side_effects": [
-        "d1_job_state",
-        "d1_job_events"
-      ],
-      "submission_auth": "HERMES_AUTOMATION_TOKEN",
-      "retention_class": "technical_runtime_evidence",
-      "role_id": "hermes-automatic-engineer",
-      "plugin_version": "0.1.34",
-      "contract_version": "ai-gateway-readiness-v1",
-      "semantic_required": false,
-      "free_ai_policy": "not_required"
-    },
-    {
-      "job_type": "growth.error.closure.audit",
-      "permission_class": "READ_ONLY",
-      "execution_runtime": "canonical_hae_queue",
-      "external_provider_write": false,
-      "allowed_side_effects": [
-        "d1_job_state",
-        "d1_job_events"
-      ],
-      "submission_auth": "HERMES_AUTOMATION_TOKEN",
-      "retention_class": "business_runtime_evidence",
-      "role_id": "hermes-marketing-growth",
-      "plugin_version": "0.1.16",
-      "contract_version": "growth-error-closure-v1",
-      "semantic_required": false,
-      "free_ai_policy": "not_required"
-    },
-    {
       "job_type": "market.car-hauling.snapshot.evaluate",
       "permission_class": "READ_ONLY",
       "execution_runtime": "canonical_hae_queue",
@@ -288,6 +344,23 @@
       "free_ai_policy": "not_required"
     },
     {
+      "job_type": "marketing.content.dedupe.audit",
+      "permission_class": "READ_ONLY",
+      "execution_runtime": "canonical_hae_queue",
+      "external_provider_write": false,
+      "allowed_side_effects": [
+        "d1_job_state",
+        "d1_job_events"
+      ],
+      "submission_auth": "HERMES_AUTOMATION_TOKEN",
+      "retention_class": "business_runtime_evidence",
+      "role_id": "hermes-marketing-growth",
+      "plugin_version": "0.1.17",
+      "contract_version": "marketing-content-dedupe-v1",
+      "semantic_required": false,
+      "free_ai_policy": "not_required"
+    },
+    {
       "job_type": "marketing.mentions.audit",
       "permission_class": "READ_ONLY",
       "execution_runtime": "canonical_hae_queue",
@@ -299,13 +372,13 @@
       "submission_auth": "HERMES_AUTOMATION_TOKEN",
       "retention_class": "business_runtime_evidence",
       "role_id": "hermes-marketing-growth",
-      "plugin_version": "0.1.16",
+      "plugin_version": "0.1.17",
       "contract_version": "internet-mentions-audit-v1",
       "semantic_required": false,
       "free_ai_policy": "not_required"
     },
     {
-      "job_type": "academy.english.practice.build",
+      "job_type": "search.defect.prioritize",
       "permission_class": "READ_ONLY",
       "execution_runtime": "canonical_hae_queue",
       "external_provider_write": false,
@@ -315,65 +388,14 @@
       ],
       "submission_auth": "HERMES_AUTOMATION_TOKEN",
       "retention_class": "business_runtime_evidence",
-      "role_id": "hermes-academy",
-      "plugin_version": "0.1.14",
-      "contract_version": "work-english-practice-v1",
-      "semantic_required": false,
-      "free_ai_policy": "not_required"
-    },
-    {
-      "job_type": "hae.self.improvement.audit",
-      "permission_class": "READ_ONLY",
-      "execution_runtime": "canonical_hae_queue",
-      "external_provider_write": false,
-      "allowed_side_effects": [
-        "d1_job_state",
-        "d1_job_events"
-      ],
-      "submission_auth": "HERMES_AUTOMATION_TOKEN",
-      "retention_class": "technical_runtime_evidence",
-      "role_id": "hermes-automatic-engineer",
-      "plugin_version": "0.1.34",
-      "contract_version": "hae-self-improvement-audit-v1",
-      "semantic_required": false,
-      "free_ai_policy": "not_required"
-    },
-    {
-      "job_type": "hae.self.repair.packet",
-      "permission_class": "READ_ONLY",
-      "execution_runtime": "canonical_hae_queue",
-      "external_provider_write": false,
-      "allowed_side_effects": [
-        "d1_job_state",
-        "d1_job_events"
-      ],
-      "submission_auth": "HERMES_AUTOMATION_TOKEN",
-      "retention_class": "technical_runtime_evidence",
-      "role_id": "hermes-automatic-engineer",
-      "plugin_version": "0.1.34",
-      "contract_version": "hae-self-repair-packet-v1",
-      "semantic_required": false,
-      "free_ai_policy": "not_required"
-    },
-    {
-      "job_type": "hae.self.patch.propose",
-      "permission_class": "READ_ONLY",
-      "execution_runtime": "canonical_hae_queue",
-      "external_provider_write": false,
-      "allowed_side_effects": [
-        "d1_job_state",
-        "d1_job_events"
-      ],
-      "submission_auth": "HERMES_AUTOMATION_TOKEN",
-      "retention_class": "technical_runtime_evidence",
-      "role_id": "hermes-automatic-engineer",
-      "plugin_version": "0.1.34",
-      "contract_version": "hae-self-patch-propose-v1",
+      "role_id": "hermes-search-growth",
+      "plugin_version": "0.1.16",
+      "contract_version": "search-defect-prioritize-v1",
       "semantic_required": true,
       "free_ai_policy": "free_only_wait_if_unavailable"
     },
     {
-      "job_type": "hae.self.release.verify",
+      "job_type": "search.snapshot.evaluate",
       "permission_class": "READ_ONLY",
       "execution_runtime": "canonical_hae_queue",
       "external_provider_write": false,
@@ -382,10 +404,10 @@
         "d1_job_events"
       ],
       "submission_auth": "HERMES_AUTOMATION_TOKEN",
-      "retention_class": "technical_runtime_evidence",
-      "role_id": "hermes-qa-evidence-auditor",
-      "plugin_version": "0.1.19",
-      "contract_version": "hae-self-release-verify-v1",
+      "retention_class": "business_runtime_evidence",
+      "role_id": "hermes-search-growth",
+      "plugin_version": "0.1.16",
+      "contract_version": "search-snapshot-evaluate-v1",
       "semantic_required": false,
       "free_ai_policy": "not_required"
     },
@@ -402,6 +424,52 @@
       "retention_class": "business_runtime_evidence",
       "owner_approval_required": true,
       "contract_version": "social-reply-prepare-v1"
+    },
+    {
+      "job_type": "system.health.snapshot",
+      "permission_class": "READ_ONLY",
+      "execution_runtime": "canonical_hae_queue",
+      "external_provider_write": false,
+      "allowed_side_effects": [
+        "d1_job_state",
+        "d1_job_events"
+      ],
+      "submission_auth": "HERMES_AUTOMATION_TOKEN",
+      "retention_class": "technical_runtime_evidence"
+    },
+    {
+      "job_type": "technology.release.radar",
+      "permission_class": "READ_ONLY",
+      "execution_runtime": "canonical_hae_queue",
+      "external_provider_write": false,
+      "allowed_side_effects": [
+        "d1_job_state",
+        "d1_job_events"
+      ],
+      "submission_auth": "HERMES_AUTOMATION_TOKEN",
+      "retention_class": "business_runtime_evidence",
+      "role_id": "hermes-automatic-engineer",
+      "plugin_version": "0.1.36",
+      "contract_version": "technology-release-radar-v1",
+      "semantic_required": false,
+      "free_ai_policy": "not_required"
+    },
+    {
+      "job_type": "work.portfolio.reconcile",
+      "permission_class": "READ_ONLY",
+      "execution_runtime": "canonical_hae_queue",
+      "external_provider_write": false,
+      "allowed_side_effects": [
+        "d1_job_state",
+        "d1_job_events"
+      ],
+      "submission_auth": "HERMES_AUTOMATION_TOKEN",
+      "retention_class": "business_runtime_evidence",
+      "role_id": "hermes-agent-coordinator",
+      "plugin_version": "0.1.90",
+      "contract_version": "work-portfolio-reconcile-v1",
+      "semantic_required": false,
+      "free_ai_policy": "not_required"
     }
   ],
   "future_capability_gate": {
