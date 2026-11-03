@@ -23,11 +23,16 @@ class D1Database {
 }
 
 const DB = new D1Database();
-const TOKEN = "synthetic-runner-token-with-more-than-32-characters";
-const env = { DB, HERMES_INTERNAL_AI_RUNNER_TOKEN: TOKEN };
-const post = (path, payload) => new Request(`https://example.test${path}`, {
+const MAC_TOKEN = "synthetic-mac-runner-token-with-more-than-32-characters";
+const WINDOWS_TOKEN = "synthetic-windows-runner-token-with-more-than-32-characters";
+const env = {
+  DB,
+  HERMES_INTERNAL_AI_RUNNER_TOKEN: MAC_TOKEN,
+  HERMES_INTERNAL_AI_WINDOWS_RUNNER_TOKEN: WINDOWS_TOKEN,
+};
+const post = (path, payload, token = MAC_TOKEN) => new Request(`https://example.test${path}`, {
   method: "POST",
-  headers: { Authorization: `Bearer ${TOKEN}`, "Content-Type": "application/json" },
+  headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
   body: JSON.stringify(payload),
 });
 const responseJson = async (response) => ({ status: response.status, body: await response.json() });
@@ -45,13 +50,33 @@ let result = await responseJson(await claimTask({
     phase: "ANALYZING",
     last_result: "PASS",
     blocker: "HAE adapter not released",
-  }),
+  }, WINDOWS_TOKEN),
   env,
 }));
 assert.equal(result.status, 200);
 assert.equal(result.body.heartbeat_only, true);
 assert.equal(result.body.runner_id, INTERNAL_AI_WINDOWS_VIKTOR_RUNNER_ID);
 assert.equal(result.body.task, null);
+
+result = await responseJson(await claimTask({
+  request: post("/api/internal-ai/runner/claim", {
+    runner_id: INTERNAL_AI_MAC_RUNNER_ID,
+    accept_tasks: false,
+  }, WINDOWS_TOKEN),
+  env,
+}));
+assert.equal(result.status, 403);
+assert.equal(result.body.error, "runner_identity_mismatch");
+
+result = await responseJson(await claimTask({
+  request: post("/api/internal-ai/runner/claim", {
+    runner_id: INTERNAL_AI_WINDOWS_VIKTOR_RUNNER_ID,
+    accept_tasks: false,
+  }, MAC_TOKEN),
+  env,
+}));
+assert.equal(result.status, 403);
+assert.equal(result.body.error, "runner_identity_mismatch");
 
 let windowsState = await DB.prepare("SELECT * FROM hermes_internal_ai_runner_state WHERE id = ?").bind(INTERNAL_AI_WINDOWS_VIKTOR_RUNNER_ID).first();
 assert.ok(windowsState);
@@ -64,7 +89,7 @@ result = await responseJson(await claimTask({
   request: post("/api/internal-ai/runner/claim", {
     runner_id: "internal-ai-untrusted-runner",
     accept_tasks: false,
-  }),
+  }, WINDOWS_TOKEN),
   env,
 }));
 assert.equal(result.status, 400);
@@ -81,7 +106,7 @@ result = await responseJson(await claimTask({
     runner_id: INTERNAL_AI_WINDOWS_VIKTOR_RUNNER_ID,
     accept_tasks: true,
     runtime_version: "viktor-local-test",
-  }),
+  }, WINDOWS_TOKEN),
   env,
 }));
 assert.equal(result.status, 409);
@@ -107,7 +132,7 @@ result = await responseJson(await eventTask({
     task_id: "hcai_multi_runner",
     event_type: "output",
     message: "Windows must not write events for a Mac-owned task.",
-  }),
+  }, WINDOWS_TOKEN),
   env,
 }));
 assert.equal(result.status, 409);
@@ -120,7 +145,7 @@ result = await responseJson(await completeTask({
     status: "completed",
     branch: "internal-ai/hcai_multi_runner",
     output_summary: "Unauthorized cross-runner completion.",
-  }),
+  }, WINDOWS_TOKEN),
   env,
 }));
 assert.equal(result.status, 409);
