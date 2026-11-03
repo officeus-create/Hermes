@@ -121,6 +121,38 @@ for (const authenticatedAuditJob of [
   assert.equal(authenticatedAudit.source_verified, true);
 }
 
+const safeSecretExposureFinding = runRoleContractPrimitive("audit.drive.truth", {
+  observed_at: "2026-11-03T08:00:00.000Z",
+  coverage_complete: true,
+  source_authenticated: true,
+  source_trusted: false,
+  findings: [{
+    finding_id: "drive-domain-config-secret-exposure",
+    category: "SECRET_EXPOSURE",
+    severity: "P0",
+    status: "OPEN",
+  }],
+});
+assert.deepEqual(safeSecretExposureFinding.finding_ids, ["drive-domain-config-secret-exposure"]);
+assert.equal(safeSecretExposureFinding.p0_count, 1);
+
+for (const secretLikeFinding of [
+  { finding_id: "123456789:ABCDEFGHIJKLMNOPQRSTUVWXYZabcd123456", category: "SECRET_EXPOSURE" },
+  { finding_id: "drive-secret-exposure", category: "Authorization: Bearer abcdefghijklmnopqrstuvwxyz" },
+]) {
+  assert.throws(
+    () => runRoleContractPrimitive("audit.drive.truth", {
+      observed_at: "2026-11-03T08:00:00.000Z",
+      coverage_complete: true,
+      source_authenticated: true,
+      source_trusted: false,
+      findings: [{ ...secretLikeFinding, severity: "P0", status: "OPEN" }],
+    }),
+    /audit_finding_secret_like/,
+    "auditor receipts must classify secret exposure without persisting secret-like values",
+  );
+}
+
 const searchContract = roleContractForJobType("search.snapshot.evaluate");
 assert.ok(searchContract.runtime_config.target_urls.length >= 3);
 assert.ok(searchContract.runtime_config.target_urls.every((url) => url.startsWith("https://hermeslogisticsus.com/")));
