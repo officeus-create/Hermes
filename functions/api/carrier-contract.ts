@@ -19,6 +19,11 @@ type ContractInput = {
   selected_plan?: unknown;
   service_percentage?: unknown;
   custom_scope?: unknown;
+  trial_selected?: unknown;
+  trial_start_date?: unknown;
+  trial_end_date?: unknown;
+  trial_service_percentage?: unknown;
+  consent_no_auto_continuation?: unknown;
   legal_company_name?: unknown;
   dba_name?: unknown;
   mc_number?: unknown;
@@ -47,6 +52,11 @@ type NormalizedContract = {
   percentage: string;
   percentageKey: string;
   customScope: string;
+  trialSelected: boolean;
+  trialStartDate: string;
+  trialEndDate: string;
+  trialPercentage: string;
+  trialPercentageKey: string;
   legalCompanyName: string;
   dbaName: string;
   mcNumber: string;
@@ -74,7 +84,7 @@ const REVIEW_DOCUMENT_SHA256 = "9d26436b95b63610179f3af9ac4cddf5df59a1610e402bad
 // website state until qualified Wisconsin transportation counsel and owner approval
 // are recorded and the remaining production activation safeguards are satisfied.
 const LEGAL_EXECUTION_APPROVED = false;
-const CONSENT_VERSION = "carrier-electronic-records-v2-2026-08-06";
+const CONSENT_VERSION = "carrier-electronic-records-v3-2026-11-03";
 const MAX_REQUEST_BYTES = 420_000;
 const MAX_SIGNATURE_BYTES = 220_000;
 const RATE_LIMIT = 3;
@@ -124,6 +134,18 @@ const normalizePercentage = (value: unknown) => {
   return { key, display: `${key.replace(/\.00$/, "").replace(/(\.\d)0$/, "$1")}%` };
 };
 const parseAllowedPercentages = (value: unknown) => new Set(clean(value, 300).split(/[;,\s]+/).map((item) => normalizePercentage(item)?.key ?? "").filter(Boolean));
+const parseDateOnly = (value: unknown) => {
+  const raw = clean(value, 10);
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(raw)) return null;
+  const [year, month, day] = raw.split("-").map(Number);
+  const date = new Date(Date.UTC(year, month - 1, day));
+  if (date.getUTCFullYear() !== year || date.getUTCMonth() !== month - 1 || date.getUTCDate() !== day) return null;
+  return { raw, date };
+};
+const addUtcDays = (value: Date, days: number) => {
+  const next = new Date(value.getTime() + days * 86400000);
+  return next.toISOString().slice(0, 10);
+};
 const base64ToBytes = (value: string) => { const binary = atob(value); const bytes = new Uint8Array(binary.length); for (let i=0;i<binary.length;i+=1) bytes[i]=binary.charCodeAt(i); return bytes; };
 const bytesToBase64 = (bytes: Uint8Array) => { let binary=""; const chunk=0x8000; for(let i=0;i<bytes.length;i+=chunk) binary+=String.fromCharCode(...bytes.subarray(i,Math.min(i+chunk,bytes.length))); return btoa(binary); };
 const concatBytes = (...parts: Uint8Array[]) => { const output=new Uint8Array(parts.reduce((sum,p)=>sum+p.length,0)); let offset=0; for(const part of parts){output.set(part,offset);offset+=part.length;} return output; };
@@ -139,6 +161,15 @@ const normalizeInput = (input: ContractInput): NormalizedContract | null => {
   // Standard packages are immutable commercial selections. Never let a direct API request
   // relabel an arbitrary 1–15% as 6% Dispatch Support or 8% Full Partnership.
   if ((plan === "essential" && percentage.key !== "6.00") || (plan === "pro" && percentage.key !== "8.00")) return null;
+  const trialSelected=input.trial_selected===true;
+  const trialStart=parseDateOnly(input.trial_start_date);
+  const trialEnd=parseDateOnly(input.trial_end_date);
+  const trialPercentage=normalizePercentage(input.trial_service_percentage);
+  if (trialSelected) {
+    if (!trialStart || !trialEnd || !trialPercentage || trialEnd.raw !== addUtcDays(trialStart.date, 13) || input.consent_no_auto_continuation !== true) return null;
+  } else if (trialStart || trialEnd || trialPercentage || input.consent_no_auto_continuation === true) {
+    return null;
+  }
   const legalCompanyName=clean(input.legal_company_name,140);
   const signerName=clean(input.signer_name,120);
   const signerTitle=clean(input.signer_title,100);
@@ -167,7 +198,13 @@ const normalizeInput = (input: ContractInput): NormalizedContract | null => {
     planLabel:plan==="essential"?"Dispatch Support":plan==="pro"?"Full Partnership":"Carrier Proposal",
     percentage:plan==="custom"?`${percentage.display} proposed - pending Hermes approval`:percentage.display,
     percentageKey:percentage.key,
-    customScope,legalCompanyName,dbaName:clean(input.dba_name,140),mcNumber,usdotNumber,companyWebsite,signerName,signerTitle,signerEmail,signerPhone,salesContact,offerCode,typedSignature,signatureBytes,signatureWidth,signatureHeight,submittedAt,
+    customScope,
+    trialSelected,
+    trialStartDate:trialSelected ? trialStart!.raw : "",
+    trialEndDate:trialSelected ? trialEnd!.raw : "",
+    trialPercentage:trialSelected ? trialPercentage!.display : "",
+    trialPercentageKey:trialSelected ? trialPercentage!.key : "",
+    legalCompanyName,dbaName:clean(input.dba_name,140),mcNumber,usdotNumber,companyWebsite,signerName,signerTitle,signerEmail,signerPhone,salesContact,offerCode,typedSignature,signatureBytes,signatureWidth,signatureHeight,submittedAt,
   };
 };
 
@@ -182,10 +219,10 @@ const pageStream = (title:string, sections:Array<{label:string;value:string}>, f
 const createSignedAppendixPdf = (contract:NormalizedContract,mode:"review"|"live",documentVersion:string,documentSha:string,audit:{inputHash:string;ipHash:string;userAgentHash:string}) => {
   const status=mode==="live"?"EXECUTION PACKAGE - approved master plus signed carrier-specific Appendix A":"SIGNED REVIEW PACKET - not a final executed agreement";
   const page1=pageStream("Hermes Carrier Agreement - Appendix A",[
-    {label:"Document status",value:status},{label:"Master agreement",value:`${documentVersion} | SHA-256 ${documentSha}`},{label:"Selected service model",value:contract.planLabel},{label:"Carrier-specific service fee",value:contract.percentage},{label:"Legal carrier company",value:contract.legalCompanyName},{label:"DBA",value:contract.dbaName||"None provided"},{label:"Authority identifiers",value:`MC ${contract.mcNumber||"N/A"} | USDOT ${contract.usdotNumber||"N/A"}`},{label:"Company website",value:contract.companyWebsite||"Not provided"},{label:"Authorized signer",value:`${contract.signerName}, ${contract.signerTitle}`},{label:"Signer contact",value:`${contract.signerEmail} | ${contract.signerPhone}`},{label:"Hermes representative / offer",value:[contract.salesContact,contract.offerCode].filter(Boolean).join(" | ")||"Not provided"},...(contract.plan==="custom"?[{label:"Custom scope proposed",value:contract.customScope}]:[])
+    {label:"Document status",value:status},{label:"Master agreement",value:`${documentVersion} | SHA-256 ${documentSha}`},{label:"Selected service model",value:contract.planLabel},{label:"Carrier-specific service fee",value:contract.percentage},{label:"Optional 14-day trial",value:contract.trialSelected?`Selected | ${contract.trialStartDate} through ${contract.trialEndDate} | Trial ${contract.trialPercentage} | Standard after trial ${contract.percentage} | No automatic continuation`:"Not selected"},{label:"Legal carrier company",value:contract.legalCompanyName},{label:"DBA",value:contract.dbaName||"None provided"},{label:"Authority identifiers",value:`MC ${contract.mcNumber||"N/A"} | USDOT ${contract.usdotNumber||"N/A"}`},{label:"Company website",value:contract.companyWebsite||"Not provided"},{label:"Authorized signer",value:`${contract.signerName}, ${contract.signerTitle}`},{label:"Signer contact",value:`${contract.signerEmail} | ${contract.signerPhone}`},{label:"Hermes representative / offer",value:[contract.salesContact,contract.offerCode].filter(Boolean).join(" | ")||"Not provided"},...(contract.plan==="custom"?[{label:"Custom scope proposed",value:contract.customScope}]:[])
   ],`Request ${contract.requestId} | Generated ${contract.submittedAt}`);
   const page2=pageStream("Electronic Consent, Carrier Control, and Signature Record",[
-    {label:"Electronic-record consent",value:"Signer affirmatively consented to electronic records and signatures, confirmed access to a device capable of downloading and retaining PDF records, and may request a paper copy."},{label:"Signer authority",value:"Signer confirmed authority to act for the carrier company identified in this packet."},{label:"Document review",value:mode==="live"?"Signer confirmed review of the approved master agreement and this Appendix A.":"Signer confirmed review of the v3 attorney-review master and understands that final activation requires an approved execution version."},{label:"Selected commercial term",value:`${contract.planLabel} | ${contract.percentage}`},{label:"Carrier-control boundary",value:"Carrier approves every load and retains drivers, equipment, safety, insurance, routes, compliance, and final operating decisions. Hermes has limited administrative and dispatch support authority only."},{label:"Payment boundary",value:"Freight funds remain payable to the carrier or its factor. Hermes earns only the service fee stated in Appendix A."},{label:"No guarantee",value:"No load, rate, mileage, lane, customer, booking, payment, profit, revenue, or business outcome is guaranteed."},{label:"Typed signature",value:contract.typedSignature},{label:"Signature timestamp",value:contract.submittedAt},{label:"Consent version",value:CONSENT_VERSION},{label:"Audit fingerprints",value:`Input ${audit.inputHash} | Network ${audit.ipHash.slice(0,24)} | Device ${audit.userAgentHash.slice(0,24)}`}
+    {label:"Electronic-record consent",value:"Signer affirmatively consented to electronic records and signatures, confirmed access to a device capable of downloading and retaining PDF records, and may request a paper copy."},{label:"Signer authority",value:"Signer confirmed authority to act for the carrier company identified in this packet."},{label:"Document review",value:mode==="live"?"Signer confirmed review of the approved master agreement and this Appendix A.":"Signer confirmed review of the v3 attorney-review master and understands that final activation requires an approved execution version."},{label:"Selected commercial term",value:`${contract.planLabel} | ${contract.percentage}`},{label:"Trial continuation",value:contract.trialSelected?"14-calendar-day trial selected; continued support requires separate written confirmation of the standard fee and scope. No automatic conversion.":"No trial selected."},{label:"Carrier-control boundary",value:"Carrier approves every load and retains drivers, equipment, safety, insurance, routes, compliance, and final operating decisions. Hermes has limited administrative and dispatch support authority only."},{label:"Payment boundary",value:"Freight funds remain payable to the carrier or its factor. Hermes earns only the service fee stated in Appendix A."},{label:"No guarantee",value:"No load, rate, mileage, lane, customer, booking, payment, profit, revenue, or business outcome is guaranteed."},{label:"Typed signature",value:contract.typedSignature},{label:"Signature timestamp",value:contract.submittedAt},{label:"Consent version",value:CONSENT_VERSION},{label:"Audit fingerprints",value:`Input ${audit.inputHash} | Network ${audit.ipHash.slice(0,24)} | Device ${audit.userAgentHash.slice(0,24)}`}
   ],`Request ${contract.requestId} | Signature image below`,{bytes:contract.signatureBytes,width:contract.signatureWidth,height:contract.signatureHeight});
   const objects:Uint8Array[]=[];const asBytes=(v:string)=>encoder.encode(v);const stream=(data:Uint8Array,extra="")=>concatBytes(asBytes(`<< /Length ${data.length}${extra?` ${extra}`:""} >>\nstream\n`),data,asBytes("\nendstream"));
   objects[1]=asBytes("<< /Type /Catalog /Pages 2 0 R >>");objects[2]=asBytes("<< /Type /Pages /Kids [3 0 R 4 0 R] /Count 2 >>");objects[3]=asBytes("<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 5 0 R /F2 6 0 R >> >> /Contents 7 0 R >>");objects[4]=asBytes("<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 5 0 R /F2 6 0 R >> /XObject << /Im1 9 0 R >> >> /Contents 8 0 R >>");objects[5]=asBytes("<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>");objects[6]=asBytes("<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>");objects[7]=stream(page1);objects[8]=stream(page2);objects[9]=stream(contract.signatureBytes,`/Type /XObject /Subtype /Image /Width ${contract.signatureWidth} /Height ${contract.signatureHeight} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode`);objects[10]=asBytes(`<< /Title (${pdfEscape("Hermes Carrier Agreement Appendix A")}) /Author (${pdfEscape("Hermes Logistics LLC")}) /Subject (${pdfEscape(status)}) /Keywords (${pdfEscape(`${contract.requestId} ${documentVersion}`)}) >>`);
@@ -296,7 +333,7 @@ export async function onRequestPost({request,env}:Context){
   const mode:"review"|"live"=liveApproved?"live":"review";const documentVersion=liveApproved?approvedVersion:REVIEW_DOCUMENT_VERSION;const documentPath=liveApproved?approvedPath:REVIEW_DOCUMENT_PATH;const documentSha=liveApproved?approvedSha:REVIEW_DOCUMENT_SHA256;
   const canonical=JSON.stringify({...contract,signatureBytes:undefined,signature_jpeg_sha256:await sha256(contract.signatureBytes),documentVersion,documentSha,mode});const inputHash=await sha256(canonical);const userAgentHash=await sha256(request.headers.get("User-Agent")||"unknown");const appendixPdf=createSignedAppendixPdf(contract,mode,documentVersion,documentSha,{inputHash,ipHash,userAgentHash});const appendixSha=await sha256(appendixPdf);const filename=safeFilename(contract.legalCompanyName,mode==="live"?"Signed_Appendix_A":"Signed_Review_Packet");
   const assetResponse=await env.ASSETS.fetch(new URL(documentPath,request.url));if(!assetResponse.ok||!assetResponse.headers.get("Content-Type")?.toLowerCase().includes("pdf"))return json(allowedOrigin,503,{success:false,error:"master_document_unavailable"});const masterBytes=new Uint8Array(await assetResponse.arrayBuffer());if(await sha256(masterBytes)!==documentSha)return json(allowedOrigin,503,{success:false,error:"master_document_hash_mismatch"});
-  const emailText=[mode==="live"?"Hermes carrier agreement execution package":"Hermes carrier agreement signed review package","-----------------------------------------------",`Request ID: ${contract.requestId}`,`Document mode: ${mode}`,`Master version: ${documentVersion}`,`Master SHA-256: ${documentSha}`,`Appendix SHA-256: ${appendixSha}`,`Carrier: ${contract.legalCompanyName}`,`DBA: ${contract.dbaName||"not provided"}`,`MC: ${contract.mcNumber||"not provided"}`,`USDOT: ${contract.usdotNumber||"not provided"}`,`Website: ${contract.companyWebsite||"not provided"}`,`Signer: ${contract.signerName}, ${contract.signerTitle}`,`Email: ${contract.signerEmail}`,`Phone: ${contract.signerPhone}`,`Selected model: ${contract.planLabel}`,`Carrier-specific percentage: ${contract.percentage}`,`Hermes representative: ${contract.salesContact||"not provided"}`,`Offer code: ${contract.offerCode||"not provided"}`,"",mode==="live"?"The attached approved master agreement and signed Appendix A form the execution package.":"The attached files form a signed review packet and do not activate a final agreement until Hermes publishes and configures an approved execution version.","No password, PIN, API token, payment credential, W-9, CDL image, VIN list, full street address, lane profile, load-board access, or private shipment document was collected by the pre-signature form."].join("\n");
+  const emailText=[mode==="live"?"Hermes carrier agreement execution package":"Hermes carrier agreement signed review package","-----------------------------------------------",`Request ID: ${contract.requestId}`,`Document mode: ${mode}`,`Master version: ${documentVersion}`,`Master SHA-256: ${documentSha}`,`Appendix SHA-256: ${appendixSha}`,`Carrier: ${contract.legalCompanyName}`,`DBA: ${contract.dbaName||"not provided"}`,`MC: ${contract.mcNumber||"not provided"}`,`USDOT: ${contract.usdotNumber||"not provided"}`,`Website: ${contract.companyWebsite||"not provided"}`,`Signer: ${contract.signerName}, ${contract.signerTitle}`,`Email: ${contract.signerEmail}`,`Phone: ${contract.signerPhone}`,`Selected model: ${contract.planLabel}`,`Carrier-specific percentage: ${contract.percentage}`,`Trial selected: ${contract.trialSelected?"yes":"no"}`,`Trial window: ${contract.trialSelected?`${contract.trialStartDate} through ${contract.trialEndDate}`:"not selected"}`,`Trial percentage: ${contract.trialSelected?contract.trialPercentage:"not selected"}`,`No automatic continuation: ${contract.trialSelected?"confirmed":"not applicable"}`,`Hermes representative: ${contract.salesContact||"not provided"}`,`Offer code: ${contract.offerCode||"not provided"}`,"",mode==="live"?"The attached approved master agreement and signed Appendix A form the execution package.":"The attached files form a signed review packet and do not activate a final agreement until Hermes publishes and configures an approved execution version.","No password, PIN, API token, payment credential, W-9, CDL image, VIN list, full street address, lane profile, load-board access, or private shipment document was collected by the pre-signature form."].join("\n");
   const controller=new AbortController();
   const timeout=setTimeout(()=>controller.abort(),DELIVERY_TIMEOUT_MS);
   let internalDelivery="pending";
