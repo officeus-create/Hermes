@@ -45,7 +45,14 @@ const json=(value,status=200)=>({
   ok:status>=200&&status<300,status,
   async json(){return value;},
 });
-function fixture({subscriptions=[],subscriptionStatus=200,totalCount=null}={}){
+function fixture({
+  subscriptions=[],
+  subscriptionStatus=200,
+  totalCount=null,
+  providerEnabled="disabled",
+  planAttested="unverified",
+  assertionExpiresAt=null,
+}={}){
   const calls=[];
   const fetchImpl=async(url)=>{
     calls.push(url);
@@ -63,9 +70,10 @@ function fixture({subscriptions=[],subscriptionStatus=200,totalCount=null}={}){
         {name:"HERMES_AUTOMATION_SOURCE_SHA",type:"plain_text",text:mainSha},
         {name:"HERMES_AUTOMATION_MODE",type:"plain_text",text:"dry_run"},
         {name:"HERMES_AUTOMATION_PUBLISH",type:"plain_text",text:"disabled"},
-        {name:"HERMES_FREE_AI_CLOUDFLARE_ENABLED",type:"plain_text",text:"disabled"},
-        {name:"HERMES_FREE_AI_CLOUDFLARE_PLAN_ATTESTED",type:"plain_text",text:"unverified"},
+        {name:"HERMES_FREE_AI_CLOUDFLARE_ENABLED",type:"plain_text",text:providerEnabled},
+        {name:"HERMES_FREE_AI_CLOUDFLARE_PLAN_ATTESTED",type:"plain_text",text:planAttested},
         {name:"HERMES_FREE_AI_CLOUDFLARE_MODEL",type:"plain_text",text:"@cf/zai-org/glm-4.7-flash"},
+        ...(assertionExpiresAt?[{name:"HERMES_FREE_AI_CLOUDFLARE_FREE_ASSERTION_EXPIRES_AT",type:"plain_text",text:assertionExpiresAt}]:[]),
       ]}
     });
     throw new Error("unexpected_url:"+url);
@@ -93,6 +101,7 @@ assert.equal(verified.status,"WORKERS_FREE_VERIFIED");
 assert.equal(verified.workers_free_verified,true);
 assert.equal(verified.activation_candidate,true);
 assert.equal(verified.inference_currently_allowed,false);
+assert.equal(verified.inference_enabled_by_this_readback,false);
 assert.equal(verified.activation_requires_separate_reviewed_source_change,true);
 assert.equal(verified.provider_write_performed,false);
 assert.equal(verified.model_inference_performed,false);
@@ -102,6 +111,33 @@ assert.equal(
   2,
   "successful attestation must verify main before and after provider reads"
 );
+
+const alreadyEnabledFixture=fixture({
+  providerEnabled:"enabled",
+  planAttested:"workers_free",
+  assertionExpiresAt:"2026-10-27T18:00:00Z",
+});
+const alreadyEnabled=await readbackWorkersFreePlan({
+  expectedMainSha:mainSha,githubToken:"gh",cloudflareToken:"cf",accountId,
+  fetchImpl:alreadyEnabledFixture.fetchImpl,nowMs:now,
+});
+assert.equal(alreadyEnabled.inference_currently_allowed,true,
+  "readback must report current runtime eligibility instead of assuming it is disabled");
+assert.equal(alreadyEnabled.inference_enabled_by_this_readback,false);
+assert.equal(alreadyEnabled.provider_write_performed,false);
+assert.equal(alreadyEnabled.model_inference_performed,false);
+
+const staleAttestationFixture=fixture({
+  providerEnabled:"enabled",
+  planAttested:"workers_free",
+  assertionExpiresAt:"2026-10-27T06:00:00Z",
+});
+const staleAttestation=await readbackWorkersFreePlan({
+  expectedMainSha:mainSha,githubToken:"gh",cloudflareToken:"cf",accountId,
+  fetchImpl:staleAttestationFixture.fetchImpl,nowMs:now,
+});
+assert.equal(staleAttestation.inference_currently_allowed,false,
+  "expired free-plan attestation must fail closed even when provider flag is enabled");
 
 const driftBase=fixture();
 let mainReads=0;
