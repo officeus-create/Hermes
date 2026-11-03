@@ -51,6 +51,19 @@ const superseded = evaluatePullRequestReadiness({
 });
 assert.ok(superseded.blockers.includes("INDEPENDENT_APPROVAL_MISSING"));
 
+const commentAfterApproval = evaluatePullRequestReadiness({
+  draft:false,
+  behind_by:0,
+  author:"officeus-create",
+  head_sha:"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  reviews:[
+    {user:{login:"qa-reviewer"},state:"APPROVED",commit_id:"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"},
+    {user:{login:"qa-reviewer"},state:"COMMENTED",commit_id:"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"},
+  ],
+});
+assert.equal(commentAfterApproval.status,"READY");
+assert.deepEqual(commentAfterApproval.independent_approvers,["qa-reviewer"]);
+
 const staleApproval = evaluatePullRequestReadiness({
   draft:false,
   behind_by:0,
