@@ -56,6 +56,7 @@ export async function onRequestPost(context:Context) {
   if(!workspaceSameOrigin(context.request))return respond(403,{success:false,error:"same_origin_required"});
   const auth=await session(context);if(auth.error)return auth.error;
   const {company,specialist}=auth;const db=context.env.DB;
+  if(company.access_role==="read_only")return respond(403,{success:false,error:"carrier_membership_write_permission_required"});
   let body:Record<string,unknown>;
   try{body=await context.request.json() as Record<string,unknown>;}
   catch{return respond(400,{success:false,error:"invalid_json"});}
