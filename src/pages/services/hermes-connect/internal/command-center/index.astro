@@ -53,7 +53,7 @@ async function loadAll(){
   q("[data-access]")!.hidden=true;q("[data-private]")!.hidden=false;runtime=status.d.runtime||{};const active=status.d.active_task||null;
   setText("[data-runner-state]",runtime.online?t("Online","Онлайн"):t("Offline","Офлайн"));setText("[data-runner-copy]",runtime.online?t("Mac runner is accepting work","Mac runner принимает работу"):t("Cloud backlog remains safe","Облачная очередь сохранена"));
   setText("[data-agent-badge]",runtime.online?t("Online","Онлайн"):t("Offline","Офлайн"));setText("[data-agent-status]",runtime.online?t("Online","Онлайн"):t("Offline","Офлайн"));setText("[data-agent-seen]",stamp(runtime.last_seen_at));setText("[data-agent-sha]",runtime.repo_sha||"—");setText("[data-active-task]",active?(String(active.status||"")+(active.id?" · "+String(active.id).slice(-10):"")):t("None","Нет"));
-  const [work,taskList,accessList,account,processList]=await Promise.all([jsonFetch("/api/internal-command-center/work-items"),jsonFetch("/api/internal-ai/tasks"),jsonFetch("/api/internal-command-center/access"),jsonFetch("/api/hermes-connect/account"),jsonFetch("/api/internal-command-center/processes")]);
+  const [work,taskList,accessList,account,processList,auditStatus]=await Promise.all([jsonFetch("/api/internal-command-center/work-items"),jsonFetch("/api/internal-ai/tasks"),jsonFetch("/api/internal-command-center/access"),jsonFetch("/api/hermes-connect/account"),jsonFetch("/api/internal-command-center/processes"),jsonFetch("/api/internal-command-center/audit-status")]);
   if(work.r.ok&&work.d.success){
     const all:WorkItem[]=[...(work.d.work_items||[])];
     let offset=work.d.next_offset;
@@ -71,6 +71,17 @@ async function loadAll(){
   setText("[data-backlog-count]",String(items.filter(x=>!["done","cancelled"].includes(x.status)).length));setText("[data-approval-count]",String(tasks.filter(x=>x.status==="needs_approval").length));
   document.querySelectorAll<HTMLElement>("[data-module]").forEach(card=>{const key=card.dataset.module||"";const count=items.filter(x=>x.workstream===key&&!["done","cancelled"].includes(x.status)).length;const badge=card.querySelector<HTMLElement>(".module-state");if(badge)badge.textContent=count?String(count)+" "+t("open","открыто"):t("Clear","Чисто")});
   renderItems();renderProcesses();renderOwnerOverview();renderEvidence();if(accessList.r.ok&&accessList.d.success)renderOwners(accessList.d);
+  if(auditStatus.r.ok&&auditStatus.d.success){
+    const audit=auditStatus.d.audit||{};
+    setText("[data-audit-state]",String(audit.status||"UNKNOWN"));
+    setText("[data-audit-copy]",t(
+      `${Number(audit.open_count||0)} open · ${Number(audit.stale_count||0)} stale · ${Number(audit.not_run_count||0)} not run`,
+      `${Number(audit.open_count||0)} открыто · ${Number(audit.stale_count||0)} устарело · ${Number(audit.not_run_count||0)} не запускалось`
+    ));
+  }else{
+    setText("[data-audit-state]","UNKNOWN");
+    setText("[data-audit-copy]",t("Audit readback unavailable","Нет readback аудита"));
+  }
   void loadProjects();
 }
 // Project lookup is optional metadata: never block cloud backlog or HAE processing when it fails.

@@ -9,6 +9,7 @@ const collection=read("functions/api/internal-command-center/work-items.ts");
 const item=read("functions/api/internal-command-center/work-items/[id].ts");
 const access=read("functions/api/internal-command-center/access.ts");
 const processes=read("functions/api/internal-command-center/processes.ts");
+const auditStatus=read("functions/api/internal-command-center/audit-status.ts");
 const processItem=read("functions/api/internal-command-center/processes/[id].ts");
 const processControl=read("src/lib/hae-process-control.mjs");
 const processRuntime=read("workers/automation-engine/src/owner-process-runtime.mjs");
@@ -28,6 +29,9 @@ assert.match(shell,/mode:"public"\|"private"/,"public and private Command Center
 assert.match(page,/\/api\/internal-ai\/status/,"must read the existing runner state instead of inventing a second agent runtime");
 assert.match(page,/\/api\/internal-ai\/tasks/,"must read the existing AI queue");
 assert.match(page,/\/api\/internal-command-center\/work-items/,"must use the bounded owner backlog");
+assert.match(page,/\/api\/internal-command-center\/audit-status/,"owner attention must include bounded HAE audit status");
+assert.doesNotMatch(auditStatus,/payload_json/,"audit owner API must never expose HAE payloads");
+assert.doesNotMatch(auditStatus,/finding_ids/,"audit owner API must not project raw finding ids");
 assert.match(page,/SpeechRecognition.*webkitSpeechRecognition/s,"voice capture must use browser speech recognition with keyboard/OS fallback");
 assert.match(page,/Dictation added.*Review before saving/s,"dictation must require review before persistence");
 assert.doesNotMatch(page,/localStorage|sessionStorage/,"owner work must not use browser storage as system of record");
@@ -57,7 +61,7 @@ assert.doesNotMatch(helper,/SET status = 'done'.*linked_task_id IN/s,"linked exe
 assert.match(helper,/Reuse current Hermes architecture.*do not create a second CRM/s,"dispatched prompts must preserve single-system ownership");
 assert.match(helper,/external communications.*owner approval flow/i,"dispatched prompts must preserve consequential approval gates");
 
-for(const source of [collection,item,access,processes,processItem]){
+for(const source of [collection,item,access,processes,processItem,auditStatus]){
   assert.match(source,/requireInternalOwner/,"every command-center API must require HERMES_INTERNAL_OWNER");
   assert.match(source,/Cache-Control.*no-store/,"private APIs must not be cached");
 }
@@ -105,6 +109,7 @@ assert.match(nav,/internal\/command-center/,"existing owner navigation must expo
 assert.match(docs,/canonical PR #2107/,"durable Command Center docs must point at the current canonical implementation");
 assert.doesNotMatch(docs,/IMPLEMENTATION DRAFT in PR #2096/,"superseded #2096 must never return as the current implementation");
 
+await import("./internal-command-center-audit-summary.test.mjs");
 await import("./internal-command-center-runtime.test.mjs");
 await import("./internal-command-center-state.test.mjs");
 await import("./internal-command-center-processes.test.mjs");
