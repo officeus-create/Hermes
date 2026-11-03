@@ -37,7 +37,8 @@ const nav=[
 
 <script>
 type WorkItem={id:string;project_id?:string|null;workstream:string;priority:string;title:string;details:string;source:string;status:string;created_at?:string;updated_at?:string;completed_at?:string|null;accepted_by?:string|null;accepted_at?:string|null;linked_task_id?:string|null;linked_task_status?:string|null;linked_task_pr_url?:string|null;linked_task_output_summary?:string|null;blocked_reason?:string|null};
-type HaeProcess={id:string;name:string;job_type:string;business_lane:string;workstream:string;role_id:string;cadence_hours:number;status:string;next_run_at?:string|null;last_run_at?:string|null;last_job_id?:string|null;last_job_state?:string|null;last_job_completed_at?:string|null;last_error_class?:string|null;template_label:string;template_label_ru:string};
+type HaeAuditSummary={capability?:string|null;source_status?:string|null;coverage_complete?:boolean|null;access_gap?:boolean;p0_count?:number|null;open_count?:number|null;unowned_count?:number|null;repeated_regression_count?:number|null;http_error_count?:number|null;canonical_defect_count?:number|null;redirect_drift_count?:number|null};
+type HaeProcess={id:string;name:string;job_type:string;business_lane:string;workstream:string;role_id?:string|null;cadence_hours:number|null;status:string;managed_by?:string;attention_required?:boolean;audit_summary?:HaeAuditSummary|null;next_run_at?:string|null;last_run_at?:string|null;last_job_id?:string|null;last_job_state?:string|null;last_job_completed_at?:string|null;last_error_class?:string|null;template_label:string;template_label_ru:string};
 const isRu=new URLSearchParams(location.search).get("lang")==="ru";
 const q=<T extends HTMLElement=HTMLElement>(s:string)=>document.querySelector<T>(s);
 const t=(en:string,ru:string)=>isRu?ru:en;
@@ -67,7 +68,7 @@ async function loadAll(){
     }
     items=all;
   }
-  if(taskList.r.ok&&taskList.d.success)tasks=taskList.d.tasks||[]; if(account.r.ok&&account.d.success)renderAccount(account.d);if(processList.r.ok&&processList.d.success)processes=processList.d.processes||[];
+  if(taskList.r.ok&&taskList.d.success)tasks=taskList.d.tasks||[]; if(account.r.ok&&account.d.success)renderAccount(account.d);if(processList.r.ok&&processList.d.success)processes=[...(processList.d.processes||[]),...(processList.d.system_processes||[])];
   setText("[data-backlog-count]",String(items.filter(x=>!["done","cancelled"].includes(x.status)).length));setText("[data-approval-count]",String(tasks.filter(x=>x.status==="needs_approval").length));
   document.querySelectorAll<HTMLElement>("[data-module]").forEach(card=>{const key=card.dataset.module||"";const count=items.filter(x=>x.workstream===key&&!["done","cancelled"].includes(x.status)).length;const badge=card.querySelector<HTMLElement>(".module-state");if(badge)badge.textContent=count?String(count)+" "+t("open","открыто"):t("Clear","Чисто")});
   renderItems();renderProcesses();renderOwnerOverview();renderEvidence();if(accessList.r.ok&&accessList.d.success)renderOwners(accessList.d);
@@ -94,19 +95,21 @@ async function loadProjects(){
 function priorityRank(value:string){return ({p0:0,p1:1,p2:2,p3:3} as Record<string,number>)[value]??9}
 function renderOwnerOverview(){
   const pending=items.filter(item=>item.status==="awaiting_acceptance");
+  const processAlerts=processes.filter(process=>process.attention_required||process.status==="blocked");
   const runningTasks=tasks.filter((task:any)=>["queued","running"].includes(String(task.status))).length;
   const activeProcesses=processes.filter(process=>process.status==="active").length;
-  const blocked=items.filter(item=>item.status==="blocked").length+processes.filter(process=>process.status==="blocked").length;
+  const blocked=items.filter(item=>item.status==="blocked").length+processAlerts.length;
   const open=items.filter(item=>!["done","cancelled"].includes(item.status)).sort((a,b)=>priorityRank(a.priority)-priorityRank(b.priority));
-  const next=pending[0]||open[0]||null;
-  setText("[data-today-decision]",String(pending.length));
+  const next=pending[0]||processAlerts[0]||open[0]||null;
+  setText("[data-today-decision]",String(pending.length+processAlerts.length));
   setText("[data-today-running]",String(runningTasks+activeProcesses));
   setText("[data-today-blocked]",String(blocked));
-  setText("[data-today-next]",next?next.title:t("No action","Нет действий"));
+  setText("[data-today-next]",next?("title" in next?next.title:next.name):t("No action","Нет действий"));
   const box=q("[data-today-list]");if(!box)return;box.replaceChildren();
-  const rows=[...pending,...open.filter(item=>!pending.some(review=>review.id===item.id))].slice(0,5);
-  if(!rows.length){const p=document.createElement("p");p.className="muted";p.textContent=t("Nothing needs owner attention right now.","Сейчас нет задач, требующих внимания владельца.");box.append(p);return}
-  rows.forEach(item=>{const row=document.createElement("article");row.className="owner-today-item";const copy=document.createElement("div");const strong=document.createElement("strong");strong.textContent=item.title;const small=document.createElement("small");small.textContent=item.workstream+" · "+item.priority.toUpperCase()+(item.project_id?" · "+(projects.find(project=>project.id===item.project_id)?.title||item.project_id):"");copy.append(strong,small);const state=document.createElement("span");state.textContent=item.status==="awaiting_acceptance"?t("Needs decision","Нужно решение"):item.status.replaceAll("_"," ");row.append(copy,state);row.addEventListener("click",()=>{filter=item.status==="awaiting_acceptance"?"awaiting_acceptance":"open";switchView("tasks");renderItems()});box.append(row)});
+  const taskRows=[...pending,...open.filter(item=>!pending.some(review=>review.id===item.id))];
+  if(!processAlerts.length&&!taskRows.length){const p=document.createElement("p");p.className="muted";p.textContent=t("Nothing needs owner attention right now.","Сейчас нет задач, требующих внимания владельца.");box.append(p);return}
+  processAlerts.slice(0,3).forEach(process=>{const row=document.createElement("article");row.className="owner-today-item";const copy=document.createElement("div");const strong=document.createElement("strong");strong.textContent=process.name;const small=document.createElement("small");small.textContent=t("Automation evidence needs attention","Evidence автоматизации требует внимания")+" · "+process.job_type;copy.append(strong,small);const state=document.createElement("span");state.textContent=t("Review","Проверить");row.append(copy,state);row.addEventListener("click",()=>switchView("automations"));box.append(row)});
+  taskRows.slice(0,Math.max(0,5-Math.min(3,processAlerts.length))).forEach(item=>{const row=document.createElement("article");row.className="owner-today-item";const copy=document.createElement("div");const strong=document.createElement("strong");strong.textContent=item.title;const small=document.createElement("small");small.textContent=item.workstream+" · "+item.priority.toUpperCase()+(item.project_id?" · "+(projects.find(project=>project.id===item.project_id)?.title||item.project_id):"");copy.append(strong,small);const state=document.createElement("span");state.textContent=item.status==="awaiting_acceptance"?t("Needs decision","Нужно решение"):item.status.replaceAll("_"," ");row.append(copy,state);row.addEventListener("click",()=>{filter=item.status==="awaiting_acceptance"?"awaiting_acceptance":"open";switchView("tasks");renderItems()});box.append(row)});
 }
 function renderEvidence(){
   const box=q("[data-evidence-list]");if(!box)return;box.replaceChildren();
