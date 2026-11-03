@@ -22,6 +22,7 @@ const failed=githubAuditorJobFromEnvelope(base,{deployedSourceSha:main});
 assert.equal(failed.job_type,"audit.github.snapshot");
 assert.equal(failed.payload.coverage_complete,false);
 assert.equal(failed.payload.source_authenticated,true);
+assert.equal(failed.payload.source_trusted,false);
 assert.equal(failed.payload.findings.length,1);
 assert.equal(failed.payload.findings[0].severity,"P1");
 
