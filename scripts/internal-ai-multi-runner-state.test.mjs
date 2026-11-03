@@ -44,8 +44,8 @@ let result = await responseJson(await claimTask({
     runner_id: INTERNAL_AI_WINDOWS_VIKTOR_RUNNER_ID,
     accept_tasks: false,
     runtime_version: "viktor-local-test",
-    executor_type: "windows",
-    display_name: "VIKTOR Windows",
+    executor_type: "mac",
+    display_name: "Spoofed Mac Identity",
     current_task: "Read-only local QA",
     phase: "ANALYZING",
     last_result: "PASS",
@@ -81,6 +81,8 @@ assert.equal(result.body.error, "runner_identity_mismatch");
 let windowsState = await DB.prepare("SELECT * FROM hermes_internal_ai_runner_state WHERE id = ?").bind(INTERNAL_AI_WINDOWS_VIKTOR_RUNNER_ID).first();
 assert.ok(windowsState);
 assert.equal(windowsState.accept_tasks, 0);
+assert.equal(windowsState.executor_type, "windows", "authenticated Windows identity must override spoofed executor_type");
+assert.equal(windowsState.display_name, "Hermes AI / VIKTOR Windows", "authenticated Windows identity must override spoofed display_name");
 assert.equal(windowsState.executor_type, "windows");
 assert.equal(windowsState.display_name, "VIKTOR Windows");
 assert.equal(publicRunnerState(windowsState).online, true);
