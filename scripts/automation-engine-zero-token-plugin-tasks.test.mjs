@@ -96,6 +96,17 @@ assert.equal(runZeroTokenPluginTask("website.route.audit", fixtures["website.rou
 assert.equal(runZeroTokenPluginTask("github.ecosystem.audit", fixtures["github.ecosystem.audit"]).repeated_regression_count, 1);
 assert.equal(runZeroTokenPluginTask("cloudflare.runtime.audit", fixtures["cloudflare.runtime.audit"]).access_gap, true);
 assert.equal(runZeroTokenPluginTask("drive.governance.audit", fixtures["drive.governance.audit"]).open_count, 0);
+const websiteAudit = runZeroTokenPluginTask("website.route.audit", fixtures["website.route.audit"]);
+assert.equal(websiteAudit.remediation_owner.role_id, "hermes-technology-developer");
+assert.equal(websiteAudit.independent_review_owner.role_id, "hermes-qa-evidence-auditor");
+const githubAudit = runZeroTokenPluginTask("github.ecosystem.audit", fixtures["github.ecosystem.audit"]);
+assert.equal(githubAudit.remediation_owner.role_id, "hermes-technology-developer");
+const cloudflareAudit = runZeroTokenPluginTask("cloudflare.runtime.audit", fixtures["cloudflare.runtime.audit"]);
+assert.equal(cloudflareAudit.remediation_owner.role_id, "hermes-technology-developer");
+const driveAudit = runZeroTokenPluginTask("drive.governance.audit", fixtures["drive.governance.audit"]);
+assert.equal(driveAudit.remediation_owner.role_id, "hermes-knowledge-curator");
+assert.equal(driveAudit.independent_review_owner.role_id, "hermes-qa-evidence-auditor");
+
 assert.equal(runZeroTokenPluginTask("market.car-hauling.snapshot.evaluate", fixtures["market.car-hauling.snapshot.evaluate"]).unknown_metric_count, 1);
 assert.equal(runZeroTokenPluginTask("marketing.mentions.audit", fixtures["marketing.mentions.audit"]).raw_page_content_stored, false);
 assert.equal(runZeroTokenPluginTask("hae.self.improvement.audit", fixtures["hae.self.improvement.audit"]).next_action, "HOLD_REPAIR");
