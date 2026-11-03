@@ -20,6 +20,9 @@ on:
       - "workers/automation-engine/src/work-portfolio.mjs"
       - "scripts/automation-engine-zero-token-plugin-tasks.test.mjs"
       - "scripts/automation-engine-self-improvement.test.mjs"
+      - "scripts/hae-independent-heartbeat-watch.mjs"
+      - "scripts/hae-independent-heartbeat-watch.test.mjs"
+      - ".github/workflows/hae-independent-heartbeat-watch.yml"
       - "scripts/hae-plugin-release-drift-preflight.test.mjs"
       - "scripts/automation-engine-self-backlog.test.mjs"
       - "scripts/automation-engine-self-release-gate.test.mjs"
@@ -73,6 +76,7 @@ jobs:
           node scripts/automation-engine-work-portfolio.test.mjs
           node scripts/automation-engine-zero-token-plugin-tasks.test.mjs
           node scripts/automation-engine-self-improvement.test.mjs
+          node scripts/hae-independent-heartbeat-watch.test.mjs
           node scripts/hae-plugin-release-drift-preflight.test.mjs
           node scripts/automation-engine-self-backlog.test.mjs
           node scripts/automation-engine-self-release-gate.test.mjs
