@@ -2068,6 +2068,7 @@ async function buildScheduledSearchPayload(contract) {
         && !htmlNoindex(html);
       return {
         url,
+        final_url: response.url || url,
         status: response.status,
         canonical,
         indexable,
@@ -2076,6 +2077,7 @@ async function buildScheduledSearchPayload(contract) {
     } catch {
       return {
         url,
+        final_url: url,
         status: 599,
         canonical: "",
         indexable: false,
@@ -2181,11 +2183,34 @@ function buildScheduledHaeSelfImprovementPayload(scheduledAt) {
     });
   }
 
+  const runtimeRoleIds = new Set(pluginRuntimeRegistrySnapshot().entries.map((entry) => entry.role_id));
+  const roleJobTypes = new Set(ROLE_CONTRACTS.map((contract) => contract.job_type));
+  const migrationSnapshot = taskMigrationSnapshot(ROLE_CONTRACT_JOB_TYPES);
+  const ecosystemMigration = migrationSnapshot.migrations.find((item) => item.task_key === "ecosystem-watch");
+  const ecosystemJobTypes = new Set(ecosystemMigration?.job_types || []);
+  const auditorRequirements = [
+    ["hermes-github-auditor", "github.ecosystem.audit"],
+    ["hermes-cloudflare-auditor", "cloudflare.runtime.audit"],
+    ["hermes-drive-auditor", "drive.governance.audit"],
+    ["hermes-website-auditor", "website.route.audit"],
+  ];
+  for (const [roleId, jobType] of auditorRequirements) {
+    if (!runtimeRoleIds.has(roleId)) {
+      findings.push({ finding_id: `missing-auditor-runtime-role:${roleId}`, source_ref: "github://officeus-create/Hermes/runtime/plugin-runtime-registry", category: "CONTRACT_DRIFT", severity: "P0", status: "OPEN", artifact_key: "workers/automation-engine/src/plugin-runtime-registry.mjs", verified: true, writer_active: false, writer_state_verified: false, observed_at: observedAt });
+    }
+    if (!roleJobTypes.has(jobType)) {
+      findings.push({ finding_id: `missing-auditor-contract:${jobType}`, source_ref: "github://officeus-create/Hermes/runtime/role-contracts", category: "CONTRACT_DRIFT", severity: "P0", status: "OPEN", artifact_key: "workers/automation-engine/src/zero-token-plugin-tasks.mjs", verified: true, writer_active: false, writer_state_verified: false, observed_at: observedAt });
+    }
+    if (!ecosystemJobTypes.has(jobType)) {
+      findings.push({ finding_id: `missing-ecosystem-watch-route:${jobType}`, source_ref: "github://officeus-create/Hermes/runtime/schedule-migrations", category: "CONTRACT_DRIFT", severity: "P0", status: "OPEN", artifact_key: "workers/automation-engine/src/schedule-migrations.mjs", verified: true, writer_active: false, writer_state_verified: false, observed_at: observedAt });
+    }
+  }
   return { observed_at: observedAt, coverage_complete: true, findings };
 }
 
 async function buildScheduledRoleContractPayload(env, contract, scheduledAt) {
   if (contract.job_type === "search.snapshot.evaluate") return buildScheduledSearchPayload(contract);
+  if (contract.job_type === "website.route.audit") return buildScheduledSearchPayload(contract);
   if (contract.job_type === "marketing.content.dedupe.audit") return buildScheduledMarketingPayload(env, contract);
   if (contract.job_type === "logistics.source.freshness.audit") return buildScheduledLogisticsPayload(env, contract);
   if (contract.job_type === "ai.gateway.readiness.audit") {
