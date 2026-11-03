@@ -232,6 +232,18 @@ export async function readbackWorkersFreePlan({
     runtimeMode==="dry_run"&&publication==="disabled");
   const modelApproved=currentModel===APPROVED_FREE_MODEL;
   const bindingReady=aiBindingPresent(bindings);
+  const currentExpiryMs=Date.parse(currentExpiry||"");
+  const currentFreeAssertionFresh=Number.isFinite(currentExpiryMs)&&currentExpiryMs>nowMs;
+  const currentAttestationWindowValid=Number.isFinite(currentExpiryMs)&&
+    currentExpiryMs<=nowMs+(24*60*60*1000);
+  const currentProviderRuntimeReady=Boolean(
+    currentEnabled==="enabled"&&
+    currentAttestation==="workers_free"&&
+    modelApproved&&
+    bindingReady&&
+    currentFreeAssertionFresh&&
+    currentAttestationWindowValid
+  );
 
   return Object.freeze({
     status:plan.status,
@@ -251,7 +263,8 @@ export async function readbackWorkersFreePlan({
     current_provider_enabled:currentEnabled,
     current_plan_attestation:currentAttestation,
     current_free_assertion_expires_at:currentExpiry,
-    inference_currently_allowed:false,
+    inference_currently_allowed:currentProviderRuntimeReady,
+    inference_enabled_by_this_readback:false,
     activation_candidate:Boolean(
       plan.workers_free_verified&&exactRuntime&&bindingReady&&modelApproved
     ),
