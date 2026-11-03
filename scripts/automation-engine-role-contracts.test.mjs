@@ -25,6 +25,10 @@ assert.deepEqual(
   [...ROLE_CONTRACT_JOB_TYPES].sort(),
   [
     "academy.english.practice.build",
+    "audit.cloudflare.runtime",
+    "audit.drive.truth",
+    "audit.github.snapshot",
+    "audit.website.journey",
     "ai.gateway.readiness.audit",
     "dispatch.daily.closeout.audit",
     "growth.error.closure.audit",
