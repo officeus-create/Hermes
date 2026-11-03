@@ -148,5 +148,5 @@ await import("./internal-command-center-processes.test.mjs");
 await import("./automation-engine-owner-processes.test.mjs");
 await import("./internal-command-center-local-agents.test.mjs");
 await import("./internal-command-center-project-portfolio.test.mjs");
-await import("./internal-command-center-ai-architecture.test.mjs");
+await import("./internal-command-center-ai-architecture.test.mjs");\nawait import("./internal-command-center-hae-bridge.test.mjs");
 console.log("Hermes Business Command Center contract: PASS");
