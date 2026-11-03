@@ -456,6 +456,16 @@ function normalizeProviderAudit(payload, prefix) {
   return { observed_at: observedAt, coverage_complete: coverageComplete, source_status: sourceStatus, adapter_receipt_id: adapterReceiptId, findings };
 }
 
+function remediationOwnerForAudit(prefix) {
+  const roleId = prefix === "drive" ? "hermes-knowledge-curator" : "hermes-technology-developer";
+  return { role_id: roleId, plugin_version: pluginRuntimeVersion(roleId) };
+}
+
+function independentReviewOwner() {
+  const roleId = "hermes-qa-evidence-auditor";
+  return { role_id: roleId, plugin_version: pluginRuntimeVersion(roleId) };
+}
+
 function runProviderAudit(payload, prefix) {
   const input = normalizeProviderAudit(payload, prefix);
   const open = input.findings.filter((item) => item.status !== "FIXED");
@@ -472,6 +482,7 @@ function runProviderAudit(payload, prefix) {
     access_gap: input.source_status === "ACCESS_GAP", open_count: open.length, p0_count: p0.length, unowned_count: unowned.length,
     repeated_regression_count: repeated.length, open_finding_ids: bounded(open.map((item) => item.finding_id)),
     p0_finding_ids: bounded(p0), unowned_finding_ids: bounded(unowned), repeated_regression_keys: bounded(repeated),
+    remediation_owner: remediationOwnerForAudit(prefix), independent_review_owner: independentReviewOwner(),
     automatic_fix_performed: false, cost_usd: 0,
   };
 }
@@ -513,6 +524,7 @@ function runWebsite(payload) {
     missing_canonical_count: missingCanonical.length, canonical_mismatch_count: canonicalMismatch.length,
     canonical_defect_count: missingCanonical.length + canonicalMismatch.length, http_error_urls: bounded(httpErrors),
     redirect_drift_urls: bounded(redirects), missing_canonical_urls: bounded(missingCanonical), canonical_mismatch_urls: bounded(canonicalMismatch),
+    remediation_owner: remediationOwnerForAudit("website"), independent_review_owner: independentReviewOwner(),
     external_writes: 0, cost_usd: 0,
   };
 }
