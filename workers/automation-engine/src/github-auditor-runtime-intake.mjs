@@ -68,6 +68,7 @@ export function githubAuditorJobFromEnvelope(message,{deployedSourceSha=null}={}
       observed_at:source.updated_at,
       coverage_complete:false,
       source_authenticated:true,
+      source_trusted:false,
       findings,
     },
     source_verified:true,
