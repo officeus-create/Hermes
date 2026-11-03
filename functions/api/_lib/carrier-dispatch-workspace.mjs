@@ -112,9 +112,16 @@ export async function authorizedCarrier(db, specialist) {
   if(!company || Number(company.load_board_access)!==1 || company.entitlement_status!=="active") return null;
   if(company.authority_status!=="verified" || company.insurance_status!=="verified" || company.source_rights_status!=="verified") return null;
   if(!/^[a-f0-9]{64}$/.test(String(company.agreement_sha256||"")) || !String(company.agreement_version||"") || !String(company.evidence_id||"")) return null;
-  const today=new Date().toISOString().slice(0,10);
-  const effective=company.agreement_state==="ONGOING_EFFECTIVE" ||
-    (company.agreement_state==="TRIAL_ACTIVE" && /^\d{4}-\d{2}-\d{2}$/.test(String(company.trial_end_date||"")) && String(company.trial_end_date)>=today);
+  const now=new Date();
+  const today=now.toISOString().slice(0,10);
+  const effectiveAtMs=Date.parse(String(company.agreement_effective_at||""));
+  const ongoingEffective=company.agreement_state==="ONGOING_EFFECTIVE" &&
+    Number.isFinite(effectiveAtMs) && effectiveAtMs<=now.getTime();
+  const trialEffective=company.agreement_state==="TRIAL_ACTIVE" &&
+    /^\d{4}-\d{2}-\d{2}$/.test(String(company.trial_start_date||"")) &&
+    /^\d{4}-\d{2}-\d{2}$/.test(String(company.trial_end_date||"")) &&
+    String(company.trial_start_date)<=today && String(company.trial_end_date)>=today;
+  const effective=ongoingEffective||trialEffective;
   if(!effective) return null;
   const assignment=await verifiedAssignment(db,company.id);
   return assignment ? company : null;
