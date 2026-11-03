@@ -91,7 +91,7 @@
       "submission_auth": "HERMES_AUTOMATION_TOKEN",
       "retention_class": "business_runtime_evidence",
       "role_id": "hermes-drive-auditor",
-      "plugin_version": "0.1.3",
+      "plugin_version": "0.1.4",
       "contract_version": "drive-audit-snapshot-v1",
       "semantic_required": false,
       "free_ai_policy": "not_required"
