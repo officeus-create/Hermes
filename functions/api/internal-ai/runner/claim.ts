@@ -1,12 +1,13 @@
 import { jsonResponse } from "../../_lib/session.mjs";
-import { ensureInternalAiSchema, INTERNAL_AI_ORGANIZATION_SCOPE, INTERNAL_AI_WINDOWS_VIKTOR_RUNNER_ID, normalizeApprovalGate, normalizeInternalAiRunnerId, nowIso, runnerTask, requireInternalAiRunner, sanitizeExecutionText } from "../../_lib/internal-ai.mjs";
-type Env = { DB?: any; HERMES_INTERNAL_AI_RUNNER_TOKEN?: string };
+import { ensureInternalAiSchema, INTERNAL_AI_ORGANIZATION_SCOPE, INTERNAL_AI_WINDOWS_VIKTOR_RUNNER_ID, normalizeApprovalGate, nowIso, runnerTask, requireAuthenticatedRunnerId, requireInternalAiRunner, sanitizeExecutionText } from "../../_lib/internal-ai.mjs";
+type Env = { DB?: any; HERMES_INTERNAL_AI_RUNNER_TOKEN?: string; HERMES_INTERNAL_AI_WINDOWS_RUNNER_TOKEN?: string };
 export async function onRequestPost({ request, env }: { request: Request; env: Env }) {
   const auth = requireInternalAiRunner(request, env); if (auth.response) return auth.response; if (!env.DB) return jsonResponse(503, { success: false, error: "database_not_configured" });
   await ensureInternalAiSchema(env.DB);
   let payload: any = {}; try { payload = await request.json(); } catch {}
-  const runnerId = normalizeInternalAiRunnerId(payload?.runner_id);
-  if (!runnerId) return jsonResponse(400, { success: false, error: "invalid_runner_id" });
+  const runnerIdentity = requireAuthenticatedRunnerId(auth, payload?.runner_id);
+  if (runnerIdentity.response) return runnerIdentity.response;
+  const runnerId = runnerIdentity.runner_id;
   const acceptTasks = payload?.accept_tasks !== false;
   if (runnerId === INTERNAL_AI_WINDOWS_VIKTOR_RUNNER_ID && acceptTasks) {
     return jsonResponse(409, { success: false, error: "windows_viktor_task_claim_not_enabled", runner_id: runnerId });
