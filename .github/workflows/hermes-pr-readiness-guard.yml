@@ -1,0 +1,51 @@
+name: Hermes PR Readiness Guard
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review, converted_to_draft]
+  pull_request_review:
+    types: [submitted, dismissed]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  readiness:
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == 'officeus-create/Hermes'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: main
+          persist-credentials: false
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+
+      - name: Validate readiness contract
+        run: node scripts/hae-pr-readiness-check.test.mjs
+
+      - name: Read current PR evidence
+        if: github.event_name != 'workflow_dispatch'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          set -euo pipefail
+          gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}" > "${RUNNER_TEMP}/pr.json"
+          base_sha="$(jq -r '.base.sha' "${RUNNER_TEMP}/pr.json")"
+          head_sha="$(jq -r '.head.sha' "${RUNNER_TEMP}/pr.json")"
+          gh api "repos/${GITHUB_REPOSITORY}/compare/${base_sha}...${head_sha}" > "${RUNNER_TEMP}/compare.json"
+          gh api --paginate "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}/reviews?per_page=100" --slurp 'add' > "${RUNNER_TEMP}/reviews.json"
+
+      - name: Enforce zero-behind + independent approval
+        if: github.event_name != 'workflow_dispatch'
+        env:
+          HAE_PR_JSON_PATH: ${{ runner.temp }}/pr.json
+          HAE_COMPARE_JSON_PATH: ${{ runner.temp }}/compare.json
+          HAE_REVIEWS_JSON_PATH: ${{ runner.temp }}/reviews.json
+        run: node scripts/hae-pr-readiness-check.mjs
