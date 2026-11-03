@@ -1,0 +1,53 @@
+---
+import { ArrowRight, Check, FileText, Users, ShieldCheck } from "@lucide/astro";
+interface Props { id?: string; heading?: string; }
+const { id = "carrier-service-options", heading = "Choose the support that fits your operation." } = Astro.props;
+const plans = [
+  { key: "essential", title: "Dispatch Support", rate: "6%", tagline: "A focused dispatch partner", features: ["Search for available loads and review equipment / lane fit", "Broker communication and rate negotiation within your instructions", "Load setup, dispatch paperwork and ordinary invoice follow-up"], button: "Select Dispatch Support" },
+  { key: "pro", title: "Full Partnership", rate: "8%", tagline: "Dispatch plus customer development", features: ["Everything in Dispatch Support, including current load research", "A dispatch / load-planning specialist and a second specialist focused on shipper and dealer relationship development, subject to agreed scope and availability", "Lane strategy, direct-customer research, operations support and reporting"], button: "Select Full Partnership" },
+  { key: "custom", title: "Carrier Proposal", rate: "Your %", tagline: "Propose your own terms", features: ["Specify the proposed percentage and support scope", "Hermes reviews the proposal and responds with written terms", "Any different agreed offer requires a matching signed Appendix A"], button: "Submit your proposal" }
+];
+---
+<section class="section carrier-plan-catalog" id={id} aria-labelledby={id + "-title"} data-carrier-three-options>
+  <div class="shell">
+    <div class="carrier-plan-heading">
+      <p class="eyebrow">Hermes Logistics · Carrier agreements</p>
+      <h2 id={id + "-title"}>{heading}</h2>
+      <p>Three clear options. The exact service fee is shown in your carrier-specific Appendix A before you sign. All services remain non-exclusive and subject to your approval of every load.</p>
+    </div>
+    <div class="carrier-plan-grid">
+      {plans.map((plan) => (
+        <article class:list={["carrier-plan", { "carrier-plan-featured": plan.key === "pro" }]} data-carrier-plan={plan.key}>
+          {plan.key === "pro" && <span class="carrier-plan-flag">Expanded support</span>}
+          <div class="carrier-plan-title"><h3>{plan.title}</h3><strong>{plan.rate}</strong></div>
+          <p class="carrier-plan-tagline">{plan.tagline}</p>
+          <ul>{plan.features.map((feature) => <li><Check size={17} aria-hidden="true"/><span>{feature}</span></li>)}</ul>
+          <a class="carrier-plan-action" href={`/logistics/carrier-onboarding/?plan=${plan.key}`} data-carrier-plan-cta={plan.key}>{plan.button} <ArrowRight size={17} aria-hidden="true" /></a>
+          {plan.key === "custom" && <small>Custom terms remain a proposal until approved in writing by Hermes and signed by both parties.</small>}
+        </article>
+      ))}
+    </div>
+    <div class="carrier-plan-footer">
+      <p><ShieldCheck size={18} aria-hidden="true"/> Freight payments go to the Carrier or its factor; Hermes has no authority to accept a load without Carrier approval. Direct shippers, rates or load volume are not guaranteed.</p>
+      <a href="/logistics/carrier-agreement/"><FileText size={17} aria-hidden="true"/> Review agreement terms</a>
+    </div>
+  </div>
+</section>
+<style>
+  .carrier-plan-catalog{padding:clamp(3rem,6vw,5.5rem) 0;background:#f5f7ff;color:#12234f}
+  .carrier-plan-heading{max-width:800px;margin-bottom:2rem}.carrier-plan-heading .eyebrow{color:#425bd0}.carrier-plan-heading h2{margin:.2rem 0 1rem;font-size:clamp(2rem,4.5vw,3.3rem);line-height:1.12;letter-spacing:-.035em}.carrier-plan-heading>p:last-child{color:#52617c;line-height:1.7}
+  .carrier-plan-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1.15rem;align-items:stretch}
+  .carrier-plan{display:flex;position:relative;flex-direction:column;gap:.9rem;padding:clamp(1.2rem,2.5vw,2rem);border:1px solid #dce3f8;border-radius:18px;background:#fff;box-shadow:0 10px 34px rgba(7,16,56,.05)}
+  .carrier-plan-featured{border:2px solid #557bea;box-shadow:0 15px 45px rgba(47,107,246,.13)}
+  .carrier-plan-flag{position:absolute;right:1rem;top:-.8rem;padding:.27rem .65rem;border-radius:999px;background:#315bd9;color:#fff;font-size:.73rem;font-weight:800}
+  .carrier-plan-title{display:flex;gap:.5rem;align-items:baseline;justify-content:space-between}.carrier-plan-title h3{margin:0;font-size:1.25rem}.carrier-plan-title strong{color:#2857dd;font-size:2rem;white-space:nowrap}
+  .carrier-plan-tagline{margin:0;color:#52617c;font-weight:700}.carrier-plan ul{display:grid;gap:.85rem;margin:.2rem 0 1rem;padding:0;list-style:none;flex:1}
+  .carrier-plan li{display:flex;align-items:flex-start;gap:.6rem;line-height:1.55;color:#2a395e;font-size:.93rem}.carrier-plan li svg{flex:none;margin-top:.22rem;color:#159675}
+  .carrier-plan-action{display:flex;align-items:center;justify-content:space-between;gap:.6rem;padding:.9rem 1rem;border-radius:10px;background:#183c91;color:#fff;text-decoration:none;font-weight:800;min-height:48px}
+  .carrier-plan-featured .carrier-plan-action{background:#315bd9}.carrier-plan-action:hover,.carrier-plan-action:focus-visible{background:#0d2b72;color:#fff}
+  .carrier-plan small{display:block;color:#62708c;line-height:1.5}
+  .carrier-plan-footer{display:flex;align-items:center;justify-content:space-between;gap:1.2rem;margin-top:1.3rem;color:#53607d}
+  .carrier-plan-footer p{display:flex;align-items:flex-start;gap:.55rem;max-width:770px;line-height:1.55;font-size:.88rem}.carrier-plan-footer svg{flex:none;margin-top:.15rem}
+  .carrier-plan-footer a{display:flex;align-items:center;gap:.35rem;font-weight:800;color:#244db6;white-space:nowrap}
+  @media(max-width:950px){.carrier-plan-grid{grid-template-columns:1fr}.carrier-plan{max-width:none}.carrier-plan-footer{flex-direction:column;align-items:flex-start}}
+</style>

@@ -11,7 +11,7 @@ test("carrier agreement entry uses the shared Hermes public system", async ({ pa
 
   await expect(page.locator("a[href='/logistics/carrier-onboarding/']").first()).toBeVisible();
   await expect(page.locator("a[href='/logistics/carrier-offer/']")).toBeVisible();
-  await expect(page.locator("a[href='/logistics/carrier-agreement/']")).toBeVisible();
+  await expect(page.locator("a[href='/logistics/carrier-agreement/']").first()).toBeVisible();
 
   const visual = await page.evaluate(() => {
     const header = document.querySelector<HTMLElement>(".site-header");

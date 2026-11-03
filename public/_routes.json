@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "include": [
+    "/*"
+  ],
+  "exclude": [
+    "/carrier",
+    "/carrier/*",
+    "/sign",
+    "/sign/*",
+    "/logistics/carrier-offer",
+    "/logistics/carrier-offer/*",
+    "/logistics/carrier-agreement",
+    "/logistics/carrier-agreement/*",
+    "/logistics/carrier-onboarding",
+    "/logistics/carrier-onboarding/*",
+    "/contracts/*",
+    "/logistics/car-hauler-loads",
+    "/logistics/car-hauler-loads/*",
+    "/services/website-redesign",
+    "/services/website-redesign/*",
+    "/services/seo-for-independent-auto-dealers",
+    "/services/seo-for-independent-auto-dealers/*",
+    "/services/hermes-connect/repair-shops/booking",
+    "/services/hermes-connect/repair-shops/booking/*"
+  ]
+}
