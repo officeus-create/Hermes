@@ -30,6 +30,16 @@ const fixtures = {
     { error_id: "ERR-1", status: "FIXED", owner: "technology", updated_at: "2026-10-24T10:00:00Z", evidence_ref: "github://issue/1", production_verified: true },
     { error_id: "ERR-2", status: "OPEN", owner: "", updated_at: "2026-10-01T10:00:00Z", evidence_ref: null, production_verified: false },
   ] },
+  "website.route.audit": { pages: [
+    { url: "https://hermeslogisticsus.com/", final_url: "https://hermeslogisticsus.com/", status: 200, canonical: "https://hermeslogisticsus.com/", indexable: true },
+    { url: "https://hermeslogisticsus.com/old/", final_url: "https://hermeslogisticsus.com/new/", status: 200, canonical: "https://hermeslogisticsus.com/new/", indexable: true },
+  ] },
+  "github.ecosystem.audit": { observed_at: "2026-10-24T18:00:00Z", coverage_complete: true, source_status: "VERIFIED", adapter_receipt_id: "github:receipt:1", findings: [
+    { finding_id: "G-1", severity: "P1", status: "OPEN", owner: "technology", evidence_ref: "github://pull/1", regression_key: "stale-green-ci" },
+    { finding_id: "G-2", severity: "P1", status: "OPEN", owner: "technology", evidence_ref: "github://pull/2", regression_key: "stale-green-ci" },
+  ] },
+  "cloudflare.runtime.audit": { observed_at: "2026-10-24T18:00:00Z", coverage_complete: false, source_status: "ACCESS_GAP", adapter_receipt_id: "cloudflare:attempt:1", findings: [] },
+  "drive.governance.audit": { observed_at: "2026-10-24T18:00:00Z", coverage_complete: true, source_status: "VERIFIED", adapter_receipt_id: "drive:receipt:1", findings: [] },
   "market.car-hauling.snapshot.evaluate": { current: { observed_at: "2026-10-24T18:00:00Z", dealer_demand_index: 52, shipper_demand_index: null, carrier_availability_index: 61, rate_cents_per_mile: 210 }, previous: { observed_at: "2026-10-17T18:00:00Z", dealer_demand_index: 50, shipper_demand_index: null, carrier_availability_index: 60, rate_cents_per_mile: 205 } },
   "marketing.mentions.audit": { observed_at: "2026-10-24T18:00:00Z", mentions: [
     { mention_id: "M-1", fingerprint: hash, source_url: "https://example.com/hermes", classification: "UNKNOWN", first_seen_at: "2026-10-24T17:00:00Z" },
@@ -65,12 +75,12 @@ const fixtures = {
   },
 };
 
-assert.equal(ZERO_TOKEN_PLUGIN_TASK_CONTRACTS.length, 11);
+assert.equal(ZERO_TOKEN_PLUGIN_TASK_CONTRACTS.length, 15);
 for (const contract of ZERO_TOKEN_PLUGIN_TASK_CONTRACTS) {
   assert.equal(contract.semantic_required, false);
   assert.equal(contract.permission_class, "READ_ONLY");
   assert.equal(contract.runtime_config.max_cost_usd, 0);
-  if (!["ai.gateway.readiness.audit", "academy.english.practice.build", "hae.self.improvement.audit"].includes(contract.job_type)) {
+  if (!["ai.gateway.readiness.audit", "academy.english.practice.build", "hae.self.improvement.audit", "website.route.audit"].includes(contract.job_type)) {
     assert.equal(contract.runtime_config.scheduled, false, "External-source tasks must wait for their authorized plugin adapter");
   }
   validateZeroTokenPluginTaskInput(contract.job_type, fixtures[contract.job_type]);
@@ -82,6 +92,10 @@ assert.equal(runZeroTokenPluginTask("dispatch.daily.closeout.audit", fixtures["d
 assert.equal(runZeroTokenPluginTask("technology.release.radar", fixtures["technology.release.radar"]).security_candidate_count, 1);
 assert.equal(runZeroTokenPluginTask("ai.gateway.readiness.audit", fixtures["ai.gateway.readiness.audit"]).readiness, "READY");
 assert.equal(runZeroTokenPluginTask("growth.error.closure.audit", fixtures["growth.error.closure.audit"]).closure_candidate_count, 1);
+assert.equal(runZeroTokenPluginTask("website.route.audit", fixtures["website.route.audit"]).redirect_drift_count, 1);
+assert.equal(runZeroTokenPluginTask("github.ecosystem.audit", fixtures["github.ecosystem.audit"]).repeated_regression_count, 1);
+assert.equal(runZeroTokenPluginTask("cloudflare.runtime.audit", fixtures["cloudflare.runtime.audit"]).access_gap, true);
+assert.equal(runZeroTokenPluginTask("drive.governance.audit", fixtures["drive.governance.audit"]).open_count, 0);
 assert.equal(runZeroTokenPluginTask("market.car-hauling.snapshot.evaluate", fixtures["market.car-hauling.snapshot.evaluate"]).unknown_metric_count, 1);
 assert.equal(runZeroTokenPluginTask("marketing.mentions.audit", fixtures["marketing.mentions.audit"]).raw_page_content_stored, false);
 assert.equal(runZeroTokenPluginTask("hae.self.improvement.audit", fixtures["hae.self.improvement.audit"]).next_action, "HOLD_REPAIR");
@@ -99,6 +113,7 @@ assert.equal(ZERO_TOKEN_PLUGIN_TASK_CONTRACTS.find((item) => item.job_type === "
 assert.throws(() => validateZeroTokenPluginTaskInput("dispatch.daily.closeout.audit", { ...fixtures["dispatch.daily.closeout.audit"], coverage_complete: "yes" }), /dispatch_coverage_complete_required/);
 assert.throws(() => validateZeroTokenPluginTaskInput("knowledge.evidence.audit", { observed_at: "2026-10-24T18:00:00Z", evidence: [{ evidence_id: "E", fingerprint: hash, source_ref: "gmail://raw/body", status: "VERIFIED", observed_at: "2026-10-24T17:00:00Z" }] }), /knowledge_source_ref_invalid/);
 assert.throws(() => validateZeroTokenPluginTaskInput("marketing.mentions.audit", { observed_at: "2026-10-24T18:00:00Z", mentions: [{ mention_id: "M", fingerprint: hash, source_url: "javascript:alert(1)", classification: "SOCIAL", first_seen_at: "2026-10-24T17:00:00Z" }] }), /mention_invalid/);
+assert.throws(() => validateZeroTokenPluginTaskInput("cloudflare.runtime.audit", { ...fixtures["cloudflare.runtime.audit"], coverage_complete: true }), /cloudflare_coverage_status_conflict/);
 assert.equal(new Set(CHATGPT_TASK_MIGRATIONS.map((item) => item.task_key)).size, CHATGPT_TASK_MIGRATIONS.length);
 const migration = taskMigrationSnapshot(ZERO_TOKEN_PLUGIN_TASK_CONTRACTS.map((item) => item.job_type).concat([
   "search.snapshot.evaluate",
@@ -126,4 +141,4 @@ assert.match(worker, /idempotency_key: idempotencyKey/);
 assert.match(worker, /!contract\.semantic_required && roleContractScheduleEligible/);
 assert.match(worker, /url\.pathname === "\/v1\/schedule-migrations"/);
 
-console.log("HAE zero-token plugin task migration PASS: 14 recovered schedules, 11 deterministic plugin capabilities, no ChatGPT runtime dependency");
+console.log("HAE zero-token plugin task migration PASS: 14 recovered schedules, 15 deterministic plugin capabilities, no ChatGPT runtime dependency");
