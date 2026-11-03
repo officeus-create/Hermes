@@ -319,8 +319,9 @@ export const ROLE_CONTRACTS = Object.freeze([
       "classify dependencies and writer conflicts",
       "preserve UNKNOWN and incomplete coverage",
       "identify bounded READ_ONLY routing candidates without executing them",
+      "record one deterministic route decision per work item with selected role/version or fail-closed omission reason",
     ],
-    output_schema: "coverage + ready/blocked/stale/conflict/routing candidate ids",
+    output_schema: "coverage + ready/blocked/stale/conflict ids + per-work-item routing decisions",
     kpi: ["unfinished_count", "ready_count", "blocked_count", "writer_conflict_count", "unknown_count"],
     owner_gate: "authorized_source_adapter_required",
     readback: "result_json bound to source_kind and snapshot_id",
@@ -861,7 +862,7 @@ export function runRoleContractPrimitive(jobType, payload, observedAt = new Date
   if (jobType === "logistics.source.freshness.audit") return evaluateLogistics(payload, observedAt);
   if (jobType === "search.defect.prioritize" || jobType === "hae.self.patch.propose") throw new Error("semantic_job_requires_free_ai");
   if (jobType === "work.portfolio.reconcile") {
-    return reconcileWorkPortfolioSnapshot(payload, ROLE_CONTRACT_JOB_TYPES);
+    return reconcileWorkPortfolioSnapshot(payload, ROLE_CONTRACT_JOB_TYPES, ROLE_CONTRACTS);
   }
   if (isZeroTokenPluginTask(jobType)) return runZeroTokenPluginTask(jobType, payload);
   throw new Error("role_contract_job_type_not_allowed");
