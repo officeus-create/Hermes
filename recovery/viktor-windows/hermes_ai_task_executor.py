@@ -113,7 +113,7 @@ def issue_number(task):
  return int(n) if isinstance(n,int) or (isinstance(n,str) and n.isdigit()) else None
 
 def plugin_use_receipt(task):
- inventory=load_json(ROOT/"HERMES_PRIVATE_PLUGIN_INVENTORY_20261028.json",{})
+ inventory=load_json(PLUGIN_INVENTORY_CURRENT,{})
  registry=load_json(ROOT/"skill_registry_v4.json",{})
  by_name={str(p.get("name")):p for p in inventory.get("plugins",[]) if isinstance(p,dict)}
  skill_ids={str(x.get("id")) for x in registry.get("skills",[]) if isinstance(x,dict)}
