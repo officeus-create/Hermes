@@ -86,13 +86,13 @@ export async function onRequestPost({request,env}:{request:Request;env:Env}){
   const findings=new Map<string,{finding_id:string;category:string;severity:string;status:string}>();
   let coverageComplete=true;
   for(const source of unique){
-    const result=await readBusinessSocialDriveGovernanceSnapshot(
+    const result:any=await readBusinessSocialDriveGovernanceSnapshot(
       env.DB,env,{business_key:source.business_key},owner.specialist.id,source.source_url,{observedAt}
     );
-    if(!result.ok){
+    if(!result||result.ok!==true||!result.snapshot){
       return jsonResponse(409,{
         success:false,
-        error:clean(result.error_class,120)||"drive_audit_source_unavailable",
+        error:clean(result?.error_class,120)||"drive_audit_source_unavailable",
         provider_write_performed:false,
       },headers);
     }
