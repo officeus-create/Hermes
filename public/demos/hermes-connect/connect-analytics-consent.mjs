@@ -143,7 +143,8 @@ function clearAnalyticsCookies() {
   for (const name of names) document.cookie = `${name}=; Max-Age=0; Path=/; SameSite=Lax`;
 }
 function disableAnalytics() {
-  if (typeof window.gtag === "function") window.gtag("consent", "update", { analytics_storage: "denied", ad_storage: "denied", ad_user_data: "denied", ad_personalization: "denied" });
+  // Hard-stop GA transport before teardown. Do not call gtag after withdrawal:
+  // an already-loaded GA session may flush queued enhanced-measurement traffic.
   window[`ga-disable-${MEASUREMENT_ID}`] = true;
   analyticsEnabled = false;
   window.dataLayer = createDiscardingLayer();
@@ -170,7 +171,7 @@ function renderConsentControls() {
   const state = document.createElement("span"); state.className = "connect-analytics-state";
   const refreshState = () => { const value = readConsent(); state.textContent = value === "granted" ? "Analytics: allowed" : value === "denied" ? "Analytics: declined" : "Analytics: not chosen"; };
   allow.addEventListener("click", () => { writeConsent("granted"); enableAnalytics(); refreshState(); panel.hidden = true; manage.focus(); });
-  decline.addEventListener("click", () => { writeConsent("denied"); disableAnalytics(); refreshState(); panel.hidden = true; manage.focus(); });
+  decline.addEventListener("click", () => { const wasGranted = readConsent() === "granted"; disableAnalytics(); writeConsent("denied"); refreshState(); if (wasGranted) { window.location.reload(); return; } panel.hidden = true; manage.focus(); });
   manage.addEventListener("click", () => { panel.hidden = !panel.hidden; if (!panel.hidden) allow.focus(); });
   panel.append(heading, copy, details, actions, state); refreshState(); panel.hidden = readConsent() !== "unknown"; document.body.append(panel, manage);
 }
