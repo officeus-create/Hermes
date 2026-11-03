@@ -1,11 +1,11 @@
 // Exact authenticated Plugin Creator readback instant, not the UTC date at midnight.
 // A date-only midnight surrogate makes a fresh late-UTC readback falsely stale after rollover.
 // This is bounded release evidence, NOT proof of runtime loading or automatic refreshing.
-const OBSERVED_AT = "2026-11-03T07:23:00.000Z";
+const OBSERVED_AT = "2026-11-03T09:36:00.000Z";
 
 export const PLUGIN_RUNTIME_REGISTRY = Object.freeze({
   "hermes-automatic-engineer": Object.freeze({ version: "0.1.36", observed_at: OBSERVED_AT }),
-  "hermes-agent-coordinator": Object.freeze({ version: "0.1.90", observed_at: OBSERVED_AT }),
+  "hermes-agent-coordinator": Object.freeze({ version: "0.1.91", observed_at: OBSERVED_AT }),
   "hermes-technology-developer": Object.freeze({ version: "0.1.61", observed_at: OBSERVED_AT }),
   "hermes-qa-evidence-auditor": Object.freeze({ version: "0.1.24", observed_at: OBSERVED_AT }),
   "hermes-knowledge-curator": Object.freeze({ version: "0.1.95", observed_at: OBSERVED_AT }),
@@ -13,10 +13,10 @@ export const PLUGIN_RUNTIME_REGISTRY = Object.freeze({
   "hermes-search-growth": Object.freeze({ version: "0.1.16", observed_at: OBSERVED_AT }),
   "hermes-academy": Object.freeze({ version: "0.1.14", observed_at: OBSERVED_AT }),
   "hermes-dispatch-os": Object.freeze({ version: "0.1.26", observed_at: OBSERVED_AT }),
-  "hermes-github-auditor": Object.freeze({ version: "0.1.2", observed_at: OBSERVED_AT }),
-  "hermes-cloudflare-auditor": Object.freeze({ version: "0.1.2", observed_at: OBSERVED_AT }),
-  "hermes-drive-auditor": Object.freeze({ version: "0.1.2", observed_at: OBSERVED_AT }),
-  "hermes-website-auditor": Object.freeze({ version: "0.1.2", observed_at: OBSERVED_AT }),
+  "hermes-github-auditor": Object.freeze({ version: "0.1.3", observed_at: OBSERVED_AT }),
+  "hermes-cloudflare-auditor": Object.freeze({ version: "0.1.3", observed_at: OBSERVED_AT }),
+  "hermes-drive-auditor": Object.freeze({ version: "0.1.3", observed_at: OBSERVED_AT }),
+  "hermes-website-auditor": Object.freeze({ version: "0.1.3", observed_at: OBSERVED_AT }),
 });
 
 export function pluginRuntimeVersion(roleId) {
