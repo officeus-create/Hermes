@@ -19,6 +19,9 @@ export function evaluatePullRequestReadiness(input = {}) {
     const state = clean(review?.state, 40).toUpperCase();
     const commitId = clean(review?.commit_id, 40).toLowerCase();
     if (!reviewer || reviewer === author) continue;
+    // COMMENTED reviews add discussion but do not revoke an existing approval.
+    // Only decision-bearing states may replace the reviewer's prior decision.
+    if (!["APPROVED", "CHANGES_REQUESTED", "DISMISSED"].includes(state)) continue;
     latestByReviewer.set(reviewer, { state, commit_id: commitId });
   }
 
