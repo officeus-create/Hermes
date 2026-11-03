@@ -261,7 +261,7 @@ const ccIdentity={
   contract_version:ccRole.contract_version,sha256:ccSha,
 };
 const ccJob={
-  job_id:ccJobId,job_type:ccRole.job_type,idempotency_key:ccBinding.idempotency_key,
+  job_id:ccJobId,job_type:ccRole.job_type,business_lane:ccRole.business_lane,idempotency_key:ccBinding.idempotency_key,
   state:"SUCCEEDED",payload_json:JSON.stringify({_role_contract:ccIdentity}),
   result_json:JSON.stringify({
     capability:ccRole.job_type,external_write:false,role_contract:ccIdentity,
@@ -289,6 +289,7 @@ const ccDenials=[
   [{workItem:{...ccWorkItem,id:"hcwi_98765432-1234-1234-1234-123456789abc"}},"CANONICAL_JOB_BINDING_UNVERIFIED"],
   [{haeJob:{...ccJob,state:"RUNNING"}},"NO_SUCCEEDED_HAE_JOB"],
   [{haeJob:{...ccJob,job_type:"another.job"}},"CANONICAL_JOB_IDENTITY_MISMATCH"],
+  [{haeJob:{...ccJob,business_lane:"wrong-lane"}},"CANONICAL_JOB_IDENTITY_MISMATCH"],
   [{haeJob:{...ccJob,result_json:JSON.stringify({capability:ccRole.job_type,external_write:false,role_contract:{...ccIdentity,plugin_version:"0.0.0"}})}},"RECEIPT_ROLE_CONTRACT_MISMATCH"],
   [{haeJob:{...ccJob,result_json:JSON.stringify({capability:ccRole.job_type,external_write:true,role_contract:ccIdentity})}},"RECEIPT_PERMISSION_OR_CAPABILITY_MISMATCH"],
   [{jobEvents:[]},"DURABLE_SUCCESS_EVENT_UNVERIFIED"],
