@@ -89,9 +89,21 @@ export function normalizeWorkPortfolioSnapshot(input = {}) {
   };
 }
 
-export function reconcileWorkPortfolioSnapshot(input = {}, allowedReadOnlyJobTypes = []) {
+export function reconcileWorkPortfolioSnapshot(input = {}, allowedReadOnlyJobTypes = [], routeContracts = []) {
   const snapshot = normalizeWorkPortfolioSnapshot(input);
   const allowed = new Set(allowedReadOnlyJobTypes);
+  const contracts = new Map(
+    (Array.isArray(routeContracts) ? routeContracts : [])
+      .filter((item) => item && typeof item === "object" && typeof item.job_type === "string")
+      .map((item) => [item.job_type, {
+        job_type: item.job_type,
+        role_id: clean(item.role_id, 120) || null,
+        plugin_version: clean(item.plugin_version, 80) || null,
+        permission_class: clean(item.permission_class, 40).toUpperCase() || "UNKNOWN",
+        semantic_required: item.semantic_required === true,
+        max_cost_usd: Number(item?.runtime_config?.max_cost_usd ?? 0),
+      }]),
+  );
   const observedMs = Date.parse(snapshot.observed_at);
   const staleCutoff = observedMs - 7 * 24 * 60 * 60 * 1000;
   const byId = new Map();
@@ -140,6 +152,57 @@ export function reconcileWorkPortfolioSnapshot(input = {}, allowedReadOnlyJobTyp
     }
   }
 
+  const routingDecisions = [];
+  for (const task of byId.values()) {
+    const contract = task.capability_job_type ? contracts.get(task.capability_job_type) : null;
+    let decision = "OMIT";
+    let reason = "NOT_READY";
+    if (duplicates.has(task.work_id)) reason = "DUPLICATE_WORK_ID";
+    else if (writerConflicts.has(task.work_id)) reason = "WRITER_CONFLICT";
+    else if (task.status === "BLOCKED") reason = "TASK_BLOCKED";
+    else if (task.status === "UNKNOWN") reason = "TASK_STATUS_UNKNOWN";
+    else if (task.status === "DONE") reason = "TASK_ALREADY_DONE";
+    else if (task.dependencies.some((dependency) => byId.get(dependency)?.status !== "DONE")) reason = "DEPENDENCY_NOT_DONE";
+    else if (task.status !== "TODO") reason = "TASK_NOT_TODO";
+    else if (!snapshot.coverage_complete) {
+      decision = "HOLD";
+      reason = "PARTIAL_COVERAGE";
+    } else if (task.permission_class !== "READ_ONLY") {
+      decision = "HOLD";
+      reason = "PERMISSION_NOT_READ_ONLY";
+    } else if (!task.capability_job_type) {
+      decision = "HOLD";
+      reason = "CAPABILITY_JOB_TYPE_MISSING";
+    } else if (task.capability_job_type === "work.portfolio.reconcile") {
+      decision = "HOLD";
+      reason = "COORDINATOR_RECURSION_DENIED";
+    } else if (!allowed.has(task.capability_job_type) || !contract) {
+      decision = "HOLD";
+      reason = "ROLE_CONTRACT_NOT_ALLOWED";
+    } else if (contract.permission_class !== "READ_ONLY") {
+      decision = "HOLD";
+      reason = "ROLE_PERMISSION_NOT_READ_ONLY";
+    } else {
+      decision = "CANDIDATE";
+      reason = "MATCHED_READ_ONLY_ROLE";
+    }
+
+    const selected = decision === "CANDIDATE" ? contract : null;
+    const cost = selected && Number.isFinite(selected.max_cost_usd) ? selected.max_cost_usd : null;
+    routingDecisions.push({
+      work_id: task.work_id,
+      route_decision: decision,
+      route_reason: reason,
+      capability_job_type: task.capability_job_type,
+      selected_role_id: selected?.role_id || null,
+      selected_plugin_version: selected?.plugin_version || null,
+      execution_permission: selected ? "READ_ONLY_CANDIDATE_ONLY" : "NONE",
+      semantic_required: selected?.semantic_required ?? null,
+      model_cost_usd: selected ? Math.max(0, cost ?? 0) : null,
+      evidence_id: `HAE-ROUTE:${snapshot.snapshot_id}:${task.work_id}`,
+    });
+  }
+
   return {
     source_kind: snapshot.source_kind,
     snapshot_id: snapshot.snapshot_id,
@@ -167,6 +230,7 @@ export function reconcileWorkPortfolioSnapshot(input = {}, allowedReadOnlyJobTyp
     writer_conflict_work_ids: bounded([...writerConflicts]),
     unresolved_dependency_work_ids: bounded(unresolvedDependencies),
     routing_candidate_work_ids: bounded(routingCandidates),
+    routing_decisions: bounded(routingDecisions, MAX_TASKS),
     automatic_execution_performed: false,
     raw_chat_history_persisted: false,
   };
