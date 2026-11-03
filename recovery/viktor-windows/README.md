@@ -23,6 +23,7 @@ A local source scan on 2026-11-02 checked 52 source/config files for common lite
 
 ## Current truth gates
 - Windows VIKTOR is local-live but session-guarded; the current watchdog scheduled task uses an interactive logon token.
+- `hermes_internal_ai_windows_heartbeat.py` is heartbeat-only and requires a dedicated `HERMES_INTERNAL_AI_WINDOWS_RUNNER_TOKEN`; the Mac runner token must never be reused for the Windows identity.
 - `hermes_hae_windows_node.py` is dormant/fail-closed until reviewed server support, scoped API/token configuration and an authorized READ_ONLY canary.
 - Development regression can be green without proving independent generalization.
 - The canonical production HAE remains the Cloudflare/D1/Queue runtime.
