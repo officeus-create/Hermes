@@ -45,7 +45,7 @@ export async function onRequestPatch({request,env,params}:{request:Request;env:E
       const pluginExecution=await readCommandCenterHaeExecution(env,row,route);
       return jsonResponse(200,{success:true,work_item:publicWorkItem(row),plugin_execution:pluginExecution},headers);
     }
-    const pluginExecution=await submitCommandCenterHaeExecution(env,row,route,linkedTaskId,now);
+    const pluginExecution:any=await submitCommandCenterHaeExecution(env,row,route,linkedTaskId,now);
     if(!pluginExecution?.ok)return jsonResponse(409,{
       success:false,error:pluginExecution?.reason||"plugin_execution_unavailable",
       work_item:publicWorkItem(row),plugin_execution:pluginExecution,
@@ -118,7 +118,7 @@ export async function onRequestPatch({request,env,params}:{request:Request;env:E
     row=await getItem(env.DB,id);
     const task=await env.DB.prepare("SELECT * FROM hermes_internal_ai_tasks WHERE id=? AND organization_scope=?").bind(taskId,INTERNAL_AI_ORGANIZATION_SCOPE).first();
     const persistedRoute=readWorkItemPluginRoute(row);
-    let pluginExecution=persistedRoute
+    let pluginExecution:any=persistedRoute
       ?await submitCommandCenterHaeExecution(env,row,persistedRoute,taskId,now)
       :{ok:false,state:"PLUGIN_EXECUTION_UNAVAILABLE",reason:"plugin_route_missing"};
     if(pluginExecution?.ok&&pluginExecution.job_id){
