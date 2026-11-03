@@ -135,6 +135,11 @@ $watchdogUnattendedReady=$watchdogTaskLogonType -in @("S4U","ServiceAccount","Pa
 if(-not $watchdogUnattendedReady){
   L ("UNATTENDED_RUNTIME_HOLD watchdog_task_logon_type={0}" -f $watchdogTaskLogonType)
 }
+$remoteAgentStartupPath="C:\Users\user\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\HermesRemoteAgent.cmd"
+$remoteAgentStartupConfigured=Test-Path -LiteralPath $remoteAgentStartupPath
+$remoteAgentRaw=@(Get-CimInstance Win32_Process -ErrorAction SilentlyContinue | Where-Object {
+  $_.CommandLine -and ($_.CommandLine -match 'desktop-commander\s+remote' -or $_.CommandLine -match '@wonderwhy-er/desktop-commander@0\.3\.1\s+remote')
+}).Count
 $receipt=[ordered]@{
   at=(Get-Date).ToString("o")
   dashboard_http=$http
@@ -162,6 +167,9 @@ $receipt=[ordered]@{
   plugin_provider_snapshot_fresh=$pluginProviderSnapshotFresh
   watchdog_task_logon_type=$watchdogTaskLogonType
   watchdog_unattended_ready=$watchdogUnattendedReady
+  remote_agent_startup_configured=$remoteAgentStartupConfigured
+  remote_agent_processes_raw=$remoteAgentRaw
+  remote_agent_pinned_version="0.3.1"
   external_bind="127.0.0.1 only"
   production_write_authorized=$false
 }
