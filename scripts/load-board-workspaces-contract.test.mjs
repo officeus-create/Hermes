@@ -75,6 +75,10 @@ assert.match(scripted.admin,/effective_agreement_state_required/);
 assert.match(scripted.admin,/signed_agreement_authority_insurance_source_rights_evidence_required/);
 assert.match(scripted.admin,/no_automatic_continuation_confirmation_required/);
 assert.match(scripted.admin,/trial_not_current_or_not_14_days/);
+assert.match(scripted.admin,/trialStartDate>now\.slice/,"Future trials must not grant early access.");
+assert.match(scripted.admin,/effectiveMs>Date\.now/,"Future ongoing effective timestamps must fail closed.");
+assert.match(scripted.workspaceLib,/trial_start_date\)\<=today/,"Runtime trial access must not begin before the trial start date.");
+assert.match(scripted.workspaceLib,/effectiveAtMs\<=now\.getTime/,"Runtime ongoing access must not begin before the effective timestamp.");
 assert.match(scripted.admin,/CARRIER_REVOKED/);
 assert.match(scripted.admin,/effective_carrier_agreement_and_verification_required/);
 assert.doesNotMatch(scripted.admin,/agreementState.*=\s*["']ONGOING_EFFECTIVE["']/,
