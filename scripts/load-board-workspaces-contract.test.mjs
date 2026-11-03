@@ -83,9 +83,9 @@ assert.match(scripted.admin,/CARRIER_REVOKED/);
 assert.match(scripted.admin,/effective_carrier_agreement_and_verification_required/);
 assert.doesNotMatch(scripted.admin,/agreementState.*=\s*["']ONGOING_EFFECTIVE["']/,
   "No automatic post-trial conversion may be encoded.");
-assert.match(scripted.access,/entitlement==='active'/);
+assert.match(scripted.access,/authorizedCarrier/);
 for(const key of ["active","opportunities","plan"]){
- assert.match(scripted[key],/specialistHasLoadBoardAccess/);
+ assert.match(scripted[key],/authorizedCarrier/);
  assert.match(scripted[key],/redistribution_permission/);
  assert.match(scripted[key],/carrier_only/);
 }
