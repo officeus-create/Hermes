@@ -39,6 +39,35 @@ const trustedProbe=summarizeHaeAudits(full.map((row,index)=>index===3?{
 }:row),now);
 assert.equal(trustedProbe.auditors.find((x)=>x.job_type==="audit.website.journey")?.coverage,"COMPLETE");
 
+const trustedOnlyPrivate=summarizeHaeAudits(full.map((row,index)=>index===0?{
+  ...row,
+  result_json:result({capability:row.job_type,observed_at:"2026-11-03T07:30:00.000Z",result:{
+    observed_at:"2026-11-03T07:29:00.000Z",coverage_complete:true,
+    source_authenticated:false,source_trusted:true,source_verified:true,
+    open_count:0,p0_count:0,p1_count:0,
+  }}),
+}:row),now);
+assert.equal(
+  trustedOnlyPrivate.auditors.find((x)=>x.job_type==="audit.github.snapshot")?.coverage,
+  "PARTIAL",
+  "private auditors must not become COMPLETE from trusted-only provenance",
+);
+
+const previousP0={
+  ...full[0],
+  updated_at:"2026-11-03T07:20:00.000Z",
+  completed_at:"2026-11-03T07:20:00.000Z",
+  result_json:result({capability:full[0].job_type,result:{
+    observed_at:"2026-11-03T07:19:00.000Z",coverage_complete:true,
+    source_authenticated:true,source_trusted:false,
+    open_count:1,p0_count:1,p1_count:0,
+  }}),
+};
+const newerRunning={...full[0],state:"RUNNING",updated_at:"2026-11-03T07:40:00.000Z",completed_at:null,result_json:null};
+const runningDoesNotMask=summarizeHaeAudits([newerRunning,previousP0,...full.slice(1)],now);
+assert.equal(runningDoesNotMask.status,"P0");
+assert.equal(runningDoesNotMask.p0_count,1);
+
 const failedExecution=summarizeHaeAudits(full.map((row,index)=>index===2?{...row,state:"FAILED",result_json:null}:row),now);
 assert.equal(failedExecution.status,"P1");
 assert.equal(failedExecution.execution_failed_count,1);
