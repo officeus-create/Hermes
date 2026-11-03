@@ -40,8 +40,11 @@ export function summarizeHaeAudits(rows = [], nowIso = new Date().toISOString(),
       coverage: "NOT_RUN", open_count: 0, p0_count: 0, p1_count: 0,
       observed_at: null, stale: true,
     };
-    const result = parseResult(row.result_json);
-    const observedAt = safeIso(result?.observed_at) || safeIso(row.completed_at) || safeIso(row.updated_at);
+    const envelope = parseResult(row.result_json);
+    const result = envelope?.result && typeof envelope.result === "object" && !Array.isArray(envelope.result)
+      ? envelope.result
+      : null;
+    const observedAt = safeIso(result?.observed_at) || safeIso(envelope?.observed_at) || safeIso(row.completed_at) || safeIso(row.updated_at);
     const stale = !observedAt || (now - Date.parse(observedAt)) > staleHours * 3600000 || (now - Date.parse(observedAt)) < 0;
     const coverage = result?.coverage_complete === true && result?.source_authenticated === true
       ? "COMPLETE"
