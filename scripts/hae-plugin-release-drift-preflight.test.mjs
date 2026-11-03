@@ -18,10 +18,10 @@ assert.equal(current.readback_fresh,true);
 assert.equal(current.version_mismatches.length,0);
 assert.equal(current.registered_roles,13);
 const requiredAuditors=new Map([
- ["hermes-github-auditor","0.1.1"],
- ["hermes-cloudflare-auditor","0.1.1"],
- ["hermes-drive-auditor","0.1.1"],
- ["hermes-website-auditor","0.1.1"],
+ ["hermes-github-auditor","0.1.2"],
+ ["hermes-cloudflare-auditor","0.1.2"],
+ ["hermes-drive-auditor","0.1.2"],
+ ["hermes-website-auditor","0.1.2"],
 ]);
 for(const [roleId,version] of requiredAuditors){
  const entry=known.find((item)=>item.role_id===roleId);
