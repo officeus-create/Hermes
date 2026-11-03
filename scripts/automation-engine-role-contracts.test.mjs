@@ -94,6 +94,33 @@ const unauthenticatedAudit = runRoleContractPrimitive("audit.website.journey", {
 assert.equal(unauthenticatedAudit.coverage_complete, false);
 assert.equal(unauthenticatedAudit.source_verified, false);
 
+for (const authenticatedAuditJob of [
+  "audit.github.snapshot",
+  "audit.cloudflare.runtime",
+  "audit.drive.truth",
+]) {
+  assert.throws(
+    () => runRoleContractPrimitive(authenticatedAuditJob, {
+      observed_at: "2026-11-03T08:00:00.000Z",
+      coverage_complete: true,
+      source_authenticated: false,
+      source_trusted: true,
+      findings: [],
+    }),
+    /audit_source_authentication_required/,
+    `${authenticatedAuditJob} must reject trusted-only spoofing`,
+  );
+  const authenticatedAudit = runRoleContractPrimitive(authenticatedAuditJob, {
+    observed_at: "2026-11-03T08:00:00.000Z",
+    coverage_complete: true,
+    source_authenticated: true,
+    source_trusted: false,
+    findings: [],
+  });
+  assert.equal(authenticatedAudit.coverage_complete, true);
+  assert.equal(authenticatedAudit.source_verified, true);
+}
+
 const searchContract = roleContractForJobType("search.snapshot.evaluate");
 assert.ok(searchContract.runtime_config.target_urls.length >= 3);
 assert.ok(searchContract.runtime_config.target_urls.every((url) => url.startsWith("https://hermeslogisticsus.com/")));
