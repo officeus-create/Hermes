@@ -3,6 +3,7 @@ import { DatabaseSync } from "node:sqlite";
 import { ensureInternalAiSchema } from "../functions/api/_lib/internal-ai.mjs";
 import { onRequestGet as listProcesses, onRequestPost as createProcess } from "../functions/api/internal-command-center/processes.ts";
 import { onRequestPatch as mutateProcess } from "../functions/api/internal-command-center/processes/[id].ts";
+import { publicHaeAuditSummary, haeAuditAttentionRequired } from "../src/lib/hae-process-control.mjs";
 
 class Statement {
   constructor(statement, args = []) { this.statement = statement; this.args = args; }
@@ -229,6 +230,14 @@ assert.deepEqual(new Set(events.map((event) => event.event_type)), new Set([
   "process.paused",
 ]));
 assert(events.every((event) => event.actor_specialist_id === "owner"));
+
+const blockedSummary = publicHaeAuditSummary(JSON.stringify({
+  capability: "hae.self.improvement.audit",
+  result: { blocked_finding_count: 1, routing_blocked_reason: "FINDING_BLOCKED" },
+}), "hae.self.improvement.audit");
+assert.equal(blockedSummary.blocked_finding_count, 1);
+assert.equal(blockedSummary.routing_blocked_reason, "FINDING_BLOCKED");
+assert.equal(haeAuditAttentionRequired({ last_job_state: "SUCCEEDED" }, blockedSummary), true);
 
 const anonymous = await listProcesses({ request: new Request("https://example.test/api/internal-command-center/processes"), env: { DB } });
 assert.equal(anonymous.status, 401);
