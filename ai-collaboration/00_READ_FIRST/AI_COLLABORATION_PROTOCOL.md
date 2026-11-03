@@ -33,6 +33,64 @@ not_reviewed:
 handoff_to: next owner or NONE
 ```
 
+## Agent Work Passport — PR, commit and cross-chat attribution (owner request 2026-10-28)
+
+This section implements the existing identity opening block and handoff journal; it is **not** another task board, identity store, memory, scheduler, or authorization system. The canonical work item stays its existing GitHub issue/PR or approved source; One Brain keeps durable approved knowledge; `docs/AI_HANDOFF.md` remains the append-only historical log.
+
+**At the start of material work** (a PR, significant PR review, cross-agent decision or handoff), attach a compact **Agent Work Passport** to the PR description or relevant existing issue/PR comment. New PRs must also use the repository PR template, including when created by an API that does not prefill it. The opening YAML identity block above remains available for detailed research/proposals.
+
+```text
+AGENT WORK PASSPORT
+Agent / environment: <ChatGPT | Codex | Claude Code | Hermes AI/Viktor | other; actual tool>
+Contributor: <who actually wrote/tested/changed code; or NONE for review-only>
+Chat / session: <exact human-readable chat title when supplied; else UNAVAILABLE — do not invent one>
+Work ID: <canonical existing issue # / PR # / task ID>
+Role / department: <owner / reviewer / executor; domain>
+Action & scope: <specific contribution, files/surfaces, what is explicitly out of scope>
+Status: <PROPOSED | IN_PROGRESS | PR_OPEN | REVIEWED | MERGED_NOT_LIVE | LIVE_VERIFIED | BLOCKED>
+Evidence: <repo branch, commit SHA, PR, exact-head CI, production proof as applicable>
+Overlap / dependencies: <other active owners, shared files, release/security gates; NONE if checked>
+Next owner & action: <named agent/role + one bounded next step; NONE if finished>
+Owner approval required: <YES/NO; name the exact gated action>
+```
+
+**A material commit** should add concise trailers where the tool permits, e.g. `Agent: Claude Code`, `Chat-Thread: <title or UNAVAILABLE>`, `Work-Item: #2164`. Never rewrite old commits to add attribution. A shared GitHub account's author name does not establish which AI executed the work.
+
+**A material PR update or handoff** adds one new signed comment with a changed-state receipt; do not spam comments for every test or repeat the full passport when nothing changed. Cross-chat context is a **decision digest**, not an exported transcript: accepted owner goal, exact current work ID, decisions, existing owners/branches/files, tests and evidence, blockers, next step and approval boundary. If the recipient has no access to the original conversation, mark the input `OWNER_PROVIDED_HANDOFF` and verify against current GitHub/production before declaring success.
+
+**Never misattribute implementation.** A review by ChatGPT may identify a bug and post a coordination comment; only the tool/agent that implemented the code is the contributor. A message intended for Codex is `HANDOFF_POSTED`, not `CODEX_STARTED`. A green PR is not a deployment. Distinguish proposed work, source-verified code, current-head CI, merge and production verification.
+
+Use the passport for **internal collaboration only**. Do not place AI chat/session details, private task/worker/queue information or internal implementation attribution on public Hermes pages, customer/dispatch emails or public SEO metadata. Do not copy raw chats, credentials or confidential client data into GitHub.
+
+**Recipient workflow:** read `docs/AI_START_HERE.md`, then the latest relevant passport, canonical issue/PR, exact current files/head/CI and handoff; identify a single active writer before editing. If another agent owns the same changed file/behavior, review or request a bounded handoff instead of opening a competing implementation.
+
+## Plugin-first capability routing and evidence (CEO directive 2026-11-01)
+
+The first work-passport checkpoint is a **task-specific role selection**, including indirectly related Hermes/ProgressoPro work. Use the existing Agent Coordinator's routing skills when callable; never treat the presence of a private-plugin release or an inventory row as proof that an AI colleague worked on the task. The user need not @mention a specialist. For unrelated personal tasks, do not inspect Hermes sources.
+
+- Determine one canonical work ID, primary owner/writer, no-touch surfaces and the smallest necessary specialist set. QA & Evidence Auditor is the default independent assurance owner for material work; Technology owns source changes, Security handles real privacy/dependency findings, and Automatic Engineer handles HAE runtime issues only when relevant.
+- Check `DISCOVERED -> INSTALLED -> CONNECTED/CALLABLE -> AUTHORIZED -> EXECUTED -> VERIFIED` without jumping states. A role may be `SKILL_READ` and still not have a callable runtime. No fictitious agent-to-agent handoff or "all plugins activated" message; when unavailable, note `PLUGIN_CAPABILITY_GAP` and proceed with the connected real tool.
+- For PR/CI incidents, identify exact failed head/attempt, first failing job step and shared error signature. Mark `SOURCE_DEFECT`, `TEST_DEFECT`, `DEPENDENCY_SECURITY`, `INFRA`, `CANCELLED_NOT_EXECUTED` and `GATE_PROPAGATION` separately. Check the **newest** exact-head requirements after a fix. Historical email warnings remain dated evidence.
+- A human or genuinely different verifier must provide **independent QA** for critical releases. One assistant reading an Auditor skill and reviewing its own code is `SELF_CHECK`, never `INDEPENDENT_QA`. Keep `CODED`, `EXACT_HEAD_CI_GREEN`, `REVIEWED`, `MERGED`, `DEPLOYED`, `LIVE_VERIFIED` and `BUSINESS_VERIFIED` separate.
+- Treat the existing One Brain, PR/issue and HAE D1/Queue as canonical data/execution authorities. Do not add a second registry, runtime, tracker, scheduler, live Codex automation or paid provider. Training/skill publication is not live 24/7 work.
+
+Append a **short execution receipt** to the same work passport on material transitions (not per polling call):
+
+```text
+PLUGIN ROUTING RECEIPT
+Work ID / exact source SHA:
+Candidate roles -> selected role(s):
+Plugin ID/version and skill path actually read: (or NOT_READ)
+Connected tool/action and observed result: (or NOT_CALLED)
+Who actually implemented the change:
+Independent review: (reviewer link/receipt or PENDING/SELF_CHECK)
+HAE job/runtime consumption receipt: (ID + source/version or UNKNOWN/NOT_RUN)
+Failing root cause vs dependent failures, if applicable:
+Last verified state / next owner and action:
+```
+
+Acceptance KPI: relevant material tasks with recorded selection, zero falsely attributed plugin execution, independent review coverage for high-risk releases, repeat-incident count after verified regression tests, and real HAE consumed-version receipts (not plugin-release counts). No claim of account-wide enforcement: repository instructions affect only agents that actually read this file.
+
 ## Required workflow
 
 1. Read this protocol and `00_READ_FIRST/CURRENT_STATE.md`.
