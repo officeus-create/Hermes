@@ -96,7 +96,7 @@ export async function onRequestPost(context:Context){
     const effectiveMs=Date.parse(agreementEffectiveAt);
     const evidenceId=cleanWorkspaceId(body.evidenceId);
     if(!agreementVersion || /draft|review/i.test(agreementVersion) || !/^[a-f0-9]{64}$/.test(agreementSha) ||
-       !Number.isFinite(effectiveMs) || !evidenceId ||
+       !Number.isFinite(effectiveMs) || effectiveMs>Date.now() || !evidenceId ||
        body.authorityVerified!==true || body.insuranceVerified!==true || body.sourceRightsVerified!==true)
       return reply(400,{success:false,error:"signed_agreement_authority_insurance_source_rights_evidence_required"});
     let trialStartDate="";
@@ -108,7 +108,8 @@ export async function onRequestPost(context:Context){
         return reply(400,{success:false,error:"trial_window_required"});
       const start=new Date(`${trialStartDate}T00:00:00.000Z`);
       const expectedEnd=new Date(start.getTime()+13*86400000).toISOString().slice(0,10);
-      if(Number.isNaN(start.getTime())||trialEndDate!==expectedEnd||trialEndDate<now.slice(0,10))
+      if(Number.isNaN(start.getTime())||trialEndDate!==expectedEnd||
+         trialStartDate>now.slice(0,10)||trialEndDate<now.slice(0,10))
         return reply(409,{success:false,error:"trial_not_current_or_not_14_days"});
       if(body.noAutomaticContinuationConfirmed!==true)
         return reply(400,{success:false,error:"no_automatic_continuation_confirmation_required"});
@@ -140,11 +141,12 @@ export async function onRequestPost(context:Context){
   }
   const entitlement=await db.prepare(`
     SELECT status,agreement_state,agreement_sha256,authority_status,insurance_status,source_rights_status,
-      trial_end_date,evidence_id FROM hermes_carrier_board_entitlements WHERE company_id=?`
+      trial_start_date,trial_end_date,evidence_id FROM hermes_carrier_board_entitlements WHERE company_id=?`
   ).bind(companyId).first();
   const today=now.slice(0,10);
   const agreementEffective=entitlement?.agreement_state==="ONGOING_EFFECTIVE" ||
-    (entitlement?.agreement_state==="TRIAL_ACTIVE" && String(entitlement?.trial_end_date||"")>=today);
+    (entitlement?.agreement_state==="TRIAL_ACTIVE" &&
+      String(entitlement?.trial_start_date||"")<=today && String(entitlement?.trial_end_date||"")>=today);
   if(entitlement?.status!=="active" || !agreementEffective ||
      entitlement?.authority_status!=="verified" || entitlement?.insurance_status!=="verified" ||
      entitlement?.source_rights_status!=="verified" || !/^[a-f0-9]{64}$/.test(String(entitlement?.agreement_sha256||"")) ||
