@@ -1,11 +1,12 @@
-// Exact authenticated Plugin Creator readback instant, not the UTC date at midnight.
-// A date-only midnight surrogate makes a fresh late-UTC readback falsely stale after rollover.
+// Conservative timestamp for the latest authenticated Plugin Creator inventory readback.
+// It uses the newest current release creation instant observed in that same readback as a
+// lower bound, so freshness is never overstated by a fabricated local clock instant.
 // This is bounded release evidence, NOT proof of runtime loading or automatic refreshing.
-const OBSERVED_AT = "2026-11-03T09:36:00.000Z";
+const OBSERVED_AT = "2026-11-03T11:44:46.337095Z";
 
 export const PLUGIN_RUNTIME_REGISTRY = Object.freeze({
   "hermes-automatic-engineer": Object.freeze({ version: "0.1.36", observed_at: OBSERVED_AT }),
-  "hermes-agent-coordinator": Object.freeze({ version: "0.1.91", observed_at: OBSERVED_AT }),
+  "hermes-agent-coordinator": Object.freeze({ version: "0.1.92", observed_at: OBSERVED_AT }),
   "hermes-technology-developer": Object.freeze({ version: "0.1.61", observed_at: OBSERVED_AT }),
   "hermes-qa-evidence-auditor": Object.freeze({ version: "0.1.24", observed_at: OBSERVED_AT }),
   "hermes-knowledge-curator": Object.freeze({ version: "0.1.95", observed_at: OBSERVED_AT }),
