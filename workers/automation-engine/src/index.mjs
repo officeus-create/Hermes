@@ -61,6 +61,7 @@ import {
 } from "./plugin-runtime-registry.mjs";
 import { haeSelfRepairPacketReplayMatches } from "./hae-self-improvement.mjs";
 import { verifyGithubCIQueueEnvelope } from "./github-ci-runtime-intake.mjs";
+import { githubAuditorJobFromEnvelope } from "./github-auditor-runtime-intake.mjs";
 import { verifyGithubCIPatchProposalEnvelope } from "./github-ci-patch-runtime-intake.mjs";
 import { verifyGithubCIIndependentQaEnvelope } from "./github-ci-independent-qa-runtime-intake.mjs";
 import { materializeIndependentQaReceipt } from "./hae-independent-qa-receipt.mjs";
@@ -2389,6 +2390,18 @@ export default {
       const payload = item.body || {};
       const messageType = clean(payload?.type, 80) || "UNKNOWN";
       try {
+        if (messageType === "github.audit.snapshot") {
+          // Separate read-only GitHub health receipt. This lane never creates repair
+          // work and intentionally remains PARTIAL until broader GitHub coverage exists.
+          if (!env.DB) throw new Error("database_not_configured");
+          await ensureSchema(env.DB);
+          const auditJob = githubAuditorJobFromEnvelope(payload, {
+            deployedSourceSha: clean(env.HERMES_AUTOMATION_SOURCE_SHA, 80),
+          });
+          await createGenericJob(env, auditJob);
+          item.ack();
+          continue;
+        }
         if (messageType === "github.ci.audit") {
           // The canonical GitHub Actions producer authenticates the exact run and
           // commit with its ephemeral token, then sends only a minimized snapshot
