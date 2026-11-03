@@ -36,6 +36,7 @@ REPO = SCRIPT.parents[2]
 CODEX_HERMES = REPO / "scripts" / "ai" / "codex-hermes"
 API_BASE = os.environ.get("HERMES_INTERNAL_AI_API", "").rstrip("/")
 TOKEN = os.environ.get("HERMES_INTERNAL_AI_RUNNER_TOKEN", "")
+RUNNER_ID = os.environ.get("HERMES_INTERNAL_AI_RUNNER_ID", "internal-ai-mac-runner").strip() or "internal-ai-mac-runner"
 # Verified against the installed official `codex exec --help`: these options
 # belong after `exec`. This keeps the workspace sandbox enabled while routing
 # routine approvals through Codex's safe automatic review.
@@ -241,12 +242,12 @@ def post_event(task_id: str, event_type: str, message: str) -> None:
     request_json(
         "/api/internal-ai/runner/event",
         method="POST",
-        payload={"task_id": task_id, "event_type": event_type, "message": safe},
+        payload={"task_id": task_id, "event_type": event_type, "message": safe, "runner_id": RUNNER_ID},
     )
 
 
 def task_state(task_id: str) -> dict[str, Any] | None:
-    query = urllib.parse.urlencode({"id": task_id})
+    query = urllib.parse.urlencode({"id": task_id, "runner_id": RUNNER_ID})
     response = request_json(f"/api/internal-ai/runner/task?{query}")
     return response.get("task") if response.get("success") else None
 
@@ -255,6 +256,8 @@ def claim() -> dict[str, Any] | None:
     payload = {
         "repo_sha": git("rev-parse", "HEAD"),
         "runtime_version": codex_version(),
+        "runner_id": RUNNER_ID,
+        "accept_tasks": True,
         }
     response = request_json("/api/internal-ai/runner/claim", method="POST", payload=payload)
     if not response.get("success"):
@@ -299,6 +302,7 @@ def complete(
             "evidence_class": "LOCAL_RUNNER_EXECUTION",
             "output_summary": summary,
             "approval_gate": approval_gate,
+            "runner_id": RUNNER_ID,
         },
     )
 
@@ -470,7 +474,7 @@ def main() -> None:
     if not (REPO / "AGENTS.md").exists():
         die(f"Hermes repository not found at {REPO}")
 
-    print(f"[hermes-internal-ai-runner] outbound poller started for {API_BASE}; repo={REPO}")
+    print(f"[hermes-internal-ai-runner] outbound poller started for {API_BASE}; repo={REPO}; runner_id={RUNNER_ID}")
     while True:
         try:
             task = claim()
