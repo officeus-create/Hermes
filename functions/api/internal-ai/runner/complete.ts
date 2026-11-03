@@ -1,12 +1,12 @@
 import { jsonResponse } from "../../_lib/session.mjs";
-import { ensureInternalAiSchema, internalAiTaskBranch, INTERNAL_AI_ORGANIZATION_SCOPE, normalizeInternalAiRunnerId, nowIso, publicTask, requireInternalAiRunner, sanitizeTaskResult } from "../../_lib/internal-ai.mjs";
-type Env = { DB?: any; HERMES_INTERNAL_AI_RUNNER_TOKEN?: string };
+import { ensureInternalAiSchema, internalAiTaskBranch, INTERNAL_AI_ORGANIZATION_SCOPE, nowIso, publicTask, requireAuthenticatedRunnerId, requireInternalAiRunner, sanitizeTaskResult } from "../../_lib/internal-ai.mjs";
+type Env = { DB?: any; HERMES_INTERNAL_AI_RUNNER_TOKEN?: string; HERMES_INTERNAL_AI_WINDOWS_RUNNER_TOKEN?: string };
 export async function onRequestPost({ request, env }: { request: Request; env: Env }) {
   const auth = requireInternalAiRunner(request, env); if (auth.response) return auth.response; if (!env.DB) return jsonResponse(503, { success: false, error: "database_not_configured" });
   await ensureInternalAiSchema(env.DB);
   let payload: any; try { payload = await request.json(); } catch { return jsonResponse(400, { success: false, error: "invalid_json" }); }
   const taskId = String(payload?.task_id || "").trim(); if (!taskId) return jsonResponse(400, { success: false, error: "task_id_required" });
-  const runnerId = normalizeInternalAiRunnerId(payload?.runner_id); if (!runnerId) return jsonResponse(400, { success: false, error: "invalid_runner_id" });
+  const runnerIdentity = requireAuthenticatedRunnerId(auth, payload?.runner_id); if (runnerIdentity.response) return runnerIdentity.response; const runnerId = runnerIdentity.runner_id;
   const existing = await env.DB.prepare("SELECT * FROM hermes_internal_ai_tasks WHERE id = ? AND organization_scope = ?").bind(taskId, INTERNAL_AI_ORGANIZATION_SCOPE).first(); if (!existing) return jsonResponse(404, { success: false, error: "task_not_found" });
   if (existing.runner_id && existing.runner_id !== runnerId) return jsonResponse(409, { success: false, error: "task_owned_by_another_runner", runner_id: existing.runner_id });
   const result = sanitizeTaskResult(payload); const finalStatus = existing.cancel_requested && result.status !== "failed" ? "cancelled" : result.status;
