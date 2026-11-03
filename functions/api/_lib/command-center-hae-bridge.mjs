@@ -114,7 +114,7 @@ export async function buildCommandCenterHaeJobRequest(item,route,linkedTaskId,ob
       project_key:"command-center-plugin-route",
       priority,
       max_attempts:2,
-      idempotency_key:["hae","command-center",id,taskId,policy,plan.plugin_version,plan.contract.contract_version].join(":").slice(0,240),
+      idempotency_key:["hae","command-center","hermes_internal",id,taskId,policy,plan.plugin_version,plan.contract.contract_version].join(":").slice(0,240),
       policy_version:BRIDGE_POLICY_VERSION,
       payload,
     },
