@@ -67,6 +67,14 @@ import { materializeIndependentQaReceipt } from "./hae-independent-qa-receipt.mj
 import { socialAccountReadinessSnapshot } from "./social-account-readiness.mjs";
 import { socialReplyPreflight } from "./social-reply-preflight.mjs";
 import { runSocialReplyPrepare, validateSocialReplyPrepareInput } from "./social-reply-prepare.mjs";
+import {
+  claimWindowsNodeJob,
+  completeWindowsNodeJob,
+  heartbeatWindowsNode,
+  recoverExpiredWindowsNodeLeases,
+  windowsNodeAuthorized,
+  windowsNodeSnapshot,
+} from "./windows-node-runtime.mjs";
 
 const ACCOUNT_KEY = "hermes_logistics";
 const PLATFORM = "threads";
@@ -1329,6 +1337,13 @@ async function recoverPendingGenericJobs(env, limit = 20) {
   if (!env.DB || !env.AUTOMATION_QUEUE) return 0;
   await ensureSchema(env.DB);
   const now = new Date().toISOString();
+  // Windows-node source is inert until explicitly enabled: no node schema or
+  // lease-recovery mutation is touched by the scheduled path while disabled.
+  if (String(env.HERMES_WINDOWS_NODE_ENABLED || "").trim().toLowerCase() === "enabled") {
+    // Expired semantic leases return to the existing WAITING_FREE_AI state
+    // before generic stale-RUNNING recovery can consume a retry.
+    await recoverExpiredWindowsNodeLeases(env.DB, now);
+  }
   const staleRunningCutoff = addSecondsIso(now, -15 * 60);
 
   const staleRows = await env.DB.prepare(`
@@ -2501,6 +2516,13 @@ export default {
         role_contract_cadence: "per-contract; current deterministic slice every 6 hours",
         free_semantic_only: true,
         paid_ai_fallback_enabled: false,
+        windows_semantic_node: {
+          configured: String(env.HERMES_WINDOWS_NODE_ENABLED || "").trim().toLowerCase() === "enabled",
+          transport: "outbound_poll",
+          inbound_exposure_required: false,
+          eligible_job_types: ["search.defect.prioritize", "hae.self.patch.propose"],
+          production_write_authorized: false,
+        },
         dlq_runtime_consumer: true,
         dlq_external_alert_delivery_verified: false,
         ai_cost_ledger: true,
@@ -2622,6 +2644,42 @@ export default {
       }
       return json(200, { success: true, ...result });
     }
+    if (url.pathname.startsWith("/v1/nodes/windows/")) {
+      const nodeAuth = windowsNodeAuthorized(request, env);
+      if (!nodeAuth.ok) return json(nodeAuth.status, { success: false, error: nodeAuth.error });
+      if (!env.DB) return json(503, { success: false, error: "runtime_not_configured" });
+      const body = request.method === "POST" ? await request.json().catch(() => ({})) : {};
+      try {
+        if (request.method === "POST" && url.pathname === "/v1/nodes/windows/heartbeat") {
+          return json(200, { success: true, ...(await heartbeatWindowsNode(env, body)) });
+        }
+        if (request.method === "POST" && url.pathname === "/v1/nodes/windows/claim") {
+          const result = await claimWindowsNodeJob(env, body);
+          return json(result.status === "LEASE_ACCEPTED" ? 200 : 200, { success: true, ...result });
+        }
+        if (request.method === "POST" && url.pathname === "/v1/nodes/windows/complete") {
+          const result = await completeWindowsNodeJob(env, body);
+          if (result.status === "SUCCEEDED") {
+            await syncCapabilityGraphJobBestEffort(env, {
+              jobId: result.job_id,
+              jobState: "SUCCEEDED",
+              result: result.result,
+            });
+          }
+          return json(200, { success: true, ...result });
+        }
+        if (request.method === "GET" && url.pathname === "/v1/nodes/windows/status") {
+          return json(200, { success: true, ...(await windowsNodeSnapshot(env)) });
+        }
+        return json(404, { success: false, error: "not_found" });
+      } catch (error) {
+        const code = safeRuntimeErrorClass(error, "windows_node_request_failed");
+        const conflict = /(?:lease|fence|replay|owner|contract_drift|completion_conflict)/.test(code);
+        const invalid = /(?:node_id|contract_version|cost|semantic_result|model|required|output_sha|usage_chars)/.test(code);
+        return json(conflict ? 409 : invalid ? 400 : 500, { success: false, error: code });
+      }
+    }
+
     if (request.method === "POST" && url.pathname === "/v1/jobs") {
       if (!authorized(request, env)) return json(401, { success: false, error: "unauthorized" });
       if (!env.DB || !env.AUTOMATION_QUEUE) return json(503, { success: false, error: "runtime_not_configured" });
