@@ -72,6 +72,28 @@ for (const contract of ROLE_CONTRACTS) {
   assert.equal(sha, await roleContractSha256(JSON.parse(stableRoleContractJson(contract))), "Contract digest must be canonical/deterministic");
   assert.equal(roleContractForJobType(contract.job_type)?.contract_version, contract.contract_version);
 }
+const trustedWebsiteAudit = runRoleContractPrimitive("audit.website.journey", {
+  observed_at: "2026-11-03T08:00:00.000Z",
+  coverage_complete: true,
+  source_authenticated: false,
+  source_trusted: true,
+  findings: [],
+});
+assert.equal(trustedWebsiteAudit.coverage_complete, true);
+assert.equal(trustedWebsiteAudit.source_authenticated, false);
+assert.equal(trustedWebsiteAudit.source_trusted, true);
+assert.equal(trustedWebsiteAudit.source_verified, true);
+
+const unauthenticatedAudit = runRoleContractPrimitive("audit.website.journey", {
+  observed_at: "2026-11-03T08:00:00.000Z",
+  coverage_complete: true,
+  source_authenticated: false,
+  source_trusted: false,
+  findings: [],
+});
+assert.equal(unauthenticatedAudit.coverage_complete, false);
+assert.equal(unauthenticatedAudit.source_verified, false);
+
 const searchContract = roleContractForJobType("search.snapshot.evaluate");
 assert.ok(searchContract.runtime_config.target_urls.length >= 3);
 assert.ok(searchContract.runtime_config.target_urls.every((url) => url.startsWith("https://hermeslogisticsus.com/")));
