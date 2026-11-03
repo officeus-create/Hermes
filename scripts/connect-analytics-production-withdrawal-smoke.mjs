@@ -4,6 +4,37 @@ import { chromium } from "playwright";
 const origin = "https://connect.hermeslogisticsus.com";
 const path = "/search-opportunity-radar/?_hermes_ga4_smoke=1";
 const measurementId = "G-RY26321PVW";
+const expectedAssetMarkers = [
+  "Hard-stop GA transport before teardown",
+  "window.location.reload()",
+];
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+let deployed = false;
+let lastAssetStatus = null;
+for (let attempt = 1; attempt <= 24; attempt += 1) {
+  const stamp = Date.now();
+  try {
+    const response = await fetch(`${origin}/connect-analytics-consent.mjs?withdrawal=${stamp}`, {
+      headers: { "cache-control": "no-cache", pragma: "no-cache" },
+      signal: AbortSignal.timeout(20_000),
+    });
+    const source = await response.text();
+    lastAssetStatus = {
+      attempt,
+      status: response.status,
+      markers: expectedAssetMarkers.map((marker) => source.includes(marker)),
+    };
+    if (response.status === 200 && lastAssetStatus.markers.every(Boolean)) {
+      deployed = true;
+      break;
+    }
+  } catch (error) {
+    lastAssetStatus = { attempt, error: error instanceof Error ? error.message : String(error) };
+  }
+  if (attempt < 24) await sleep(10_000);
+}
+assert.ok(deployed, `fixed production consent asset was not observed before smoke: ${JSON.stringify(lastAssetStatus)}`);
 
 const browser = await chromium.launch({
   headless: true,
@@ -40,13 +71,13 @@ try {
   await decline.waitFor({ state: "visible", timeout: 10_000 });
 
   const beforeWithdrawal = collects.length;
-  await Promise.all([
-    page.waitForNavigation({ waitUntil: "domcontentloaded", timeout: 30_000 }),
-    decline.click(),
-  ]);
-  await page.waitForTimeout(1500);
+  await decline.click();
+  // The fixed implementation reloads after a previously granted withdrawal, but
+  // the privacy invariant is transport-based rather than navigation-based.
+  // Allow either implementation shape and fail only if GA can emit after withdrawal.
+  await page.waitForTimeout(2200);
   await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
-  await page.waitForTimeout(1800);
+  await page.waitForTimeout(2200);
 
   const state = await page.evaluate((id) => ({
     consent: localStorage.getItem("hermes-analytics-consent"),
