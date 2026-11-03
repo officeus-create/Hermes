@@ -196,6 +196,7 @@ export const localizedDirectionCopy: Record<LocalizedSiteLocale, Record<Directio
       detail: "Hermes Logistics объединяет dispatch и back-office поддержку, координацию документов, взаимодействие с брокерами и отправителями и отдельные Car Hauling маршруты. Доступность, грузы, ставки и коммерческие условия проверяются перед работой.",
       boundary: "Страница не означает наличие конкретного груза, гарантированной ставки, гарантированного gross или автоматического принятия перевозчика. Реальная работа начинается после проверки authority, insurance, equipment, lane fit и текущих условий.",
       related: [
+        { label: "Диспетчер для автовоза", href: "/ru/logistics/dispetcher-dlya-avtovoza/", body: "Русскоязычный путь для car hauler перевозчиков: dispatch, документы, брокеры и инвойсы с подтверждением каждого груза перевозчиком." },
         { label: "Запрос на перевозку автомобиля", href: "/logistics/request-vehicle-transport/", body: "Контролируемый путь для клиента, которому нужно перевезти автомобиль в США." },
         { label: "Load Board", href: "/load-board/", body: "Публичный обзор возможностей с разделением демонстрационных материалов и подтверждённой передачи обращения." },
         { label: "Carrier onboarding", href: "/carrier/", body: "Договор, проверка документов и следующие шаги для перевозчика." },
