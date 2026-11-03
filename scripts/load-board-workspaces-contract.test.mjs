@@ -44,6 +44,7 @@ const scripted={
   plan:read("functions/api/load-board/dispatch-plan.ts"),
   interest:read("functions/api/load-board/interest.ts"),
   dealers:read("functions/api/load-board/posts.ts"),
+  workspaceLib:read("functions/api/_lib/carrier-dispatch-workspace.mjs"),
 };
 assert.match(scripted.carrier,/authorizedCarrier/);
 assert.match(scripted.carrier,/verifiedAssignment/);
@@ -62,6 +63,22 @@ for(const key of ["active","opportunities","plan"]){
 }
 assert.match(scripted.admin,/specialistHasInternalOwnerCapability/);
 assert.match(scripted.admin,/identityVerified/);
+assert.match(scripted.workspaceLib,/PENDING_CONTRACT/);
+assert.match(scripted.workspaceLib,/TRIAL_ACTIVE/);
+assert.match(scripted.workspaceLib,/ONGOING_EFFECTIVE/);
+assert.match(scripted.workspaceLib,/authority_status!==\"verified\"/);
+assert.match(scripted.workspaceLib,/insurance_status!==\"verified\"/);
+assert.match(scripted.workspaceLib,/source_rights_status!==\"verified\"/);
+assert.match(scripted.workspaceLib,/verifiedAssignment\(db,company\.id\)/,
+  "Restricted carrier access must require an active assigned dispatcher.");
+assert.match(scripted.admin,/effective_agreement_state_required/);
+assert.match(scripted.admin,/signed_agreement_authority_insurance_source_rights_evidence_required/);
+assert.match(scripted.admin,/no_automatic_continuation_confirmation_required/);
+assert.match(scripted.admin,/trial_not_current_or_not_14_days/);
+assert.match(scripted.admin,/CARRIER_REVOKED/);
+assert.match(scripted.admin,/effective_carrier_agreement_and_verification_required/);
+assert.doesNotMatch(scripted.admin,/agreementState.*=\s*["']ONGOING_EFFECTIVE["']/,
+  "No automatic post-trial conversion may be encoded.");
 assert.match(scripted.access,/entitlement==='active'/);
 for(const key of ["active","opportunities","plan"]){
  assert.match(scripted[key],/specialistHasLoadBoardAccess/);
