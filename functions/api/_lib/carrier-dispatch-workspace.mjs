@@ -25,8 +25,35 @@ export async function ensureCarrierDispatchWorkspaceSchema(db) {
       status TEXT NOT NULL CHECK(status IN ('active','revoked')),
       reviewed_by_specialist_id TEXT NOT NULL,
       reviewed_at TEXT NOT NULL,
-      note TEXT
+      note TEXT,
+      agreement_state TEXT NOT NULL DEFAULT 'PENDING_CONTRACT',
+      agreement_version TEXT,
+      agreement_sha256 TEXT,
+      agreement_effective_at TEXT,
+      trial_end_date TEXT,
+      authority_status TEXT NOT NULL DEFAULT 'pending',
+      insurance_status TEXT NOT NULL DEFAULT 'pending',
+      source_rights_status TEXT NOT NULL DEFAULT 'pending',
+      evidence_id TEXT,
+      revoked_at TEXT
     )`).run();
+  const entitlementInfo=await db.prepare("PRAGMA table_info(hermes_carrier_board_entitlements)").all();
+  const entitlementColumns=new Set((entitlementInfo.results||[]).map((row)=>String(row.name)));
+  const entitlementMigrations=[
+    ["agreement_state","TEXT NOT NULL DEFAULT 'PENDING_CONTRACT'"],
+    ["agreement_version","TEXT"],
+    ["agreement_sha256","TEXT"],
+    ["agreement_effective_at","TEXT"],
+    ["trial_end_date","TEXT"],
+    ["authority_status","TEXT NOT NULL DEFAULT 'pending'"],
+    ["insurance_status","TEXT NOT NULL DEFAULT 'pending'"],
+    ["source_rights_status","TEXT NOT NULL DEFAULT 'pending'"],
+    ["evidence_id","TEXT"],
+    ["revoked_at","TEXT"],
+  ];
+  for(const [column,definition] of entitlementMigrations){
+    if(!entitlementColumns.has(column)) await db.prepare(`ALTER TABLE hermes_carrier_board_entitlements ADD COLUMN ${column} ${definition}`).run();
+  }
   await db.prepare(`
     CREATE TABLE IF NOT EXISTS hermes_carrier_dispatch_assignments (
       carrier_company_id TEXT PRIMARY KEY,
@@ -69,7 +96,9 @@ export async function getOwnedCarrier(db, specialist) {
   if (!specialist) return null;
   await ensureCarrierDispatchWorkspaceSchema(db);
   const result = await db.prepare(`
-    SELECT c.id,c.company_name,c.company_type,c.load_board_access,e.status AS entitlement_status
+    SELECT c.id,c.company_name,c.company_type,c.load_board_access,e.status AS entitlement_status,
+      e.agreement_state,e.agreement_version,e.agreement_sha256,e.agreement_effective_at,
+      e.trial_end_date,e.authority_status,e.insurance_status,e.source_rights_status,e.evidence_id
     FROM hermes_company_profiles c
     LEFT JOIN hermes_carrier_board_entitlements e ON e.company_id=c.id
     WHERE c.owner_specialist_id=? LIMIT 1
@@ -78,7 +107,15 @@ export async function getOwnedCarrier(db, specialist) {
 }
 export async function authorizedCarrier(db, specialist) {
   const company = await getOwnedCarrier(db, specialist);
-  return company && Number(company.load_board_access) === 1 && company.entitlement_status === "active" ? company : null;
+  if(!company || Number(company.load_board_access)!==1 || company.entitlement_status!=="active") return null;
+  if(company.authority_status!=="verified" || company.insurance_status!=="verified" || company.source_rights_status!=="verified") return null;
+  if(!/^[a-f0-9]{64}$/.test(String(company.agreement_sha256||"")) || !String(company.agreement_version||"") || !String(company.evidence_id||"")) return null;
+  const today=new Date().toISOString().slice(0,10);
+  const effective=company.agreement_state==="ONGOING_EFFECTIVE" ||
+    (company.agreement_state==="TRIAL_ACTIVE" && /^\d{4}-\d{2}-\d{2}$/.test(String(company.trial_end_date||"")) && String(company.trial_end_date)>=today);
+  if(!effective) return null;
+  const assignment=await verifiedAssignment(db,company.id);
+  return assignment ? company : null;
 }
 export async function verifiedAssignment(db, carrierCompanyId) {
   const row = await db.prepare(`
