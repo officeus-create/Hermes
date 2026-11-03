@@ -40,7 +40,7 @@ jobs:
           base_sha="$(jq -r '.base.sha' "${RUNNER_TEMP}/pr.json")"
           head_sha="$(jq -r '.head.sha' "${RUNNER_TEMP}/pr.json")"
           gh api "repos/${GITHUB_REPOSITORY}/compare/${base_sha}...${head_sha}" > "${RUNNER_TEMP}/compare.json"
-          gh api --paginate "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}/reviews?per_page=100" --slurp 'add' > "${RUNNER_TEMP}/reviews.json"
+          gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}/reviews?per_page=100" > "${RUNNER_TEMP}/reviews.json"
 
       - name: Enforce zero-behind + independent approval
         if: github.event_name != 'workflow_dispatch'
