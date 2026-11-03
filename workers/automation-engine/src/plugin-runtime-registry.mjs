@@ -1,7 +1,7 @@
 // Exact authenticated Plugin Creator readback instant, not the UTC date at midnight.
 // A date-only midnight surrogate makes a fresh late-UTC readback falsely stale after rollover.
 // This is bounded release evidence, NOT proof of runtime loading or automatic refreshing.
-const OBSERVED_AT = "2026-11-02T23:28:00.000Z";
+const OBSERVED_AT = "2026-11-03T00:52:00.000Z";
 
 export const PLUGIN_RUNTIME_REGISTRY = Object.freeze({
   "hermes-automatic-engineer": Object.freeze({ version: "0.1.36", observed_at: OBSERVED_AT }),
@@ -13,10 +13,10 @@ export const PLUGIN_RUNTIME_REGISTRY = Object.freeze({
   "hermes-search-growth": Object.freeze({ version: "0.1.16", observed_at: OBSERVED_AT }),
   "hermes-academy": Object.freeze({ version: "0.1.14", observed_at: OBSERVED_AT }),
   "hermes-dispatch-os": Object.freeze({ version: "0.1.26", observed_at: OBSERVED_AT }),
-  "hermes-github-auditor": Object.freeze({ version: "0.1.1", observed_at: OBSERVED_AT }),
-  "hermes-cloudflare-auditor": Object.freeze({ version: "0.1.1", observed_at: OBSERVED_AT }),
-  "hermes-drive-auditor": Object.freeze({ version: "0.1.1", observed_at: OBSERVED_AT }),
-  "hermes-website-auditor": Object.freeze({ version: "0.1.1", observed_at: OBSERVED_AT }),
+  "hermes-github-auditor": Object.freeze({ version: "0.1.2", release_id: "pluginrel_6ae93038dde88191a9a04365730bff3e", observed_at: OBSERVED_AT }),
+  "hermes-cloudflare-auditor": Object.freeze({ version: "0.1.2", release_id: "pluginrel_6ae930405ff081919b7fc419035d9d5f", observed_at: OBSERVED_AT }),
+  "hermes-drive-auditor": Object.freeze({ version: "0.1.2", release_id: "pluginrel_6ae93047004481918b89ed1b8f07a8a9", observed_at: OBSERVED_AT }),
+  "hermes-website-auditor": Object.freeze({ version: "0.1.2", release_id: "pluginrel_6ae9304d555081919f3a8ad4eba0395e", observed_at: OBSERVED_AT }),
 });
 
 export function pluginRuntimeVersion(roleId) {
@@ -32,6 +32,7 @@ export function pluginRuntimeRegistrySnapshot() {
     entries: Object.entries(PLUGIN_RUNTIME_REGISTRY).map(([role_id, value]) => ({
       role_id,
       plugin_version: value.version,
+      release_id: value.release_id || null,
       observed_at: value.observed_at,
     })),
   };
