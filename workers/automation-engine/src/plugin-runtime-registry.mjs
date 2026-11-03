@@ -1,8 +1,8 @@
 // Conservative timestamp for the latest authenticated Plugin Creator inventory readback.
 // It uses the newest current release creation instant observed in that same readback as a
-// lower bound, so freshness is never overstated by a fabricated local clock instant.
+// millisecond-truncated lower bound, so freshness is never overstated by a fabricated local clock instant.
 // This is bounded release evidence, NOT proof of runtime loading or automatic refreshing.
-const OBSERVED_AT = "2026-11-03T11:44:46.337095Z";
+const OBSERVED_AT = "2026-11-03T11:44:46.337Z";
 
 export const PLUGIN_RUNTIME_REGISTRY = Object.freeze({
   "hermes-automatic-engineer": Object.freeze({ version: "0.1.36", observed_at: OBSERVED_AT }),
