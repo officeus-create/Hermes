@@ -1,0 +1,117 @@
+name: HAE Independent Heartbeat Watch
+
+on:
+  schedule:
+    - cron: "47 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: hae-independent-heartbeat-watch
+  cancel-in-progress: false
+
+jobs:
+  heartbeat:
+    name: External read-only HAE heartbeat watchdog
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out current main
+        uses: actions/checkout@v6
+        with:
+          ref: main
+          fetch-depth: 1
+
+      - name: Bind expected runtime SHA to checked-out current main
+        shell: bash
+        run: echo "HAE_EXPECTED_SOURCE_SHA=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+
+      - name: Validate watchdog contract offline
+        run: node scripts/hae-independent-heartbeat-watch.test.mjs
+
+      - name: Read production heartbeat without Hermes runtime writes
+        id: watch
+        shell: bash
+        env:
+          CLOUDFLARE_HAE_RELEASE_TOKEN: ${{ secrets.CLOUDFLARE_HAE_RELEASE_TOKEN }}
+          HAE_HEARTBEAT_MAX_AGE_MINUTES: "150"
+          HAE_WATCH_RECEIPT_PATH: ${{ runner.temp }}/hae-independent-heartbeat-watch.json
+        run: |
+          set +e
+          node scripts/hae-independent-heartbeat-watch.mjs
+          code=$?
+          set -e
+          echo "exit_code=$code" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Upload sanitized heartbeat receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hae-independent-heartbeat-watch
+          path: ${{ runner.temp }}/hae-independent-heartbeat-watch.json
+          if-no-files-found: ignore
+          retention-days: 14
+
+      - name: Open one bounded watchdog incident
+        if: steps.watch.outputs.exit_code != '0'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const title = "P0 HAE independent heartbeat watchdog incident";
+            const issues = await github.paginate(github.rest.issues.listForRepo, {
+              owner: context.repo.owner, repo: context.repo.repo, state: "open", per_page: 100,
+            });
+            const existing = issues.find((item) => !item.pull_request && item.title === title);
+            if (!existing) {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title,
+                body: [
+                  "Independent read-only HAE heartbeat monitoring failed.",
+                  "",
+                  "This monitor runs outside HAE, reads only canonical Cloudflare Pages/D1 heartbeat state, and performs no Hermes runtime writes.",
+                  "It requires heartbeat source_sha to equal checked-out current main and requires dry_run/publication=false.",
+                  "",
+                  `Evidence: ${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
+                  "",
+                  "DONE: restore a fresh exact-current dry-run heartbeat and rerun this workflow successfully.",
+                ].join("\n"),
+              });
+            }
+
+      - name: Close recovered watchdog incident
+        if: steps.watch.outputs.exit_code == '0'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const title = "P0 HAE independent heartbeat watchdog incident";
+            const issues = await github.paginate(github.rest.issues.listForRepo, {
+              owner: context.repo.owner, repo: context.repo.repo, state: "open", per_page: 100,
+            });
+            const existing = issues.find((item) => !item.pull_request && item.title === title);
+            if (existing) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner, repo: context.repo.repo, issue_number: existing.number,
+                body: `Recovery receipt: independent heartbeat watch passed. Run: ${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
+              });
+              await github.rest.issues.update({
+                owner: context.repo.owner, repo: context.repo.repo, issue_number: existing.number,
+                state: "closed", state_reason: "completed",
+              });
+            }
+
+      - name: Enforce watchdog result
+        if: steps.watch.outputs.exit_code != '0'
+        run: |
+          echo "HAE independent heartbeat watchdog failed; see bounded incident + sanitized artifact."
+          exit 1
