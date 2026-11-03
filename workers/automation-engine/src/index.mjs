@@ -51,6 +51,7 @@ import {
   settleCapabilityGraphNodeForJob,
 } from "./capability-graph.mjs";
 import { taskMigrationSnapshot } from "./schedule-migrations.mjs";
+import { scheduleMigrationGapFindings } from "./schedule-audit-gaps.mjs";
 import {
   enqueueDueOwnerProcesses,
   ownerManagedJobTypes,
@@ -2165,6 +2166,9 @@ function buildScheduledHaeSelfImprovementPayload(scheduledAt) {
       findings.push({ finding_id: `semantic-budget-drift:${contract.job_type}`, source_ref: sourceRef, category: "CONTRACT_DRIFT", severity: "P0", status: "OPEN", artifact_key: "workers/automation-engine/src/role-contracts.mjs", verified: true, writer_active: false, writer_state_verified: false, observed_at: observedAt });
     }
   }
+
+  const migrationSnapshot = taskMigrationSnapshot(ROLE_CONTRACT_JOB_TYPES);
+  findings.push(...scheduleMigrationGapFindings(migrationSnapshot, observedAt));
 
   if (!registryEvidence.fresh) {
     findings.push({
