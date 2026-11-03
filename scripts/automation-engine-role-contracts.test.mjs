@@ -237,4 +237,4 @@ assert.throws(()=>validateRoleContractSemanticResult("hae.self.patch.propose",pa
 }),/hae_patch_diff_unsafe_added_code/);
 assert.throws(()=>runRoleContractPrimitive("hae.self.patch.propose",patchPayload),/semantic_job_requires_free_ai/);
 
-console.log("HAE plugin role contracts PASS: 15 zero-model + 2 free-only semantic contracts");
+console.log("HAE plugin role contracts PASS: 19 zero-model + 2 free-only semantic contracts");
