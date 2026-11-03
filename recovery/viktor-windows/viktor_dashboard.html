@@ -70,7 +70,7 @@ footer{padding-top:20px;font-size:11px;color:#8693a5}
 <div class="compose">
 <div class="quick"><button data-prompt="Какие следующие задачи Hermes AI?">План Hermes AI</button><button data-prompt="Какое качество обучения, слепые тесты и coached?">Качество обучения</button><button data-prompt="Что ты изучил из аудитов Hermes сегодня?">Что изучено</button><button data-prompt="Какие повторяющиеся ошибки наших ИИ ты обнаружил?">Ошибки ИИ</button><button data-prompt="Что ещё требует доказательства и независимой проверки?">Что проверить</button><button data-prompt="Покажи Hermes Investment Intelligence W-20261024-103 и текущий checkpoint">Инвесторы</button><button data-prompt="Какие приватные Hermes-плагины подключены и как ты их используешь?">Плагины</button></div>
 <div class="input-wrap"><textarea id="query" maxlength="2000" placeholder="Напишите Hermes AI... (Enter — отправить, Shift+Enter — новая строка)"></textarea><button id="send" class="send">Отправить</button></div>
-<div class="hint">Localhost · Windows YuraValentyuk · быстрые ответы из аудитов · /ai вопрос — локальный эксперимент · обучение 24/7 · power-guarded</div>
+<div class="hint">Localhost · Windows YuraValentyuk · read-only local AI · session-guarded · без provider/production writes</div>
 </div></main>
 <section class="metrics">
 <h2>Работа агента <span style="color:#8da0bb">/ Live</span></h2>
@@ -103,7 +103,7 @@ footer{padding-top:20px;font-size:11px;color:#8693a5}
 <div class="info"><div class="lbl" id="model">Модель: —</div><p id="lesson">Нет подтверждённого результата</p></div>
 <div class="section-title">События</div>
 <div id="activity" class="activity"><div class="ev-detail">Загрузка событий...</div></div>
-<footer id="deadline">Учебный цикл: 24/7 · power guard · localhost</footer>
+<footer id="deadline">Непрерывный read-only цикл · session-guarded · localhost</footer>
 </section></div>
 <script>
 const scroller=document.getElementById('scroller'),q=document.getElementById('query'),send=document.getElementById('send');
