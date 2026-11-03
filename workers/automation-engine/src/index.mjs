@@ -61,7 +61,8 @@ import {
 } from "./plugin-runtime-registry.mjs";
 import { haeSelfRepairPacketReplayMatches } from "./hae-self-improvement.mjs";
 import { verifyGithubCIQueueEnvelope } from "./github-ci-runtime-intake.mjs";
-import { githubAuditorJobFromEnvelope } from "./github-auditor-runtime-intake.mjs";\nimport { cloudflareAuditorJobFromEnvelope } from "./cloudflare-auditor-runtime-intake.mjs";
+import { githubAuditorJobFromEnvelope } from "./github-auditor-runtime-intake.mjs";
+import { cloudflareAuditorJobFromEnvelope } from "./cloudflare-auditor-runtime-intake.mjs";
 import { verifyGithubCIPatchProposalEnvelope } from "./github-ci-patch-runtime-intake.mjs";
 import { verifyGithubCIIndependentQaEnvelope } from "./github-ci-independent-qa-runtime-intake.mjs";
 import { materializeIndependentQaReceipt } from "./hae-independent-qa-receipt.mjs";
