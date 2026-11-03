@@ -46,7 +46,10 @@ export function summarizeHaeAudits(rows = [], nowIso = new Date().toISOString(),
       : null;
     const observedAt = safeIso(result?.observed_at) || safeIso(envelope?.observed_at) || safeIso(row.completed_at) || safeIso(row.updated_at);
     const stale = !observedAt || (now - Date.parse(observedAt)) > staleHours * 3600000 || (now - Date.parse(observedAt)) < 0;
-    const coverage = result?.coverage_complete === true && result?.source_authenticated === true
+    const sourceVerified = result?.source_verified === true ||
+      result?.source_authenticated === true ||
+      result?.source_trusted === true;
+    const coverage = result?.coverage_complete === true && sourceVerified
       ? "COMPLETE"
       : "PARTIAL";
     return {
@@ -59,6 +62,7 @@ export function summarizeHaeAudits(rows = [], nowIso = new Date().toISOString(),
       p1_count: finiteCount(result?.p1_count),
       observed_at: observedAt,
       stale,
+      execution_failed: String(row.state || "").toUpperCase() === "FAILED",
     };
   });
 
@@ -69,12 +73,13 @@ export function summarizeHaeAudits(rows = [], nowIso = new Date().toISOString(),
     acc.stale_count += item.stale ? 1 : 0;
     acc.not_run_count += item.coverage === "NOT_RUN" ? 1 : 0;
     acc.partial_count += item.coverage === "PARTIAL" ? 1 : 0;
+    acc.execution_failed_count += item.execution_failed ? 1 : 0;
     return acc;
-  }, { open_count: 0, p0_count: 0, p1_count: 0, stale_count: 0, not_run_count: 0, partial_count: 0 });
+  }, { open_count: 0, p0_count: 0, p1_count: 0, stale_count: 0, not_run_count: 0, partial_count: 0, execution_failed_count: 0 });
 
   let status = "HEALTHY";
   if (totals.p0_count > 0) status = "P0";
-  else if (totals.p1_count > 0) status = "P1";
+  else if (totals.p1_count > 0 || totals.execution_failed_count > 0) status = "P1";
   else if (totals.not_run_count > 0) status = "NOT_RUN";
   else if (totals.partial_count > 0 || totals.stale_count > 0) status = "PARTIAL";
 
