@@ -466,7 +466,7 @@
       "submission_auth": "HERMES_AUTOMATION_TOKEN",
       "retention_class": "business_runtime_evidence",
       "role_id": "hermes-agent-coordinator",
-      "plugin_version": "0.1.91",
+      "plugin_version": "0.1.92",
       "contract_version": "work-portfolio-reconcile-v1",
       "semantic_required": false,
       "free_ai_policy": "not_required"
