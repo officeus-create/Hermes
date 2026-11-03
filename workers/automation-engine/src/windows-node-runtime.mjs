@@ -82,6 +82,7 @@ export async function ensureWindowsNodeSchema(db) {
     updated_at TEXT NOT NULL
   )`).run();
   await db.prepare("CREATE UNIQUE INDEX IF NOT EXISTS idx_hae_node_active_lease ON hermes_automation_node_leases(node_id) WHERE state='ACTIVE'").run();
+  await db.prepare("CREATE UNIQUE INDEX IF NOT EXISTS idx_hae_node_inflight_lease ON hermes_automation_node_leases(node_id) WHERE state IN ('ACTIVE','COMPLETING')").run();
   await db.prepare("CREATE INDEX IF NOT EXISTS idx_hae_node_lease_expiry ON hermes_automation_node_leases(state,lease_until)").run();
 }
 
@@ -98,6 +99,7 @@ async function frozenSemanticJob(row) {
   if (!row || !ELIGIBLE_JOB_TYPES.has(String(row.job_type || ""))) return null;
   const contract = roleContractForJobType(String(row.job_type));
   if (!contract || contract.semantic_required !== true || contract.permission_class !== "READ_ONLY") return null;
+  if (String(row.business_lane || "") !== String(contract.business_lane || "")) return null;
   const budget = Number(contract?.runtime_config?.max_cost_usd);
   if (!Number.isFinite(budget) || budget !== 0) return null;
   const payload = parsePayload(row);
@@ -139,17 +141,24 @@ async function claimResponse(db, row, lease) {
 
 export async function recoverExpiredWindowsNodeLeases(db, now = new Date().toISOString()) {
   await ensureWindowsNodeSchema(db);
-  const rows = await db.prepare(`SELECT job_id,node_id,lease_id,fence FROM hermes_automation_node_leases
-    WHERE state='ACTIVE' AND lease_until<=? ORDER BY lease_until ASC LIMIT 50`).bind(now).all();
+  const rows = await db.prepare(`SELECT job_id,node_id,lease_id,fence,state FROM hermes_automation_node_leases
+    WHERE state IN ('ACTIVE','COMPLETING') AND lease_until<=? ORDER BY lease_until ASC LIMIT 50`).bind(now).all();
   let recovered = 0;
   for (const lease of rows?.results || []) {
-    const jobUpdate = await db.prepare(`UPDATE hermes_automation_jobs
+    const jobStatement = db.prepare(`UPDATE hermes_automation_jobs
       SET state='WAITING_FREE_AI',current_step='free_ai',available_at=?,last_error_class='windows_node_lease_expired',updated_at=?
-      WHERE job_id=? AND state='RUNNING' AND current_step='windows_free_ai'`).bind(now, now, lease.job_id).run();
-    if (Number(jobUpdate?.meta?.changes || 0) !== 1) continue;
-    await db.prepare("UPDATE hermes_automation_node_leases SET state='EXPIRED',updated_at=? WHERE job_id=? AND state='ACTIVE' AND fence=?")
-      .bind(now, lease.job_id, lease.fence).run();
-    await appendEvent(db, { jobId: lease.job_id, eventType: "job.windows_node_lease_expired", fromState: "RUNNING", toState: "WAITING_FREE_AI", step: "free_ai", errorClass: "windows_node_lease_expired", createdAt: now });
+      WHERE job_id=? AND state='RUNNING' AND current_step='windows_free_ai'`).bind(now, now, lease.job_id);
+    const leaseStatement = db.prepare("UPDATE hermes_automation_node_leases SET state='EXPIRED',updated_at=? WHERE job_id=? AND state IN ('ACTIVE','COMPLETING') AND fence=? AND lease_until<=?")
+      .bind(now, lease.job_id, lease.fence, now);
+    const results = typeof db.batch === "function"
+      ? await db.batch([jobStatement, leaseStatement])
+      : [await jobStatement.run(), await leaseStatement.run()];
+    const jobChanged = Number(results?.[0]?.meta?.changes || 0) === 1;
+    const leaseChanged = Number(results?.[1]?.meta?.changes || 0) === 1;
+    if (!leaseChanged) continue;
+    if (jobChanged) {
+      await appendEvent(db, { jobId: lease.job_id, eventType: "job.windows_node_lease_expired", fromState: "RUNNING", toState: "WAITING_FREE_AI", step: "free_ai", errorClass: "windows_node_lease_expired", createdAt: now });
+    }
     recovered += 1;
   }
   return recovered;
@@ -182,9 +191,10 @@ export async function claimWindowsNodeJob(env, payload = {}, now = new Date().to
   if (clean(payload.node_id, 80) !== WINDOWS_NODE_ID) throw new Error("windows_node_id_invalid");
   if (clean(payload.contract_version, 80) !== WINDOWS_NODE_CONTRACT_VERSION) throw new Error("windows_node_contract_version_invalid");
 
-  const active = await env.DB.prepare(`SELECT l.*,j.job_type,j.business_lane,j.payload_json,j.state,j.current_step
+  const active = await env.DB.prepare(`SELECT l.*,l.state AS lease_state,j.job_type,j.business_lane,j.payload_json,j.state AS job_state,j.current_step
     FROM hermes_automation_node_leases l JOIN hermes_automation_jobs j ON j.job_id=l.job_id
-    WHERE l.node_id=? AND l.state='ACTIVE' AND l.lease_until>? LIMIT 1`).bind(WINDOWS_NODE_ID, now).first();
+    WHERE l.node_id=? AND l.state IN ('ACTIVE','COMPLETING') AND l.lease_until>? LIMIT 1`).bind(WINDOWS_NODE_ID, now).first();
+  if (active?.lease_state === "COMPLETING") return { status: "LEASE_COMPLETING", lease: null };
   if (active) return { status: "LEASE_REPLAY", lease: await claimResponse(env.DB, active, active) };
 
   const rows = await env.DB.prepare(`SELECT job_id,job_type,business_lane,payload_json,state,current_step,priority,available_at
@@ -307,6 +317,7 @@ export async function completeWindowsNodeJob(env, payload = {}, now = new Date()
     };
     const completedAt = now;
     const eventId = `evt:${jobId}:job.windows_node_succeeded:${fence}`;
+    const canonicalSuccessEventId = `evt:${jobId}:job.succeeded:windows:${fence}`;
     const batch = [
       env.DB.prepare(`INSERT OR IGNORE INTO hermes_automation_ai_usage
         (usage_id,job_id,role_id,contract_version,contract_sha256,provider_id,model,budget_usd,cost_usd,input_tokens,output_tokens,input_chars,output_chars,status,created_at)
@@ -316,6 +327,8 @@ export async function completeWindowsNodeJob(env, payload = {}, now = new Date()
         .bind(JSON.stringify(finalResult), completedAt, completedAt, jobId),
       env.DB.prepare("INSERT OR IGNORE INTO hermes_automation_job_events (event_id,job_id,event_type,from_state,to_state,step,evidence_ref,provider_ref,error_class,created_at) VALUES (?,?,'job.windows_node_succeeded','RUNNING','SUCCEEDED','complete',?,?,NULL,?)")
         .bind(eventId, jobId, `sha256:${outputSha}`, WINDOWS_NODE_PROVIDER_ID, completedAt),
+      env.DB.prepare("INSERT OR IGNORE INTO hermes_automation_job_events (event_id,job_id,event_type,from_state,to_state,step,evidence_ref,provider_ref,error_class,created_at) VALUES (?,?,'job.succeeded','RUNNING','SUCCEEDED','complete',?,?,NULL,?)")
+        .bind(canonicalSuccessEventId, jobId, `sha256:${outputSha}`, WINDOWS_NODE_PROVIDER_ID, completedAt),
       env.DB.prepare("UPDATE hermes_automation_node_leases SET state='COMPLETED',output_sha256=?,updated_at=? WHERE job_id=? AND node_id=? AND lease_id=? AND fence=? AND state='COMPLETING'")
         .bind(outputSha, completedAt, jobId, WINDOWS_NODE_ID, leaseId, fence),
     ];
