@@ -110,12 +110,31 @@ function timingSafeEqualText(left, right) {
 }
 
 export function requireInternalAiRunner(request, env) {
-  const expected = String(env.HERMES_INTERNAL_AI_RUNNER_TOKEN || "");
-  if (!expected) return { response: jsonResponse(503, { success: false, error: "internal_ai_runner_not_configured" }) };
+  const macToken = String(env.HERMES_INTERNAL_AI_RUNNER_TOKEN || "");
+  const windowsToken = String(env.HERMES_INTERNAL_AI_WINDOWS_RUNNER_TOKEN || "");
+  if (!macToken && !windowsToken) return { response: jsonResponse(503, { success: false, error: "internal_ai_runner_not_configured" }) };
+  if (macToken && windowsToken && timingSafeEqualText(macToken, windowsToken)) {
+    return { response: jsonResponse(503, { success: false, error: "internal_ai_runner_token_collision" }) };
+  }
   const authorization = request.headers.get("Authorization") || "";
   const supplied = authorization.startsWith("Bearer ") ? authorization.slice(7) : "";
-  if (!supplied || !timingSafeEqualText(supplied, expected)) return { response: jsonResponse(401, { success: false, error: "runner_auth_required" }) };
-  return { ok: true };
+  if (!supplied) return { response: jsonResponse(401, { success: false, error: "runner_auth_required" }) };
+  if (windowsToken && timingSafeEqualText(supplied, windowsToken)) {
+    return { ok: true, runner_id: INTERNAL_AI_WINDOWS_VIKTOR_RUNNER_ID };
+  }
+  if (macToken && timingSafeEqualText(supplied, macToken)) {
+    return { ok: true, runner_id: INTERNAL_AI_MAC_RUNNER_ID };
+  }
+  return { response: jsonResponse(401, { success: false, error: "runner_auth_required" }) };
+}
+
+export function requireAuthenticatedRunnerId(auth, requestedRunnerId) {
+  const runnerId = normalizeInternalAiRunnerId(requestedRunnerId);
+  if (!runnerId) return { response: jsonResponse(400, { success: false, error: "invalid_runner_id" }) };
+  if (auth?.runner_id !== runnerId) {
+    return { response: jsonResponse(403, { success: false, error: "runner_identity_mismatch", runner_id: runnerId }) };
+  }
+  return { runner_id: runnerId };
 }
 
 export const nowIso = () => new Date().toISOString();
