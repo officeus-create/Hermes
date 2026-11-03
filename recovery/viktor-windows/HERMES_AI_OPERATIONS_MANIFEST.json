@@ -95,8 +95,8 @@
       "plugin_route": [
         {
           "plugin": "hermes-agent-coordinator",
-          "version": "0.1.90",
-          "release_id": "pluginrel_6ae910b51a34819186eae0b1a3162820",
+          "version": "0.1.92",
+          "release_id": "pluginrel_6ae9c92e56408191a04676bc8b4cb877",
           "local_skill_projection": "WINDOWS_RUNTIME_TRUTH"
         }
       ],
@@ -129,8 +129,8 @@
       "plugin_route": [
         {
           "plugin": "hermes-agent-coordinator",
-          "version": "0.1.90",
-          "release_id": "pluginrel_6ae910b51a34819186eae0b1a3162820",
+          "version": "0.1.92",
+          "release_id": "pluginrel_6ae9c92e56408191a04676bc8b4cb877",
           "local_skill_projection": "WINDOWS_RUNTIME_TRUTH"
         }
       ],
@@ -369,8 +369,8 @@
         },
         {
           "plugin": "hermes-agent-coordinator",
-          "version": "0.1.90",
-          "release_id": "pluginrel_6ae910b51a34819186eae0b1a3162820",
+          "version": "0.1.92",
+          "release_id": "pluginrel_6ae9c92e56408191a04676bc8b4cb877",
           "local_skill_projection": "WINDOWS_RUNTIME_TRUTH"
         },
         {
@@ -409,8 +409,8 @@
       "plugin_route": [
         {
           "plugin": "hermes-agent-coordinator",
-          "version": "0.1.90",
-          "release_id": "pluginrel_6ae910b51a34819186eae0b1a3162820",
+          "version": "0.1.92",
+          "release_id": "pluginrel_6ae9c92e56408191a04676bc8b4cb877",
           "local_skill_projection": "WINDOWS_RUNTIME_TRUTH"
         },
         {
@@ -421,8 +421,8 @@
         }
       ],
       "plugin_owner": "hermes-agent-coordinator",
-      "plugin_owner_version": "0.1.90",
-      "plugin_owner_release_id": "pluginrel_6ae910b51a34819186eae0b1a3162820",
+      "plugin_owner_version": "0.1.92",
+      "plugin_owner_release_id": "pluginrel_6ae9c92e56408191a04676bc8b4cb877",
       "qa_owner": "hermes-qa-evidence-auditor",
       "qa_owner_version": "0.1.24",
       "learning_owner": "hermes-knowledge-curator",
@@ -447,8 +447,8 @@
       "plugin_route": [
         {
           "plugin": "hermes-agent-coordinator",
-          "version": "0.1.90",
-          "release_id": "pluginrel_6ae910b51a34819186eae0b1a3162820",
+          "version": "0.1.92",
+          "release_id": "pluginrel_6ae9c92e56408191a04676bc8b4cb877",
           "local_skill_projection": "WINDOWS_RUNTIME_TRUTH"
         },
         {
@@ -465,8 +465,8 @@
         }
       ],
       "plugin_owner": "hermes-agent-coordinator",
-      "plugin_owner_version": "0.1.90",
-      "plugin_owner_release_id": "pluginrel_6ae910b51a34819186eae0b1a3162820",
+      "plugin_owner_version": "0.1.92",
+      "plugin_owner_release_id": "pluginrel_6ae9c92e56408191a04676bc8b4cb877",
       "qa_owner": "hermes-qa-evidence-auditor",
       "qa_owner_version": "0.1.24",
       "learning_owner": "hermes-knowledge-curator",
@@ -621,14 +621,14 @@
       "plugin_route": [
         {
           "plugin": "hermes-sales",
-          "version": "0.1.24",
-          "release_id": "pluginrel_6ae63d88c454819198590803738009bc",
+          "version": "0.1.28",
+          "release_id": "pluginrel_6ae9cd69100c8191ac9987def9cf437d",
           "local_skill_projection": "SALES_PIPELINE_ROUTING_20261102"
         }
       ],
       "plugin_owner": "hermes-sales",
-      "plugin_owner_version": "0.1.24",
-      "plugin_owner_release_id": "pluginrel_6ae63d88c454819198590803738009bc",
+      "plugin_owner_version": "0.1.28",
+      "plugin_owner_release_id": "pluginrel_6ae9cd69100c8191ac9987def9cf437d",
       "qa_owner": "hermes-qa-evidence-auditor",
       "qa_owner_version": "0.1.24",
       "learning_owner": "hermes-knowledge-curator",
@@ -685,8 +685,8 @@
       "plugin_route": [
         {
           "plugin": "hermes-agent-coordinator",
-          "version": "0.1.90",
-          "release_id": "pluginrel_6ae910b51a34819186eae0b1a3162820",
+          "version": "0.1.92",
+          "release_id": "pluginrel_6ae9c92e56408191a04676bc8b4cb877",
           "local_skill_projection": "WINDOWS_RUNTIME_TRUTH"
         },
         {
@@ -703,8 +703,8 @@
         }
       ],
       "plugin_owner": "hermes-agent-coordinator",
-      "plugin_owner_version": "0.1.90",
-      "plugin_owner_release_id": "pluginrel_6ae910b51a34819186eae0b1a3162820",
+      "plugin_owner_version": "0.1.92",
+      "plugin_owner_release_id": "pluginrel_6ae9c92e56408191a04676bc8b4cb877",
       "qa_owner": "hermes-qa-evidence-auditor",
       "qa_owner_version": "0.1.24",
       "learning_owner": "hermes-knowledge-curator",
