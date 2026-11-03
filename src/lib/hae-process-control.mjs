@@ -204,6 +204,8 @@ export function publicHaeAuditSummary(resultJson, fallbackCapability = "") {
     blocked_finding_count: boundedCount(result.blocked_finding_count),
     writer_state_unverified_count: boundedCount(result.writer_state_unverified_count),
     routing_blocked_reason: typeof result.routing_blocked_reason === "string" ? result.routing_blocked_reason.slice(0, 120) : null,
+    remediation_owner_role_id: typeof result.remediation_owner?.role_id === "string" ? result.remediation_owner.role_id.slice(0, 120) : null,
+    independent_review_owner_role_id: typeof result.independent_review_owner?.role_id === "string" ? result.independent_review_owner.role_id.slice(0, 120) : null,
     http_error_count: boundedCount(result.http_error_count),
     canonical_defect_count: boundedCount(result.canonical_defect_count),
     redirect_drift_count: boundedCount(result.redirect_drift_count),
