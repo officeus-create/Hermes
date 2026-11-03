@@ -100,11 +100,11 @@ function renderOwnerOverview(){
   const activeProcesses=processes.filter(process=>process.status==="active").length;
   const blocked=items.filter(item=>item.status==="blocked").length+processAlerts.length;
   const open=items.filter(item=>!["done","cancelled"].includes(item.status)).sort((a,b)=>priorityRank(a.priority)-priorityRank(b.priority));
-  const next=pending[0]||processAlerts[0]||open[0]||null;
+  const nextLabel=pending[0]?.title||processAlerts[0]?.name||open[0]?.title||null;
   setText("[data-today-decision]",String(pending.length+processAlerts.length));
   setText("[data-today-running]",String(runningTasks+activeProcesses));
   setText("[data-today-blocked]",String(blocked));
-  setText("[data-today-next]",next?("title" in next?next.title:next.name):t("No action","Нет действий"));
+  setText("[data-today-next]",nextLabel||t("No action","Нет действий"));
   const box=q("[data-today-list]");if(!box)return;box.replaceChildren();
   const taskRows=[...pending,...open.filter(item=>!pending.some(review=>review.id===item.id))];
   if(!processAlerts.length&&!taskRows.length){const p=document.createElement("p");p.className="muted";p.textContent=t("Nothing needs owner attention right now.","Сейчас нет задач, требующих внимания владельца.");box.append(p);return}
