@@ -83,8 +83,6 @@ assert.ok(windowsState);
 assert.equal(windowsState.accept_tasks, 0);
 assert.equal(windowsState.executor_type, "windows", "authenticated Windows identity must override spoofed executor_type");
 assert.equal(windowsState.display_name, "Hermes AI / VIKTOR Windows", "authenticated Windows identity must override spoofed display_name");
-assert.equal(windowsState.executor_type, "windows");
-assert.equal(windowsState.display_name, "VIKTOR Windows");
 assert.equal(publicRunnerState(windowsState).online, true);
 
 result = await responseJson(await claimTask({
