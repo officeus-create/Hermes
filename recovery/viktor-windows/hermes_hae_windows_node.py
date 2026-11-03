@@ -77,9 +77,16 @@ def run_once():
     except Exception as exc:
         return emit("HAE_UNAVAILABLE",error_class=type(exc).__name__,node_id=NODE_ID)
     if claim.get("success") is not True: return emit("HAE_CONTRACT_ERROR",node_id=NODE_ID)
+    claim_status=str(claim.get("status") or "")
     lease=claim.get("lease")
-    if claim.get("status")=="NO_ELIGIBLE_WORK" or not lease: return emit("NO_ELIGIBLE_WORK",node_id=NODE_ID)
-    if claim.get("status") not in ("LEASE_ACCEPTED","LEASE_REPLAY"): return emit("UNEXPECTED_CLAIM_STATE",claim_state=claim.get("status"),node_id=NODE_ID)
+    if claim_status=="LEASE_COMPLETING":
+        return emit("LEASE_COMPLETING",node_id=NODE_ID,cost_usd=0,external_write=False)
+    if claim_status=="NO_ELIGIBLE_WORK":
+        return emit("NO_ELIGIBLE_WORK",node_id=NODE_ID)
+    if claim_status not in ("LEASE_ACCEPTED","LEASE_REPLAY"):
+        return emit("UNEXPECTED_CLAIM_STATE",claim_state=claim_status,node_id=NODE_ID)
+    if not lease:
+        return emit("HAE_CONTRACT_ERROR",claim_state=claim_status,node_id=NODE_ID)
     job_id=str(lease.get("job_id") or ""); work_id=str(lease.get("work_id") or "")
     role=lease.get("role_contract") or {}
     if lease.get("node_id")!=NODE_ID or lease.get("node_contract_version")!=CONTRACT_VERSION: return emit("LEASE_IDENTITY_MISMATCH",job_id=job_id)
