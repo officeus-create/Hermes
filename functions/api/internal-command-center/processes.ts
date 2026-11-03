@@ -9,6 +9,7 @@ import {
   normalizeHaeProcessCadence,
   normalizeHaeProcessName,
   publicHaeProcess,
+  publicHaeSystemJob,
 } from "../../../src/lib/hae-process-control.mjs";
 
 type Env = { DB?: any };
@@ -22,11 +23,11 @@ async function processRows(db: any) {
     "SELECT name FROM sqlite_master WHERE type='table' AND name='hermes_automation_jobs' LIMIT 1",
   ).first();
   if (!jobsTable) {
-    return db.prepare(`SELECT p.*, NULL AS last_job_state, NULL AS last_job_completed_at, NULL AS last_job_error_class
+    return db.prepare(`SELECT p.*, NULL AS last_job_state, NULL AS last_job_completed_at, NULL AS last_job_error_class, NULL AS last_job_result_json
       FROM hermes_automation_processes p WHERE p.organization_scope=? ORDER BY p.created_at DESC`).bind(SCOPE).all();
   }
   return db.prepare(`SELECT p.*, j.state AS last_job_state, j.completed_at AS last_job_completed_at,
-    j.last_error_class AS last_job_error_class
+    j.last_error_class AS last_job_error_class, j.result_json AS last_job_result_json
     FROM hermes_automation_processes p
     LEFT JOIN hermes_automation_jobs j ON j.job_id=p.last_job_id
     WHERE p.organization_scope=? ORDER BY
@@ -34,17 +35,42 @@ async function processRows(db: any) {
       p.created_at DESC`).bind(SCOPE).all();
 }
 
+async function systemJobRows(db: any) {
+  const jobsTable = await db.prepare(
+    "SELECT name FROM sqlite_master WHERE type='table' AND name='hermes_automation_jobs' LIMIT 1",
+  ).first();
+  if (!jobsTable) return [];
+  const result = await db.prepare(`SELECT job_id,job_type,business_lane,state,result_json,last_error_class,created_at,completed_at
+    FROM hermes_automation_jobs
+    WHERE project_key='hae-plugin-role-runtime'
+    ORDER BY created_at DESC LIMIT 100`).all();
+  const latest = new Map<string, any>();
+  for (const row of result.results || []) {
+    const jobType = String(row.job_type || "");
+    if (jobType && !latest.has(jobType)) latest.set(jobType, row);
+  }
+  return [...latest.values()];
+}
+
 export async function onRequestGet({ request, env }: { request: Request; env: Env }) {
   const owner = await requireInternalOwner(request, env); if (owner.response) return owner.response;
   await ensureHaeProcessSchema(env.DB);
-  const result = await processRows(env.DB);
+  const [result, systemRows] = await Promise.all([processRows(env.DB), systemJobRows(env.DB)]);
+  const processes = (result.results || []).map(publicHaeProcess);
+  const ownerManagedTypes = new Set(processes.map((process: any) => String(process.job_type)));
+  const systemProcesses = systemRows
+    .filter((row: any) => !ownerManagedTypes.has(String(row.job_type)))
+    .map(publicHaeSystemJob)
+    .filter(Boolean);
   return jsonResponse(200, {
     success: true,
     runtime_owner: "hermes-automation-engine",
     tick_interval: "hourly",
     normal_loop_requires_chat: false,
     automatic_paid_ai_cost_usd: 0,
-    processes: (result.results || []).map(publicHaeProcess),
+    processes,
+    system_processes: systemProcesses,
+    attention_required_count: [...processes, ...systemProcesses].filter((process: any) => process?.attention_required).length,
     templates: HAE_OWNER_PROCESS_TEMPLATES,
   }, headers);
 }
