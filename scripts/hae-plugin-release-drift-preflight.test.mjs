@@ -16,7 +16,18 @@ const current=plan(base,"2026-10-26T16:00:00Z");
 assert.equal(current.status,"HOLD_RUNTIME_COMPATIBILITY_PROOF");
 assert.equal(current.readback_fresh,true);
 assert.equal(current.version_mismatches.length,0);
-assert.equal(current.registered_roles,9);
+assert.equal(current.registered_roles,13);
+const requiredAuditors=new Map([
+ ["hermes-github-auditor","0.1.1"],
+ ["hermes-cloudflare-auditor","0.1.1"],
+ ["hermes-drive-auditor","0.1.1"],
+ ["hermes-website-auditor","0.1.1"],
+]);
+for(const [roleId,version] of requiredAuditors){
+ const entry=known.find((item)=>item.role_id===roleId);
+ assert.ok(entry,`missing required auditor ${roleId}`);
+ assert.equal(entry.plugin_version,version,`${roleId} version drift`);
+}
 assert.equal(current.automatic_dispatch_allowed,false);
 assert.equal(current.one_brain_write_allowed,false);
 assert.equal(current.automatic_plugin_update_allowed,false);
