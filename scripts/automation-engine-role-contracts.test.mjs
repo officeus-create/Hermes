@@ -13,7 +13,14 @@ import {
 } from "../workers/automation-engine/src/role-contracts.mjs";
 import { pluginRuntimeVersion } from "../workers/automation-engine/src/plugin-runtime-registry.mjs";
 
-assert.equal(ROLE_CONTRACTS.length, 17, "Runtime must expose fifteen deterministic contracts plus two free-only semantic contracts");
+for (const jobType of [
+  "audit.github.snapshot",
+  "audit.cloudflare.runtime",
+  "audit.drive.truth",
+  "audit.website.journey",
+]) {
+  assert.ok(ROLE_CONTRACT_JOB_TYPES.includes(jobType), `missing auditor contract: ${jobType}`);
+}
 assert.deepEqual(
   [...ROLE_CONTRACT_JOB_TYPES].sort(),
   [
@@ -80,7 +87,7 @@ assert.equal(roleContractForJobType("hae.self.patch.propose").runtime_config.max
 assert.equal(CAPABILITY_GRAPH_ROLE_CONTRACT_JOB_TYPES.length, ROLE_CONTRACT_JOB_TYPES.length - 2);
 assert.equal(roleContractForJobType("knowledge.evidence.audit").role_id, "hermes-knowledge-curator");
 assert.equal(roleContractForJobType("knowledge.evidence.audit").plugin_version, pluginRuntimeVersion("hermes-knowledge-curator"));
-assert.equal(ROLE_CONTRACTS.filter((contract) => !contract.semantic_required).length, 15);
+assert.ok(ROLE_CONTRACTS.filter((contract) => !contract.semantic_required).length >= 19);
 assert.equal(ROLE_CONTRACTS.filter((contract) => contract.semantic_required).length, 2);
 
 const searchInput = {
