@@ -1,11 +1,11 @@
 import { getAuthenticatedSpecialist, jsonResponse } from "../_lib/session.mjs";
+import { authorizedCarrier } from "../_lib/carrier-dispatch-workspace.mjs";
 import {
   cleanCompanyText,
   companySlug,
   ensureHermesCompanyProfilesSchema,
   normalizeCompanyType,
   normalizeState,
-  specialistHasLoadBoardAccess,
 } from "../_lib/hermes-company-profiles.mjs";
 
 type Env = {
@@ -277,7 +277,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     success: true,
     company: safeCompany(row),
     load_board_access: Boolean(loadBoardAccess),
-    verified_carrier_access: await specialistHasLoadBoardAccess(env.DB,specialist),
+    verified_carrier_access: Boolean(await authorizedCarrier(env.DB,specialist)),
     catalog: catalogOptIn
       ? { listed: true, status: row?.catalog_status || "self_submitted", note: "Self-submitted company facts remain verification-pending until reviewed." }
       : { listed: false, status: "opted_out" },
