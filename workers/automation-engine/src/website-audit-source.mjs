@@ -18,8 +18,8 @@ function normalized(url){
     return parsed.toString();
   }catch{return null;}
 }
-function finding(id,category,severity){
-  return {finding_id:id,category,severity,status:"OPEN"};
+function finding(id,category,severity,status="OPEN"){
+  return {finding_id:id,category,severity,status};
 }
 
 export function buildWebsiteAuditSnapshot({
@@ -52,13 +52,17 @@ export function buildWebsiteAuditSnapshot({
     const page=pageByUrl.get(normalizedTarget);
     if(!page){
       coverageComplete=false;
-      findings.push(finding("website-"+key+"-probe-missing","PROBE_MISSING","P1"));
+      findings.push(finding("website-"+key+"-probe-missing","PROBE_MISSING","P1","UNKNOWN"));
       continue;
     }
 
     const status=Number(page.status);
-    if(!Number.isInteger(status)||status<100||status>599||status===599)coverageComplete=false;
-    if(!Number.isInteger(status)||status<200||status>=400){
+    if(!Number.isInteger(status)||status<100||status>599||status===599){
+      coverageComplete=false;
+      findings.push(finding("website-"+key+"-probe-unavailable","PROBE_UNAVAILABLE","P1","UNKNOWN"));
+      continue;
+    }
+    if(status<200||status>=400){
       findings.push(finding(
         "website-"+key+"-http",
         "HTTP_ERROR",
