@@ -51,8 +51,11 @@ assert.equal(registryStale.automatic_dispatch_allowed,false);
 assert.equal(plan({...base,inventory_complete:false},checkedAt).status,"HOLD_INCOMPLETE_OR_UNREDACTED");
 assert.equal(plan({...base,redaction_verified:false},checkedAt).status,"HOLD_INCOMPLETE_OR_UNREDACTED");
 assert.equal(plan({...base,entries:base.entries.slice(1)},checkedAt).missing_roles.length,1);
-const unknown=[...base.entries,{role_id:"hermes-unknown-agent",plugin_version:"1.2.3",release_evidence_hash:"sha256:"+"b".repeat(64)}];
-assert.equal(plan({...base,entries:unknown},checkedAt).unknown_roles.length,1);
+const providerOnly=[...base.entries,{role_id:"hermes-provider-only-agent",plugin_version:"1.2.3",release_evidence_hash:"sha256:"+"b".repeat(64)}];
+const providerOnlyResult=plan({...base,entries:providerOnly},checkedAt);
+assert.equal(providerOnlyResult.status,"HOLD_RUNTIME_COMPATIBILITY_PROOF","A complete provider inventory may legitimately contain Hermes plugins outside the HAE runtime subset");
+assert.deepEqual(providerOnlyResult.provider_only_roles,["hermes-provider-only-agent"]);
+assert.equal(providerOnlyResult.observed_roles,known.length+1);
 const rejects=[
  [{...base,raw_secret:"do not read"},"unknown"],
  [{...base,source_class:"USER_SUPPLIED_PROOF"},"source"],
