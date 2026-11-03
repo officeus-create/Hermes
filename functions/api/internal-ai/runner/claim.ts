@@ -15,8 +15,10 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
   const now = nowIso();
   const repoSha = sanitizeExecutionText(payload?.repo_sha, 80) || null;
   const runtimeVersion = sanitizeExecutionText(payload?.runtime_version, 120) || null;
-  const executorType = sanitizeExecutionText(payload?.executor_type, 80) || null;
-  const displayName = sanitizeExecutionText(payload?.display_name, 120) || null;
+  const executorType = runnerId === INTERNAL_AI_WINDOWS_VIKTOR_RUNNER_ID ? "windows" : "mac";
+  const displayName = runnerId === INTERNAL_AI_WINDOWS_VIKTOR_RUNNER_ID
+    ? "Hermes AI / VIKTOR Windows"
+    : "Hermes Internal AI Mac Runner";
   const currentTask = sanitizeExecutionText(payload?.current_task, 500) || null;
   const phase = sanitizeExecutionText(payload?.phase, 120) || null;
   const lastResult = sanitizeExecutionText(payload?.last_result, 500) || null;
