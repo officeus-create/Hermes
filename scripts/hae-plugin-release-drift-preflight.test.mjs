@@ -21,7 +21,7 @@ assert.equal(current.readback_fresh,true);
 assert.equal(current.registered_inventory_fresh,true);
 assert.equal(current.registered_inventory_age_hours,2);
 assert.equal(current.version_mismatches.length,0);
-assert.equal(current.registered_roles,9);
+assert.equal(current.registered_roles,known.length,"registry-size assertion must follow the canonical runtime subset, not a historical hard-coded count");
 assert.equal(current.automatic_dispatch_allowed,false);
 assert.equal(current.one_brain_write_allowed,false);
 assert.equal(current.automatic_plugin_update_allowed,false);
