@@ -30,6 +30,7 @@ export async function ensureCarrierDispatchWorkspaceSchema(db) {
       agreement_version TEXT,
       agreement_sha256 TEXT,
       agreement_effective_at TEXT,
+      trial_start_date TEXT,
       trial_end_date TEXT,
       authority_status TEXT NOT NULL DEFAULT 'pending',
       insurance_status TEXT NOT NULL DEFAULT 'pending',
@@ -44,6 +45,7 @@ export async function ensureCarrierDispatchWorkspaceSchema(db) {
     ["agreement_version","TEXT"],
     ["agreement_sha256","TEXT"],
     ["agreement_effective_at","TEXT"],
+    ["trial_start_date","TEXT"],
     ["trial_end_date","TEXT"],
     ["authority_status","TEXT NOT NULL DEFAULT 'pending'"],
     ["insurance_status","TEXT NOT NULL DEFAULT 'pending'"],
@@ -98,7 +100,7 @@ export async function getOwnedCarrier(db, specialist) {
   const result = await db.prepare(`
     SELECT c.id,c.company_name,c.company_type,c.load_board_access,e.status AS entitlement_status,
       e.agreement_state,e.agreement_version,e.agreement_sha256,e.agreement_effective_at,
-      e.trial_end_date,e.authority_status,e.insurance_status,e.source_rights_status,e.evidence_id
+      e.trial_start_date,e.trial_end_date,e.authority_status,e.insurance_status,e.source_rights_status,e.evidence_id
     FROM hermes_company_profiles c
     LEFT JOIN hermes_carrier_board_entitlements e ON e.company_id=c.id
     WHERE c.owner_specialist_id=? LIMIT 1
