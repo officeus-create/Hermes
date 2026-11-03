@@ -9,6 +9,7 @@ import {
   pluginRuntimeRegistrySnapshot,
   pluginRuntimeVersion,
 } from "../workers/automation-engine/src/plugin-runtime-registry.mjs";
+import { scheduledReceiptFreshnessFindings } from "../workers/automation-engine/src/scheduled-receipt-guard.mjs";
 
 const findings = [
   {
@@ -140,5 +141,55 @@ assert.throws(
   }),
   /hae_self_source_ref_invalid/,
 );
+
+const scheduleSha = "a".repeat(40);
+const scheduleContracts = [
+  { job_type: "website.route.audit", cadence_hours: 6, owner_managed: false },
+  { job_type: "ai.gateway.readiness.audit", cadence_hours: 24, owner_managed: false },
+  { job_type: "academy.english.practice.build", cadence_hours: 24, owner_managed: true },
+];
+assert.deepEqual(scheduledReceiptFreshnessFindings({
+  scheduled_at: "2026-11-03T10:00:00Z",
+  deployment_first_observed_at: "2026-11-03T00:00:00Z",
+  source_sha: scheduleSha,
+  contracts: scheduleContracts,
+  latest_receipts: {},
+}), [], "new deployment gets a two-cadence grace period");
+const staleSchedule = scheduledReceiptFreshnessFindings({
+  scheduled_at: "2026-11-03T13:00:00Z",
+  deployment_first_observed_at: "2026-11-03T00:00:00Z",
+  source_sha: scheduleSha,
+  contracts: scheduleContracts,
+  latest_receipts: {},
+});
+assert.equal(staleSchedule.length, 1);
+assert.equal(staleSchedule[0].finding_id, "scheduled-receipt-stale:website.route.audit");
+assert.equal(staleSchedule[0].category, "TEST_GAP");
+assert.equal(staleSchedule[0].status, "BLOCKED");
+assert.equal(staleSchedule[0].writer_state_verified, false);
+assert.deepEqual(scheduledReceiptFreshnessFindings({
+  scheduled_at: "2026-11-03T13:00:00Z",
+  deployment_first_observed_at: "2026-11-03T00:00:00Z",
+  source_sha: scheduleSha,
+  contracts: scheduleContracts,
+  latest_receipts: { "website.route.audit": "2026-11-03T12:00:00Z" },
+}), [], "fresh scheduled receipt clears the SLA alert");
+assert.deepEqual(scheduledReceiptFreshnessFindings({
+  scheduled_at: "2026-11-06T00:00:00Z",
+  deployment_first_observed_at: "2026-11-03T00:00:00Z",
+  source_sha: "not-a-sha",
+  contracts: scheduleContracts,
+  latest_receipts: {},
+}), [], "receipt monitoring fails closed until an exact deployed SHA exists");
+const dailyStale = scheduledReceiptFreshnessFindings({
+  scheduled_at: "2026-11-05T01:00:00Z",
+  deployment_first_observed_at: "2026-11-03T00:00:00Z",
+  source_sha: scheduleSha,
+  contracts: scheduleContracts,
+  latest_receipts: { "website.route.audit": "2026-11-05T00:00:00Z" },
+});
+assert.equal(dailyStale.length, 1);
+assert.equal(dailyStale[0].finding_id, "scheduled-receipt-stale:ai.gateway.readiness.audit");
+assert.ok(!dailyStale.some((item) => item.finding_id.includes("academy.english.practice.build")), "owner-managed schedules are not double-monitored");
 
 console.log("HAE self-improvement PASS: complete evidence only -> repair candidate -> independent QA -> no merge/deploy");
