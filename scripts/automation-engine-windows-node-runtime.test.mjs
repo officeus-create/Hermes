@@ -205,9 +205,6 @@ assert.equal(usageRows.results[0].cost_usd,0);
 let successEvents=await DB.prepare("SELECT * FROM hermes_automation_job_events WHERE job_id=? AND event_type='job.windows_node_succeeded'").bind(claim.lease.job_id).all();
 assert.equal(successEvents.results.length,1);
 
-canonicalSuccessEvents=await DB.prepare("SELECT * FROM hermes_automation_job_events WHERE job_id=? AND event_type='job.succeeded'").bind(claim.lease.job_id).all();
-assert.equal(canonicalSuccessEvents.results.length,1);
-
 let canonicalSuccessEvents=await DB.prepare("SELECT * FROM hermes_automation_job_events WHERE job_id=? AND event_type='job.succeeded'").bind(claim.lease.job_id).all();
 assert.equal(canonicalSuccessEvents.results.length,1,"Windows semantic completion must emit the canonical durable success event");
 
