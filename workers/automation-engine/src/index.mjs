@@ -60,6 +60,7 @@ import {
   pluginRuntimeRegistrySnapshot,
 } from "./plugin-runtime-registry.mjs";
 import { haeSelfRepairPacketReplayMatches } from "./hae-self-improvement.mjs";
+import { scheduledReceiptFreshnessFindings } from "./scheduled-receipt-guard.mjs";
 import { verifyGithubCIQueueEnvelope } from "./github-ci-runtime-intake.mjs";
 import { verifyGithubCIPatchProposalEnvelope } from "./github-ci-patch-runtime-intake.mjs";
 import { verifyGithubCIIndependentQaEnvelope } from "./github-ci-independent-qa-runtime-intake.mjs";
@@ -2148,7 +2149,50 @@ async function buildScheduledLogisticsPayload(env, contract) {
   };
 }
 
-function buildScheduledHaeSelfImprovementPayload(scheduledAt) {
+async function buildScheduledReceiptFreshnessFindings(env, scheduledAt) {
+  const sourceSha = String(env?.HERMES_AUTOMATION_SOURCE_SHA || "").trim().toLowerCase();
+  if (!/^[0-9a-f]{40}$/.test(sourceSha) || !env?.DB) return [];
+
+  const heartbeat = await env.DB.prepare(
+    "SELECT MIN(observed_at) AS first_observed_at FROM hermes_automation_heartbeats WHERE source_sha=?"
+  ).bind(sourceSha).first();
+  const firstObservedAt = heartbeat?.first_observed_at || null;
+  if (!firstObservedAt || !Number.isFinite(Date.parse(String(firstObservedAt)))) return [];
+
+  const ownerManaged = await ownerManagedJobTypes(env.DB);
+  const contracts = ROLE_CONTRACTS
+    .filter((contract) => !contract.semantic_required && contract?.runtime_config?.scheduled)
+    .map((contract) => ({
+      job_type: contract.job_type,
+      cadence_hours: Number(contract?.runtime_config?.cadence_hours || 0),
+      owner_managed: ownerManaged.has(contract.job_type),
+    }));
+
+  const monitoredTypes = contracts.filter((contract) => !contract.owner_managed).map((contract) => contract.job_type);
+  const latestReceipts = {};
+  if (monitoredTypes.length) {
+    const placeholders = monitoredTypes.map(() => "?").join(",");
+    const rows = await env.DB.prepare(
+      `SELECT job_type,MAX(created_at) AS last_created_at
+       FROM hermes_automation_jobs
+       WHERE project_key='hae-plugin-role-runtime' AND job_type IN (${placeholders})
+       GROUP BY job_type`
+    ).bind(...monitoredTypes).all();
+    for (const row of rows?.results || []) {
+      if (row?.job_type && row?.last_created_at) latestReceipts[String(row.job_type)] = String(row.last_created_at);
+    }
+  }
+
+  return scheduledReceiptFreshnessFindings({
+    scheduled_at: scheduledAt.toISOString(),
+    deployment_first_observed_at: String(firstObservedAt),
+    source_sha: sourceSha,
+    contracts,
+    latest_receipts: latestReceipts,
+  });
+}
+
+async function buildScheduledHaeSelfImprovementPayload(env, scheduledAt) {
   const observedAt = scheduledAt.toISOString();
   const registryEvidence = pluginRuntimeRegistryEvidenceStatus(observedAt, 24);
   const findings = [];
@@ -2205,6 +2249,7 @@ function buildScheduledHaeSelfImprovementPayload(scheduledAt) {
       findings.push({ finding_id: `missing-ecosystem-watch-route:${jobType}`, source_ref: "github://officeus-create/Hermes/runtime/schedule-migrations", category: "CONTRACT_DRIFT", severity: "P0", status: "OPEN", artifact_key: "workers/automation-engine/src/schedule-migrations.mjs", verified: true, writer_active: false, writer_state_verified: false, observed_at: observedAt });
     }
   }
+  findings.push(...await buildScheduledReceiptFreshnessFindings(env, scheduledAt));
   return { observed_at: observedAt, coverage_complete: true, findings };
 }
 
@@ -2231,7 +2276,7 @@ async function buildScheduledRoleContractPayload(env, contract, scheduledAt) {
     };
   }
   if (contract.job_type === "hae.self.improvement.audit") {
-    return buildScheduledHaeSelfImprovementPayload(scheduledAt);
+    return buildScheduledHaeSelfImprovementPayload(env, scheduledAt);
   }
   throw new Error("scheduled_role_contract_not_supported");
 }
