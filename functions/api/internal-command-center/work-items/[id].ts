@@ -1,8 +1,9 @@
 import { jsonResponse } from "../../_lib/session.mjs";
 import { normalizeWorkItemProjectId, validWorkItemProject } from "../../_lib/command-center-work-item-projects.mjs";
 import { ensureInternalAiSchema, INTERNAL_AI_ORGANIZATION_SCOPE, newTaskId, normalizePrompt, nowIso, publicTask, requireInternalOwner } from "../../_lib/internal-ai.mjs";
-import { ensureCommandCenterSchema, normalizeWorkstream, normalizePriority, normalizeWorkItemTitle, normalizeWorkItemDetails, publicWorkItem, reconcileWorkItems, workItemPrompt, selectWorkItemPluginRoute } from "../../_lib/internal-command-center.mjs";
-type Env={DB?:any};
+import { ensureCommandCenterSchema, normalizeWorkstream, normalizePriority, normalizeWorkItemTitle, normalizeWorkItemDetails, publicWorkItem, reconcileWorkItems, workItemPrompt, selectWorkItemPluginRoute, readWorkItemPluginRoute } from "../../_lib/internal-command-center.mjs";
+import { readCommandCenterHaeExecution, submitCommandCenterHaeExecution } from "../../_lib/command-center-hae-bridge.mjs";
+type Env={DB?:any;HERMES_AUTOMATION_BASE_URL?:string;HERMES_AUTOMATION_TOKEN?:string};
 const headers={"Cache-Control":"private, no-store","X-Robots-Tag":"noindex, nofollow"};
 const sameOriginMutation=(request:Request)=>request.headers.get("Sec-Fetch-Site")!=="cross-site"&&(!request.headers.get("Origin")||request.headers.get("Origin")===new URL(request.url).origin);
 const safeReason=(value:unknown)=>String(value||"").replace(/\u0000/g,"").trim().slice(0,1000);
@@ -20,7 +21,9 @@ export async function onRequestGet({request,env,params}:{request:Request;env:Env
   await ensureCommandCenterSchema(env.DB); await reconcileWorkItems(env.DB);
   const row=await getItem(env.DB,String(params.id||""));
   if(!row)return jsonResponse(404,{success:false,error:"work_item_not_found"},headers);
-  return jsonResponse(200,{success:true,work_item:publicWorkItem(row)},headers);
+  const route=readWorkItemPluginRoute(row);
+  const pluginExecution=route?await readCommandCenterHaeExecution(env,row,route):null;
+  return jsonResponse(200,{success:true,work_item:publicWorkItem(row),plugin_execution:pluginExecution},headers);
 }
 
 export async function onRequestPatch({request,env,params}:{request:Request;env:Env;params:any}){
@@ -32,6 +35,29 @@ export async function onRequestPatch({request,env,params}:{request:Request;env:E
   let payload:any; try{payload=await request.json()}catch{return jsonResponse(400,{success:false,error:"invalid_json"},headers)}
   const action=String(payload?.action||"").trim(), now=nowIso();
   if(["done","cancelled"].includes(String(row.status)))return jsonResponse(409,{success:false,error:"work_item_terminal",work_item:publicWorkItem(row)},headers);
+
+  if(action==="execute_plugin"){
+    const linkedTaskId=String(row.linked_task_id||"");
+    if(!linkedTaskId)return jsonResponse(409,{success:false,error:"plugin_execution_requires_linked_task",work_item:publicWorkItem(row)},headers);
+    const route=readWorkItemPluginRoute(row);
+    if(!route)return jsonResponse(409,{success:false,error:"plugin_route_missing",work_item:publicWorkItem(row)},headers);
+    if(row.hae_job_id){
+      const pluginExecution=await readCommandCenterHaeExecution(env,row,route);
+      return jsonResponse(200,{success:true,work_item:publicWorkItem(row),plugin_execution:pluginExecution},headers);
+    }
+    const pluginExecution=await submitCommandCenterHaeExecution(env,row,route,linkedTaskId,now);
+    if(!pluginExecution?.ok)return jsonResponse(409,{
+      success:false,error:pluginExecution?.reason||"plugin_execution_unavailable",
+      work_item:publicWorkItem(row),plugin_execution:pluginExecution,
+    },headers);
+    const linked=await env.DB.prepare("UPDATE hermes_owner_work_items SET hae_job_id=?,updated_at=? WHERE id=? AND organization_scope=? AND linked_task_id=? AND hae_job_id IS NULL")
+      .bind(pluginExecution.job_id,now,id,INTERNAL_AI_ORGANIZATION_SCOPE,linkedTaskId).run();
+    row=await getItem(env.DB,id);
+    if(!linked?.meta?.changes&&String(row?.hae_job_id||"")!==String(pluginExecution.job_id||""))
+      return jsonResponse(409,{success:false,error:"hae_job_link_conflict",work_item:publicWorkItem(row)},headers);
+    const readback=await readCommandCenterHaeExecution(env,row,route);
+    return jsonResponse(200,{success:true,work_item:publicWorkItem(row),plugin_execution:readback},headers);
+  }
 
   if(action==="edit"){
     // Only unclaimed owner backlog items are editable; never rewrite an AI execution or accepted receipt.
@@ -72,7 +98,7 @@ export async function onRequestPatch({request,env,params}:{request:Request;env:E
         SELECT 1 FROM hermes_internal_ai_tasks
         WHERE organization_scope=? AND status IN ('queued','running','needs_approval')
       )`).bind(taskId,INTERNAL_AI_ORGANIZATION_SCOPE,prompt,String(owner.specialist.id),now,now,INTERNAL_AI_ORGANIZATION_SCOPE);
-    const linkStatement=env.DB.prepare(`UPDATE hermes_owner_work_items SET status='in_progress', linked_task_id=?, plugin_route_json=?, acceptance_status='not_required', blocked_reason=NULL, completed_at=NULL, accepted_by=NULL, accepted_at=NULL, updated_at=?
+    const linkStatement=env.DB.prepare(`UPDATE hermes_owner_work_items SET status='in_progress', linked_task_id=?, plugin_route_json=?, hae_job_id=NULL, acceptance_status='not_required', blocked_reason=NULL, completed_at=NULL, accepted_by=NULL, accepted_at=NULL, updated_at=?
       WHERE id=? AND organization_scope=? AND status IN ('planned','ready','blocked') AND (linked_task_id IS NULL OR linked_task_id=?)
       AND EXISTS (SELECT 1 FROM hermes_internal_ai_tasks WHERE id=? AND organization_scope=? AND status='queued' AND runner_id IS NULL)`)
       .bind(taskId,routeJson,now,id,INTERNAL_AI_ORGANIZATION_SCOPE,priorLinkedTaskId,taskId,INTERNAL_AI_ORGANIZATION_SCOPE);
@@ -91,7 +117,17 @@ export async function onRequestPatch({request,env,params}:{request:Request;env:E
     }
     row=await getItem(env.DB,id);
     const task=await env.DB.prepare("SELECT * FROM hermes_internal_ai_tasks WHERE id=? AND organization_scope=?").bind(taskId,INTERNAL_AI_ORGANIZATION_SCOPE).first();
-    return jsonResponse(200,{success:true,state:"dispatched",work_item:publicWorkItem(row),task:publicTask(task)},headers);
+    const persistedRoute=readWorkItemPluginRoute(row);
+    let pluginExecution=persistedRoute
+      ?await submitCommandCenterHaeExecution(env,row,persistedRoute,taskId,now)
+      :{ok:false,state:"PLUGIN_EXECUTION_UNAVAILABLE",reason:"plugin_route_missing"};
+    if(pluginExecution?.ok&&pluginExecution.job_id){
+      const linked=await env.DB.prepare("UPDATE hermes_owner_work_items SET hae_job_id=?,updated_at=? WHERE id=? AND organization_scope=? AND linked_task_id=? AND (hae_job_id IS NULL OR hae_job_id=?)")
+        .bind(pluginExecution.job_id,now,id,INTERNAL_AI_ORGANIZATION_SCOPE,taskId,pluginExecution.job_id).run();
+      if(linked?.meta?.changes)row=await getItem(env.DB,id);
+      else pluginExecution={ok:false,state:"PLUGIN_EXECUTION_UNAVAILABLE",reason:"hae_job_link_conflict"};
+    }
+    return jsonResponse(200,{success:true,state:"dispatched",work_item:publicWorkItem(row),task:publicTask(task),plugin_execution:pluginExecution},headers);
   }
 
   if(action==="ready"){
