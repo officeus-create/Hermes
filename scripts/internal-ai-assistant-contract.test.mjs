@@ -154,5 +154,6 @@ assert.match(internalNav, /method:\s*"POST"/, "activation secret must never be p
 assert.match(internalNav, /input\.value = ""/, "activation UI must clear the one-time secret after success");
 const bootstrapRuntime = spawnSync(process.execPath, ["--experimental-strip-types", resolve(root, "scripts/internal-ai-bootstrap-owner-runtime.test.mjs")], { encoding: "utf8" });
 assert.equal(bootstrapRuntime.status, 0, `atomic owner bootstrap runtime probe must pass: ${bootstrapRuntime.stderr || bootstrapRuntime.stdout}`);
+await import("./internal-ai-multi-runner-state.test.mjs");
 await import("./internal-command-center-contract.test.mjs");
 console.log("Hermes internal AI Assistant contract: PASS");

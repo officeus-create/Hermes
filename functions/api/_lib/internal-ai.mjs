@@ -1,6 +1,9 @@
 import { getAuthenticatedSpecialist, jsonResponse } from "./session.mjs";
 
 export const INTERNAL_AI_ORGANIZATION_SCOPE = "hermes_internal";
+export const INTERNAL_AI_MAC_RUNNER_ID = "internal-ai-mac-runner";
+export const INTERNAL_AI_WINDOWS_VIKTOR_RUNNER_ID = "internal-ai-windows-viktor";
+const INTERNAL_AI_RUNNER_IDS = new Set([INTERNAL_AI_MAC_RUNNER_ID, INTERNAL_AI_WINDOWS_VIKTOR_RUNNER_ID]);
 const TASK_STATES = new Set(["queued", "running", "completed", "failed", "cancelled", "needs_approval"]);
 const APPROVAL_GATES = new Set(["delete_archive", "credentials_secrets", "merge_deploy", "billing_permissions", "external_communication", "legal_commercial", "destructive_database", "material_scope_expansion", "unresolvable_evidence"]);
 const MAX_PROMPT_LENGTH = 12000;
@@ -63,8 +66,29 @@ export async function ensureInternalAiSchema(db) {
     organization_scope TEXT NOT NULL CHECK (organization_scope = 'hermes_internal'),
     last_seen_at TEXT NOT NULL,
     repo_sha TEXT,
-    runtime_version TEXT
+    runtime_version TEXT,
+    executor_type TEXT,
+    display_name TEXT,
+    current_task TEXT,
+    phase TEXT,
+    last_result TEXT,
+    blocker TEXT,
+    accept_tasks INTEGER NOT NULL DEFAULT 1 CHECK (accept_tasks IN (0,1))
   )`).run();
+  const runnerColumns = await db.prepare("PRAGMA table_info(hermes_internal_ai_runner_state)").all();
+  const runnerColumnNames = new Set((runnerColumns.results || []).map((column) => column.name));
+  const optionalRunnerColumns = {
+    executor_type: "TEXT",
+    display_name: "TEXT",
+    current_task: "TEXT",
+    phase: "TEXT",
+    last_result: "TEXT",
+    blocker: "TEXT",
+    accept_tasks: "INTEGER NOT NULL DEFAULT 1",
+  };
+  for (const [name, definition] of Object.entries(optionalRunnerColumns)) {
+    if (!runnerColumnNames.has(name)) await db.prepare(`ALTER TABLE hermes_internal_ai_runner_state ADD COLUMN ${name} ${definition}`).run();
+  }
 }
 
 export async function requireInternalOwner(request, env) {
@@ -95,6 +119,29 @@ export function requireInternalAiRunner(request, env) {
 }
 
 export const nowIso = () => new Date().toISOString();
+export function normalizeInternalAiRunnerId(value) {
+  const candidate = String(value || "").trim();
+  if (!candidate) return INTERNAL_AI_MAC_RUNNER_ID;
+  return INTERNAL_AI_RUNNER_IDS.has(candidate) ? candidate : null;
+}
+export function publicRunnerState(row, now = Date.now()) {
+  if (!row) return null;
+  const lastSeenMs = row.last_seen_at ? Date.parse(row.last_seen_at) : 0;
+  return {
+    id: row.id,
+    online: Boolean(lastSeenMs && now - lastSeenMs <= 90000),
+    last_seen_at: row.last_seen_at || null,
+    repo_sha: row.repo_sha || null,
+    runtime_version: row.runtime_version || null,
+    executor_type: row.executor_type || null,
+    display_name: row.display_name || row.id,
+    current_task: row.current_task || null,
+    phase: row.phase || null,
+    last_result: row.last_result || null,
+    blocker: row.blocker || null,
+    accept_tasks: Boolean(Number(row.accept_tasks ?? 1)),
+  };
+}
 export const newTaskId = () => `hcai_${crypto.randomUUID()}`;
 export function internalAiTaskBranch(taskId) {
   const safe = Array.from(String(taskId || ""), (character) => /[A-Za-z0-9_-]/.test(character) ? character : "-").join("").slice(0, 80);
@@ -124,7 +171,7 @@ export function sanitizeTaskResult(payload = {}) {
 }
 export function publicTask(row) {
   if (!row) return null;
-  return { id: row.id, organization_scope: row.organization_scope, agent_role: row.agent_role, status: row.status, created_at: row.created_at, started_at: row.started_at, completed_at: row.completed_at, updated_at: row.updated_at, repo_sha: row.repo_sha, branch: row.branch, pr_url: row.pr_url, evidence_class: row.evidence_class, output_summary: row.output_summary, approval_gate: row.approval_gate, approval_state: row.status === "needs_approval" ? "awaiting_approval" : row.approval_granted_at ? "approved" : null, approval_granted_at: row.approval_granted_at || null, approval_attempt: Number(row.approval_attempt || 0), cancel_requested: Boolean(row.cancel_requested) };
+  return { id: row.id, organization_scope: row.organization_scope, agent_role: row.agent_role, status: row.status, created_at: row.created_at, started_at: row.started_at, completed_at: row.completed_at, updated_at: row.updated_at, repo_sha: row.repo_sha, branch: row.branch, pr_url: row.pr_url, evidence_class: row.evidence_class, output_summary: row.output_summary, approval_gate: row.approval_gate, approval_state: row.status === "needs_approval" ? "awaiting_approval" : row.approval_granted_at ? "approved" : null, approval_granted_at: row.approval_granted_at || null, approval_attempt: Number(row.approval_attempt || 0), cancel_requested: Boolean(row.cancel_requested), runner_id: row.runner_id || null };
 }
 export function runnerTask(row) {
   const task = publicTask(row);
