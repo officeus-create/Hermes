@@ -74,7 +74,7 @@
       "submission_auth": "HERMES_AUTOMATION_TOKEN",
       "retention_class": "technical_runtime_evidence",
       "role_id": "hermes-cloudflare-auditor",
-      "plugin_version": "0.1.2",
+      "plugin_version": "0.1.3",
       "contract_version": "cloudflare-audit-snapshot-v1",
       "semantic_required": false,
       "free_ai_policy": "not_required"
@@ -91,7 +91,7 @@
       "submission_auth": "HERMES_AUTOMATION_TOKEN",
       "retention_class": "business_runtime_evidence",
       "role_id": "hermes-drive-auditor",
-      "plugin_version": "0.1.2",
+      "plugin_version": "0.1.3",
       "contract_version": "drive-audit-snapshot-v1",
       "semantic_required": false,
       "free_ai_policy": "not_required"
@@ -108,7 +108,7 @@
       "submission_auth": "HERMES_AUTOMATION_TOKEN",
       "retention_class": "technical_runtime_evidence",
       "role_id": "hermes-github-auditor",
-      "plugin_version": "0.1.2",
+      "plugin_version": "0.1.3",
       "contract_version": "github-audit-snapshot-v1",
       "semantic_required": false,
       "free_ai_policy": "not_required"
@@ -125,7 +125,7 @@
       "submission_auth": "HERMES_AUTOMATION_TOKEN",
       "retention_class": "technical_runtime_evidence",
       "role_id": "hermes-website-auditor",
-      "plugin_version": "0.1.2",
+      "plugin_version": "0.1.3",
       "contract_version": "website-audit-snapshot-v1",
       "semantic_required": false,
       "free_ai_policy": "not_required"
