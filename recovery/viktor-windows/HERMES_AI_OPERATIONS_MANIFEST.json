@@ -868,9 +868,9 @@
     "status": "CORE_4_WINDOWS_RUNTIME_TRUTH_LOCAL_RUNTIME_CONSUMED_HAE_CONSUMPTION_PENDING",
     "trained_core_plugins": {
       "hermes-agent-coordinator": {
-        "version": "0.1.90",
-        "release_id": "pluginrel_6ae910b51a34819186eae0b1a3162820",
-        "status": "REGISTRY_READBACK_VERIFIED_2026-11-03"
+        "version": "0.1.92",
+        "release_id": "pluginrel_6ae9c92e56408191a04676bc8b4cb877",
+        "status": "PROVIDER_CURRENT_RELEASE_READBACK_2026-11-03; LOCAL_RUNTIME_CONSUMPTION_OF_THIS_VERSION_NOT_PROVEN"
       },
       "hermes-automatic-engineer": {
         "version": "0.1.36",
