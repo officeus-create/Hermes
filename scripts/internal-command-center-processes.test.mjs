@@ -61,6 +61,50 @@ assert.equal(result.status, 200);
 assert.equal(result.body.processes.length, 0);
 assert.equal(result.body.normal_loop_requires_chat, false);
 assert.equal(result.body.automatic_paid_ai_cost_usd, 0);
+assert.deepEqual(result.body.system_processes, []);
+assert.equal(result.body.attention_required_count, 0);
+
+sqlite.exec(`CREATE TABLE hermes_automation_jobs (
+  job_id TEXT PRIMARY KEY,
+  job_type TEXT NOT NULL,
+  business_lane TEXT NOT NULL,
+  project_key TEXT,
+  state TEXT NOT NULL,
+  result_json TEXT,
+  last_error_class TEXT,
+  created_at TEXT NOT NULL,
+  completed_at TEXT
+)`);
+const systemReceipt = JSON.stringify({
+  capability: "website.route.audit",
+  observed_at: now,
+  role_contract: { role_id: "hermes-website-auditor", plugin_version: "0.1.1" },
+  result: {
+    http_error_count: 1,
+    canonical_defect_count: 0,
+    redirect_drift_count: 0,
+    http_error_urls: ["PRIVATE_RAW_SHOULD_NOT_LEAK"],
+  },
+});
+sqlite.prepare("INSERT INTO hermes_automation_jobs VALUES (?,?,?,?,?,?,?,?,?)").run(
+  "job-system-website",
+  "website.route.audit",
+  "website",
+  "hae-plugin-role-runtime",
+  "SUCCEEDED",
+  systemReceipt,
+  null,
+  now,
+  now,
+);
+result = await payload(await listProcesses({ request: request("/api/internal-command-center/processes"), env: { DB } }));
+assert.equal(result.status, 200);
+assert.equal(result.body.system_processes.length, 1);
+assert.equal(result.body.system_processes[0].managed_by, "system");
+assert.equal(result.body.system_processes[0].attention_required, true);
+assert.equal(result.body.system_processes[0].audit_summary.http_error_count, 1);
+assert.equal(result.body.attention_required_count, 1);
+assert.doesNotMatch(JSON.stringify(result.body), /PRIVATE_RAW_SHOULD_NOT_LEAK/);
 
 result = await payload(await createProcess({
   request: request("/api/internal-command-center/processes", "POST", {
@@ -74,6 +118,26 @@ assert.equal(result.status, 201);
 assert.equal(result.body.process.status, "paused");
 assert.equal(result.body.process.max_cost_usd, 0);
 const processId = result.body.process.id;
+sqlite.prepare("INSERT INTO hermes_automation_jobs VALUES (?,?,?,?,?,?,?,?,?)").run(
+  "job-owner-gap",
+  "ai.gateway.readiness.audit",
+  "automation",
+  "hae-process:" + processId,
+  "SUCCEEDED",
+  JSON.stringify({
+    capability: "ai.gateway.readiness.audit",
+    observed_at: now,
+    result: { source_status: "ACCESS_GAP", coverage_complete: false, access_gap: true },
+  }),
+  null,
+  now,
+  now,
+);
+sqlite.prepare("UPDATE hermes_automation_processes SET last_job_id=? WHERE process_id=?").run("job-owner-gap", processId);
+result = await payload(await listProcesses({ request: request("/api/internal-command-center/processes"), env: { DB } }));
+assert.equal(result.body.processes[0].attention_required, true);
+assert.equal(result.body.processes[0].audit_summary.source_status, "ACCESS_GAP");
+assert.equal(result.body.attention_required_count, 2);
 
 result = await payload(await createProcess({
   request: request("/api/internal-command-center/processes", "POST", {
