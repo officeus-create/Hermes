@@ -201,17 +201,6 @@ const isRepairShopRoute = Astro.url.pathname.startsWith("/services/hermes-connec
       }
     };
 
-    const denyGoogleConsent = () => {
-      if (typeof window.gtag === "function") {
-        window.gtag('consent', 'update', {
-          analytics_storage: 'denied',
-          ad_storage: 'denied',
-          ad_user_data: 'denied',
-          ad_personalization: 'denied'
-        });
-      }
-    };
-
     const denyClarityConsent = () => {
       if (typeof window.clarity === "function") {
         window.clarity("consentv2", { ad_Storage: "denied", analytics_Storage: "denied" });
@@ -324,9 +313,10 @@ const isRepairShopRoute = Astro.url.pathname.startsWith("/services/hermes-connec
 
     decline?.addEventListener("click", () => {
       const wasGranted = readChoice() === "granted";
-      // After withdrawal, stop GA transport before sending the consent update.
+      // Withdrawal is a hard stop: set the GA kill switch first and never
+      // call gtag again on the already-loaded page. A consent-update call can flush
+      // an already-queued enhanced-measurement event before navigation.
       setGoogleAnalyticsDisabled(true);
-      denyGoogleConsent();
       denyClarityConsent();
       clearGaCookies();
       saveChoice("denied");
