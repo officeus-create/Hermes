@@ -219,6 +219,8 @@ usageRows=await DB.prepare("SELECT * FROM hermes_automation_ai_usage WHERE job_i
 assert.equal(usageRows.results.length,1);
 successEvents=await DB.prepare("SELECT * FROM hermes_automation_job_events WHERE job_id=? AND event_type='job.windows_node_succeeded'").bind(claim.lease.job_id).all();
 assert.equal(successEvents.results.length,1);
+canonicalSuccessEvents=await DB.prepare("SELECT * FROM hermes_automation_job_events WHERE job_id=? AND event_type='job.succeeded'").bind(claim.lease.job_id).all();
+assert.equal(canonicalSuccessEvents.results.length,1,"idempotent Windows replay must not duplicate the canonical success event");
 
 await assert.rejects(
   ()=>completeWindowsNodeJob(env,{
