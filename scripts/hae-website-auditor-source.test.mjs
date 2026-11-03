@@ -65,6 +65,16 @@ const wrongPath=buildWebsiteAuditSnapshot({
   observedAt,
 });
 assert.equal(wrongPath.coverage_complete,false);
-assert.ok(wrongPath.findings.some((item)=>item.category==="PROBE_MISSING"));
+assert.ok(wrongPath.findings.some((item)=>item.category==="PROBE_MISSING"&&item.status==="UNKNOWN"));
+
+const unavailable=buildWebsiteAuditSnapshot({
+  pages:pages.map((page)=>page.url.endsWith("/sitemap.xml")?{...page,status:599}:page),
+  canonicalUrls:contract.runtime_config.target_urls,
+  statusOnlyUrls:contract.runtime_config.status_only_urls,
+  observedAt,
+});
+assert.equal(unavailable.coverage_complete,false);
+assert.ok(unavailable.findings.some((item)=>item.category==="PROBE_UNAVAILABLE"&&item.status==="UNKNOWN"));
+assert.equal(unavailable.findings.some((item)=>item.category==="HTTP_ERROR"&&item.finding_id.includes("sitemap-xml")),false);
 
 console.log("HAE Website auditor trusted source adapter PASS");
