@@ -26,15 +26,23 @@ function parseResult(value) {
 export function summarizeHaeAudits(rows = [], nowIso = new Date().toISOString(), staleHours = 30) {
   const now = Date.parse(nowIso);
   if (!Number.isFinite(now)) throw new Error("audit_summary_now_invalid");
-  const latest = new Map();
+  // Rows arrive newest-first. A newer QUEUED/RUNNING row without a result
+  // must not hide the latest proven P0/P1 from an older terminal receipt.
+  const proven = new Map();
+  const fallback = new Map();
   for (const row of Array.isArray(rows) ? rows : []) {
     const jobType = String(row?.job_type || "");
-    if (!HAE_AUDIT_JOB_TYPES.includes(jobType) || latest.has(jobType)) continue;
-    latest.set(jobType, row);
+    if (!HAE_AUDIT_JOB_TYPES.includes(jobType)) continue;
+    if (!fallback.has(jobType)) fallback.set(jobType, row);
+    if (proven.has(jobType)) continue;
+    const state = String(row?.state || "").toUpperCase();
+    const envelope = parseResult(row?.result_json);
+    const hasResult = envelope?.result && typeof envelope.result === "object" && !Array.isArray(envelope.result);
+    if (state === "FAILED" || hasResult) proven.set(jobType, row);
   }
 
   const auditors = HAE_AUDIT_JOB_TYPES.map((jobType) => {
-    const row = latest.get(jobType);
+    const row = proven.get(jobType) || fallback.get(jobType);
     if (!row) return {
       job_type: jobType, label: AUDIT_JOB_LABELS[jobType], state: "NOT_RUN",
       coverage: "NOT_RUN", open_count: 0, p0_count: 0, p1_count: 0,
@@ -46,9 +54,11 @@ export function summarizeHaeAudits(rows = [], nowIso = new Date().toISOString(),
       : null;
     const observedAt = safeIso(result?.observed_at) || safeIso(envelope?.observed_at) || safeIso(row.completed_at) || safeIso(row.updated_at);
     const stale = !observedAt || (now - Date.parse(observedAt)) > staleHours * 3600000 || (now - Date.parse(observedAt)) < 0;
-    const sourceVerified = result?.source_verified === true ||
-      result?.source_authenticated === true ||
-      result?.source_trusted === true;
+    // Only the public Website probe may use trusted-but-unauthenticated
+    // provenance. GitHub, Cloudflare and Drive must be authenticated.
+    const sourceVerified = jobType === "audit.website.journey"
+      ? (result?.source_authenticated === true || result?.source_trusted === true)
+      : result?.source_authenticated === true;
     const coverage = result?.coverage_complete === true && sourceVerified
       ? "COMPLETE"
       : "PARTIAL";
