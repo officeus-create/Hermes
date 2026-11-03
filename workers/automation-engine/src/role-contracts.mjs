@@ -205,6 +205,90 @@ export const ROLE_CONTRACTS = Object.freeze([
     retention: "technical_runtime_evidence"
   }),
   Object.freeze({
+    role_id: "hermes-github-auditor",
+    plugin_version: pluginRuntimeVersion("hermes-github-auditor"),
+    contract_version: "github-audit-snapshot-v1",
+    job_type: "audit.github.snapshot",
+    business_lane: "automation",
+    permission_class: "READ_ONLY",
+    semantic_required: false,
+    free_ai_policy: "not_required",
+    trigger: "authenticated_source_adapter",
+    input_schema: { observed_at: "ISO-8601", coverage_complete: "boolean", source_authenticated: "boolean", findings: "bounded sanitized finding metadata" },
+    runtime_config: { scheduled: false, max_items: 200 },
+    preconditions: ["authenticated GitHub adapter", "no raw logs, secrets or code bodies in payload"],
+    deterministic_steps: ["validate coverage", "count severity/status", "return bounded finding ids"],
+    output_schema: "coverage + counts + bounded finding ids",
+    kpi: ["coverage_complete", "open_count", "p0_count", "p1_count"],
+    owner_gate: "source_adapter_required",
+    readback: "result_json receipt",
+    failure: "fail_closed_on_partial_or_invalid_source_metadata",
+    retention: "technical_runtime_evidence",
+  }),
+  Object.freeze({
+    role_id: "hermes-cloudflare-auditor",
+    plugin_version: pluginRuntimeVersion("hermes-cloudflare-auditor"),
+    contract_version: "cloudflare-audit-snapshot-v1",
+    job_type: "audit.cloudflare.runtime",
+    business_lane: "automation",
+    permission_class: "READ_ONLY",
+    semantic_required: false,
+    free_ai_policy: "not_required",
+    trigger: "authenticated_source_adapter",
+    input_schema: { observed_at: "ISO-8601", coverage_complete: "boolean", source_authenticated: "boolean", findings: "bounded sanitized finding metadata" },
+    runtime_config: { scheduled: false, max_items: 200 },
+    preconditions: ["authenticated Cloudflare adapter", "no secrets, request bodies or customer data in payload"],
+    deterministic_steps: ["validate coverage", "count severity/status", "return bounded finding ids"],
+    output_schema: "coverage + counts + bounded finding ids",
+    kpi: ["coverage_complete", "open_count", "p0_count", "p1_count"],
+    owner_gate: "source_adapter_required",
+    readback: "result_json receipt",
+    failure: "fail_closed_on_partial_or_invalid_source_metadata",
+    retention: "technical_runtime_evidence",
+  }),
+  Object.freeze({
+    role_id: "hermes-drive-auditor",
+    plugin_version: pluginRuntimeVersion("hermes-drive-auditor"),
+    contract_version: "drive-audit-snapshot-v1",
+    job_type: "audit.drive.truth",
+    business_lane: "automation",
+    permission_class: "READ_ONLY",
+    semantic_required: false,
+    free_ai_policy: "not_required",
+    trigger: "authenticated_source_adapter",
+    input_schema: { observed_at: "ISO-8601", coverage_complete: "boolean", source_authenticated: "boolean", findings: "bounded sanitized finding metadata" },
+    runtime_config: { scheduled: false, max_items: 200 },
+    preconditions: ["authenticated Drive adapter", "metadata-only minimized payload", "no document bodies or sharing secrets"],
+    deterministic_steps: ["validate coverage", "count severity/status", "return bounded finding ids"],
+    output_schema: "coverage + counts + bounded finding ids",
+    kpi: ["coverage_complete", "open_count", "p0_count", "p1_count"],
+    owner_gate: "source_adapter_required",
+    readback: "result_json receipt",
+    failure: "fail_closed_on_partial_or_invalid_source_metadata",
+    retention: "business_runtime_evidence",
+  }),
+  Object.freeze({
+    role_id: "hermes-website-auditor",
+    plugin_version: pluginRuntimeVersion("hermes-website-auditor"),
+    contract_version: "website-audit-snapshot-v1",
+    job_type: "audit.website.journey",
+    business_lane: "automation",
+    permission_class: "READ_ONLY",
+    semantic_required: false,
+    free_ai_policy: "not_required",
+    trigger: "authenticated_or_trusted_probe_adapter",
+    input_schema: { observed_at: "ISO-8601", coverage_complete: "boolean", source_authenticated: "boolean", findings: "bounded sanitized finding metadata" },
+    runtime_config: { scheduled: false, max_items: 200 },
+    preconditions: ["canonical route ownership checked before 404 finding", "no real customer submission", "metadata-only minimized payload"],
+    deterministic_steps: ["validate coverage", "count severity/status", "return bounded finding ids"],
+    output_schema: "coverage + counts + bounded finding ids",
+    kpi: ["coverage_complete", "open_count", "p0_count", "p1_count"],
+    owner_gate: "source_adapter_required",
+    readback: "result_json receipt",
+    failure: "fail_closed_on_partial_or_invalid_source_metadata",
+    retention: "technical_runtime_evidence",
+  }),
+  Object.freeze({
     role_id: "hermes-agent-coordinator",
     plugin_version: pluginRuntimeVersion("hermes-agent-coordinator"),
     contract_version: "work-portfolio-reconcile-v1",
@@ -336,6 +420,64 @@ function validateLogisticsPayload(payload) {
     if (!source || typeof source !== "object" || !cleanText(source.source_id, 200)) throw new Error("source_id_required");
   }
   return { sources, maxAgeMinutes: requestedAge };
+}
+
+
+const AUDITOR_JOB_TYPES = new Set([
+  "audit.github.snapshot",
+  "audit.cloudflare.runtime",
+  "audit.drive.truth",
+  "audit.website.journey",
+]);
+const AUDIT_SEVERITIES = new Set(["P0", "P1", "P2", "P3"]);
+const AUDIT_STATUSES = new Set(["OPEN", "HOLD", "CLOSED", "UNKNOWN"]);
+
+function validateAuditorSnapshot(payload) {
+  if (!payload || typeof payload !== "object" || Array.isArray(payload)) throw new Error("audit_snapshot_object_required");
+  const observedAt = cleanText(payload.observed_at, 80);
+  if (!observedAt || !Number.isFinite(Date.parse(observedAt))) throw new Error("audit_observed_at_invalid");
+  if (typeof payload.coverage_complete !== "boolean" || typeof payload.source_authenticated !== "boolean") {
+    throw new Error("audit_coverage_state_invalid");
+  }
+  const findings = boundedArray(payload.findings, "audit_findings");
+  if (findings.length > 200) throw new Error("audit_findings_too_large");
+  const normalized = [];
+  const seen = new Set();
+  for (const item of findings) {
+    if (!item || typeof item !== "object" || Array.isArray(item)) throw new Error("audit_finding_invalid");
+    const findingId = cleanText(item.finding_id, 160);
+    const category = cleanText(item.category, 100);
+    const severity = cleanText(item.severity, 10).toUpperCase();
+    const status = cleanText(item.status, 20).toUpperCase();
+    if (!findingId || !category || !AUDIT_SEVERITIES.has(severity) || !AUDIT_STATUSES.has(status)) {
+      throw new Error("audit_finding_fields_invalid");
+    }
+    if (seen.has(findingId)) throw new Error("audit_finding_duplicate");
+    seen.add(findingId);
+    normalized.push({ finding_id: findingId, category, severity, status });
+  }
+  return {
+    observedAt,
+    coverageComplete: payload.coverage_complete,
+    sourceAuthenticated: payload.source_authenticated,
+    findings: normalized,
+  };
+}
+
+function evaluateAuditorSnapshot(payload) {
+  const input = validateAuditorSnapshot(payload);
+  const open = input.findings.filter((item) => item.status === "OPEN" || item.status === "HOLD");
+  return {
+    observed_at: input.observedAt,
+    coverage_complete: input.coverageComplete && input.sourceAuthenticated,
+    source_authenticated: input.sourceAuthenticated,
+    finding_count: input.findings.length,
+    open_count: open.length,
+    p0_count: open.filter((item) => item.severity === "P0").length,
+    p1_count: open.filter((item) => item.severity === "P1").length,
+    finding_ids: bounded(open.map((item) => item.finding_id), 100),
+    raw_source_payload_persisted: false,
+  };
 }
 
 const SEARCH_DEFECT_TYPES = new Set([
@@ -591,6 +733,7 @@ export function validateRoleContractSemanticResult(jobType, payload, value) {
 }
 
 export function validateRoleContractInput(jobType, payload) {
+  if (AUDITOR_JOB_TYPES.has(jobType)) return validateAuditorSnapshot(payload);
   if (jobType === "search.snapshot.evaluate") return validateSearchPayload(payload);
   if (jobType === "marketing.content.dedupe.audit") return validateMarketingPayload(payload);
   if (jobType === "logistics.source.freshness.audit") return validateLogisticsPayload(payload);
@@ -703,6 +846,7 @@ function evaluateLogistics(payload, observedAt) {
 }
 
 export function runRoleContractPrimitive(jobType, payload, observedAt = new Date().toISOString()) {
+  if (AUDITOR_JOB_TYPES.has(jobType)) return evaluateAuditorSnapshot(payload);
   if (jobType === "search.snapshot.evaluate") return evaluateSearch(payload);
   if (jobType === "marketing.content.dedupe.audit") return evaluateMarketing(payload);
   if (jobType === "logistics.source.freshness.audit") return evaluateLogistics(payload, observedAt);
