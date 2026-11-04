@@ -28,6 +28,14 @@ const commandCenter=portfolio.find((project)=>project.id==="hermes-command-cente
 for(const gate of ["runtime-registry","adapter-gap-detector","github-auditor-source","website-auditor-source","cloudflare-auditor-source","drive-auditor-source","audit-attention","receipt-verifier","plugin-hae-bridge","viktor-canary","free-ai","deployment","production-readback","final-independent-qa"])
   assert.ok(commandCenter.milestones.some((item)=>item.id===gate),"Command Center progress must include closure gate: "+gate);
 assert.notEqual(commandCenter.status,"done","Command Center cannot be done while release/runtime gates remain");
+assert.ok(commandCenter.milestones.some((item)=>item.id==="client-view"&&item.state==="active"),"Client View must remain visible until independent security + two-tenant production proof");
+for(const surface of ["public-showcase","team-view","crm-router","social-read-model","reports-surface","knowledge-investor","access-admin","execution-evidence"])
+  assert.ok(commandCenter.milestones.some((item)=>item.id===surface),"Command Center project map must retain product surface: "+surface);
+const operationsFeed=portfolio.find((project)=>project.id==="command-center-operations-feed");
+assert.ok(operationsFeed,"recurring reports/mail intake must not disappear from the canonical project map");
+assert.ok(operationsFeed.milestones.some((item)=>item.id==="catalog-runtime"&&item.state==="blocked"));
+assert.ok(operationsFeed.milestones.some((item)=>item.id==="hr-radar-runtime"&&item.state==="blocked"));
+assert.ok(operationsFeed.milestones.some((item)=>item.id==="mail-triage"&&item.state==="planned"));
 assert.ok(portfolio.some((project) => project.id === "ai-operations" && project.evidence_level === "SOURCE_RELEASE_CANDIDATE_REVIEW_PENDING"), "AI Operations must remain a release candidate until protected review and runtime acceptance");
 assert.ok(portfolio.some((project) => project.id === "hae-runtime" && project.evidence_level === "CURRENT_MAIN_RUNTIME_READONLY_PROOF_ACCEPTED_RELEASE_PENDING"), "HAE project must separate accepted current-main runtime proof from the unmerged Command Center release");
 assert.ok(portfolio.some((project) => project.id === "windows-ai" && project.evidence_level === "PRIMARY_ASSIGNED_HAE_EXECUTION_UNVERIFIED"), "Windows assignment must stay separate from dynamic host liveness and canonical HAE execution proof");
