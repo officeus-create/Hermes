@@ -24,9 +24,11 @@ assert.ok(portfolio.every((project) => project.eta === null && project.eta_label
 assert.ok(portfolio.some((project) => project.id === "investor-intelligence" && project.evidence_level === "HOLD_EVENT_TRIGGER_ONLY"));
 assert.ok(portfolio.some((project) => project.id === "ai-operations" && project.status === "in_progress"), "AI Operations must remain in progress until role-scoped production acceptance");
 assert.ok(portfolio.some((project) => project.id === "hermes-command-center" && project.evidence_level === "SOURCE_RELEASE_CANDIDATE_REVIEW_PENDING"), "release-candidate source must not become production verification");
+assert.ok(portfolio.find((project) => project.id === "hermes-command-center")?.milestones.some((item) => item.id === "exact-head-ci" && item.state === "done"), "Command Center registry must reflect the verified #2236 exact-head GREEN state");
 assert.ok(portfolio.some((project) => project.id === "ai-operations" && project.evidence_level === "SOURCE_RELEASE_CANDIDATE_REVIEW_PENDING"), "AI Operations must remain a release candidate until protected review and runtime acceptance");
+assert.ok(portfolio.find((project) => project.id === "ai-operations")?.milestones.some((item) => item.id === "exact-head-ci" && item.state === "done"), "AI Operations registry must not keep a stale rerun-required CI milestone after verified GREEN");
 assert.ok(portfolio.some((project) => project.id === "hae-runtime" && project.evidence_level === "CURRENT_MAIN_RUNTIME_READONLY_PROOF_ACCEPTED_RELEASE_PENDING"), "HAE project must separate accepted current-main runtime proof from the unmerged Command Center release");
-assert.ok(portfolio.some((project) => project.id === "windows-ai" && project.evidence_level === "HISTORICAL_LOCAL_VERIFIED_CURRENT_OFFLINE"), "historical Windows evidence must not be presented as current live runtime");
+assert.ok(portfolio.some((project) => project.id === "windows-ai" && project.evidence_level === "LOCAL_RUNTIME_RUNNING_HAE_ACTIVATION_UNVERIFIED"), "Windows local runtime state must stay separate from signed HAE activation and durable receipt proof");
 assert.ok(portfolio.some((project) => project.id === "mac-ai" && project.evidence_level === "HOST_ONLINE_FALLBACK_RUNTIME_UNVERIFIED"), "Mac host liveness must remain separate from Hermes AI/HAE execution proof");
 const deepseek = portfolio.find((project) => project.id === "deepseek-specialist");
 assert.ok(deepseek, "DeepSeek specialist lane must exist in the canonical Command Center registry");
