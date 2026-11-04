@@ -266,7 +266,7 @@ test.describe("Hermes Business Command Center",()=>{
     await demo.getByRole("tab",{name:"Evidence"}).click();
     await expect(demo.getByText(/Exact-SHA deployment/)).toBeVisible();
     await expect(page.getByRole("link",{name:"Request a Command Center"}).first()).toHaveAttribute("href","/contacts/?path=technology&utm_source=business_command_center");
-    await expect(page.locator("body")).not.toContainText("HERMES_INTERNAL_OWNER");
+    await expect(page.locator("body")).not.toContainText("HERMES_INTERNAL_OWNER");\n    expect(await page.content()).not.toContain("HERMES_INTERNAL_OWNER");
     await expect(page.locator("body")).not.toContainText("#2107");
   });
 
