@@ -63,7 +63,10 @@ assert.match(page,/\/api\/internal-command-center\/reports/,"owner workspace mus
 assert.match(page,/\/api\/internal-command-center\/owner-intelligence/,"owner workspace must read One Brain/investor governance state");
 assert.match(ownerWorkspace,/HermesExecutionMap/,"Executions view must reuse the canonical owner execution read model");
 assert.match(page,/hermes:execution-map/,"Plugins view must reuse the execution snapshot emitted by the canonical map");
-assert.match(page,/REGISTERED CAPABILITY|ЗАРЕГИСТРИРОВАННАЯ ВОЗМОЖНОСТЬ/,"Plugins view must distinguish capability registration from execution");
+assert.match(page,/REGISTERED \/ LOADED/,"Plugins view must distinguish registry/runtime load from execution");
+assert.match(page,/Provider release:/,"Plugins view must surface provider-release truth separately");
+assert.match(page,/Latest verified invocation:/,"Plugins view must surface invocation truth separately");
+assert.match(page,/Training \/ holdout:/,"Plugins view must surface verified learning/holdout truth separately");
 assert.match(ownerWorkspace,/separate HAE receipt|отдельным HAE receipt/,"Plugins view must require a separate HAE receipt before claiming execution");
 assert.match(ownerWorkspace,/data-cc-view="executions"[\s\S]*HermesExecutionMap/,"Executions view must reuse the canonical execution map");
 assert.match(page,/\/api\/hermes-connect\/account/,"CRM router must reuse the canonical Hermes account portfolio");
