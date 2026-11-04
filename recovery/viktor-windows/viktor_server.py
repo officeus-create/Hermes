@@ -9,7 +9,7 @@ ROOT=pathlib.Path(__file__).resolve().parent
 RUN=ROOT/"viktor_live"
 RUN.mkdir(exist_ok=True)
 HTML=ROOT/"viktor_dashboard.html"
-PLUGIN_INVENTORY=ROOT/"HERMES_PRIVATE_PLUGIN_INVENTORY_20261028.json"
+PLUGIN_INVENTORY=ROOT/"HERMES_PRIVATE_PLUGIN_INVENTORY_CURRENT.json"
 TRANSFER_CORPUS=ROOT/"HERMES_AI_CURRENT_TRANSFER_CORPUS_20261028.jsonl"
 HOST="127.0.0.1"
 PORT=int(os.getenv("VIKTOR_LOCAL_PORT","8765"))
@@ -20,9 +20,18 @@ def status():
  try:
   data=json.loads(p.read_text(encoding="utf-8"))
   raw=str(data.get("current_task") or "")
+  case_id=str(data.get("case_id") or "").strip()
+  phase=str(data.get("phase") or "").upper()
+  training_case=bool(case_id and (case_id.startswith("G") or case_id.startswith("T")) and phase in ("ANALYZING","CYCLE_FINISHED"))
   # Preserve raw evidence on disk; sanitize only the owner-facing projection.
+  if training_case:
+   data["current_task"]="Training / QA case "+case_id
+   data["current_task_kind"]="TRAINING_CASE"
+  else:
+   data["current_task_kind"]="OPERATIONAL"
   if "\ufffd" in raw or (raw.count("D")>=8 and ("D_" in raw or "D?" in raw)) or (raw.count("?")>=8 and raw.count("?")>=max(8,len(raw)//6)):
    data["current_task"]="Historical training case active — legacy text encoding"
+   data["current_task_kind"]="TRAINING_CASE"
    data["current_task_encoding"]="LEGACY_MOJIBAKE_RAW_PRESERVED"
   return data
  except (FileNotFoundError,ValueError):return {"status":"STARTING","deadline":None,"run_mode":"CONTINUOUS_READ_ONLY_SESSION_GUARDED","current_task":"Starting local lab"}
@@ -143,7 +152,8 @@ def quick_answer(message):
   return "Текущий authenticated Plugin Creator snapshot: %s приватных плагинов. Ключевые: %s. Все роли используются как знания/контракты; HAE остаётся единственным runtime. personal-health-os исключён из investor evidence как private sensitive."%(inv.get("count",0),names)
  status_line="Hermes AI: %s, тестов %s, локальных PASS %s, на доработку %s. Модель учебного цикла: %s." %(st.get("status","UNKNOWN"),st.get("tested",0),st.get("passed",0),st.get("failed",0),st.get("model","unknown"))
  if any(w in q for w in ("что изуч","изучил","что дела","делаешь","статус","прогресс","сейчас")):
-  return status_line+"\nТекущая задача: "+str(st.get("current_task","неизвестно"))+"\nСледующее действие: "+str(st.get("next_action","наблюдать QA"))+"\nНе путайте локальные тесты и результаты production."
+  task_label="Текущий QA/training case" if st.get("current_task_kind")=="TRAINING_CASE" else "Текущая задача"
+  return status_line+"\n"+task_label+": "+str(st.get("current_task","неизвестно"))+"\nСледующее действие: "+str(st.get("next_action","наблюдать QA"))+"\nНе путайте локальные тесты и результаты production."
  if any(w in q for w in ("какие ошибк","повторяющ","исторические ошибки","ошибки ии","ошибки иИ")):
   pick=[x for x in tracks if x["id"] in ("ERROR-001","ERROR-002","ERROR-005")]
   return "Исторические ошибки наших ИИ (это не доказательство текущего сбоя):\n"+"\n".join("• "+x["id"]+": "+x["failed_assumption"]+". Профилактика: "+x["regression_test"]+". Источник: "+x["source_url"] for x in pick)
