@@ -7,10 +7,21 @@ const ROLE_JOB_MAP=Object.freeze({
 });
 const PRIORITY=Object.freeze({p0:100,p1:85,p2:60,p3:40});
 
-function expectedIdempotencyKey(item,route,plan){
-  const id=clean(item?.id,160),taskId=clean(item?.linked_task_id,160),policy=clean(route?.policy_version,120);
-  if(!id||!taskId||!policy)return null;
-  return ["hae","command-center","hermes_internal",id,taskId,policy,plan.plugin_version,plan.contract.contract_version].join(":").slice(0,240);
+async function expectedIdempotencyKey(item,route,plan,linkedTaskId=null,contractSha=null){
+  const id=clean(item?.id,160);
+  const taskId=clean(linkedTaskId||item?.linked_task_id,160);
+  const policy=clean(route?.policy_version,120);
+  const sha=contractSha||await roleContractSha256(plan.contract);
+  if(!id||!taskId||!policy||!plan?.role_id||!plan?.plugin_version||!plan?.job_type||!plan?.contract?.contract_version||!/^[a-f0-9]{64}$/.test(String(sha||"")))return null;
+  // Keep byte-for-byte identity semantics aligned with #2264 verifier.
+  const identity=JSON.stringify([
+    "hermes-command-center-hae-v1","hermes_internal",
+    id,taskId,policy,plan.role_id,plan.plugin_version,
+    plan.job_type,plan.contract.contract_version,sha,
+  ]);
+  const digest=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(identity));
+  const hex=[...new Uint8Array(digest)].map(value=>value.toString(16).padStart(2,"0")).join("");
+  return "hae:cc:v1:"+hex;
 }
 
 function clean(value,max=500){
@@ -87,6 +98,8 @@ export async function buildCommandCenterHaeJobRequest(item,route,linkedTaskId,ob
   if(!id||!taskId||!policy||!Number.isFinite(Date.parse(observedAt))||!Number.isFinite(Date.parse(updatedAt)))
     return{ok:false,state:"PLUGIN_EXECUTION_UNAVAILABLE",reason:"command_center_work_identity_invalid"};
   const contractSha=await roleContractSha256(plan.contract);
+  const idempotencyKey=await expectedIdempotencyKey(item,route,plan,taskId,contractSha);
+  if(!idempotencyKey)return{ok:false,state:"PLUGIN_EXECUTION_UNAVAILABLE",reason:"command_center_idempotency_identity_invalid"};
   const priority=PRIORITY[clean(item?.priority,10).toLowerCase()]??60;
   const payload={
     source_kind:"CHATGPT_SELECTED",
@@ -120,7 +133,7 @@ export async function buildCommandCenterHaeJobRequest(item,route,linkedTaskId,ob
       project_key:"command-center-plugin-route",
       priority,
       max_attempts:2,
-      idempotency_key:["hae","command-center","hermes_internal",id,taskId,policy,plan.plugin_version,plan.contract.contract_version].join(":").slice(0,240),
+      idempotency_key:idempotencyKey,
       policy_version:BRIDGE_POLICY_VERSION,
       payload,
     },
@@ -163,7 +176,7 @@ export async function readCommandCenterHaeExecution(env,item,route){
   const job=response.payload?.job||{};
   if(clean(job.job_id,180)!==jobId||clean(job.job_type,120)!==plan.job_type||clean(job.project_key,120)!=="command-center-plugin-route")
     return{state:"PLUGIN_ROUTE_VERSION_DRIFT",reason:"hae_job_identity_mismatch",job_id:jobId,receipt_verified:false};
-  const expectedKey=expectedIdempotencyKey(item,route,plan);
+  const expectedKey=await expectedIdempotencyKey(item,route,plan,item?.linked_task_id,expectedSha);
   let sourcePayload=null;
   try{sourcePayload=JSON.parse(String(job.payload_json||"null"));}catch{}
   const task=Array.isArray(sourcePayload?.tasks)&&sourcePayload.tasks.length===1?sourcePayload.tasks[0]:null;
