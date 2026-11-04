@@ -8,6 +8,7 @@ import {
   recoverExpiredWindowsNodeLeases,
   WINDOWS_NODE_CONTRACT_VERSION,
   WINDOWS_NODE_ID,
+  buildWindowsNodeAuthMessage,
   windowsNodeAuthorized,
   windowsNodeSnapshot,
 } from "../workers/automation-engine/src/windows-node-runtime.mjs";
@@ -81,11 +82,39 @@ CREATE TABLE hermes_automation_job_events (
 await ensureWindowsNodeSchema(DB);
 
 const request=(token=TOKEN)=>new Request("https://hae.example/v1/nodes/windows/claim",{headers:{Authorization:`Bearer ${token}`}});
-assert.equal(windowsNodeAuthorized(request(),env).ok,true);
-assert.equal(windowsNodeAuthorized(request("wrong"),env).status,401);
-assert.equal(windowsNodeAuthorized(request(),{...env,HERMES_WINDOWS_NODE_ENABLED:"disabled"}).status,503);
+assert.equal((await windowsNodeAuthorized(request(),env)).ok,true);
+assert.equal((await windowsNodeAuthorized(request("wrong"),env)).status,401);
+assert.equal((await windowsNodeAuthorized(request(),{...env,HERMES_WINDOWS_NODE_ENABLED:"disabled"})).status,503);
 
 const t0="2026-11-02T18:10:00.000Z";
+const authKeyPair=await crypto.subtle.generateKey({name:"Ed25519"},true,["sign","verify"]);
+const authSpki=Buffer.from(await crypto.subtle.exportKey("spki",authKeyPair.publicKey)).toString("base64");
+const signedEnv={...env,HERMES_WINDOWS_NODE_TOKEN:"",HERMES_WINDOWS_NODE_PUBLIC_KEY_SPKI_B64:authSpki};
+const signedBody=JSON.stringify({node_id:WINDOWS_NODE_ID,contract_version:WINDOWS_NODE_CONTRACT_VERSION});
+const signedTimestamp=String(Math.floor(Date.parse(t0)/1000));
+async function signedNodeRequest(nonce,body=signedBody,signatureOverride=null) {
+  const unsigned=new Request("https://hae.example/v1/nodes/windows/claim",{method:"POST",body,headers:{"Content-Type":"application/json"}});
+  const message=await buildWindowsNodeAuthMessage(unsigned,body,signedTimestamp,nonce);
+  const rawSignature=signatureOverride||await crypto.subtle.sign("Ed25519",authKeyPair.privateKey,new TextEncoder().encode(message));
+  const signature=Buffer.from(rawSignature).toString("base64url");
+  return new Request("https://hae.example/v1/nodes/windows/claim",{method:"POST",body,headers:{
+    "Content-Type":"application/json",
+    "X-Hermes-Node-Id":WINDOWS_NODE_ID,
+    "X-Hermes-Node-Key-Id":"viktor-windows-20261104",
+    "X-Hermes-Node-Timestamp":signedTimestamp,
+    "X-Hermes-Node-Nonce":nonce,
+    "X-Hermes-Node-Signature":signature,
+  }});
+}
+const signedRequest=await signedNodeRequest("nonce_signed_auth_00000001");
+assert.equal((await windowsNodeAuthorized(signedRequest,signedEnv,signedBody,t0)).ok,true);
+const replayRequest=await signedNodeRequest("nonce_signed_auth_00000001");
+const replayAuth=await windowsNodeAuthorized(replayRequest,signedEnv,signedBody,t0);
+assert.equal(replayAuth.status,409);
+assert.equal(replayAuth.error,"windows_node_signature_replay");
+const badSignature=new Uint8Array(64);badSignature.fill(7);
+const tamperedRequest=await signedNodeRequest("nonce_signed_auth_00000002",signedBody,badSignature);
+assert.equal((await windowsNodeAuthorized(tamperedRequest,signedEnv,signedBody,t0)).status,401);
 const heartbeat=await heartbeatWindowsNode(env,{
   node_id:WINDOWS_NODE_ID,
   contract_version:WINDOWS_NODE_CONTRACT_VERSION,
