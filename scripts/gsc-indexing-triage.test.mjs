@@ -11,7 +11,7 @@ assert.match(redirects, /^\/logistics\/ \/paths\/logistics\/ 301$/m, "/logistics
 for (const [legacy, canonical] of [
   ["/resources/rpm-calculator/", "/logistics/resources/rpm-calculator/"],
   ["/tools/load-analyzer/", "/services/hermes-connect/load-analyzer/"],
-  ["/ai-command-center/", "/services/hermes-connect/ai-command-center/"],
+  ["/ai-command-center/", "/services/hermes-connect/command-center/"],
   ["/unified-inbox/", "/services/hermes-connect/unified-inbox/"],
 ]) {
   assert.ok(redirects.includes(`${legacy} ${canonical} 301`), `retired public owner must redirect: ${legacy}`);
@@ -62,6 +62,13 @@ const slashVariant = classifyUrl("https://hermeslogisticsus.com/es", sitemaps);
 assert.equal(slashVariant.category, "EXPECTED_EXCLUSION_CANONICAL_VARIANT");
 assert.equal(slashVariant.normalized, "https://hermeslogisticsus.com/es/");
 
+for (const tool of ["roi-calculator", "proposal-builder", "unified-inbox", "rate-negotiator"]) {
+  const url = `https://hermeslogisticsus.com/services/hermes-connect/${tool}/?lang=es`;
+  const classified = classifyUrl(url, sitemaps);
+  assert.equal(classified.category, "EXPECTED_EXCLUSION_NOINDEX_REFERENCE", "Retired public reference tool remains noindex: " + url);
+  assert.equal(sitemaps.has(classified.normalized), false, "Reference capability must not be added to search sitemap");
+}
+
 const unknown = classifyUrl("https://hermeslogisticsus.com/gb/london/academy/old-program/", sitemaps);
 assert.equal(unknown.category, "MANUAL_REVIEW");
 
@@ -74,6 +81,29 @@ assert.deepEqual(extracted.sort(), [
   "https://hermeslogisticsus.com/es/",
   "https://hermeslogisticsus.com/gb/london/marketing/",
 ].sort());
+
+
+/* 2026-11-02 owner GSC alternate-canonical drilldown export regression:
+   the quoted first column can contain internal commas and embedded newlines.
+   Preserve the entire URL; Google correctly excludes the query variants. */
+const exported = [
+  "URL,Последнее сканирование",
+  '"https://hermeslogisticsus.com/load-board/?role=carrier&area=Green Bay, WI",2026-08-11',
+  '"https://hermeslogisticsus.com/load-board/?role=private_party&origin=Eau \nClaire, WI",2026-08-10',
+  '"https://hermeslogisticsus.com/academy/apply/?program=us-logistics-operations&utm_source=london&utm_medium=organic",2026-09-04',
+  'https://hermeslogisticsus.com/paths/marketing/?service=seo,2026-10-16',
+  'https://hermeslogisticsus.com/paths/marketing/?service=seo,2026-10-16',
+].join("\r\n");
+const exportedUrls = extractUrls("\uFEFF" + exported);
+assert.equal(exportedUrls.length, 4, "Quoted, multiline and duplicate GSC CSV rows must be read exactly once");
+assert.ok(exportedUrls.includes("https://hermeslogisticsus.com/load-board/?role=carrier&area=Green Bay, WI"));
+assert.ok(exportedUrls.includes("https://hermeslogisticsus.com/load-board/?role=private_party&origin=Eau \nClaire, WI"));
+for (const url of exportedUrls) {
+  const result = classifyUrl(url, sitemaps);
+  assert.equal(result.category, "EXPECTED_EXCLUSION_CANONICAL_VARIANT", "GSC query variants are not indexable owners: " + url);
+  assert.ok(sitemaps.has(result.normalized), "GSC variant must resolve to a current canonical sitemap owner");
+}
+assert.equal(extractUrls("Дата,Затронутые страницы\n2026-10-23,61").length, 0, "GSC chart data is not a list of URLs");
 
 console.log(`GSC indexing triage contract passed with ${sitemaps.size} current sitemap URL(s).`);
 

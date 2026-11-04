@@ -1,23 +1,27 @@
 # Hermes Owner Business Command Center — canonical contract
 
-Status: RELEASE CANDIDATE in canonical PR #2107; #2096 and #2105 are superseded historical implementations.
-Route: /services/hermes-connect/internal/command-center/
-Access: server-verified HERMES_INTERNAL_OWNER only.
-Public discovery: noindex, nofollow, noarchive.
+Status: CURRENT PRIVATE FOUNDATION; public/private unification is implemented in PR #2198 on top of merged owner backlog/project work. Private foundation: canonical PR #2107. #2096 and #2105 remain superseded historical implementations.
+Private route: /services/hermes-connect/internal/command-center/
+Public route: /services/hermes-connect/command-center/
+Private access: server-verified HERMES_INTERNAL_OWNER only; edge middleware must verify capability before serving the static owner workspace asset.
+Private discovery: noindex, nofollow, noarchive. Public Business Command Center is indexable and uses sample/sanitized data only.
 
 ## Purpose
 
 One owner-facing CRM/admin surface for Hermes business management. The Command Center must reduce chat/app hopping without becoming a second system of record.
 
-It presents:
-- Marketing;
-- Logistics;
-- Sales;
-- Technology / Hermes Connect;
-- Academy;
-- Finance / project economics;
-- Agents / Internal AI;
-- the owner's cross-direction work backlog.
+It presents one Hermes operating layer with two access modes.
+
+Public mode explains the product through sample data and never exposes owner records. Private mode organizes daily owner work into:
+- Today — decisions, running work, blockers and the next owner action;
+- Projects — project portfolio plus the four Hermes business pillars: Logistics, Marketing, Technology and Academy;
+- Tasks — the durable owner backlog;
+- Automations — owner-managed HAE processes;
+- Agents — local/cloud execution state and fallbacks;
+- Evidence — task-linked results, PRs and owner acceptance;
+- Access — connected workspaces and owner permission management.
+
+Sales, Finance and Operations remain operating functions inside the system. They are not additional Hermes business pillars or sub-brands.
 
 ## Data ownership
 
@@ -87,13 +91,13 @@ External communications, publishing, CRM/customer mutations, billing and other c
 
 The Command Center also provides a loopback-only link to the existing Hermes AI Agents interface at `127.0.0.1:8765`. It opens in a separate tab, so a phone or another computer can return to the unchanged Command Center and use the canonical cloud AI status/queue fallback. The online page does not probe localhost, weaken CSP, expose port 8765 through a tunnel, or make the local Cockpit the HAE runtime.
 
-## Project portfolio and public preview
+## Project portfolio and public/private product boundary
 
 The owner-only project portfolio is a projection inside this same Command Center. Its canonical bounded registry is returned only by `/api/internal-command-center/projects` after `HERMES_INTERNAL_OWNER` verification; real project names, relationships, agents, plugin roles, blockers and GitHub evidence are never embedded in the public static HTML.
 
 Every project record states its department, purpose, accountable role, execution agent, plugin roles, parent, dependencies, related projects, blockers and dated evidence. Progress is derived only from completed milestones divided by total milestones. It is not a subjective confidence score. ETA remains `UNKNOWN` until comparable completed work provides an auditable basis; the UI must label any future ETA as an estimate and show that basis.
 
-The existing public `/services/hermes-connect/ai-command-center/` reference page contains a synthetic, read-only product preview. It uses demo companies/projects only, exposes no internal project or authorization data, and routes interest into the existing scoped contact path. It is a product explanation, not a live customer account, internal system, or second admin.
+The canonical public page is `/services/hermes-connect/command-center/`. It is a synthetic, read-only product demonstration using sample projects/tasks only. It exposes no internal project, customer, credential or authorization data. The historical `/services/hermes-connect/ai-command-center/` identity is retired as a competing product name and redirects/transitions to Business Command Center; Hermes Intelligence is a layer inside the product, not a second Command Center.
 
 The current registry records the unresolved AI Operations architecture collision between stacked PRs #2125 and #2159 as a blocker. Neither branch is silently selected as canonical. Owner/maintainer review must choose the surviving delta before merge.
 
@@ -127,13 +131,14 @@ A work-item prompt cannot manufacture approval.
 
 ## Product UX
 
-The owner should answer, from one page:
-- Is the agent online?
-- What is running?
-- What needs my approval?
-- What are my open tasks by business direction?
-- What is the next task to execute?
-- Which canonical workspace do I open for Marketing / Logistics / Sales / Technology / Academy / Finance?
-- Who currently has owner access?
+The private default view is **Today**, not a long configuration page. The owner should answer immediately:
+- What needs my decision?
+- What is running now?
+- What is blocked?
+- What should I do next?
 
-The page should stay light-first, mobile-usable, fast-scanning, and compatible with the Hermes Connect product-native interface system.
+Configuration is progressively disclosed through Projects, Tasks, Automations, Agents, Evidence and Access. Task capture opens on demand instead of permanently occupying the main page. HAE configuration is not mixed into the daily decision layer.
+
+The public and private surfaces share one Command Center shell and the canonical Hermes brand system so they cannot drift into separate products. Pearl/Paper/Ink are the base; violet is Intelligence; the four business-pillar colors are orientation cues only. Primary controls keep 44px touch targets. Large workspace panels use the canonical panel radius.
+
+Anonymous requests to the private route must be intercepted at the edge. They receive only a minimal secure sign-in/access shell; internal operational markup must not be served before server-side owner verification.
