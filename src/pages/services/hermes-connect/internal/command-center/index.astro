@@ -44,13 +44,19 @@ const nav=[
 </BaseLayout>
 
 <script>
-type WorkItem={id:string;project_id?:string|null;workstream:string;priority:string;title:string;details:string;source:string;status:string;created_at?:string;updated_at?:string;completed_at?:string|null;accepted_by?:string|null;accepted_at?:string|null;linked_task_id?:string|null;linked_task_status?:string|null;linked_task_pr_url?:string|null;linked_task_output_summary?:string|null;blocked_reason?:string|null;plugin_route?:{policy_version:string;state:string;owner:{role_id:string;plugin_version:string};helpers:{role_id:string;plugin_version:string}[]}|null};
+type WorkItem={id:string;project_id?:string|null;workstream:string;priority:string;title:string;details:string;source:string;status:string;created_at?:string;updated_at?:string;completed_at?:string|null;accepted_by?:string|null;accepted_at?:string|null;linked_task_id?:string|null;linked_task_status?:string|null;linked_task_started_at?:string|null;linked_task_completed_at?:string|null;linked_task_updated_at?:string|null;linked_task_pr_url?:string|null;linked_task_output_summary?:string|null;blocked_reason?:string|null;plugin_route?:{policy_version:string;state:string;owner:{role_id:string;plugin_version:string};helpers:{role_id:string;plugin_version:string}[]}|null};
 type HaeProcess={id:string;name:string;job_type:string;business_lane:string;workstream:string;role_id:string;cadence_hours:number;status:string;next_run_at?:string|null;last_run_at?:string|null;last_job_id?:string|null;last_job_state?:string|null;last_job_completed_at?:string|null;last_error_class?:string|null;template_label:string;template_label_ru:string};
 const isRu=new URLSearchParams(location.search).get("lang")==="ru";
 const q=<T extends HTMLElement=HTMLElement>(s:string)=>document.querySelector<T>(s);
 const t=(en:string,ru:string)=>isRu?ru:en;
 let items:WorkItem[]=[],processes:HaeProcess[]=[],filter="open",projectFilter="all",searchTerm="",runtime:any=null,processRuntime:any=null,socialSnapshot:any=null,threadsSnapshot:any=null,tasks:any[]=[],projects:any[]=[];
 const stamp=(v?:string|null)=>v?new Date(v).toLocaleString(isRu?"ru-RU":"en-US",{dateStyle:"medium",timeStyle:"short"}):"—";
+const durationLabel=(start?:string|null,end?:string|null)=>{
+  const startMs=Date.parse(String(start||"")),endMs=Date.parse(String(end||""));
+  if(!Number.isFinite(startMs)||!Number.isFinite(endMs)||endMs<startMs)return "UNKNOWN";
+  const minutes=Math.floor((endMs-startMs)/60000),days=Math.floor(minutes/1440),hours=Math.floor((minutes%1440)/60),mins=minutes%60;
+  return days?days+"d "+hours+"h":hours?hours+"h "+mins+"m":minutes+"m";
+};
 async function jsonFetch(url:string,options:RequestInit={}){const r=await fetch(url,{credentials:"same-origin",cache:"no-store",...options,headers:{Accept:"application/json",...(options.body?{"Content-Type":"application/json"}:{}),...(options.headers||{})}});let d:any={};try{d=await r.json()}catch{}return{r,d}}
 function setText(sel:string,value:string){const n=q(sel);if(n)n.textContent=value}
 function showOwnerToast(message:string){const n=q<HTMLElement>("[data-owner-toast]");if(!n)return;n.textContent=message;n.hidden=false}
@@ -321,6 +327,15 @@ function renderItems(){
  const body=document.createElement("p");body.textContent=item.details;card.append(top,body);
   if(item.plugin_route?.owner?.role_id){const receipt=document.createElement("p");receipt.className="linked";receipt.textContent=t("Selected plugin (not executed): ","Плагин выбран (не запущен): ")+item.plugin_route.owner.role_id+" v"+item.plugin_route.owner.plugin_version+" · "+item.plugin_route.policy_version;card.append(receipt)}if(item.blocked_reason){const b=document.createElement("p");b.className="blocked";b.textContent=item.blocked_reason;card.append(b)}
  if(item.linked_task_status){const l=document.createElement("p");l.className="linked";l.textContent=t("Execution: ","Выполнение: ")+item.linked_task_status;card.append(l)}
+ if(item.linked_task_id){
+   const started=item.linked_task_started_at||null;
+   const finished=item.linked_task_completed_at||null;
+   const elapsed=started?durationLabel(started,finished||new Date().toISOString()):"UNKNOWN";
+   const duration=started&&finished?durationLabel(started,finished):"UNKNOWN";
+   const timing=document.createElement("p");timing.className="linked task-timing";
+   timing.textContent=t("Started: ","Старт: ")+(started?stamp(started):"UNKNOWN")+" · "+t("Elapsed: ","Прошло: ")+elapsed+" · "+t("Duration: ","Длительность: ")+duration+" · ETA: UNKNOWN";
+   card.append(timing);
+ }
  if(item.status==="awaiting_acceptance"){const review=document.createElement("p");review.className="acceptance-note";review.textContent=t("Execution finished. Review the evidence before accepting the business result.","Выполнение закончено. Проверь результат и доказательства перед приёмкой.");card.append(review)}
  if(item.linked_task_output_summary){const output=document.createElement("p");output.className="output-summary";output.textContent=t("Result: ","Результат: ")+item.linked_task_output_summary;card.append(output)}
  const actions=document.createElement("div");actions.className="work-actions";
