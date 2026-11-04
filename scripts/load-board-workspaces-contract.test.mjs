@@ -79,6 +79,14 @@ assert.match(scripted.admin,/trialStartDate>now\.slice/,"Future trials must not 
 assert.match(scripted.admin,/effectiveMs>Date\.now/,"Future ongoing effective timestamps must fail closed.");
 assert.match(scripted.workspaceLib,/trial_start_date\)\<=today/,"Runtime trial access must not begin before the trial start date.");
 assert.match(scripted.workspaceLib,/effectiveAtMs\<=now\.getTime/,"Runtime ongoing access must not begin before the effective timestamp.");
+assert.match(scripted.workspaceLib,/no_auto_continuation_confirmed/,"Trial no-auto-continuation confirmation must be durable.");
+assert.match(scripted.workspaceLib,/validDateOnly/,"Runtime must reject impossible calendar dates.");
+assert.match(scripted.workspaceLib,/expectedTrialEnd/,"Runtime must re-prove the exact 14-day trial window.");
+assert.match(scripted.workspaceLib,/draft\|review/i,"Runtime must reject draft/review agreement versions.");
+assert.match(scripted.admin,/noAutomaticContinuationConfirmed:Boolean/,"Owner readback must expose durable trial continuation evidence.");
+assert.match(scripted.admin,/no_auto_continuation_confirmed=excluded\.no_auto_continuation_confirmed/,"Grant must persist trial continuation evidence.");
+assert.match(scripted.admin,/Number\(entitlement\?\.no_auto_continuation_confirmed\)===1/,"Assignment must revalidate no-auto-continuation evidence.");
+assert.match(scripted.admin,/expectedTrialEnd/,"Assignment must revalidate the exact 14-day trial window.");
 assert.match(scripted.admin,/CARRIER_REVOKED/);
 assert.match(scripted.admin,/effective_carrier_agreement_and_verification_required/);
 assert.doesNotMatch(scripted.admin,/agreementState.*=\s*["']ONGOING_EFFECTIVE["']/,
