@@ -44,13 +44,19 @@ const nav=[
 </BaseLayout>
 
 <script>
-type WorkItem={id:string;project_id?:string|null;workstream:string;priority:string;title:string;details:string;source:string;status:string;created_at?:string;updated_at?:string;completed_at?:string|null;accepted_by?:string|null;accepted_at?:string|null;linked_task_id?:string|null;linked_task_status?:string|null;linked_task_pr_url?:string|null;linked_task_output_summary?:string|null;blocked_reason?:string|null;hae_job_id?:string|null;plugin_route?:{policy_version:string;state:string;owner:{role_id:string;plugin_version:string};helpers:{role_id:string;plugin_version:string}[]}|null};
+type WorkItem={id:string;project_id?:string|null;workstream:string;priority:string;title:string;details:string;source:string;status:string;created_at?:string;updated_at?:string;completed_at?:string|null;accepted_by?:string|null;accepted_at?:string|null;linked_task_id?:string|null;linked_task_status?:string|null;linked_task_started_at?:string|null;linked_task_completed_at?:string|null;linked_task_updated_at?:string|null;linked_task_pr_url?:string|null;linked_task_output_summary?:string|null;blocked_reason?:string|null;hae_job_id?:string|null;plugin_route?:{policy_version:string;state:string;owner:{role_id:string;plugin_version:string};helpers:{role_id:string;plugin_version:string}[]}|null};
 type HaeProcess={id:string;name:string;job_type:string;business_lane:string;workstream:string;role_id:string;cadence_hours:number;status:string;next_run_at?:string|null;last_run_at?:string|null;last_job_id?:string|null;last_job_state?:string|null;last_job_completed_at?:string|null;last_error_class?:string|null;template_label:string;template_label_ru:string};
 const isRu=new URLSearchParams(location.search).get("lang")==="ru";
 const q=<T extends HTMLElement=HTMLElement>(s:string)=>document.querySelector<T>(s);
 const t=(en:string,ru:string)=>isRu?ru:en;
-let items:WorkItem[]=[],processes:HaeProcess[]=[],filter="open",projectFilter="all",searchTerm="",runtime:any=null,processRuntime:any=null,socialSnapshot:any=null,threadsSnapshot:any=null,tasks:any[]=[],projects:{id:string;title:string;department:string}[]=[];
+let items:WorkItem[]=[],processes:HaeProcess[]=[],filter="open",projectFilter="all",searchTerm="",runtime:any=null,processRuntime:any=null,socialSnapshot:any=null,threadsSnapshot:any=null,tasks:any[]=[],projects:any[]=[];
 const stamp=(v?:string|null)=>v?new Date(v).toLocaleString(isRu?"ru-RU":"en-US",{dateStyle:"medium",timeStyle:"short"}):"—";
+const durationLabel=(start?:string|null,end?:string|null)=>{
+  const startMs=Date.parse(String(start||"")),endMs=Date.parse(String(end||""));
+  if(!Number.isFinite(startMs)||!Number.isFinite(endMs)||endMs<startMs)return "UNKNOWN";
+  const minutes=Math.floor((endMs-startMs)/60000),days=Math.floor(minutes/1440),hours=Math.floor((minutes%1440)/60),mins=minutes%60;
+  return days?days+"d "+hours+"h":hours?hours+"h "+mins+"m":minutes+"m";
+};
 async function jsonFetch(url:string,options:RequestInit={}){const r=await fetch(url,{credentials:"same-origin",cache:"no-store",...options,headers:{Accept:"application/json",...(options.body?{"Content-Type":"application/json"}:{}),...(options.headers||{})}});let d:any={};try{d=await r.json()}catch{}return{r,d}}
 function setText(sel:string,value:string){const n=q(sel);if(n)n.textContent=value}
 function showOwnerToast(message:string){const n=q<HTMLElement>("[data-owner-toast]");if(!n)return;n.textContent=message;n.hidden=false}
@@ -137,13 +143,68 @@ async function loadProjects(){
           visited.add(offset);const next=await jsonFetch("/api/internal-command-center/projects?offset="+offset);
           if(!next.r.ok||!next.d.success)break;known.push(...(next.d.projects||[]));offset=next.d.next_offset;
         }
-        projects=known.map((project:any)=>({id:String(project.id),title:String(project.title),department:String(project.department)}));
+        projects=known.map((project:any)=>({
+          ...project,
+          id:String(project.id),
+          title:String(project.title),
+          department:String(project.department),
+        }));
         refreshProjectSelectors();
+        renderAgentRoster();
+        renderCommandCenterLaunch();
       }
   } catch(error) {
     console.warn("Command Center project metadata unavailable; task backlog remains usable.");
   }
   renderItems();renderOwnerOverview();
+}
+function renderCommandCenterLaunch(){
+  const project=projects.find((item:any)=>item.id==="hermes-command-center");
+  const list=q<HTMLElement>("[data-launch-milestones]");
+  if(!project){
+    setText("[data-launch-state]","UNKNOWN");setText("[data-launch-progress]","UNKNOWN");setText("[data-launch-completed]","UNKNOWN");setText("[data-launch-total]",t("of UNKNOWN","из UNKNOWN"));setText("[data-launch-hold]","UNKNOWN");
+    if(list){list.replaceChildren();const p=document.createElement("p");p.className="muted";p.textContent=t("Canonical Command Center project state is unavailable.","Каноническое состояние проекта Command Center недоступно.");list.append(p)}
+    return;
+  }
+  const progress=project.progress||{};
+  setText("[data-launch-state]",String(project.status||"UNKNOWN").replaceAll("_"," ").toUpperCase());
+  setText("[data-launch-progress]",Number.isFinite(progress.percent)?String(progress.percent)+"%":"UNKNOWN");
+  setText("[data-launch-completed]",Number.isFinite(progress.completed)?String(progress.completed):"UNKNOWN");
+  setText("[data-launch-total]",Number.isFinite(progress.total)?t("of ","из ")+String(progress.total):t("of UNKNOWN","из UNKNOWN"));
+  setText("[data-launch-hold]",Array.isArray(project.blockers)&&project.blockers.length?String(project.blockers[0]):"UNKNOWN");
+  if(!list)return;list.replaceChildren();
+  const milestones=Array.isArray(project.milestones)?project.milestones:[];
+  milestones.forEach((item:any)=>{
+    const row=document.createElement("article");row.className="owner-today-item";
+    const identity=document.createElement("div");const strong=document.createElement("strong");strong.textContent=String(item.label||item.id||"Gate");
+    const evidence=document.createElement("small");evidence.textContent=String(item.evidence||t("No evidence reference yet","Ссылка на evidence пока отсутствует"));identity.append(strong,evidence);
+    const state=document.createElement("span");state.className="module-state";state.textContent=String(item.state||"UNKNOWN").replaceAll("_"," ").toUpperCase();
+    row.append(identity,state);list.append(row);
+  });
+}
+function renderAgentRoster(){
+  const root=q<HTMLElement>("[data-agent-roster]");if(!root)return;
+  const wanted=["windows-ai","deepseek-specialist","mac-ai"];
+  const roster=wanted.map(id=>projects.find(project=>project.id===id)).filter(Boolean);
+  root.replaceChildren();
+  if(!roster.length){const p=document.createElement("p");p.className="muted";p.textContent=t("AI project state is UNKNOWN until the canonical project map loads.","Состояние AI-проектов UNKNOWN до загрузки канонической карты проектов.");root.append(p);return}
+  roster.forEach((project:any)=>{
+    const card=document.createElement("article");card.className="hcc-card";
+    const top=document.createElement("div");top.className="owner-pillar-top";
+    const label=document.createElement("span");label.className="owner-live-kicker";label.textContent=String(project.agent_role||project.title||"AI");
+    const state=document.createElement("span");state.className="module-state";state.textContent=String(project.status||"UNKNOWN").replaceAll("_"," ").toUpperCase();
+    top.append(label,state);
+    const h=document.createElement("h3");h.textContent=String(project.title||project.id);
+    const evidence=document.createElement("p");evidence.className="muted";evidence.textContent=t("Evidence: ","Evidence: ")+String(project.evidence_level||"UNKNOWN");
+    const progress=document.createElement("p");progress.className="muted";progress.textContent=Number.isFinite(project.progress?.percent)
+      ?t("Declared milestone progress: ","Прогресс объявленных этапов: ")+String(project.progress.percent)+"%"
+      :t("Declared milestone progress: UNKNOWN","Прогресс объявленных этапов: UNKNOWN");
+    const blocker=document.createElement("p");blocker.textContent=Array.isArray(project.blockers)&&project.blockers.length?String(project.blockers[0]):t("No source-backed blocker returned.","Нет подтверждённого блокера в источнике.");
+    card.append(top,h,evidence,progress,blocker);
+    const href=Array.isArray(project.links)?project.links.map((link:any)=>safePr(link.href)||(/^https:\/\/github\.com\/officeus-create\/Hermes\/issues\/\d+\/?$/.test(String(link.href||""))?String(link.href):null)).find(Boolean):null;
+    if(href){const a=document.createElement("a");a.className="owner-text-link";a.href=href;a.target="_blank";a.rel="noopener noreferrer";a.textContent=t("Open evidence →","Открыть evidence →");card.append(a)}
+    root.append(card);
+  });
 }
 function priorityRank(value:string){return ({p0:0,p1:1,p2:2,p3:3} as Record<string,number>)[value]??9}
 function liveTone(selector:string,tone:"good"|"warn"|"bad"|"neutral"){
@@ -236,15 +297,40 @@ function renderSocialAcquisition(data:any,threads:any){
   if(queue){queue.replaceChildren();if(!content.length){const p=document.createElement("p");p.className="muted";p.textContent=data?.content_queue?.source_state==="CONNECTED"?t("No recent HAE content rows.","Нет свежих HAE content rows."):t("HAE content source unavailable; count remains UNKNOWN.","HAE content source недоступен; количество остаётся UNKNOWN.");queue.append(p)}else content.slice(0,10).forEach((item:any)=>{const card=document.createElement("article");card.className="owner-evidence-item";const body=document.createElement("div");const title=document.createElement("strong");title.textContent=String(item.account_key||"UNKNOWN")+" · "+String(item.platform||"UNKNOWN");const meta=document.createElement("small");meta.textContent=String(item.slot_key||item.content_id||"")+" · "+String(item.state||"UNKNOWN")+" · "+stamp(item.updated_at);body.append(title,meta);const state=document.createElement("span");state.textContent=String(item.state||"UNKNOWN");card.append(body,state);queue.append(card)})}
   if(receipts){receipts.replaceChildren();if(!pubs.length){const p=document.createElement("p");p.className="muted";p.textContent=data?.publication_receipts?.source_state==="CONNECTED"?t("No recent publication receipts.","Нет свежих publication receipts."):t("Publication receipt source unavailable; state remains UNKNOWN.","Источник publication receipts недоступен; состояние остаётся UNKNOWN.");receipts.append(p)}else pubs.slice(0,10).forEach((item:any)=>{const card=document.createElement("article");card.className="owner-evidence-item";const body=document.createElement("div");const title=document.createElement("strong");title.textContent=String(item.account_key||"UNKNOWN")+" · "+String(item.platform||"UNKNOWN");const meta=document.createElement("small");meta.textContent=String(item.status||"UNKNOWN")+" · attempts "+String(item.attempt_count??"UNKNOWN")+" · "+stamp(item.updated_at);body.append(title,meta);if(item.permalink){try{const u=new URL(String(item.permalink));if(u.protocol==="https:"&&["threads.net","www.threads.net","threads.com","www.threads.com"].includes(u.hostname)){const a=document.createElement("a");a.href=u.href;a.target="_blank";a.rel="noopener noreferrer";a.textContent=t("Provider receipt ↗","Provider receipt ↗");body.append(a)}}catch{}}const state=document.createElement("span");state.textContent=String(item.provider_post_id?"RECEIPT":"NO RECEIPT");card.append(body,state);receipts.append(card)})}
 }
-window.addEventListener("hermes:execution-map",(event)=>renderPluginRegistry((event as CustomEvent).detail));
-queueMicrotask(()=>{const cached=(window as any).__hermesCommandCenterExecutionMap;if(cached)renderPluginRegistry(cached)});
+window.addEventListener("hermes:execution-map",(event)=>{const data=(event as CustomEvent).detail;renderPluginRegistry(data);renderHaeEventTimeline(data)});
+queueMicrotask(()=>{const cached=(window as any).__hermesCommandCenterExecutionMap;if(cached){renderPluginRegistry(cached);renderHaeEventTimeline(cached)}});
+function renderHaeEventTimeline(data:any){
+  const box=q<HTMLElement>("[data-hae-events]");if(!box)return;box.replaceChildren();
+  const source=data?.hae_recent_events||{source_state:"UNKNOWN",items:[]};
+  setText("[data-hae-events-state]",String(source.source_state||"UNKNOWN").replaceAll("_"," "));
+  const rows=Array.isArray(source.items)?source.items.slice(0,20):[];
+  if(!rows.length){const p=document.createElement("p");p.className="muted";p.textContent=t("No bounded HAE events are available from the current read.","Текущий read не вернул безопасные HAE events.");box.append(p);return}
+  rows.forEach((item:any)=>{
+    const row=document.createElement("article");row.className="owner-evidence-item";
+    const body=document.createElement("div");const title=document.createElement("strong");title.textContent=String(item.job_type||"HAE job");
+    const meta=document.createElement("small");meta.textContent=String(item.event_type||"UNKNOWN")+" · "+String(item.from_state||"—")+" → "+String(item.to_state||"UNKNOWN")+" · "+String(item.step||"—")+" · "+stamp(item.created_at);
+    body.append(title,meta);
+    if(item.error_class){const error=document.createElement("p");error.textContent=t("Error class: ","Класс ошибки: ")+String(item.error_class);body.append(error)}
+    const state=document.createElement("span");state.textContent=String(item.to_state||"UNKNOWN");
+    row.append(body,state);box.append(row);
+  });
+}
 function renderPluginRegistry(data:any){
   const box=q('[data-cc-view="plugins"] [data-plugin-registry]');if(!box)return;box.replaceChildren();
   const rows=Array.isArray(data?.plugin_registry)?data.plugin_registry:[];
   const evidence=data?.registry_evidence||{};
   setText("[data-plugin-registry-state]",evidence.fresh===true?t("FRESH","АКТУАЛЬНО"):String(evidence.reason||"UNKNOWN"));
   if(!rows.length){const p=document.createElement("p");p.className="muted";p.textContent=t("Plugin registry unavailable; no capability was inferred.","Реестр плагинов недоступен; возможности не были придуманы.");box.append(p);return}
-  rows.forEach((item:any)=>{const card=document.createElement("article");card.className="workspace-card";const title=document.createElement("strong");title.textContent=String(item.role_id||"UNKNOWN");const version=document.createElement("span");version.textContent="@"+String(item.plugin_version||"UNKNOWN");const note=document.createElement("small");note.textContent=t("REGISTERED CAPABILITY · execution requires a separate HAE receipt","ЗАРЕГИСТРИРОВАННАЯ ВОЗМОЖНОСТЬ · выполнение требует отдельного HAE receipt");card.append(title,version,note);box.append(card)});
+  rows.forEach((item:any)=>{
+    const card=document.createElement("article");card.className="workspace-card";
+    const title=document.createElement("strong");title.textContent=String(item.role_id||"UNKNOWN");
+    const runtime=document.createElement("span");runtime.textContent=t("Runtime loaded: ","Runtime загружен: ")+"@"+String(item.runtime_loaded_version||item.plugin_version||"UNKNOWN");
+    const release=document.createElement("small");release.textContent=t("Provider release: ","Provider release: ")+(item.provider_release_version?String(item.provider_release_version):"UNKNOWN")+" · "+String(item.provider_release_state||"UNKNOWN").replaceAll("_"," ");
+    const invocation=document.createElement("small");invocation.textContent=t("Latest verified invocation: ","Последний подтверждённый запуск: ")+String(item.latest_invocation_state||"UNKNOWN").replaceAll("_"," ")+(item.latest_invocation_at?" · "+stamp(item.latest_invocation_at):"");
+    const training=document.createElement("small");training.textContent=t("Training / holdout: ","Обучение / holdout: ")+String(item.training_holdout_state||"UNKNOWN").replaceAll("_"," ");
+    const note=document.createElement("small");note.textContent=t("REGISTERED / LOADED is not execution · a canonical HAE receipt is required","REGISTERED / LOADED не означает выполнение · нужен канонический HAE receipt");
+    card.append(title,runtime,release,invocation,training,note);box.append(card)
+  });
 }
 function switchView(view:string){
   const valid=new Set(["today","projects","tasks","crm","social","hae","automations","agents","plugins","executions","evidence","reports","knowledge","investor","access"]);
@@ -291,6 +377,15 @@ function renderItems(){
  const body=document.createElement("p");body.textContent=item.details;card.append(top,body);
   if(item.plugin_route?.owner?.role_id){const receipt=document.createElement("p");receipt.className="linked";receipt.dataset.pluginReceipt=item.id;receipt.textContent=item.hae_job_id?t("Plugin receipt: verifying HAE job…","Receipt плагина: проверяем HAE job…"):t("Selected plugin (not executed): ","Плагин выбран (не запущен): ")+item.plugin_route.owner.role_id+" v"+item.plugin_route.owner.plugin_version+" · "+item.plugin_route.policy_version;card.append(receipt);if(item.hae_job_id)void refreshPluginReceipt(item.id)}if(item.blocked_reason){const b=document.createElement("p");b.className="blocked";b.textContent=item.blocked_reason;card.append(b)}
  if(item.linked_task_status){const l=document.createElement("p");l.className="linked";l.textContent=t("Execution: ","Выполнение: ")+item.linked_task_status;card.append(l)}
+ if(item.linked_task_id){
+   const started=item.linked_task_started_at||null;
+   const finished=item.linked_task_completed_at||null;
+   const elapsed=started?durationLabel(started,finished||new Date().toISOString()):"UNKNOWN";
+   const duration=started&&finished?durationLabel(started,finished):"UNKNOWN";
+   const timing=document.createElement("p");timing.className="linked task-timing";
+   timing.textContent=t("Started: ","Старт: ")+(started?stamp(started):"UNKNOWN")+" · "+t("Elapsed: ","Прошло: ")+elapsed+" · "+t("Duration: ","Длительность: ")+duration+" · "+t("Progress: UNKNOWN · ","Прогресс: UNKNOWN · ")+"ETA: UNKNOWN";
+   card.append(timing);
+ }
  if(item.status==="awaiting_acceptance"){const review=document.createElement("p");review.className="acceptance-note";review.textContent=t("Execution finished. Review the evidence before accepting the business result.","Выполнение закончено. Проверь результат и доказательства перед приёмкой.");card.append(review)}
  if(item.linked_task_output_summary){const output=document.createElement("p");output.className="output-summary";output.textContent=t("Result: ","Результат: ")+item.linked_task_output_summary;card.append(output)}
  const actions=document.createElement("div");actions.className="work-actions";
@@ -329,7 +424,7 @@ q<HTMLFormElement>("[data-edit-form]")?.addEventListener("submit",async(event)=>
   q<HTMLDialogElement>("[data-edit-dialog]")?.close();
   await loadAll();
 });
-async function refreshPluginReceipt(id:string){const target=q<HTMLElement>("[data-plugin-receipt='"+CSS.escape(id)+"']");if(!target)return;const x=await jsonFetch("/api/internal-command-center/work-items/"+encodeURIComponent(id));if(!x.r.ok)return;const state=String(x.d?.plugin_execution?.state||"PLUGIN_EXECUTION_UNAVAILABLE");if(x.d?.plugin_execution?.receipt_verified===true){target.textContent=t("Verified plugin execution: ","Подтверждённое выполнение плагина: ")+String(x.d.plugin_execution.role_id||"")+" v"+String(x.d.plugin_execution.plugin_version||"")+" · "+String(x.d.plugin_execution.capability||"")+" · receipt verified · external_write=false"}else{target.textContent=t("Plugin execution: ","Выполнение плагина: ")+state.replaceAll("_"," ")+(x.d?.plugin_execution?.reason?" · "+String(x.d.plugin_execution.reason):"")}}
+async function refreshPluginReceipt(id:string){const target=q<HTMLElement>("[data-plugin-receipt=\'"+CSS.escape(id)+"\']");if(!target)return;const x=await jsonFetch("/api/internal-command-center/work-items/"+encodeURIComponent(id));if(!x.r.ok)return;const state=String(x.d?.plugin_execution?.state||"PLUGIN_EXECUTION_UNAVAILABLE");if(x.d?.plugin_execution?.receipt_verified===true){target.textContent=t("Verified plugin execution: ","Подтверждённое выполнение плагина: ")+String(x.d.plugin_execution.role_id||"")+" v"+String(x.d.plugin_execution.plugin_version||"")+" · "+String(x.d.plugin_execution.capability||"")+" · receipt verified · external_write=false"}else{target.textContent=t("Plugin execution: ","Выполнение плагина: ")+state.replaceAll("_"," ")+(x.d?.plugin_execution?.reason?" · "+String(x.d.plugin_execution.reason):"")}}
 async function mutate(id:string,action:string,reason?:string){const x=await jsonFetch("/api/internal-command-center/work-items/"+encodeURIComponent(id),{method:"PATCH",body:JSON.stringify({action,...(reason?{reason}:{})})});if(!x.r.ok){alert(String(x.d?.plugin_execution?.reason||x.d.error||"update_failed"));return}await loadAll()}
 function renderProcesses(){const box=q("[data-process-list]");if(!box)return;box.replaceChildren();if(!processes.length){const p=document.createElement("p");p.className="muted";p.textContent=t("No autonomous processes configured yet.","Автономные процессы пока не настроены.");box.append(p);return}processes.forEach(process=>{const card=document.createElement("article");card.className="process-card";const head=document.createElement("div");head.className="process-head";const identity=document.createElement("div");const strong=document.createElement("strong");strong.textContent=process.name;const meta=document.createElement("small");meta.textContent=(isRu?process.template_label_ru:process.template_label)+" · "+process.role_id+" · "+process.cadence_hours+"h";identity.append(strong,meta);const state=document.createElement("span");state.className="process-state "+process.status;state.textContent=process.status.replaceAll("_"," ");head.append(identity,state);card.append(head);const timing=document.createElement("dl");timing.innerHTML=`<div><dt>${t("Next HAE tick","Следующий запуск HAE")}</dt><dd>${stamp(process.next_run_at)}</dd></div><div><dt>${t("Last run","Последний запуск")}</dt><dd>${stamp(process.last_run_at)}</dd></div><div><dt>${t("Last job","Последняя job")}</dt><dd>${process.last_job_state||"—"}</dd></div>`;card.append(timing);if(process.last_error_class){const error=document.createElement("p");error.className="blocked";error.textContent=t("Error: ","Ошибка: ")+process.last_error_class;card.append(error)}const actions=document.createElement("div");actions.className="work-actions";const button=(label:string,action:string,cls="secondary")=>{const b=document.createElement("button");b.type="button";b.className=cls;b.textContent=label;b.addEventListener("click",()=>mutateProcess(process.id,action));return b};if(process.status!=="active")actions.append(button(t("Activate","Активировать"),"activate","primary"));if(process.status==="active"){actions.append(button(t("Run on next HAE tick","Запустить на следующем tick"),"run_next_tick","primary"));actions.append(button(t("Pause","Пауза"),"pause"))}card.append(actions);box.append(card)})}
 async function mutateProcess(id:string,action:string){const x=await jsonFetch("/api/internal-command-center/processes/"+encodeURIComponent(id),{method:"PATCH",body:JSON.stringify({action})});if(!x.r.ok){setText("[data-process-status]",String(x.d.error||"process_update_failed"));return}setText("[data-process-status]",action==="activate"?t("Activated. HAE will claim it on the next hourly tick.","Активировано. HAE заберёт процесс на следующем часовом tick."):t("Process updated.","Процесс обновлён."));await loadAll()}
