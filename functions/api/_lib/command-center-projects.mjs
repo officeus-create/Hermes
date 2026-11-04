@@ -1,6 +1,6 @@
 const DONE_STATES = new Set(["done", "accepted"]);
 
-export const PROJECT_PORTFOLIO_SNAPSHOT_OBSERVED_AT = "2026-11-02T06:44:28.000Z";
+export const PROJECT_PORTFOLIO_SNAPSHOT_OBSERVED_AT = "2026-11-04T21:07:00.000Z";
 export const PROJECT_PORTFOLIO_COVERAGE_STATE = "PARTIAL_DECLARED_REGISTRY";
 export const PROJECT_PORTFOLIO_COVERAGE_NOTE = "Declared Command Center project families plus owner-created D1 projects; not a complete One Brain or company-wide project inventory.";
 
@@ -49,7 +49,7 @@ const projects = Object.freeze([
     plugin_roles: ["hermes-technology-developer", "hermes-access-identity-governor"],
     parent_id: "hermes-command-center",
     dependency_ids: ["hermes-command-center"],
-    related_ids: ["mac-ai", "windows-ai", "plugin-workforce"],
+    related_ids: ["mac-ai", "windows-ai", "deepseek-specialist", "plugin-workforce"],
     started_at: "2026-10-27T00:00:00.000Z",
     target_at: null,
     blockers: ["PR #2236 is the single current AI Operations/Command Center release candidate; fresh exact-head CI, independent review, protected release and authenticated production readback remain."],
@@ -127,7 +127,7 @@ const projects = Object.freeze([
     plugin_roles: ["hermes-automatic-engineer", "hermes-finance-accounting"],
     parent_id: "hae-runtime",
     dependency_ids: ["hae-runtime"],
-    related_ids: ["self-learning", "mac-ai", "windows-ai"],
+    related_ids: ["self-learning", "mac-ai", "windows-ai", "deepseek-specialist"],
     started_at: "2026-10-27T00:00:00.000Z",
     target_at: null,
     blockers: ["PR #2137 exact-head CI is 8/8 GREEN; independent review/merge and authenticated Workers plan readback remain before any activation."],
@@ -202,7 +202,7 @@ const projects = Object.freeze([
     plugin_roles: ["hermes-private-network", "hermes-security-engineering"],
     parent_id: "ai-operations",
     dependency_ids: ["hae-runtime"],
-    related_ids: ["free-ai", "windows-ai"],
+    related_ids: ["free-ai", "windows-ai", "deepseek-specialist"],
     started_at: "2026-10-25T00:00:00.000Z",
     target_at: null,
     blockers: ["Mac host is reachable on the authorized office Remote Desktop link, but it remains fallback/reference; host liveness is not Hermes AI/HAE execution proof and no primary-executor claim is made."],
@@ -225,7 +225,7 @@ const projects = Object.freeze([
     plugin_roles: ["hermes-private-network", "hermes-security-engineering"],
     parent_id: "ai-operations",
     dependency_ids: ["hae-runtime"],
-    related_ids: ["mac-ai", "free-ai"],
+    related_ids: ["mac-ai", "free-ai", "deepseek-specialist"],
     started_at: "2026-10-28T00:00:00.000Z",
     target_at: null,
     blockers: ["Latest authorized Remote Desktop readback shows Windows YuraValentyuk offline; no canonical HAE WORK_ID → lease → execution → D1 receipt exists."],
@@ -238,6 +238,33 @@ const projects = Object.freeze([
       milestone("receipt", "Accepted Windows runtime receipt", "blocked"),
       milestone("hae-work", "Consume and return one canonical HAE job", "planned"),
       milestone("continuity-90d", "90-day unattended continuity with durable runtime receipts", "blocked", "Continuity clock cannot start while Windows is offline; heartbeat alone is insufficient"),
+    ],
+  },
+  {
+    id: "deepseek-specialist",
+    title: "DeepSeek specialist lane",
+    department: "technology",
+    purpose: "Provide bounded zero-cost semantic assistance beneath HAE/VIKTOR without creating a second scheduler, queue, memory authority or control plane.",
+    owner_role: "hermes-agent-coordinator",
+    agent_role: "DeepSeek specialist",
+    plugin_roles: ["hermes-agent-coordinator", "hermes-qa-evidence-auditor"],
+    parent_id: "ai-operations",
+    dependency_ids: ["hae-runtime", "windows-ai"],
+    related_ids: ["free-ai", "self-learning", "plugin-workforce"],
+    started_at: "2026-11-03T00:00:00.000Z",
+    target_at: null,
+    blockers: ["Local DeepSeek model/integration evidence exists, but no canonical HAE WORK_ID → lease → execution → durable receipt is accepted. #2266 remains PREPARED / NOT RUNNING until isolated sandbox identity and review gates pass; MODEL_OUTPUT_REJECTED is a valid fail-closed state."],
+    evidence_level: "LOCAL_MODEL_AND_GUARD_SOURCE_PRESENT_RUNTIME_RECEIPT_UNVERIFIED",
+    links: [
+      { label: "Windows semantic canary #2250", href: "https://github.com/officeus-create/Hermes/pull/2250" },
+      { label: "DeepSeek sandbox #2266", href: "https://github.com/officeus-create/Hermes/issues/2266" },
+    ],
+    milestones: [
+      milestone("local-model", "Local DeepSeek model available", "done", "Authorized Windows local evidence"),
+      milestone("bounded-adapter", "Deterministic read-only adapter", "done", "PR #2250"),
+      milestone("fail-closed-output", "Semantic output guard keeps rejection explicit", "done", "MODEL_OUTPUT_REJECTED remains non-success"),
+      milestone("sandbox-isolation", "Isolated dsh-superagent sandbox + scoped identity", "blocked", "Issue #2266"),
+      milestone("hae-receipt", "One canonical DeepSeek → HAE READ_ONLY receipt", "planned"),
     ],
   },
   {
