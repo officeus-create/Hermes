@@ -1,6 +1,7 @@
 ---
 import { ArrowLeft, ArrowRight, Braces, Check, ClipboardList, Gauge, MonitorSmartphone, PanelsTopLeft, Rocket, SearchCheck, ShieldCheck } from "@lucide/astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import CaseStudyFunnelAnalytics from "../../components/CaseStudyFunnelAnalytics.astro";
 import ContactCTA from "../../components/ContactCTA.astro";
 import SiteFooter from "../../components/SiteFooter.astro";
 import SiteHeader from "../../components/SiteHeader.astro";
@@ -166,12 +167,13 @@ import "../../styles/features/case.css";
           <span>First step</span>
           <strong>Build your brief</strong>
           <p>Three priorities · references · market · budget approach</p>
-          <a href="/paths/technology/#project-brief">Start your project brief <ArrowRight size={18} aria-hidden="true" /></a>
+          <a href="/paths/technology/#project-brief" data-case-cta="commercial" data-case-action="start_project_brief">Start your project brief <ArrowRight size={18} aria-hidden="true" /></a>
         </div>
       </div>
     </section>
 
     <ContactCTA selectedPath="IT Development" />
+    <CaseStudyFunnelAnalytics caseId="it_development" />
   </main>
   <SiteFooter />
 </BaseLayout>

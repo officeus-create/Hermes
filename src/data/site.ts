@@ -46,7 +46,22 @@ export const site = {
     href: "mailto:officeus@hermeslogisticsus.com",
     note: "Email the U.S. Logistics team about freight, documents, dispatch, or operating support",
   },
-  publicPhones: [] as { label: string; value: string; href: string; note: string }[],
+  // Owner-approved 2026-10-27 (docs/CANONICAL_COMPANY_FACTS_APPROVAL.md): one line for both Logistics desks,
+  // calls and text messages, Mon–Sat 6 AM–6 PM Central. Same number as the owner's Facebook page.
+  publicPhones: [
+    {
+      label: "Dispatch desk",
+      value: "+1 (351) 777-5337",
+      href: "tel:+13517775337",
+      note: "Carrier dispatch · call or text · Mon–Sat 6 AM–6 PM CT",
+    },
+    {
+      label: "Shipper & dealer desk",
+      value: "+1 (351) 777-5337",
+      href: "tel:+13517775337",
+      note: "Vehicle transport requests · call or text · Mon–Sat 6 AM–6 PM CT",
+    },
+  ] as { label: string; value: string; href: string; note: string }[],
   telegramGroups: [
     {
       label: "Hermes Marketing | ProgressoPro Growth",
@@ -306,6 +321,7 @@ export const site = {
     { label: "Instagram", href: "https://www.instagram.com/hermes.logistics/" },
     { label: "Threads", href: "https://www.threads.com/@hermes.logistics" },
     { label: "Telegram", href: "https://t.me/+R-GepRJDbEQ1NjVi" },
+    { label: "Facebook", href: "https://www.facebook.com/profile.php?id=61558767681287" },
   ],
   claimRegister: [
     { claim: "Hermes operates as a multi-division business ecosystem", status: "VERIFIED_INTERNAL" as ClaimStatus },

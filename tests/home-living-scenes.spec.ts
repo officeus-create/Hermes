@@ -50,7 +50,7 @@ test("Home keeps native routes and shows living details without layout overflow"
 });
 
 test("Home update glow follows a dated public Insight and expires after seven days", async ({ page }) => {
-  await page.addInitScript(() => { Date.now = () => Date.parse("2026-10-22T12:00:00Z"); });
+  await page.addInitScript(() => { Date.now = () => Date.parse("2026-10-26T12:00:00Z"); });
   await page.goto("/");
   const insights = page.locator('.desktop-products-grid a[data-product="insights"]');
   await expect(insights).toHaveClass(/has-home-update/);
@@ -58,14 +58,14 @@ test("Home update glow follows a dated public Insight and expires after seven da
   await expect(page.locator('.desktop-products-grid a[data-product="connect"]')).not.toHaveClass(/has-home-update/);
   await expect(page.locator('.desktop-products-grid a[data-product="catalog"]')).not.toHaveClass(/has-home-update/);
   const futurePage = await page.context().newPage();
-  await futurePage.addInitScript(() => { Date.now = () => Date.parse("2026-10-30T12:00:00Z"); });
+  await futurePage.addInitScript(() => { Date.now = () => Date.parse("2026-11-03T12:00:00Z"); });
   await futurePage.goto("/");
   await expect(futurePage.locator('.desktop-products-grid a[data-product="insights"]')).not.toHaveClass(/has-home-update/);
   await futurePage.close();
 });
 
 
-test("Home keeps a visible direction arrow on touch devices", async ({ browser }, testInfo) => {
+test("Home windows stay full native links on touch without circled arrows", async ({ browser }, testInfo) => {
   const context = await browser.newContext({
     baseURL: testInfo.project.use.baseURL,
     viewport: { width: 390, height: 844 },
@@ -74,9 +74,11 @@ test("Home keeps a visible direction arrow on touch devices", async ({ browser }
   try {
     const page = await context.newPage();
     await page.goto("/");
-    const arrows = page.locator(".home-master-route-arrow");
-    await expect(arrows).toHaveCount(4);
-    for (const arrow of await arrows.all()) await expect(arrow).toBeVisible();
+    // Owner 22.10: circled arrows looked cheap and were removed; each window is the link itself.
+    await expect(page.locator(".home-master-route-arrow")).toHaveCount(0);
+    const routes = page.locator("[data-home-route]");
+    await expect(routes).toHaveCount(4);
+    for (const route of await routes.all()) await expect(route).toHaveAttribute("href", /^\/paths\/(logistics|technology|academy|marketing)\/$/);
   } finally {
     await context.close();
   }

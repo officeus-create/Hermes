@@ -48,11 +48,13 @@ test("analytics stays off before choice and after decline", async ({ page }) => 
 
   await page.getByRole("button", { name: "Continue without analytics" }).click();
   await expect.poll(() => page.evaluate(() => localStorage.getItem("hermes-analytics-consent"))).toBe("denied");
+  await expect.poll(() => page.evaluate(() => Reflect.get(window, "ga-disable-G-RY26321PVW"))).toBe(true);
   await page.waitForTimeout(400);
   expect(analyticsRequests).toEqual([]);
 
   await page.reload({ waitUntil: "domcontentloaded" });
   await expect(page.getByRole("heading", { name: "Choose whether to allow website analytics." })).toBeHidden();
+  await expect.poll(() => page.evaluate(() => Reflect.get(window, "ga-disable-G-RY26321PVW"))).toBe(true);
   await page.waitForTimeout(400);
   expect(analyticsRequests).toEqual([]);
 });
@@ -87,6 +89,7 @@ test("analytics consent uses host-appropriate transport and can be withdrawn", a
 
   await page.getByRole("button", { name: "Allow analytics" }).click();
   await expect.poll(() => page.evaluate(() => localStorage.getItem("hermes-analytics-consent"))).toBe("granted");
+  await expect.poll(() => page.evaluate(() => Reflect.get(window, "ga-disable-G-RY26321PVW"))).toBe(false);
   await expect.poll(() => page.evaluate(() => document.documentElement.dataset.analyticsTransport)).toBe(expectedTransport);
   await expect.poll(() => page.evaluate(() => document.documentElement.dataset.clarityTransport)).toBe(expectedClarityTransport);
 
@@ -123,6 +126,7 @@ test("analytics consent uses host-appropriate transport and can be withdrawn", a
   ]);
 
   await expect.poll(() => page.evaluate(() => localStorage.getItem("hermes-analytics-consent"))).toBe("denied");
+  await expect.poll(() => page.evaluate(() => Reflect.get(window, "ga-disable-G-RY26321PVW"))).toBe(true);
   await expect(page.locator('script[data-hermes-ga4="true"]')).toHaveCount(0);
   await expect(page.locator('script[data-hermes-clarity="true"]')).toHaveCount(0);
   await expect(page.getByRole("heading", { name: "Choose whether to allow website analytics." })).toBeHidden();

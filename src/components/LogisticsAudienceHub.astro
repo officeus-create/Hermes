@@ -11,15 +11,16 @@ const training = {
 
 const serviceGuides = [
   { label: "Car Hauling Dispatch", href: "/logistics/car-hauling-dispatch/" },
+  { label: "Car Hauler Loads by Market", href: "/logistics/car-hauler-loads/" },
+  { label: "Owner-Operator Dispatch Support", href: "/logistics/owner-operator-dispatch-support/" },
+  { label: "New Authority Car Hauler Support", href: "/logistics/new-authority-car-hauler-support/" },
+  { label: "Fleet Owner Dispatch Support", href: "/logistics/fleet-owner-dispatch-support/" },
   { label: "Dealer Vehicle Transportation", href: "/logistics/dealer-vehicle-transportation/" },
   { label: "Auction Vehicle Pickup", href: "/logistics/auction-vehicle-pickup/" },
   { label: "Enclosed Vehicle Transport", href: "/logistics/enclosed-vehicle-transport/" },
   { label: "Open Vehicle Transport", href: "/logistics/open-vehicle-transport/" },
   { label: "Inoperable Vehicle Transport", href: "/logistics/inoperable-vehicle-transport/" },
   { label: "Multi-Car Transport", href: "/logistics/multi-car-transport/" },
-  { label: "New Authority Car Hauler Support", href: "/logistics/new-authority-car-hauler-support/" },
-  { label: "Owner-Operator Dispatch Support", href: "/logistics/owner-operator-dispatch-support/" },
-  { label: "Fleet Owner Dispatch Support", href: "/logistics/fleet-owner-dispatch-support/" },
 ];
 import "../styles/features/load.css";
 import "../styles/features/resource.css";
@@ -37,7 +38,7 @@ import "../styles/hermes-logistics-public.css";
     </div>
     <div class="logistics-audience-grid">
       {logisticsAudiences.map((audience) => (
-        <a href={`/logistics/${audience.slug}/`}>
+        <a href={audience.ownerHref ?? `/logistics/${audience.slug}/`}>
           <span>{audience.eyebrow}</span>
           <h3>{audience.label}</h3>
           <p>{audience.summary}</p>

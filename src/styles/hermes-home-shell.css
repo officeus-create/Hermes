@@ -127,7 +127,7 @@ body:has(.hermes-home-page) .site-header .menu-button {
 
 .hermes-home-page .hero-eyebrow {
   margin-bottom: 1rem;
-  color: var(--hermes-violet);
+  color: var(--hermes-violet-text);
   font: 700 .72rem/1.2 var(--font-mono);
   letter-spacing: .085em;
   text-transform: uppercase;
@@ -361,7 +361,7 @@ body:has(.hermes-home-page) .site-header .menu-button {
 }
 
 .hermes-home-page .home-role-card-top {
-  color: var(--hermes-violet);
+  color: var(--hermes-violet-text);
 }
 
 .hermes-home-page .home-role-card strong {
@@ -380,7 +380,7 @@ body:has(.hermes-home-page) .site-header .menu-button {
 
 .hermes-home-page .section-heading .eyebrow,
 .hermes-home-page .paths-heading .eyebrow {
-  color: var(--hermes-violet);
+  color: var(--hermes-violet-text);
   letter-spacing: .08em;
   text-transform: uppercase;
 }

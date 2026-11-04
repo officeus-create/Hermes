@@ -1,0 +1,143 @@
+---
+import { GraduationCap, Megaphone, Mic, PackageCheck, ShieldCheck, Truck, Users, Wrench, CircleDollarSign } from "@lucide/astro";
+import HermesLocalAgentsLink from "./HermesLocalAgentsLink.astro";
+import HermesOwnerProjectPortfolio from "./HermesOwnerProjectPortfolio.astro";
+import { HAE_OWNER_PROCESS_TEMPLATES } from "../lib/hae-process-control.mjs";
+interface Props{ru?:boolean}
+const {ru=false}=Astro.props;
+const pillars=[
+  {key:"logistics",icon:Truck,title:"Logistics",copy:ru?"Перевозчики, грузы, dispatch, документы и операционная видимость.":"Carriers, loads, dispatch, documents and operating visibility.",links:[["Logistics","/paths/logistics/"],["Load Board","/load-board/"]]},
+  {key:"marketing",icon:Megaphone,title:"Marketing",copy:ru?"Сайт, SEO/GEO, social distribution и путь до квалифицированного действия.":"Website, SEO/GEO, social distribution and the path to a qualified action.",links:[["Marketing","/paths/marketing/"],["Website Development","/services/website-development/"]]},
+  {key:"technology",icon:Wrench,title:"Technology",copy:ru?"Hermes Connect, сайты, CRM, интеграции, automation и AI systems.":"Hermes Connect, websites, CRM, integrations, automation and AI systems.",links:[["Hermes Connect","/services/hermes-connect/"],["AI Connect","/services/hermes-connect/internal/ai-connect/"]]},
+  {key:"academy",icon:GraduationCap,title:"Academy",copy:ru?"Обучение, практика, review, прогресс и бизнес-операции академии.":"Learning, practice, review, progression and academy business operations.",links:[["Academy","/services/hermes-connect/academy/"],["Business Workspace","/services/hermes-connect/academy/business/workspace/"]]},
+];
+const functions=[
+  {key:"sales",icon:Users,title:ru?"Продажи":"Sales",copy:ru?"Лиды, предложения, follow-up и revenue path.":"Leads, proposals, follow-up and the revenue path."},
+  {key:"finance",icon:CircleDollarSign,title:ru?"Финансы":"Finance",copy:ru?"Экономика проектов и ROI.":"Project economics and ROI."},
+  {key:"operations",icon:PackageCheck,title:ru?"Операции":"Operations",copy:ru?"Межкомандная очередь, процессы и координация.":"Cross-team queue, process and coordination."},
+];
+---
+<div class="owner-workspace" data-private hidden>
+  <div class="owner-toast" data-owner-toast role="status" hidden></div>
+  <section class="owner-view is-active" data-cc-view="today">
+    <div class="owner-decision-grid" aria-label={ru?"Сводка владельца":"Owner summary"}>
+      <article><span>{ru?"Нужно моё решение":"Needs my decision"}</span><strong data-today-decision>0</strong><small>{ru?"Результаты ждут приёмки":"Results awaiting acceptance"}</small></article>
+      <article><span>{ru?"Выполняется":"Running now"}</span><strong data-today-running>0</strong><small>{ru?"AI-задачи и активные процессы":"AI tasks and active processes"}</small></article>
+      <article><span>{ru?"Заблокировано":"Blocked"}</span><strong data-today-blocked>0</strong><small>{ru?"Есть причина и следующий шаг":"Reason and next step are recorded"}</small></article>
+      <article><span>{ru?"Следующее":"Next"}</span><strong class="owner-next" data-today-next>—</strong><small>{ru?"Приоритетное действие владельца":"Highest-priority owner action"}</small></article>
+    </div>
+
+    <section class="hcc-panel owner-today-focus">
+      <div class="owner-section-head"><div><p class="hcc-sample">{ru?"Сегодня":"Today"}</p><h2>{ru?"Что требует внимания сейчас":"What needs attention now"}</h2></div><button type="button" class="hcc-primary" data-new-task>+ {ru?"Новая задача":"New task"}</button></div>
+      <div class="owner-today-list" data-today-list><p class="muted">{ru?"Загружаем текущую работу…":"Loading current work…"}</p></div>
+    </section>
+
+    <section class="owner-status-row">
+      <article class="hcc-card"><span>{ru?"Облако":"Cloud"}</span><strong>Cloudflare + D1</strong><small>{ru?"Очередь и CRM не зависят от Mac":"Queue and CRM do not depend on the Mac"}</small></article>
+      <article class="hcc-card"><span>{ru?"Исполнитель":"Runner"}</span><strong data-runner-state>—</strong><small data-runner-copy>—</small></article>
+      <article class="hcc-card"><span>{ru?"Открытые задачи":"Open tasks"}</span><strong data-backlog-count>0</strong><small>{ru?"В облачной очереди":"In the cloud queue"}</small></article>
+      <article class="hcc-card"><span>{ru?"На приёмке":"Acceptance"}</span><strong data-approval-count>0</strong><small>{ru?"AI-задачи ждут решения":"AI tasks awaiting decision"}</small></article>
+    </section>
+  </section>
+
+  <section class="owner-view" data-cc-view="projects" hidden>
+    <HermesOwnerProjectPortfolio ru={ru}/>
+    <section class="hcc-panel owner-business-map">
+      <div class="owner-section-head"><div><p class="hcc-sample">{ru?"One Hermes · Four business pillars":"One Hermes · Four business pillars"}</p><h2>{ru?"Направления бизнеса":"Business pillars"}</h2><p>{ru?"Цвет обозначает направление, а не отдельный суббренд.":"Color is an orientation cue, not a separate sub-brand."}</p></div></div>
+      <div class="owner-pillar-grid">
+        {pillars.map((module)=>{const Icon=module.icon;return <article class="owner-pillar hcc-card" data-module={module.key} data-pillar={module.key}><div class="owner-pillar-top"><span class="owner-pillar-icon"><Icon size={20}/></span><span class="module-state">{ru?"Открыто":"Open"}</span></div><h3>{module.title}</h3><p>{module.copy}</p><div class="owner-links">{module.links.map(([label,href])=><a href={href}>{label}</a>)}</div><button type="button" class="owner-filter-button" data-focus-workstream={module.key}>{ru?"Показать задачи":"Show tasks"}</button></article>})}
+      </div>
+      <div class="owner-functions">
+        <div><p class="hcc-sample">{ru?"Operating functions":"Operating functions"}</p><h3>{ru?"Продажи, финансы и операции":"Sales, Finance and Operations"}</h3><p>{ru?"Это функции внутри одной системы, а не дополнительные направления бренда Hermes.":"These are operating functions inside one system, not additional Hermes brand pillars."}</p></div>
+        <div class="owner-function-grid">{functions.map((item)=>{const Icon=item.icon;return <button type="button" data-module={item.key} data-focus-workstream={item.key}><Icon size={18}/><span><strong>{item.title}</strong><small>{item.copy}</small></span><em class="module-state">{ru?"Открыто":"Open"}</em></button>})}</div>
+      </div>
+    </section>
+  </section>
+
+  <section class="owner-view" data-cc-view="tasks" hidden>
+    <section class="hcc-panel owner-work-panel">
+      <div class="owner-section-head"><div><p class="hcc-sample">{ru?"Облачная очередь":"Cloud work queue"}</p><h2 data-backlog-title>{ru?"Задачи владельца":"Owner work queue"}</h2><p>{ru?"Фильтруй по проекту, приоритету и состоянию. AI запускается отдельно от сохранения задачи.":"Filter by project and state. AI dispatch remains separate from task capture."}</p></div><div class="owner-head-actions"><button type="button" class="hcc-secondary" data-refresh>{ru?"Обновить":"Refresh"}</button><button type="button" class="hcc-primary" data-new-task>+ {ru?"Новая задача":"New task"}</button></div></div>
+      <div class="owner-task-tools">
+        <label>{ru?"Проект":"Project"}<select data-project-filter><option value="all">{ru?"Все проекты":"All projects"}</option><option value="unassigned">{ru?"Без проекта":"Unassigned"}</option></select></label>
+        <label>{ru?"Поиск":"Search"}<input type="search" data-work-search placeholder={ru?"Название, описание или ID…":"Title, description or task ID…"} autocomplete="off"/></label>
+      </div>
+      <div class="filters" data-filters><button class="active" data-filter="open">{ru?"Открытые":"Open"}</button><button data-filter="awaiting_acceptance">{ru?"На приёмке":"Needs acceptance"}</button><button data-filter="marketing">Marketing</button><button data-filter="logistics">Logistics</button><button data-filter="sales">Sales</button><button data-filter="technology">Technology</button><button data-filter="academy">Academy</button><button data-filter="finance">Finance</button><button data-filter="operations">Operations</button><button data-filter="done">{ru?"Принято":"Accepted"}</button></div>
+      <div class="work-list" data-work-list><p>{ru?"Загружаем очередь…":"Loading backlog…"}</p></div>
+    </section>
+  </section>
+
+  <section class="owner-view" data-cc-view="automations" hidden>
+    <section class="hcc-panel process-control" data-process-control>
+      <div class="owner-section-head"><div><p class="hcc-sample">{ru?"Автоматизация":"Automation"}</p><h2>{ru?"Процессы HAE 24/7":"HAE 24/7 processes"}</h2><p>{ru?"Проверенные процессы создаются на паузе и включаются отдельно. Внешние отправки и платный AI в этом слое отключены.":"Verified processes start paused and are activated separately. External sends and paid AI are disabled in this layer."}</p></div><span class="owner-cloud-note">D1 · Queue · $0 default</span></div>
+      <form data-process-form class="process-form">
+        <label>{ru?"Название":"Process name"}<input name="name" maxlength="160" placeholder={ru?"Можно оставить пустым":"Optional"}/></label>
+        <label>{ru?"Что проверять":"Capability"}<select name="job_type">{HAE_OWNER_PROCESS_TEMPLATES.map((template)=><option value={template.job_type} data-cadences={template.allowed_cadence_hours.join(",")}>{ru?template.label_ru:template.label}</option>)}</select></label>
+        <label>{ru?"Частота":"Cadence"}<select name="cadence_hours"><option value="1">{ru?"Каждый час":"Every hour"}</option><option value="6">{ru?"Каждые 6 часов":"Every 6 hours"}</option><option value="12">{ru?"Каждые 12 часов":"Every 12 hours"}</option><option value="24">{ru?"Каждые 24 часа":"Every 24 hours"}</option><option value="168">{ru?"Каждую неделю":"Every week"}</option></select></label>
+        <button type="submit" class="primary">{ru?"Создать на паузе":"Create paused"}</button>
+        <p data-process-status role="status"></p>
+      </form>
+      <div class="process-list" data-process-list><p class="muted">{ru?"Загружаем процессы…":"Loading processes…"}</p></div>
+    </section>
+  </section>
+
+  <section class="owner-view" data-cc-view="agents" hidden>
+    <div class="owner-agent-grid">
+      <article class="hcc-panel owner-agent-panel">
+        <div class="owner-section-head"><div><p class="hcc-sample">Hermes Intelligence</p><h2>{ru?"Среда исполнения":"Execution environment"}</h2></div><span class="module-state" data-agent-badge>—</span></div>
+        <dl><div><dt>{ru?"Состояние":"Status"}</dt><dd data-agent-status>—</dd></div><div><dt>{ru?"Последняя связь":"Last heartbeat"}</dt><dd data-agent-seen>—</dd></div><div><dt>{ru?"Активная AI-задача":"Active AI task"}</dt><dd data-active-task>—</dd></div><div><dt>{ru?"Версия кода":"Repo SHA"}</dt><dd data-agent-sha>—</dd></div></dl>
+        <p class="muted">{ru?"Если локальный исполнитель выключится, облачная очередь остаётся в D1. Запуск Hermes AI передаёт только одну задачу в существующую очередь.":"If the local runner goes offline, the cloud queue remains in D1. Hermes AI dispatch sends only one task into the existing queue."}</p>
+        <a class="owner-text-link" href="/services/hermes-connect/internal/ai-connect/">{ru?"Открыть AI workspace →":"Open AI workspace →"}</a>
+      </article>
+      <article class="hcc-panel owner-agent-panel">
+        <div class="owner-section-head"><div><p class="hcc-sample">{ru?"Локальные и облачные агенты":"Local & cloud agents"}</p><h2>{ru?"Исполнители и fallback":"Runners and fallback"}</h2></div></div>
+        <HermesLocalAgentsLink ru={ru}/>
+      </article>
+    </div>
+  </section>
+
+  <section class="owner-view" data-cc-view="evidence" hidden>
+    <section class="hcc-panel owner-evidence-panel">
+      <div class="owner-section-head"><div><p class="hcc-sample">Evidence</p><h2>{ru?"Что реально было сделано":"What actually happened"}</h2><p>{ru?"Здесь показываются только task-linked результаты, PR и owner acceptance.":"Only task-linked results, PRs and owner acceptance appear here."}</p></div></div>
+      <div class="owner-evidence-list" data-evidence-list><p class="muted">{ru?"Загружаем evidence…":"Loading evidence…"}</p></div>
+    </section>
+  </section>
+
+  <section class="owner-view" data-cc-view="access" hidden>
+    <section class="hcc-panel owner-account-panel">
+      <div class="owner-section-head"><div><p class="hcc-sample">{ru?"Мой Hermes":"My Hermes"}</p><h2>{ru?"Подключённые рабочие пространства":"Connected workspaces"}</h2></div><span data-account-identity class="owner-cloud-note">—</span></div>
+      <div class="workspace-grid" data-account-workspaces><p class="muted">{ru?"Загружаем доступы…":"Loading access…"}</p></div>
+    </section>
+    <section class="hcc-panel access-admin">
+      <div class="owner-section-head"><div><p class="hcc-sample">{ru?"Доступ":"Access"}</p><h2>{ru?"Владельцы Command Center":"Command Center owners"}</h2><p>{ru?"Доступ выдаётся только существующему Hermes-аккаунту и фиксируется в audit trail.":"Access can be granted only to an existing Hermes account and is written to the audit trail."}</p></div><ShieldCheck size={22}/></div>
+      <div class="owner-list" data-owner-list></div>
+      <form data-access-form><label>{ru?"Email существующего Hermes-аккаунта":"Existing Hermes account email"}<input name="email" type="email" autocomplete="off" required placeholder="team@example.com"/></label><div class="access-actions"><button type="submit" name="action" value="grant" class="primary">{ru?"Выдать доступ":"Grant access"}</button><button type="submit" name="action" value="revoke" class="danger">{ru?"Отозвать":"Revoke"}</button></div><p data-access-status role="status"></p></form>
+    </section>
+  </section>
+
+  <dialog class="owner-dialog" data-capture-dialog aria-labelledby="capture-heading">
+    <form data-work-form>
+      <div class="owner-dialog-head"><div><p class="hcc-sample">{ru?"Новая задача":"New task"}</p><h2 id="capture-heading">{ru?"Добавить в облачную очередь":"Add to cloud backlog"}</h2></div><button type="button" class="icon-close" data-capture-cancel aria-label={ru?"Закрыть":"Close"}>×</button></div>
+      <p class="muted">{ru?"Сохранение задачи не запускает AI автоматически.":"Saving a task does not dispatch AI automatically."}</p>
+      <div class="row"><label>{ru?"Функция / направление":"Business area"}<select name="workstream"><option value="marketing">Marketing</option><option value="logistics">Logistics</option><option value="sales">Sales</option><option value="technology">Technology</option><option value="academy">Academy</option><option value="finance">Finance</option><option value="operations">Operations</option></select></label><label>{ru?"Приоритет":"Priority"}<select name="priority"><option value="p0">P0 · Critical</option><option value="p1">P1 · High</option><option value="p2" selected>P2 · Normal</option><option value="p3">P3 · Later</option></select></label></div>
+      <label>{ru?"Проект":"Project"}<select name="project_id" data-work-project><option value="">{ru?"Без проекта":"Unassigned"}</option></select></label>
+      <label>{ru?"Название (необязательно)":"Title (optional)"}<input name="title" maxlength="160" placeholder={ru?"Если пусто — первая строка станет названием":"If blank, the first instruction line becomes the title"}/></label>
+      <label>{ru?"Что нужно сделать":"Instructions"}<textarea name="details" rows="6" maxlength="10000" required placeholder={ru?"Опишите ожидаемый результат обычным языком.":"Describe the expected outcome in normal language."}></textarea></label>
+      <div class="dialog-actions"><button type="button" class="secondary" data-dictate><Mic size={15}/>{ru?"Диктовать":"Dictate"}</button><button type="submit" class="primary"><PackageCheck size={15}/>{ru?"Сохранить в очередь":"Save to backlog"}</button></div>
+      <p data-capture-status role="status"></p>
+    </form>
+  </dialog>
+
+  <dialog class="owner-dialog" data-edit-dialog aria-labelledby="work-edit-heading">
+    <form data-edit-form>
+      <div class="owner-dialog-head"><div><p class="hcc-sample">{ru?"Задача":"Task"}</p><h2 id="work-edit-heading">{ru?"Редактировать задачу":"Edit cloud task"}</h2></div><button type="button" class="icon-close" data-edit-cancel aria-label={ru?"Закрыть":"Close"}>×</button></div>
+      <p class="muted">{ru?"Запущенные AI-задачи редактировать нельзя.":"Tasks already dispatched to AI cannot be edited."}</p>
+      <input name="edit_id" type="hidden"/><input name="edit_updated_at" type="hidden"/>
+      <label>{ru?"Проект":"Project"}<select name="edit_project_id" data-edit-project><option value="">{ru?"Без проекта":"Unassigned"}</option></select></label>
+      <label>{ru?"Название":"Title"}<input name="edit_title" maxlength="160" required/></label>
+      <div class="row"><label>{ru?"Функция / направление":"Business area"}<select name="edit_workstream"><option value="marketing">Marketing</option><option value="logistics">Logistics</option><option value="sales">Sales</option><option value="technology">Technology</option><option value="academy">Academy</option><option value="finance">Finance</option><option value="operations">Operations</option></select></label><label>{ru?"Приоритет":"Priority"}<select name="edit_priority"><option value="p0">P0</option><option value="p1">P1</option><option value="p2">P2</option><option value="p3">P3</option></select></label></div>
+      <label>{ru?"Описание и ожидаемый результат":"Instructions and expected outcome"}<textarea name="edit_details" rows="7" maxlength="10000" required></textarea></label>
+      <p data-edit-status role="status"></p>
+      <div class="dialog-actions"><button type="button" class="secondary" data-edit-cancel>{ru?"Отмена":"Cancel"}</button><button type="submit" class="primary">{ru?"Сохранить в облаке":"Save to cloud"}</button></div>
+    </form>
+  </dialog>
+</div>

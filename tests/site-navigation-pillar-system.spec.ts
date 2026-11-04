@@ -19,7 +19,8 @@ test("global header separates four primary directions from secondary discovery l
 
   const products = page.locator(".desktop-nav > [data-hermes-products]");
   await expect(products).toHaveCount(1);
-  await expect(products.locator('a[data-product]')).toHaveCount(4);
+  await expect(products.locator('a[data-product]')).toHaveCount(5);
+  await expect(products.locator('[data-product="all-products"]')).toHaveAttribute("href", "/products/");
   await expect(products.locator('[data-product="connect"]')).toHaveAttribute("href", "/services/hermes-connect/");
   await expect(products.locator('[data-product="catalog"]')).toHaveAttribute("href", "/businesses/");
   await expect(products.locator('[data-product="insights"]')).toHaveAttribute("href", "/insights/");
@@ -150,7 +151,7 @@ test("Products navigation remains stable at 320px and the 1180px desktop breakpo
         products = page.locator(".desktop-nav .desktop-products-menu");
       }
       await products.locator("summary").click();
-      await expect(products.locator("a[data-product]")).toHaveCount(4);
+      await expect(products.locator("a[data-product]")).toHaveCount(5);
       for (const link of await products.locator("a[data-product]").all()) {
         await expect(link).toBeVisible();
       }

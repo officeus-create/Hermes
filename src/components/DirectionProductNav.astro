@@ -16,13 +16,14 @@ import {
   Workflow,
 } from "@lucide/astro";
 import DirectionNavIcon from "./DirectionNavIcon.astro";
+import HermesConnectMark from "./HermesConnectMark.astro";
 
-export type DirectionId = "logistics" | "marketing" | "technology" | "academy" | "catalog";
+export type DirectionId = "logistics" | "marketing" | "technology" | "academy" | "catalog" | "products";
 
 interface Props {
   direction: DirectionId;
   theme?: "light" | "dark";
-  locale?: "en" | "ru";
+  locale?: "en" | "ru" | "uk";
 }
 
 const { direction, theme = "light", locale = "en" } = Astro.props;
@@ -41,6 +42,7 @@ const configs = {
       { id: "brokers", label: "Brokers", href: "/paths/logistics/brokers/carrier-capacity/", icon: BriefcaseBusiness },
       { id: "shippers-dealers", label: "Shippers & Dealers", href: "/paths/logistics/customers/vehicle-transport/", icon: Building2 },
       { id: "operations", label: "Dispatch & Back Office", href: "/logistics/car-hauling-dispatch/", icon: Workflow },
+      { id: "start-company", label: "Start a Company", href: "/logistics/start-trucking-company/", icon: FileSignature },
       { id: "agreement", label: "Agreement", href: "/carrier/", icon: FileSignature },
       { id: "path", label: "Find Your Path", href: "/paths/logistics/find-your-path/", icon: ArrowUpRight },
       { id: "catalog", label: "Catalog", href: "/businesses/", icon: Search },
@@ -92,6 +94,20 @@ const configs = {
       { id: "method", label: "How Training Works", href: "/academy/how-training-works/", icon: BookOpen },
       { id: "apply", label: "Apply", href: "/academy/apply/", icon: GraduationCap },
       { id: "catalog", label: "Catalog", href: "/businesses/", icon: Building2 },
+    ],
+  },
+  products: {
+    brand: "Hermes Products",
+    subtitle: "Built and run by us",
+    home: "/products/",
+    accent: "#0a164f",
+    items: [
+      { id: "connect", label: "Hermes Connect", href: "/services/hermes-connect/", icon: Sparkles },
+      { id: "load-board", label: "Load Board", href: "/load-board/", icon: Route },
+      { id: "catalog", label: "Catalog", href: "/businesses/", icon: Search },
+      { id: "insights", label: "Insights", href: "/insights/", icon: BookOpen },
+      { id: "opportunities", label: "Opportunities", href: "/opportunities/", icon: BriefcaseBusiness },
+      { id: "case", label: "Case studies", href: "/case/", icon: Code2 },
     ],
   },
   catalog: {
@@ -174,8 +190,16 @@ const ruOverrides: Partial<Record<DirectionId, {
   },
 };
 
+// Catalog labels only: hrefs and canonical owners stay identical across languages.
+const catalogLabelOverrides: Record<"ru" | "uk", { home?: string; subtitle?: string; items?: Record<string, { label?: string; href?: string }> }> = {
+  ru: { subtitle: "Бизнесы · услуги · локации · Connect", items: { search: { label: "Поиск" }, categories: { label: "Категории" }, locations: { label: "Локации" }, owners: { label: "Владельцам бизнеса" }, ecosystem: { label: "Услуги Hermes" } } },
+  uk: { subtitle: "Бізнеси · послуги · локації · Connect", items: { search: { label: "Пошук" }, categories: { label: "Категорії" }, locations: { label: "Локації" }, owners: { label: "Власникам бізнесу" }, ecosystem: { label: "Послуги Hermes" } } },
+};
+
 const config = configs[direction];
-const localeOverride = locale === "ru" ? ruOverrides[direction] : undefined;
+const localeOverride = direction === "catalog" && locale !== "en"
+  ? catalogLabelOverrides[locale]
+  : locale === "ru" ? ruOverrides[direction] : undefined;
 const home = localeOverride?.home ?? config.home;
 const subtitle = localeOverride?.subtitle ?? config.subtitle;
 const items = config.items.map((item) => {
@@ -205,7 +229,8 @@ const livingKinds: Record<string, string> = {
   growth: "path",
   ...(direction === "academy" ? { logistics: "carriers" } : {}),
 };
-const livingKind = (id: string) => (direction === "logistics" ? id : livingKinds[id]);
+// "Start a Company" reuses the living document icon (DOT/MC package) in every direction.
+const livingKind = (id: string) => (id === "start-company" ? "agreement" : direction === "logistics" ? id : livingKinds[id]);
 ---
 
 <nav
@@ -218,15 +243,15 @@ const livingKind = (id: string) => (direction === "logistics" ? id : livingKinds
   <div class="shell direction-product-nav__inner">
     <a class="direction-product-nav__brand" href={home} aria-current={currentPath === home ? "page" : undefined}>
       <span>{config.brand}</span>
-      <small>{subtitle}</small>
+      <small data-catalog-label-uk={direction === "catalog" ? catalogLabelOverrides.uk.subtitle : undefined} data-catalog-label-ru={direction === "catalog" ? catalogLabelOverrides.ru.subtitle : undefined}>{subtitle}</small>
     </a>
     <div class="direction-product-nav__links">
       {items.map((item) => {
         const Icon = item.icon;
         return (
           <a href={item.href} aria-current={isActive(item.href) ? "page" : undefined} data-direction-product-link={item.id}>
-            {livingKind(item.id) ? <DirectionNavIcon kind={livingKind(item.id)!} /> : <span class="direction-product-nav__generic-icon" aria-hidden="true"><Icon size={15} /></span>}
-            <span>{item.label}</span>
+            {item.id === "connect" ? <HermesConnectMark size={13} class="direction-product-nav__connect-mark" /> : livingKind(item.id) ? <DirectionNavIcon kind={livingKind(item.id)!} /> : <span class="direction-product-nav__generic-icon" aria-hidden="true"><Icon size={15} /></span>}
+            <span data-catalog-label-uk={direction === "catalog" ? catalogLabelOverrides.uk.items?.[item.id]?.label : undefined} data-catalog-label-ru={direction === "catalog" ? catalogLabelOverrides.ru.items?.[item.id]?.label : undefined}>{item.label}</span>
           </a>
         );
       })}
@@ -234,38 +259,54 @@ const livingKind = (id: string) => (direction === "logistics" ? id : livingKinds
   </div>
 </nav>
 
+{direction === "catalog" && (
+  <script is:inline>
+    // Catalog pages switch language in the browser (?lang=uk / html lang); keep the submenu
+    // labels in the same language. Hrefs never change.
+    (() => {
+      const requested = new URLSearchParams(location.search).get("lang") || document.documentElement.lang || "";
+      const lang = requested.slice(0, 2) === "ua" ? "uk" : requested.slice(0, 2);
+      if (lang !== "uk" && lang !== "ru") return;
+      document.querySelectorAll(`[data-direction-product-nav="catalog"] [data-catalog-label-${lang}]`).forEach((node) => {
+        const label = node.getAttribute(`data-catalog-label-${lang}`);
+        if (label) node.textContent = label;
+      });
+    })();
+  </script>
+)}
+
 <style>
   .direction-product-nav{position:sticky;top:96px;z-index:35;border-bottom:1px solid rgba(17,19,36,.1);backdrop-filter:blur(18px) saturate(1.04)}
-  .direction-product-nav--light{background:rgba(255,255,255,.95);color:#111324}
-  .direction-product-nav--dark{background:rgba(7,16,56,.95);color:#fff;border-bottom-color:rgba(255,255,255,.12)}
+  .direction-product-nav--light{background:#fff;color:#111324}
+  .direction-product-nav--dark{background:#071038;color:#fff;border-bottom-color:rgba(255,255,255,.12)}
   .direction-product-nav__inner{display:flex;align-items:center;gap:1rem;min-height:58px}
   .direction-product-nav__brand{position:relative;display:grid;gap:.08rem;flex:0 0 auto;color:inherit;text-decoration:none;padding:.35rem 1rem .35rem .8rem;border-right:1px solid color-mix(in srgb,currentColor 20%,transparent)}
   .direction-product-nav__brand::before{position:absolute;left:0;top:50%;width:4px;height:30px;border-radius:999px;background:var(--direction-nav-accent);content:"";transform:translateY(-50%)}
-  .direction-product-nav__brand span{font-weight:820;font-size:.8rem;letter-spacing:.02em}
-  .direction-product-nav__brand small{font-size:.63rem;opacity:.58;white-space:nowrap}
+  .direction-product-nav__brand span{font-weight:820;font-size:.9rem;letter-spacing:.02em}
+  .direction-product-nav__brand small{font-size:.72rem;opacity:.82;white-space:nowrap}
   .direction-product-nav__links{display:flex;align-items:center;gap:.18rem;min-width:0;overflow-x:auto;scrollbar-width:none;padding:.45rem 0;overscroll-behavior-inline:contain}
   .direction-product-nav__links::-webkit-scrollbar{display:none}
-  .direction-product-nav__links a{position:relative;display:inline-flex;align-items:center;gap:.35rem;min-height:34px;padding:.45rem .58rem .45rem .72rem;border:0;border-radius:8px;color:inherit;text-decoration:none;font-size:.72rem;font-weight:660;white-space:nowrap;opacity:.67;transition:opacity .18s ease,background .18s ease,color .18s ease}
+  .direction-product-nav__links a{position:relative;display:inline-flex;align-items:center;gap:.35rem;min-height:34px;padding:.45rem .58rem .45rem .72rem;border:0;border-radius:8px;color:inherit;text-decoration:none;font-size:.84rem;font-weight:660;white-space:nowrap;opacity:.67;transition:opacity .18s ease,background .18s ease,color .18s ease}
   .direction-product-nav__links a::before{position:absolute;left:.28rem;top:50%;width:2px;height:13px;border-radius:999px;background:var(--direction-nav-accent);content:"";opacity:.46;transform:translateY(-50%);transition:height .18s ease,width .18s ease,opacity .18s ease}
   .direction-product-nav__links a:hover,.direction-product-nav__links a:focus-visible,.direction-product-nav__links a[aria-current="page"]{opacity:1;background:color-mix(in srgb,var(--direction-nav-accent) 7%,transparent)}
   .direction-product-nav__links a:hover::before,.direction-product-nav__links a:focus-visible::before,.direction-product-nav__links a[aria-current="page"]::before{width:3px;height:22px;opacity:1}
   .direction-product-nav__generic-icon{display:grid;place-items:center;color:var(--direction-nav-accent);transform-origin:50% 100%}
   .direction-product-nav__links a:is(:hover,:focus-visible) .direction-product-nav__generic-icon{animation:direction-icon-bounce .62s cubic-bezier(.34,1.56,.64,1)}
-  .direction-product-nav__links a:is(:hover,:focus-visible) [data-direction-nav-icon="load-board"] :global(.motion-route){animation:direction-route 1.05s ease-in-out infinite alternate}
-  .direction-product-nav__links a:is(:hover,:focus-visible) [data-direction-nav-icon="carriers"] :global(.motion-wheel){animation:direction-wheel .72s linear infinite;transform-origin:center}
-  .direction-product-nav__links a:is(:hover,:focus-visible) [data-direction-nav-icon="carriers"] :global(.motion-truck){animation:direction-truck .5s ease-in-out infinite alternate}
-  .direction-product-nav__links a:is(:hover,:focus-visible) [data-direction-nav-icon="owner-operators"] :global(.motion-person-left){animation:direction-person-left .7s ease-in-out infinite alternate}
-  .direction-product-nav__links a:is(:hover,:focus-visible) [data-direction-nav-icon="owner-operators"] :global(.motion-person-right){animation:direction-person-right .7s ease-in-out infinite alternate}
-  .direction-product-nav__links a:is(:hover,:focus-visible) [data-direction-nav-icon="brokers"] :global(.motion-case){animation:direction-case .7s ease-in-out infinite alternate;transform-origin:center}
-  .direction-product-nav__links a:is(:hover,:focus-visible) [data-direction-nav-icon="brokers"] :global(.motion-case-handle){animation:direction-case-handle .7s ease-in-out infinite alternate}
-  .direction-product-nav__links a:is(:hover,:focus-visible) [data-direction-nav-icon="shippers-dealers"] :global(.motion-car){animation:direction-car .85s ease-in-out infinite alternate}
-  .direction-product-nav__links a:is(:hover,:focus-visible) [data-direction-nav-icon="operations"] :global(.motion-phone){animation:direction-phone .22s ease-in-out infinite alternate;transform-origin:center}
-  .direction-product-nav__links a:is(:hover,:focus-visible) [data-direction-nav-icon="operations"] :global(.motion-signal){animation:direction-signal .8s steps(2,end) infinite}
-  .direction-product-nav__links a:is(:hover,:focus-visible) [data-direction-nav-icon="agreement"] :global(.motion-doc-line){stroke-dasharray:12;animation:direction-draw 1.15s ease-in-out infinite}
-  .direction-product-nav__links a:is(:hover,:focus-visible) [data-direction-nav-icon="agreement"] :global(.motion-doc-line-2){animation-delay:.12s}
-  .direction-product-nav__links a:is(:hover,:focus-visible) [data-direction-nav-icon="agreement"] :global(.motion-doc-line-3){animation-delay:.24s}
-  .direction-product-nav__links a:is(:hover,:focus-visible) [data-direction-nav-icon="path"] :global(.motion-arrow){stroke-dasharray:24;animation:direction-draw .85s ease-in-out infinite}
-  .direction-product-nav__links a:is(:hover,:focus-visible) [data-direction-nav-icon="catalog"] :global(.motion-search){animation:direction-search 1s ease-in-out infinite;transform-origin:center}
+  .direction-product-nav__links a:is(:hover,:focus-visible) :global([data-direction-nav-icon="load-board"]) :global(.motion-route){animation:direction-route 1.05s ease-in-out infinite alternate}
+  .direction-product-nav__links a:is(:hover,:focus-visible) :global([data-direction-nav-icon="carriers"]) :global(.motion-wheel){animation:direction-wheel .72s linear infinite;transform-origin:center}
+  .direction-product-nav__links a:is(:hover,:focus-visible) :global([data-direction-nav-icon="carriers"]) :global(.motion-truck){animation:direction-truck .5s ease-in-out infinite alternate}
+  .direction-product-nav__links a:is(:hover,:focus-visible) :global([data-direction-nav-icon="owner-operators"]) :global(.motion-person-left){animation:direction-person-left .7s ease-in-out infinite alternate}
+  .direction-product-nav__links a:is(:hover,:focus-visible) :global([data-direction-nav-icon="owner-operators"]) :global(.motion-person-right){animation:direction-person-right .7s ease-in-out infinite alternate}
+  .direction-product-nav__links a:is(:hover,:focus-visible) :global([data-direction-nav-icon="brokers"]) :global(.motion-case){animation:direction-case .7s ease-in-out infinite alternate;transform-origin:center}
+  .direction-product-nav__links a:is(:hover,:focus-visible) :global([data-direction-nav-icon="brokers"]) :global(.motion-case-handle){animation:direction-case-handle .7s ease-in-out infinite alternate}
+  .direction-product-nav__links a:is(:hover,:focus-visible) :global([data-direction-nav-icon="shippers-dealers"]) :global(.motion-car){animation:direction-car .85s ease-in-out infinite alternate}
+  .direction-product-nav__links a:is(:hover,:focus-visible) :global([data-direction-nav-icon="operations"]) :global(.motion-phone){animation:direction-phone .22s ease-in-out infinite alternate;transform-origin:center}
+  .direction-product-nav__links a:is(:hover,:focus-visible) :global([data-direction-nav-icon="operations"]) :global(.motion-signal){animation:direction-signal .8s steps(2,end) infinite}
+  .direction-product-nav__links a:is(:hover,:focus-visible) :global([data-direction-nav-icon="agreement"]) :global(.motion-doc-line){stroke-dasharray:12;animation:direction-draw 1.15s ease-in-out infinite}
+  .direction-product-nav__links a:is(:hover,:focus-visible) :global([data-direction-nav-icon="agreement"]) :global(.motion-doc-line-2){animation-delay:.12s}
+  .direction-product-nav__links a:is(:hover,:focus-visible) :global([data-direction-nav-icon="agreement"]) :global(.motion-doc-line-3){animation-delay:.24s}
+  .direction-product-nav__links a:is(:hover,:focus-visible) :global([data-direction-nav-icon="path"]) :global(.motion-arrow){stroke-dasharray:24;animation:direction-draw .85s ease-in-out infinite}
+  .direction-product-nav__links a:is(:hover,:focus-visible) :global([data-direction-nav-icon="catalog"]) :global(.motion-search){animation:direction-search 1s ease-in-out infinite;transform-origin:center}
   @keyframes direction-icon-bounce{50%{transform:translateY(-3px) scale(1.08)}}
   @keyframes direction-route{to{transform:translate(14px,-13px)}}
   @keyframes direction-wheel{to{transform:rotate(360deg)}}

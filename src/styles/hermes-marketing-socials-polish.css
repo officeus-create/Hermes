@@ -42,15 +42,15 @@
 .direction-social-grid a:hover,
 .direction-social-grid a:focus-visible {
   padding-left: 1.05rem;
-  color: var(--color-magenta-500);
-  border-color: color-mix(in srgb,var(--color-magenta-500) 28%,transparent);
+  color: var(--hermes-violet-text);
+  border-color: color-mix(in srgb,var(--hermes-violet-text) 28%,transparent);
   background: rgba(255,255,255,.88);
   box-shadow: 0 18px 44px rgba(80,38,94,.08);
   transform: translateY(-2px);
 }
 
 .direction-social-grid a:focus-visible {
-  outline: 3px solid color-mix(in srgb,var(--color-magenta-500) 22%,transparent);
+  outline: 3px solid color-mix(in srgb,var(--hermes-violet-text) 22%,transparent);
   outline-offset: 3px;
 }
 

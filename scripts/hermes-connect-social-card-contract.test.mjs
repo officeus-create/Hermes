@@ -33,7 +33,7 @@ assert(width === HERMES_CONNECT_SOCIAL_CARD.width && height === HERMES_CONNECT_S
 assert(width === 2200 && height === 1238, "Hermes Connect social card must match existing shared OG dimensions 2200x1238.");
 
 const generator = await text("src/lib/hermes-connect-social-card-generator.ts");
-for (const token of ["30, 136, 255", "0, 200, 83", "124, 92, 255", "255, 122, 0"]) {
+for (const token of ["47, 107, 246", "255, 122, 89", "18, 184, 134", "56, 182, 245"]) {
   assert(generator.includes(token), `Hermes Connect social card must retain canonical division color ${token}.`);
 }
 assert(!generator.toLowerCase().includes("beauty:"), "Hermes Connect social card must not invent a canonical Beauty accent.");

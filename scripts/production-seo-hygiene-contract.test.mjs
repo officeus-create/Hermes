@@ -10,7 +10,7 @@ const verifierFiles = [
   "scripts/check-production-seo-hygiene.mjs",
 ];
 
-const canonicalSocialImage = new URL("../src/assets/hermes-ecosystem-hero.jpg", import.meta.url);
+const canonicalSocialImage = new URL("../src/assets/hermes-social-card.jpg", import.meta.url);
 const retiredPublicHeroImage = new URL("../public/images/hermes-ecosystem-hero.jpg", import.meta.url);
 const retiredSocialImage = new URL("../public/images/hermes-social-share-2026.jpg", import.meta.url);
 const [layout, homepage] = await Promise.all([
@@ -21,7 +21,7 @@ const [layout, homepage] = await Promise.all([
 
 await assert.rejects(access(retiredSocialImage), undefined, "The redundant social-share JPEG must stay removed.");
 await assert.rejects(access(retiredPublicHeroImage), undefined, "The redundant public hero JPEG must stay removed.");
-assert.ok(layout.includes('import heroImage from "../assets/hermes-ecosystem-hero.jpg"'), "BaseLayout must import the canonical hero source.");
+assert.ok(layout.includes('import socialCardImage from "../assets/hermes-social-card.jpg"'), "BaseLayout must import the canonical branded social card.");
 assert.ok(layout.includes('const useHermesConnectSocialCard = isHermesConnectProductHub && !image;'), "BaseLayout must scope the dedicated Connect social card to the exact hub when no explicit image is supplied.");
 assert.ok(layout.includes('const defaultSocialImage = useHermesConnectSocialCard'), "BaseLayout must preserve the exact Hermes Connect hub override while keeping one canonical default social-image contract.");
 assert.ok(layout.includes('const socialImagePath = image ?? defaultSocialImage.path;'), "BaseLayout must preserve explicit social images and the canonical default fallback outside the exact Hermes Connect hub.");
@@ -77,7 +77,10 @@ const indexedChildSitemapFiles = [
 // 2026-10-07 restores Load Analyzer as a clearly bounded public reference owner because the
 // production compatibility route, historical manifest and carrier discovery path all assign it
 // a distinct search purpose without presenting the capability as a live paid integration.
-const nonInsightsExpectedPageUrlCount = 257;
+// +1 on 2026-10-22: /products/ (approved Claude Design Products page).
+// -1 on 2026-10-28: /logistics/carrier/ merged into /logistics/car-hauling-dispatch/ (owner decision; 301).
+// +1 on 2026-10-30: canonical public Hermes Business Command Center sample/demo owner.
+const nonInsightsExpectedPageUrlCount = 260;
 const carrierGeoRoot = `https://${sitemapHost}/logistics/car-hauler-loads/`;
 const carrierLifecycleGuide = `https://${sitemapHost}/logistics/resources/car-hauler-jobs-owner-operator-guide/`;
 const expectedCarrierGeoCityCount = 25;
@@ -115,6 +118,7 @@ const primarySitemap = await readFile(new URL("../public/sitemap.xml", import.me
 const businessDirectorySitemap = await readFile(new URL("../public/sitemap-business-directory.xml", import.meta.url), "utf8");
 const digitalServicesSitemap = await readFile(new URL("../public/sitemap-digital-services.xml", import.meta.url), "utf8");
 assert.ok(digitalServicesSitemap.includes("/services/hermes-connect/support/"), "Hermes Connect Support/Trust owner must remain discoverable in the digital-services sitemap");
+assert.ok(digitalServicesSitemap.includes("/services/hermes-connect/command-center/"), "public Business Command Center must be discoverable in the digital-services sitemap");
 for (const capability of ["ai-command-center","business-automation","proposal-builder","rate-negotiator","roi-calculator","unified-inbox"]) {
   assert.ok(!digitalServicesSitemap.includes(`/services/hermes-connect/${capability}/`), `unreleased capability leaked into sitemap: ${capability}`);
 }

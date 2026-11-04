@@ -47,7 +47,7 @@
 .technology-solution-grid p { min-height: 3.2rem; color: var(--color-muted); font-size: .86rem; }
 .technology-solution-grid ul { display: grid; gap: .45rem; margin: 1rem 0 0; padding: 0; list-style: none; }
 .technology-solution-grid li { display: flex; gap: .45rem; align-items: flex-start; color: #3c4961; font-size: .76rem; }
-.technology-solution-grid li svg { flex: 0 0 auto; margin-top: .05rem; color: #128b8a; }
+.technology-solution-grid li svg { flex: 0 0 auto; margin-top: .05rem; color: #0f7574; }
 .technology-solution-card > a { display: inline-flex; gap: .45rem; align-items: center; margin-top: 1.2rem; color: #1a4fb6; font: 750 .7rem/1.3 var(--font-mono); }
 .technology-solution-mockups { background: #07113c; color: #fff; }
 .technology-solution-mockups .section-heading h2 { color: #fff; }
@@ -93,7 +93,7 @@
 .technology-proof-meta span, .technology-proof-meta strong { font-family: var(--font-mono); font-size: .66rem; }
 .technology-proof-meta span { color: #2563eb; }
 .technology-proof-item-1 .technology-proof-meta span { color: #8db7ff; }
-.technology-proof-meta strong { color: #128b8a; }
+.technology-proof-meta strong { color: #0f7574; }
 .technology-proof-category { width: fit-content; margin-top: .8rem; padding: .3rem .45rem; border: 1px solid #d5dae4; border-radius: 999px; color: var(--color-muted); font: 650 .6rem/1 var(--font-mono); }
 .technology-proof-item-1 .technology-proof-category { border-color: rgba(255,255,255,.25); color: rgba(255,255,255,.7); }
 .technology-proof-item > svg { margin: 3.5rem 0 2rem; color: #2563eb; }

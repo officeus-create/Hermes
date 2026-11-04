@@ -125,7 +125,7 @@ test("latest Claude Directions header owns the attached submenu and Logistics ic
   await expect(submenu.locator('[data-direction-product-link="agreement"]')).toHaveText(/Agreement/);
 
   const ids = await submenu.locator("[data-direction-product-link]").evaluateAll((links) => links.map((link) => link.getAttribute("data-direction-product-link")));
-  expect(ids).toEqual(["load-board", "carriers", "owner-operators", "brokers", "shippers-dealers", "operations", "agreement", "path", "catalog"]);
+  expect(ids).toEqual(["load-board", "carriers", "owner-operators", "brokers", "shippers-dealers", "operations", "start-company", "agreement", "path", "catalog"]);
 
   const geometry = await page.evaluate(() => {
     const header = document.querySelector<HTMLElement>("header.site-header");
@@ -162,7 +162,6 @@ test("Logistics hero title remains contained on a 1440px viewport", async ({ pag
   expect(geometry!.headingRight).toBeLessThanOrEqual(geometry!.heroRight + 1);
   expect(geometry!.headingRight).toBeLessThanOrEqual(geometry!.viewportWidth);
 });
-
 
 test("all four Direction submenus keep visible icon motion and honor reduced-motion", async ({ browser }, testInfo) => {
   const directions = [

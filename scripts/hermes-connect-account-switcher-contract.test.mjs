@@ -64,9 +64,9 @@ test('owned Beauty opens only the canonical private foundation and keeps a neutr
 
 test('switcher consumes canonical Design OS accents and preserves locale on real workspace links', async () => {
   const source = await loadSwitcher();
-  assert.match(source, /var\(--hermes-repair,#1e88ff\)/);
-  assert.match(source, /var\(--hermes-academy,#7c5cff\)/);
-  assert.match(source, /var\(--hermes-ai-product,#ff7a00\)/);
+  assert.match(source, /var\(--hermes-repair,#2f6bf6\)/);
+  assert.match(source, /var\(--hermes-academy,#12b886\)/);
+  assert.match(source, /var\(--hermes-ai-product,#38b6f5\)/);
   assert.match(source, /url\.searchParams\.set\("lang", locale\)/);
   assert.match(source, /data-hc-workspace-link="repair"/);
   assert.match(source, /data-hc-workspace-link="academy"/);
