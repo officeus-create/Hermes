@@ -3,18 +3,13 @@
 
 Fail-closed by default. It never claims work, never sends secrets to stdout,
 and must not be scheduled until the reviewed server contract is deployed.
-
-Required Windows-only secret:
-  HERMES_INTERNAL_AI_WINDOWS_RUNNER_TOKEN=<scoped secret stored locally only>
-
-The Mac runner token is intentionally NOT accepted for this identity.
 """
-import json, os, pathlib, urllib.request, urllib.error
+import json, os, pathlib, sys, urllib.request, urllib.error
 
 ROOT=pathlib.Path(__file__).resolve().parent
 STATUS=ROOT/"viktor_live"/"status.json"
 API=os.environ.get("HERMES_INTERNAL_AI_API","").rstrip("/")
-TOKEN=os.environ.get("HERMES_INTERNAL_AI_WINDOWS_RUNNER_TOKEN","")
+TOKEN=os.environ.get("HERMES_INTERNAL_AI_RUNNER_TOKEN","")
 ENABLED=os.environ.get("HERMES_INTERNAL_AI_WINDOWS_HEARTBEAT_ENABLED","")=="1"
 RUNNER_ID="internal-ai-windows-viktor"
 
@@ -22,10 +17,10 @@ def out(status, **extra):
     print(json.dumps({"status":status, **extra}, ensure_ascii=False))
 
 if not ENABLED:
-    out("DISABLED_FAIL_CLOSED", reason="Enable only after reviewed server contract deployment and a dedicated Windows runner secret.")
+    out("DISABLED_FAIL_CLOSED", reason="Set HERMES_INTERNAL_AI_WINDOWS_HEARTBEAT_ENABLED=1 only after reviewed server contract deployment.")
     raise SystemExit(2)
 if not API.startswith("https://") or not TOKEN:
-    out("CONFIG_MISSING", api_configured=API.startswith("https://"), windows_token_configured=bool(TOKEN))
+    out("CONFIG_MISSING", api_configured=API.startswith("https://"), token_configured=bool(TOKEN))
     raise SystemExit(2)
 
 try:
@@ -33,14 +28,20 @@ try:
 except Exception:
     state={}
 
+phase=str(state.get("phase") or "")[:120]
+case_id=str(state.get("case_id") or "").strip()[:80]
+training_case=bool(case_id and (case_id.startswith("G") or case_id.startswith("T")) and phase.upper() in ("ANALYZING","CYCLE_FINISHED"))
+projected_task=("Training / QA case "+case_id) if training_case else str(state.get("current_task") or "")[:500]
 payload={
     "runner_id":RUNNER_ID,
     "accept_tasks":False,
-    "runtime_version":"viktor-windows-local/2026-11-03",
+    "runtime_version":"viktor-windows-local/2026-11-04",
     "executor_type":"windows",
     "display_name":"Hermes AI / VIKTOR Windows",
-    "current_task":str(state.get("current_task") or "")[:500],
-    "phase":str(state.get("phase") or "")[:120],
+    "current_task":projected_task,
+    "current_task_kind":"TRAINING_CASE" if training_case else "OPERATIONAL",
+    "case_id":case_id if training_case else None,
+    "phase":phase,
     "last_result":str(state.get("last_result") or "")[:500],
     "blocker":"HAE task-claim adapter remains gated; heartbeat-only visibility.",
 }
@@ -52,7 +53,7 @@ req=urllib.request.Request(
         "Authorization":"Bearer "+TOKEN,
         "Content-Type":"application/json",
         "Accept":"application/json",
-        "User-Agent":"HermesViktorWindowsHeartbeat/1.1",
+        "User-Agent":"HermesViktorWindowsHeartbeat/1.0",
     },
 )
 try:
