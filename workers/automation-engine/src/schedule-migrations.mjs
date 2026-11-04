@@ -1,6 +1,6 @@
 const MIGRATIONS = [
   ["dispatch-daily-closeout", "Dispatch Daily Closeout", "hermes-dispatch-os", ["dispatch.daily.closeout.audit"], "SOURCE_ADAPTER_REQUIRED"],
-  ["knowledge-mining", "Hermes Knowledge Mining", "hermes-connect-operator", ["knowledge.evidence.audit"], "SOURCE_ADAPTER_REQUIRED"],
+  ["knowledge-mining", "Hermes Knowledge Mining", "hermes-knowledge-curator", ["knowledge.evidence.audit"], "SOURCE_ADAPTER_REQUIRED"],
   ["web-technology-radar", "Hermes Web Technology Radar", "hermes-automatic-engineer", ["technology.release.radar"], "SOURCE_ADAPTER_REQUIRED"],
   ["ai-gateway-readiness", "Hermes AI Gateway readiness", "hermes-automatic-engineer", ["ai.gateway.readiness.audit"], "READY_ZERO_TOKEN"],
   ["growth-error-closure", "Hermes Growth + Error Closure", "hermes-marketing-growth", ["growth.error.closure.audit"], "SOURCE_ADAPTER_REQUIRED"],
