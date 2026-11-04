@@ -1,4 +1,5 @@
 import { getAuthenticatedSpecialist, jsonResponse } from "../_lib/session.mjs";
+import { ensureCompanyMembershipSchema, membershipRowAsPermission } from "../_lib/company-memberships.mjs";
 import { ensureRepairShopProfileSchema } from "../_lib/repair-shop-schema.mjs";
 import { getOwnedBeautySalon } from "../_lib/beauty-salon-context.mjs";
 import { ensureHermesCompanyProfilesSchema } from "../_lib/hermes-company-profiles.mjs";
@@ -76,6 +77,27 @@ async function getInternalAiAccess(db: any, specialistId: string) {
   `).bind(specialistId).first();
 }
 
+async function listDelegatedAccess(db: any, specialistId: string) {
+  await ensureCompanyMembershipSchema(db);
+  const rows = await db.prepare(`
+    SELECT id,business_ref,workspace_ref,specialist_id,role,active,grant_source,granted_by,revoked_at
+    FROM hermes_company_memberships
+    WHERE specialist_id = ? AND active = 1 AND revoked_at IS NULL
+    ORDER BY updated_at DESC LIMIT 100
+  `).bind(specialistId).all();
+
+  return (rows?.results || [])
+    .map((row: any) => membershipRowAsPermission(row))
+    .filter((membership: any) => membership && membership.specialistId === specialistId)
+    .map((membership: any) => ({
+      membership_id: membership.membershipId,
+      company_ref: membership.companyId,
+      workspace_ref: membership.workspaceId || null,
+      role: membership.role,
+      grant_source: membership.grantSource,
+    }));
+}
+
 export async function onRequestGet({ request, env }: { request: Request; env: Env }) {
   if (!env.DB) return jsonResponse(503, { success: false, error: "database_not_configured" }, privateHeaders);
 
@@ -89,7 +111,7 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
 
   await ensureAcademySchema(env.DB);
 
-  const [repairShop, beautySalon, academyBusiness, hermesCompany, academyProfile, academyEnrollments, academyReviewerAccess, internalAiAccess, hrReviewerAccess] = await Promise.all([
+  const [repairShop, beautySalon, academyBusiness, hermesCompany, academyProfile, academyEnrollments, academyReviewerAccess, internalAiAccess, hrReviewerAccess, delegatedAccess] = await Promise.all([
     getOwnedRepairShop(env.DB, specialist.id),
     getOwnedBeautySalon(env.DB, specialist.id),
     getOwnedAcademyBusiness(env.DB, specialist.id),
@@ -99,6 +121,7 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
     getAcademyReviewerAccess(env.DB, specialist.id),
     getInternalAiAccess(env.DB, specialist.id),
     getHrReviewerAccess(env.DB, specialist.id),
+    listDelegatedAccess(env.DB, specialist.id),
   ]);
 
   const ownedBusinesses: OwnedBusiness[] = [];
@@ -227,6 +250,8 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
     },
     owned_businesses: ownedBusinesses,
     workspaces,
+    // Discovery only. Every target API independently re-authorizes the exact Company/Workspace membership before reading or mutating tenant data.
+    delegated_access: delegatedAccess,
     capabilities: {
       load_board: Boolean(hermesCompany && Number(hermesCompany.load_board_access) === 1),
       internal_ai: Boolean(internalAiAccess),
