@@ -43,12 +43,17 @@ test("production transport form rejects generic 2xx and preserves retries with s
     if (url.pathname === "/logistics/request-vehicle-transport/" && contentType.includes("text/html")) {
       const html = body.toString("utf8");
       expect(html).toContain('data-lead-mode="preview"');
-      expect(html).toMatch(/data-lead-endpoint=""/);
-      body = Buffer.from(
-        html
-          .replace('data-lead-mode="preview"', 'data-lead-mode="live"')
-          .replace('data-lead-endpoint=""', 'data-lead-endpoint="/api/logistics-lead"'),
-      );
+      // Preview is fail-closed whether the receiver attribute is omitted or explicitly empty.
+      expect(html).not.toMatch(/data-lead-endpoint="[^"]+"/);
+      const liveHtml = html.includes('data-lead-endpoint=""')
+        ? html
+            .replace('data-lead-mode="preview"', 'data-lead-mode="live"')
+            .replace('data-lead-endpoint=""', 'data-lead-endpoint="/api/logistics-lead"')
+        : html.replace(
+            'data-lead-mode="preview"',
+            'data-lead-mode="live" data-lead-endpoint="/api/logistics-lead"',
+          );
+      body = Buffer.from(liveHtml);
     }
     await route.fulfill({ status: response.status, headers: { "content-type": contentType }, body });
   });
