@@ -48,6 +48,29 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
   };
 
   const checkedAt = new Date().toISOString();
+  let hae_recent_events:any={source_state:"UNKNOWN",items:[]};
+  try {
+    const eventRows=await env.DB.prepare(`SELECT e.job_id,e.event_type,e.from_state,e.to_state,e.step,e.error_class,e.created_at,
+      j.job_type
+      FROM hermes_automation_job_events e
+      LEFT JOIN hermes_automation_jobs j ON j.job_id=e.job_id
+      ORDER BY e.created_at DESC LIMIT 50`).all();
+    hae_recent_events={
+      source_state:"CONNECTED_CANONICAL_HAE_D1",
+      items:(eventRows.results||[]).map((row:any)=>({
+        job_id:String(row.job_id||""),
+        job_type:row.job_type?String(row.job_type):null,
+        event_type:String(row.event_type||""),
+        from_state:row.from_state?String(row.from_state):null,
+        to_state:String(row.to_state||""),
+        step:row.step?String(row.step):null,
+        error_class:row.error_class?String(row.error_class):null,
+        created_at:row.created_at?String(row.created_at):null,
+      })),
+    };
+  } catch {
+    hae_recent_events={source_state:"UNAVAILABLE_OR_NOT_MIGRATED",items:[]};
+  }
   const registrySnapshot = pluginRuntimeRegistrySnapshot();
   const registryEvidence = pluginRuntimeRegistryEvidenceStatus(checkedAt);
   const processes = (processRows.results || []).map(publicHaeProcess);
@@ -81,6 +104,7 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
     github_developments,
     department_kpis,
     provider_health,
+    hae_recent_events,
     plugin_registry: registrySnapshot.entries.map(({ role_id, plugin_version, observed_at }) => ({
       role_id,
       plugin_version,
