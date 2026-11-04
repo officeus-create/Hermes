@@ -85,16 +85,24 @@ function validatePatchReceipt(receipt,{runId,runAttempt}){
   }
   return receipt;
 }
-function releaseReceiptMatches(row,{workId,patchSha}){
-  if(!row||String(row.state||"")!=="SUCCEEDED")return false;
+function releaseReceiptMatches(row,{workId,findingId,artifactKey,repairJobId,proposalJobId,sourceHeadSha,patchSha,patchedFileSha,qaDigest}){
+  if(!row||row.job_type!=="hae.self.release.verify"||String(row.state||"")!=="SUCCEEDED")return false;
   const parsed=safeResult(row.result_json);
   return parsed?.external_write===false&&
     parsed?.result?.work_id===workId&&
+    parsed?.result?.finding_id===findingId&&
+    parsed?.result?.artifact_key===artifactKey&&
+    parsed?.result?.repair_job_id===repairJobId&&
+    parsed?.result?.proposal_job_id===proposalJobId&&
+    parsed?.result?.source_head_sha===sourceHeadSha&&
     parsed?.result?.patch_sha256===patchSha&&
+    parsed?.result?.patched_file_sha256===patchedFileSha&&
+    parsed?.result?.qa_receipt_sha256===qaDigest&&
     parsed?.result?.release_state==="BLOCKED"&&
     parsed?.result?.blocker==="AUTHENTICATED_RELEASE_EVIDENCE_INCOMPLETE"&&
     parsed?.result?.hold_release_reachable===false&&
-    parsed?.result?.independent_verifier_identity_ok===true&&
+    parsed?.result?.independent_verifier_identity_ok===false&&
+    parsed?.result?.qa_identity_provenance==="SELF_ASSERTED_UNVERIFIED"&&
     parsed?.result?.exact_head_ci_verified===false&&
     parsed?.result?.rollback_verified===false&&
     parsed?.result?.automatic_merge_allowed===false&&
@@ -125,16 +133,19 @@ export async function dispatchGithubCIIndependentQa({
      run?.html_url!=="https://github.com/"+REPO+"/actions/runs/"+runId)
     fail("github_ci_qa_source_run_invalid");
 
-  const settings=await jsonFetch(API+"/accounts/"+accountId+"/workers/scripts/hermes-automation-engine/settings",cloudflareToken,fetchImpl);
-  if(settings?.success!==true||!Array.isArray(settings?.result?.bindings))fail("github_ci_qa_source_worker_settings_invalid");
-  const value=(name)=>{
-    const b=settings.result.bindings.find(item=>item?.name===name);
-    return b?.text??b?.value??null;
+  const assertDeployedDryRunMain=async()=>{
+    const settings=await jsonFetch(API+"/accounts/"+accountId+"/workers/scripts/hermes-automation-engine/settings",cloudflareToken,fetchImpl);
+    if(settings?.success!==true||!Array.isArray(settings?.result?.bindings))fail("github_ci_qa_source_worker_settings_invalid");
+    const value=(name)=>{
+      const b=settings.result.bindings.find(item=>item?.name===name);
+      return b?.text??b?.value??null;
+    };
+    if(value("HERMES_AUTOMATION_SOURCE_SHA")!==expectedMainSha||
+       value("HERMES_AUTOMATION_MODE")!=="dry_run"||
+       value("HERMES_AUTOMATION_PUBLISH")!=="disabled")
+      fail("github_ci_qa_source_worker_not_exact_dry_run_main");
   };
-  if(value("HERMES_AUTOMATION_SOURCE_SHA")!==expectedMainSha||
-     value("HERMES_AUTOMATION_MODE")!=="dry_run"||
-     value("HERMES_AUTOMATION_PUBLISH")!=="disabled")
-    fail("github_ci_qa_source_worker_not_exact_dry_run_main");
+  await assertDeployedDryRunMain();
 
   const dbId=await canonicalD1(accountId,cloudflareToken,fetchImpl);
   const proposalRows=await d1Query(accountId,dbId,cloudflareToken,fetchImpl,
@@ -184,13 +195,34 @@ export async function dispatchGithubCIIndependentQa({
      repairResult?.result?.repair_state!=="HOLD_REPAIR")
     fail("github_ci_qa_source_repair_contract_mismatch");
 
+  // Derive replay identity before readback, without executing the repair or enqueuing.
+  const qaMessage={
+    type:"github.ci.qa.verify",
+    run_id:runId,run_attempt:runAttempt,producer_main_sha:expectedMainSha,
+    repository:REPO,workflow_name:run.name,workflow_path:run.path,workflow_id:run.workflow_id,
+    source_head_sha:receipt.base_sha,work_id:receipt.work_id,finding_id:receipt.finding_id,
+    repair_job_id:proposalPayload.repair_job_id,proposal_job_id:receipt.proposal_job_id,
+    artifact_key:receipt.artifact_key,patch_sha256:receipt.patch_sha256,
+    patched_file_sha256:receipt.patched_file_sha256,
+    qa_role:"hermes-qa-evidence-auditor",qa_verdict:"PASS",
+    qa_receipt_sha256:"",
+  };
+  qaMessage.qa_receipt_sha256=hash(canonicalGithubCIIndependentQaReceipt(qaMessage));
+  const expectedQaReceipt={
+    workId:receipt.work_id,findingId:receipt.finding_id,artifactKey:receipt.artifact_key,
+    repairJobId:proposalPayload.repair_job_id,proposalJobId:receipt.proposal_job_id,
+    sourceHeadSha:receipt.base_sha,patchSha:receipt.patch_sha256,
+    patchedFileSha:receipt.patched_file_sha256,
+    qaDigest:qaMessage.qa_receipt_sha256,
+  };
+
   const releaseKey="hae:receipt:self.qa.verify:"+receipt.work_id;
-  const releaseSql="SELECT job_id,state,result_json,last_error_class FROM hermes_automation_jobs WHERE idempotency_key=? LIMIT 2";
+  const releaseSql="SELECT job_id,job_type,state,result_json,last_error_class FROM hermes_automation_jobs WHERE idempotency_key=? LIMIT 2";
   let releases=await d1Query(accountId,dbId,cloudflareToken,fetchImpl,releaseSql,[releaseKey]);
   if(releases.length>1)fail("github_ci_qa_source_duplicate_release_receipts");
-  if(releases.length===1&&releaseReceiptMatches(releases[0],{workId:receipt.work_id,patchSha:receipt.patch_sha256})){
+  if(releases.length===1&&releaseReceiptMatches(releases[0],expectedQaReceipt)){
     return Object.freeze({
-      status:"INDEPENDENT_QA_VERIFIED",duplicate:true,queue_sent:false,
+      status:"INDEPENDENT_QA_EVIDENCE_ONLY",duplicate:true,queue_sent:false,
       release_job_id:String(releases[0].job_id||""),work_id:receipt.work_id,
       patch_sha256:receipt.patch_sha256,model_cost_usd:0,
       automatic_merge:false,automatic_deploy:false,
@@ -227,24 +259,14 @@ export async function dispatchGithubCIIndependentQa({
      qaProof?.paid_ai_cost_usd!==0)
     fail("github_ci_qa_source_independent_reproof_mismatch");
 
-  const qaMessage={
-    type:"github.ci.qa.verify",
-    run_id:runId,run_attempt:runAttempt,producer_main_sha:expectedMainSha,
-    repository:REPO,workflow_name:run.name,workflow_path:run.path,workflow_id:run.workflow_id,
-    source_head_sha:receipt.base_sha,work_id:receipt.work_id,finding_id:receipt.finding_id,
-    repair_job_id:proposalPayload.repair_job_id,proposal_job_id:receipt.proposal_job_id,
-    artifact_key:receipt.artifact_key,patch_sha256:receipt.patch_sha256,
-    qa_role:"hermes-qa-evidence-auditor",qa_verdict:"PASS",
-    qa_receipt_sha256:"",
-  };
-  qaMessage.qa_receipt_sha256=hash(canonicalGithubCIIndependentQaReceipt(qaMessage));
-
   const mainAgain=await jsonFetch("https://api.github.com/repos/"+REPO+"/branches/main",githubToken,fetchImpl);
   if(mainAgain?.commit?.sha!==expectedMainSha)fail("github_ci_qa_source_main_moved");
   const queues=await jsonFetch(API+"/accounts/"+accountId+"/queues",cloudflareToken,fetchImpl);
   if(queues?.success!==true||!Array.isArray(queues.result))fail("github_ci_qa_source_queue_inventory_invalid");
   const matches=queues.result.filter(q=>q.queue_name==="hermes-automation"&&UUID.test(q.queue_id||""));
   if(matches.length!==1)fail("github_ci_qa_source_canonical_queue_missing_or_ambiguous");
+  // A separate QA reproof may outlive a Worker deploy; re-check immediately before the sole Queue POST.
+  await assertDeployedDryRunMain();
   const accepted=await jsonFetch(API+"/accounts/"+accountId+"/queues/"+matches[0].queue_id+"/messages",cloudflareToken,fetchImpl,{body:qaMessage});
   if(accepted?.success!==true)fail("github_ci_qa_source_enqueue_unconfirmed_no_retry");
   const queueSent=true;
@@ -254,9 +276,9 @@ export async function dispatchGithubCIIndependentQa({
     if(releases.length>1)fail("github_ci_qa_source_duplicate_release_receipts");
     if(releases.length===1){
       if(releases[0].state==="FAILED")fail("github_ci_qa_source_release_failed");
-      if(releaseReceiptMatches(releases[0],{workId:receipt.work_id,patchSha:receipt.patch_sha256})){
+      if(releaseReceiptMatches(releases[0],expectedQaReceipt)){
         return Object.freeze({
-          status:"INDEPENDENT_QA_VERIFIED",duplicate:false,queue_sent:queueSent,
+          status:"INDEPENDENT_QA_EVIDENCE_ONLY",duplicate:false,queue_sent:queueSent,
           release_job_id:String(releases[0].job_id||""),work_id:receipt.work_id,
           patch_sha256:receipt.patch_sha256,qa_receipt_sha256:qaMessage.qa_receipt_sha256,
           model_cost_usd:0,automatic_merge:false,automatic_deploy:false,

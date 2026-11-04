@@ -1,0 +1,44 @@
+---
+import BaseLayout from "../../../../layouts/BaseLayout.astro";
+import SiteHeader from "../../../../components/SiteHeader.astro";
+import SiteFooter from "../../../../components/SiteFooter.astro";
+import HermesCommandCenterPublicContent from "../../../../components/HermesCommandCenterPublicContent.astro";
+import "../../../../styles/hermes-business-command-center.css";
+
+// Build-time output is static; the query-based Russian view is selected from a pre-rendered template.
+const ru=false;
+const title=ru?"Hermes Business Command Center — единый центр управления бизнесом":"Hermes Business Command Center — one operating layer for business";
+const description=ru
+  ?"Публичная демонстрация Hermes Business Command Center: проекты, задачи, AI, автоматизация, evidence и решения владельца в одной системе. Демонстрация использует только sample data."
+  :"Public demonstration of Hermes Business Command Center: projects, tasks, AI, automation, evidence and owner decisions in one operating system. The preview uses sample data only.";
+const schema=[
+  {"@context":"https://schema.org","@type":"WebPage",name:title,description,url:"https://hermeslogisticsus.com/services/hermes-connect/command-center/"},
+  {"@context":"https://schema.org","@type":"SoftwareApplication",name:"Hermes Business Command Center",applicationCategory:"BusinessApplication",operatingSystem:"Web",description:ru?"Закрытая операционная система владельца с публичной демонстрационной версией.":"A private owner operating system with a public demonstration layer."},
+  {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[
+    {"@type":"ListItem",position:1,name:"Hermes Connect",item:"https://hermeslogisticsus.com/services/hermes-connect/"},
+    {"@type":"ListItem",position:2,name:"Hermes Business Command Center",item:"https://hermeslogisticsus.com/services/hermes-connect/command-center/"}
+  ]}
+];
+---
+<BaseLayout title={title} description={description} robots="index,follow,max-image-preview:large" htmlLang="en" schema={schema}>
+  <SiteHeader activePath="/services/hermes-connect/" />
+  <div id="hcc-public-live"><HermesCommandCenterPublicContent ru={false}/></div>
+  <template id="hcc-public-ru"><HermesCommandCenterPublicContent ru={true}/></template>
+  <script is:inline>
+    (() => {
+      // Astro builds static HTML: Astro.url.searchParams cannot localize query strings at request time.
+      // Keep a real, fully translated Russian tree pre-rendered in an inert template and swap it
+      // before deferred scripts bind to the active Command Center. Do not duplicate live IDs.
+      if (new URLSearchParams(window.location.search).get("lang") !== "ru") return;
+      const live = document.getElementById("hcc-public-live");
+      const localized = document.getElementById("hcc-public-ru");
+      if (!(live instanceof HTMLElement) || !(localized instanceof HTMLTemplateElement)) return;
+      live.replaceChildren(localized.content.cloneNode(true));
+      document.documentElement.lang = "ru";
+      document.title = "Hermes Business Command Center — единый центр управления бизнесом";
+      const description = document.querySelector('meta[name="description"]');
+      if (description) description.setAttribute("content", "Публичная демонстрация Hermes Business Command Center: проекты, задачи, AI, автоматизация, evidence и решения владельца в одной системе. Демонстрация использует только sample data.");
+    })();
+  </script>
+  <SiteFooter />
+</BaseLayout>

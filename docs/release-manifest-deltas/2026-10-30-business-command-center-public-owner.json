@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "base_manifest": "docs/release-manifest-2026-08-01.json",
+  "release_delta": "2026-10-30-business-command-center-public-owner",
+  "generated_at": "2026-10-30T11:48:00Z",
+  "status": "PENDING_PRODUCTION_DEPLOYMENT",
+  "scope": "Adds the canonical indexable public Hermes Business Command Center sample/demo owner while the real owner workspace remains private and server-gated.",
+  "additions": [
+    {
+      "route": "/services/hermes-connect/command-center/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/services/hermes-connect/command-center/",
+      "sitemap_owner": "public/sitemap-digital-services.xml",
+      "source_file": "src/pages/services/hermes-connect/command-center/index.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    }
+  ],
+  "removals": [],
+  "acceptance": {
+    "route_count_added": 1,
+    "route_count_removed": 0,
+    "indexable_route_count_added": 1,
+    "requires_green_current_head_ci": true,
+    "requires_production_snapshot_reconciliation_after_deploy": true
+  }
+}

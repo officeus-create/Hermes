@@ -10,13 +10,13 @@ async function analyticsEvents(page: Page, eventName: string) {
 test("car-hauler GEO hub exposes exactly 25 indexable market links with one commercial owner", async ({ page }) => {
   await page.goto("/logistics/car-hauler-loads/");
 
-  await expect(page).toHaveTitle(/Car Hauler Operating Markets & Route-Fit Research/);
+  await expect(page).toHaveTitle(/Car Hauler Loads & Dispatch Service by Market/);
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", /index,follow/);
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
     "href",
     "https://hermeslogisticsus.com/logistics/car-hauler-loads/",
   );
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Car Hauler Operating Markets & Route-Fit Research");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Car Hauler Loads and Dispatch Service by Market");
 
   const marketLinks = page.locator('a[href^="/logistics/car-hauler-loads/"][data-carrier-geo-cta="market_select"]');
   await expect(marketLinks).toHaveCount(25);

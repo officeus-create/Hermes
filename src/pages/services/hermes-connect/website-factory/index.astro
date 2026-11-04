@@ -5,6 +5,7 @@ import SiteHeader from "../../../../components/SiteHeader.astro";
 import SiteFooter from "../../../../components/SiteFooter.astro";
 import HermesConnectExperience from "../../../../components/HermesConnectExperience.astro";
 import HermesConnectAccountSwitcher from "../../../../components/HermesConnectAccountSwitcher.astro";
+import HermesGoogleSignIn from "../../../../components/HermesGoogleSignIn.astro";
 ---
 
 <BaseLayout
@@ -45,6 +46,7 @@ import HermesConnectAccountSwitcher from "../../../../components/HermesConnectAc
         </div>
         <div>
           <div class="factory-alert hidden" data-auth-alert role="alert"></div>
+          <HermesGoogleSignIn />
           <form class="factory-auth-form active" data-auth-form="login">
             <label>Email<input name="email" type="email" autocomplete="email" required /></label>
             <label>Password<input name="password" type="password" autocomplete="current-password" required /></label>
