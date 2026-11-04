@@ -305,7 +305,16 @@ function renderPluginRegistry(data:any){
   const evidence=data?.registry_evidence||{};
   setText("[data-plugin-registry-state]",evidence.fresh===true?t("FRESH","АКТУАЛЬНО"):String(evidence.reason||"UNKNOWN"));
   if(!rows.length){const p=document.createElement("p");p.className="muted";p.textContent=t("Plugin registry unavailable; no capability was inferred.","Реестр плагинов недоступен; возможности не были придуманы.");box.append(p);return}
-  rows.forEach((item:any)=>{const card=document.createElement("article");card.className="workspace-card";const title=document.createElement("strong");title.textContent=String(item.role_id||"UNKNOWN");const version=document.createElement("span");version.textContent="@"+String(item.plugin_version||"UNKNOWN");const note=document.createElement("small");note.textContent=t("REGISTERED CAPABILITY · execution requires a separate HAE receipt","ЗАРЕГИСТРИРОВАННАЯ ВОЗМОЖНОСТЬ · выполнение требует отдельного HAE receipt");card.append(title,version,note);box.append(card)});
+  rows.forEach((item:any)=>{
+    const card=document.createElement("article");card.className="workspace-card";
+    const title=document.createElement("strong");title.textContent=String(item.role_id||"UNKNOWN");
+    const runtime=document.createElement("span");runtime.textContent=t("Runtime loaded: ","Runtime загружен: ")+"@"+String(item.runtime_loaded_version||item.plugin_version||"UNKNOWN");
+    const release=document.createElement("small");release.textContent=t("Provider release: ","Provider release: ")+(item.provider_release_version?String(item.provider_release_version):"UNKNOWN")+" · "+String(item.provider_release_state||"UNKNOWN").replaceAll("_"," ");
+    const invocation=document.createElement("small");invocation.textContent=t("Latest verified invocation: ","Последний подтверждённый запуск: ")+String(item.latest_invocation_state||"UNKNOWN").replaceAll("_"," ")+(item.latest_invocation_at?" · "+stamp(item.latest_invocation_at):"");
+    const training=document.createElement("small");training.textContent=t("Training / holdout: ","Обучение / holdout: ")+String(item.training_holdout_state||"UNKNOWN").replaceAll("_"," ");
+    const note=document.createElement("small");note.textContent=t("REGISTERED / LOADED is not execution · a canonical HAE receipt is required","REGISTERED / LOADED не означает выполнение · нужен канонический HAE receipt");
+    card.append(title,runtime,release,invocation,training,note);box.append(card)
+  });
 }
 function switchView(view:string){
   const valid=new Set(["today","projects","tasks","crm","social","hae","automations","agents","plugins","executions","evidence","reports","knowledge","investor","access"]);
