@@ -1,6 +1,6 @@
 import { readFile, writeFile } from "node:fs/promises";
 
-const root = new URL("../", import.meta.url).pathname;
+const root = decodeURIComponent(new URL("../", import.meta.url).pathname);
 const jsonPath = new URL("../docs/release-manifest-2026-08-01.json", import.meta.url);
 const markdownPath = new URL("../docs/RELEASE_MANIFEST_2026-08-01.md", import.meta.url);
 

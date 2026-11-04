@@ -44,7 +44,7 @@
 .it-brief-review-actions .button { min-height: 48px; }
 .it-brief-copy { background: white; border-color: #cfd4de; color: var(--color-navy-900); }
 .it-brief-reset { display: inline-flex; gap: .45rem; align-items: center; min-height: 44px; padding: .5rem; border: 0; background: transparent; color: var(--color-muted); font-size: .82rem; font-weight: 700; cursor: pointer; }
-.it-brief-status { min-height: 1.5rem; margin: .8rem 0 0; color: #128b8a; font-size: .82rem; font-weight: 700; }
+.it-brief-status { min-height: 1.5rem; margin: .8rem 0 0; color: #0f7574; font-size: .82rem; font-weight: 700; }
 @media (max-width: 900px) {
 .it-brief-panel { min-height: 0; }
 .it-brief-reference-list label { grid-template-columns: 30px 1fr; }

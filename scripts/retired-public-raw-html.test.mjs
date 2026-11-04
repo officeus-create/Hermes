@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 
-const root = new URL("../", import.meta.url).pathname;
+const root = decodeURIComponent(new URL("../", import.meta.url).pathname);
 const retiredStrings = [
   "freight_301@hermeslogisticsus.com",
   "USA · Europe · International email coordination",

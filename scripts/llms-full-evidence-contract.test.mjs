@@ -1,7 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 
-const root = new URL("../", import.meta.url).pathname;
+const root = decodeURIComponent(new URL("../", import.meta.url).pathname);
 const publishedPath = join(root, "dist", "llms-full.txt");
 const body = await readFile(publishedPath, "utf8");
 const errors = [];

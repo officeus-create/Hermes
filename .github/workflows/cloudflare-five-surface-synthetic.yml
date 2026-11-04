@@ -3,7 +3,7 @@ name: Cloudflare five-surface synthetic
 on:
   workflow_dispatch:
   schedule:
-    - cron: "23 */6 * * *"
+    - cron: "23 * * * *"
 
 permissions:
   contents: read
@@ -26,8 +26,11 @@ jobs:
         shell: bash
         run: |
           node <<'NODE'
+          // Credential-free GET only. Three independent samples expose intermittent 1102.
           const targets = [
             { name: "home", url: "https://hermeslogisticsus.com/", status: 200, markers: ["Hermes Connect"] },
+            { name: "logistics", url: "https://hermeslogisticsus.com/paths/logistics/", status: 200 },
+            { name: "academy", url: "https://hermeslogisticsus.com/paths/academy/", status: 200 },
             { name: "repair-shops", url: "https://hermeslogisticsus.com/services/hermes-connect/repair-shops/", status: 200, markers: ["Founding Shop Plan"] },
             { name: "load-board", url: "https://hermeslogisticsus.com/load-board/", status: 200, markers: ["Car Hauler Load Board"] },
             { name: "connect", url: "https://connect.hermeslogisticsus.com/", status: 308, location: "https://hermeslogisticsus.com/services/hermes-connect/" },
@@ -38,47 +41,61 @@ jobs:
           let failed = false;
 
           for (const target of targets) {
-            let passed = false;
-            let last = null;
+            let firstFailure = null;
+            let samplesPassed = 0;
+            let resourceErrors = 0;
 
+            // Never break on a 200: a later 1102 is still a real incident.
             for (let attempt = 1; attempt <= 3; attempt += 1) {
+              let observation;
               try {
                 const url = new URL(target.url);
-                url.searchParams.set("synthetic", `${Date.now()}-${attempt}`);
+                url.searchParams.set("synthetic", String(Date.now()) + "-" + attempt);
                 const response = await fetch(url, {
+                  method: "GET",
                   redirect: "manual",
                   headers: {
                     "cache-control": "no-cache",
                     pragma: "no-cache",
-                    "user-agent": "HermesCloudflareSynthetic/1.0",
+                    "user-agent": "HermesCloudflareSynthetic/1.1 (+public-read-only)",
                   },
                   signal: AbortSignal.timeout(20_000),
                 });
 
-                const body = target.markers ? await response.text() : "";
+                const body = target.markers || response.status >= 500 ? await response.text() : "";
                 const missing = (target.markers || []).filter((marker) => !body.includes(marker));
                 const location = response.headers.get("location");
-                last = { status: response.status, missing, location };
+                const error1102 = /Error\s*1102|Worker exceeded resource limits/i.test(body);
+                observation = { attempt, status: response.status, missing, location, error1102 };
+                if (error1102) resourceErrors += 1;
 
                 if (
                   response.status === target.status &&
                   missing.length === 0 &&
+                  !error1102 &&
                   (!target.location || location === target.location)
                 ) {
-                  passed = true;
-                  console.log(`PASS ${target.name} ${response.status}`);
-                  break;
+                  samplesPassed += 1;
                 }
               } catch (error) {
-                last = { error: error instanceof Error ? error.message : String(error) };
+                observation = { attempt, error: error instanceof Error ? error.name : "request_failure" };
               }
 
-              if (attempt < 3) await sleep(5_000);
+              // Record the first failure, even if a later sample succeeds.
+              if (observation.error || observation.error1102 ||
+                  observation.status !== target.status || observation.missing?.length ||
+                  (target.location && observation.location !== target.location)) {
+                firstFailure ??= observation;
+              }
+              if (attempt < 3) await sleep(1_500);
             }
 
-            if (!passed) {
+            if (samplesPassed !== 3 || firstFailure) {
               failed = true;
-              console.error(`FAIL ${target.name}: ${JSON.stringify(last)}`);
+              console.error("FAIL " + target.name + " stable=" + samplesPassed + "/3 1102=" +
+                resourceErrors + " first=" + JSON.stringify(firstFailure));
+            } else {
+              console.log("PASS " + target.name + " stable=3/3");
             }
           }
 
@@ -92,9 +109,9 @@ jobs:
           {
             echo "## Cloudflare five-surface synthetic — FAIL"
             echo
-            echo "One or more public availability checks failed in scheduled run `${GITHUB_RUN_ID}`."
+            echo "At least one of three samples failed on one or more public surfaces in scheduled run `${GITHUB_RUN_ID}`."
             echo
-            echo "Checked only these public surfaces: homepage, Repair Shops, Load Board, Connect, and app. No customer payload, production mutation, Cloudflare credential, or private identifier was used."
+            echo "Checked seven public GET-only surfaces (home, Logistics, Academy, Repair Shops, Load Board, Connect, app), three spaced samples each. A recovered retry never clears an observed 1102. No customer payload, production mutation, Cloudflare credential, or private identifier was used."
             echo
             echo "Evidence: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
           } >> "$GITHUB_STEP_SUMMARY"

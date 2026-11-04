@@ -18,11 +18,19 @@ const levels = [
 ];
 
 const loop = [
-  { step: "1", title: "Explanation", body: "Understand the job, the reason behind the process, the decision boundary, and what a good result looks like." },
-  { step: "2", title: "Example", body: "Review a concrete case, conversation, document, calculation, campaign, route, or workflow and see why each choice was made." },
-  { step: "3", title: "Task", body: "Do the work: answer, calculate, prepare, analyze, call, write, review, or build the approved exercise." },
-  { step: "4", title: "Feedback", body: "A reviewer identifies what was correct, what needs correction, and what the next practice target should be when the program format includes review." },
-  { step: "5", title: "Repeat", body: "Repeat the skill with a new variation until the result is reliable enough for the next stage rather than moving forward only because time passed." },
+  { step: "1", title: "Explain", body: "Read or watch the approved source, define unfamiliar terms, and explain the decision in your own words so understanding becomes visible." },
+  { step: "2", title: "Practice", body: "Make a bounded attempt in a realistic case, conversation, calculation, document, campaign, route, or workflow before live responsibility." },
+  { step: "3", title: "Self-review", body: "Identify what worked, where the reasoning or communication broke, and what you would change before seeing the reviewer answer." },
+  { step: "4", title: "Human feedback", body: "An authorized reviewer names the precise correction and next target. Generic praise is not the main proof of progress." },
+  { step: "5", title: "Retry", body: "Apply the correction in a second attempt and show the difference clearly enough for another person to inspect." },
+  { step: "6", title: "Transfer", body: "Use the same skill in a changed scenario, preferably without notes, before progression is treated as reliable." },
+];
+
+const practicePatterns = [
+  { title: "Explain back before speed", body: "After an approved source or example, define unfamiliar terms and explain the decision in your own words. Copying the trainer's wording is not evidence of understanding." },
+  { title: "Review immediately after the attempt", body: "Do not save all analysis for the end of the day. Capture the exact moment the conversation, calculation, document, or decision became weaker while the reasoning is still fresh." },
+  { title: "Deconstruct the decisive moment", body: "For calls and negotiations, identify the question, pause, objection, transition, or assumption that changed the outcome. Review the mechanism, not only whether the result was good or bad." },
+  { title: "Change the scenario before progression", body: "Retry with a different partner, accent, lane, objection, business case, or role. Transfer matters more than repeating one memorized script successfully." },
 ];
 ---
 
@@ -48,8 +56,8 @@ const loop = [
 
     <div class="academy-loop-heading">
       <p class="eyebrow">Practice loop</p>
-      <h2>Explanation → Example → Task → Feedback → Repeat</h2>
-      <p>A certificate or finished module is not treated as proof that a person can perform the work. The useful condition is whether the learner can explain the decision, do the task, correct mistakes, and repeat the result in a new situation.</p>
+      <h2>Explain → Practice → Self-review → Feedback → Retry → Transfer</h2>
+      <p>A certificate or finished module is not treated as proof that a person can perform the work. The useful condition is whether the learner can explain the decision, attempt the task, diagnose the gap, adopt a correction, and transfer the result to a new situation.</p>
     </div>
 
     <ol class="academy-loop-grid">
@@ -61,6 +69,20 @@ const loop = [
         </li>
       ))}
     </ol>
+
+    <div class="academy-practice-pattern-heading">
+      <p class="eyebrow">Practice mechanics</p>
+      <h2>Make the correction observable.</h2>
+      <p>Hermes training history repeatedly favors immediate self-analysis, precise conversation review, changed scenarios, and explain-back over passive lesson completion. The exact exercise still depends on the approved track and reviewer.</p>
+    </div>
+    <div class="academy-practice-patterns">
+      {practicePatterns.map((item) => (
+        <article>
+          <h3>{item.title}</h3>
+          <p>{item.body}</p>
+        </article>
+      ))}
+    </div>
 
     <div class="academy-condition-note">
       <strong>Progression condition</strong>
@@ -81,12 +103,19 @@ const loop = [
   .academy-level-grid p, .academy-loop-grid p, .academy-condition-note p { margin: 0; color: #64718f; line-height: 1.62; }
   .academy-loop-heading { margin-bottom: 1.5rem; }
   .academy-loop-heading h2 { max-width: 20ch; }
-  .academy-loop-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: .8rem; padding: 0; margin: 0 0 1rem; list-style: none; }
+  .academy-loop-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .8rem; padding: 0; margin: 0 0 1rem; list-style: none; }
+  .academy-practice-pattern-heading { margin: clamp(2.5rem, 6vw, 4.5rem) 0 1.3rem; }
+  .academy-practice-pattern-heading h2 { margin: .35rem 0 .65rem; max-width: 16ch; font-size: clamp(1.8rem, 3.4vw, 3rem); line-height: 1.04; letter-spacing: -.035em; }
+  .academy-practice-pattern-heading > p:last-child { max-width: 72ch; color: #64718f; line-height: 1.65; }
+  .academy-practice-patterns { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.8rem;margin-bottom:1rem; }
+  .academy-practice-patterns article { padding:1.3rem;border:1px solid #dce3f3;border-radius:12px;background:#fff; }
+  .academy-practice-patterns h3 { margin:0 0 .55rem;font-size:1.08rem; }
+  .academy-practice-patterns p { margin:0;color:#64718f;line-height:1.62; }
   .academy-condition-note { display: grid; grid-template-columns: minmax(150px, .3fr) 1fr; gap: 1rem; align-items: start; }
   @media (max-width: 960px) {
     .academy-loop-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   }
   @media (max-width: 720px) {
-    .academy-learning-heading, .academy-level-grid, .academy-loop-grid, .academy-condition-note { grid-template-columns: 1fr; }
+    .academy-learning-heading, .academy-level-grid, .academy-loop-grid, .academy-practice-patterns, .academy-condition-note { grid-template-columns: 1fr; }
   }
 </style>

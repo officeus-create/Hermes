@@ -48,11 +48,13 @@ test("analytics stays off before choice and after decline", async ({ page }) => 
 
   await page.getByRole("button", { name: "Continue without analytics" }).click();
   await expect.poll(() => page.evaluate(() => localStorage.getItem("hermes-analytics-consent"))).toBe("denied");
+  await expect.poll(() => page.evaluate(() => Reflect.get(window, "ga-disable-G-RY26321PVW"))).toBe(true);
   await page.waitForTimeout(400);
   expect(analyticsRequests).toEqual([]);
 
   await page.reload({ waitUntil: "domcontentloaded" });
   await expect(page.getByRole("heading", { name: "Choose whether to allow website analytics." })).toBeHidden();
+  await expect.poll(() => page.evaluate(() => Reflect.get(window, "ga-disable-G-RY26321PVW"))).toBe(true);
   await page.waitForTimeout(400);
   expect(analyticsRequests).toEqual([]);
 });
@@ -87,6 +89,7 @@ test("analytics consent uses host-appropriate transport and can be withdrawn", a
 
   await page.getByRole("button", { name: "Allow analytics" }).click();
   await expect.poll(() => page.evaluate(() => localStorage.getItem("hermes-analytics-consent"))).toBe("granted");
+  await expect.poll(() => page.evaluate(() => Reflect.get(window, "ga-disable-G-RY26321PVW"))).toBe(false);
   await expect.poll(() => page.evaluate(() => document.documentElement.dataset.analyticsTransport)).toBe(expectedTransport);
   await expect.poll(() => page.evaluate(() => document.documentElement.dataset.clarityTransport)).toBe(expectedClarityTransport);
 
@@ -123,6 +126,7 @@ test("analytics consent uses host-appropriate transport and can be withdrawn", a
   ]);
 
   await expect.poll(() => page.evaluate(() => localStorage.getItem("hermes-analytics-consent"))).toBe("denied");
+  await expect.poll(() => page.evaluate(() => Reflect.get(window, "ga-disable-G-RY26321PVW"))).toBe(true);
   await expect(page.locator('script[data-hermes-ga4="true"]')).toHaveCount(0);
   await expect(page.locator('script[data-hermes-clarity="true"]')).toHaveCount(0);
   await expect(page.getByRole("heading", { name: "Choose whether to allow website analytics." })).toBeHidden();
@@ -226,4 +230,33 @@ test("privacy settings stays in document flow after a mobile choice", async ({ p
     }
   });
   expect(overlap).toBe(false);
+});
+
+
+test("desktop post-choice privacy settings stays in document flow and clear of Home direction cards", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.goto("/", { waitUntil: "domcontentloaded" });
+
+  await page.getByRole("button", { name: "Continue without analytics" }).click();
+  const settings = page.getByRole("button", { name: "Privacy settings" });
+  await expect(settings).toBeVisible();
+  await expect(settings).toHaveCSS("position", "static");
+
+  const geometry = await page.evaluate(() => {
+    const button = document.querySelector<HTMLElement>("[data-consent-settings]");
+    const cards = [...document.querySelectorAll<HTMLElement>("[data-home-route]")];
+    if (!button || cards.length !== 4) return null;
+    const buttonRect = button.getBoundingClientRect();
+    const overlaps = cards.map((card) => {
+      const rect = card.getBoundingClientRect();
+      return buttonRect.left < rect.right && buttonRect.right > rect.left
+        && buttonRect.top < rect.bottom && buttonRect.bottom > rect.top;
+    });
+    return { overlaps, left: buttonRect.left, top: buttonRect.top };
+  });
+
+  expect(geometry).not.toBeNull();
+  expect(geometry!.overlaps).toEqual([false, false, false, false]);
+  expect(geometry!.left).toBeGreaterThanOrEqual(0);
+  expect(geometry!.top).toBeGreaterThanOrEqual(0);
 });

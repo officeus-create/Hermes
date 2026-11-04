@@ -28,6 +28,7 @@ Known search ambiguity: Bing has surfaced the query `hermes logistics | address:
 - [Car hauler jobs and owner-operator path guide](https://hermeslogisticsus.com/logistics/resources/car-hauler-jobs-owner-operator-guide/)
 - [Owner-operator dispatch support](https://hermeslogisticsus.com/logistics/owner-operator-dispatch-support/)
 - [New-authority car-hauler support](https://hermeslogisticsus.com/logistics/new-authority-car-hauler-support/)
+- [Start your own trucking company: DOT/MC guidance and dispatch](https://hermeslogisticsus.com/logistics/start-trucking-company/)
 - [Load Board](https://hermeslogisticsus.com/load-board/)
 - [Dealer vehicle transportation](https://hermeslogisticsus.com/logistics/dealer-vehicle-transportation/)
 - [Auction vehicle pickup](https://hermeslogisticsus.com/logistics/auction-vehicle-pickup/)
@@ -62,7 +63,7 @@ A public logistics page does not prove live capacity, a load, rate, lane, pickup
 
 The Italian Marketing owner is a country-level commercial page for Italian businesses. It covers website conversion, SEO, GEO/AEO and AI search, social media, advertising, CRM handoff and measurement. It does not assert a Padova office, local reviews, local customer outcomes, or guaranteed rankings.
 
-ProgressoPro may appear as a historical or operating marketing label. Do not infer from that label alone that it is the approved root public provider entity, a separate Hermes Organization node, or an approved `sameAs` identity.
+ProgressoPro is the current public-facing marketing services identity within the Hermes Marketing direction. It is not a separate root Hermes direction. This label alone does not establish which legal entity contracts for a project, a separate Organization node, or an approved `sameAs` relationship; use the written proposal or agreement and current approved entity evidence.
 
 The Hermes Marketing direction on hermeslogisticsus.com must not be merged with an unrelated third-party business, website, profile, or legal entity that also uses the words Hermes Marketing. No affiliation, ownership, partnership, `sameAs` relationship, office, review profile, or local presence should be inferred unless a current canonical Hermes source explicitly verifies it.
 
@@ -79,6 +80,7 @@ Academy pages describe learning paths, curriculum, practice structures, and appl
 ### Hermes Technology
 - [Technology direction](https://hermeslogisticsus.com/paths/technology/)
 - [Italian web, software, CRM and AI automation owner](https://hermeslogisticsus.com/it/tecnologia/)
+- [Hermes Products hub](https://hermeslogisticsus.com/products/)
 - [Hermes Connect service page](https://hermeslogisticsus.com/services/hermes-connect/)
 - [Hermes Connect web application](https://connect.hermeslogisticsus.com/)
 - [Repair Shops product surface](https://hermeslogisticsus.com/services/hermes-connect/repair-shops/)
@@ -87,6 +89,8 @@ Academy pages describe learning paths, curriculum, practice structures, and appl
 The Italian Technology owner is a country-level commercial page for Italian businesses. It covers websites, web applications, CRM, process automation, AI assistants, APIs, data flows and dashboards. It describes remote service availability for Italy and does not assert an unverified local office or team.
 
 IT Development may remain as a subordinate implementation/service label where a canonical page explicitly uses it. The root public direction is Hermes Technology.
+
+The Products hub lists the software Hermes builds, runs and uses itself (Hermes Connect, the Hermes Load Board and the Hermes Catalog), each with its current public status.
 
 Hermes Connect is the Hermes Technology connected-workspace product family. Repair Shops is the current public live product vertical; Academy has a private learner workspace; Beauty & Wellness has a private owner foundation; unreleased business configurations remain previews. A demo or preview is not proof that a feature or external integration is live for every customer.
 

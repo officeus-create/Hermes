@@ -4,18 +4,17 @@ import { resolve } from "node:path";
 
 const source = async (path: string) => readFile(resolve(process.cwd(), path), "utf8");
 
-test("Hermes header order stays Logistics → Marketing → Technology → Academy, with Catalog separated", async ({ page }) => {
+test("Hermes header order stays Logistics → Technology → Academy → Marketing, with Products separated", async ({ page }) => {
   const header = await source("src/components/SiteHeader.astro");
   const publicPaths = await source("src/data/public-paths.ts");
 
-  expect(header).toContain('const directionOrder: Record<string, number> = { logistics: 0, marketing: 1, technology: 2, academy: 3 }');
+  expect(header).toContain('const directionOrder: Record<string, number> = { logistics: 0, technology: 1, academy: 2, marketing: 3 }');
   expect(header).toContain('const orderedNavigation = [...site.navigation].sort(');
   expect(header).toContain('const orderedPaths = [...site.paths].sort(');
-  expect(header).toContain('["logistics", "marketing", "technology", "academy"]');
   expect(publicPaths).toContain("logistics: 0");
-  expect(publicPaths).toContain("marketing: 1");
-  expect(publicPaths).toContain("technology: 2");
-  expect(publicPaths).toContain("academy: 3");
+  expect(publicPaths).toContain("technology: 1");
+  expect(publicPaths).toContain("academy: 2");
+  expect(publicPaths).toContain("marketing: 3");
 
   await page.goto("/");
   const desktopDirections = await page.locator('.desktop-nav a[href^="/paths/"]').evaluateAll((links) =>
@@ -23,19 +22,19 @@ test("Hermes header order stays Logistics → Marketing → Technology → Acade
   );
   expect(desktopDirections).toEqual([
     { href: "/paths/logistics/", label: "Logistics" },
-    { href: "/paths/marketing/", label: "Marketing" },
     { href: "/paths/technology/", label: "Technology" },
     { href: "/paths/academy/", label: "Academy" },
+    { href: "/paths/marketing/", label: "Marketing" },
   ]);
   const mobileDirections = await page.locator('#mobile-menu a[href^="/paths/"]').evaluateAll((links) =>
     links.map((link) => ({ href: link.getAttribute("href"), label: link.textContent?.trim() })),
   );
   expect(mobileDirections).toEqual(desktopDirections);
-  await expect(page.locator('.desktop-nav a[href="/businesses/"]')).toHaveText("Catalog");
-  await expect(page.locator('.desktop-nav a[href="/businesses/"]')).toHaveClass(/catalog-nav-link/);
+  await expect(page.locator('.desktop-nav [data-hermes-products] [data-product="catalog"]')).toContainText("Catalog");
+  await expect(page.locator('.desktop-nav [data-hermes-products] [data-product="catalog"]')).toHaveAttribute("href", "/businesses/");
 
   const routeIds = await page.locator("[data-home-route]").evaluateAll((routes) => routes.map((route) => route.getAttribute("data-route-id")));
-  expect(routeIds).toEqual(["logistics", "marketing", "technology", "academy"]);
+  expect(routeIds).toEqual(["logistics", "technology", "academy", "marketing"]);
 });
 
 test("Academy exposes five learning tracks without pretending enrollment is open", async () => {

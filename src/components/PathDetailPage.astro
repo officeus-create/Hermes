@@ -1,21 +1,23 @@
 ---
-import { ArrowLeft, ArrowRight, Check, MapPin } from "@lucide/astro";
 import type { PathDetail } from "../data/site";
-import AcademyScreenFlow from "./AcademyScreenFlow.astro";
 import ItOperatingFlow from "./ItOperatingFlow.astro";
-import MarketingGrowthFlow from "./MarketingGrowthFlow.astro";
 import MarketingServicePillars from "./MarketingServicePillars.astro";
 import TechnologyStudioProof from "./TechnologyStudioProof.astro";
 import TechnologyProjectBrief from "./TechnologyProjectBrief.astro";
 import TechnologyPartnershipShowcase from "./TechnologyPartnershipShowcase.astro";
-import TechnologyBuildPulse from "./TechnologyBuildPulse.astro";
 import TechnologyCapabilityCatalog from "./TechnologyCapabilityCatalog.astro";
 import TechnologyInteractivePrototypes from "./TechnologyInteractivePrototypes.astro";
 import TechnologySolutionMockups from "./TechnologySolutionMockups.astro";
-import LogisticsAudienceHub from "./LogisticsAudienceHub.astro";
-import LogisticsSpatialOperations from "./LogisticsSpatialOperations.astro";
 import DepartmentTechnologyBridge from "./DepartmentTechnologyBridge.astro";
 import HermesPathEngine from "./HermesPathEngine.astro";
+import DirectionStory from "./DirectionStory.astro";
+import DirectionHero from "./DirectionHero.astro";
+import AcademyScreenFlow from "./AcademyScreenFlow.astro";
+import LogisticsAudienceHub from "./LogisticsAudienceHub.astro";
+import LogisticsSpatialOperations from "./LogisticsSpatialOperations.astro";
+import MarketingGrowthFlow from "./MarketingGrowthFlow.astro";
+import TechnologyBuildPulse from "./TechnologyBuildPulse.astro";
+import type { DirectionStoryId } from "../data/direction-story";
 
 interface Props {
   path: PathDetail;
@@ -24,198 +26,119 @@ interface Props {
 const { path } = Astro.props;
 const isAcademy = path.id === "academy";
 const isLogistics = path.id === "logistics";
-const primaryCtaHref = path.id === "technology" ? "#project-brief" : isLogistics ? "#find-your-path" : "#contact";
-const primaryCtaLabel = path.id === "technology"
-  ? "Build your project brief"
-  : isLogistics
-    ? "Find your logistics path"
-    : path.id === "marketing"
-      ? "Prepare a marketing brief"
-      : isAcademy
-        ? "Ask about the Academy path"
-        : "Start with a conversation";
+const isMarketing = path.id === "marketing";
+const isTechnology = path.id === "technology";
+const storyId = path.id as DirectionStoryId;
 const directContactTitle = {
   logistics: "Reach the right logistics team.",
   marketing: "Reach ProgressoPro directly.",
   academy: "Ask about the right Academy path.",
   technology: "Discuss the system you want to build.",
 }[path.id] ?? "Reach the relevant team.";
+
+const directionHero = {
+  logistics: {
+    accent: "var(--dir-logistics)",
+    tone: "#132a47",
+    kicker: "Hermes Logistics · Wisconsin first · USA",
+    title: "Freight that moves. A team that answers.",
+    summary: "Dispatch and back-office support for owner-operators and small fleets — and reviewed vehicle transport for dealers and shippers.",
+    primary: { label: "Start carrier review", href: "/logistics/start-car-hauling-dispatch/" },
+    secondary: { label: "Open the Load Board", href: "/load-board/" },
+    reassurance: "Month-to-month model · final terms confirmed in your agreement.",
+    windowLabel: "Live window · on the road",
+    windowLine: "Every load, every lane — handled.",
+    video: "/media/home/logistics-film-v2-540.mp4",
+    poster: "/images/logistics-living/car-hauler-512.webp",
+  },
+  technology: {
+    accent: "var(--dir-technology)",
+    tone: "#0d3550",
+    kicker: "Hermes Technology · Human-led, AI-assisted",
+    title: "Software shaped around how you actually work.",
+    summary: "CRM systems, websites, AI assistants and automation — built as one connected flow, starting with the workflow that loses you time or customers today.",
+    primary: { label: "Build your project brief", href: "/paths/technology/#project-brief" },
+    secondary: { label: "Explore Hermes Connect", href: "/services/hermes-connect/" },
+    reassurance: "Start with one useful module. Expand only after it works in real use.",
+    windowLabel: "Live window · code in progress",
+    windowLine: "Built by our team, in production.",
+    video: "/media/home/technology-film-v2-540.mp4",
+    poster: "/media/home/technology-film-v2-poster.jpg",
+  },
+  academy: {
+    accent: "var(--dir-academy)",
+    tone: "#0e4434",
+    kicker: "Hermes Business Academy · Five tracks",
+    title: "Learn the work by doing the work.",
+    summary: "Practical tracks in U.S. logistics, marketing, IT & AI, sales and operations — with precise human feedback on every attempt.",
+    primary: { label: "Try a public exercise", href: "/academy/resources/" },
+    secondary: { label: "Apply for review", href: "/academy/apply/" },
+    reassurance: "No account or payment needed to try. Training does not guarantee employment or income.",
+    windowLabel: "Live window · learning in practice",
+    windowLine: "Real work, real feedback.",
+    video: "/media/home/academy-film-v2-540.mp4",
+    poster: "/media/home/academy-film-v2-poster.jpg",
+  },
+  marketing: {
+    accent: "var(--dir-marketing)",
+    tone: "#4b2619",
+    kicker: "Hermes Marketing · ProgressoPro",
+    title: "Turn attention into customers — again and again.",
+    summary: "Websites, SEO/GEO, social media and sales follow-up, connected into one growth system you can measure.",
+    primary: { label: "Request a growth review", href: "#contact" },
+    secondary: { label: "See the website we built for ourselves", href: "/case/it-development/" },
+    reassurance: "A diagnostic does not oblige you to continue. No fake ranking or lead promises.",
+    windowLabel: "Live window · content in production",
+    windowLine: "Content that brings customers.",
+    video: "/media/home/marketing-film-v2-540.mp4",
+    poster: "/media/home/marketing-film-v2-poster.jpg",
+  },
+}[path.id] ?? {
+  accent: "var(--dir-logistics)",
+  tone: "#132a47",
+  kicker: path.category,
+  title: path.title,
+  summary: path.audience,
+  primary: { label: "Start a conversation", href: "#contact" },
+  secondary: { label: "Explore Hermes", href: "/" },
+  reassurance: "The final scope is confirmed with the relevant team.",
+  windowLabel: "Live window",
+  windowLine: path.category,
+  video: "/media/home/logistics-film-v2-540.mp4",
+  poster: path.image,
+};
 ---
 
 <main id="main-content" class={`detail-page detail-page-${path.id}`}>
-  <section class="detail-hero" id="top" data-motion-hero>
-    <img class="detail-hero-media" src={path.image} alt={path.imageAlt} width="1400" height="1050" decoding="async" fetchpriority="high" loading="eager" />
-    <div class="detail-hero-shade"></div>
-    <div class="shell detail-hero-content">
-      <a class="detail-back" href="/#paths"><ArrowLeft size={18} aria-hidden="true" />All directions</a>
-      <p class="eyebrow hero-eyebrow">{path.number} · {path.category}</p>
-      <h1>{path.title}</h1>
-      <p>{path.audience}</p>
-      <a class="button button-primary" href={primaryCtaHref}>{primaryCtaLabel}<ArrowRight size={18} aria-hidden="true" /></a>
-      {isAcademy && <p class="detail-hero-next">Next: choose a learning track and try one public exercise before you decide whether to apply.</p>}
-    </div>
-  </section>
+  <DirectionHero hero={directionHero} alt={path.imageAlt} />
+
+  <span id="direction-work" class="detail-anchor" aria-hidden="true"></span>
+  <DirectionStory direction={storyId} part="top" />
 
   {isLogistics && <LogisticsSpatialOperations />}
-  {path.id === "marketing" && <MarketingGrowthFlow />}
-  {path.id === "technology" && <TechnologyBuildPulse />}
+  {isMarketing && <MarketingGrowthFlow />}
+  {isTechnology && <TechnologyBuildPulse />}
+
+  {isLogistics && <HermesPathEngine />}
+  {isLogistics && <LogisticsAudienceHub />}
   {isAcademy && <AcademyScreenFlow />}
 
-  {isLogistics && <LogisticsAudienceHub />}
-  {isLogistics && <HermesPathEngine />}
-
-  <section class="section detail-overview">
-    <div class="shell detail-intro" data-reveal>
-      <p class="eyebrow">The direction</p>
-      <h2>A practical starting point.</h2>
-      <p>{path.overview}</p>
-      <p class="detail-service-area"><MapPin size={18} aria-hidden="true" />{path.localFocus}</p>
-    </div>
-  </section>
-
-  {
-    !isAcademy && (
-      <section class="section detail-offerings" aria-labelledby="offerings-title">
-        <div class="shell">
-          <div class="section-heading split-heading" data-reveal>
-            <div>
-              <p class="eyebrow">What we focus on</p>
-              <h2 id="offerings-title">Built around useful work.</h2>
-            </div>
-            <p>The final scope is confirmed with the relevant team before any engagement begins.</p>
-          </div>
-          <div class="offering-grid" data-reveal>
-            {path.offerings.map((item) => (
-              <article>
-                <Check size={22} aria-hidden="true" />
-                <h3>{item.title}</h3>
-                <p>{item.body}</p>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
-    )
-  }
-
   {path.id === "technology" && <ItOperatingFlow />}
+  {path.id === "technology" && <TechnologyProjectBrief />}
   {path.id === "technology" && <TechnologyCapabilityCatalog />}
   {path.id === "technology" && <TechnologySolutionMockups />}
   {path.id === "technology" && <TechnologyInteractivePrototypes />}
   {path.id === "technology" && <TechnologyPartnershipShowcase />}
   {path.id === "technology" && <TechnologyStudioProof />}
-  {path.id === "technology" && <TechnologyProjectBrief />}
   {path.id === "marketing" && <MarketingServicePillars />}
   {path.id === "logistics" && <DepartmentTechnologyBridge direction="logistics" />}
   {path.id === "marketing" && <DepartmentTechnologyBridge direction="marketing" />}
   {path.id === "academy" && <DepartmentTechnologyBridge direction="academy" />}
 
-  {
-    !isAcademy && (
-      <section class="section detail-process" aria-labelledby="process-title">
-        <div class="shell">
-          <div class="section-heading" data-reveal>
-            <p class="eyebrow">How to begin</p>
-            <h2 id="process-title">From question to next step.</h2>
-          </div>
-          <ol class="detail-process-grid" data-reveal>
-            {path.process.map((step, index) => (
-              <li>
-                <span>0{index + 1}</span>
-                <h3>{step.title}</h3>
-                <p>{step.body}</p>
-              </li>
-            ))}
-          </ol>
-        </div>
-      </section>
-    )
-  }
-
-  {
-    path.equipment && (
-      <section class="section logistics-equipment" aria-labelledby="equipment-title">
-        <div class="shell">
-          <div class="section-heading split-heading" data-reveal>
-            <div>
-              <p class="eyebrow">Equipment</p>
-              <h2 id="equipment-title">Truck types we can discuss.</h2>
-            </div>
-            <p>
-              Eligibility depends on authority, insurance, equipment and trailer configuration, operating area, and the
-              current freight market.
-            </p>
-          </div>
-          <div class="equipment-grid" data-reveal>
-            {path.equipment.map((item) => (
-              <article>
-                <h3>{item.title}</h3>
-                <p>{item.body}</p>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
-    )
-  }
-
-  {
-    path.serviceGroups && !isAcademy && (
-      <section class="section logistics-services" aria-labelledby="service-groups-title">
-        <div class="shell">
-          <div class="section-heading" data-reveal>
-            <p class="eyebrow">Services</p>
-            <h2 id="service-groups-title">
-              {path.id === "technology"
-                ? "The capabilities behind a connected company system."
-                : path.id === "marketing"
-                  ? "The services behind a measurable growth system."
-                  : "The operating support behind every load."}
-            </h2>
-          </div>
-          <div class="service-group-grid" data-reveal>
-            {path.serviceGroups.map((group) => (
-              <article>
-                <h3>{group.title}</h3>
-                <ul>
-                  {group.items.map((item) => (
-                    <li>
-                      <Check size={18} aria-hidden="true" />
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
-    )
-  }
-
-  {
-    path.faq && !isAcademy && (
-      <section class="section logistics-faq" aria-labelledby="faq-title">
-        <div class="shell faq-layout" data-reveal>
-          <div>
-            <p class="eyebrow">FAQ</p>
-            <h2 id="faq-title">Before you get started.</h2>
-          </div>
-          <div class="faq-list">
-            {path.faq.map((item) => (
-              <details>
-                <summary>{item.question}</summary>
-                <p>{item.answer}</p>
-              </details>
-            ))}
-          </div>
-        </div>
-      </section>
-    )
-  }
+  <DirectionStory direction={storyId} part="faq" faq={isAcademy ? undefined : path.faq} />
 
   {path.directContacts && (
-    <section class="section logistics-contacts" aria-labelledby="direct-contact-title">
+    <section class="section logistics-contacts" id="direction-contact" aria-labelledby="direct-contact-title">
       <div class="shell">
         <div class="section-heading" data-reveal><p class="eyebrow">Direct contacts</p><h2 id="direct-contact-title">{directContactTitle}</h2></div>
         <div class="direct-contact-grid" data-reveal>
@@ -247,3 +170,9 @@ const directContactTitle = {
     </section>
   )}
 </main>
+
+
+
+<style>
+  .detail-anchor{display:block;scroll-margin-top:9rem}
+</style>

@@ -15,9 +15,14 @@ const title = vacancyIsCurrent
   : "Car Hauling Dispatcher Role Overview | Hermes Logistics";
 const metaDescription = vacancyIsCurrent
   ? "Apply for the verified remote full-time Car Hauling Dispatcher opening supporting U.S. carrier operations. International candidates with experience or a clear entry-level starting point may apply."
-  : "Review the Car Hauling Dispatcher role scope and Hermes recruiting process. The vacancy is not currently published as a verified-open JobPosting pending a fresh owner review.";
-const applicationUrl = new URL(vacancy.applicationPath!, Astro.site).toString();
-const workUaApplicationUrl = "https://www.work.ua/jobs/7362244/";
+  : "Car Hauling Dispatcher role scope and the Hermes recruiting process. The vacancy is not published as open until a fresh owner review confirms it.";
+const applicationUrl = vacancyIsCurrent && vacancy.applicationPath
+  ? new URL(vacancy.applicationPath, Astro.site).toString()
+  : null;
+const externalApplicationUrl = vacancyIsCurrent ? vacancy.submissionUrl ?? null : null;
+if (vacancyIsCurrent && (!applicationUrl || !externalApplicationUrl)) {
+  throw new Error("An eligible Car Hauling Dispatcher vacancy must expose current application routes.");
+}
 
 const responsibilities = [
   "Support car-hauling dispatch work for U.S.-market carrier operations.",
@@ -40,8 +45,8 @@ const jobDescription = [
   `Responsibilities: ${responsibilities.join(" ")}`,
   `Screening information to prepare: ${screening.join(" ")}`,
   vacancyIsCurrent
-    ? "Application process: submit through the current Work.ua vacancy. The Hermes application page is a preparation preview only and does not yet send or store an application. Applications are human reviewed and may proceed to practical evidence and an interview; no step guarantees employment or compensation."
-    : "Application process: this role is awaiting a fresh recruiting review. Check current vacancies or use the general careers inquiry; do not submit through the expired Work.ua listing. Applications are human reviewed and may proceed to practical evidence and an interview; no step guarantees employment or compensation.",
+    ? "Application process: use the current verified external application route shown on this page. Applications are human reviewed and may proceed to practical evidence and an interview; no step guarantees employment or compensation."
+    : "Application process: this role is awaiting a fresh recruiting review. Check current vacancies or use the general careers inquiry; do not use the removed historical external listing. Applications are human reviewed and may proceed to practical evidence and an interview; no step guarantees employment or compensation.",
 ].join("\n\n");
 
 const jobPostingSchema = vacancyIsCurrent ? {
@@ -106,7 +111,7 @@ const schema = [
             <div class="career-job-actions">
               {vacancyIsCurrent ? (
                 <>
-                  <a class="button button-primary" href={workUaApplicationUrl} rel="noopener noreferrer" data-external-job-apply>Apply on Work.ua <ArrowRight size={18} aria-hidden="true" /></a>
+                  <a class="button button-primary" href={externalApplicationUrl!} rel="noopener noreferrer" data-external-job-apply>Apply on Work.ua <ArrowRight size={18} aria-hidden="true" /></a>
                   <a class="button" href={vacancy.applicationPath}>Prepare Hermes application preview</a>
                 </>
               ) : (
@@ -163,14 +168,14 @@ const schema = [
               : "The previous verified-open publication window has ended. Review current vacancies or submit only a general careers inquiry until this role is explicitly verified open again."}</p>
           </div>
           {vacancyIsCurrent ? (
-            <a class="button button-primary" href={workUaApplicationUrl} rel="noopener noreferrer" data-external-job-apply>Apply on Work.ua <ArrowRight size={18} aria-hidden="true" /></a>
+            <a class="button button-primary" href={externalApplicationUrl!} rel="noopener noreferrer" data-external-job-apply>Apply on Work.ua <ArrowRight size={18} aria-hidden="true" /></a>
           ) : (
             <a class="button button-primary" href="/logistics/careers/">Check current vacancies <ArrowRight size={18} aria-hidden="true" /></a>
           )}
         </div>
       </section>
 
-      {vacancyIsCurrent && <template data-application-url={applicationUrl}></template>}
+      {vacancyIsCurrent && applicationUrl && <template data-application-url={applicationUrl}></template>}
     </main>
     <SiteFooter />
   </div>

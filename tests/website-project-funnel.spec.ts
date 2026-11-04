@@ -14,6 +14,11 @@ async function fillWebsiteScope(brief: Locator, projectType = "website_and_seo")
   await brief.locator('select[name="website_page_range"]').selectOption("6-10");
   await brief.locator('textarea[name="website_integrations"]').fill("CRM, scheduling, analytics, and secure lead routing");
   await brief.locator('input[name="website_languages"]').fill("English and Spanish");
+  await brief.locator('textarea[name="website_public_sources"]').fill("https://example.com https://instagram.com/example https://www.linkedin.com/company/example");
+  await brief.locator('input[name="website_competitor_1"]').fill("https://competitor-one.example");
+  await brief.locator('input[name="website_competitor_2"]').fill("https://competitor-two.example");
+  await brief.locator('input[name="website_competitor_3"]').fill("https://competitor-three.example");
+  await brief.locator('textarea[name="website_design_direction"]').fill("Light premium interface, restrained motion, strong product UI, avoid generic agency gradients.");
 }
 
 test("website development service records CTA and opens an exact project scope", async ({ page }) => {
@@ -94,6 +99,11 @@ test("website project brief includes exact scope and records start, preview and 
   await expect(summary).toContainText("Project type: Website + SEO");
   await expect(summary).toContainText("Required page range: 6–10 pages");
   await expect(summary).toContainText("CRM, scheduling, analytics, and secure lead routing");
+  await expect(summary).toContainText("Approved public sources: https://example.com");
+  await expect(summary).toContainText("Competitor 1: https://competitor-one.example");
+  await expect(summary).toContainText("Competitor 2: https://competitor-two.example");
+  await expect(summary).toContainText("Competitor 3: https://competitor-three.example");
+  await expect(summary).toContainText("Visual direction: Light premium interface");
   await expect(brief.locator("[data-brief-email]")).toHaveAttribute("href", /Website%20project%20scope/);
   await expect.poll(async () => (await readEvents(page)).filter((item) => item.event === "website_project_preview_ready").length).toBe(1);
 
@@ -122,7 +132,7 @@ test("website project brief includes exact scope and records start, preview and 
   );
   expect(funnelEvents).toHaveLength(3);
   const serialized = JSON.stringify(funnelEvents);
-  expect(serialized).not.toMatch(/Private|example\.com|Milwaukee|Professional Services|Alex Morgan|website that qualifies|scheduling|Spanish|6-10/i);
+  expect(serialized).not.toMatch(/Private|example\.com|competitor-one|competitor-two|competitor-three|Instagram|LinkedIn|premium interface|Milwaukee|Professional Services|Alex Morgan|website that qualifies|scheduling|Spanish|6-10/i);
 });
 
 test("website redesign uses redesign scope and its own privacy-safe funnel taxonomy", async ({ page }) => {

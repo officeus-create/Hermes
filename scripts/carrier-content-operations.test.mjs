@@ -10,7 +10,7 @@ import {
   carrierRefreshPolicies,
 } from "../src/data/carrier-content-operations.ts";
 
-const root = new URL("../", import.meta.url).pathname;
+const root = decodeURIComponent(new URL("../", import.meta.url).pathname);
 const dist = join(root, "dist");
 
 const routeToBuiltFile = (route) =>

@@ -5,10 +5,10 @@ for (const route of ['dealer-vehicle-transportation', 'car-hauling-dispatch']) {
     const hero = page.locator('.commercial-hero-grid > img');
     await expect(hero).toBeVisible();
     const src = await hero.getAttribute('src');
-    expect(src).toMatch(/^\/_astro\/path-logistics-system\.[\w-]+\.jpg$/);
+    expect(src).toMatch(/^\/_astro\/direction-logistics-real-2026\.[\w-]+\.jpg$/);
     const response = await page.request.get(src!);
     expect(response.ok()).toBeTruthy();
-    expect((await response.body()).length).toBe(90337);
+    expect((await response.body()).length).toBe(78605);
     await expect(page.locator('.commercial-actions a').first()).toBeVisible();
     await expect(page.locator('h1')).toHaveCount(1);
     if (route.startsWith('dealer')) {

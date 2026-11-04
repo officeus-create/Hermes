@@ -32,6 +32,10 @@ test("sitemap index exposes each declared public child sitemap exactly once", as
 
   const locCount = (body.match(/<loc>/g) ?? []).length;
   expect(locCount).toBe(indexedChildSitemaps.length);
+
+  const runtimeCatalogEntry = body.match(/<sitemap>\s*<loc>https:\/\/hermeslogisticsus\.com\/sitemap-connect-catalog\.xml<\/loc>([\s\S]*?)<\/sitemap>/);
+  expect(runtimeCatalogEntry).not.toBeNull();
+  expect(runtimeCatalogEntry?.[1] ?? "").not.toContain("<lastmod>");
 });
 
 test("robots advertises the sitemap index and build-time static child sitemaps", async ({ page }) => {

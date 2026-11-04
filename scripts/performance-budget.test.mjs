@@ -1,7 +1,7 @@
 import { readFile, readdir, stat } from "node:fs/promises";
 import { extname, join } from "node:path";
 
-const root = new URL("../", import.meta.url).pathname;
+const root = decodeURIComponent(new URL("../", import.meta.url).pathname);
 const dist = join(root, "dist");
 
 // Advisory review thresholds only. They never block CI or release.

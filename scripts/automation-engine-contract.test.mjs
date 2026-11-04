@@ -85,11 +85,104 @@ assert.match(worker, /url\.pathname === "\/v1\/health"[\s\S]*authorized\(request
 assert.doesNotMatch(worker, /provider_account:/, "Public capabilities must not expose the provider account id");
 assert.match(worker, /publication\.readback/, "Worker must schedule delayed provider readback");
 assert.match(worker, /enqueueDueReadbacks/, "Cron must recover provider-accepted posts whose readback queue message was lost");
+assert.match(worker, /addSecondsIso\(now, 4200 \+ 15 \* 60\)/, "Initial provider readback recovery deadline must lag the primary delayed Queue delivery");
+assert.match(worker, /addSecondsIso\(now, 3600 \+ 15 \* 60\)/, "Retry readback recovery deadline must lag the primary delayed Queue delivery");
+assert.match(worker, /delaySeconds: 4200/, "Initial readback must still use the primary delayed Queue path");
+assert.match(worker, /delaySeconds: 3600/, "Retry readback must still use the primary delayed Queue path");
+assert.match(worker, /unknown_outcome_readback_enqueue_failed/, "Unknown provider outcome readback enqueue failure must remain durable");
+assert.match(worker, /const recoveryAt = addSecondsIso\(new Date\(\)\.toISOString\(\), 5 \* 60\)/, "Definite readback Queue scheduling failure must accelerate only the readback recovery deadline");
+assert.match(worker, /next_readback_at=\?,last_error_class='readback_enqueue_failed'/, "Definite readback enqueue failure must persist a near-term recovery checkpoint");
 assert.match(worker, /readback_enqueue_failed/, "Queue scheduling failure must be persisted without replaying the provider write");
 assert.match(worker, /stale_publish_requires_readback/, "Stale publishing state must recover by readback instead of a second provider write");
 assert.match(worker, /queue\.metrics\(\)/, "Private health must expose queue backlog when Cloudflare metrics are available");
+assert.match(worker, /metricNumberOrNull\(metrics\?\.backlogCount\)/, "Missing Queue backlog metrics must remain UNKNOWN/null instead of silently becoming zero");
+assert.match(worker, /metricNumberOrNull\(metrics\?\.backlogBytes\)/, "Missing Queue byte metrics must remain UNKNOWN/null instead of silently becoming zero");
+assert.match(worker, /if \(typeof value === "number"\) return Number\.isFinite\(value\) \? value : null;/, "Metric normalization must accept only finite numeric primitives directly");
+assert.match(worker, /if \(typeof value !== "string"\) return null;/, "Metric normalization must reject booleans, arrays and objects instead of coercing them");
+assert.match(worker, /const normalized = value\.trim\(\);/, "Metric normalization must trim strings before numeric parsing");
+assert.doesNotMatch(worker, /const parsed = Number\(value\);/, "Metric normalization must not use broad Number(value) coercion");
+assert.doesNotMatch(worker, /Number\(metrics\?\.backlogCount \|\| 0\)/, "Queue metrics must never coerce UNKNOWN backlog to zero");
+assert.match(worker, /status: backlogCount === null \|\| backlogBytes === null \? "partial_unknown" : "ok"/, "Queue health must not label incomplete backlog metrics as OK");
 assert.match(worker, /AUTOMATION_DLQ/, "Private health must inspect the dead-letter queue separately");
 assert.match(worker, /plan_enqueue_failures/, "Private health must surface lost-plan recovery pressure");
+assert.match(worker, /hermes_automation_heartbeats/, "Cron wakes must have a durable heartbeat table including quiet-window wakes");
+assert.match(worker, /recordCronHeartbeat/, "Scheduled execution must persist a heartbeat before eligibility return");
+assert.match(worker, /heartbeat:cron:\$\{scheduledIso\.slice\(0, 13\)\}Z/, "Cron heartbeat identity must use scheduled UTC hour so DST fallback does not collapse two wakes into one");
+assert.match(worker, /controller\?\.scheduledTime/, "Cron slot identity must derive from Cloudflare ScheduledController scheduledTime rather than wall-clock execution time");
+assert.match(worker, /rawScheduledTime === null[\s\S]*observedAt/, "Missing ScheduledController time must fall back to observed time without coercing null to epoch zero");
+assert.match(worker, /execution_lag_ms/, "Heartbeat evidence must preserve cron execution lag separately from scheduled time");
+assert.match(worker, /cron_expression TEXT/, "Heartbeat evidence must preserve the exact cron expression that invoked the Worker");
+assert.match(worker, /source_sha TEXT/, "Heartbeat evidence must preserve deployed source SHA for per-wake continuity");
+assert.match(worker, /automation_mode TEXT/, "Heartbeat evidence must preserve automation mode for per-wake continuity");
+assert.match(worker, /publication_config TEXT/, "Heartbeat evidence must preserve raw publication config for per-wake continuity");
+assert.match(worker, /publication_enabled INTEGER NOT NULL/, "Heartbeat evidence must preserve effective publication gate for per-wake continuity");
+assert.match(worker, /recordCronHeartbeat\(env, scheduledAt, observedAt, eligible, controller\?\.cron\)/, "Scheduled heartbeat must capture runtime env configuration, not only timing");
+assert.match(worker, /eligible,source_sha,automation_mode,publication_config,publication_enabled/, "Private health heartbeat readback must include per-wake runtime continuity fields");
+assert.match(worker, /normalizedLastHeartbeat/, "Private health must normalize persisted heartbeat evidence before returning it");
+assert.match(worker, /publication_enabled: Number\(lastHeartbeat\.publication_enabled\) === 1/, "Heartbeat publication evidence must be returned as an explicit boolean");
+assert.match(worker, /controller\?\.cron/, "Scheduled handler must pass Cloudflare controller.cron into durable heartbeat evidence");
+assert.match(worker, /cron\.heartbeat_write_failed/, "Heartbeat telemetry failure must be observable without blocking the current slot");
+assert.match(worker, /last_cron_wake/, "Private health must distinguish last cron wake from last updated run");
+assert.match(worker, /last_success/, "Private health must expose the last successful HAE run separately");
+assert.match(worker, /last_failure/, "Private health must expose the last failed HAE run separately");
+assert.match(worker, /status IN \('plan_enqueue_failed','failed','unknown_outcome_unresolved','readback_unverified'\)/, "Private health last_failure must include terminal failed provider runs");
+assert.match(worker, /source_sha/, "Private health must expose the exact deployed source SHA when release metadata is configured");
+assert.match(worker, /automation_mode/, "Private health must expose the current automation mode");
+assert.match(worker, /publication_enabled/, "Private health must expose the effective publication gate");
+assert.match(worker, /publication_config/, "Private health must expose the raw publication configuration separately from the effective gate");
+assert.match(worker, /hermes_automation_runtime_events/, "Queue/recovery failures must have a durable sanitized runtime event ledger");
+assert.match(worker, /queue_message_id TEXT/, "Queue runtime events must preserve the Cloudflare message id for retry correlation");
+assert.match(worker, /message_sent_at TEXT/, "Queue runtime events must preserve original message send time");
+assert.match(worker, /queueName: batch\?\.queue/, "Queue retry receipts must preserve the source queue name");
+assert.match(worker, /queueMessageId: item\?\.id/, "Queue retry receipts must correlate attempts to the same message id");
+assert.match(worker, /messageSentAt: item\?\.timestamp/, "Queue retry receipts must preserve the original queue message timestamp");
+assert.match(worker, /generic_job_events_by_type/, "Private health must expose generic retry/stale-recovery event counts");
+assert.match(worker, /initialDispatchLeaseUntil = addSecondsIso\(now, 15 \* 60\)/, "New generic jobs must reserve a recovery lease before Queue send");
+assert.match(worker, /priority,\n    initialDispatchLeaseUntil,\n    maxAttempts/, "Generic job creation must persist the dispatch lease atomically with the job row");
+assert.doesNotMatch(worker, /UPDATE hermes_automation_jobs SET available_at=\?,last_error_class=NULL,updated_at=\? WHERE job_id=\? AND state='QUEUED'/, "Generic dispatch must not depend on a post-send lease write that can fail after Queue acceptance");
+assert.doesNotMatch(worker, /ready_content: Number\(ready\?\.count \|\| 0\)/, "Missing D1 health count rows must not be coerced to zero");
+assert.match(worker, /ready_content: metricNumberOrNull\(ready\?\.count\)/, "D1 health counts must preserve UNKNOWN/null while retaining real zero");
+assert.match(worker, /safeRuntimeErrorClass/, "Runtime error receipts must use a sanitizer rather than persist arbitrary exception text");
+assert.doesNotMatch(worker, /const errorClass = clean\(error\?\.message, 160\) \|\| "generic_job_failed"/, "Generic job state must not persist arbitrary exception text");
+assert.match(worker, /const errorClass = safeRuntimeErrorClass\(error, "generic_job_failed"\)/, "Generic job failures must persist only bounded machine-code errors");
+assert.match(worker, /const code = safeRuntimeErrorClass\(error, "job_create_failed"\)/, "Private job-create API errors must be sanitized before response");
+assert.match(worker, /\^\[a-z\]\[a-z0-9_\]\{2,79\}\$/, "Runtime error sanitizer must accept only bounded machine-code error classes");
+assert.match(worker, /normalizedAttempt === null \? null : Math\.max\(0, Math\.trunc\(normalizedAttempt\)\)/, "Unknown Queue attempt count must remain null instead of becoming zero");
+assert.match(worker, /queue\.message_unknown[\s\S]*item\.retry\(\)/, "Unknown Queue messages must fail closed toward retry/DLQ instead of being silently ACKed");
+assert.match(worker, /queue\.message_retry/, "Queue handler retries must persist a sanitized durable error receipt");
+assert.doesNotMatch(worker, /UPDATE hermes_automation_runs SET status='duplicate_suppressed'/, "Duplicate Queue delivery must never regress the authoritative run state");
+assert.match(worker, /existing_publication_status/, "Duplicate provider-plan delivery should report the already-existing publication state without mutating the run");
+assert.match(worker, /env\.DB\.batch\(\[[\s\S]*unknown_outcome_readback_pending[\s\S]*hermes_automation_content[\s\S]*hermes_automation_runs/, "Unknown provider outcome state must transition publications/content/runs atomically");
+assert.match(worker, /env\.DB\.batch\(\[[\s\S]*provider_accepted_readback_pending[\s\S]*hermes_automation_content[\s\S]*hermes_automation_runs/, "Provider-accepted readback-pending state must transition publications/content/runs atomically");
+assert.match(worker, /env\.DB\.batch\(\[[\s\S]*published_verified[\s\S]*provider_post_id[\s\S]*hermes_automation_content[\s\S]*hermes_automation_runs/, "Verified provider readback must commit publication/content/run state atomically");
+assert.match(worker, /env\.DB\.batch\(\[[\s\S]*next_readback_at=NULL[\s\S]*hermes_automation_content[\s\S]*hermes_automation_runs/, "Terminal readback failure must commit publication/content/run state atomically");
+assert.match(worker, /status!='dry_run_ready'/, "Duplicate dry-run Queue delivery must not rewrite an already completed run timestamp");
+assert.match(worker, /duplicate: Number\(completed\?\.meta\?\.changes \|\| 0\) === 0/, "Dry-run plan processing must surface whether the terminal state was already present");
+assert.match(worker, /cron\.recover_readbacks_failed/, "Readback recovery failure must be isolated and observable");
+assert.match(worker, /cron\.recover_plan_runs_failed/, "Plan recovery failure must be isolated and observable");
+assert.match(worker, /cron\.recover_generic_jobs_failed/, "Generic recovery failure must be isolated and observable");
+assert.match(worker, /const enqueued = await enqueuePlanRun\(env, slotKey\)/, "Current eligible slot must finish its first enqueue attempt before recovery scans queued rows");
+assert.match(worker, /plan\.enqueue_state_write_failed/, "A post-send D1 state-write failure must be recorded separately from Queue send failure");
+assert.match(worker, /return true;\n}\n\nasync function recoverPendingPlanRuns/, "A durably accepted Queue message must remain a successful enqueue even if the follow-up D1 status write fails");
+assert.match(worker, /status='plan_enqueue_failed' OR \(status='queued' AND created_at<=\?\)/, "Recovery must not immediately re-enqueue a freshly reserved queued run after a confirmed Queue send");
+assert.match(worker, /queuedStaleCutoff = addSecondsIso\(new Date\(\)\.toISOString\(\), -2 \* 60\)/, "Queued-run recovery must use a bounded stale cutoff");
+assert.doesNotMatch(worker, /ctx\.waitUntil\(enqueuePlanRun\(env, slotKey\)/, "Current-slot enqueue must not race recoverPendingPlanRuns via waitUntil");
+{
+  const scheduledStart = worker.indexOf("async scheduled(controller, env, ctx)");
+  const currentEnqueue = worker.indexOf("const enqueued = await enqueuePlanRun(env, slotKey)", scheduledStart);
+  const recoveryLoop = worker.indexOf('["cron.recover_readbacks_failed", enqueueDueReadbacks]', scheduledStart);
+  assert.ok(scheduledStart >= 0 && currentEnqueue > scheduledStart && recoveryLoop > currentEnqueue, "Current-slot enqueue must complete before scheduled recovery maintenance begins");
+}
+{
+  const scheduledStart = worker.indexOf("async scheduled(controller, env, ctx)");
+  const healthEnqueue = worker.indexOf("await enqueueScheduledHealthSnapshot(env, scheduledAt)", scheduledStart);
+  const contentEnqueue = worker.indexOf("const enqueued = await enqueuePlanRun(env, slotKey)", scheduledStart);
+  assert.ok(healthEnqueue > scheduledStart && healthEnqueue < contentEnqueue, "Hourly read-only health snapshot must enqueue before optional content-plan work");
+}
+assert.match(worker, /hae:system\.health\.snapshot:\$\{scheduledAt\.toISOString\(\)\.slice\(0, 16\)\}/, "Scheduled health snapshots must use deterministic minute-scoped idempotency keys");
+assert.match(worker, /project_key: "hae-hourly-health"/, "Scheduled health snapshots must stay in the canonical HAE health project");
+assert.match(worker, /job_type: "system\.health\.snapshot"[\s\S]*business_lane: "automation"[\s\S]*policy_version: "hae-readonly-v1"/, "Scheduled health snapshots must use the bounded read-only generic job contract");
+assert.match(worker, /cron\.system_health_snapshot_failed/, "Scheduled health snapshot failures must leave a durable runtime signal");
 assert.match(worker, /live_slot_override_forbidden/, "Live manual ticks must not backfill arbitrary slots");
 assert.match(worker, /live_outside_publish_window/, "Live manual ticks must respect the Central Time publish window");
 assert.match(worker, /expired_live_slot/, "Recovered queue backlog must never publish a stale historical slot");
@@ -118,16 +211,67 @@ assert.equal(windsorThreadsConfig({}), null);
 assert.deepEqual(windsorThreadsConfig({ WINDSOR_API_KEY: "synthetic-key" }), { apiKey: "synthetic-key", accountId: "28419597014385166" });
 assert.ok(wrangler.includes('"HERMES_AUTOMATION_MODE": "dry_run"'), "Example config must default to dry-run");
 assert.ok(wrangler.includes('"HERMES_AUTOMATION_PUBLISH": "disabled"'), "Example config must default publication off");
+assert.ok(wrangler.includes('"HERMES_AUTOMATION_SOURCE_SHA": "INJECT_EXACT_MAIN_SHA_AT_RELEASE"'), "Example config must reserve exact source SHA release metadata");
 assert.ok(wrangler.includes('"WINDSOR_THREADS_ACCOUNT_ID": "28419597014385166"'), "Example must pin the verified Hermes Threads account");
 assert.ok(wrangler.includes("WINDSOR_API_KEY"), "Windsor secret activation step must be documented");
 assert.ok(!wrangler.includes('"WINDSOR_API_KEY":'), "Windsor API key must never be committed as a Wrangler var");
 assert.ok(wrangler.includes('"dead_letter_queue": "hermes-automation-dlq"'), "Queue must have a DLQ");
 assert.ok(wrangler.includes('"binding": "AUTOMATION_DLQ"'), "DLQ must be bound read-only in practice for health metrics");
+assert.ok(wrangler.includes('"name": "OWNER_ALERT_EMAIL"'), "HAE must bind a dedicated owner-alert email surface");
+assert.ok(wrangler.includes('"destination_address": "officeus@hermeslogisticsus.com"'), "Owner-alert email binding must be destination-restricted");
+assert.ok(wrangler.includes('"allowed_sender_addresses"'), "Owner-alert email binding must restrict sender identities");
+assert.ok(wrangler.includes('"website@hermeslogisticsus.com"'), "Owner-alert sender must use the canonical verified Hermes sender");
+assert.ok(wrangler.includes('"HERMES_HAE_OWNER_ALERT_RECIPIENT": "officeus@hermeslogisticsus.com"'), "Owner-alert recipient must be explicit in reviewed config");
+assert.ok(!wrangler.includes('"HERMES_HAE_TELEGRAM_BOT_TOKEN":'), "Telegram fallback secret must never be committed as a Wrangler var");
+assert.match(wrangler, /"queue": "hermes-automation-dlq"[\s\S]{0,180}"max_retries": 3/, "Canonical HAE Worker must consume its existing DLQ with bounded retries");
+assert.match(worker, /batch\?\.queue === "hermes-automation-dlq"/, "Queue handler must route DLQ batches to the dedicated classifier before normal processing");
+assert.match(worker, /processDlqMessage/, "DLQ batches must execute the durable classification/redrive runtime");
+assert.match(worker, /url\.pathname === "\/v1\/dlq-runtime"/, "Private control surface must expose DLQ runtime receipts");
+assert.match(worker, /dlq_external_alert_delivery_verified: false/, "Capabilities must not falsely claim that owner alert delivery is verified");
+assert.match(worker, /recordAiUsage/, "Semantic execution must persist an AI usage receipt");
+assert.match(worker, /ai_budget_exceeded/, "Semantic execution must fail closed when actual cost exceeds the contract budget");
+assert.match(worker, /default_semantic_budget_usd: 0/, "Capabilities must expose the zero-dollar default semantic budget");
+assert.match(worker, /url\.pathname === "\/v1\/ai-usage"/, "Private control surface must expose the AI usage/cost ledger");
+assert.match(worker, /url\.pathname === "\/v1\/capability-graphs"/, "Private control surface must accept bounded capability graphs");
+assert.match(worker, /dispatchCapabilityGraphReadyNodes/, "HAE must dispatch ready graph nodes through the existing generic job executor");
+assert.match(worker, /syncCapabilityGraphJobBestEffort/, "Generic job outcomes must reconcile back into graph node evidence");
+assert.match(worker, /cron\.recover_capability_graphs_failed/, "Existing Cron maintenance must recover active graphs without a second scheduler");
+assert.match(worker, /capability_graphs: true/, "Capabilities must expose bounded graph support");
+assert.match(worker, /createCapabilityGraph\(env, body, CAPABILITY_GRAPH_ROLE_CONTRACT_JOB_TYPES\)/, "Capability graphs must use the routable subset and exclude dormant self-release verification");
+assert.match(worker, /structured_kpi_completion: true/, "Capabilities must expose structured KPI completion verification");
+assert.match(worker, /self_improvement_audit: true/, "Capabilities must expose the bounded self-improvement audit lane");
+assert.match(worker, /self_improvement_automatic_source_changes: false/, "Self-improvement v1 must not mutate source automatically");
+assert.match(worker, /self_improvement_automatic_merge: false/, "Self-improvement v1 must not merge automatically");
+assert.match(worker, /self_improvement_automatic_deploy: false/, "Self-improvement v1 must not deploy automatically");
+assert.match(worker, /url\.pathname === "\/v1\/plugin-runtime-registry"/, "Runtime must expose authenticated plugin-version truth");
+const selfReleaseGate = readFileSync(new URL("../workers/automation-engine/src/hae-self-release-gate.mjs", import.meta.url), "utf8");
+assert.match(selfReleaseGate, /ALLOWED_INPUT_FIELD_SET/, "Self-release verification must enforce a strict three-field allowlist rather than a denylist");
+assert.match(selfReleaseGate, /hae_release_payload_field_\$\{clean\(field, 80\) \|\| "unknown"\}_forbidden/, "Self-release verification must reject every non-allowlisted caller field");
+assert.match(selfReleaseGate, /AUTHENTICATED_RELEASE_EVIDENCE_UNAVAILABLE/, "Self-release gate must fail closed until authenticated evidence adapters exist");
+assert.match(selfReleaseGate, /hold_release_reachable: false/, "HOLD_RELEASE must remain unreachable before #2067/#2068 activation dependencies");
+assert.match(selfReleaseGate, /human_hold_release_required: true/, "Self-release verification must preserve the human HOLD_RELEASE boundary");
+assert.match(selfReleaseGate, /automatic_merge_allowed: false/, "Self-release verification must never authorize automatic merge in v1");
+assert.match(selfReleaseGate, /automatic_deploy_allowed: false/, "Self-release verification must never authorize automatic deploy in v1");
+assert.match(selfReleaseGate, /self_improvement_should_pause: false/, "Dormant self-release gate must not claim the self-improvement stopping condition is satisfied");
+const graphRuntime = readFileSync(new URL("../workers/automation-engine/src/capability-graph.mjs", import.meta.url), "utf8");
+assert.match(graphRuntime, /MAX_GRAPH_NODES = 16/, "Capability DAG must stay bounded");
+assert.match(graphRuntime, /graph_cycle_detected/, "Capability DAG must fail closed on dependency cycles");
+assert.match(graphRuntime, /dependency_not_accepted/, "Failed dependencies must block descendants instead of poisoning independent branches");
+assert.match(graphRuntime, /kpi_verification_failed/, "Node acceptance must require KPI verification");
+assert.match(graphRuntime, /routing_mode: nodes\.length === 1 \? "DIRECT" : "DAG"/, "Simple work must short-circuit instead of forcing multi-node delegation");
+assert.doesNotMatch(graphRuntime, /model_name|gpt-|claude-|gemini-/i, "Capability graph must route by job capability rather than model branding");
+const aiLedger = readFileSync(new URL("../workers/automation-engine/src/ai-usage-ledger.mjs", import.meta.url), "utf8");
+assert.match(aiLedger, /hermes_automation_ai_usage/, "AI usage receipts must persist in canonical D1");
+assert.match(aiLedger, /cost > budget/, "AI usage ledger must reject over-budget calls before insertion");
+assert.doesNotMatch(aiLedger, /prompt|response_body|message_content/i, "AI cost ledger must not store prompt or response content");
 assert.ok(wrangler.includes('"workers_dev": false'), "Worker must not expose workers.dev by default");
 assert.ok(wrangler.includes('"preview_urls": false'), "Preview URLs must remain disabled by default");
 assert.match(releaseWorkflow, /queues\/\$\{QUEUE_ID\}\/messages/, "Dry-run proof must inject a canary through the Cloudflare Queue API");
 assert.match(releaseWorkflow, /d1\/database\/\$\{DB_ID\}\/query/, "Dry-run proof must read execution state back from canonical D1");
 assert.match(releaseWorkflow, /dry_run_canary=PASS/, "Release must require Queue→Worker→D1 evidence");
+assert.match(releaseWorkflow, /GITHUB_RUN_NUMBER/, "Dry-run canary must derive a synthetic slot from the workflow run number");
+assert.match(releaseWorkflow, /GITHUB_RUN_ATTEMPT/, "Dry-run canary retries must use a distinct synthetic slot");
+assert.doesNotMatch(releaseWorkflow, /CANARY_SLOT=.*T03/, "Dry-run canary must not reuse one fixed hourly slot across releases");
 assert.match(releaseWorkflow, /Provider writes: disabled/, "Dry-run evidence must state provider writes remain disabled");
 assert.doesNotMatch(releaseWorkflow, /WINDSOR_API_KEY/, "Dry-run release workflow must not inject the provider credential");
 for (const table of ["hermes_automation_runs", "hermes_automation_content", "hermes_automation_publications", "hermes_automation_jobs", "hermes_automation_job_events"]) {
@@ -139,8 +283,57 @@ assert.match(worker, /next_readback_at TEXT/, "Provider readback schedule must s
 assert.ok(wrangler.includes('"database_name": "hermes-connect-prototype"'), "HAE must reuse the canonical Hermes Connect production D1");
 assert.ok(wrangler.includes("DISCOVER_FROM_HERMES_PAGES_PRODUCTION_DB_BINDING"), "Canonical production D1 id must be discovered at release time, not committed");
 assert.ok(!wrangler.includes('"database_name": "hermes-automation"'), "HAE must never create a second D1 database");
+assert.match(releaseWorkflow, /INJECT_EXACT_MAIN_SHA_AT_RELEASE/, "Release workflow must inject exact source SHA into generated Worker config");
+assert.match(releaseWorkflow, /TARGET_SHA: \$\{\{ steps\.request\.outputs\.target_sha \}\}/, "Release config render must receive the owner-verified exact target SHA");
+assert.match(releaseWorkflow, /invalid_HAE_release_target_sha/, "Release config render must fail closed on a malformed exact target SHA");
+assert.match(releaseWorkflow, /HAE_release_source_sha_placeholder_not_replaced/, "Release config render must fail closed if exact source SHA metadata was not injected");
 assert.match(releaseWorkflow, /github\.event\.issue\.number == 1018/, "Release command must stay attached to canonical Growth Bridge #1018");
 assert.match(releaseWorkflow, /HAE_PROVISION_DRY_RUN/, "Dry-run provisioning must require an explicit owner command");
+assert.match(releaseWorkflow, /HAE_RUNTIME_READONLY_PROOF/, "Read-only runtime proof must require an explicit owner command");
+assert.match(releaseWorkflow, /runtime_readonly_proof/, "Release workflow must expose a bounded read-only proof operation");
+assert.match(releaseWorkflow, /system\.health\.snapshot/, "Runtime proof must execute the allowlisted system health snapshot capability");
+assert.match(worker, /job\.submit\.runtime_proof/, "Runtime proof submission must enter through the existing HAE Queue consumer");
+assert.match(worker, /submitRuntimeProofJob/, "Worker must own bounded runtime-proof job creation through its canonical D1 binding");
+assert.match(worker, /runtime_proof_requires_dry_run/, "Runtime proof queue submission must fail closed unless dry_run and publication disabled");
+assert.match(worker, /runtime_proof_job_type_not_allowed/, "Runtime proof queue submission must allow only the system health snapshot job");
+assert.match(releaseWorkflow, /job\.submit\.runtime_proof/, "Release proof must ask the deployed Worker to create the bounded read-only job");
+assert.match(releaseWorkflow, /WHERE idempotency_key=\? LIMIT 1/, "Release proof must discover the durable job through D1 readback by idempotency key");
+assert.doesNotMatch(releaseWorkflow, /INSERT INTO hermes_automation_jobs/, "Least-privilege release proof must never require CI-side D1 job writes");
+assert.doesNotMatch(releaseWorkflow, /INSERT INTO hermes_automation_job_events/, "Least-privilege release proof must never require CI-side D1 event writes");
+assert.match(releaseWorkflow, /job\.duplicate_suppressed/, "Runtime proof must require a durable duplicate-suppression replay receipt");
+assert.match(releaseWorkflow, /queues\/\$\{qid\}\/metrics/, "Runtime proof must read authoritative Queue and DLQ backlog metrics from Cloudflare");
+assert.match(releaseWorkflow, /hae-runtime-evidence-accepted/, "Runtime proof must pass through an independently validated sanitized evidence artifact");
+assert.match(releaseWorkflow, /HAE runtime evidence independent QA/, "Runtime proof must separate executor and evidence QA jobs");
+assert.match(releaseWorkflow, /stale_main_before_dry_run_deploy/, "Provisioning must re-check exact current main immediately before Worker deployment");
+assert.match(releaseWorkflow, /stale_main_after_dry_run_deploy/, "Provisioning must reject evidence if main moves during Worker deployment");
+assert.match(releaseWorkflow, /stale_main_after_dry_run_canary/, "Provisioning must reject canary evidence if main moves before dry-run evidence is accepted");
+assert.match(releaseWorkflow, /stale_main_before_runtime_readonly_proof/, "Runtime proof must re-check exact current main before creating proof work");
+assert.match(releaseWorkflow, /stale_main_during_runtime_readonly_proof/, "Runtime proof must reject evidence if main moves while proof is collected");
+assert.match(releaseWorkflow, /stale_main_during_runtime_evidence_qa/, "Independent runtime QA must reject evidence if main moves before acceptance");
+{
+  const preDeploy = releaseWorkflow.indexOf("Re-verify exact current main before dry-run deploy");
+  const deploy = releaseWorkflow.indexOf("Deploy HAE in fail-closed dry-run mode");
+  const postDeploy = releaseWorkflow.indexOf("Re-verify exact current main after dry-run deploy");
+  const canary = releaseWorkflow.indexOf("Run private Queue → Worker → D1 dry-run canary");
+  const postCanary = releaseWorkflow.indexOf("Re-verify exact current main after dry-run canary");
+  const summary = releaseWorkflow.indexOf("Publish dry-run evidence summary");
+  assert.ok(
+    preDeploy >= 0 && deploy > preDeploy && postDeploy > deploy && canary > postDeploy && postCanary > canary && summary > postCanary,
+    "Exact-main provisioning guards must bracket deploy and canary before dry-run evidence is accepted",
+  );
+}
+{
+  const runtimeProof = releaseWorkflow.indexOf("Run private read-only runtime proof");
+  const runtimeStartGuard = releaseWorkflow.indexOf("stale_main_before_runtime_readonly_proof", runtimeProof);
+  const runtimeEndGuard = releaseWorkflow.indexOf("stale_main_during_runtime_readonly_proof", runtimeStartGuard);
+  const runtimeArtifact = releaseWorkflow.indexOf("hae-runtime-evidence.json", runtimeEndGuard);
+  const runtimeQa = releaseWorkflow.indexOf("stale_main_during_runtime_evidence_qa", runtimeArtifact);
+  assert.ok(
+    runtimeProof >= 0 && runtimeStartGuard > runtimeProof && runtimeEndGuard > runtimeStartGuard && runtimeArtifact > runtimeEndGuard && runtimeQa > runtimeArtifact,
+    "Runtime exact-main guards must bracket proof collection and precede independent acceptance",
+  );
+}
+assert.doesNotMatch(releaseWorkflow, /runtime_readonly_proof[\s\S]{0,6000}create_text_post/, "Read-only runtime proof must not invoke provider publishing");
 assert.match(releaseWorkflow, /environment: production/, "Production Worker release must pass through the production environment");
 assert.match(releaseWorkflow, /CLOUDFLARE_HAE_RELEASE_TOKEN/, "HAE should prefer one dedicated least-privilege Cloudflare release token");
 assert.match(releaseWorkflow, /workers\/lead-email\/wrangler\.production\.jsonc/, "HAE must derive the canonical Cloudflare account id from existing production config");
@@ -155,6 +348,77 @@ assert.match(wrangler, /"HERMES_AUTOMATION_PUBLISH": "disabled"/, "Composed rele
 assert.doesNotMatch(releaseWorkflow, /HERMES_AUTOMATION_MODE=live|HERMES_AUTOMATION_PUBLISH=enabled/, "Owner-gated dry-run workflow must never promote live publishing");
 assert.doesNotMatch(releaseWorkflow, /WINDSOR_API_KEY:\s*\$\{\{\s*secrets\./, "Dry-run release must not require or inject a provider write secret");
 
+assert.match(releaseWorkflow, /schema_snapshot/, "Release workflow must expose the authenticated read-only D1 schema snapshot operation");
+assert.match(releaseWorkflow, /github\.event\.issue\.number == 2033[\s\S]{0,300}HAE_SCHEMA_SNAPSHOT /, "Schema snapshot owner command must be scoped to canonical HAE issue #2033");
+{
+  const conditionStart = releaseWorkflow.indexOf("    if: >-");
+  const conditionEnd = releaseWorkflow.indexOf("    runs-on:", conditionStart);
+  assert.ok(conditionStart >= 0 && conditionEnd > conditionStart, "HAE release owner-routing condition must remain inspectable");
+  const ownerCondition = releaseWorkflow.slice(conditionStart, conditionEnd);
+  const legacyStart = ownerCondition.indexOf("github.event.issue.number == 1018");
+  const canonicalStart = ownerCondition.indexOf("github.event.issue.number == 2033");
+  assert.ok(legacyStart >= 0 && canonicalStart > legacyStart, "Legacy #1018 and canonical #2033 command lanes must remain explicit");
+  const legacyLane = ownerCondition.slice(legacyStart, canonicalStart);
+  const canonicalLane = ownerCondition.slice(canonicalStart);
+  assert.doesNotMatch(legacyLane, /HAE_SCHEMA_SNAPSHOT/, "Legacy social issue #1018 must not gain schema-snapshot authority");
+  assert.doesNotMatch(canonicalLane, /HAE_VERIFY|HAE_PROVISION_DRY_RUN|HAE_RUNTIME_READONLY_PROOF/, "#2033 must not silently absorb legacy HAE command authority during the snapshot change");
+}
+assert.match(releaseWorkflow, /name: Inspect or provision canonical HAE queues[\s\S]{0,160}operation != 'schema_snapshot'/, "Schema snapshot must bypass Queue inspection/provisioning");
+assert.match(releaseWorkflow, /name: Render non-versioned production config[\s\S]{0,160}operation != 'schema_snapshot'/, "Schema snapshot must bypass Worker config composition");
+assert.match(releaseWorkflow, /name: Validate composed Worker package[\s\S]{0,160}operation != 'schema_snapshot'/, "Schema snapshot must bypass Worker package/deploy preparation");
+assert.match(releaseWorkflow, /name: HAE D1 schema snapshot independent QA/, "Schema snapshot must have a separate independent QA job");
+assert.match(releaseWorkflow, /CLOUDFLARE_HAE_RELEASE_TOKEN:\s*\$\{\{\s*secrets\.CLOUDFLARE_HAE_RELEASE_TOKEN\s*\}\}/, "Release workflow must expose the dedicated HAE Cloudflare token separately from supported legacy aliases");
+
+{
+  const credentialStart = releaseWorkflow.indexOf("- name: Validate Cloudflare release credentials");
+  const discoveryStart = releaseWorkflow.indexOf("- name: Discover canonical Hermes Connect production D1", credentialStart);
+  const captureStart = releaseWorkflow.indexOf("- name: Capture authenticated read-only D1 schema snapshot", discoveryStart);
+  assert.ok(credentialStart >= 0 && discoveryStart > credentialStart && captureStart > discoveryStart, "Credential and D1 discovery sections must remain ordered before schema capture");
+  const credentialSection = releaseWorkflow.slice(credentialStart, discoveryStart);
+  const discoverySection = releaseWorkflow.slice(discoveryStart, captureStart);
+  assert.match(credentialSection, /OPERATION[\s\S]*schema_snapshot[\s\S]*CLOUDFLARE_HAE_RELEASE_TOKEN/, "Schema snapshot credential selection must explicitly choose the dedicated HAE token");
+  assert.match(credentialSection, /HAE_CLOUDFLARE_ACTIVE_TOKEN/, "Validated Cloudflare credential must be passed to downstream read-only discovery through a masked active-token boundary");
+  assert.match(discoverySection, /Authorization: Bearer \$\{HAE_CLOUDFLARE_ACTIVE_TOKEN\}/, "Canonical D1 discovery must use the validated active token");
+  assert.doesNotMatch(discoverySection, /Authorization: Bearer \$\{CLOUDFLARE_API_TOKEN\}/, "Schema-capable D1 discovery must not directly consume a broader alias token");
+  assert.match(discoverySection, /d1\/database\/\$\{DB_ID\}/, "When Pages metadata omits the D1 name, schema discovery must resolve it from the exact canonical database ID");
+  assert.match(discoverySection, /\.result\.name \/\/ empty/, "Canonical D1 metadata readback must source the real database name from Cloudflare D1");
+  assert.match(discoverySection, /production_db_metadata_read_failed/, "Schema discovery must fail closed when canonical D1 metadata cannot be read");
+  assert.match(discoverySection, /production_db_name_missing_after_d1_read/, "Schema discovery must fail closed when the D1 detail response still lacks a name");
+}
+
+{
+  const start = releaseWorkflow.indexOf("- name: Capture authenticated read-only D1 schema snapshot");
+  const end = releaseWorkflow.indexOf("- name: Upload sanitized D1 schema snapshot evidence", start);
+  assert.ok(start >= 0 && end > start, "Schema snapshot capture step must exist as a bounded workflow section");
+  const schemaSnapshotStep = releaseWorkflow.slice(start, end);
+  assert.match(schemaSnapshotStep, /SCHEMA_SNAPSHOT_TOKEN:\s*\$\{\{\s*secrets\.CLOUDFLARE_HAE_RELEASE_TOKEN\s*\}\}/, "Schema snapshot must require the dedicated least-privilege HAE Cloudflare token");
+  assert.match(schemaSnapshotStep, /missing_CLOUDFLARE_HAE_RELEASE_TOKEN_for_schema_snapshot/, "Schema snapshot must fail closed when the dedicated token is absent");
+  assert.match(schemaSnapshotStep, /stale_main_before_schema_snapshot/, "Schema snapshot must re-check exact current main immediately before the production schema read");
+  assert.doesNotMatch(schemaSnapshotStep, /secrets\.(?:CLOUDFLARE_API_TOKEN|CF_API_TOKEN|CLOUDFLARE_TOKEN)/, "Schema snapshot must not fall back to broader Cloudflare token aliases");
+  assert.match(schemaSnapshotStep, /FROM sqlite_master/, "Schema snapshot must read only sqlite_master metadata");
+  assert.match(schemaSnapshotStep, /name NOT LIKE 'sqlite_%'/, "Schema snapshot must exclude internal SQLite objects");
+  assert.match(schemaSnapshotStep, /type IN \('table','index','trigger','view'\)/, "Schema snapshot must allow only schema object types");
+  assert.equal(
+    [...schemaSnapshotStep.matchAll(/d1\/database\/\$\{DB_ID\}\/query/g)].length,
+    1,
+    "Schema snapshot must issue exactly one bounded D1 query",
+  );
+  assert.doesNotMatch(schemaSnapshotStep, /\b(?:INSERT|UPDATE|DELETE|REPLACE|UPSERT|CREATE|ALTER|DROP)\b/i, "Schema snapshot step must not contain D1 write/DDL SQL");
+  assert.doesNotMatch(schemaSnapshotStep, /queues create|wrangler@4 deploy|create_text_post|WINDSOR_API_KEY/, "Schema snapshot step must not provision queues, deploy Workers or invoke provider writes");
+  assert.match(schemaSnapshotStep, /trap cleanup EXIT/, "Raw Cloudflare schema response must be removed even on failure");
+  assert.match(schemaSnapshotStep, /rm -f "\$raw"/, "Raw Cloudflare response must be deleted before workflow completion");
+}
+
+{
+  const start = releaseWorkflow.indexOf("schema-snapshot-qa:");
+  assert.ok(start >= 0, "Schema snapshot independent QA job must exist");
+  const qaSection = releaseWorkflow.slice(start);
+  assert.match(qaSection, /hae-d1-schema-snapshot\.mjs verify/, "Independent QA must recompute and verify the snapshot fingerprint");
+  assert.match(qaSection, /migration-manifest workers\/automation-engine\/migrations\/manifest\.json/, "Independent QA must verify the migration baseline remains pending");
+  assert.match(qaSection, /stale_main_during_schema_snapshot_qa/, "Independent QA must reject evidence if main moved after capture");
+  assert.doesNotMatch(qaSection, /CLOUDFLARE_API_TOKEN|Authorization: Bearer|database_id/, "Independent snapshot QA must not require Cloudflare production credentials");
+}
+
 
 assert.match(worker, /READ_ONLY_GENERIC_JOB_TYPES/, "Generic executor must expose a bounded read-only capability registry");
 assert.match(worker, /"system\.health\.snapshot"/, "Generic executor must support a safe system health snapshot job");
@@ -162,10 +426,46 @@ assert.match(worker, /"history\.coverage\.audit"/, "Generic executor must suppor
 assert.match(worker, /HISTORICAL_READ_ONLY_JOB_TYPES/, "Historical primitives must bind into the existing generic job registry");
 assert.match(worker, /runHistoricalLearningPrimitive/, "Historical primitive execution must reuse the existing generic executor");
 assert.match(worker, /\.\.\.HISTORICAL_READ_ONLY_JOB_TYPES/, "Historical jobs must extend the same read-only generic allowlist");
+assert.match(worker, /\.\.\.ROLE_CONTRACT_JOB_TYPES/, "Plugin-derived role contracts must extend the same generic executor allowlist");
+assert.match(worker, /roleContractSha256/, "Role-contract execution must bind a cryptographic contract digest");
+assert.match(worker, /_role_contract/, "Role-contract identity must be persisted with the durable job payload");
+assert.match(worker, /role_contract_stale/, "Role-contract drift must fail closed instead of silently changing instructions");
+assert.match(worker, /const executionPayload = \{ \.\.\.payload \};[\s\S]*delete executionPayload\._role_contract;/, "Persisted role-contract binding metadata must be verified then stripped before deterministic task execution");
+assert.match(worker, /semantic_required/, "Role-contract receipt must preserve whether AI was required");
+assert.match(worker, /free_ai_policy/, "Role-contract receipt must preserve the free-AI policy");
+assert.match(worker, /url\.pathname === "\/v1\/role-contracts"/, "Private runtime must expose the active role-contract registry and digests");
+assert.match(worker, /enqueueScheduledRoleContracts/, "Cron must enqueue plugin-derived role contracts without a chat trigger");
+assert.match(worker, /Promise\.all\(eligibleContracts\.map/, "Independent plugin role submissions must fan out instead of blocking each other sequentially");
+assert.match(worker, /body_fingerprint/, "Marketing dedupe scheduling must persist only a body fingerprint, not duplicate raw content in job payload");
+assert.match(worker, /scheduled_role_contracts: true/, "Capabilities readback must report autonomous role scheduling");
+assert.match(worker, /WAITING_FREE_AI/, "Semantic capacity exhaustion must be a durable job state");
+assert.match(worker, /job\.waiting_free_ai/, "Entering free-AI wait must append an immutable job event");
+assert.match(worker, /attempt_count=MAX\(0,attempt_count-1\)/, "Free-capacity waiting must not consume the bounded execution retry budget");
+assert.match(worker, /state IN \('RETRY_SCHEDULED','WAITING_FREE_AI'\)/, "Due free-AI waits must be claimable through the existing generic executor");
+assert.match(worker, /WHERE state IN \('QUEUED','RETRY_SCHEDULED','WAITING_FREE_AI'\)/, "Cron recovery must re-enqueue due free-AI waits without a second scheduler");
+assert.match(worker, /ensureSearchSemanticFollowup/, "Deterministic Search defects must create one idempotent semantic follow-up");
+assert.match(worker, /hae:followup:search\.defect\.prioritize:/, "Search semantic child jobs must use a stable parent-derived idempotency key");
+assert.match(worker, /semantic_job_internal_only/, "Semantic role contracts must reject direct API submission");
+assert.match(worker, /internal_submission: true/, "Only HAE-controlled downstream creation may submit the semantic child");
+assert.match(worker, /max_attempts: 1,[\s\S]{0,120}internal_submission: true/, "Free semantic child must allow one bounded inference attempt per scheduled parent");
+assert.match(worker, /paid_ai_fallback_enabled: false/, "Capabilities must explicitly report that paid AI fallback is disabled");
+assert.match(worker, /freeAiProviderSnapshot/, "Capabilities must expose only sanitized free-provider readiness state");
+const freeAiRuntime = readFileSync(new URL("../workers/automation-engine/src/free-ai-runtime.mjs", import.meta.url), "utf8");
+assert.match(freeAiRuntime, /official_deepseek_api_is_not_free_router_eligible/, "Official metered DeepSeek API must be rejected by the zero-cost router");
+assert.match(freeAiRuntime, /HERMES_FREE_AI_DEEPSEEK_COST_CLASS/, "Self-hosted DeepSeek requires explicit zero-cost attestation");
+assert.doesNotMatch(freeAiRuntime, /api\.openai\.com/, "Free semantic router must not hard-code OpenAI paid API");
+assert.doesNotMatch(freeAiRuntime, /api\.anthropic\.com/, "Free semantic router must not hard-code Anthropic paid API");
+assert.match(wrangler, /"ai"\s*:\s*\{\s*"binding"\s*:\s*"AI"/, "HAE Worker must bind Workers AI directly when the free semantic lane is enabled");
+assert.match(wrangler, /"HERMES_FREE_AI_CLOUDFLARE_MODEL": "@cf\/zai-org\/glm-4\.7-flash"/, "Pinned free-plan model must be explicit and reviewable");
+assert.match(wrangler, /HERMES_FREE_AI_CLOUDFLARE_FREE_ASSERTION_EXPIRES_AT/, "Mutable free-plan eligibility must expire automatically");
+assert.match(freeAiRuntime, /free_assertion_expired/, "Expired free entitlement must route to WAITING_FREE_AI rather than inference");
+assert.match(freeAiRuntime, /5035/, "A model becoming paid-only must be treated as unavailable to the free router");
 assert.match(worker, /HISTORICAL_READ_ONLY_JOB_TYPES\.includes\(jobType\)[\s\S]*runHistoricalLearningPrimitive\(jobType, payload\)/, "Historical job payloads must be validated before enqueue");
 assert.match(worker, /HISTORICAL_READ_ONLY_JOB_TYPES\.includes\(job\.job_type\)[\s\S]*runHistoricalLearningPrimitive\(job\.job_type, payload\)/, "Historical jobs must execute inside the same runReadOnlyGenericCapability path");
 assert.doesNotMatch(worker, /READ_ONLY_GENERIC_JOB_TYPES[\s\S]{0,240}"social\.publish"/, "Live social writes must not be allowed through the first generic read-only executor");
 assert.match(worker, /type: "job\.execute"/, "Generic jobs must execute through the existing canonical automation queue");
+assert.match(worker, /job\.duplicate_suppressed/, "Same-job replay after SUCCEEDED must leave a durable duplicate-suppression receipt");
+assert.match(worker, /String\(before\.state\) === "SUCCEEDED"[\s\S]*appendGenericJobEvent[\s\S]*job\.duplicate_suppressed/, "Terminal replay must be suppressed before any second capability execution");
 assert.match(worker, /processGenericJob/, "Queue consumer must execute generic durable jobs");
 assert.match(worker, /url\.pathname === "\/v1\/jobs"/, "Private API must accept owner-controlled generic jobs");
 assert.match(worker, /url\.pathname\.startsWith\("\/v1\/jobs\/"\)/, "Private API must expose durable job readback");
@@ -186,8 +486,10 @@ assert.match(worker, /Duplicate recovery messages[\s\S]*D1 state transition is t
 assert.match(worker, /generic_jobs_by_state/, "Private health must expose generic job backlog by state");
 assert.match(worker, /coverage_runtime_status/, "Historical coverage audit must report runtime coverage status");
 assert.match(worker, /complete: false/, "Coverage audit must fail closed until real ingested coverage proves completeness");
-assert.match(worker, /Number\.isFinite\(rawPriority\)/, "Generic job numeric inputs must fail to safe defaults instead of persisting NaN");
-assert.match(worker, /Number\.isFinite\(rawMaxAttempts\)/, "Generic job retry bounds must reject non-finite input");
+assert.match(worker, /const rawPriority = metricNumberOrNull\(input\?\.priority\)/, "Generic job priority must use strict number/string normalization");
+assert.match(worker, /const rawMaxAttempts = metricNumberOrNull\(input\?\.max_attempts\)/, "Generic job retry bounds must use strict number/string normalization");
+assert.match(worker, /const priority = rawPriority === null \? 50/, "Invalid generic job priority types must fall back safely instead of coercing booleans");
+assert.match(worker, /const maxAttempts = rawMaxAttempts === null \? 3/, "Invalid generic job retry types must fall back safely instead of coercing booleans");
 assert.match(worker, /decodeURIComponent[\s\S]*job_id_invalid/, "Malformed encoded job IDs must fail closed as a 400-class input error");
 
 const originalFetch = globalThis.fetch;
@@ -240,3 +542,7 @@ for (const secretPattern of ["sk-", "ghp_", "AIza", "Bearer eyJ"]) {
 }
 
 console.log("Hermes Automation Engine V1 contract: ok");
+
+// Metadata-only ecosystem learning gates are part of the existing HAE contract CI.
+await import("./automation-engine-ecosystem-learning.test.mjs");
+await import("./hae-bounded-repair-executor.test.mjs");

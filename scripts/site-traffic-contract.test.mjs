@@ -56,21 +56,26 @@ assert.match(dashboard, /consented first-party traffic/i);
 assert.match(dashboard, /Browser sessions · 28 days/);
 assert.match(dashboard, /International Catalog \/ SEO-GEO discovery/);
 assert.match(publicCounter, /\/api\/site-traffic-public/);
-assert.match(publicCounter, /visitor sessions today/i);
+assert.match(publicCounter, /sessions today/i);
 assert.match(publicCounter, /views today/i);
-assert.match(publicCounter, /visitor sessions this month/i);
-assert.match(publicCounter, /views this month/i);
+assert.match(publicCounter, /sessions month/i);
+assert.match(publicCounter, /views month/i);
 assert.match(publicCounter, /Updated .* UTC/);
 assert.match(publicCounter, /localStaticHost/);
 assert.match(publicCounter, /browser sessions are not unique people/i);
+assert.match(publicCounter, /grid-template-columns:repeat\(4,minmax\(0,1fr\)\)/);
+assert.match(publicCounter, /traffic-sheen/);
+assert.match(publicCounter, /border-radius:999px/);
 assert.doesNotMatch(publicCounter, />Live site traffic</i);
 assert.match(layout, /<SiteTrafficCollector \/>/);
 assert.doesNotMatch(layout, /<PublicTrafficCounter\s*\/>/, "Shared layout must not display site-wide totals as a public overlay");
 assert.doesNotMatch(layout, /showPublicTrafficCounter/);
-assert.match(homepage, /import PublicTrafficCounter from "\.\.\/components\/PublicTrafficCounter\.astro"/);
-assert.match(homepage, /<PublicTrafficCounter \/>/);
-assert.match(homepage, /home-traffic-inline-section/);
-assert.match(homepage, /Sessions are not unique visitors or customers/);
+// Claude-approved Home v3 routes visitors to one of four divisions. Traffic
+// collection and the internal owner dashboard remain functional, but a public
+// promotional counter is not rendered before its source data is verified.
+assert.doesNotMatch(homepage, /import PublicTrafficCounter/);
+assert.doesNotMatch(homepage, /<PublicTrafficCounter\s*\/>/);
+assert.doesNotMatch(homepage, /home-traffic-inline-section/);
 assert.doesNotMatch(homepage, /\bunique users today\b/i);
 
 console.log("Owner site traffic counter contract OK");

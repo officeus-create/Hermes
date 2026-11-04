@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "base_manifest": "docs/release-manifest-2026-08-01.json",
+  "release_delta": "2026-10-22-redesign-insights",
+  "generated_at": "2026-10-22T13:10:00Z",
+  "status": "CURRENT_HEAD_PENDING_PRODUCTION",
+  "additions": [
+    {
+      "route": "/insights/technology/home-redesign-four-live-video-windows/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/insights/technology/home-redesign-four-live-video-windows/",
+      "sitemap_owner": "public/sitemap-insights.xml",
+      "source_file": "src/pages/insights/[direction]/[slug].astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/insights/logistics/logistics-page-refresh-dispatch-load-board/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/insights/logistics/logistics-page-refresh-dispatch-load-board/",
+      "sitemap_owner": "public/sitemap-insights.xml",
+      "source_file": "src/pages/insights/[direction]/[slug].astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    }
+  ],
+  "acceptance": {
+    "route_count_added": 2,
+    "indexable_route_count_added": 2,
+    "requires_green_current_head_ci": true,
+    "requires_production_snapshot_reconciliation_after_deploy": true
+  }
+}

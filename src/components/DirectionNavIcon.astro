@@ -1,0 +1,21 @@
+---
+interface Props { kind: string }
+const { kind } = Astro.props;
+---
+
+<span class="direction-nav-icon" data-direction-nav-icon={kind} aria-hidden="true">
+  {kind === "load-board" && <svg viewBox="0 0 24 24"><path d="M5 19C5 12 19 15 19 6" stroke-dasharray="2 2.4"/><circle cx="5" cy="19" r="1.6"/><circle cx="19" cy="6" r="1.6"/><circle class="motion-route" cx="5" cy="19" r="1.9" fill="currentColor" stroke="none"/></svg>}
+  {kind === "carriers" && <svg viewBox="0 0 24 24"><g class="motion-truck"><path d="M2.5 6.5h11v9h-11z"/><path d="M13.5 9.5h4l3 3.2v2.8h-7"/></g><circle class="motion-wheel" cx="7" cy="17.5" r="2" stroke-dasharray="2.2 1.6"/><circle class="motion-wheel" cx="17" cy="17.5" r="2" stroke-dasharray="2.2 1.6"/></svg>}
+  {kind === "owner-operators" && <svg viewBox="0 0 24 24"><g class="motion-person-left"><circle cx="8" cy="8" r="2.8"/><path d="M3 19c0-3.2 2.3-5 5-5s5 1.8 5 5"/></g><g class="motion-person-right"><circle cx="16.5" cy="8.5" r="2.4"/><path d="M14 14.3c.8-.3 1.6-.4 2.5-.4 2.6 0 4.5 1.7 4.5 5"/></g></svg>}
+  {kind === "brokers" && <svg viewBox="0 0 24 24"><path class="motion-case-handle" d="M9 7V5.5h6V7"/><path class="motion-case" d="M3 8h18v11H3zM3 12h18M10 12v2h4v-2"/></svg>}
+  {kind === "shippers-dealers" && <svg viewBox="0 0 24 24"><path d="M3 20V7l9-4 9 4v13M6 20v-9h12v9"/><g class="motion-car"><path d="M7 17h10l-1.2-3H8.2z"/><circle cx="9" cy="18.5" r="1"/><circle cx="15" cy="18.5" r="1"/></g></svg>}
+  {kind === "operations" && <svg viewBox="0 0 24 24"><path class="motion-phone" d="M8 3h8v18H8zM11 18h2"/><g class="motion-signal"><path d="M18 8c1.4 1.2 1.4 4.8 0 6"/><path d="M20 6c2.7 2.5 2.7 7.5 0 10"/></g></svg>}
+  {kind === "agreement" && <svg viewBox="0 0 24 24"><path d="M5 2.5h10l4 4V22H5zM15 2.5V7h4"/><path class="motion-doc-line motion-doc-line-1" d="M8 11h8"/><path class="motion-doc-line motion-doc-line-2" d="M8 15h8"/><path class="motion-doc-line motion-doc-line-3" d="M8 19h5"/></svg>}
+  {kind === "path" && <svg viewBox="0 0 24 24"><path class="motion-arrow" d="M5 19 19 5M10 5h9v9"/></svg>}
+  {kind === "catalog" && <svg viewBox="0 0 24 24"><circle class="motion-search" cx="10.5" cy="10.5" r="6.5"/><path class="motion-search" d="m15.5 15.5 5 5"/></svg>}
+</span>
+
+<style>
+  .direction-nav-icon{display:block;width:17px;height:17px;flex:0 0 auto;color:var(--direction-nav-accent)}
+  svg{display:block;width:100%;height:100%;overflow:visible;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+</style>

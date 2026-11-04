@@ -1,5 +1,17 @@
 import { expect, test, type Page } from "@playwright/test";
 
+// Each JSON-LD block is one entity object with a string @context (no top-level arrays: Microsoft
+// Clarity's parser throws on them), and at least one block is present.
+async function expectEntityJsonLd(page: Page) {
+  const blocks = await page.locator('script[type="application/ld+json"]').allTextContents();
+  expect(blocks.length).toBeGreaterThan(0);
+  for (const text of blocks) {
+    const parsed = JSON.parse(text);
+    expect(Array.isArray(parsed)).toBe(false);
+    expect(typeof parsed["@context"]).toBe("string");
+  }
+}
+
 // Approved analytics are GA4 plus consent-gated Microsoft Clarity on eligible public pages.
 // "Zero external delivery" checks still fail on any other outbound form/CRM/operational request.
 const APPROVED_ANALYTICS_HOSTS = [
@@ -172,9 +184,10 @@ test("homepage final contact keeps one primary route and one direct fallback", a
   const fallback = block.locator("[data-home-contact-fallback]");
 
   await expect(primary).toHaveAttribute("href", "/contacts/");
-  await expect(primary).toContainText("Talk to Hermes");
+  await expect(primary).toContainText("Describe your request");
   await expect(fallback).toHaveAttribute("href", /^mailto:/);
-  await expect(block.locator("a.home-final-contact-action")).toHaveCount(2);
+  await expect(block.locator("a.home-final-contact-action")).toHaveCount(1);
+  await expect(block.getByRole("navigation", { name: "Contact Hermes by direction" }).getByRole("link")).toHaveCount(4);
   await expect(block.locator('a[href^="tel:"]')).toHaveCount(0);
 });
 
@@ -205,7 +218,7 @@ test("Appleton guide routes customers, dealers, and carriers into the existing L
     "https://hermeslogisticsus.com/logistics/appleton-wi-vehicle-transport/",
   );
   await expect(page.getByRole("heading", { name: "Vehicle transport to and from Appleton, Wisconsin." })).toBeVisible();
-  await expect(page.locator('script[type="application/ld+json"]')).toHaveCount(1);
+  await expectEntityJsonLd(page);
 
   await page.getByRole("link", { name: /Dealer request/ }).click();
   await expect(page).toHaveURL(/\/load-board\/\?role=dealer&origin=Appleton%2C%20WI#post-load$/);
@@ -523,7 +536,7 @@ test("logistics page routes each visitor type to a dedicated path", async ({ pag
   const hub = page.locator("#choose-your-path");
   await expect(hub.getByRole("link", { name: /Shipper or dealer/ })).toHaveAttribute("href", "/logistics/shipper-dealer/");
   await expect(hub.getByRole("link", { name: /Broker/ })).toHaveAttribute("href", "/logistics/broker/");
-  await expect(hub.getByRole("link", { name: /Carrier or owner-operator/ })).toHaveAttribute("href", "/logistics/carrier/");
+  await expect(hub.getByRole("link", { name: /Carrier or owner-operator/ })).toHaveAttribute("href", "/logistics/car-hauling-dispatch/");
   await expect(hub.getByRole("link", { name: /Open an agency/ })).toHaveAttribute("href", "/logistics/agency/");
   await expect(hub.getByRole("link", { name: /Work with us/ })).toHaveAttribute("href", "/logistics/careers/");
   await expect(hub.getByRole("link", { name: /Training/ })).toHaveAttribute("href", "/paths/academy/");
@@ -537,8 +550,9 @@ test("logistics audience pages open role-specific Load Board workspaces", async 
   await page.goto("/logistics/broker/");
   await expect(page.getByRole("link", { name: "Open broker Load Board" })).toHaveAttribute("href", "/load-board/?role=broker#post-load");
 
-  await page.goto("/logistics/carrier/");
-  await expect(page.getByRole("link", { name: "Open Load Board" })).toHaveAttribute("href", "/load-board/?role=carrier#available-loads");
+  // The carrier audience page merged into the car-hauling dispatch service page (owner decision 2026-10-28).
+  await page.goto("/logistics/car-hauling-dispatch/");
+  await expect(page.getByRole("link", { name: "Open the Car Hauling Load Board" }).first()).toHaveAttribute("href", "/load-board/?role=carrier&equipment=car_hauler#available-loads");
 });
 
 test("agency and career applications create local previews without sending", async ({ page }) => {
@@ -676,8 +690,10 @@ test("public logistics contacts use the approved department routing", async ({ p
   await expect(page.locator(".contacts-hero")).not.toContainText("The structured form below remains a safe preview.");
   await expect(contacts.getByText("Milan · Berlin · Paris · Miami · California · New York · England", { exact: true })).toBeVisible();
   const telephoneTargets = await page.locator('a[href^="tel:"]').evaluateAll((links) => [...new Set(links.map((link) => link.getAttribute("href")))]);
-  expect(telephoneTargets).toEqual([]);
-  await expect(page.getByText("+1 (351) 777-5337", { exact: true })).toHaveCount(0);
+  // Owner-approved 2026-10-27: one Logistics desk line (dispatch + shipper/dealer), calls and text.
+  expect(telephoneTargets).toEqual(["tel:+13517775337"]);
+  await expect(contacts.getByText("Dispatch desk", { exact: true })).toBeVisible();
+  await expect(contacts.getByText("Shipper & dealer desk", { exact: true })).toBeVisible();
   await expect(page.getByText("+1 (717) 696-6829", { exact: true })).toHaveCount(0);
   await expect(page.getByText("Box Truck Department", { exact: true })).toHaveCount(0);
   await expect(page.getByText("General Inquiries", { exact: true })).toHaveCount(0);
@@ -808,7 +824,7 @@ test("technology partnership presents four growth layers and evidence statuses",
   await expect(page.getByText("Live product", { exact: true })).toHaveCount(2);
   await expect(page.getByText("Working prototype", { exact: true })).toHaveCount(2);
   await expect(page.getByText("Build-ready capability", { exact: true })).toHaveCount(2);
-  await expect(page.getByText("Local preview", { exact: true })).toBeVisible();
+  await expect(page.getByText("Source-gated live + preview", { exact: true })).toBeVisible();
   await expect(page.getByText("Implemented capability", { exact: true })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Carrier and dispatcher workspace" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Multilingual website foundation" })).toBeVisible();
@@ -834,15 +850,15 @@ test("marketing presents website, SEO, social media, and growth as connected ser
 test("business directions expose the approved service areas and service schema", async ({ page }) => {
   await page.goto("/paths/logistics/");
   await expect(page).toHaveTitle(/Wisconsin/);
-  await expect(page.getByText(/Wisconsin first/)).toBeVisible();
-  await expect(page.locator('script[type="application/ld+json"]')).toHaveCount(1);
+  await expect(page.locator(".detail-service-area")).toContainText("Wisconsin first");
+  await expectEntityJsonLd(page);
 
   for (const slug of ["marketing", "academy", "technology"]) {
     await page.goto(`/paths/${slug}/`);
     await expect(page).not.toHaveTitle(/Wisconsin/);
     await expect(page.getByText(/Email coordination only/)).toBeVisible();
     await expect(page.locator('a[href^="tel:"]')).toHaveCount(0);
-    await expect(page.locator('script[type="application/ld+json"]')).toHaveCount(1);
+    await expectEntityJsonLd(page);
   }
 });
 

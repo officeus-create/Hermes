@@ -20,6 +20,18 @@ When sources disagree, preserve the contradiction, identify the evidence date/cl
 
 Do not ask the owner to repeat context that is already recorded in the current source-of-truth files.
 
+## 2026-10-21 CEO design ownership override — active
+
+**Claude / Claude Code is the single active design writer for the entire Hermes visual website.** The role covers concept and brand, visual source assets and logo, design tokens, homepage and inner-page visual implementation, video motion/media, responsive/accessibility visual fixes, visual branch commits, tests, PR, and preview. Claude does not merely prepare Figma/HTML handoffs for Codex to integrate. The current primary owner may use a bounded technical helper only by explicit per-task handoff, never as a parallel writer.
+
+**ChatGPT and Codex remain the infrastructure/SEO/GEO/AEO, analytics, integrations, CRM/Load Board/business-function engineering owners and independent design/search QA.** Do not write concurrently to Claude-owned visual components. Where a nonvisual technical/Search correction requires a shared visual file, give Claude the exact file/selector, factual copy, invariant, test and acceptance evidence. Claude implements it in the design branch; Search independently reviews it. Preserve routes, canonical, hreflang, internal discovery, consent, lead behavior, performance and responsive accessibility. Avoid a second implementation PR for the same file.
+
+GitHub access model once the corporate machine-user identity is established: repository-scoped **Write** only for `officeus-create/Hermes` (no Admin/org-wide/DNS/Cloudflare/billing access); a fresh authorized Claude Code endpoint with a separately scoped credential and MFA-backed corporate recovery; feature branches, commits, CI and preview PRs allowed. **No direct `main` push, no ruleset bypass, no unsolicited merge/production deploy.** The existing `main` ruleset must require at least one eligible independent approval, dismiss stale approvals after new commits, resolve review threads, preserve mandatory status checks and disallow force-push/deletion. Verify settings from live GitHub; document/issue statements alone do not imply actual enforcement.
+
+Canonical design sources are in Google Drive `07_CLAUDE_DESIGN — SKILLS + HANDOFF`; use the latest verified release versions rather than old local Mac snapshots or draft exports. For 2026-10-21 corporate H logo use the source package **v1.1**, not v1. The dedicated Hermes Connect logo Option #02 remains protected. The corporate mark/colour choice does not grant permission to alter unapproved business claims.
+
+Existing [issue #1986](https://github.com/officeus-create/Hermes/issues/1986) owns visual Home motion routing and the access/handoff audit; do not spawn a competing design implementation lane. No completed-permission/release claim without authenticated collaborator/ruleset/PR/CI/production readback. This **newer owner directive supersedes older generic labels** saying Codex is the primary website visual coding agent or Claude is read-only for design.
+
 ## Owner / Digital CEO
 
 The owner sets business priorities, approves production-impacting actions, and decides when work is complete. Agents should convert broad instructions into concrete tasks, but must not replace the owner's final business judgment.

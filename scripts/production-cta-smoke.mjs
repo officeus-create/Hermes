@@ -4,11 +4,11 @@ const cacheBust = process.env.GITHUB_SHA || Date.now().toString();
 const checks = [
   {
     path: "/paths/marketing/",
-    markers: ["Prepare a marketing brief"],
+    markers: ["Request a growth review"],
   },
   {
     path: "/paths/academy/",
-    markers: ["Ask about the Academy path"],
+    markers: ["Try a public exercise"],
   },
   {
     path: "/logistics/direct-vehicle-transport-network/",

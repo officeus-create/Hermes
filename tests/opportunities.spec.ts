@@ -15,24 +15,30 @@ test.describe("Work With Hermes opportunities hub", () => {
     await expect(page.getByRole("heading", { name: "Expansion, Investment & Strategic Conversations" })).toBeVisible();
 
     await expect(page.getByRole("link", { name: "Explore careers" })).toHaveAttribute("href", "/logistics/careers/");
-    await expect(page.getByRole("link", { name: "View Wisconsin Owner-Operator opportunity" })).toHaveAttribute("href", "/careers/wisconsin-owner-operators/");
+    await expect(page.getByRole("link", { name: "Review Wisconsin Owner-Operator information" })).toHaveAttribute("href", "/careers/wisconsin-owner-operators/");
     await expect(page.getByRole("link", { name: "Review agency-partner path" })).toHaveAttribute("href", "/paths/logistics/agency-partners/");
     await expect(page.getByRole("link", { name: "Explore agency launch" })).toHaveAttribute("href", "/logistics/agency/");
     await expect(page.getByRole("link", { name: "Contact Hermes" }).first()).toHaveAttribute("href", "/contacts/");
 
+    // Opportunities remains a first-class public route even when the quiet
+    // corporate header groups it with the other secondary Products links.
     if (isMobile) {
-      const menuButton = page.getByRole("button", { name: "Open navigation" });
-      await menuButton.click();
-      const mobileOpportunities = page.locator("#mobile-menu").getByRole("link", { name: "Opportunities" });
-      await expect(mobileOpportunities).toBeVisible();
-      await expect(mobileOpportunities).toHaveAttribute("href", "/opportunities/");
-      await expect(mobileOpportunities).toHaveAttribute("aria-current", "page");
-      await expect(mobileOpportunities).toHaveAttribute("data-nav-tone", "opportunities");
+      await page.getByRole("button", { name: "Open navigation" }).click();
+      const products = page.locator("#mobile-menu .mobile-products-menu");
+      await products.locator("summary").click();
+      const opportunities = products.getByRole("link", { name: "Opportunities" });
+      await expect(opportunities).toBeVisible();
+      await expect(opportunities).toHaveAttribute("href", "/opportunities/");
+      await expect(opportunities).toHaveAttribute("aria-current", "page");
+      await expect(opportunities).toHaveAttribute("data-product", "opportunities");
     } else {
-      const desktopOpportunities = page.locator(".desktop-nav").getByRole("link", { name: "Opportunities" });
-      await expect(desktopOpportunities).toHaveAttribute("href", "/opportunities/");
-      await expect(desktopOpportunities).toHaveAttribute("aria-current", "page");
-      await expect(desktopOpportunities).toHaveAttribute("data-nav-tone", "opportunities");
+      const products = page.locator(".desktop-nav .desktop-products-menu");
+      await products.locator("summary").click();
+      const opportunities = products.getByRole("link", { name: "Opportunities" });
+      await expect(opportunities).toBeVisible();
+      await expect(opportunities).toHaveAttribute("href", "/opportunities/");
+      await expect(opportunities).toHaveAttribute("aria-current", "page");
+      await expect(opportunities).toHaveAttribute("data-product", "opportunities");
     }
 
     await expect(page.getByRole("link", { name: "+1 (414) 269-7377" })).toHaveAttribute("href", "tel:+14142697377");
@@ -40,6 +46,12 @@ test.describe("Work With Hermes opportunities hub", () => {
     await expect(page.getByRole("link", { name: "partnership@hermeslogisticsus.com" }).first()).toBeVisible();
 
     const bodyText = await page.locator("body").innerText();
+    expect(bodyText).toContain("The most recent Wisconsin recruiting review expired on October 15, 2026.");
+    expect(bodyText).toContain("their own commercial truck and trailer");
+    expect(bodyText).not.toContain("Current recruiting priority · Wisconsin");
+    expect(bodyText).not.toContain("Power Only may be considered");
+    expect(bodyText).not.toContain("Hermes is currently recruiting responsible Wisconsin Owner-Operators through a verified public vacancy.");
+    expect(bodyText).not.toContain("current recruiting opportunities");
     expect(bodyText).not.toContain("careers@hermeslogisticsus.com");
     expect(bodyText).not.toContain("+1 (682) 777-5337");
   });

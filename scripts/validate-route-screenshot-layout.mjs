@@ -17,6 +17,20 @@ for (const width of expectedWidths) {
 }
 
 const failures = [];
+// First-visit decision proof must be reviewed across *all* six home languages
+// and five approved viewport widths, not just English and Russian.
+const homeLocaleRoutes = [
+  "homepage", "ru-overview", "uk-overview",
+  "es-overview", "it-overview", "fr-overview",
+];
+for (const localeRoute of homeLocaleRoutes) {
+  for (const width of expectedWidths) {
+    const observed = observations.some((item) =>
+      item.routeId === localeRoute && Number(item.width) === width
+    );
+    if (!observed) failures.push(`missing home locale visual evidence: ${localeRoute} at ${width}px`);
+  }
+}
 for (const item of observations) {
   const viewportWidth = Number(item.width || item.documentClientWidth || 0);
   const documentWidth = Number(item.documentScrollWidth || 0);

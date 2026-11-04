@@ -1,0 +1,19 @@
+name: Instagram skill donor checks
+on:
+  pull_request:
+    paths:
+      - '.claude/skills/ig-**'
+      - '.claude/skills/INSTAGRAM_DONOR_LICENSE'
+      - 'scripts/instagram-skills-integration.test.mjs'
+      - '.github/workflows/instagram-skills.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Offline Instagram skills checks (no provider credentials)
+        run: node scripts/instagram-skills-integration.test.mjs

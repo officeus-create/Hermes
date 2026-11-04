@@ -46,13 +46,13 @@
   border-radius: var(--hermes-radius-card);
   background: var(--hermes-glass-dark);
 }
-.resource-safety-card > svg { color: var(--hermes-violet); }
+.resource-safety-card > svg { color: var(--hermes-violet-text); }
 .resource-safety-card h2 { margin: 1rem 0 .7rem; color: #fff; }
 .resource-safety-card p { margin: 0; color: var(--hermes-muted-dark); }
 
 .resource-intro { background: var(--hermes-paper); }
 .resource-lead { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 1.5rem; align-items: start; max-width: 1000px; }
-.resource-lead > svg { color: var(--hermes-violet); }
+.resource-lead > svg { color: var(--hermes-violet-text); }
 .resource-lead h2 { margin: .35rem 0 .7rem; color: var(--hermes-ink); }
 .resource-lead p:last-child { color: var(--hermes-muted); }
 
@@ -68,7 +68,7 @@
   background: var(--hermes-paper);
   box-shadow: var(--hermes-shadow-card);
 }
-.resource-toc p { margin: 0 0 .8rem; color: var(--hermes-violet); font: 750 .7rem/1.3 var(--font-mono); text-transform: uppercase; }
+.resource-toc p { margin: 0 0 .8rem; color: var(--hermes-violet-text); font: 750 .7rem/1.3 var(--font-mono); text-transform: uppercase; }
 .resource-toc a { padding: .62rem 0; border-bottom: 1px solid var(--hermes-line-light-soft); color: var(--hermes-ink); font-size: .82rem; font-weight: 700; }
 .resource-toc a:last-child { border-bottom: 0; }
 .resource-sections { display: grid; gap: 1rem; }
@@ -80,12 +80,12 @@
   background: var(--hermes-paper);
   box-shadow: var(--hermes-shadow-card);
 }
-.resource-step { margin: 0 0 1.7rem; color: var(--hermes-violet); font: 800 .75rem/1 var(--font-mono); }
+.resource-step { margin: 0 0 1.7rem; color: var(--hermes-violet-text); font: 800 .75rem/1 var(--font-mono); }
 .resource-sections h2 { color: var(--hermes-ink); }
 .resource-sections p { color: var(--hermes-muted); }
 .resource-sections ul { display: grid; gap: .65rem; padding: 0; list-style: none; }
 .resource-sections li { display: flex; gap: .55rem; align-items: flex-start; }
-.resource-sections li svg { flex: 0 0 auto; margin-top: .15rem; color: var(--hermes-violet); }
+.resource-sections li svg { flex: 0 0 auto; margin-top: .15rem; color: var(--hermes-violet-text); }
 
 .resource-submit { color: #fff; background: var(--hermes-obsidian); }
 .resource-submit-grid { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: clamp(2rem, 7vw, 6rem); }
@@ -93,9 +93,9 @@
 .resource-submit p { color: var(--hermes-muted-dark); }
 .resource-submit ul { display: grid; grid-template-columns: 1fr 1fr; gap: .8rem; margin: 0; padding: 0; list-style: none; }
 .resource-submit li { display: flex; gap: .55rem; color: var(--hermes-muted-dark); }
-.resource-submit li svg { flex: 0 0 auto; color: var(--hermes-violet); }
+.resource-submit li svg { flex: 0 0 auto; color: var(--hermes-violet-text); }
 .resource-warning { display: flex; gap: .7rem; align-items: center; margin-top: 2rem; padding: 1rem; border: 1px solid var(--hermes-line-dark); border-radius: var(--hermes-radius-control); background: var(--hermes-glass-dark); }
-.resource-warning svg { flex: 0 0 auto; color: var(--hermes-violet); }
+.resource-warning svg { flex: 0 0 auto; color: var(--hermes-violet-text); }
 .resource-warning p { margin: 0; font-size: .82rem; }
 
 .resource-related { background: var(--hermes-pearl); }
@@ -112,7 +112,7 @@
   box-shadow: var(--hermes-shadow-card);
 }
 .resource-related-grid > a > svg,
-.resource-related-grid > a > span { color: var(--hermes-violet); }
+.resource-related-grid > a > span { color: var(--hermes-violet-text); }
 .resource-related-grid h3 { margin: 1.5rem 0 .55rem; }
 .resource-related-grid p { color: var(--hermes-muted); }
 .resource-related-grid strong { display: flex; gap: .4rem; align-items: center; margin-top: auto; }
@@ -146,7 +146,7 @@
   box-shadow: var(--hermes-shadow-card);
 }
 .logistics-resource-page .capacity-pillar-grid article > span,
-.logistics-resource-page .capacity-pillar-grid article > svg { color: var(--hermes-violet); }
+.logistics-resource-page .capacity-pillar-grid article > svg { color: var(--hermes-violet-text); }
 .logistics-resource-page .capacity-pillar-grid h3 { color: var(--hermes-ink); }
 .logistics-resource-page .capacity-pillar-grid ul,
 .logistics-resource-page .capacity-pillar-grid article > p { color: var(--hermes-muted); }
@@ -161,7 +161,7 @@
   border-radius: var(--hermes-radius-control);
   background: var(--hermes-glass-dark);
 }
-.logistics-resource-page .capacity-example dt { color: var(--hermes-violet); }
+.logistics-resource-page .capacity-example dt { color: var(--hermes-violet-on-dark); }
 .logistics-resource-page .capacity-example dd { color: var(--hermes-muted-dark); }
 
 .logistics-resource-page .capacity-review { background: var(--hermes-pearl); }

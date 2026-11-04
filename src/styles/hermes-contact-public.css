@@ -8,11 +8,11 @@
 .contact-layout{gap:clamp(2.5rem,7vw,6.5rem)}
 .contact-copy h2{color:var(--hermes-ink);letter-spacing:var(--hermes-display-tracking)}
 .contact-copy>h2+p,.contact-direct-routes>p,.contact-direction-eyebrow,.contact-handoff-copy,.contact-handoff-copy-status,.contact-handoff-route-label,.contact-handoff-unsure,.form-status{color:var(--hermes-muted)}
-.contact-copy .eyebrow,.contact-direction-eyebrow,.contact-handoff-eyebrow,.contact-handoff-route-label{color:var(--hermes-violet)}
+.contact-copy .eyebrow,.contact-direction-eyebrow,.contact-handoff-eyebrow,.contact-handoff-route-label{color:var(--hermes-violet-text)}
 .contact-direct-routes{overflow:hidden;gap:0;margin-top:2rem;border:1px solid var(--hermes-line-light);border-radius:var(--hermes-radius-card);background:var(--hermes-paper);box-shadow:var(--hermes-shadow-card)}
 .contact-direct-routes>p{padding:14px 16px 10px;border-bottom:1px solid var(--hermes-line-light)}
 .contact-direct-routes a{min-height:62px;padding:13px 16px;border-bottom:1px solid var(--hermes-line-light);color:var(--hermes-ink);background:var(--hermes-paper)}
-.contact-direct-routes a:last-child{border-bottom:0}.contact-direct-routes a:hover,.contact-direct-routes a:focus-visible{color:var(--hermes-violet);background:var(--hermes-pearl)}
+.contact-direct-routes a:last-child{border-bottom:0}.contact-direct-routes a:hover,.contact-direct-routes a:focus-visible{color:var(--hermes-violet-text);background:var(--hermes-pearl)}
 .contact-form{gap:1rem;padding:clamp(1.35rem,3vw,2rem);border:1px solid var(--hermes-line-light);border-radius:var(--hermes-radius-panel);color:var(--hermes-ink);background:var(--hermes-paper);box-shadow:var(--hermes-shadow-card-hover)}
 .contact-form label,.contact-direction-platforms legend{color:var(--hermes-ink)}
 .contact-form input,.contact-form select,.contact-form textarea{border:1px solid var(--hermes-line-light);border-radius:var(--hermes-radius-control);color:var(--hermes-ink);background:var(--hermes-pearl)}

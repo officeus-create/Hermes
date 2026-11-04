@@ -104,6 +104,14 @@ Every bounded change must be evaluated under `docs/ECOSYSTEM_COMPOUNDING_STANDAR
 
 This rule does not authorize uncontrolled scope growth. Implement adjacent value in the same PR only when it remains coherent, low-risk, independently testable, compatible with active branch ownership, and free of unverified claims, privacy exposure, canonical conflict, or live-integration requirements. Record valuable but non-bounded opportunities as follow-up work.
 
+## Owner directive (2026-10-21) — Claude visual-design sole writer
+
+For the Hermes public website and visual systems, **Claude / Claude Code owns both design decisions AND implementation of those decisions in code**: brand mark and color tokens, Homepage cinematic direction windows, responsive styling, site shell and headers, visual media, visual QA, visual PRs and their preview. A design deliverable stops at an inspectable PR/preview until the owner's separate merge/production decision.
+
+**ChatGPT/Codex own infrastructure, SEO/GEO/AEO/LLMO, crawlable content, analytics, business functionality, CRM/Load Board, security, CI, and independent nonvisual QA.** They must not independently edit Claude-owned visual templates or create a competing design branch. When a Search issue needs a change in a shared visual template/header, prepare exact SEO acceptance criteria and hand them to the Claude visual writer to integrate and test. Only an explicit newer owner instruction can reassign the affected files.
+
+Claude's write access, when provisioned, must be **least-privilege, repository-scoped to `officeus-create/Hermes`**, with no production secrets, Cloudflare/DNS/billing/admin entitlement, bypass or direct main push. Feature branches / review PRs are allowed; production releases still require explicit owner authorization. Keep Hermes Connect Option #02 isolated from corporate Hermes mark changes. This role directive does not override existing security, privacy, factual or SEO non-regression gates. Detailed routing and live access status: `docs/AI_ROLES.md` and existing [issue #1986](https://github.com/officeus-create/Hermes/issues/1986).
+
 ## Agent collaboration and delegation
 
 The owner is the only CEO and final decision-maker. Agents are specialists operating from the same repository memory.

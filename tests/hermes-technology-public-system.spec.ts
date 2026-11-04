@@ -10,7 +10,23 @@ test("Technology alternates Pearl public explanation with contained Obsidian pro
   await page.goto("/paths/technology/");
 
   await expect(page.locator(".technology-build-pulse")).toBeVisible();
+  await expect(page.locator("[data-technology-system-choreography]")).toBeVisible();
+  await expect(page.locator("[data-technology-system-choreography] [data-system-node]")).toHaveCount(4);
+  await expect(page.locator("[data-technology-system-choreography]")).toContainText("Hermes Connect · Repair Shops");
+  await expect(page.locator("[data-technology-system-choreography]")).toContainText("Website Factory");
+  await expect(page.locator("[data-technology-system-choreography]")).toContainText("QA → deploy → readback");
+  await expect(page.locator(".detail-page-technology .detail-offerings")).toHaveCount(0);
+  await expect(page.locator(".detail-page-technology .detail-process")).toHaveCount(0);
+  await expect(page.locator("#project-brief")).toBeVisible();
   await expect(page.locator(".technology-capability-catalog")).toBeVisible();
+
+  const hierarchy = await page.evaluate(() => {
+    const brief = document.querySelector("#project-brief");
+    const catalog = document.querySelector(".technology-capability-catalog");
+    if (!brief || !catalog) return null;
+    return Boolean(brief.compareDocumentPosition(catalog) & Node.DOCUMENT_POSITION_FOLLOWING);
+  });
+  expect(hierarchy).toBe(true);
   await expect(page.locator(".technology-solution-mockups")).toBeVisible();
   await expect(page.locator(".it-flow-screens")).toBeVisible();
   await expect(page.locator(".it-project-brief")).toBeVisible();
@@ -66,9 +82,14 @@ test("Technology alternates Pearl public explanation with contained Obsidian pro
 
 test("Technology public system remains usable at 390px", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
+  await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/paths/technology/");
 
   await expect(page.locator(".technology-build-pulse")).toBeVisible();
+  const choreography = page.locator("[data-technology-system-choreography]");
+  await expect(choreography).toBeVisible();
+  await choreography.scrollIntoViewIfNeeded();
+  await expect(choreography).toHaveAttribute("data-motion-state", "reduced");
   await expect(page.locator(".technology-solution-grid article").first()).toBeVisible();
   await expect(page.locator(".it-flow-screens")).toBeVisible();
 

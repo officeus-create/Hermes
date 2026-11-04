@@ -20,7 +20,7 @@ const schema = isLocalizedConcept ? buildCatalogConceptSchema({ business, profil
 {isLocalizedConcept ? (
   <BaseLayout title={title} description={description} schema={schema}>
     <SiteHeader theme="light" activePath="/businesses/" />
-    <main class="concept-page"><CatalogWebsiteConcept business={business} profileUrl={profileUrl} defaultLocale="en" /></main>
+    <main id="main-content" class="concept-page"><CatalogWebsiteConcept business={business} profileUrl={profileUrl} defaultLocale="en" /></main>
     <SiteFooter />
     <script is:inline src="/catalog-uk-en.js"></script>
   </BaseLayout>

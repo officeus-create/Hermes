@@ -46,7 +46,7 @@
 
 .detail-page-logistics .logistics-audience-grid span,
 .detail-page-logistics .logistics-resource-library span {
-  color: var(--hermes-violet);
+  color: var(--hermes-violet-text);
 }
 
 .detail-page-logistics .logistics-audience-grid h3,
@@ -165,7 +165,7 @@
 
 .detail-page-logistics .path-engine-toolbar button:hover,
 .detail-page-logistics .path-engine-toolbar button:focus-visible {
-  color: var(--hermes-violet);
+  color: var(--hermes-violet-text);
 }
 
 .detail-page-logistics .path-engine-progress {

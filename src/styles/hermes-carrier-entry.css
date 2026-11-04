@@ -19,7 +19,7 @@ body:has(.carrier-signing-entry) .mobile-nav{color:var(--hermes-ink);background:
 body:has(.carrier-signing-entry) .carrier-signing-entry{overflow-x:clip;color:var(--hermes-ink);background:var(--hermes-pearl)}
 body:has(.carrier-signing-entry) .carrier-entry-grid>* ,body:has(.carrier-signing-entry) .carrier-share-card>* ,body:has(.carrier-signing-entry) .carrier-final-card>*{min-width:0}
 body:has(.carrier-signing-entry) .carrier-signing-entry :is(a,button,h1,h2,h3,p,small,b){overflow-wrap:anywhere}
-body:has(.carrier-signing-entry) .carrier-signing-entry .eyebrow{color:var(--hermes-violet)}
+body:has(.carrier-signing-entry) .carrier-signing-entry .eyebrow{color:var(--hermes-violet-text)}
 body:has(.carrier-signing-entry) .carrier-entry-hero{padding:8.5rem 0 5rem;color:var(--hermes-ink);background:var(--hermes-pearl)}
 body:has(.carrier-signing-entry) .carrier-rails{top:5.2rem;height:2px;background:var(--hermes-intelligence-gradient)}
 body:has(.carrier-signing-entry) .carrier-rails span{display:none}
@@ -32,7 +32,7 @@ body:has(.carrier-signing-entry) .carrier-primary{border:1px solid var(--hermes-
 body:has(.carrier-signing-entry) .carrier-primary:hover,body:has(.carrier-signing-entry) .carrier-primary:focus-visible{background:var(--hermes-graphite)!important}
 body:has(.carrier-signing-entry) .carrier-secondary{border:1px solid var(--hermes-line-light)!important;background:var(--hermes-paper)!important;color:var(--hermes-ink)!important}
 body:has(.carrier-signing-entry) .carrier-call{border:1px solid color-mix(in srgb,var(--hermes-success) 38%,var(--hermes-line-light))!important;background:var(--hermes-paper)!important;color:var(--hermes-ink)!important}
-body:has(.carrier-signing-entry) .carrier-guidance{color:var(--hermes-violet)}
+body:has(.carrier-signing-entry) .carrier-guidance{color:var(--hermes-violet-text)}
 body:has(.carrier-signing-entry) .carrier-boundary{color:var(--hermes-muted)}
 body:has(.carrier-signing-entry) .carrier-next-card{padding:clamp(1.35rem,3vw,1.85rem);border:1px solid var(--hermes-line-dark);border-radius:var(--hermes-radius-panel);color:#fff;background:radial-gradient(circle at 88% 8%,rgba(124,92,255,.13),transparent 22rem),var(--hermes-obsidian);box-shadow:var(--hermes-shadow-workspace);backdrop-filter:none}
 body:has(.carrier-signing-entry) .carrier-next-card .eyebrow{color:#c8bdff}

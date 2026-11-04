@@ -13,10 +13,7 @@
   --hc-green: #28b487;
   --hc-action: #1a73e8;
   color: var(--hc-ink);
-  background:
-    radial-gradient(circle at 78% 5%, rgba(124,92,255,.10), transparent 27rem),
-    radial-gradient(circle at 88% 9%, rgba(90,200,250,.10), transparent 22rem),
-    var(--hc-pearl);
+  background: var(--hc-pearl);
 }
 
 .hc-experience .repair-pilot-page .repair-live-hero {
@@ -96,9 +93,7 @@
   color: #f7f8fb;
   border: 1px solid rgba(255,255,255,.09);
   border-radius: 26px;
-  background:
-    radial-gradient(circle at 82% 12%, rgba(124,92,255,.16), transparent 16rem),
-    linear-gradient(160deg, #1c2940 0%, #172033 72%);
+  background: #172033;
   box-shadow: 0 30px 90px rgba(18,22,34,.20);
 }
 
@@ -481,10 +476,11 @@
   background: rgba(124,92,255,.065) !important;
 }
 
+/* The shared owner polish paints the active pill light violet, so the label must stay ink. */
 .hc-experience .hc-family-nav a[aria-current="page"] {
-  color: #fff !important;
-  border-color: var(--hermes-obsidian) !important;
-  background: var(--hermes-obsidian) !important;
+  color: var(--hermes-ink) !important;
+  border-color: rgba(124,92,255,.32) !important;
+  background: rgba(124,92,255,.12) !important;
 }
 
 /* Repair public pricing remains a public decision surface, not a second dark dashboard. */
@@ -523,7 +519,7 @@
 
 .hc-experience .auth-page .back-link:hover,
 .hc-experience .auth-page .text-iris {
-  color: var(--hermes-violet) !important;
+  color: var(--hermes-violet-text) !important;
 }
 
 .hc-experience .auth-page .glass-panel {
@@ -601,7 +597,7 @@
 
 .hc-experience .booking-page .eyebrow,
 .hc-experience .booking-page .trust-panel svg {
-  color: var(--hermes-violet) !important;
+  color: var(--hermes-violet-text) !important;
 }
 
 .hc-experience .booking-page .panel,

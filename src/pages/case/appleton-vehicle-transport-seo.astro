@@ -1,6 +1,7 @@
 ---
 import { ArrowLeft, ArrowRight, Check, ClipboardCheck, Link2, MapPin, SearchCheck, ShieldCheck } from "@lucide/astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import CaseStudyFunnelAnalytics from "../../components/CaseStudyFunnelAnalytics.astro";
 import SiteFooter from "../../components/SiteFooter.astro";
 import SiteHeader from "../../components/SiteHeader.astro";
 
@@ -151,14 +152,13 @@ import "../../styles/features/case.css";
           <article><Link2 size={24} aria-hidden="true" /><span>Comparable query evidence</span><h3>Relevant intent ranks better while exposure shrank.</h3><p>“appleton logistics services” moved from 18 impressions at average position 54.56 in the prior comparable window to 4 impressions at 47.25. “appleton warehousing services” moved from 23 impressions at 56 to 2 impressions at 54. Warehousing remains an intent mismatch and does not justify a warehouse landing page without real service truth and distinct demand.</p><strong>Decision: keep the vehicle-transport owner; do not expand by keyword alone</strong></article>
           <article><SearchCheck size={24} aria-hidden="true" /><span>Historical context</span><h3>The first broader baseline is preserved, not blended.</h3><p>The earlier exact-URL checkpoint for August 16–September 12 recorded 33 impressions, 0 clicks, and average position 45.33. Its scope differs from the current U.S. desktop filter, so it is not a like-for-like experiment and must not be used to claim a causal decline or improvement.</p><strong>Evidence stage: search discovery, not conversion or revenue</strong></article>
         </div>
-        <figure class="evidence-figure" id="query-comparison" itemscope itemtype="https://schema.org/Dataset">
-          <meta itemprop="creator" content="Hermes" />
+        <figure class="evidence-figure" id="query-comparison">
           <div class="evidence-figure-header">
             <div>
               <p class="eyebrow">Comparable query exposure</p>
-              <h3 itemprop="name">Relevant Appleton query families lost impressions while average position improved modestly.</h3>
+              <h3>Relevant Appleton query families lost impressions while average position improved modestly.</h3>
             </div>
-            <p itemprop="description">The bars compare impressions for the same U.S. desktop query families. Average position is reported in the table because lower values are better and should not share the impression scale.</p>
+            <p>The bars compare impressions for the same U.S. desktop query families. Average position is reported in the table because lower values are better and should not share the impression scale.</p>
           </div>
           <svg class="evidence-chart" viewBox="0 0 1200 560" role="img" aria-label="Comparable Appleton query impressions" aria-describedby="appleton-query-chart-desc">
             <desc id="appleton-query-chart-desc">Appleton logistics services fell from 18 prior impressions to 4 current impressions. Appleton warehousing services fell from 23 prior impressions to 2 current impressions. The warehousing query remains an intent mismatch.</desc>
@@ -221,11 +221,14 @@ import "../../styles/features/case.css";
           data-seo-service-cta
           data-seo-owner-link
           data-service-group="logistics_seo"
+          data-case-cta="final"
+          data-case-action="review_logistics_seo"
         >
           Review logistics SEO services <ArrowRight size={18} aria-hidden="true" />
         </a>
       </div>
     </section>
+    <CaseStudyFunnelAnalytics caseId="appleton_vehicle_transport_seo" />
   </main>
   <SiteFooter />
 </BaseLayout>

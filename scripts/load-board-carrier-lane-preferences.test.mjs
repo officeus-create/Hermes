@@ -36,5 +36,5 @@ assert.match(client,/sortByLaneFit/);
 assert.match(client,/carrier-lane-preferences/);
 assert(!api.includes("sender_email"),"No sourced sender identity in preference storage.");
 assert(!client.includes("mailto:"),"No outbound messaging from preferences.");
-execFileSync(process.execPath,["--check",new URL("../public/scripts/workspaces/carrier-workspace.js",import.meta.url).pathname]);
+execFileSync(process.execPath,["--check",decodeURIComponent(new URL("../public/scripts/workspaces/carrier-workspace.js",import.meta.url).pathname)]);
 console.log("load_board_carrier_lane_preferences PASS");
