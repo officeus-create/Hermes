@@ -25,6 +25,12 @@ export async function ensureLoadBoardSchema(db) {
       car_hauling_outreach_hold INTEGER NOT NULL DEFAULT 1,
       redistribution_permission TEXT NOT NULL DEFAULT 'internal_only',
       contact_reveal_permission TEXT NOT NULL DEFAULT 'hidden',
+      trust_status TEXT NOT NULL DEFAULT 'review_required',
+      trust_tier INTEGER NOT NULL DEFAULT 3,
+      verification_kind TEXT,
+      authority_identifier TEXT,
+      authority_evidence_ref TEXT,
+      trust_verified_at TEXT,
       last_successful_sync TEXT,
       last_error TEXT,
       status TEXT NOT NULL DEFAULT 'active',
@@ -82,6 +88,15 @@ export async function ensureLoadBoardSchema(db) {
       UNIQUE(source_id, source_message_id, fingerprint)
     )
   `).run();
+
+  await ensureColumns(db, "hermes_load_sources", {
+    trust_status: "TEXT NOT NULL DEFAULT 'review_required'",
+    trust_tier: "INTEGER NOT NULL DEFAULT 3",
+    verification_kind: "TEXT",
+    authority_identifier: "TEXT",
+    authority_evidence_ref: "TEXT",
+    trust_verified_at: "TEXT",
+  });
 
   await ensureColumns(db, "hermes_load_records", {
     provider_record_id: "TEXT",
@@ -154,6 +169,12 @@ export async function ensureLoadBoardSchema(db) {
       notes TEXT,
       status TEXT NOT NULL DEFAULT 'pending_review',
       review_note TEXT,
+      trust_status TEXT NOT NULL DEFAULT 'review_required',
+      trust_tier INTEGER NOT NULL DEFAULT 3,
+      verification_kind TEXT,
+      authority_identifier TEXT,
+      authority_evidence_ref TEXT,
+      trust_verified_at TEXT,
       created_at TEXT NOT NULL,
       updated_at TEXT NOT NULL,
       UNIQUE(company_id, source_name)
@@ -162,6 +183,7 @@ export async function ensureLoadBoardSchema(db) {
 
   await db.prepare("CREATE INDEX IF NOT EXISTS idx_load_sources_mailbox ON hermes_load_sources(mailbox_email)").run();
   await db.prepare("CREATE INDEX IF NOT EXISTS idx_load_sources_status ON hermes_load_sources(status, ingest_enabled)").run();
+  await db.prepare("CREATE INDEX IF NOT EXISTS idx_load_sources_trust ON hermes_load_sources(trust_status, trust_tier, status)").run();
   await db.prepare("CREATE INDEX IF NOT EXISTS idx_load_records_active ON hermes_load_records(status, visibility, expires_at DESC)").run();
   await db.prepare("CREATE INDEX IF NOT EXISTS idx_load_records_source ON hermes_load_records(source_id, last_seen_at DESC)").run();
   await db.prepare("CREATE INDEX IF NOT EXISTS idx_load_records_type_equipment ON hermes_load_records(record_type, equipment, expires_at DESC)").run();
@@ -182,6 +204,12 @@ export async function ensureLoadBoardSchema(db) {
     data_rights_evidence_ref: "TEXT",
     retention_rule: "TEXT",
     revocation_rule: "TEXT",
+    trust_status: "TEXT NOT NULL DEFAULT 'review_required'",
+    trust_tier: "INTEGER NOT NULL DEFAULT 3",
+    verification_kind: "TEXT",
+    authority_identifier: "TEXT",
+    authority_evidence_ref: "TEXT",
+    trust_verified_at: "TEXT",
     car_hauling_ingest_allowed: "INTEGER NOT NULL DEFAULT 0",
     connection_verified_at: "TEXT",
     ingest_enabled_at: "TEXT",

@@ -306,3 +306,20 @@ assert.match(seoLanding, /\/load-board\/#live-marketplace/);
 console.log("load-board-intake-api-contract: normalized opportunity schema, company-aware access, scoring, safe search, planning, AI context, official Ship.Cars sync, DAT certification-ready gates, and SEO/GEO distribution verified");
 await import("./load-board-email-bridge-contract.test.mjs");
 await import("./load-board-marketplace-posting-contract.test.mjs");
+
+
+assert.match(schema, /trust_status TEXT NOT NULL DEFAULT 'review_required'/);
+assert.match(schema, /trust_tier INTEGER NOT NULL DEFAULT 3/);
+assert.match(schema, /verification_kind TEXT/);
+assert.match(schema, /authority_identifier TEXT/);
+assert.match(schema, /authority_evidence_ref TEXT/);
+assert.match(schema, /trust_verified_at TEXT/);
+assert.match(schema, /idx_load_sources_trust/);
+assert.match(sourceRequests, /trust_status/);
+assert.match(sourceRequests, /trust_evidence_recorded/);
+assert.match(sourceReviews, /trust_status/);
+assert.match(sourceReviews, /authority_identifier_recorded/);
+assert.match(sourceConnections, /"initialize", "verify_trust", "verify_connection", "enable_ingest", "verify_first_record", "revoke"/);
+for (const marker of ["broker_authority","provider_entitlement","direct_shipper_relationship","direct_dealer_relationship","source_trust_verification_required","trust_evidence_required","broker_authority_identifier_required","trust_decision_invalid","trust_blocked"]) {
+  assert.match(sourceConnections, new RegExp(marker));
+}
