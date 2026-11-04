@@ -24,6 +24,10 @@ assert.ok(portfolio.every((project) => project.eta === null && project.eta_label
 assert.ok(portfolio.some((project) => project.id === "investor-intelligence" && project.evidence_level === "HOLD_EVENT_TRIGGER_ONLY"));
 assert.ok(portfolio.some((project) => project.id === "ai-operations" && project.status === "in_progress"), "AI Operations must remain in progress until role-scoped production acceptance");
 assert.ok(portfolio.some((project) => project.id === "hermes-command-center" && project.evidence_level === "SOURCE_RELEASE_CANDIDATE_REVIEW_PENDING"), "release-candidate source must not become production verification");
+const commandCenter=portfolio.find((project)=>project.id==="hermes-command-center");
+for(const gate of ["runtime-registry","source-adapters","receipt-verifier","plugin-hae-bridge","viktor-canary","free-ai","deployment","production-readback","final-independent-qa"])
+  assert.ok(commandCenter.milestones.some((item)=>item.id===gate),"Command Center progress must include closure gate: "+gate);
+assert.notEqual(commandCenter.status,"done","Command Center cannot be done while release/runtime gates remain");
 assert.ok(portfolio.some((project) => project.id === "ai-operations" && project.evidence_level === "SOURCE_RELEASE_CANDIDATE_REVIEW_PENDING"), "AI Operations must remain a release candidate until protected review and runtime acceptance");
 assert.ok(portfolio.some((project) => project.id === "hae-runtime" && project.evidence_level === "CURRENT_MAIN_RUNTIME_READONLY_PROOF_ACCEPTED_RELEASE_PENDING"), "HAE project must separate accepted current-main runtime proof from the unmerged Command Center release");
 assert.ok(portfolio.some((project) => project.id === "windows-ai" && project.evidence_level === "PRIMARY_ASSIGNED_HAE_EXECUTION_UNVERIFIED"), "Windows assignment must stay separate from dynamic host liveness and canonical HAE execution proof");
