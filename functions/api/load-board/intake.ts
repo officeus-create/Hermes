@@ -78,11 +78,35 @@ async function stableId(prefix: string, sourceId: string, sourceMessageId: strin
   return `${prefix}_${hex.slice(0, 40)}`;
 }
 
+async function constantTimeTokenMatch(candidate: string, expected: string) {
+  const encoder = new TextEncoder();
+  const [candidateDigest, expectedDigest] = await Promise.all([
+    crypto.subtle.digest("SHA-256", encoder.encode(candidate)),
+    crypto.subtle.digest("SHA-256", encoder.encode(expected)),
+  ]);
+  const left = new Uint8Array(candidateDigest);
+  const right = new Uint8Array(expectedDigest);
+  let diff = 0;
+  for (let index = 0; index < left.length; index += 1) diff |= left[index] ^ right[index];
+  return diff === 0;
+}
+
+function rejectSource(reason: string, sourceId: string, extra: Record<string, unknown> = {}) {
+  console.info("LOAD_BOARD_SOURCE_REJECTED", JSON.stringify({
+    metric: "source_rejected_total",
+    value: 1,
+    reason,
+    source_id: sourceId || null,
+  }));
+  return jsonResponse(409, { success: false, error: reason, ...extra });
+}
+
 export async function onRequestPost({ request, env }: { request: Request; env: Env }) {
   if (!env.DB) return jsonResponse(503, { success: false, error: "database_not_configured" });
   const configuredToken = String(env.HERMES_LOADBOARD_INGEST_TOKEN || env.LEAD_SERVICE_TOKEN || "");
   if (!configuredToken) return jsonResponse(503, { success: false, error: "ingest_secret_not_configured" });
-  if (request.headers.get("Authorization") !== `Bearer ${configuredToken}`) {
+  const presentedAuthorization = String(request.headers.get("Authorization") || "");
+  if (!(await constantTimeTokenMatch(presentedAuthorization, `Bearer ${configuredToken}`))) {
     return jsonResponse(401, { success: false, error: "unauthorized" });
   }
 
