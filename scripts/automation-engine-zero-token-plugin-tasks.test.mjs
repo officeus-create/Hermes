@@ -13,7 +13,6 @@ import { pluginRuntimeVersion } from "../workers/automation-engine/src/plugin-ru
 
 const hash = "a".repeat(64);
 const worker = readFileSync(new URL("../workers/automation-engine/src/index.mjs", import.meta.url), "utf8");
-const wrangler = readFileSync(new URL("../workers/automation-engine/wrangler.jsonc.example", import.meta.url), "utf8");
 const fixtures = {
   "dispatch.daily.closeout.audit": { business_date: "2026-10-24", coverage_complete: false, orders: [
     { order_id: "O-1", value_cents: 10000, commission_cents: 700, pickup_at: "2026-10-24T10:00:00Z", delivery_at: null, cancelled: false },
@@ -35,17 +34,6 @@ const fixtures = {
   "marketing.mentions.audit": { observed_at: "2026-10-24T18:00:00Z", mentions: [
     { mention_id: "M-1", fingerprint: hash, source_url: "https://example.com/hermes", classification: "UNKNOWN", first_seen_at: "2026-10-24T17:00:00Z" },
   ] },
-  "report.catalog.weekly.build": {
-    observed_at:"2026-11-06T10:00:00Z", mode:"WEEKLY_REPORT", period_start:"2026-10-31", period_end:"2026-11-06",
-    catalog:{catalog_profile_count:12,catalog_opt_in_count:10,verified_public_count:4,self_submitted_count:6,hermes_connect_company_count:12,open_catalog_work_count:2,seo_duplicate_risk_count:null,seo_duplicate_risk_state:"UNKNOWN",blockers:["SEO_DUPLICATE_AUDIT_NOT_CONNECTED"],next_action:"Review self-submitted Catalog companies.",done_criteria:"DONE when reviewed companies have explicit verified or held state."}
-  },
-  "report.hr-tech.weekly.build": {
-    observed_at:"2026-11-02T08:00:00Z",period_start:"2026-10-27",period_end:"2026-11-02",
-    source_snapshots:[
-      {source_id:"linkedin-hiring-release",url:"https://business.linkedin.com/hire/product-update/hire-release",title:"LinkedIn Hiring Release",category:"CANDIDATE_SOURCE",published_at:null,content_fingerprint:hash,changed:false,source_state:"CONNECTED"},
-      {source_id:"greenhouse-product-features",url:"https://www.greenhouse.com/product-features",title:"Greenhouse product features",category:"AI_INTERVIEW",published_at:null,content_fingerprint:"b".repeat(64),changed:true,source_state:"CHANGED"}
-    ]
-  },
   "academy.english.practice.build": { lesson_date: "2026-10-24", track: "LOGISTICS" },
   "hae.self.improvement.audit": {
     observed_at: "2026-10-25T00:30:00Z",
@@ -77,12 +65,12 @@ const fixtures = {
   },
 };
 
-assert.equal(ZERO_TOKEN_PLUGIN_TASK_CONTRACTS.length, 13);
+assert.equal(ZERO_TOKEN_PLUGIN_TASK_CONTRACTS.length, 11);
 for (const contract of ZERO_TOKEN_PLUGIN_TASK_CONTRACTS) {
   assert.equal(contract.semantic_required, false);
   assert.equal(contract.permission_class, "READ_ONLY");
   assert.equal(contract.runtime_config.max_cost_usd, 0);
-  if (!["ai.gateway.readiness.audit","academy.english.practice.build","hae.self.improvement.audit","report.catalog.weekly.build","report.hr-tech.weekly.build"].includes(contract.job_type)) {
+  if (!["ai.gateway.readiness.audit", "academy.english.practice.build", "hae.self.improvement.audit"].includes(contract.job_type)) {
     assert.equal(contract.runtime_config.scheduled, false, "External-source tasks must wait for their authorized plugin adapter");
   }
   validateZeroTokenPluginTaskInput(contract.job_type, fixtures[contract.job_type]);
@@ -96,19 +84,6 @@ assert.equal(runZeroTokenPluginTask("ai.gateway.readiness.audit", fixtures["ai.g
 assert.equal(runZeroTokenPluginTask("growth.error.closure.audit", fixtures["growth.error.closure.audit"]).closure_candidate_count, 1);
 assert.equal(runZeroTokenPluginTask("market.car-hauling.snapshot.evaluate", fixtures["market.car-hauling.snapshot.evaluate"]).unknown_metric_count, 1);
 assert.equal(runZeroTokenPluginTask("marketing.mentions.audit", fixtures["marketing.mentions.audit"]).raw_page_content_stored, false);
-const catalogReport=runZeroTokenPluginTask("report.catalog.weekly.build",fixtures["report.catalog.weekly.build"]);
-assert.equal(catalogReport.delivery_surface,"HERMES_COMMAND_CENTER_ONLY");
-assert.equal(catalogReport.external_send,false);
-assert.equal(catalogReport.ai_tokens_used,0);
-assert.equal(catalogReport.cost_usd,0);
-assert.equal(catalogReport.planned.find((item)=>item.key==="seo_duplicate_risk").state,"UNKNOWN");
-const hrReport=runZeroTokenPluginTask("report.hr-tech.weekly.build",fixtures["report.hr-tech.weekly.build"]);
-assert.equal(hrReport.delivery_surface,"HERMES_COMMAND_CENTER_ONLY");
-assert.equal(hrReport.external_send,false);
-assert.equal(hrReport.ai_tokens_used,0);
-assert.equal(hrReport.cost_usd,0);
-assert.equal(hrReport.accepted_change_count,1);
-assert.equal(hrReport.source_snapshots[0].changed,false,"first/baseline source must not be promoted to a change");
 assert.equal(runZeroTokenPluginTask("hae.self.improvement.audit", fixtures["hae.self.improvement.audit"]).next_action, "HOLD_REPAIR");
 assert.equal(runZeroTokenPluginTask("hae.self.repair.packet", fixtures["hae.self.repair.packet"]).repair_state, "HOLD_REPAIR");
 assert.equal(runZeroTokenPluginTask("hae.self.repair.packet", fixtures["hae.self.repair.packet"]).source_change_performed, false);
@@ -129,6 +104,10 @@ const migration = taskMigrationSnapshot(ZERO_TOKEN_PLUGIN_TASK_CONTRACTS.map((it
   "search.snapshot.evaluate",
   "work.portfolio.reconcile",
   "marketing.content.dedupe.audit",
+  "audit.github.snapshot",
+  "audit.cloudflare.runtime",
+  "audit.drive.truth",
+  "audit.website.journey",
 ]));
 assert.equal(migration.recovered_task_count, 14);
 assert.equal(migration.unsupported_capability_count, 0);
@@ -151,9 +130,4 @@ assert.match(worker, /idempotency_key: idempotencyKey/);
 assert.match(worker, /!contract\.semantic_required && roleContractScheduleEligible/);
 assert.match(worker, /url\.pathname === "\/v1\/schedule-migrations"/);
 
-assert.ok(worker.includes("Europe/Kyiv"),"Command Center reports must use Kyiv local scheduling");
-assert.ok(worker.includes('cronExpression==="0 * * * *"'),"exact-hour report wake must be isolated from the existing HAE cron");
-assert.ok(worker.includes('hae:command-center-report:${job.key}:${localDate}'),"weekly report runs need local-date idempotency");
-assert.ok(worker.includes('report.hr-tech.weekly.build'));
-assert.ok(worker.includes('report.catalog.weekly.build'));
-console.log("HAE zero-token plugin task migration PASS: 14 recovered schedules, 13 deterministic plugin capabilities, no ChatGPT runtime dependency");
+console.log("HAE zero-token plugin task migration PASS: 14 recovered schedules, 11 deterministic plugin capabilities, no ChatGPT runtime dependency");
