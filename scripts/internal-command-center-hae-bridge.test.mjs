@@ -58,6 +58,7 @@ assert.equal(unsupported.reason,"safe_role_contract_mapping_missing");
 const endpoint=await readFile(new URL("../functions/api/internal-command-center/work-items/[id].ts",import.meta.url),"utf8");
 const helper=await readFile(new URL("../functions/api/_lib/command-center-hae-bridge.mjs",import.meta.url),"utf8");
 const verifier=await readFile(new URL("../functions/api/_lib/command-center-hae-receipt-verifier.mjs",import.meta.url),"utf8");
+const haeRuntime=await readFile(new URL("../workers/automation-engine/src/index.mjs",import.meta.url),"utf8");
 const schema=await readFile(new URL("../functions/api/_lib/internal-command-center.mjs",import.meta.url),"utf8");
 assert.match(endpoint,/action==="execute_plugin"/);
 assert.match(endpoint,/readWorkItemPluginRoute\(row\)/);
@@ -68,6 +69,7 @@ assert.match(helper,/commandCenterHaeIdempotencyKey/);
 assert.match(verifier,/IDEMPOTENCY_BINDING_MISMATCH/);
 assert.match(verifier,/DURABLE_SUCCESS_EVENT_UNVERIFIED/);
 assert.match(verifier,/RECEIPT_COST_OR_PROVIDER_WRITE_UNVERIFIED/);
+assert.match(haeRuntime,/SELECT event_id,job_id,event_type,from_state,to_state/,"HAE job readback must retain event job_id for durable receipt binding");
 assert.match(schema,/hae_job_id TEXT/);
 assert.doesNotMatch(schema,/hae_result_json|plugin_result_json/);
 
