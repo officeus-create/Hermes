@@ -165,7 +165,8 @@ assert.equal(blockedSecond.response.status,409);
 assert.equal(blockedSecond.payload.error,"active_task_exists");
 
 const activeTaskId=dispatched.payload.task.id;
-sqlite.prepare("UPDATE hermes_internal_ai_tasks SET status='completed',completed_at=?,updated_at=?,output_summary='Synthetic completion evidence' WHERE id=?").run(now,now,activeTaskId);
+const syntheticStartedAt=new Date(Date.parse(now)-60000).toISOString();
+sqlite.prepare("UPDATE hermes_internal_ai_tasks SET status='completed',started_at=?,completed_at=?,updated_at=?,output_summary='Synthetic completion evidence' WHERE id=?").run(syntheticStartedAt,now,now,activeTaskId);
 const projectsAfterAiCompletion=(await (await listProjects({request:request("/api/internal-command-center/projects"),env:{DB:db}})).json()).projects;
 assert.deepEqual(
   projectsAfterAiCompletion.find(project=>project.id==="hermes-command-center")?.work_items_summary,
@@ -178,6 +179,8 @@ const firstAfter=listPayload.work_items.find(item=>item.id===first.id);
 const secondAfter=listPayload.work_items.find(item=>item.id===second.id);
 assert.equal(firstAfter.status,"awaiting_acceptance");
 assert.equal(firstAfter.linked_task_status,"completed");
+assert.equal(firstAfter.linked_task_started_at,syntheticStartedAt,"owner read model must expose real execution start time");
+assert.equal(firstAfter.linked_task_completed_at,now,"owner read model must expose real execution completion time");
 assert.equal(firstAfter.linked_task_output_summary,"Synthetic completion evidence");
 assert.equal(firstAfter.completed_at,null);
 assert.equal(firstAfter.accepted_at,null);
