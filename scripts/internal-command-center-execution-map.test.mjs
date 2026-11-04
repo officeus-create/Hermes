@@ -21,6 +21,9 @@ assert.doesNotMatch(readModelEndpointSource,/\breconcileWorkItems\s*\(/,"Evidenc
 assert.match(readModelEndpointSource,/readDepartmentKpiSources\(env\.DB, checkedAt\)/,"Department KPIs must be read from canonical sources through the owner read model");
 assert.match(readModelEndpointSource,/department_kpis/,"Owner read model must expose department KPI projection");
 assert.match(readModelEndpointSource,/provider_health/,"Owner read model must expose provider health without a provider mirror");
+assert.match(readModelEndpointSource,/hae_recent_events/,"Owner read model must expose a bounded HAE event timeline");
+assert.match(readModelEndpointSource,/CONNECTED_CANONICAL_HAE_D1/,"HAE event timeline must identify canonical D1 as its source");
+assert.doesNotMatch(readModelEndpointSource,/payload_json|result_json|evidence_ref|provider_ref/,"Command Center event projection must not expose HAE payload/result/provider evidence internals");
 assert.match(readModelEndpointSource,/plugin_registry:\s*registrySnapshot\.entries\.map/,"Owner read model must expose only minimized plugin registry metadata");
 assert.match(readModelEndpointSource,/runtime_loaded_version/,"Plugin registry must separate HAE-loaded version from provider release truth");
 assert.match(readModelEndpointSource,/UNKNOWN_PROVIDER_RELEASE_READBACK_NOT_CONNECTED/,"missing provider-release adapter must remain explicit UNKNOWN");
