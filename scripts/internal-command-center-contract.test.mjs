@@ -53,6 +53,8 @@ assert.match(ownerWorkspace,/ETA[\s\S]*UNKNOWN/,"launch ETA must stay UNKNOWN wi
 assert.match(page,/renderCommandCenterLaunch/,"Today launch state must be rendered from the canonical project API");
 for(const selector of ["data-live-threads-state","data-live-hae-state","data-live-automation-state","data-live-ai-state"]) assert.match(ownerWorkspace,new RegExp(selector),`owner Overview must expose ${selector}`);
 assert.match(ownerWorkspace,/data-cc-view="hae"[\s\S]*data-hae-runtime-state/,"HAE must have a dedicated owner runtime view");
+assert.match(ownerWorkspace,/data-hae-events/,"HAE owner view must expose a bounded event timeline");
+assert.match(page,/renderHaeEventTimeline/,"HAE event timeline must render from the canonical execution-map read model");
 assert.match(commandCenterShell,/hcc-private-sidebar/,"private Command Center must use a persistent owner sidebar shell");
 for(const label of ["Work","Operations","System","Admin"]) assert.match(commandCenterShell,new RegExp(label),`private sidebar must expose ${label} grouping`);
 assert.match(commandCenterShell,/hcc-private-nav-drawer/,"private navigation must collapse through the responsive owner drawer contract");
