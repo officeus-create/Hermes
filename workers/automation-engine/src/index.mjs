@@ -2499,6 +2499,10 @@ export default {
   },
   async fetch(request, env) {
     const url = new URL(request.url);
+    const windowsNodeHost=String(env?.HERMES_WINDOWS_NODE_HOST||"").trim().toLowerCase();
+    if(windowsNodeHost && url.hostname.toLowerCase()===windowsNodeHost && !url.pathname.startsWith("/v1/nodes/windows/")) {
+      return json(404,{success:false,error:"not_found"});
+    }
     if (request.method === "GET" && url.pathname === "/v1/capabilities") {
       return json(200, {
         success: true,
@@ -2645,10 +2649,15 @@ export default {
       return json(200, { success: true, ...result });
     }
     if (url.pathname.startsWith("/v1/nodes/windows/")) {
-      const nodeAuth = windowsNodeAuthorized(request, env);
+      const rawBody=request.method==="POST" ? await request.text().catch(()=>"") : "";
+      const nodeAuth = await windowsNodeAuthorized(request, env, rawBody);
       if (!nodeAuth.ok) return json(nodeAuth.status, { success: false, error: nodeAuth.error });
       if (!env.DB) return json(503, { success: false, error: "runtime_not_configured" });
-      const body = request.method === "POST" ? await request.json().catch(() => ({})) : {};
+      let body={};
+      if(rawBody) {
+        try { body=JSON.parse(rawBody); }
+        catch { return json(400,{success:false,error:"invalid_json"}); }
+      }
       try {
         if (request.method === "POST" && url.pathname === "/v1/nodes/windows/heartbeat") {
           return json(200, { success: true, ...(await heartbeatWindowsNode(env, body)) });
