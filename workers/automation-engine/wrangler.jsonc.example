@@ -5,6 +5,12 @@
   "compatibility_date": "2026-10-13",
   "workers_dev": false,
   "preview_urls": false,
+  "routes": [
+    {
+      "pattern": "hae-node.hermeslogisticsus.com",
+      "custom_domain": true
+    }
+  ],
   "ai": {
     "binding": "AI"
   },
@@ -58,6 +64,7 @@
     "HERMES_AUTOMATION_MODE": "dry_run",
     "HERMES_AUTOMATION_PUBLISH": "disabled",
     "HERMES_WINDOWS_NODE_ENABLED": "disabled",
+    "HERMES_WINDOWS_NODE_HOST": "hae-node.hermeslogisticsus.com",
     "HERMES_AUTOMATION_SOURCE_SHA": "INJECT_EXACT_MAIN_SHA_AT_RELEASE",
     "HERMES_HAE_OWNER_ALERT_RECIPIENT": "officeus@hermeslogisticsus.com",
     "HERMES_HAE_OWNER_ALERT_SENDER": "website@hermeslogisticsus.com",
@@ -96,7 +103,9 @@
 
 // Enable Workers AI only after authenticated account-level readback establishes Workers Free
 // (not Workers Paid with overage billing) and an owner-reviewed plan attestation is present.
-// HERMES_WINDOWS_NODE_TOKEN is a separate secret and must never be committed here.
+// Windows uses a reviewed Ed25519 device identity by default: only its public key is versioned.
+// HERMES_WINDOWS_NODE_TOKEN remains an optional legacy fallback secret and must never be committed here.
+// The dedicated Custom Domain exposes only /v1/nodes/windows/*; all other paths on that host fail closed.
 // Windows semantic-node activation stays disabled until exact-head CI, independent review and one READ_ONLY canary.
 // HERMES_FREE_AI_CLOUDFLARE_PLAN_ATTESTED=workers_free is an operator assertion,
 // NOT proof that a paid plan cannot bill. The source-only example intentionally leaves
