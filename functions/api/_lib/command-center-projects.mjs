@@ -1,6 +1,6 @@
 const DONE_STATES = new Set(["done", "accepted"]);
 
-export const PROJECT_PORTFOLIO_SNAPSHOT_OBSERVED_AT = "2026-11-02T06:44:28.000Z";
+export const PROJECT_PORTFOLIO_SNAPSHOT_OBSERVED_AT = "2026-11-04T13:19:00.000Z";
 export const PROJECT_PORTFOLIO_COVERAGE_STATE = "PARTIAL_DECLARED_REGISTRY";
 export const PROJECT_PORTFOLIO_COVERAGE_NOTE = "Declared Command Center project families plus owner-created D1 projects; not a complete One Brain or company-wide project inventory.";
 
@@ -238,6 +238,35 @@ const projects = Object.freeze([
       milestone("receipt", "Accepted Windows runtime receipt", "blocked"),
       milestone("hae-work", "Consume and return one canonical HAE job", "planned"),
       milestone("continuity-90d", "90-day unattended continuity with durable runtime receipts", "blocked", "Continuity clock cannot start while Windows is offline; heartbeat alone is insufficient"),
+    ],
+  },
+  {
+    id: "deepseek-specialist",
+    title: "DeepSeek specialist lane",
+    department: "technology",
+    purpose: "Track DeepSeek local semantic/coding capability as a bounded subordinate specialist under HAE and Hermes AI, never as a second coordinator or production control plane.",
+    owner_role: "hermes-automatic-engineer",
+    agent_role: "DeepSeek specialist",
+    plugin_roles: ["hermes-agent-coordinator", "hermes-security-engineering", "hermes-qa-evidence-auditor"],
+    parent_id: "ai-operations",
+    dependency_ids: ["hae-runtime", "free-ai"],
+    related_ids: ["windows-ai", "mac-ai", "plugin-workforce"],
+    started_at: "2026-11-02T00:00:00.000Z",
+    target_at: null,
+    blockers: [
+      "Issue #2266 remains PREPARED / NOT RUNNING for dsh-superagent: isolated OS/container/VM, scoped GitHub bot identity, reviewed source/dependencies and one isolated Ticket→PR→CI→independent-review smoke are still required before activation.",
+      "DeepSeek output must remain schema/validator bounded and cannot directly merge, deploy, publish, write production providers or become a second HAE."
+    ],
+    evidence_level: "PREPARED_NOT_RUNNING_SANDBOX_GATED",
+    links: [{ label: "DeepSeek sandbox #2266", href: "https://github.com/officeus-create/Hermes/issues/2266" }],
+    milestones: [
+      milestone("local-specialist", "DeepSeek local specialist evidence retained", "done", "Historical VIKTOR/DeepSeek read-only audit receipts; production writes = 0"),
+      milestone("sandbox-boundary", "Dedicated sandbox / OS isolation", "blocked", "Issue #2266"),
+      milestone("scoped-identity", "Scoped GitHub bot and credential boundary", "blocked", "Issue #2266"),
+      milestone("source-review", "Pinned source + dependency/security review", "planned"),
+      milestone("isolated-smoke", "One isolated Ticket → PR → CI → independent review", "planned"),
+      milestone("hae-receipt", "Canonical HAE WORK_ID / job receipt", "planned"),
+      milestone("command-center-readback", "Command Center worker lifecycle/readback", "planned"),
     ],
   },
   {
