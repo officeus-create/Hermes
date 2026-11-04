@@ -80,7 +80,7 @@ const indexedChildSitemapFiles = [
 // +1 on 2026-10-22: /products/ (approved Claude Design Products page).
 // -1 on 2026-10-28: /logistics/carrier/ merged into /logistics/car-hauling-dispatch/ (owner decision; 301).
 // +1 on 2026-10-30: canonical public Hermes Business Command Center sample/demo owner.
-const nonInsightsExpectedPageUrlCount = 259;
+const nonInsightsExpectedPageUrlCount = 260;
 const carrierGeoRoot = `https://${sitemapHost}/logistics/car-hauler-loads/`;
 const carrierLifecycleGuide = `https://${sitemapHost}/logistics/resources/car-hauler-jobs-owner-operator-guide/`;
 const expectedCarrierGeoCityCount = 25;
