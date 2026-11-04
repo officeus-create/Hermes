@@ -33,6 +33,7 @@ export async function ensureCarrierDispatchWorkspaceSchema(db) {
       agreement_effective_at TEXT,
       trial_start_date TEXT,
       trial_end_date TEXT,
+      no_auto_continuation_confirmed INTEGER NOT NULL DEFAULT 0,
       authority_status TEXT NOT NULL DEFAULT 'pending',
       insurance_status TEXT NOT NULL DEFAULT 'pending',
       source_rights_status TEXT NOT NULL DEFAULT 'pending',
@@ -48,6 +49,7 @@ export async function ensureCarrierDispatchWorkspaceSchema(db) {
     ["agreement_effective_at","TEXT"],
     ["trial_start_date","TEXT"],
     ["trial_end_date","TEXT"],
+    ["no_auto_continuation_confirmed","INTEGER NOT NULL DEFAULT 0"],
     ["authority_status","TEXT NOT NULL DEFAULT 'pending'"],
     ["insurance_status","TEXT NOT NULL DEFAULT 'pending'"],
     ["source_rights_status","TEXT NOT NULL DEFAULT 'pending'"],
@@ -101,7 +103,7 @@ export async function getOwnedCarrier(db, specialist) {
   const columns=`
     c.id,c.company_name,c.company_type,c.load_board_access,e.status AS entitlement_status,
     e.agreement_state,e.agreement_version,e.agreement_sha256,e.agreement_effective_at,
-    e.trial_start_date,e.trial_end_date,e.authority_status,e.insurance_status,e.source_rights_status,e.evidence_id
+    e.trial_start_date,e.trial_end_date,e.no_auto_continuation_confirmed,e.authority_status,e.insurance_status,e.source_rights_status,e.evidence_id
   `;
   const owned=await db.prepare(`
     SELECT ${columns}, 'owner' AS access_role, 'owner_relation' AS access_source
@@ -128,19 +130,31 @@ export async function getOwnedCarrier(db, specialist) {
   const rows=delegated.results||[];
   return rows.length===1 ? rows[0] : null;
 }
+function validDateOnly(value) {
+  const raw=String(value||"");
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(raw)) return null;
+  const [year,month,day]=raw.split("-").map(Number);
+  const date=new Date(Date.UTC(year,month-1,day));
+  if(date.getUTCFullYear()!==year || date.getUTCMonth()!==month-1 || date.getUTCDate()!==day) return null;
+  return date;
+}
 export async function authorizedCarrier(db, specialist) {
   const company = await getOwnedCarrier(db, specialist);
   if(!company || Number(company.load_board_access)!==1 || company.entitlement_status!=="active") return null;
   if(company.authority_status!=="verified" || company.insurance_status!=="verified" || company.source_rights_status!=="verified") return null;
-  if(!/^[a-f0-9]{64}$/.test(String(company.agreement_sha256||"")) || !String(company.agreement_version||"") || !String(company.evidence_id||"")) return null;
+  if(!/^[a-f0-9]{64}$/.test(String(company.agreement_sha256||"")) || !String(company.agreement_version||"") || /draft|review/i.test(String(company.agreement_version||"")) || !String(company.evidence_id||"")) return null;
   const now=new Date();
   const today=now.toISOString().slice(0,10);
   const effectiveAtMs=Date.parse(String(company.agreement_effective_at||""));
   const ongoingEffective=company.agreement_state==="ONGOING_EFFECTIVE" &&
     Number.isFinite(effectiveAtMs) && effectiveAtMs<=now.getTime();
+  const trialStart=validDateOnly(company.trial_start_date);
+  const trialEnd=validDateOnly(company.trial_end_date);
+  const expectedTrialEnd=trialStart ? new Date(trialStart.getTime()+13*86400000).toISOString().slice(0,10) : "";
   const trialEffective=company.agreement_state==="TRIAL_ACTIVE" &&
-    /^\d{4}-\d{2}-\d{2}$/.test(String(company.trial_start_date||"")) &&
-    /^\d{4}-\d{2}-\d{2}$/.test(String(company.trial_end_date||"")) &&
+    trialStart && trialEnd &&
+    String(company.trial_end_date)===expectedTrialEnd &&
+    Number(company.no_auto_continuation_confirmed)===1 &&
     String(company.trial_start_date)<=today && String(company.trial_end_date)>=today;
   const effective=ongoingEffective||trialEffective;
   if(!effective) return null;
