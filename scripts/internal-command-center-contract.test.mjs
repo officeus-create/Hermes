@@ -32,6 +32,12 @@ assert.match(shell,/mode:"public"\|"private"/,"public and private Command Center
 assert.match(page,/\/api\/internal-ai\/status/,"must read the existing runner state instead of inventing a second agent runtime");
 assert.match(page,/\/api\/internal-ai\/tasks/,"must read the existing AI queue");
 assert.match(page,/\/api\/internal-command-center\/work-items/,"must use the bounded owner backlog");
+assert.match(collection,/linked_task_started_at/,"work-item list must read real AI execution start time");
+assert.match(collection,/linked_task_completed_at/,"work-item list must read real AI execution completion time");
+assert.match(helper,/linked_task_started_at/,"owner work-item projection must preserve execution start evidence");
+assert.match(helper,/linked_task_completed_at/,"owner work-item projection must preserve execution completion evidence");
+assert.match(page,/durationLabel/,"task timing must be derived from timestamps");
+assert.match(page,/ETA: UNKNOWN/,"task ETA must remain UNKNOWN without duration evidence");
 assert.match(page,/SpeechRecognition.*webkitSpeechRecognition/s,"voice capture must use browser speech recognition with keyboard/OS fallback");
 assert.match(page,/Dictation added.*Review before saving/s,"dictation must require review before persistence");
 assert.doesNotMatch(page,/localStorage|sessionStorage/,"owner work must not use browser storage as system of record");
