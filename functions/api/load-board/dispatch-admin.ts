@@ -128,19 +128,21 @@ export async function onRequestPost(context:Context){
       INSERT INTO hermes_carrier_board_entitlements
       (company_id,status,reviewed_by_specialist_id,reviewed_at,note,
        agreement_state,agreement_version,agreement_sha256,agreement_effective_at,
-       trial_start_date,trial_end_date,authority_status,insurance_status,source_rights_status,evidence_id,revoked_at)
-      VALUES(?,'active',?,?,?,?,?,?,?,?,?,'verified','verified','verified',?,NULL)
+       trial_start_date,trial_end_date,no_auto_continuation_confirmed,
+       authority_status,insurance_status,source_rights_status,evidence_id,revoked_at)
+      VALUES(?,'active',?,?,?,?,?,?,?,?,?,?,'verified','verified','verified',?,NULL)
       ON CONFLICT(company_id) DO UPDATE SET status='active',
       reviewed_by_specialist_id=excluded.reviewed_by_specialist_id,
       reviewed_at=excluded.reviewed_at,note=excluded.note,
       agreement_state=excluded.agreement_state,agreement_version=excluded.agreement_version,
       agreement_sha256=excluded.agreement_sha256,agreement_effective_at=excluded.agreement_effective_at,
       trial_start_date=excluded.trial_start_date,trial_end_date=excluded.trial_end_date,
+      no_auto_continuation_confirmed=excluded.no_auto_continuation_confirmed,
       authority_status='verified',insurance_status='verified',source_rights_status='verified',
       evidence_id=excluded.evidence_id,revoked_at=NULL
     `).bind(companyId,auth.user.id,now,safeWorkspaceText(body.note,200)||null,
       agreementState,agreementVersion,agreementSha,agreementEffectiveAt,
-      trialStartDate||null,trialEndDate||null,evidenceId).run();
+      trialStartDate||null,trialEndDate||null,agreementState==="TRIAL_ACTIVE"?1:0,evidenceId).run();
     return reply(200,{success:true,action,carrierCompanyId:companyId,agreementState,
       trialEndDate:trialEndDate||null,outboundPerformed:false});
   }
