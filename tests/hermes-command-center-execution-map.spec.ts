@@ -81,7 +81,7 @@ test.describe("Command Center capability execution map", () => {
     if(await pluginDirect.count()) await pluginDirect.first().click(); else { const more=page.locator("details.hcc-private-nav-drawer"); if(!(await more.getAttribute("open"))) await more.locator("summary").click(); await more.locator('[data-cc-nav="plugins"]').click(); }
     await expect(page.locator('[data-cc-view="plugins"] [data-plugin-registry]')).toContainText("hermes-technology-developer");
     await expect(page.locator('[data-cc-view="plugins"] [data-plugin-registry]')).toContainText("@0.1.61");
-    await expect(page.locator('[data-cc-view="plugins"] [data-plugin-registry]')).toContainText(/execution requires a separate HAE receipt/i);
+    await expect(page.locator('[data-cc-view="plugins"] [data-plugin-registry]')).toContainText(/canonical HAE receipt is required/i);
     expect(mapRequests).toBe(1);
   });
 });
