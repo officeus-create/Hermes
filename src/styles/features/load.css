@@ -45,10 +45,11 @@
 .load-board-role-router { padding: clamp(2rem, 5vw, 3.5rem) 0; background: #081342; color: #fff; }
 .load-board-role-router .load-board-section-heading { margin-bottom: 1.4rem; }
 .load-board-role-router .load-board-section-heading h2 { color: #fff; }
+.load-board-role-router .load-board-section-heading > p, .load-board-role-router .load-board-section-heading a { color: rgba(255,255,255,.78); }
 .load-board-role-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .85rem; }
 .load-board-role-grid a { display: grid; min-height: 190px; gap: .7rem; padding: 1.25rem; border: 1px solid rgba(255,255,255,.2); border-radius: 12px; background: rgba(255,255,255,.06); color: #fff; text-decoration: none; transition: transform .2s ease, border-color .2s ease, background .2s ease; }
-.load-board-role-grid a:hover, .load-board-role-grid a:focus-visible, .load-board-role-grid a[aria-current="page"] { transform: translateY(-3px); border-color: #df47a8; background: rgba(176,0,114,.18); }
-.load-board-role-grid a > svg { color: #df47a8; }
+.load-board-role-grid a:hover, .load-board-role-grid a:focus-visible, .load-board-role-grid a[aria-current="page"] { transform: translateY(-3px); border-color: #c8bdff; background: rgba(124,92,255,.18); }
+.load-board-role-grid a > svg { color: #8f7aff; }
 .load-board-role-grid span { color: #bfc8eb; font-family: var(--font-mono); font-size: .72rem; text-transform: uppercase; }
 .load-board-role-grid strong { margin-top: auto; font-size: 1.35rem; }
 .load-board-role-grid small { color: #d7defa; font-size: .86rem; line-height: 1.5; }

@@ -3,7 +3,7 @@ import { join } from "node:path";
 import { HERMES_CONNECT_SOCIAL_CARD } from "../src/data/hermes-connect-social-card.ts";
 import { createHermesConnectSocialCardPng } from "../src/lib/hermes-connect-social-card-generator.ts";
 
-const root = new URL("../", import.meta.url).pathname;
+const root = decodeURIComponent(new URL("../", import.meta.url).pathname);
 const assert = (condition, message) => { if (!condition) throw new Error(message); };
 const text = (path) => readFile(join(root, path), "utf8");
 
@@ -12,7 +12,8 @@ console.log("Running Hermes Connect social card contract...");
 const layout = await text("src/layouts/BaseLayout.astro");
 assert(layout.includes('Astro.url.pathname === "/services/hermes-connect/"'), "BaseLayout must identify the canonical Hermes Connect product hub.");
 assert(layout.includes("HERMES_CONNECT_SOCIAL_CARD.path"), "Hermes Connect hub must use its dedicated social card instead of the generic ecosystem hero.");
-assert(layout.includes('useHermesConnectSocialCard ? "image/png" : "image/jpeg"'), "BaseLayout must advertise the correct social image MIME type without changing other routes.");
+assert(layout.includes('type: "image/png"') && layout.includes('type: "image/jpeg"'), "BaseLayout must preserve distinct Connect PNG and canonical JPEG default MIME types.");
+assert(layout.includes(': defaultSocialImage.type;'), "BaseLayout must use the route-specific default MIME when no explicit social image is supplied.");
 assert(layout.includes("socialImageAlt"), "Hermes Connect social image must have route-specific alt text.");
 
 const endpoint = await text("src/pages/images/hermes-connect-social-card.png.ts");
@@ -32,7 +33,7 @@ assert(width === HERMES_CONNECT_SOCIAL_CARD.width && height === HERMES_CONNECT_S
 assert(width === 2200 && height === 1238, "Hermes Connect social card must match existing shared OG dimensions 2200x1238.");
 
 const generator = await text("src/lib/hermes-connect-social-card-generator.ts");
-for (const token of ["30, 136, 255", "0, 200, 83", "124, 92, 255", "255, 122, 0"]) {
+for (const token of ["47, 107, 246", "255, 122, 89", "18, 184, 134", "56, 182, 245"]) {
   assert(generator.includes(token), `Hermes Connect social card must retain canonical division color ${token}.`);
 }
 assert(!generator.toLowerCase().includes("beauty:"), "Hermes Connect social card must not invent a canonical Beauty accent.");

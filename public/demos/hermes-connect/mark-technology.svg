@@ -4,6 +4,6 @@
     <linearGradient id="hi" x1="22" y1="20" x2="94" y2="55" gradientUnits="userSpaceOnUse"><stop stop-color="#FFF" stop-opacity=".62"/><stop offset=".42" stop-color="#FFF" stop-opacity=".12"/><stop offset="1" stop-color="#FFF" stop-opacity="0"/></linearGradient>
   </defs>
   <path d="M35 18C15 18 15 62 35 62C55 62 65 18 85 18C105 18 105 62 85 62C65 62 55 18 35 18Z" fill="none" stroke="url(#base)" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M35 18C15 18 15 62 35 62C55 62 65 18 85 18C105 18 105 62 85 62C65 62 55 18 35 18Z" fill="none" stroke="#FF7A00" stroke-opacity=".24" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M35 18C15 18 15 62 35 62C55 62 65 18 85 18C105 18 105 62 85 62C65 62 55 18 35 18Z" fill="none" stroke="#38B6F5" stroke-opacity=".24" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
   <path d="M28 23C20 30 20 49 29 57C37 64 45 57 51 47" fill="none" stroke="url(#hi)" stroke-width="2.2" stroke-linecap="round"/>
 </svg>

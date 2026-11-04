@@ -23,7 +23,7 @@ test("mobile homepage keeps Approved system statement visible after load", async
   expect(paint.webkitTextFillColor).not.toContain("transparent");
 });
 
-test("homepage contact shell preserves the approved rounded pearl surface", async ({ page }) => {
+test("homepage contact shell keeps Claude v3 seamless pearl surface", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
 
@@ -42,8 +42,9 @@ test("homepage contact shell preserves the approved rounded pearl surface", asyn
       overflow: style.overflow,
     };
   });
-  expect(shellPaint.topLeft).toBe("36px");
-  expect(shellPaint.topRight).toBe("36px");
+  // Claude 21 Oct reference: seamless flat Pearl contact, not September capsule.
+  expect(shellPaint.topLeft).toBe("0px");
+  expect(shellPaint.topRight).toBe("0px");
   expect(shellPaint.backgroundColor).not.toBe("rgb(255, 255, 255)");
   expect(shellPaint.overflow).toBe("hidden");
 

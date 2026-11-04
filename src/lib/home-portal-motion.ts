@@ -1,4 +1,4 @@
-/** Three gentle subject cycles with rests; no panel motion, timers or frame loop. */
+/** Gentle living subject cycles with long rests; no panel motion, timers or frame loop. */
 export function initializeHomePortalMotion() {
   const layers = [...document.querySelectorAll<HTMLElement>("[data-home-motion]")];
   if (!layers.length || !window.IntersectionObserver || !Element.prototype.animate) return;
@@ -22,24 +22,21 @@ export function initializeHomePortalMotion() {
         const truck = layer.dataset.homeMotion === "truck";
         animation = layer.animate(truck ? [
           { transform: "translate(0,0) rotate(-18deg)", opacity: 1 },
-          { transform: "translate(-35%,75%) rotate(-18deg)", opacity: 1, offset: .48 },
-          { transform: "translate(-35%,75%) rotate(-18deg)", opacity: 0, offset: .55 },
-          { transform: "translate(0,0) rotate(-18deg)", opacity: 0, offset: .56 },
-          { transform: "translate(0,0) rotate(-18deg)", opacity: 1, offset: .64 },
+          { transform: "translate(0,0) rotate(-18deg)", opacity: 1, offset: .08 },
+          { transform: "translate(-35%,75%) rotate(-18deg)", opacity: 1, offset: .34 },
+          { transform: "translate(-35%,75%) rotate(-18deg)", opacity: 0, offset: .40 },
+          { transform: "translate(0,0) rotate(-18deg)", opacity: 0, offset: .41 },
+          { transform: "translate(0,0) rotate(-18deg)", opacity: 1, offset: .47 },
           { transform: "translate(0,0) rotate(-18deg)", opacity: 1 },
         ] : [
           { transform: "rotate(0deg)" },
-          { transform: "rotate(-2.2deg)", offset: .16 },
-          { transform: "rotate(1.8deg)", offset: .32 },
-          { transform: "rotate(0deg)", offset: .48 },
+          { transform: "rotate(0deg)", offset: .06 },
+          { transform: "rotate(-2deg)", offset: .12 },
+          { transform: "rotate(1.5deg)", offset: .20 },
+          { transform: "rotate(0deg)", offset: .28 },
           { transform: "rotate(0deg)" },
-        ], { duration: 12000, iterations: 3, easing: "ease-in-out" });
+        ], { duration: 18000, iterations: Infinity, easing: "ease-in-out" });
         animations.set(layer, animation);
-        animation.onfinish = () => {
-          completed.add(layer);
-          animations.delete(layer);
-          layer.dataset.motionState = "finished";
-        };
       }
       if (!animation) continue;
       if (canRun) {
@@ -59,16 +56,6 @@ export function initializeHomePortalMotion() {
     update();
   }, { threshold: .2 });
   layers.forEach(layer => observer.observe(layer));
-  for (const layer of layers) {
-    const route = layer.closest<HTMLElement>("[data-home-route]");
-    const restartFinishedLayer = () => {
-      if (preference.matches || !completed.has(layer)) return;
-      completed.delete(layer);
-      update();
-    };
-    route?.addEventListener("pointerenter", restartFinishedLayer);
-    route?.addEventListener("focusin", restartFinishedLayer);
-  }
   preference.addEventListener("change", update);
   document.addEventListener("visibilitychange", update);
   update();

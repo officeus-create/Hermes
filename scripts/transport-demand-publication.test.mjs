@@ -8,7 +8,7 @@ import {
   lanePairLinkRules,
 } from "../src/data/transport-demand-publication.ts";
 
-const root = new URL("../", import.meta.url).pathname;
+const root = decodeURIComponent(new URL("../", import.meta.url).pathname);
 const dist = join(root, "dist");
 const routeToBuiltFile = (route) => join(dist, route.slice(1), "index.html");
 

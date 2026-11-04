@@ -4,12 +4,74 @@ import {
   windsorThreadsConfig,
 } from "./windsor-threads.mjs";
 import {
+  metaThreadsConfig,
+  metaThreadsMode,
+  metaThreadsPreflight,
+  publishThreadsTextViaMeta,
+  readbackThreadsTextViaMeta,
+} from "./meta-threads.mjs";
+import {
   HISTORICAL_READ_ONLY_JOB_TYPES,
   runHistoricalLearningPrimitive,
 } from "./historical-learning.mjs";
+import {
+  CAPABILITY_GRAPH_ROLE_CONTRACT_JOB_TYPES,
+  ROLE_CONTRACTS,
+  ROLE_CONTRACT_JOB_TYPES,
+  buildRoleContractSemanticRequest,
+  roleContractForJobType,
+  roleContractSha256,
+  runRoleContractPrimitive,
+  validateRoleContractInput,
+  validateRoleContractSemanticResult,
+} from "./role-contracts.mjs";
+import {
+  FreeAiUnavailableError,
+  freeAiProviderSnapshot,
+  runFreeSemanticJson,
+} from "./free-ai-runtime.mjs";
+import {
+  dlqRuntimeSnapshot,
+  processDlqMessage,
+  recoverPendingDlqOwnerAlerts,
+} from "./dlq-runtime.mjs";
+import {
+  aiUsageLedgerSnapshot,
+  recordAiUsage,
+} from "./ai-usage-ledger.mjs";
+import {
+  CAPABILITY_GRAPH_LIMITS,
+  bindCapabilityGraphNodeJob,
+  createCapabilityGraph,
+  getCapabilityGraph,
+  listActiveCapabilityGraphIds,
+  listCapabilityGraphJobBindings,
+  markCapabilityGraphNodeDispatchFailure,
+  readyCapabilityGraphNodes,
+  settleCapabilityGraphNodeForJob,
+} from "./capability-graph.mjs";
+import { taskMigrationSnapshot } from "./schedule-migrations.mjs";
+import {
+  enqueueDueOwnerProcesses,
+  ownerManagedJobTypes,
+} from "./owner-process-runtime.mjs";
+import {
+  pluginRuntimeRegistryEvidenceStatus,
+  pluginRuntimeRegistrySnapshot,
+} from "./plugin-runtime-registry.mjs";
+import { haeSelfRepairPacketReplayMatches } from "./hae-self-improvement.mjs";
+import { verifyGithubCIQueueEnvelope } from "./github-ci-runtime-intake.mjs";
+import { verifyGithubCIPatchProposalEnvelope } from "./github-ci-patch-runtime-intake.mjs";
+import { verifyGithubCIIndependentQaEnvelope } from "./github-ci-independent-qa-runtime-intake.mjs";
+import { materializeIndependentQaReceipt } from "./hae-independent-qa-receipt.mjs";
+import { socialAccountReadinessSnapshot } from "./social-account-readiness.mjs";
+import { socialReplyPreflight } from "./social-reply-preflight.mjs";
+import { runSocialReplyPrepare, validateSocialReplyPrepareInput } from "./social-reply-prepare.mjs";
 
 const ACCOUNT_KEY = "hermes_logistics";
 const PLATFORM = "threads";
+const THREADS_PROVIDER_META = "meta_direct";
+const THREADS_PROVIDER_WINDSOR = "windsor";
 const CHICAGO_TZ = "America/Chicago";
 const ALLOWED_HOURS = new Set([0, 1, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23]);
 
@@ -202,6 +264,12 @@ export function chicagoSlotKey(date = new Date()) {
   return `${parts.year}-${parts.month}-${parts.day}T${String(parts.hour).padStart(2, "0")}`;
 }
 
+async function sha256HexText(value) {
+  const bytes = new TextEncoder().encode(String(value ?? ""));
+  const digest = await crypto.subtle.digest("SHA-256", bytes);
+  return [...new Uint8Array(digest)].map((item) => item.toString(16).padStart(2, "0")).join("");
+}
+
 function fnv1a(value) {
   let hash = 0x811c9dc5;
   for (const char of String(value || "")) {
@@ -353,6 +421,132 @@ async function ensureSchema(db) {
     )
   `).run();
   await db.prepare("CREATE INDEX IF NOT EXISTS idx_hae_job_events_job_created ON hermes_automation_job_events(job_id, created_at)").run();
+  await db.prepare(`
+    CREATE TABLE IF NOT EXISTS hermes_automation_runtime_events (
+      event_id TEXT PRIMARY KEY,
+      event_type TEXT NOT NULL,
+      queue_name TEXT,
+      queue_message_id TEXT,
+      message_sent_at TEXT,
+      message_type TEXT,
+      job_id TEXT,
+      content_id TEXT,
+      slot_key TEXT,
+      attempt_count INTEGER,
+      error_class TEXT,
+      created_at TEXT NOT NULL
+    )
+  `).run();
+  await db.prepare("CREATE INDEX IF NOT EXISTS idx_hae_runtime_events_created ON hermes_automation_runtime_events(created_at)").run();
+  await db.prepare(`
+    CREATE TABLE IF NOT EXISTS hermes_automation_heartbeats (
+      heartbeat_id TEXT PRIMARY KEY,
+      trigger_type TEXT NOT NULL,
+      cron_expression TEXT,
+      scheduled_at TEXT NOT NULL,
+      observed_at TEXT NOT NULL,
+      execution_lag_ms INTEGER NOT NULL,
+      chicago_slot_key TEXT NOT NULL,
+      eligible INTEGER NOT NULL,
+      source_sha TEXT,
+      automation_mode TEXT,
+      publication_config TEXT,
+      publication_enabled INTEGER NOT NULL,
+      created_at TEXT NOT NULL
+    )
+  `).run();
+  await db.prepare("CREATE INDEX IF NOT EXISTS idx_hae_heartbeats_scheduled ON hermes_automation_heartbeats(scheduled_at)").run();
+}
+
+function runtimeEventId(eventType) {
+  return `runtime:${eventType}:${crypto.randomUUID()}`;
+}
+
+function metricNumberOrNull(value) {
+  if (typeof value === "number") return Number.isFinite(value) ? value : null;
+  if (typeof value !== "string") return null;
+  const normalized = value.trim();
+  if (!normalized) return null;
+  const parsed = Number(normalized);
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+function safeRuntimeErrorClass(error, fallback) {
+  const raw = clean(error?.message, 80);
+  return /^[a-z][a-z0-9_]{2,79}$/.test(raw) ? raw : fallback;
+}
+
+async function recordRuntimeEvent(env, {
+  eventType,
+  queueName = null,
+  queueMessageId = null,
+  messageSentAt = null,
+  messageType = null,
+  jobId = null,
+  contentId = null,
+  slotKey = null,
+  attemptCount = null,
+  errorClass = null,
+  createdAt = new Date().toISOString(),
+}) {
+  if (!env?.DB) return false;
+  const normalizedAttempt = metricNumberOrNull(attemptCount);
+  try {
+    await ensureSchema(env.DB);
+    await env.DB.prepare(`
+      INSERT INTO hermes_automation_runtime_events
+        (event_id,event_type,queue_name,queue_message_id,message_sent_at,message_type,job_id,content_id,slot_key,attempt_count,error_class,created_at)
+      VALUES (?,?,?,?,?,?,?,?,?,?,?,?)
+    `).bind(
+      runtimeEventId(clean(eventType, 80) || "runtime.event"),
+      clean(eventType, 80) || "runtime.event",
+      clean(queueName, 120) || null,
+      clean(queueMessageId, 160) || null,
+      Number.isFinite(Date.parse(String(messageSentAt || ""))) ? new Date(messageSentAt).toISOString() : null,
+      clean(messageType, 80) || null,
+      clean(jobId, 160) || null,
+      clean(contentId, 200) || null,
+      clean(slotKey, 32) || null,
+      normalizedAttempt === null ? null : Math.max(0, Math.trunc(normalizedAttempt)),
+      clean(errorClass, 160) || null,
+      createdAt,
+    ).run();
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+async function recordCronHeartbeat(env, scheduledAt, observedAt, eligible, cronExpression = null) {
+  const db = env?.DB;
+  if (!db) throw new Error("database_not_configured");
+  const scheduledIso = scheduledAt.toISOString();
+  const observedIso = observedAt.toISOString();
+  const slotKey = chicagoSlotKey(scheduledAt);
+  const lagMs = Math.max(0, observedAt.getTime() - scheduledAt.getTime());
+  const sourceShaRaw = String(env?.HERMES_AUTOMATION_SOURCE_SHA || "").trim();
+  const sourceSha = /^[0-9a-f]{40}$/.test(sourceShaRaw) ? sourceShaRaw : null;
+  const automationMode = clean(env?.HERMES_AUTOMATION_MODE, 40) || "UNKNOWN";
+  const publicationConfig = clean(env?.HERMES_AUTOMATION_PUBLISH, 40) || "UNKNOWN";
+  await db.prepare(`
+    INSERT OR IGNORE INTO hermes_automation_heartbeats
+      (heartbeat_id,trigger_type,cron_expression,scheduled_at,observed_at,execution_lag_ms,chicago_slot_key,eligible,source_sha,automation_mode,publication_config,publication_enabled,created_at)
+    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)
+  `).bind(
+    `heartbeat:cron:${scheduledIso.slice(0, 13)}Z`,
+    "cron",
+    clean(cronExpression, 80) || null,
+    scheduledIso,
+    observedIso,
+    lagMs,
+    slotKey,
+    eligible ? 1 : 0,
+    sourceSha,
+    automationMode,
+    publicationConfig,
+    publicationEnabled(env) ? 1 : 0,
+    observedIso,
+  ).run();
 }
 
 function runIdForSlot(slotKey) {
@@ -363,6 +557,14 @@ const READ_ONLY_GENERIC_JOB_TYPES = new Set([
   "system.health.snapshot",
   "history.coverage.audit",
   ...HISTORICAL_READ_ONLY_JOB_TYPES,
+  ...ROLE_CONTRACT_JOB_TYPES,
+]);
+const DRAFT_ONLY_GENERIC_JOB_TYPES = new Set([
+  "social.reply.prepare",
+]);
+const GENERIC_JOB_TYPES = new Set([
+  ...READ_ONLY_GENERIC_JOB_TYPES,
+  ...DRAFT_ONLY_GENERIC_JOB_TYPES,
 ]);
 
 function genericJobEventId(jobId, eventType) {
@@ -491,21 +693,45 @@ async function createGenericJob(env, input) {
   if (!env.DB || !env.AUTOMATION_QUEUE) throw new Error("runtime_not_configured");
   await ensureSchema(env.DB);
   const jobType = clean(input?.job_type, 120);
-  const businessLane = clean(input?.business_lane, 120);
+  const roleContract = roleContractForJobType(jobType);
+  const requestedBusinessLane = clean(input?.business_lane, 120);
+  const businessLane = requestedBusinessLane || clean(roleContract?.business_lane, 120);
   const idempotencyKey = clean(input?.idempotency_key, 240);
   const accountKey = clean(input?.account_key, 120) || null;
   const projectKey = clean(input?.project_key, 120) || null;
   const policyVersion = clean(input?.policy_version, 120) || "hae-readonly-v1";
-  const rawPriority = Number(input?.priority ?? 50);
-  const rawMaxAttempts = Number(input?.max_attempts ?? 3);
-  const priority = Number.isFinite(rawPriority) ? Math.max(0, Math.min(100, Math.trunc(rawPriority))) : 50;
-  const maxAttempts = Number.isFinite(rawMaxAttempts) ? Math.max(1, Math.min(5, Math.trunc(rawMaxAttempts))) : 3;
-  if (!READ_ONLY_GENERIC_JOB_TYPES.has(jobType)) throw new Error("job_type_not_allowed");
+  const rawPriority = metricNumberOrNull(input?.priority);
+  const rawMaxAttempts = metricNumberOrNull(input?.max_attempts);
+  const priority = rawPriority === null ? 50 : Math.max(0, Math.min(100, Math.trunc(rawPriority)));
+  const maxAttempts = rawMaxAttempts === null ? 3 : Math.max(1, Math.min(5, Math.trunc(rawMaxAttempts)));
+  if (!GENERIC_JOB_TYPES.has(jobType)) throw new Error("job_type_not_allowed");
+  if (DRAFT_ONLY_GENERIC_JOB_TYPES.has(jobType) && maxAttempts !== 1) throw new Error("draft_only_max_attempts_must_be_one");
   if (!businessLane) throw new Error("business_lane_required");
+  if (roleContract && businessLane !== roleContract.business_lane) throw new Error("role_contract_business_lane_mismatch");
+  if (roleContract?.semantic_required && input?.internal_submission !== true) throw new Error("semantic_job_internal_only");
   if (!idempotencyKey) throw new Error("idempotency_key_required");
-  const payload = input?.payload ?? {};
+  let payload = input?.payload ?? {};
+  if (jobType === "social.reply.prepare") {
+    payload = validateSocialReplyPrepareInput(payload);
+    if (payload.business_lane !== businessLane) throw new Error("social_reply_business_lane_mismatch");
+  }
   if (HISTORICAL_READ_ONLY_JOB_TYPES.includes(jobType)) {
     runHistoricalLearningPrimitive(jobType, payload);
+  }
+  if (ROLE_CONTRACT_JOB_TYPES.includes(jobType)) {
+    validateRoleContractInput(jobType, payload);
+    const contract = roleContract;
+    if (!contract) throw new Error("role_contract_missing");
+    const roleContractSha = await roleContractSha256(contract);
+    payload = {
+      ...payload,
+      _role_contract: {
+        role_id: contract.role_id,
+        plugin_version: contract.plugin_version,
+        contract_version: contract.contract_version,
+        sha256: roleContractSha,
+      },
+    };
   }
   let payloadJson = "{}";
   try {
@@ -525,6 +751,7 @@ async function createGenericJob(env, input) {
   }
 
   const now = new Date().toISOString();
+  const initialDispatchLeaseUntil = addSecondsIso(now, 15 * 60);
   const jobId = `job:${crypto.randomUUID()}`;
   const insertStatement = env.DB.prepare(`
     INSERT INTO hermes_automation_jobs
@@ -538,7 +765,7 @@ async function createGenericJob(env, input) {
     accountKey,
     projectKey,
     priority,
-    now,
+    initialDispatchLeaseUntil,
     maxAttempts,
     idempotencyKey,
     policyVersion,
@@ -569,9 +796,6 @@ async function createGenericJob(env, input) {
 
   try {
     await enqueueGenericJobMessage(env, jobId);
-    await env.DB.prepare(
-      "UPDATE hermes_automation_jobs SET available_at=?,last_error_class=NULL,updated_at=? WHERE job_id=? AND state='QUEUED'"
-    ).bind(addSecondsIso(now, 15 * 60), now, jobId).run();
   } catch {
     const retryAt = addSecondsIso(now, 5 * 60);
     await transitionGenericJobWithEvent(env.DB, {
@@ -595,7 +819,219 @@ async function createGenericJob(env, input) {
   return { created: true, duplicate: false, job };
 }
 
+async function dispatchCapabilityGraphReadyNodes(env, graphId) {
+  const ready = await readyCapabilityGraphNodes(env, graphId);
+  const outcomes = await Promise.all(ready.map(async (node) => {
+    try {
+      const created = await createGenericJob(env, {
+        job_type: node.job_type,
+        account_key: ACCOUNT_KEY,
+        project_key: `hae-graph:${graphId}`,
+        priority: 50,
+        max_attempts: 3,
+        internal_submission: true,
+        idempotency_key: `hae:graph:${graphId}:node:${node.node_id}`,
+        policy_version: "hae-capability-graph-v1",
+        payload: {
+          ...node.payload,
+          _graph: {
+            graph_id: graphId,
+            node_id: node.node_id,
+          },
+        },
+      });
+      const jobId = clean(created?.job?.job_id, 160);
+      if (!jobId) throw new Error("graph_node_job_missing");
+      await bindCapabilityGraphNodeJob(env, graphId, node.node_id, jobId);
+      return 1;
+    } catch (error) {
+      await markCapabilityGraphNodeDispatchFailure(
+        env,
+        graphId,
+        node.node_id,
+        safeRuntimeErrorClass(error, "graph_node_dispatch_failed"),
+      );
+      return 0;
+    }
+  }));
+  return outcomes.reduce((sum, value) => sum + value, 0);
+}
+
+async function syncCapabilityGraphJobBestEffort(env, {
+  jobId,
+  jobState,
+  result = null,
+  errorClass = null,
+}) {
+  try {
+    const settled = await settleCapabilityGraphNodeForJob(env, {
+      job_id: jobId,
+      job_state: jobState,
+      result,
+      error_class: errorClass,
+    });
+    if (settled?.graph_id && ["SUCCEEDED", "FAILED"].includes(jobState)) {
+      await dispatchCapabilityGraphReadyNodes(env, settled.graph_id);
+    }
+  } catch (error) {
+    await recordRuntimeEvent(env, {
+      eventType: "graph.job_sync_failed",
+      messageType: "job.execute",
+      jobId,
+      errorClass: safeRuntimeErrorClass(error, "graph_job_sync_failed"),
+    });
+  }
+}
+
+async function recoverCapabilityGraphs(env, limit = 20) {
+  if (!env?.DB || !env?.AUTOMATION_QUEUE) return 0;
+  const graphIds = await listActiveCapabilityGraphIds(env, limit);
+  let touched = 0;
+  for (const graphId of graphIds) {
+    const bindings = await listCapabilityGraphJobBindings(env, graphId);
+    for (const binding of bindings) {
+      if (binding.job_state === "SUCCEEDED") {
+        let result = null;
+        try {
+          result = binding.result_json ? JSON.parse(String(binding.result_json)) : null;
+        } catch {
+          result = null;
+        }
+        await settleCapabilityGraphNodeForJob(env, {
+          job_id: binding.job_id,
+          job_state: "SUCCEEDED",
+          result,
+        });
+      } else if (binding.job_state === "FAILED") {
+        await settleCapabilityGraphNodeForJob(env, {
+          job_id: binding.job_id,
+          job_state: "FAILED",
+          error_class: binding.last_error_class,
+        });
+      } else if (binding.job_state === "WAITING_FREE_AI") {
+        await settleCapabilityGraphNodeForJob(env, {
+          job_id: binding.job_id,
+          job_state: "WAITING_FREE_AI",
+          error_class: binding.last_error_class,
+        });
+      }
+    }
+    touched += await dispatchCapabilityGraphReadyNodes(env, graphId);
+  }
+  return touched;
+}
+
+async function submitRuntimeProofJob(env, message) {
+  if (!env.DB || !env.AUTOMATION_QUEUE) throw new Error("runtime_not_configured");
+  const automationMode = clean(env.HERMES_AUTOMATION_MODE, 40) || "UNKNOWN";
+  const publicationConfig = clean(env.HERMES_AUTOMATION_PUBLISH, 40) || "UNKNOWN";
+  if (automationMode !== "dry_run" || publicationConfig !== "disabled" || publicationEnabled(env)) {
+    throw new Error("runtime_proof_requires_dry_run");
+  }
+  const jobType = clean(message?.job_type, 120);
+  if (jobType !== "system.health.snapshot") throw new Error("runtime_proof_job_type_not_allowed");
+  const idempotencyKey = clean(message?.idempotency_key, 240);
+  if (!idempotencyKey) throw new Error("idempotency_key_required");
+  return createGenericJob(env, {
+    job_type: jobType,
+    business_lane: "automation",
+    account_key: ACCOUNT_KEY,
+    project_key: "hae-runtime-proof",
+    priority: 50,
+    max_attempts: 1,
+    idempotency_key: idempotencyKey,
+    policy_version: "hae-readonly-v1",
+    payload: {},
+  });
+}
+
 async function runReadOnlyGenericCapability(env, job) {
+  if (job.job_type === "social.reply.prepare") {
+    let payload = {};
+    try {
+      payload = JSON.parse(String(job.payload_json || "{}"));
+    } catch {
+      throw new Error("generic_job_payload_invalid");
+    }
+    return runSocialReplyPrepare(env, payload);
+  }
+  if (ROLE_CONTRACT_JOB_TYPES.includes(job.job_type)) {
+    let payload = {};
+    try {
+      payload = JSON.parse(String(job.payload_json || "{}"));
+    } catch {
+      throw new Error("generic_job_payload_invalid");
+    }
+    const contract = roleContractForJobType(job.job_type);
+    if (!contract) throw new Error("role_contract_missing");
+    const currentRoleContractSha = await roleContractSha256(contract);
+    const bound = payload?._role_contract;
+    if (
+      !bound ||
+      bound.role_id !== contract.role_id ||
+      bound.plugin_version !== contract.plugin_version ||
+      bound.contract_version !== contract.contract_version ||
+      bound.sha256 !== currentRoleContractSha
+    ) {
+      throw new Error("role_contract_stale");
+    }
+    const executionPayload = { ...payload };
+    delete executionPayload._role_contract;
+    const observedAt = new Date().toISOString();
+    let result;
+    let semanticExecution = null;
+    if (contract.semantic_required) {
+      const semanticRequest = buildRoleContractSemanticRequest(job.job_type, executionPayload);
+      const budgetUsd = Number(contract?.runtime_config?.max_cost_usd);
+      if (!Number.isFinite(budgetUsd) || budgetUsd < 0) throw new Error("semantic_budget_invalid");
+      const freeResult = await runFreeSemanticJson(env, semanticRequest);
+      const actualCostUsd = Number(freeResult.cost_usd || 0);
+      if (!Number.isFinite(actualCostUsd) || actualCostUsd < 0) throw new Error("ai_usage_cost_invalid");
+      if (actualCostUsd > budgetUsd + 1e-9) throw new Error("ai_budget_exceeded");
+      const usageReceipt = await recordAiUsage(env, {
+        job_id: job.job_id,
+        role_id: contract.role_id,
+        contract_version: contract.contract_version,
+        contract_sha256: currentRoleContractSha,
+        provider_id: freeResult.provider_id,
+        model: freeResult.model,
+        budget_usd: budgetUsd,
+        cost_usd: actualCostUsd,
+        usage: freeResult.usage,
+        status: "PROVIDER_RETURNED",
+      });
+      if (actualCostUsd !== 0) throw new Error("paid_inference_forbidden");
+      result = validateRoleContractSemanticResult(job.job_type, executionPayload, freeResult.result);
+      semanticExecution = {
+        provider_id: clean(freeResult.provider_id, 120),
+        model: clean(freeResult.model, 200),
+        budget_usd: budgetUsd,
+        cost_usd: actualCostUsd,
+        usage_id: usageReceipt.usage_id,
+        input_tokens: usageReceipt.input_tokens,
+        output_tokens: usageReceipt.output_tokens,
+        input_chars: usageReceipt.input_chars,
+        output_chars: usageReceipt.output_chars,
+      };
+    } else {
+      result = runRoleContractPrimitive(job.job_type, executionPayload, observedAt);
+    }
+    return {
+      capability: job.job_type,
+      observed_at: observedAt,
+      external_write: false,
+      role_contract: {
+        role_id: contract.role_id,
+        plugin_version: contract.plugin_version,
+        contract_version: contract.contract_version,
+        sha256: currentRoleContractSha,
+        semantic_required: contract.semantic_required,
+        free_ai_policy: contract.free_ai_policy,
+      },
+      semantic_execution: semanticExecution,
+      result,
+    };
+  }
   if (HISTORICAL_READ_ONLY_JOB_TYPES.includes(job.job_type)) {
     let payload = {};
     try {
@@ -651,7 +1087,26 @@ async function processGenericJob(env, message) {
     "SELECT job_id,job_type,business_lane,account_key,project_key,priority,state,current_step,available_at,attempt_count,max_attempts,idempotency_key,policy_version,payload_json,result_json,last_error_class,created_at,updated_at,completed_at FROM hermes_automation_jobs WHERE job_id=? LIMIT 1"
   ).bind(jobId).first();
   if (!before) return { status: "job_missing" };
-  if (String(before.state) === "SUCCEEDED") return { status: "SUCCEEDED", duplicate: true, job_id: jobId };
+  if (String(before.state) === "SUCCEEDED") {
+    try {
+      await appendGenericJobEvent(env.DB, {
+        jobId,
+        eventType: "job.duplicate_suppressed",
+        fromState: "SUCCEEDED",
+        toState: "SUCCEEDED",
+        step: "execute",
+        createdAt: new Date().toISOString(),
+      });
+    } catch {
+      await recordRuntimeEvent(env, {
+        eventType: "job.duplicate_receipt_write_failed",
+        messageType: "job.execute",
+        jobId,
+        errorClass: "duplicate_receipt_write_failed",
+      });
+    }
+    return { status: "SUCCEEDED", duplicate: true, job_id: jobId };
+  }
   const now = new Date().toISOString();
   const currentAttempt = Number(before.attempt_count || 0) + 1;
   const claimed = await transitionGenericJobWithEvent(env.DB, {
@@ -660,7 +1115,7 @@ async function processGenericJob(env, message) {
       SET state='RUNNING',current_step='execute',attempt_count=attempt_count+1,last_error_class=NULL,updated_at=?
       WHERE job_id=? AND (
         state='QUEUED' OR
-        (state='RETRY_SCHEDULED' AND (available_at IS NULL OR available_at<=?))
+        (state IN ('RETRY_SCHEDULED','WAITING_FREE_AI') AND (available_at IS NULL OR available_at<=?))
       )
     `).bind(now, jobId, now),
     jobId,
@@ -675,8 +1130,100 @@ async function processGenericJob(env, message) {
     const current = await env.DB.prepare("SELECT state,available_at,last_error_class FROM hermes_automation_jobs WHERE job_id=? LIMIT 1").bind(jobId).first();
     return { status: String(current?.state || "not_claimed"), duplicate: true, job_id: jobId };
   }
+function searchDefectsFromSnapshotResult(result) {
+  if (result?.capability !== "search.snapshot.evaluate") return [];
+  const defects = result?.result?.defects || {};
+  const output = [];
+  for (const [defectType, urls] of [
+    ["http_error", defects.http_errors],
+    ["missing_canonical", defects.missing_canonical],
+    ["canonical_mismatch", defects.canonical_mismatch],
+    ["sitemap_indexability_conflict", defects.sitemap_indexability_conflict],
+  ]) {
+    for (const url of Array.isArray(urls) ? urls : []) {
+      if (output.length >= 20) break;
+      output.push({ defect_type: defectType, url });
+    }
+    if (output.length >= 20) break;
+  }
+  return output;
+}
+
+async function ensureSearchSemanticFollowup(env, parentJob, result) {
+  if (parentJob?.job_type !== "search.snapshot.evaluate") return null;
+  const defects = searchDefectsFromSnapshotResult(result);
+  if (!defects.length) return null;
+  return createGenericJob(env, {
+    job_type: "search.defect.prioritize",
+    account_key: parentJob.account_key || ACCOUNT_KEY,
+    project_key: "hae-search-semantic-followup",
+    priority: Math.min(100, Math.max(0, Number(parentJob.priority || 50) + 5)),
+    max_attempts: 1,
+    internal_submission: true,
+    idempotency_key: `hae:followup:search.defect.prioritize:${parentJob.job_id}`,
+    policy_version: "hae-free-ai-v1",
+    payload: {
+      parent_job_id: parentJob.job_id,
+      defects,
+    },
+  });
+}
+
+async function existingHaeSelfRepairFollowup(env, idempotencyKey, audit) {
+  const existing = await env.DB.prepare(
+    "SELECT job_id,job_type,business_lane,account_key,project_key,priority,state,max_attempts,idempotency_key,policy_version,payload_json,result_json,last_error_class FROM hermes_automation_jobs WHERE idempotency_key=? LIMIT 1"
+  ).bind(idempotencyKey).first();
+  if (!existing) return null;
+  let payload = null;
+  try {
+    payload = JSON.parse(String(existing.payload_json || "{}"));
+  } catch {
+    throw new Error("hae_self_repair_idempotency_conflict");
+  }
+  if (
+    String(existing.job_type || "") !== "hae.self.repair.packet"
+    || !haeSelfRepairPacketReplayMatches(payload, audit)
+  ) {
+    throw new Error("hae_self_repair_idempotency_conflict");
+  }
+  return { created: false, duplicate: true, frozen_contract_reused: true, job: existing };
+}
+
+async function ensureHaeSelfRepairFollowup(env, parentJob, result) {
+  if (parentJob?.job_type !== "hae.self.improvement.audit") return null;
+  const audit = result?.result;
+  if (
+    audit?.next_action !== "HOLD_REPAIR"
+    || !audit?.next_work_id
+    || !audit?.next_finding_id
+    || !audit?.next_artifact_key
+  ) {
+    return null;
+  }
+  const idempotencyKey = `hae:followup:self.repair:${audit.next_work_id}`;
+  const frozen = await existingHaeSelfRepairFollowup(env, idempotencyKey, audit);
+  if (frozen) return frozen;
+  return createGenericJob(env, {
+    job_type: "hae.self.repair.packet",
+    account_key: parentJob.account_key || ACCOUNT_KEY,
+    project_key: "hae-self-repair",
+    priority: Math.min(100, Math.max(80, Number(parentJob.priority || 80) + 5)),
+    max_attempts: 1,
+    internal_submission: true,
+    idempotency_key: idempotencyKey,
+    policy_version: "hae-self-improvement-v1",
+    payload: {
+      work_id: audit.next_work_id,
+      finding_id: audit.next_finding_id,
+      artifact_key: audit.next_artifact_key,
+    },
+  });
+}
+
   try {
     const result = await runReadOnlyGenericCapability(env, before);
+    await ensureSearchSemanticFollowup(env, before, result);
+    await ensureHaeSelfRepairFollowup(env, before, result);
     const completedAt = new Date().toISOString();
     const succeeded = await transitionGenericJobWithEvent(env.DB, {
       updateStatement: env.DB.prepare(
@@ -691,10 +1238,46 @@ async function processGenericJob(env, message) {
       expectedAttemptCount: currentAttempt,
     });
     if (!succeeded) throw new Error("job_transition_conflict");
+    await syncCapabilityGraphJobBestEffort(env, {
+      jobId,
+      jobState: "SUCCEEDED",
+      result,
+    });
     return { status: "SUCCEEDED", job_id: jobId, result };
   } catch (error) {
-    const errorClass = clean(error?.message, 160) || "generic_job_failed";
     const failedAt = new Date().toISOString();
+    if (error instanceof FreeAiUnavailableError || error?.code === "free_ai_unavailable") {
+      const waitSeconds = Math.max(60, Math.min(24 * 60 * 60, Number(error?.retrySeconds || 900)));
+      const waitUntil = addSecondsIso(failedAt, waitSeconds);
+      const waitReason = clean(error?.reason, 160) || "free_ai_unavailable";
+      const waiting = await transitionGenericJobWithEvent(env.DB, {
+        updateStatement: env.DB.prepare(
+          "UPDATE hermes_automation_jobs SET state='WAITING_FREE_AI',current_step='free_ai',available_at=?,attempt_count=MAX(0,attempt_count-1),last_error_class=?,updated_at=? WHERE job_id=? AND state='RUNNING' AND attempt_count=?"
+        ).bind(waitUntil, waitReason, failedAt, jobId, currentAttempt),
+        jobId,
+        eventType: "job.waiting_free_ai",
+        fromState: "RUNNING",
+        toState: "WAITING_FREE_AI",
+        step: "free_ai",
+        errorClass: waitReason,
+        createdAt: failedAt,
+        expectedAttemptCount: Math.max(0, currentAttempt - 1),
+      });
+      if (!waiting) return { status: "transition_conflict", job_id: jobId, error_class: "job_transition_conflict" };
+      await syncCapabilityGraphJobBestEffort(env, {
+        jobId,
+        jobState: "WAITING_FREE_AI",
+        errorClass: waitReason,
+      });
+      return {
+        status: "WAITING_FREE_AI",
+        job_id: jobId,
+        available_at: waitUntil,
+        error_class: waitReason,
+        attempt_consumed: false,
+      };
+    }
+    const errorClass = safeRuntimeErrorClass(error, "generic_job_failed");
     if (currentAttempt < Number(before.max_attempts || 3)) {
       const retryAt = addSecondsIso(failedAt, genericJobBackoffSeconds(currentAttempt));
       const retryScheduled = await transitionGenericJobWithEvent(env.DB, {
@@ -733,6 +1316,11 @@ async function processGenericJob(env, message) {
       expectedAttemptCount: currentAttempt,
     });
     if (!failed) return { status: "transition_conflict", job_id: jobId, error_class: "job_transition_conflict" };
+    await syncCapabilityGraphJobBestEffort(env, {
+      jobId,
+      jobState: "FAILED",
+      errorClass,
+    });
     return { status: "FAILED", job_id: jobId, error_class: errorClass };
   }
 }
@@ -802,7 +1390,7 @@ async function recoverPendingGenericJobs(env, limit = 20) {
 
   const rows = await env.DB.prepare(`
     SELECT job_id,state,attempt_count FROM hermes_automation_jobs
-    WHERE state IN ('QUEUED','RETRY_SCHEDULED')
+    WHERE state IN ('QUEUED','RETRY_SCHEDULED','WAITING_FREE_AI')
       AND (available_at IS NULL OR available_at<=?)
     ORDER BY priority DESC, created_at ASC
     LIMIT ?
@@ -818,14 +1406,14 @@ async function recoverPendingGenericJobs(env, limit = 20) {
       // are harmless because the D1 state transition is the execution lock.
       await enqueueGenericJobMessage(env, jobId);
       await env.DB.prepare(
-        "UPDATE hermes_automation_jobs SET last_error_class=NULL,updated_at=? WHERE job_id=? AND state IN ('QUEUED','RETRY_SCHEDULED')"
+        "UPDATE hermes_automation_jobs SET last_error_class=NULL,updated_at=? WHERE job_id=? AND state IN ('QUEUED','RETRY_SCHEDULED','WAITING_FREE_AI')"
       ).bind(now, jobId).run();
       recovered += 1;
     } catch {
       const retryAt = addSecondsIso(now, 5 * 60);
       await transitionGenericJobWithEvent(env.DB, {
         updateStatement: env.DB.prepare(
-          "UPDATE hermes_automation_jobs SET state='RETRY_SCHEDULED',available_at=?,last_error_class='job_enqueue_failed',updated_at=? WHERE job_id=? AND state IN ('QUEUED','RETRY_SCHEDULED')"
+          "UPDATE hermes_automation_jobs SET state='RETRY_SCHEDULED',available_at=?,last_error_class='job_enqueue_failed',updated_at=? WHERE job_id=? AND state IN ('QUEUED','RETRY_SCHEDULED','WAITING_FREE_AI')"
         ).bind(retryAt, now, jobId),
         jobId,
         eventType: "job.enqueue_failed",
@@ -884,7 +1472,14 @@ async function insertCandidate(db, candidate) {
   return Number(result?.meta?.changes || 0) === 1;
 }
 
-async function claimPublicationForProvider(db, candidate) {
+export function selectedThreadsProvider(env) {
+  return metaThreadsMode(env) ? THREADS_PROVIDER_META : THREADS_PROVIDER_WINDSOR;
+}
+
+export async function claimPublicationForProvider(db, candidate, providerTransport) {
+  if (![THREADS_PROVIDER_META, THREADS_PROVIDER_WINDSOR].includes(providerTransport)) {
+    throw new Error("publication_provider_invalid");
+  }
   const now = new Date().toISOString();
   await db.prepare(`
     INSERT OR IGNORE INTO hermes_automation_publications
@@ -899,7 +1494,30 @@ async function claimPublicationForProvider(db, candidate) {
     SET status='publishing',attempt_count=attempt_count+1,updated_at=?
     WHERE idempotency_key=? AND account_key=? AND platform=? AND status='reserved'
   `).bind(now, candidate.idempotency_key, candidate.account_key, candidate.platform).run();
-  return Number(claimed?.meta?.changes || 0) === 1;
+  if (Number(claimed?.meta?.changes || 0) !== 1) return false;
+
+  // Persist immutable transport provenance BEFORE any provider network write.
+  // If this evidence write fails, the publication remains stuck in publishing
+  // and later recovery fails closed instead of guessing from current config.
+  try {
+    const provenance = await db.prepare(`
+      INSERT INTO hermes_automation_runtime_events
+        (event_id,event_type,message_type,content_id,slot_key,created_at)
+      VALUES (?, 'publication.provider_claimed', ?, ?, ?, ?)
+    `).bind(
+      `provider-claim:${candidate.idempotency_key}`,
+      providerTransport,
+      candidate.content_id,
+      candidate.slot_key,
+      now,
+    ).run();
+    if (Number(provenance?.meta?.changes || 0) !== 1) {
+      throw new Error("provider_provenance_not_inserted");
+    }
+  } catch {
+    throw new Error("provider_provenance_persist_failed");
+  }
+  return true;
 }
 
 function publicationEnabled(env) {
@@ -910,6 +1528,34 @@ function publicationEnabled(env) {
 function addSecondsIso(iso, seconds) {
   const base = Number.isFinite(Date.parse(String(iso || ""))) ? Date.parse(String(iso)) : Date.now();
   return new Date(base + seconds * 1000).toISOString();
+}
+
+export async function readPublicationProviderClaim(db, contentId) {
+  const rows = await db.prepare(
+    "SELECT message_type FROM hermes_automation_runtime_events WHERE event_type='publication.provider_claimed' AND content_id=? ORDER BY created_at ASC LIMIT 2"
+  ).bind(contentId).all();
+  const claims = rows?.results || [];
+  if (claims.length === 0) {
+    return { ok: false, error_class: "publication_provider_provenance_missing" };
+  }
+  if (claims.length !== 1) {
+    return { ok: false, error_class: "publication_provider_provenance_ambiguous" };
+  }
+  const providerTransport = String(claims[0]?.message_type || "");
+  if (![THREADS_PROVIDER_META, THREADS_PROVIDER_WINDSOR].includes(providerTransport)) {
+    return { ok: false, error_class: "publication_provider_provenance_invalid" };
+  }
+  return { ok: true, provider_transport: providerTransport };
+}
+
+export async function readbackThreadsByClaimedProvider(providerTransport, env, body) {
+  if (providerTransport === THREADS_PROVIDER_META) {
+    return readbackThreadsTextViaMeta(env, body);
+  }
+  if (providerTransport === THREADS_PROVIDER_WINDSOR) {
+    return readbackThreadsTextViaWindsor(env, body);
+  }
+  return { ok: false, error_class: "publication_provider_provenance_invalid" };
 }
 
 async function enqueueDueReadbacks(env, limit = 20) {
@@ -991,24 +1637,37 @@ async function enqueuePlanRun(env, slotKey) {
       platform: PLATFORM,
       slot_key: slotKey,
     });
-    await env.DB.prepare(
-      "UPDATE hermes_automation_runs SET status='plan_enqueued',last_error_class=NULL,updated_at=? WHERE id=? AND status IN ('queued','plan_enqueue_failed')"
-    ).bind(now, runIdForSlot(slotKey)).run();
-    return true;
   } catch {
     await env.DB.prepare(
       "UPDATE hermes_automation_runs SET status='plan_enqueue_failed',last_error_class='plan_enqueue_failed',updated_at=? WHERE id=? AND status IN ('queued','plan_enqueue_failed')"
     ).bind(now, runIdForSlot(slotKey)).run();
     return false;
   }
+
+  try {
+    await env.DB.prepare(
+      "UPDATE hermes_automation_runs SET status='plan_enqueued',last_error_class=NULL,updated_at=? WHERE id=? AND status IN ('queued','plan_enqueue_failed')"
+    ).bind(now, runIdForSlot(slotKey)).run();
+  } catch (error) {
+    // Queue.send() resolving means Cloudflare has durably accepted the message.
+    // A later D1 status-write failure must never be reclassified as a send failure.
+    await recordRuntimeEvent(env, {
+      eventType: "plan.enqueue_state_write_failed",
+      messageType: "content.plan",
+      slotKey,
+      errorClass: safeRuntimeErrorClass(error, "enqueue_state_write_failed"),
+    });
+  }
+  return true;
 }
 
 async function recoverPendingPlanRuns(env, limit = 20) {
   if (!env.DB || !env.AUTOMATION_QUEUE) return 0;
   await ensureSchema(env.DB);
+  const queuedStaleCutoff = addSecondsIso(new Date().toISOString(), -2 * 60);
   const rows = await env.DB.prepare(
-    "SELECT slot_key FROM hermes_automation_runs WHERE account_key=? AND platform=? AND status IN ('queued','plan_enqueue_failed') ORDER BY created_at ASC LIMIT ?"
-  ).bind(ACCOUNT_KEY, PLATFORM, Math.max(1, Math.min(50, Number(limit) || 20))).all();
+    "SELECT slot_key FROM hermes_automation_runs WHERE account_key=? AND platform=? AND (status='plan_enqueue_failed' OR (status='queued' AND created_at<=?)) ORDER BY created_at ASC LIMIT ?"
+  ).bind(ACCOUNT_KEY, PLATFORM, queuedStaleCutoff, Math.max(1, Math.min(50, Number(limit) || 20))).all();
   let recovered = 0;
   for (const row of rows?.results || []) {
     const slotKey = clean(row?.slot_key, 32);
@@ -1040,19 +1699,54 @@ async function processPlanMessage(env, message) {
   const candidate = await loadOrCreateCarrierCandidate(env.DB, slotKey);
 
   if (!publicationEnabled(env)) {
-    await env.DB.prepare("UPDATE hermes_automation_runs SET status='dry_run_ready',updated_at=? WHERE id=?")
-      .bind(new Date().toISOString(), runIdForSlot(slotKey)).run();
-    return { status: "dry_run_ready", candidate };
+    const completedAt = new Date().toISOString();
+    const completed = await env.DB.prepare(
+      "UPDATE hermes_automation_runs SET status='dry_run_ready',updated_at=? WHERE id=? AND status!='dry_run_ready'"
+    ).bind(completedAt, runIdForSlot(slotKey)).run();
+    return {
+      status: "dry_run_ready",
+      duplicate: Number(completed?.meta?.changes || 0) === 0,
+      candidate,
+    };
   }
 
-  const claimed = await claimPublicationForProvider(env.DB, candidate);
+  if (metaThreadsMode(env)) {
+    // Do not cross providers while an earlier delivery remains ambiguous.
+    const unresolved = await env.DB.prepare(
+      "SELECT COUNT(*) AS n FROM hermes_automation_publications WHERE account_key=? AND platform=? AND status IN ('provider_accepted_readback_pending','unknown_outcome_readback_pending','unknown_outcome_unresolved','readback_unverified')"
+    ).bind(ACCOUNT_KEY, PLATFORM).first();
+    if (!Number.isSafeInteger(unresolved?.n) || unresolved.n !== 0) {
+      const now = new Date().toISOString();
+      await env.DB.prepare("UPDATE hermes_automation_runs SET status='preflight_blocked',last_error_class='unresolved_previous_publication',updated_at=? WHERE id=?")
+        .bind(now, runIdForSlot(slotKey)).run();
+      return { status: "preflight_blocked", error_class: "unresolved_previous_publication" };
+    }
+    // Fresh authenticated /me identity + recent 50; independent of Windsor's FREE gate.
+    // No reservation / provider POST if access, identity, duplicate or 3h15 cooldown fails.
+    const preflight = await metaThreadsPreflight(env, candidate.body);
+    if (!preflight.ok) {
+      const now = new Date().toISOString();
+      await env.DB.prepare("UPDATE hermes_automation_runs SET status='preflight_blocked',last_error_class=?,updated_at=? WHERE id=?")
+        .bind(preflight.error_class, now, runIdForSlot(slotKey)).run();
+      return { status: "preflight_blocked", error_class: preflight.error_class };
+    }
+  }
+  const providerTransport = selectedThreadsProvider(env);
+  const claimed = await claimPublicationForProvider(env.DB, candidate, providerTransport);
   if (!claimed) {
-    await env.DB.prepare("UPDATE hermes_automation_runs SET status='duplicate_suppressed',updated_at=? WHERE id=?")
-      .bind(new Date().toISOString(), runIdForSlot(slotKey)).run();
-    return { status: "duplicate_suppressed", candidate };
+    const existingPublication = await env.DB.prepare(
+      "SELECT status FROM hermes_automation_publications WHERE idempotency_key=? AND account_key=? AND platform=? LIMIT 1"
+    ).bind(candidate.idempotency_key, candidate.account_key, candidate.platform).first();
+    return {
+      status: "duplicate_suppressed",
+      candidate,
+      existing_publication_status: clean(existingPublication?.status, 80) || null,
+    };
   }
 
-  const published = await publishThreadsTextViaWindsor(env, candidate.body);
+  const published = providerTransport === THREADS_PROVIDER_META
+    ? await publishThreadsTextViaMeta(env, candidate.body)
+    : await publishThreadsTextViaWindsor(env, candidate.body);
   const now = new Date().toISOString();
   if (!published.ok) {
     if (published.error_class === "provider_outcome_unknown") {
@@ -1060,47 +1754,55 @@ async function processPlanMessage(env, message) {
       // Move directly into readback-only recovery so HAE can determine whether
       // the post exists before asking a human to resolve the ambiguity.
       const status = "unknown_outcome_readback_pending";
-      const nextReadbackAt = addSecondsIso(now, 4200);
-      await env.DB.prepare("UPDATE hermes_automation_publications SET status=?,readback_attempt=0,next_readback_at=?,last_error_class=?,updated_at=? WHERE idempotency_key=?")
-        .bind(status, nextReadbackAt, published.error_class, now, candidate.idempotency_key).run();
-      await env.DB.prepare("UPDATE hermes_automation_content SET state=?,last_error_class=?,updated_at=? WHERE content_id=?")
-        .bind(status, published.error_class, now, candidate.content_id).run();
-      await env.DB.prepare("UPDATE hermes_automation_runs SET status=?,last_error_class=?,updated_at=? WHERE id=?")
-        .bind(status, published.error_class, now, runIdForSlot(slotKey)).run();
+      const nextReadbackAt = addSecondsIso(now, 4200 + 15 * 60);
+      await env.DB.batch([
+        env.DB.prepare("UPDATE hermes_automation_publications SET status=?,readback_attempt=0,next_readback_at=?,last_error_class=?,updated_at=? WHERE idempotency_key=?")
+          .bind(status, nextReadbackAt, published.error_class, now, candidate.idempotency_key),
+        env.DB.prepare("UPDATE hermes_automation_content SET state=?,last_error_class=?,updated_at=? WHERE content_id=?")
+          .bind(status, published.error_class, now, candidate.content_id),
+        env.DB.prepare("UPDATE hermes_automation_runs SET status=?,last_error_class=?,updated_at=? WHERE id=?")
+          .bind(status, published.error_class, now, runIdForSlot(slotKey)),
+      ]);
       try {
         await env.AUTOMATION_QUEUE.send({ type: "publication.readback", content_id: candidate.content_id }, { delaySeconds: 4200 });
       } catch {
-        await env.DB.prepare("UPDATE hermes_automation_publications SET last_error_class='unknown_outcome_readback_enqueue_failed',updated_at=? WHERE content_id=?")
-          .bind(new Date().toISOString(), candidate.content_id).run();
+        const recoveryAt = addSecondsIso(new Date().toISOString(), 5 * 60);
+        await env.DB.prepare("UPDATE hermes_automation_publications SET next_readback_at=?,last_error_class='unknown_outcome_readback_enqueue_failed',updated_at=? WHERE content_id=?")
+          .bind(recoveryAt, new Date().toISOString(), candidate.content_id).run();
       }
       return { status, candidate, error_class: published.error_class };
     }
 
     const status = "failed";
-    await env.DB.prepare("UPDATE hermes_automation_publications SET status=?,last_error_class=?,updated_at=? WHERE idempotency_key=?")
-      .bind(status, published.error_class, now, candidate.idempotency_key).run();
-    await env.DB.prepare("UPDATE hermes_automation_content SET state=?,last_error_class=?,updated_at=? WHERE content_id=?")
-      .bind(status, published.error_class, now, candidate.content_id).run();
-    await env.DB.prepare("UPDATE hermes_automation_runs SET status=?,last_error_class=?,updated_at=? WHERE id=?")
-      .bind(status, published.error_class, now, runIdForSlot(slotKey)).run();
+    await env.DB.batch([
+      env.DB.prepare("UPDATE hermes_automation_publications SET status=?,last_error_class=?,updated_at=? WHERE idempotency_key=?")
+        .bind(status, published.error_class, now, candidate.idempotency_key),
+      env.DB.prepare("UPDATE hermes_automation_content SET state=?,last_error_class=?,updated_at=? WHERE content_id=?")
+        .bind(status, published.error_class, now, candidate.content_id),
+      env.DB.prepare("UPDATE hermes_automation_runs SET status=?,last_error_class=?,updated_at=? WHERE id=?")
+        .bind(status, published.error_class, now, runIdForSlot(slotKey)),
+    ]);
     return { status, candidate, error_class: published.error_class };
   }
 
-  const nextReadbackAt = addSecondsIso(now, 4200);
-  await env.DB.prepare("UPDATE hermes_automation_publications SET status='provider_accepted_readback_pending',readback_attempt=0,next_readback_at=?,updated_at=? WHERE idempotency_key=?")
-    .bind(nextReadbackAt, now, candidate.idempotency_key).run();
-  await env.DB.prepare("UPDATE hermes_automation_content SET state='provider_accepted_readback_pending',updated_at=? WHERE content_id=?")
-    .bind(now, candidate.content_id).run();
-  await env.DB.prepare("UPDATE hermes_automation_runs SET status='provider_accepted_readback_pending',updated_at=? WHERE id=?")
-    .bind(now, runIdForSlot(slotKey)).run();
+  const nextReadbackAt = addSecondsIso(now, 4200 + 15 * 60);
+  await env.DB.batch([
+    env.DB.prepare("UPDATE hermes_automation_publications SET status='provider_accepted_readback_pending',readback_attempt=0,next_readback_at=?,updated_at=? WHERE idempotency_key=?")
+      .bind(nextReadbackAt, now, candidate.idempotency_key),
+    env.DB.prepare("UPDATE hermes_automation_content SET state='provider_accepted_readback_pending',updated_at=? WHERE content_id=?")
+      .bind(now, candidate.content_id),
+    env.DB.prepare("UPDATE hermes_automation_runs SET status='provider_accepted_readback_pending',updated_at=? WHERE id=?")
+      .bind(now, runIdForSlot(slotKey)),
+  ]);
 
   try {
     await env.AUTOMATION_QUEUE.send({ type: "publication.readback", content_id: candidate.content_id }, { delaySeconds: 4200 });
   } catch {
     // Provider write has already happened. Never retry the publish step merely
-    // because queue scheduling failed; the hourly recovery scan will enqueue it.
-    await env.DB.prepare("UPDATE hermes_automation_publications SET last_error_class='readback_enqueue_failed',updated_at=? WHERE content_id=?")
-      .bind(new Date().toISOString(), candidate.content_id).run();
+    // because queue scheduling failed; move only the readback recovery deadline forward.
+    const recoveryAt = addSecondsIso(new Date().toISOString(), 5 * 60);
+    await env.DB.prepare("UPDATE hermes_automation_publications SET next_readback_at=?,last_error_class='readback_enqueue_failed',updated_at=? WHERE content_id=?")
+      .bind(recoveryAt, new Date().toISOString(), candidate.content_id).run();
   }
 
   return { status: "provider_accepted_readback_pending", candidate, provider_result: published.provider_result || null };
@@ -1125,27 +1827,52 @@ async function processReadbackMessage(env, message) {
   if (!row) return { status: "readback_missing_content" };
   if (String(row.state) === "published_verified") return { status: "published_verified", duplicate: true };
 
-  const readback = await readbackThreadsTextViaWindsor(env, String(row.body || ""));
+  const provenance = await readPublicationProviderClaim(env.DB, contentId);
   const now = new Date().toISOString();
+  if (!provenance.ok) {
+    const terminalStatus = pendingStatus === "unknown_outcome_readback_pending"
+      ? "unknown_outcome_unresolved"
+      : "readback_unverified";
+    await env.DB.batch([
+      env.DB.prepare("UPDATE hermes_automation_publications SET status=?,next_readback_at=NULL,last_error_class=?,updated_at=? WHERE content_id=?")
+        .bind(terminalStatus, provenance.error_class, now, contentId),
+      env.DB.prepare("UPDATE hermes_automation_content SET state=?,last_error_class=?,updated_at=? WHERE content_id=?")
+        .bind(terminalStatus, provenance.error_class, now, contentId),
+      env.DB.prepare("UPDATE hermes_automation_runs SET status=?,last_error_class=?,updated_at=? WHERE id=?")
+        .bind(terminalStatus, provenance.error_class, now, runIdForSlot(String(row.slot_key || ""))),
+    ]);
+    return { status: terminalStatus, error_class: provenance.error_class };
+  }
+
+  const readback = await readbackThreadsByClaimedProvider(
+    provenance.provider_transport,
+    env,
+    String(row.body || ""),
+  );
   if (readback.ok && readback.found) {
-    await env.DB.prepare("UPDATE hermes_automation_publications SET status='published_verified',provider_post_id=?,permalink=?,last_error_class=NULL,updated_at=? WHERE content_id=?")
-      .bind(readback.provider_post_id, readback.permalink || null, now, contentId).run();
-    await env.DB.prepare("UPDATE hermes_automation_content SET state='published_verified',provider_post_id=?,permalink=?,last_error_class=NULL,updated_at=? WHERE content_id=?")
-      .bind(readback.provider_post_id, readback.permalink || null, now, contentId).run();
-    await env.DB.prepare("UPDATE hermes_automation_runs SET status='published_verified',last_error_class=NULL,updated_at=? WHERE id=?")
-      .bind(now, runIdForSlot(String(row.slot_key || ""))).run();
+    await env.DB.batch([
+      env.DB.prepare("UPDATE hermes_automation_publications SET status='published_verified',provider_post_id=?,permalink=?,last_error_class=NULL,updated_at=? WHERE content_id=?")
+        .bind(readback.provider_post_id, readback.permalink || null, now, contentId),
+      env.DB.prepare("UPDATE hermes_automation_content SET state='published_verified',provider_post_id=?,permalink=?,last_error_class=NULL,updated_at=? WHERE content_id=?")
+        .bind(readback.provider_post_id, readback.permalink || null, now, contentId),
+      env.DB.prepare("UPDATE hermes_automation_runs SET status='published_verified',last_error_class=NULL,updated_at=? WHERE id=?")
+        .bind(now, runIdForSlot(String(row.slot_key || ""))),
+    ]);
     return { status: "published_verified", provider_post_id: readback.provider_post_id, permalink: readback.permalink || null };
   }
 
   if (attempt < 4) {
     const errorClass = readback.ok ? "post_not_visible_yet" : readback.error_class;
-    const nextReadbackAt = addSecondsIso(now, 3600);
+    const nextReadbackAt = addSecondsIso(now, 3600 + 15 * 60);
     await env.DB.prepare("UPDATE hermes_automation_publications SET readback_attempt=?,next_readback_at=?,last_error_class=?,updated_at=? WHERE content_id=? AND status=?")
       .bind(attempt, nextReadbackAt, errorClass, now, contentId, pendingStatus).run();
     try {
       await env.AUTOMATION_QUEUE.send({ type: "publication.readback", content_id: contentId }, { delaySeconds: 3600 });
     } catch {
-      // Recovery cron will pick up next_readback_at; do not touch provider write state.
+      // The provider write is already immutable; only accelerate the readback recovery scan.
+      const recoveryAt = addSecondsIso(new Date().toISOString(), 5 * 60);
+      await env.DB.prepare("UPDATE hermes_automation_publications SET next_readback_at=?,last_error_class='readback_enqueue_failed',updated_at=? WHERE content_id=? AND status=?")
+        .bind(recoveryAt, new Date().toISOString(), contentId, pendingStatus).run();
     }
     return { status: "provider_accepted_readback_pending", readback_attempt: attempt, error_class: errorClass };
   }
@@ -1154,12 +1881,14 @@ async function processReadbackMessage(env, message) {
   const terminalStatus = pendingStatus === "unknown_outcome_readback_pending"
     ? "unknown_outcome_unresolved"
     : "readback_unverified";
-  await env.DB.prepare("UPDATE hermes_automation_publications SET status=?,readback_attempt=?,next_readback_at=NULL,last_error_class=?,updated_at=? WHERE content_id=?")
-    .bind(terminalStatus, attempt, errorClass, now, contentId).run();
-  await env.DB.prepare("UPDATE hermes_automation_content SET state=?,last_error_class=?,updated_at=? WHERE content_id=?")
-    .bind(terminalStatus, errorClass, now, contentId).run();
-  await env.DB.prepare("UPDATE hermes_automation_runs SET status=?,last_error_class=?,updated_at=? WHERE id=?")
-    .bind(terminalStatus, errorClass, now, runIdForSlot(String(row.slot_key || ""))).run();
+  await env.DB.batch([
+    env.DB.prepare("UPDATE hermes_automation_publications SET status=?,readback_attempt=?,next_readback_at=NULL,last_error_class=?,updated_at=? WHERE content_id=?")
+      .bind(terminalStatus, attempt, errorClass, now, contentId),
+    env.DB.prepare("UPDATE hermes_automation_content SET state=?,last_error_class=?,updated_at=? WHERE content_id=?")
+      .bind(terminalStatus, errorClass, now, contentId),
+    env.DB.prepare("UPDATE hermes_automation_runs SET status=?,last_error_class=?,updated_at=? WHERE id=?")
+      .bind(terminalStatus, errorClass, now, runIdForSlot(String(row.slot_key || ""))),
+  ]);
   return { status: terminalStatus, error_class: errorClass };
 }
 
@@ -1167,10 +1896,12 @@ async function queueHealth(queue) {
   if (!queue || typeof queue.metrics !== "function") return { status: "unavailable" };
   try {
     const metrics = await queue.metrics();
+    const backlogCount = metricNumberOrNull(metrics?.backlogCount);
+    const backlogBytes = metricNumberOrNull(metrics?.backlogBytes);
     return {
-      status: "ok",
-      backlog_count: Number(metrics?.backlogCount || 0),
-      backlog_bytes: Number(metrics?.backlogBytes || 0),
+      status: backlogCount === null || backlogBytes === null ? "partial_unknown" : "ok",
+      backlog_count: backlogCount,
+      backlog_bytes: backlogBytes,
       oldest_message_at: metrics?.oldestMessageTimestamp
         ? new Date(metrics.oldestMessageTimestamp).toISOString()
         : null,
@@ -1192,7 +1923,7 @@ async function health(env) {
   const planEnqueueFailed = await db.prepare("SELECT COUNT(*) AS count FROM hermes_automation_runs WHERE account_key=? AND platform=? AND status='plan_enqueue_failed'").bind(ACCOUNT_KEY, PLATFORM).first();
   const genericJobRows = await db.prepare("SELECT state,COUNT(*) AS count FROM hermes_automation_jobs GROUP BY state ORDER BY state").all();
   const genericJobsByState = Object.fromEntries(
-    (genericJobRows?.results || []).map((row) => [String(row.state || "UNKNOWN"), Number(row.count || 0)])
+    (genericJobRows?.results || []).map((row) => [String(row.state || "UNKNOWN"), metricNumberOrNull(row.count)])
   );
   const last = await db.prepare(`
     SELECT slot_key,status,updated_at,last_error_class
@@ -1201,57 +1932,552 @@ async function health(env) {
     ORDER BY updated_at DESC
     LIMIT 1
   `).bind(ACCOUNT_KEY, PLATFORM).first();
+  const lastSuccess = await db.prepare(`
+    SELECT slot_key,status,updated_at
+    FROM hermes_automation_runs
+    WHERE account_key=? AND platform=? AND status IN ('dry_run_ready','published_verified')
+    ORDER BY updated_at DESC
+    LIMIT 1
+  `).bind(ACCOUNT_KEY, PLATFORM).first();
+  const lastFailure = await db.prepare(`
+    SELECT slot_key,status,updated_at,last_error_class
+    FROM hermes_automation_runs
+    WHERE account_key=? AND platform=? AND status IN ('plan_enqueue_failed','failed','unknown_outcome_unresolved','readback_unverified')
+    ORDER BY updated_at DESC
+    LIMIT 1
+  `).bind(ACCOUNT_KEY, PLATFORM).first();
+  const lastHeartbeat = await db.prepare(`
+    SELECT trigger_type,cron_expression,scheduled_at,observed_at,execution_lag_ms,chicago_slot_key,eligible,source_sha,automation_mode,publication_config,publication_enabled
+    FROM hermes_automation_heartbeats
+    ORDER BY scheduled_at DESC
+    LIMIT 1
+  `).first();
+  const runtimeEventRows = await db.prepare(
+    "SELECT event_type,COUNT(*) AS count FROM hermes_automation_runtime_events GROUP BY event_type ORDER BY event_type"
+  ).all();
+  const runtimeEventsByType = Object.fromEntries(
+    (runtimeEventRows?.results || []).map((row) => [String(row.event_type || "UNKNOWN"), metricNumberOrNull(row.count)])
+  );
+  const genericJobEventRows = await db.prepare(
+    "SELECT event_type,COUNT(*) AS count FROM hermes_automation_job_events GROUP BY event_type ORDER BY event_type"
+  ).all();
+  const genericJobEventsByType = Object.fromEntries(
+    (genericJobEventRows?.results || []).map((row) => [String(row.event_type || "UNKNOWN"), metricNumberOrNull(row.count)])
+  );
+  const sourceShaRaw = String(env?.HERMES_AUTOMATION_SOURCE_SHA || "").trim();
+  const normalizedLastHeartbeat = lastHeartbeat ? {
+    ...lastHeartbeat,
+    eligible: Number(lastHeartbeat.eligible) === 1,
+    publication_enabled: Number(lastHeartbeat.publication_enabled) === 1,
+  } : null;
   return {
     database: "ok",
-    ready_content: Number(ready?.count || 0),
-    unknown_outcomes: Number(unknown?.count || 0),
-    failed_publications: Number(failed?.count || 0),
-    pending_readbacks: Number(pendingReadback?.count || 0),
-    unverified_readbacks: Number(unverifiedReadback?.count || 0),
-    plan_enqueue_failures: Number(planEnqueueFailed?.count || 0),
+    source_sha: /^[0-9a-f]{40}$/.test(sourceShaRaw) ? sourceShaRaw : null,
+    automation_mode: clean(env?.HERMES_AUTOMATION_MODE, 40) || "UNKNOWN",
+    publication_config: clean(env?.HERMES_AUTOMATION_PUBLISH, 40) || "UNKNOWN",
+    publication_enabled: publicationEnabled(env),
+    ready_content: metricNumberOrNull(ready?.count),
+    unknown_outcomes: metricNumberOrNull(unknown?.count),
+    failed_publications: metricNumberOrNull(failed?.count),
+    pending_readbacks: metricNumberOrNull(pendingReadback?.count),
+    unverified_readbacks: metricNumberOrNull(unverifiedReadback?.count),
+    plan_enqueue_failures: metricNumberOrNull(planEnqueueFailed?.count),
     generic_jobs_by_state: genericJobsByState,
+    runtime_events_by_type: runtimeEventsByType,
+    generic_job_events_by_type: genericJobEventsByType,
     queue: await queueHealth(env?.AUTOMATION_QUEUE),
     dlq: await queueHealth(env?.AUTOMATION_DLQ),
+    last_cron_wake: normalizedLastHeartbeat,
+    last_success: lastSuccess || null,
+    last_failure: lastFailure || null,
     last_run: last || null,
   };
 }
 
+
+function scheduledHealthSnapshotIdempotencyKey(scheduledAt) {
+  return `hae:system.health.snapshot:${scheduledAt.toISOString().slice(0, 16)}`;
+}
+
+async function enqueueScheduledHealthSnapshot(env, scheduledAt) {
+  return createGenericJob(env, {
+    job_type: "system.health.snapshot",
+    business_lane: "automation",
+    account_key: ACCOUNT_KEY,
+    project_key: "hae-hourly-health",
+    priority: 40,
+    max_attempts: 3,
+    idempotency_key: scheduledHealthSnapshotIdempotencyKey(scheduledAt),
+    policy_version: "hae-readonly-v1",
+    payload: {
+      trigger_type: "cron",
+      scheduled_at: scheduledAt.toISOString(),
+    },
+  });
+}
+
+function roleContractScheduleEligible(contract, scheduledAt) {
+  const cadence = Number(contract?.runtime_config?.cadence_hours || 0);
+  if (!Number.isInteger(cadence) || cadence < 1 || cadence > 24) return false;
+  return chicagoParts(scheduledAt).hour % cadence === 0;
+}
+
+function extractCanonicalFromHtml(html, pageUrl) {
+  for (const tag of String(html || "").match(/<link\b[^>]*>/gi) || []) {
+    if (!/\brel\s*=\s*["'][^"']*\bcanonical\b[^"']*["']/i.test(tag)) continue;
+    const href = tag.match(/\bhref\s*=\s*["']([^"']+)["']/i)?.[1] || "";
+    if (!href) continue;
+    try {
+      return new URL(href, pageUrl).toString();
+    } catch {
+      return "";
+    }
+  }
+  return "";
+}
+
+function htmlNoindex(html) {
+  for (const tag of String(html || "").match(/<meta\b[^>]*>/gi) || []) {
+    const name = tag.match(/\bname\s*=\s*["']([^"']+)["']/i)?.[1]?.toLowerCase() || "";
+    if (name !== "robots") continue;
+    const content = tag.match(/\bcontent\s*=\s*["']([^"']+)["']/i)?.[1]?.toLowerCase() || "";
+    if (/(^|[,\s])noindex([,\s]|$)/.test(content)) return true;
+  }
+  return false;
+}
+
+async function buildScheduledSearchPayload(contract) {
+  const targets = Array.isArray(contract?.runtime_config?.target_urls)
+    ? contract.runtime_config.target_urls.slice(0, 20)
+    : [];
+  if (!targets.length) throw new Error("search_contract_targets_missing");
+  const pages = await Promise.all(targets.map(async (url) => {
+    try {
+      const response = await fetch(url, {
+        method: "GET",
+        redirect: "follow",
+        headers: { "user-agent": "HermesAutomationEngine/1.0 search-readonly" },
+      });
+      const contentType = response.headers.get("content-type") || "";
+      const html = contentType.toLowerCase().includes("text/html") ? await response.text() : "";
+      const xRobots = String(response.headers.get("x-robots-tag") || "").toLowerCase();
+      const canonical = extractCanonicalFromHtml(html, url);
+      const indexable = response.status >= 200
+        && response.status < 400
+        && !/(^|[,\s])noindex([,\s]|$)/.test(xRobots)
+        && !htmlNoindex(html);
+      return {
+        url,
+        status: response.status,
+        canonical,
+        indexable,
+        in_sitemap: null,
+      };
+    } catch {
+      return {
+        url,
+        status: 599,
+        canonical: "",
+        indexable: false,
+        in_sitemap: null,
+      };
+    }
+  }));
+  return { pages };
+}
+
+async function buildScheduledMarketingPayload(env, contract) {
+  const requestedLimit = Number(contract?.runtime_config?.lookback_limit || 200);
+  const limit = Math.max(1, Math.min(500, Number.isInteger(requestedLimit) ? requestedLimit : 200));
+  const rows = await env.DB.prepare(
+    "SELECT content_id,slot_key,body FROM hermes_automation_content ORDER BY updated_at DESC LIMIT ?"
+  ).bind(limit).all();
+  const items = [];
+  for (const row of rows?.results || []) {
+    const contentId = clean(row?.content_id, 200);
+    const slotKey = clean(row?.slot_key, 200);
+    if (!contentId || !slotKey || typeof row?.body !== "string" || !row.body.trim()) continue;
+    items.push({
+      content_id: contentId,
+      slot_key: slotKey,
+      body_fingerprint: await sha256HexText(row.body.replace(/\s+/g, " ").trim().toLowerCase()),
+    });
+  }
+  return { items };
+}
+
+async function requiredTablesPresent(db, tableNames) {
+  const names = tableNames.map((name) => clean(name, 120)).filter(Boolean);
+  if (!names.length) return true;
+  const placeholders = names.map(() => "?").join(",");
+  const rows = await db.prepare(
+    `SELECT name FROM sqlite_master WHERE type='table' AND name IN (${placeholders})`
+  ).bind(...names).all();
+  const present = new Set((rows?.results || []).map((row) => String(row.name || "")));
+  return names.every((name) => present.has(name));
+}
+
+async function buildScheduledLogisticsPayload(env, contract) {
+  if (!await requiredTablesPresent(env.DB, ["hermes_load_sources", "hermes_load_records"])) {
+    throw new Error("logistics_source_tables_missing");
+  }
+  const rows = await env.DB.prepare(`
+    SELECT
+      s.id AS source_id,
+      COALESCE(MAX(r.last_seen_at), s.last_successful_sync) AS last_seen_at,
+      MAX(r.expires_at) AS expires_at
+    FROM hermes_load_sources s
+    LEFT JOIN hermes_load_records r
+      ON r.source_id = s.id AND r.status = 'active'
+    WHERE s.read_enabled = 1
+      AND s.ingest_enabled = 1
+      AND s.status != 'revoked'
+    GROUP BY s.id, s.last_successful_sync
+    ORDER BY MAX(s.updated_at) DESC
+    LIMIT 500
+  `).all();
+  return {
+    sources: (rows?.results || []).map((row) => ({
+      source_id: clean(row?.source_id, 200),
+      last_seen_at: row?.last_seen_at || null,
+      expires_at: row?.expires_at || null,
+    })),
+    max_age_minutes: Number(contract?.runtime_config?.max_age_minutes || 1440),
+  };
+}
+
+function buildScheduledHaeSelfImprovementPayload(scheduledAt) {
+  const observedAt = scheduledAt.toISOString();
+  const registryEvidence = pluginRuntimeRegistryEvidenceStatus(observedAt, 24);
+  const findings = [];
+  const seenJobTypes = new Set();
+
+  for (const contract of ROLE_CONTRACTS) {
+    const sourceRef = `github://officeus-create/Hermes/runtime/role-contract/${contract.job_type}`;
+    if (seenJobTypes.has(contract.job_type)) {
+      findings.push({ finding_id: `duplicate-job-type:${contract.job_type}`, source_ref: sourceRef, category: "CONTRACT_DRIFT", severity: "P0", status: "OPEN", artifact_key: "workers/automation-engine/src/role-contracts.mjs", verified: true, writer_active: false, writer_state_verified: false, observed_at: observedAt });
+    }
+    seenJobTypes.add(contract.job_type);
+    if (contract.permission_class !== "READ_ONLY") {
+      findings.push({ finding_id: `permission-drift:${contract.job_type}`, source_ref: sourceRef, category: "CONTRACT_DRIFT", severity: "P0", status: "OPEN", artifact_key: "workers/automation-engine/src/role-contracts.mjs", verified: true, writer_active: false, writer_state_verified: false, observed_at: observedAt });
+    }
+    if (contract.semantic_required && Number(contract?.runtime_config?.max_cost_usd) !== 0) {
+      findings.push({ finding_id: `semantic-budget-drift:${contract.job_type}`, source_ref: sourceRef, category: "CONTRACT_DRIFT", severity: "P0", status: "OPEN", artifact_key: "workers/automation-engine/src/role-contracts.mjs", verified: true, writer_active: false, writer_state_verified: false, observed_at: observedAt });
+    }
+  }
+
+  if (!registryEvidence.fresh) {
+    findings.push({
+      finding_id: "plugin-runtime-registry-evidence-stale",
+      source_ref: "github://officeus-create/Hermes/runtime/plugin-runtime-registry",
+      category: "EVIDENCE_OVERCLAIM",
+      severity: "P1",
+      status: "OPEN",
+      artifact_key: "workers/automation-engine/src/plugin-runtime-registry.mjs",
+      verified: true,
+      writer_active: false,
+      writer_state_verified: false,
+      observed_at: observedAt,
+    });
+  }
+
+  return { observed_at: observedAt, coverage_complete: true, findings };
+}
+
+async function buildScheduledRoleContractPayload(env, contract, scheduledAt) {
+  if (contract.job_type === "search.snapshot.evaluate") return buildScheduledSearchPayload(contract);
+  if (contract.job_type === "marketing.content.dedupe.audit") return buildScheduledMarketingPayload(env, contract);
+  if (contract.job_type === "logistics.source.freshness.audit") return buildScheduledLogisticsPayload(env, contract);
+  if (contract.job_type === "ai.gateway.readiness.audit") {
+    const providers = freeAiProviderSnapshot(env);
+    return {
+      binding_ready: Boolean(env?.AI && typeof env.AI.run === "function"),
+      gateway_id_present: Boolean(clean(env?.AI_GATEWAY_ID, 200)),
+      free_provider_ready: providers.some((provider) => provider.available),
+      paid_fallback_enabled: false,
+      budget_usd: 0,
+    };
+  }
+  if (contract.job_type === "academy.english.practice.build") {
+    const parts = chicagoParts(scheduledAt);
+    return {
+      lesson_date: `${parts.year}-${parts.month}-${parts.day}`,
+      track: "LOGISTICS",
+    };
+  }
+  if (contract.job_type === "hae.self.improvement.audit") {
+    return buildScheduledHaeSelfImprovementPayload(scheduledAt);
+  }
+  throw new Error("scheduled_role_contract_not_supported");
+}
+
+async function enqueueScheduledRoleContracts(env, scheduledAt) {
+  const slotKey = chicagoSlotKey(scheduledAt);
+  const managedJobTypes = await ownerManagedJobTypes(env.DB);
+  const eligibleContracts = ROLE_CONTRACTS.filter(
+    (contract) => !contract.semantic_required && roleContractScheduleEligible(contract, scheduledAt)
+      && !managedJobTypes.has(contract.job_type),
+  );
+  const outcomes = await Promise.all(eligibleContracts.map(async (contract) => {
+    try {
+      const payload = await buildScheduledRoleContractPayload(env, contract, scheduledAt);
+      await createGenericJob(env, {
+        job_type: contract.job_type,
+        account_key: ACCOUNT_KEY,
+        project_key: "hae-plugin-role-runtime",
+        priority: 45,
+        max_attempts: 3,
+        idempotency_key: `hae:role:${contract.job_type}:${slotKey}`,
+        policy_version: "hae-role-contract-v1",
+        payload: {
+          ...payload,
+          trigger_type: "cron",
+          scheduled_at: scheduledAt.toISOString(),
+        },
+      });
+      return 1;
+    } catch (error) {
+      await recordRuntimeEvent(env, {
+        eventType: "cron.role_contract_submit_failed",
+        messageType: `role:${contract.job_type}`,
+        slotKey,
+        errorClass: safeRuntimeErrorClass(error, "role_contract_submit_failed"),
+      });
+      return 0;
+    }
+  }));
+  return outcomes.reduce((sum, value) => sum + value, 0);
+}
+
 export default {
-  async scheduled(_controller, env, ctx) {
+  async scheduled(controller, env, ctx) {
     if (!env.DB || !env.AUTOMATION_QUEUE) return;
-    const now = new Date();
-    await enqueueDueReadbacks(env);
-    await recoverPendingPlanRuns(env);
-    await recoverPendingGenericJobs(env);
-    if (!isEligibleChicagoSlot(now)) return;
-    const slotKey = chicagoSlotKey(now);
+    const observedAt = new Date();
+    const rawScheduledTime = metricNumberOrNull(controller?.scheduledTime);
+    const scheduledAt = rawScheduledTime === null
+      ? observedAt
+      : new Date(rawScheduledTime);
     await ensureSchema(env.DB);
-    const inserted = await reserveRun(env.DB, slotKey, "cron");
-    if (!inserted) return;
-    ctx.waitUntil(enqueuePlanRun(env, slotKey));
+    const eligible = isEligibleChicagoSlot(scheduledAt);
+    try {
+      await recordCronHeartbeat(env, scheduledAt, observedAt, eligible, controller?.cron);
+    } catch (error) {
+      await recordRuntimeEvent(env, {
+        eventType: "cron.heartbeat_write_failed",
+        slotKey: chicagoSlotKey(scheduledAt),
+        errorClass: safeRuntimeErrorClass(error, "heartbeat_write_failed"),
+      });
+    }
+
+    try {
+      await enqueueScheduledHealthSnapshot(env, scheduledAt);
+    } catch (error) {
+      await recordRuntimeEvent(env, {
+        eventType: "cron.system_health_snapshot_failed",
+        messageType: "job.execute",
+        slotKey: chicagoSlotKey(scheduledAt),
+        errorClass: safeRuntimeErrorClass(error, "scheduled_health_snapshot_failed"),
+      });
+    }
+
+    try {
+      await enqueueScheduledRoleContracts(env, scheduledAt);
+    } catch (error) {
+      await recordRuntimeEvent(env, {
+        eventType: "cron.role_contract_batch_failed",
+        slotKey: chicagoSlotKey(scheduledAt),
+        errorClass: safeRuntimeErrorClass(error, "scheduled_role_contract_batch_failed"),
+      });
+    }
+
+    try {
+      await enqueueDueOwnerProcesses(env, scheduledAt, {
+        createJob: createGenericJob,
+        buildPayload: buildScheduledRoleContractPayload,
+        contractForJobType: roleContractForJobType,
+        accountKey: ACCOUNT_KEY,
+      });
+    } catch (error) {
+      await recordRuntimeEvent(env, {
+        eventType: "cron.owner_process_batch_failed",
+        slotKey: chicagoSlotKey(scheduledAt),
+        errorClass: safeRuntimeErrorClass(error, "owner_process_batch_failed"),
+      });
+    }
+
+    if (eligible) {
+      const slotKey = chicagoSlotKey(scheduledAt);
+      const inserted = await reserveRun(env.DB, slotKey, "cron");
+      if (inserted) {
+        try {
+          const enqueued = await enqueuePlanRun(env, slotKey);
+          if (!enqueued) {
+            await recordRuntimeEvent(env, {
+              eventType: "cron.current_slot_enqueue_failed",
+              messageType: "content.plan",
+              slotKey,
+              errorClass: "current_slot_enqueue_failed",
+            });
+          }
+        } catch (error) {
+          await recordRuntimeEvent(env, {
+            eventType: "cron.current_slot_enqueue_failed",
+            messageType: "content.plan",
+            slotKey,
+            errorClass: safeRuntimeErrorClass(error, "current_slot_enqueue_failed"),
+          });
+        }
+      }
+    }
+
+    for (const [eventType, maintenance] of [
+      ["cron.recover_readbacks_failed", enqueueDueReadbacks],
+      ["cron.recover_plan_runs_failed", recoverPendingPlanRuns],
+      ["cron.recover_generic_jobs_failed", recoverPendingGenericJobs],
+      ["cron.recover_capability_graphs_failed", recoverCapabilityGraphs],
+      ["cron.recover_dlq_owner_alerts_failed", recoverPendingDlqOwnerAlerts],
+    ]) {
+      try {
+        await maintenance(env);
+      } catch (error) {
+        await recordRuntimeEvent(env, {
+          eventType,
+          errorClass: safeRuntimeErrorClass(error, "scheduled_maintenance_failed"),
+        });
+      }
+    }
   },
 
   async queue(batch, env) {
+    if (batch?.queue === "hermes-automation-dlq") {
+      for (const item of batch.messages) {
+        try {
+          const outcome = await processDlqMessage(env, item);
+          await recordRuntimeEvent(env, {
+            eventType: "dlq.processed",
+            queueName: batch?.queue,
+            queueMessageId: item?.id,
+            messageSentAt: item?.timestamp,
+            messageType: item?.body?.type,
+            jobId: item?.body?.job_id,
+            contentId: item?.body?.content_id,
+            attemptCount: item?.attempts,
+            errorClass: outcome?.disposition === "OWNER_ACTION" || outcome?.disposition === "QUARANTINE"
+              ? `dlq_${String(outcome.disposition || "").toLowerCase()}`
+              : null,
+          });
+          item.ack();
+        } catch (error) {
+          await recordRuntimeEvent(env, {
+            eventType: "dlq.process_retry",
+            queueName: batch?.queue,
+            queueMessageId: item?.id,
+            messageSentAt: item?.timestamp,
+            messageType: item?.body?.type,
+            jobId: item?.body?.job_id,
+            contentId: item?.body?.content_id,
+            attemptCount: item?.attempts,
+            errorClass: safeRuntimeErrorClass(error, "dlq_runtime_failed"),
+          });
+          item.retry();
+        }
+      }
+      return;
+    }
+
     for (const item of batch.messages) {
       const payload = item.body || {};
+      const messageType = clean(payload?.type, 80) || "UNKNOWN";
       try {
-        if (payload.type === "job.execute") {
+        if (messageType === "github.ci.audit") {
+          // The canonical GitHub Actions producer authenticates the exact run and
+          // commit with its ephemeral token, then sends only a minimized snapshot
+          // through the private Cloudflare Queue. The Worker receives no GitHub
+          // credential and independently enforces deployed-main + D1 writer lease.
+          if (!env.DB) throw new Error("database_not_configured");
+          await ensureSchema(env.DB);
+          const authenticated = await verifyGithubCIQueueEnvelope(payload, {
+            db: env.DB,
+            deployedSourceSha: clean(env.HERMES_AUTOMATION_SOURCE_SHA, 80),
+          });
+          await createGenericJob(env, authenticated);
+          item.ack();
+          continue;
+        }
+        if (messageType === "github.ci.patch.propose") {
+          // READ_ONLY patch proposal intake. The source must bind to a persisted
+          // successful HOLD_REPAIR packet and the exact deployed HAE source SHA.
+          // This can create only an internal semantic candidate job in D1/Queue.
+          if (!env.DB) throw new Error("database_not_configured");
+          await ensureSchema(env.DB);
+          const authenticated = await verifyGithubCIPatchProposalEnvelope(payload, {
+            db: env.DB,
+            deployedSourceSha: clean(env.HERMES_AUTOMATION_SOURCE_SHA, 80),
+          });
+          await createGenericJob(env, authenticated);
+          item.ack();
+          continue;
+        }
+        if (messageType === "github.ci.qa.verify") {
+          // Independent GitHub Actions QA runs in a separate job/context. The
+          // Worker trusts no caller verdict until exact deployed-main, repair,
+          // proposal, patch digest and QA identity all reconcile against D1.
+          if (!env.DB) throw new Error("database_not_configured");
+          await ensureSchema(env.DB);
+          const authenticated = await verifyGithubCIIndependentQaEnvelope(payload, {
+            db: env.DB,
+            deployedSourceSha: clean(env.HERMES_AUTOMATION_SOURCE_SHA, 80),
+          });
+          await materializeIndependentQaReceipt(env.DB, authenticated);
+          item.ack();
+          continue;
+        }
+        if (messageType === "job.submit.runtime_proof") {
+          await submitRuntimeProofJob(env, payload);
+          item.ack();
+          continue;
+        }
+        if (messageType === "job.execute") {
           await processGenericJob(env, payload);
           item.ack();
           continue;
         }
-        if (payload.type === "content.plan") {
+        if (messageType === "content.plan") {
           await processPlanMessage(env, payload);
           item.ack();
           continue;
         }
-        if (payload.type === "publication.readback") {
+        if (messageType === "publication.readback") {
           await processReadbackMessage(env, payload);
           item.ack();
           continue;
         }
-        item.ack();
-      } catch {
+        await recordRuntimeEvent(env, {
+          eventType: "queue.message_unknown",
+          queueName: batch?.queue,
+          queueMessageId: item?.id,
+          messageSentAt: item?.timestamp,
+          messageType,
+          jobId: payload?.job_id,
+          contentId: payload?.content_id,
+          slotKey: payload?.slot_key,
+          attemptCount: item?.attempts,
+          errorClass: "queue_message_type_unknown",
+        });
+        item.retry();
+      } catch (error) {
+        await recordRuntimeEvent(env, {
+          eventType: "queue.message_retry",
+          queueName: batch?.queue,
+          queueMessageId: item?.id,
+          messageSentAt: item?.timestamp,
+          messageType,
+          jobId: payload?.job_id,
+          contentId: payload?.content_id,
+          slotKey: payload?.slot_key,
+          attemptCount: item?.attempts,
+          errorClass: safeRuntimeErrorClass(error, "queue_handler_failed"),
+        });
         item.retry();
       }
     }
@@ -1269,27 +2495,148 @@ export default {
         generation_mode: "deterministic_templates",
         generic_job_executor: true,
         read_only_job_types: Array.from(READ_ONLY_GENERIC_JOB_TYPES),
-        provider_transport: "windsor_connectors_api",
-        provider_configured: Boolean(windsorThreadsConfig(env)),
+        role_contract_job_types: Array.from(ROLE_CONTRACT_JOB_TYPES),
+        normal_loop_requires_paid_ai: false,
+        scheduled_role_contracts: true,
+        role_contract_cadence: "per-contract; current deterministic slice every 6 hours",
+        free_semantic_only: true,
+        paid_ai_fallback_enabled: false,
+        dlq_runtime_consumer: true,
+        dlq_external_alert_delivery_verified: false,
+        ai_cost_ledger: true,
+        default_semantic_budget_usd: 0,
+        capability_graphs: true,
+        capability_graph_permission_class: CAPABILITY_GRAPH_LIMITS.permission_class,
+        capability_graph_max_nodes: CAPABILITY_GRAPH_LIMITS.max_nodes,
+        structured_kpi_completion: true,
+        self_improvement_audit: true,
+        self_improvement_automatic_source_changes: false,
+        self_improvement_automatic_merge: false,
+        self_improvement_automatic_deploy: false,
+        free_ai_providers: freeAiProviderSnapshot(env).map(({ id, available, configured, model, reason }) => ({
+          id, available, configured, model, reason,
+        })),
+        provider_transport: metaThreadsMode(env) ? "meta_threads_graph_direct" : "windsor_connectors_api",
+        provider_configured: metaThreadsMode(env) ? Boolean(metaThreadsConfig(env)) : Boolean(windsorThreadsConfig(env)),
         publication_enabled: publicationEnabled(env),
       });
+    }
+    if (request.method === "GET" && url.pathname === "/v1/plugin-runtime-registry") {
+      if (!authorized(request, env)) return json(401, { success: false, error: "unauthorized" });
+      return json(200, { success: true, ...pluginRuntimeRegistrySnapshot() });
+    }
+
+    if (request.method === "POST" && url.pathname === "/v1/capability-graphs") {
+      if (!authorized(request, env)) return json(401, { success: false, error: "unauthorized" });
+      if (!env.DB || !env.AUTOMATION_QUEUE) return json(503, { success: false, error: "runtime_not_configured" });
+      const body = await request.json().catch(() => ({}));
+      try {
+        const created = await createCapabilityGraph(env, body, CAPABILITY_GRAPH_ROLE_CONTRACT_JOB_TYPES);
+        await dispatchCapabilityGraphReadyNodes(env, created.graph_id);
+        const snapshot = await getCapabilityGraph(env, created.graph_id);
+        return json(created.created ? 202 : 200, {
+          success: true,
+          ...created,
+          snapshot,
+        });
+      } catch (error) {
+        const code = safeRuntimeErrorClass(error, "graph_create_failed");
+        const status = code === "graph_idempotency_conflict" ? 409 : code.startsWith("graph_") ? 400 : 500;
+        return json(status, { success: false, error: code });
+      }
+    }
+
+    if (request.method === "GET" && url.pathname.startsWith("/v1/capability-graphs/")) {
+      if (!authorized(request, env)) return json(401, { success: false, error: "unauthorized" });
+      if (!env.DB) return json(503, { success: false, error: "runtime_not_configured" });
+      let graphId = "";
+      try {
+        graphId = clean(decodeURIComponent(url.pathname.slice("/v1/capability-graphs/".length)), 160);
+      } catch {
+        return json(400, { success: false, error: "graph_id_invalid" });
+      }
+      if (!graphId) return json(400, { success: false, error: "graph_id_invalid" });
+      const snapshot = await getCapabilityGraph(env, graphId);
+      if (!snapshot) return json(404, { success: false, error: "graph_not_found" });
+      return json(200, { success: true, ...snapshot });
+    }
+
+    if (request.method === "GET" && url.pathname === "/v1/role-contracts") {
+      if (!authorized(request, env)) return json(401, { success: false, error: "unauthorized" });
+      const contracts = await Promise.all(ROLE_CONTRACTS.map(async (contract) => ({
+        role_id: contract.role_id,
+        plugin_version: contract.plugin_version,
+        contract_version: contract.contract_version,
+        job_type: contract.job_type,
+        business_lane: contract.business_lane,
+        permission_class: contract.permission_class,
+        semantic_required: contract.semantic_required,
+        free_ai_policy: contract.free_ai_policy,
+        sha256: await roleContractSha256(contract),
+      })));
+      return json(200, {
+        success: true,
+        engine: "hermes-automation-engine",
+        paid_fallback_enabled: false,
+        contracts,
+      });
+    }
+    if (request.method === "GET" && url.pathname === "/v1/schedule-migrations") {
+      if (!authorized(request, env)) return json(401, { success: false, error: "unauthorized" });
+      return json(200, {
+        success: true,
+        engine: "hermes-automation-engine",
+        ...taskMigrationSnapshot(ROLE_CONTRACT_JOB_TYPES),
+      });
+    }
+    if (request.method === "GET" && url.pathname === "/v1/ai-usage") {
+      if (!authorized(request, env)) return json(401, { success: false, error: "unauthorized" });
+      if (!env.DB) return json(503, { success: false, error: "runtime_not_configured" });
+      const limit = Math.max(1, Math.min(100, Number(url.searchParams.get("limit") || 50) || 50));
+      return json(200, { success: true, ...(await aiUsageLedgerSnapshot(env, limit)) });
+    }
+    if (request.method === "GET" && url.pathname === "/v1/dlq-runtime") {
+      if (!authorized(request, env)) return json(401, { success: false, error: "unauthorized" });
+      if (!env.DB) return json(503, { success: false, error: "runtime_not_configured" });
+      const limit = Math.max(1, Math.min(100, Number(url.searchParams.get("limit") || 50) || 50));
+      return json(200, { success: true, ...(await dlqRuntimeSnapshot(env, limit)) });
     }
     if (request.method === "GET" && url.pathname === "/v1/health") {
       if (!authorized(request, env)) return json(401, { success: false, error: "unauthorized" });
       return json(200, { success: true, ...(await health(env)) });
     }
+    if (request.method === "GET" && url.pathname === "/v1/social-account-readiness") {
+      if (!authorized(request, env)) return json(401, { success: false, error: "unauthorized" });
+      if (!env.DB) return json(503, { success: false, error: "runtime_not_configured" });
+      return json(200, await socialAccountReadinessSnapshot(env));
+    }
+    if (request.method === "POST" && url.pathname === "/v1/social-reply-preflight") {
+      if (!authorized(request, env)) return json(401, { success: false, error: "unauthorized" });
+      if (!env.DB) return json(503, { success: false, error: "runtime_not_configured" });
+      const body = await request.json().catch(() => ({}));
+      const result = await socialReplyPreflight(env, body);
+      if (!result.ok) {
+        const invalid = ["social_business_lane_invalid","social_reply_target_invalid","social_reply_root_invalid","social_reply_text_invalid"].includes(result.error_class);
+        const unavailable = ["database_not_configured","hermes_logistics_meta_credentials_not_ready","progressopro_hae_token_key_bridge_missing","progressopro_threads_connection_table_missing","progressopro_threads_connection_missing"].includes(result.error_class);
+        return json(invalid ? 400 : unavailable ? 503 : 409, { success: false, ...result });
+      }
+      return json(200, { success: true, ...result });
+    }
     if (request.method === "POST" && url.pathname === "/v1/jobs") {
       if (!authorized(request, env)) return json(401, { success: false, error: "unauthorized" });
       if (!env.DB || !env.AUTOMATION_QUEUE) return json(503, { success: false, error: "runtime_not_configured" });
       const body = await request.json().catch(() => ({}));
+      if (Object.hasOwn(body || {}, "internal_submission")) {
+        return json(400, { success: false, error: "internal_submission_forbidden" });
+      }
       try {
         const created = await createGenericJob(env, body);
         return json(created.created ? 202 : 200, { success: true, ...created });
       } catch (error) {
-        const code = clean(error?.message, 160) || "job_create_failed";
+        const code = safeRuntimeErrorClass(error, "job_create_failed");
         const status = code === "idempotency_key_conflict"
           ? 409
-          : code.startsWith("historical_") || ["job_type_not_allowed", "business_lane_required", "idempotency_key_required", "payload_not_serializable", "payload_too_large"].includes(code) ? 400 : 500;
+          : ["historical_", "search_", "marketing_", "source_", "work_", "dispatch_", "knowledge_", "technology_", "gateway_", "growth_", "market_", "mention_", "academy_"].some((prefix) => code.startsWith(prefix)) || ["job_type_not_allowed", "business_lane_required", "role_contract_business_lane_mismatch", "semantic_job_internal_only", "idempotency_key_required", "payload_not_serializable", "payload_too_large", "max_age_minutes_invalid"].includes(code) ? 400 : 500;
         return json(status, { success: false, error: code });
       }
     }

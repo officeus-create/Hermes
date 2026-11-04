@@ -7,7 +7,7 @@
  */
 
 body:has(.detail-page-logistics) .logistics-commercial-links {
-  --logistics-commercial-accent: var(--hermes-logistics, #1e88ff);
+  --logistics-commercial-accent: var(--hermes-logistics, #2f6bf6);
   /* Raw Logistics blue is reserved for icons/borders. Mix with ink for small text so
      the semantic color remains recognizable while preserving readable contrast on Pearl. */
   --logistics-commercial-accent-text: color-mix(in srgb, var(--logistics-commercial-accent) 80%, var(--hermes-ink));

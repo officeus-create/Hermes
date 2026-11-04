@@ -1,7 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 
-const root = new URL("../", import.meta.url).pathname;
+const root = decodeURIComponent(new URL("../", import.meta.url).pathname);
 const assert = (condition, message) => { if (!condition) throw new Error(message); };
 const text = (path) => readFile(join(root, path), "utf8");
 
@@ -17,7 +17,8 @@ assert(launcher.includes("hermes-connect-header-launcher"), "Launcher: header va
 
 const header = await text("src/components/SiteHeader.astro");
 assert(header.includes("HermesConnectLauncher"), "Header: missing Hermes Connect launcher.");
-assert(header.includes('variant="header"') && header.includes('variant="mobile"'), "Header: desktop and mobile launcher variants are required.");
+assert(header.includes('variant="header"'), "Header: existing desktop Connect launcher is required on non-Home pages.");
+assert(header.includes('class="mobile-products-menu"') && header.includes('data-product="connect"'), "Header: mobile users must retain one canonical Connect product entry without a duplicate launcher.");
 assert(header.includes('href="/services/hermes-connect/repair-shops/"'), "Header: current Repair Shop product entry is required.");
 assert(header.includes("isHermesConnectRoute"), "Header: Connect-specific language routing is required.");
 assert(header.includes("isLoadBoardRoute") && header.includes("isHermesConnectExperienceRoute"), "Header: canonical Load Board must retain the Hermes Connect experience shell without creating another Load Board route.");
@@ -74,7 +75,8 @@ for (const label of ["Home", "Inbox", "Customers", "Calendar", "Sales", "Marketi
 }
 assert(hub.includes("/demos/hermes-connect/mark-option02.svg"), "Hub: approved Option 02 mark must remain as the static product signature.");
 assert(!hub.includes("hc-knot-float") && !hub.includes('class="hc-knot"'), "Hub: decorative infinity/knot object must not return to perpetual motion.");
-assert(hub.includes('{ name: "Load Analysis + RPM", href: "/load-board/#load-analysis" }'), "Hub: Load Analysis must route into the canonical Load Board decision path.");
+assert(hub.includes('{ name: "Load Analysis + RPM", href: "/load-board/#load-analysis", state: "CURRENT" }'), "Hub: Load Analysis must route into the canonical Load Board decision path.");
+assert(hub.includes('{ name: "Business Command Center", href: "/services/hermes-connect/command-center/", state: "PRIVATE PRODUCT · PUBLIC DEMO" }'), "Hub: Business Command Center must be classified as a real private product with a public sample, not a generic reference capability.");
 assert(hub.includes("Hermes Connect Labs") && hub.includes("REFERENCE"), "Hub: reference capabilities must remain subordinate and clearly classified.");
 assert(!hub.includes("connect.hermeslogisticsus.com/workspace"), "Hub: legacy workspace link must not be user-facing.");
 assert(hub.includes("$0 during Repair Shop setup · $99/month after setup if you continue"), "Hub: current free-setup to Founding Shop continuation offer must remain explicit.");
@@ -112,7 +114,6 @@ assert(foundingPlan.includes('fetch("/api/logistics-lead"'), "Founding Plan: rea
 assert(foundingPlan.includes("No card is charged during setup"), "Founding Plan: no-charge-during-setup boundary must remain explicit.");
 
 const capabilityPages = [
-  "ai-command-center.astro",
   "unified-inbox.astro",
   "load-analyzer.astro",
   "rate-negotiator.astro",
@@ -120,6 +121,17 @@ const capabilityPages = [
   "roi-calculator.astro",
   "business-automation.astro",
 ];
+const businessCommandCenter = await text("src/pages/services/hermes-connect/command-center/index.astro");
+const commandCenterShell = await text("src/components/HermesBusinessCommandCenterShell.astro");
+const commandCenterContent = await text("src/components/HermesCommandCenterPublicContent.astro");
+const commandCenterPreview = await text("src/components/HermesCommandCenterPublicPreview.astro");
+const retiredAiCommandCenter = await text("src/pages/services/hermes-connect/ai-command-center.astro");
+assert(businessCommandCenter.includes("HermesCommandCenterPublicContent") && commandCenterContent.includes("HermesBusinessCommandCenterShell") && commandCenterContent.includes("HermesCommandCenterPublicPreview"), "Business Command Center: canonical public page must delegate to the shared shell and public-safe sample preview.");
+assert(businessCommandCenter.includes('robots="index,follow,max-image-preview:large"'), "Business Command Center: public owner must be indexable.");
+assert(commandCenterPreview.includes("SAMPLE DATA") && commandCenterPreview.includes("No Hermes private data"), "Business Command Center: public demo must be explicitly synthetic and private-data free.");
+assert(commandCenterShell.includes('mode:"public"|"private"'), "Business Command Center: public and private surfaces must share one shell.");
+assert(retiredAiCommandCenter.includes("Business Command Center") && retiredAiCommandCenter.includes('robots="noindex,follow"'), "AI Command Center: retired identity must route users toward the unified Business Command Center without competing in search.");
+
 for (const file of capabilityPages) {
   const source = await text(`src/pages/services/hermes-connect/${file}`);
   assert(source.includes("HermesConnectCapabilityPage"), `${file}: must use the shared Connect capability design system.`);

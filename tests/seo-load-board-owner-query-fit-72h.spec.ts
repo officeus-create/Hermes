@@ -19,8 +19,10 @@ test("canonical load board owner matches load-board intent with one truthful mix
 });
 
 test("load board truth boundary keeps live feed, structural preview, preview freight and booking semantics separate", () => {
-  expect(liveEnhancer).toContain("fetchJson('/api/load-board/active?type=load')");
-  expect(liveEnhancer).toContain("fetchJson('/api/load-board/active?type=capacity')");
+  expect(liveEnhancer).toContain('url.searchParams.set("type", type)');
+  expect(liveEnhancer).toContain('if (requestedEquipment) url.searchParams.set("equipment", requestedEquipment)');
+  expect(liveEnhancer).toContain('fetchJson(activeFeedUrl("load"))');
+  expect(liveEnhancer).toContain('fetchJson(activeFeedUrl("capacity"))');
   expect(liveEnhancer).toContain("fetchJson('/api/load-board/summary')");
   expect(liveEnhancer).toContain("Interface preview rows are not inventory.");
   expect(liveEnhancer).toContain("Only the real count above represents active, unexpired records.");

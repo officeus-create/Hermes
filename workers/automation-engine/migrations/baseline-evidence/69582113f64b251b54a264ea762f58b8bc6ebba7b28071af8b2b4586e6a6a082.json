@@ -1,0 +1,1263 @@
+{
+  "evidence_type": "hae_migration_baseline_candidate",
+  "candidate_version": 1,
+  "promotion_state": "ELIGIBLE_FOR_MANUAL_PROMOTION",
+  "canonical_database": "hermes-connect-prototype",
+  "database_binding_fingerprint": "sha256:00dfd9d715ebb9755dde5a5c461f69de3578fb6f5a843e326fbb47a0e5572b1f",
+  "schema_snapshot": {
+    "schema_version": 1,
+    "evidence_type": "hae_d1_schema_snapshot",
+    "target_sha": "f58eba92af8adac8bf88132c5d795d65df49df96",
+    "database_name": "hermes-connect-prototype",
+    "database_binding_fingerprint": "sha256:00dfd9d715ebb9755dde5a5c461f69de3578fb6f5a843e326fbb47a0e5572b1f",
+    "normalization": "sqlite_master_non_internal_v2",
+    "object_count": 203,
+    "objects": [
+      {
+        "type": "index",
+        "name": "idx_academy_business_catalog",
+        "tbl_name": "hermes_academy_business_profiles",
+        "sql": "CREATE INDEX idx_academy_business_catalog ON hermes_academy_business_profiles(catalog_opt_in, catalog_status, country_code, city)"
+      },
+      {
+        "type": "index",
+        "name": "idx_academy_business_company",
+        "tbl_name": "hermes_academy_business_profiles",
+        "sql": "CREATE UNIQUE INDEX idx_academy_business_company ON hermes_academy_business_profiles(company_id) WHERE company_id IS NOT NULL"
+      },
+      {
+        "type": "index",
+        "name": "idx_academy_enrollments_program_state",
+        "tbl_name": "academy_enrollments",
+        "sql": "CREATE INDEX idx_academy_enrollments_program_state ON academy_enrollments(program_slug, state)"
+      },
+      {
+        "type": "index",
+        "name": "idx_academy_enrollments_specialist",
+        "tbl_name": "academy_enrollments",
+        "sql": "CREATE INDEX idx_academy_enrollments_specialist ON academy_enrollments(specialist_id)"
+      },
+      {
+        "type": "index",
+        "name": "idx_academy_progress_specialist_program",
+        "tbl_name": "academy_lesson_progress",
+        "sql": "CREATE INDEX idx_academy_progress_specialist_program ON academy_lesson_progress(specialist_id, program_slug)"
+      },
+      {
+        "type": "index",
+        "name": "idx_academy_reviews_submission",
+        "tbl_name": "academy_submission_reviews",
+        "sql": "CREATE INDEX idx_academy_reviews_submission ON academy_submission_reviews(submission_id, created_at)"
+      },
+      {
+        "type": "index",
+        "name": "idx_academy_submissions_program_state",
+        "tbl_name": "academy_submissions",
+        "sql": "CREATE INDEX idx_academy_submissions_program_state ON academy_submissions(program_slug, state, created_at)"
+      },
+      {
+        "type": "index",
+        "name": "idx_academy_submissions_specialist",
+        "tbl_name": "academy_submissions",
+        "sql": "CREATE INDEX idx_academy_submissions_specialist ON academy_submissions(specialist_id, created_at)"
+      },
+      {
+        "type": "index",
+        "name": "idx_account_engagement_due",
+        "tbl_name": "account_engagement",
+        "sql": "CREATE INDEX idx_account_engagement_due ON account_engagement(email_enabled, last_active_at, last_reminder_at)"
+      },
+      {
+        "type": "index",
+        "name": "idx_auth_identities_email",
+        "tbl_name": "hermes_auth_identities",
+        "sql": "CREATE INDEX idx_auth_identities_email ON hermes_auth_identities(provider, email)"
+      },
+      {
+        "type": "index",
+        "name": "idx_beauty_salon_team_owner",
+        "tbl_name": "beauty_salon_team_members",
+        "sql": "CREATE INDEX idx_beauty_salon_team_owner\n    ON beauty_salon_team_members(owner_specialist_id, salon_id, is_active)"
+      },
+      {
+        "type": "index",
+        "name": "idx_beauty_salons_owner",
+        "tbl_name": "beauty_salons",
+        "sql": "CREATE UNIQUE INDEX idx_beauty_salons_owner ON beauty_salons(owner_specialist_id)"
+      },
+      {
+        "type": "index",
+        "name": "idx_beauty_salons_slug",
+        "tbl_name": "beauty_salons",
+        "sql": "CREATE UNIQUE INDEX idx_beauty_salons_slug ON beauty_salons(slug)"
+      },
+      {
+        "type": "index",
+        "name": "idx_bookings_access_token",
+        "tbl_name": "bookings",
+        "sql": "CREATE UNIQUE INDEX idx_bookings_access_token ON bookings(access_token)"
+      },
+      {
+        "type": "index",
+        "name": "idx_business_social_creative_intakes_business",
+        "tbl_name": "hermes_business_social_creative_intakes",
+        "sql": "CREATE INDEX idx_business_social_creative_intakes_business\n    ON hermes_business_social_creative_intakes(business_key, created_at DESC)"
+      },
+      {
+        "type": "index",
+        "name": "idx_business_social_credentials_owner",
+        "tbl_name": "hermes_business_social_credentials",
+        "sql": "CREATE INDEX idx_business_social_credentials_owner\n    ON hermes_business_social_credentials(owner_specialist_id, business_key, provider)"
+      },
+      {
+        "type": "index",
+        "name": "idx_business_social_publications_business",
+        "tbl_name": "hermes_business_social_publications",
+        "sql": "CREATE INDEX idx_business_social_publications_business\n    ON hermes_business_social_publications(business_key, provider, created_at DESC)"
+      },
+      {
+        "type": "index",
+        "name": "idx_catalog_business_country_day",
+        "tbl_name": "catalog_business_country_views_daily",
+        "sql": "CREATE INDEX idx_catalog_business_country_day ON catalog_business_country_views_daily(catalog_business_id, day)"
+      },
+      {
+        "type": "index",
+        "name": "idx_catalog_business_events_business_day",
+        "tbl_name": "catalog_business_events_daily",
+        "sql": "CREATE INDEX idx_catalog_business_events_business_day ON catalog_business_events_daily(catalog_business_id, day DESC)"
+      },
+      {
+        "type": "index",
+        "name": "idx_catalog_business_inquiries_business",
+        "tbl_name": "catalog_business_inquiries",
+        "sql": "CREATE INDEX idx_catalog_business_inquiries_business ON catalog_business_inquiries(catalog_business_id, created_at DESC)"
+      },
+      {
+        "type": "index",
+        "name": "idx_catalog_business_inquiries_owner",
+        "tbl_name": "catalog_business_inquiries",
+        "sql": "CREATE INDEX idx_catalog_business_inquiries_owner ON catalog_business_inquiries(owner_specialist_id, created_at DESC)"
+      },
+      {
+        "type": "index",
+        "name": "idx_catalog_business_inquiries_retention",
+        "tbl_name": "catalog_business_inquiries",
+        "sql": "CREATE INDEX idx_catalog_business_inquiries_retention ON catalog_business_inquiries(retention_until)"
+      },
+      {
+        "type": "index",
+        "name": "idx_catalog_weekly_report_owner",
+        "tbl_name": "catalog_weekly_report_deliveries",
+        "sql": "CREATE INDEX idx_catalog_weekly_report_owner ON catalog_weekly_report_deliveries(owner_specialist_id, period_end DESC)"
+      },
+      {
+        "type": "index",
+        "name": "idx_hae_content_state",
+        "tbl_name": "hermes_automation_content",
+        "sql": "CREATE INDEX idx_hae_content_state ON hermes_automation_content(state, updated_at)"
+      },
+      {
+        "type": "index",
+        "name": "idx_hae_dlq_alert_status",
+        "tbl_name": "hermes_automation_dlq_items",
+        "sql": "CREATE INDEX idx_hae_dlq_alert_status ON hermes_automation_dlq_items(alert_status,updated_at)"
+      },
+      {
+        "type": "index",
+        "name": "idx_hae_dlq_disposition_updated",
+        "tbl_name": "hermes_automation_dlq_items",
+        "sql": "CREATE INDEX idx_hae_dlq_disposition_updated ON hermes_automation_dlq_items(disposition,updated_at)"
+      },
+      {
+        "type": "index",
+        "name": "idx_hae_graph_nodes_state",
+        "tbl_name": "hermes_automation_task_nodes",
+        "sql": "CREATE INDEX idx_hae_graph_nodes_state ON hermes_automation_task_nodes(graph_id,state,updated_at)"
+      },
+      {
+        "type": "index",
+        "name": "idx_hae_graphs_state_updated",
+        "tbl_name": "hermes_automation_task_graphs",
+        "sql": "CREATE INDEX idx_hae_graphs_state_updated ON hermes_automation_task_graphs(state,updated_at)"
+      },
+      {
+        "type": "index",
+        "name": "idx_hae_heartbeats_scheduled",
+        "tbl_name": "hermes_automation_heartbeats",
+        "sql": "CREATE INDEX idx_hae_heartbeats_scheduled ON hermes_automation_heartbeats(scheduled_at)"
+      },
+      {
+        "type": "index",
+        "name": "idx_hae_job_events_job_created",
+        "tbl_name": "hermes_automation_job_events",
+        "sql": "CREATE INDEX idx_hae_job_events_job_created ON hermes_automation_job_events(job_id, created_at)"
+      },
+      {
+        "type": "index",
+        "name": "idx_hae_jobs_state_available",
+        "tbl_name": "hermes_automation_jobs",
+        "sql": "CREATE INDEX idx_hae_jobs_state_available ON hermes_automation_jobs(state, available_at, priority DESC)"
+      },
+      {
+        "type": "index",
+        "name": "idx_hae_publication_status",
+        "tbl_name": "hermes_automation_publications",
+        "sql": "CREATE INDEX idx_hae_publication_status ON hermes_automation_publications(status, updated_at)"
+      },
+      {
+        "type": "index",
+        "name": "idx_hae_runtime_events_created",
+        "tbl_name": "hermes_automation_runtime_events",
+        "sql": "CREATE INDEX idx_hae_runtime_events_created ON hermes_automation_runtime_events(created_at)"
+      },
+      {
+        "type": "index",
+        "name": "idx_hermes_business_context_default",
+        "tbl_name": "hermes_business_contexts",
+        "sql": "CREATE UNIQUE INDEX idx_hermes_business_context_default\n    ON hermes_business_contexts(owner_specialist_id, vertical_key)\n    WHERE is_default = 1"
+      },
+      {
+        "type": "index",
+        "name": "idx_hermes_business_context_owner",
+        "tbl_name": "hermes_business_contexts",
+        "sql": "CREATE INDEX idx_hermes_business_context_owner\n    ON hermes_business_contexts(owner_specialist_id, vertical_key, business_id)"
+      },
+      {
+        "type": "index",
+        "name": "idx_hermes_company_catalog",
+        "tbl_name": "hermes_company_profiles",
+        "sql": "CREATE INDEX idx_hermes_company_catalog ON hermes_company_profiles(catalog_opt_in, catalog_status, state, city)"
+      },
+      {
+        "type": "index",
+        "name": "idx_hermes_company_loadboard",
+        "tbl_name": "hermes_company_profiles",
+        "sql": "CREATE INDEX idx_hermes_company_loadboard ON hermes_company_profiles(owner_specialist_id, load_board_access)"
+      },
+      {
+        "type": "index",
+        "name": "idx_hermes_service_context_context",
+        "tbl_name": "hermes_service_contexts",
+        "sql": "CREATE INDEX idx_hermes_service_context_context\n    ON hermes_service_contexts(context_id)"
+      },
+      {
+        "type": "index",
+        "name": "idx_hermes_site_traffic_day",
+        "tbl_name": "hermes_site_traffic_daily",
+        "sql": "CREATE INDEX idx_hermes_site_traffic_day ON hermes_site_traffic_daily(day)"
+      },
+      {
+        "type": "index",
+        "name": "idx_home_service_leads_owner_city",
+        "tbl_name": "hermes_home_service_leads",
+        "sql": "CREATE INDEX idx_home_service_leads_owner_city ON hermes_home_service_leads(owner_specialist_id,city)"
+      },
+      {
+        "type": "index",
+        "name": "idx_home_service_leads_owner_source",
+        "tbl_name": "hermes_home_service_leads",
+        "sql": "CREATE INDEX idx_home_service_leads_owner_source ON hermes_home_service_leads(owner_specialist_id,source)"
+      },
+      {
+        "type": "index",
+        "name": "idx_home_service_leads_owner_status",
+        "tbl_name": "hermes_home_service_leads",
+        "sql": "CREATE INDEX idx_home_service_leads_owner_status ON hermes_home_service_leads(owner_specialist_id,status,updated_at)"
+      },
+      {
+        "type": "index",
+        "name": "idx_hr_answers_candidate",
+        "tbl_name": "hr_interview_answers",
+        "sql": "CREATE INDEX idx_hr_answers_candidate ON hr_interview_answers(candidate_id,submitted_at)"
+      },
+      {
+        "type": "index",
+        "name": "idx_hr_calibration_candidate",
+        "tbl_name": "hr_calibration_reviews",
+        "sql": "CREATE INDEX idx_hr_calibration_candidate ON hr_calibration_reviews(candidate_id,created_at)"
+      },
+      {
+        "type": "index",
+        "name": "idx_hr_candidates_email",
+        "tbl_name": "hr_candidates",
+        "sql": "CREATE INDEX idx_hr_candidates_email ON hr_candidates(email)"
+      },
+      {
+        "type": "index",
+        "name": "idx_hr_candidates_source",
+        "tbl_name": "hr_candidates",
+        "sql": "CREATE INDEX idx_hr_candidates_source ON hr_candidates(source,created_at)"
+      },
+      {
+        "type": "index",
+        "name": "idx_hr_candidates_track_status",
+        "tbl_name": "hr_candidates",
+        "sql": "CREATE INDEX idx_hr_candidates_track_status ON hr_candidates(track,status,created_at)"
+      },
+      {
+        "type": "index",
+        "name": "idx_hr_events_candidate",
+        "tbl_name": "hr_events",
+        "sql": "CREATE INDEX idx_hr_events_candidate ON hr_events(candidate_id,occurred_at)"
+      },
+      {
+        "type": "index",
+        "name": "idx_hr_evidence_candidate",
+        "tbl_name": "hr_evidence_items",
+        "sql": "CREATE INDEX idx_hr_evidence_candidate ON hr_evidence_items(candidate_id,created_at)"
+      },
+      {
+        "type": "index",
+        "name": "idx_hr_question_path_candidate",
+        "tbl_name": "hr_question_path_events",
+        "sql": "CREATE INDEX idx_hr_question_path_candidate ON hr_question_path_events(candidate_id,occurred_at)"
+      },
+      {
+        "type": "index",
+        "name": "idx_hr_reviews_candidate",
+        "tbl_name": "hr_reviews",
+        "sql": "CREATE INDEX idx_hr_reviews_candidate ON hr_reviews(candidate_id,created_at)"
+      },
+      {
+        "type": "index",
+        "name": "idx_hr_routes_candidate",
+        "tbl_name": "hr_route_decisions",
+        "sql": "CREATE INDEX idx_hr_routes_candidate ON hr_route_decisions(candidate_id,created_at)"
+      },
+      {
+        "type": "index",
+        "name": "idx_hr_scores_candidate",
+        "tbl_name": "hr_score_snapshots",
+        "sql": "CREATE INDEX idx_hr_scores_candidate ON hr_score_snapshots(candidate_id,created_at)"
+      },
+      {
+        "type": "index",
+        "name": "idx_internal_ai_events_scope_task",
+        "tbl_name": "hermes_internal_ai_events",
+        "sql": "CREATE INDEX idx_internal_ai_events_scope_task ON hermes_internal_ai_events(organization_scope, task_id, id)"
+      },
+      {
+        "type": "index",
+        "name": "idx_internal_ai_tasks_scope_status_created",
+        "tbl_name": "hermes_internal_ai_tasks",
+        "sql": "CREATE INDEX idx_internal_ai_tasks_scope_status_created ON hermes_internal_ai_tasks(organization_scope, status, created_at)"
+      },
+      {
+        "type": "index",
+        "name": "idx_load_interest_company",
+        "tbl_name": "hermes_load_interest_requests",
+        "sql": "CREATE INDEX idx_load_interest_company ON hermes_load_interest_requests(company_id, status, updated_at DESC)"
+      },
+      {
+        "type": "index",
+        "name": "idx_load_interest_record",
+        "tbl_name": "hermes_load_interest_requests",
+        "sql": "CREATE INDEX idx_load_interest_record ON hermes_load_interest_requests(load_record_id, status, updated_at DESC)"
+      },
+      {
+        "type": "index",
+        "name": "idx_load_quarantine_pending",
+        "tbl_name": "hermes_load_quarantine",
+        "sql": "CREATE INDEX idx_load_quarantine_pending ON hermes_load_quarantine(status, observed_at DESC)"
+      },
+      {
+        "type": "index",
+        "name": "idx_load_quarantine_source",
+        "tbl_name": "hermes_load_quarantine",
+        "sql": "CREATE INDEX idx_load_quarantine_source ON hermes_load_quarantine(source_id, observed_at DESC)"
+      },
+      {
+        "type": "index",
+        "name": "idx_load_records_active",
+        "tbl_name": "hermes_load_records",
+        "sql": "CREATE INDEX idx_load_records_active ON hermes_load_records(status, visibility, expires_at DESC)"
+      },
+      {
+        "type": "index",
+        "name": "idx_load_records_dedupe",
+        "tbl_name": "hermes_load_records",
+        "sql": "CREATE INDEX idx_load_records_dedupe ON hermes_load_records(dedupe_key, observed_at DESC)"
+      },
+      {
+        "type": "index",
+        "name": "idx_load_records_lane",
+        "tbl_name": "hermes_load_records",
+        "sql": "CREATE INDEX idx_load_records_lane ON hermes_load_records(origin_state, destination_state, equipment, expires_at DESC)"
+      },
+      {
+        "type": "index",
+        "name": "idx_load_records_provider_id",
+        "tbl_name": "hermes_load_records",
+        "sql": "CREATE INDEX idx_load_records_provider_id ON hermes_load_records(provider_record_id)"
+      },
+      {
+        "type": "index",
+        "name": "idx_load_records_score",
+        "tbl_name": "hermes_load_records",
+        "sql": "CREATE INDEX idx_load_records_score ON hermes_load_records(source_quality_score DESC, observed_at DESC)"
+      },
+      {
+        "type": "index",
+        "name": "idx_load_records_source",
+        "tbl_name": "hermes_load_records",
+        "sql": "CREATE INDEX idx_load_records_source ON hermes_load_records(source_id, last_seen_at DESC)"
+      },
+      {
+        "type": "index",
+        "name": "idx_load_records_type_equipment",
+        "tbl_name": "hermes_load_records",
+        "sql": "CREATE INDEX idx_load_records_type_equipment ON hermes_load_records(record_type, equipment, expires_at DESC)"
+      },
+      {
+        "type": "index",
+        "name": "idx_load_source_requests_company",
+        "tbl_name": "hermes_load_source_requests",
+        "sql": "CREATE INDEX idx_load_source_requests_company ON hermes_load_source_requests(company_id, status, updated_at DESC)"
+      },
+      {
+        "type": "index",
+        "name": "idx_load_source_requests_source",
+        "tbl_name": "hermes_load_source_requests",
+        "sql": "CREATE INDEX idx_load_source_requests_source ON hermes_load_source_requests(source_id, connection_state, updated_at DESC)"
+      },
+      {
+        "type": "index",
+        "name": "idx_load_source_requests_status",
+        "tbl_name": "hermes_load_source_requests",
+        "sql": "CREATE INDEX idx_load_source_requests_status ON hermes_load_source_requests(status, updated_at DESC)"
+      },
+      {
+        "type": "index",
+        "name": "idx_load_sources_mailbox",
+        "tbl_name": "hermes_load_sources",
+        "sql": "CREATE INDEX idx_load_sources_mailbox ON hermes_load_sources(mailbox_email)"
+      },
+      {
+        "type": "index",
+        "name": "idx_load_sources_status",
+        "tbl_name": "hermes_load_sources",
+        "sql": "CREATE INDEX idx_load_sources_status ON hermes_load_sources(status, ingest_enabled)"
+      },
+      {
+        "type": "index",
+        "name": "idx_managed_client_access_company",
+        "tbl_name": "hermes_managed_client_access",
+        "sql": "CREATE INDEX idx_managed_client_access_company ON hermes_managed_client_access(company_id,active)"
+      },
+      {
+        "type": "index",
+        "name": "idx_market_posts_company",
+        "tbl_name": "hermes_load_market_posts",
+        "sql": "CREATE INDEX idx_market_posts_company ON hermes_load_market_posts(company_id, status, updated_at DESC)"
+      },
+      {
+        "type": "index",
+        "name": "idx_market_posts_record",
+        "tbl_name": "hermes_load_market_posts",
+        "sql": "CREATE INDEX idx_market_posts_record ON hermes_load_market_posts(record_id, status)"
+      },
+      {
+        "type": "index",
+        "name": "idx_password_reset_expiry",
+        "tbl_name": "password_reset_tokens",
+        "sql": "CREATE INDEX idx_password_reset_expiry ON password_reset_tokens(expires_at)"
+      },
+      {
+        "type": "index",
+        "name": "idx_password_reset_specialist",
+        "tbl_name": "password_reset_tokens",
+        "sql": "CREATE INDEX idx_password_reset_specialist ON password_reset_tokens(specialist_id, created_at)"
+      },
+      {
+        "type": "index",
+        "name": "idx_registration_alerts_specialist",
+        "tbl_name": "hermes_registration_alerts",
+        "sql": "CREATE INDEX idx_registration_alerts_specialist ON hermes_registration_alerts(specialist_id, created_at DESC)"
+      },
+      {
+        "type": "index",
+        "name": "idx_registration_alerts_status_created",
+        "tbl_name": "hermes_registration_alerts",
+        "sql": "CREATE INDEX idx_registration_alerts_status_created ON hermes_registration_alerts(status, created_at DESC)"
+      },
+      {
+        "type": "index",
+        "name": "idx_registration_flags_synthetic",
+        "tbl_name": "hermes_registration_flags",
+        "sql": "CREATE INDEX idx_registration_flags_synthetic ON hermes_registration_flags(synthetic, updated_at DESC)"
+      },
+      {
+        "type": "index",
+        "name": "idx_repair_shop_access_state",
+        "tbl_name": "repair_shop_access",
+        "sql": "CREATE INDEX idx_repair_shop_access_state ON repair_shop_access(access_state)"
+      },
+      {
+        "type": "index",
+        "name": "idx_repair_shop_booking_history_booking",
+        "tbl_name": "repair_shop_booking_history",
+        "sql": "CREATE INDEX idx_repair_shop_booking_history_booking ON repair_shop_booking_history(booking_id, changed_at)"
+      },
+      {
+        "type": "index",
+        "name": "idx_repair_shop_booking_history_owner",
+        "tbl_name": "repair_shop_booking_history",
+        "sql": "CREATE INDEX idx_repair_shop_booking_history_owner ON repair_shop_booking_history(owner_specialist_id, changed_at)"
+      },
+      {
+        "type": "index",
+        "name": "idx_repair_shop_booking_vehicles_owner",
+        "tbl_name": "repair_shop_booking_vehicles",
+        "sql": "CREATE INDEX idx_repair_shop_booking_vehicles_owner ON repair_shop_booking_vehicles(owner_specialist_id, updated_at)"
+      },
+      {
+        "type": "index",
+        "name": "idx_repair_shop_bookings_active_window",
+        "tbl_name": "repair_shop_bookings",
+        "sql": "CREATE INDEX idx_repair_shop_bookings_active_window\n     ON repair_shop_bookings(shop_id, appointment_date, start_time, end_time, status)"
+      },
+      {
+        "type": "index",
+        "name": "idx_repair_shop_bookings_owner_date",
+        "tbl_name": "repair_shop_bookings",
+        "sql": "CREATE INDEX idx_repair_shop_bookings_owner_date ON repair_shop_bookings(owner_specialist_id, appointment_date, start_time)"
+      },
+      {
+        "type": "index",
+        "name": "idx_repair_shop_bookings_shop_date",
+        "tbl_name": "repair_shop_bookings",
+        "sql": "CREATE INDEX idx_repair_shop_bookings_shop_date ON repair_shop_bookings(shop_id, appointment_date, start_time)"
+      },
+      {
+        "type": "index",
+        "name": "idx_repair_shop_bookings_technician_date",
+        "tbl_name": "repair_shop_bookings",
+        "sql": "CREATE INDEX idx_repair_shop_bookings_technician_date ON repair_shop_bookings(technician_id, appointment_date, start_time)"
+      },
+      {
+        "type": "index",
+        "name": "idx_repair_shop_calendar_connections_shop",
+        "tbl_name": "repair_shop_calendar_connections",
+        "sql": "CREATE INDEX idx_repair_shop_calendar_connections_shop\n     ON repair_shop_calendar_connections(shop_id, owner_specialist_id, provider, status)"
+      },
+      {
+        "type": "index",
+        "name": "idx_repair_shop_feedback_owner_created",
+        "tbl_name": "repair_shop_feedback",
+        "sql": "CREATE INDEX idx_repair_shop_feedback_owner_created ON repair_shop_feedback(owner_specialist_id, created_at DESC)"
+      },
+      {
+        "type": "index",
+        "name": "idx_repair_shop_followups_owner",
+        "tbl_name": "repair_shop_booking_followups",
+        "sql": "CREATE INDEX idx_repair_shop_followups_owner ON repair_shop_booking_followups(owner_specialist_id, needed, updated_at)"
+      },
+      {
+        "type": "index",
+        "name": "idx_repair_shop_prospects_claim_state",
+        "tbl_name": "repair_shop_prospects",
+        "sql": "CREATE INDEX idx_repair_shop_prospects_claim_state ON repair_shop_prospects(claim_state, updated_at DESC)"
+      },
+      {
+        "type": "index",
+        "name": "idx_repair_shop_prospects_source_ref",
+        "tbl_name": "repair_shop_prospects",
+        "sql": "CREATE UNIQUE INDEX idx_repair_shop_prospects_source_ref ON repair_shop_prospects(source_ref)"
+      },
+      {
+        "type": "index",
+        "name": "idx_repair_shop_sales_attribution_code_registered",
+        "tbl_name": "repair_shop_sales_attribution",
+        "sql": "CREATE INDEX idx_repair_shop_sales_attribution_code_registered ON repair_shop_sales_attribution(salesperson_code, registered_at DESC)"
+      },
+      {
+        "type": "index",
+        "name": "idx_repair_shop_staff_owner_active",
+        "tbl_name": "repair_shop_staff",
+        "sql": "CREATE INDEX idx_repair_shop_staff_owner_active ON repair_shop_staff(owner_specialist_id, active, name)"
+      },
+      {
+        "type": "index",
+        "name": "idx_repair_shop_staff_schedule_owner",
+        "tbl_name": "repair_shop_staff_schedule",
+        "sql": "CREATE INDEX idx_repair_shop_staff_schedule_owner ON repair_shop_staff_schedule(owner_specialist_id,shop_id,staff_id,day_of_week)"
+      },
+      {
+        "type": "index",
+        "name": "idx_repair_shop_staff_shop_name",
+        "tbl_name": "repair_shop_staff",
+        "sql": "CREATE UNIQUE INDEX idx_repair_shop_staff_shop_name ON repair_shop_staff(shop_id, name)"
+      },
+      {
+        "type": "index",
+        "name": "idx_repair_shops_catalog",
+        "tbl_name": "repair_shops",
+        "sql": "CREATE INDEX idx_repair_shops_catalog ON repair_shops(catalog_opt_in, updated_at)"
+      },
+      {
+        "type": "index",
+        "name": "idx_repair_shops_owner",
+        "tbl_name": "repair_shops",
+        "sql": "CREATE UNIQUE INDEX idx_repair_shops_owner ON repair_shops(owner_specialist_id)"
+      },
+      {
+        "type": "index",
+        "name": "idx_repair_shops_slug",
+        "tbl_name": "repair_shops",
+        "sql": "CREATE UNIQUE INDEX idx_repair_shops_slug ON repair_shops(slug)"
+      },
+      {
+        "type": "index",
+        "name": "idx_services_owner",
+        "tbl_name": "services",
+        "sql": "CREATE INDEX idx_services_owner ON services(owner_specialist_id)"
+      },
+      {
+        "type": "index",
+        "name": "idx_specialists_telegram_id",
+        "tbl_name": "specialists",
+        "sql": "CREATE UNIQUE INDEX idx_specialists_telegram_id ON specialists(telegram_id) WHERE telegram_id IS NOT NULL"
+      },
+      {
+        "type": "index",
+        "name": "idx_staff_members_specialist",
+        "tbl_name": "staff_members",
+        "sql": "CREATE INDEX idx_staff_members_specialist ON staff_members(specialist_id)"
+      },
+      {
+        "type": "index",
+        "name": "idx_threads_publications_brand_created",
+        "tbl_name": "hermes_social_threads_publications",
+        "sql": "CREATE INDEX idx_threads_publications_brand_created ON hermes_social_threads_publications(brand_key, created_at)"
+      },
+      {
+        "type": "table",
+        "name": "academy_enrollments",
+        "tbl_name": "academy_enrollments",
+        "sql": "CREATE TABLE academy_enrollments (\n      id TEXT PRIMARY KEY,\n      specialist_id TEXT NOT NULL,\n      program_slug TEXT NOT NULL CHECK (program_slug IN ('us-logistics-operations','marketing')),\n      state TEXT NOT NULL CHECK (state IN ('applied','approved','enrolled','paused','completed','cancelled')),\n      participation_model TEXT NOT NULL CHECK (participation_model IN ('free_practice','paid_cohort','unspecified')),\n      cohort_code TEXT,\n      created_at TEXT NOT NULL,\n      updated_at TEXT NOT NULL,\n      UNIQUE(specialist_id, program_slug)\n    )"
+      },
+      {
+        "type": "table",
+        "name": "academy_learner_profiles",
+        "tbl_name": "academy_learner_profiles",
+        "sql": "CREATE TABLE academy_learner_profiles (\n      specialist_id TEXT PRIMARY KEY,\n      preferred_language TEXT CHECK (preferred_language IS NULL OR preferred_language IN ('en','ru','uk','es','it','fr')),\n      timezone TEXT,\n      created_at TEXT NOT NULL,\n      updated_at TEXT NOT NULL\n    )"
+      },
+      {
+        "type": "table",
+        "name": "academy_lesson_progress",
+        "tbl_name": "academy_lesson_progress",
+        "sql": "CREATE TABLE academy_lesson_progress (\n      specialist_id TEXT NOT NULL,\n      program_slug TEXT NOT NULL CHECK (program_slug IN ('us-logistics-operations','marketing')),\n      lesson_id TEXT NOT NULL,\n      state TEXT NOT NULL CHECK (state IN ('not_started','in_progress','completed')),\n      started_at TEXT,\n      completed_at TEXT,\n      updated_at TEXT NOT NULL,\n      UNIQUE(specialist_id, program_slug, lesson_id)\n    )"
+      },
+      {
+        "type": "table",
+        "name": "academy_reviewer_access",
+        "tbl_name": "academy_reviewer_access",
+        "sql": "CREATE TABLE academy_reviewer_access (\n      specialist_id TEXT PRIMARY KEY,\n      active INTEGER NOT NULL DEFAULT 0 CHECK (active IN (0,1)),\n      program_scope TEXT CHECK (program_scope IS NULL OR program_scope IN ('us-logistics-operations','marketing')),\n      created_at TEXT NOT NULL,\n      updated_at TEXT NOT NULL\n    )"
+      },
+      {
+        "type": "table",
+        "name": "academy_submission_reviews",
+        "tbl_name": "academy_submission_reviews",
+        "sql": "CREATE TABLE academy_submission_reviews (\n      id TEXT PRIMARY KEY,\n      submission_id TEXT NOT NULL,\n      reviewer_specialist_id TEXT NOT NULL,\n      decision TEXT NOT NULL CHECK (decision IN ('changes_requested','accepted')),\n      feedback_text TEXT NOT NULL,\n      created_at TEXT NOT NULL\n    )"
+      },
+      {
+        "type": "table",
+        "name": "academy_submissions",
+        "tbl_name": "academy_submissions",
+        "sql": "CREATE TABLE academy_submissions (\n      id TEXT PRIMARY KEY,\n      specialist_id TEXT NOT NULL,\n      program_slug TEXT NOT NULL CHECK (program_slug IN ('us-logistics-operations','marketing')),\n      lesson_id TEXT NOT NULL,\n      submission_type TEXT NOT NULL CHECK (submission_type IN ('written_reflection','evidence_link')),\n      text_content TEXT,\n      evidence_url TEXT,\n      state TEXT NOT NULL CHECK (state IN ('submitted','changes_requested','accepted')),\n      created_at TEXT NOT NULL,\n      updated_at TEXT NOT NULL\n    )"
+      },
+      {
+        "type": "table",
+        "name": "account_engagement",
+        "tbl_name": "account_engagement",
+        "sql": "CREATE TABLE account_engagement (\n      specialist_id TEXT PRIMARY KEY,\n      last_active_at TEXT NOT NULL,\n      last_reminder_at TEXT,\n      email_enabled INTEGER NOT NULL DEFAULT 1,\n      locale TEXT NOT NULL DEFAULT 'en',\n      updated_at TEXT NOT NULL\n    )"
+      },
+      {
+        "type": "table",
+        "name": "availability_slots",
+        "tbl_name": "availability_slots",
+        "sql": "CREATE TABLE availability_slots (\n  slot TEXT PRIMARY KEY\n)"
+      },
+      {
+        "type": "table",
+        "name": "beauty_salon_team_members",
+        "tbl_name": "beauty_salon_team_members",
+        "sql": "CREATE TABLE beauty_salon_team_members (\n      id TEXT PRIMARY KEY,\n      salon_id TEXT NOT NULL,\n      owner_specialist_id TEXT NOT NULL,\n      display_name TEXT NOT NULL,\n      role_label TEXT NOT NULL,\n      public_title TEXT,\n      is_public INTEGER NOT NULL DEFAULT 0 CHECK (is_public IN (0,1)),\n      is_active INTEGER NOT NULL DEFAULT 1 CHECK (is_active IN (0,1)),\n      created_at TEXT NOT NULL,\n      updated_at TEXT NOT NULL\n    )"
+      },
+      {
+        "type": "table",
+        "name": "beauty_salons",
+        "tbl_name": "beauty_salons",
+        "sql": "CREATE TABLE beauty_salons (\n      id TEXT PRIMARY KEY,\n      owner_specialist_id TEXT NOT NULL UNIQUE,\n      name TEXT NOT NULL,\n      slug TEXT NOT NULL UNIQUE,\n      phone TEXT,\n      website TEXT,\n      address_line1 TEXT,\n      city TEXT NOT NULL,\n      region TEXT,\n      postal_code TEXT,\n      country_code TEXT NOT NULL,\n      timezone TEXT NOT NULL,\n      created_at TEXT NOT NULL,\n      updated_at TEXT NOT NULL\n    )"
+      },
+      {
+        "type": "table",
+        "name": "bookings",
+        "tbl_name": "bookings",
+        "sql": "CREATE TABLE bookings (\n  id TEXT PRIMARY KEY,\n  specialist_id TEXT NOT NULL REFERENCES specialists(id) ON DELETE CASCADE,\n  service_id TEXT NOT NULL REFERENCES services(id),\n  slot TEXT NOT NULL,\n  status TEXT NOT NULL DEFAULT 'test_booking_created',\n  created_at TEXT NOT NULL\n, client_name TEXT, client_email TEXT, client_phone TEXT, access_token TEXT, contact_method TEXT, contact_handle TEXT, booking_type TEXT NOT NULL DEFAULT 'appointment', meeting_topic TEXT, meeting_link TEXT, staff_id TEXT REFERENCES staff_members(id) ON DELETE SET NULL)"
+      },
+      {
+        "type": "table",
+        "name": "catalog_business_country_views_daily",
+        "tbl_name": "catalog_business_country_views_daily",
+        "sql": "CREATE TABLE catalog_business_country_views_daily (\n    day TEXT NOT NULL, catalog_business_id TEXT NOT NULL, country TEXT NOT NULL,\n    view_count INTEGER NOT NULL DEFAULT 0, updated_at TEXT NOT NULL,\n    PRIMARY KEY(day, catalog_business_id, country)\n  )"
+      },
+      {
+        "type": "table",
+        "name": "catalog_business_events_daily",
+        "tbl_name": "catalog_business_events_daily",
+        "sql": "CREATE TABLE catalog_business_events_daily (\n      day TEXT NOT NULL,\n      catalog_business_id TEXT NOT NULL,\n      event_type TEXT NOT NULL,\n      event_count INTEGER NOT NULL DEFAULT 0,\n      updated_at TEXT NOT NULL,\n      PRIMARY KEY(day, catalog_business_id, event_type)\n    )"
+      },
+      {
+        "type": "table",
+        "name": "catalog_business_inquiries",
+        "tbl_name": "catalog_business_inquiries",
+        "sql": "CREATE TABLE catalog_business_inquiries (\n      id TEXT PRIMARY KEY,\n      request_id TEXT NOT NULL UNIQUE,\n      payload_hash TEXT NOT NULL,\n      catalog_business_id TEXT NOT NULL,\n      catalog_profile TEXT NOT NULL,\n      catalog_source_ref TEXT,\n      shop_id TEXT,\n      owner_specialist_id TEXT,\n      business_name TEXT NOT NULL,\n      contact_name TEXT NOT NULL,\n      contact_email TEXT NOT NULL,\n      contact_phone TEXT,\n      contact_whatsapp TEXT,\n      contact_telegram TEXT,\n      preferred_language TEXT,\n      preferred_contact_time TEXT,\n      message TEXT NOT NULL,\n      services_json TEXT NOT NULL,\n      attribution_json TEXT NOT NULL,\n      status TEXT NOT NULL DEFAULT 'new'\n        CHECK (status IN ('new','seen','contacted','closed')),\n      internal_delivery_status TEXT NOT NULL DEFAULT 'pending'\n        CHECK (internal_delivery_status IN ('pending','delivered','failed')),\n      owner_delivery_status TEXT NOT NULL DEFAULT 'skipped'\n        CHECK (owner_delivery_status IN ('pending','delivered','failed','skipped')),\n      owner_delivery_at TEXT,\n      retention_until TEXT NOT NULL,\n      created_at TEXT NOT NULL,\n      updated_at TEXT NOT NULL\n    , delivery_payload_json TEXT)"
+      },
+      {
+        "type": "table",
+        "name": "catalog_inquiry_delivery_receipts",
+        "tbl_name": "catalog_inquiry_delivery_receipts",
+        "sql": "CREATE TABLE catalog_inquiry_delivery_receipts (\n    request_id TEXT NOT NULL REFERENCES catalog_business_inquiries(request_id) ON DELETE CASCADE,\n    recipient_kind TEXT NOT NULL CHECK(recipient_kind IN ('internal','owner')),\n    recipient_fingerprint TEXT,\n    state TEXT NOT NULL CHECK(state IN ('ready','sending','accepted','failed','uncertain','skipped')),\n    attempt_token TEXT, attempt_count INTEGER NOT NULL DEFAULT 0, attempted_at TEXT,\n    accepted_at TEXT, provider_message_id TEXT, error_code TEXT, updated_at TEXT NOT NULL,\n    PRIMARY KEY(request_id,recipient_kind)\n  )"
+      },
+      {
+        "type": "table",
+        "name": "catalog_weekly_report_deliveries",
+        "tbl_name": "catalog_weekly_report_deliveries",
+        "sql": "CREATE TABLE catalog_weekly_report_deliveries (\n      report_key TEXT PRIMARY KEY,\n      shop_id TEXT NOT NULL,\n      owner_specialist_id TEXT NOT NULL,\n      period_start TEXT NOT NULL,\n      period_end TEXT NOT NULL,\n      owner_status TEXT NOT NULL DEFAULT 'pending',\n      internal_status TEXT NOT NULL DEFAULT 'pending',\n      owner_delivered_at TEXT,\n      internal_delivered_at TEXT,\n      created_at TEXT NOT NULL,\n      updated_at TEXT NOT NULL\n    )"
+      },
+      {
+        "type": "table",
+        "name": "client_notes",
+        "tbl_name": "client_notes",
+        "sql": "CREATE TABLE client_notes (\n  specialist_id TEXT NOT NULL REFERENCES specialists(id) ON DELETE CASCADE,\n  client_email TEXT NOT NULL,\n  note TEXT NOT NULL DEFAULT '',\n  updated_at TEXT NOT NULL,\n  PRIMARY KEY (specialist_id, client_email)\n)"
+      },
+      {
+        "type": "table",
+        "name": "d1_migrations",
+        "tbl_name": "d1_migrations",
+        "sql": "CREATE TABLE \"d1_migrations\"(\n\t\tid         INTEGER PRIMARY KEY AUTOINCREMENT,\n\t\tname       TEXT UNIQUE,\n\t\tapplied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL\n)"
+      },
+      {
+        "type": "table",
+        "name": "hermes_academy_business_profiles",
+        "tbl_name": "hermes_academy_business_profiles",
+        "sql": "CREATE TABLE hermes_academy_business_profiles (\n      id TEXT PRIMARY KEY,\n      company_id TEXT,\n      owner_specialist_id TEXT NOT NULL UNIQUE,\n      business_name TEXT NOT NULL,\n      slug TEXT NOT NULL UNIQUE,\n      academy_type TEXT NOT NULL DEFAULT 'business_academy',\n      city TEXT NOT NULL,\n      region TEXT,\n      country_code TEXT NOT NULL DEFAULT 'UA',\n      website TEXT,\n      phone TEXT,\n      timezone TEXT,\n      catalog_opt_in INTEGER NOT NULL DEFAULT 0,\n      catalog_status TEXT NOT NULL DEFAULT 'self_submitted',\n      created_at TEXT NOT NULL,\n      updated_at TEXT NOT NULL\n    )"
+      },
+      {
+        "type": "table",
+        "name": "hermes_auth_identities",
+        "tbl_name": "hermes_auth_identities",
+        "sql": "CREATE TABLE hermes_auth_identities (\n      provider TEXT NOT NULL,\n      provider_subject TEXT NOT NULL,\n      specialist_id TEXT NOT NULL,\n      email TEXT NOT NULL,\n      created_at TEXT NOT NULL,\n      updated_at TEXT NOT NULL,\n      PRIMARY KEY(provider, provider_subject),\n      UNIQUE(provider, specialist_id)\n    )"
+      },
+      {
+        "type": "table",
+        "name": "hermes_automation_content",
+        "tbl_name": "hermes_automation_content",
+        "sql": "CREATE TABLE hermes_automation_content (\n      content_id TEXT PRIMARY KEY,\n      account_key TEXT NOT NULL,\n      platform TEXT NOT NULL,\n      slot_key TEXT NOT NULL,\n      template_id TEXT NOT NULL,\n      variant_key TEXT NOT NULL,\n      destination_url TEXT NOT NULL,\n      body TEXT NOT NULL,\n      state TEXT NOT NULL,\n      provider_post_id TEXT,\n      permalink TEXT,\n      last_error_class TEXT,\n      created_at TEXT NOT NULL,\n      updated_at TEXT NOT NULL,\n      UNIQUE(account_key, platform, slot_key)\n    )"
+      },
+      {
+        "type": "table",
+        "name": "hermes_automation_dlq_items",
+        "tbl_name": "hermes_automation_dlq_items",
+        "sql": "CREATE TABLE hermes_automation_dlq_items (\n      dlq_item_id TEXT PRIMARY KEY,\n      source_queue_message_id TEXT,\n      message_type TEXT NOT NULL,\n      job_id TEXT,\n      content_id TEXT,\n      body_sha256 TEXT NOT NULL,\n      d1_state TEXT,\n      idempotency_key TEXT,\n      disposition TEXT NOT NULL,\n      reason TEXT NOT NULL,\n      action_status TEXT NOT NULL,\n      alert_status TEXT NOT NULL,\n      alert_attempt_count INTEGER NOT NULL DEFAULT 0,\n      alert_claimed_at TEXT,\n      alert_delivered_at TEXT,\n      alert_provider_message_id TEXT,\n      alert_channel TEXT,\n      alert_receipt_ref TEXT,\n      alert_last_error_class TEXT,\n      redrive_count INTEGER NOT NULL DEFAULT 0,\n      first_seen_at TEXT NOT NULL,\n      updated_at TEXT NOT NULL,\n      last_error_class TEXT\n    )"
+      },
+      {
+        "type": "table",
+        "name": "hermes_automation_heartbeats",
+        "tbl_name": "hermes_automation_heartbeats",
+        "sql": "CREATE TABLE hermes_automation_heartbeats (\n      heartbeat_id TEXT PRIMARY KEY,\n      trigger_type TEXT NOT NULL,\n      cron_expression TEXT,\n      scheduled_at TEXT NOT NULL,\n      observed_at TEXT NOT NULL,\n      execution_lag_ms INTEGER NOT NULL,\n      chicago_slot_key TEXT NOT NULL,\n      eligible INTEGER NOT NULL,\n      source_sha TEXT,\n      automation_mode TEXT,\n      publication_config TEXT,\n      publication_enabled INTEGER NOT NULL,\n      created_at TEXT NOT NULL\n    )"
+      },
+      {
+        "type": "table",
+        "name": "hermes_automation_job_events",
+        "tbl_name": "hermes_automation_job_events",
+        "sql": "CREATE TABLE hermes_automation_job_events (\n      event_id TEXT PRIMARY KEY,\n      job_id TEXT NOT NULL,\n      event_type TEXT NOT NULL,\n      from_state TEXT,\n      to_state TEXT NOT NULL,\n      step TEXT,\n      evidence_ref TEXT,\n      provider_ref TEXT,\n      error_class TEXT,\n      created_at TEXT NOT NULL,\n      FOREIGN KEY(job_id) REFERENCES hermes_automation_jobs(job_id)\n    )"
+      },
+      {
+        "type": "table",
+        "name": "hermes_automation_jobs",
+        "tbl_name": "hermes_automation_jobs",
+        "sql": "CREATE TABLE hermes_automation_jobs (\n      job_id TEXT PRIMARY KEY,\n      job_type TEXT NOT NULL,\n      business_lane TEXT NOT NULL,\n      account_key TEXT,\n      project_key TEXT,\n      priority INTEGER NOT NULL DEFAULT 50,\n      state TEXT NOT NULL,\n      current_step TEXT,\n      available_at TEXT,\n      attempt_count INTEGER NOT NULL DEFAULT 0,\n      max_attempts INTEGER NOT NULL DEFAULT 3,\n      idempotency_key TEXT NOT NULL UNIQUE,\n      policy_version TEXT NOT NULL,\n      payload_json TEXT NOT NULL DEFAULT '{}',\n      result_json TEXT,\n      last_error_class TEXT,\n      created_at TEXT NOT NULL,\n      updated_at TEXT NOT NULL,\n      completed_at TEXT\n    )"
+      },
+      {
+        "type": "table",
+        "name": "hermes_automation_publications",
+        "tbl_name": "hermes_automation_publications",
+        "sql": "CREATE TABLE hermes_automation_publications (\n      idempotency_key TEXT PRIMARY KEY,\n      content_id TEXT NOT NULL UNIQUE,\n      account_key TEXT NOT NULL,\n      platform TEXT NOT NULL,\n      status TEXT NOT NULL,\n      attempt_count INTEGER NOT NULL DEFAULT 0,\n      readback_attempt INTEGER NOT NULL DEFAULT 0,\n      next_readback_at TEXT,\n      provider_post_id TEXT,\n      permalink TEXT,\n      last_error_class TEXT,\n      created_at TEXT NOT NULL,\n      updated_at TEXT NOT NULL\n    )"
+      },
+      {
+        "type": "table",
+        "name": "hermes_automation_runs",
+        "tbl_name": "hermes_automation_runs",
+        "sql": "CREATE TABLE hermes_automation_runs (\n      id TEXT PRIMARY KEY,\n      trigger_type TEXT NOT NULL,\n      account_key TEXT NOT NULL,\n      platform TEXT NOT NULL,\n      slot_key TEXT NOT NULL,\n      status TEXT NOT NULL,\n      last_error_class TEXT,\n      created_at TEXT NOT NULL,\n      updated_at TEXT NOT NULL,\n      UNIQUE(account_key, platform, slot_key)\n    )"
+      },
+      {
+        "type": "table",
+        "name": "hermes_automation_runtime_events",
+        "tbl_name": "hermes_automation_runtime_events",
+        "sql": "CREATE TABLE hermes_automation_runtime_events (\n      event_id TEXT PRIMARY KEY,\n      event_type TEXT NOT NULL,\n      queue_name TEXT,\n      queue_message_id TEXT,\n      message_sent_at TEXT,\n      message_type TEXT,\n      job_id TEXT,\n      content_id TEXT,\n      slot_key TEXT,\n      attempt_count INTEGER,\n      error_class TEXT,\n      created_at TEXT NOT NULL\n    )"
+      },
+      {
+        "type": "table",
+        "name": "hermes_automation_task_graphs",
+        "tbl_name": "hermes_automation_task_graphs",
+        "sql": "CREATE TABLE hermes_automation_task_graphs (\n      graph_id TEXT PRIMARY KEY,\n      idempotency_key TEXT NOT NULL UNIQUE,\n      goal TEXT NOT NULL,\n      graph_sha256 TEXT NOT NULL,\n      routing_mode TEXT NOT NULL,\n      state TEXT NOT NULL,\n      node_count INTEGER NOT NULL,\n      created_at TEXT NOT NULL,\n      updated_at TEXT NOT NULL,\n      completed_at TEXT\n    )"
+      },
+      {
+        "type": "table",
+        "name": "hermes_automation_task_nodes",
+        "tbl_name": "hermes_automation_task_nodes",
+        "sql": "CREATE TABLE hermes_automation_task_nodes (\n      graph_id TEXT NOT NULL,\n      node_id TEXT NOT NULL,\n      job_type TEXT NOT NULL,\n      role_owner TEXT,\n      state TEXT NOT NULL,\n      job_id TEXT UNIQUE,\n      depends_json TEXT NOT NULL,\n      payload_json TEXT NOT NULL,\n      kpi_json TEXT NOT NULL,\n      completion_json TEXT,\n      error_class TEXT,\n      created_at TEXT NOT NULL,\n      updated_at TEXT NOT NULL,\n      PRIMARY KEY(graph_id,node_id),\n      FOREIGN KEY(graph_id) REFERENCES hermes_automation_task_graphs(graph_id)\n    )"
+      },
+      {
+        "type": "table",
+        "name": "hermes_business_contexts",
+        "tbl_name": "hermes_business_contexts",
+        "sql": "CREATE TABLE hermes_business_contexts (\n      id TEXT PRIMARY KEY,\n      owner_specialist_id TEXT NOT NULL,\n      vertical_key TEXT NOT NULL,\n      business_id TEXT NOT NULL,\n      is_default INTEGER NOT NULL DEFAULT 0 CHECK (is_default IN (0,1)),\n      created_at TEXT NOT NULL,\n      updated_at TEXT NOT NULL,\n      UNIQUE(owner_specialist_id, vertical_key, business_id)\n    )"
+      },
+      {
+        "type": "table",
+        "name": "hermes_business_social_creative_intakes",
+        "tbl_name": "hermes_business_social_creative_intakes",
+        "sql": "CREATE TABLE hermes_business_social_creative_intakes (\n      id TEXT PRIMARY KEY,\n      business_key TEXT NOT NULL,\n      owner_specialist_id TEXT NOT NULL,\n      vertical_key TEXT NOT NULL,\n      business_id TEXT NOT NULL,\n      source_kind TEXT NOT NULL DEFAULT 'google_drive',\n      source_url TEXT NOT NULL,\n      brief TEXT,\n      language TEXT,\n      market TEXT,\n      status TEXT NOT NULL DEFAULT 'source_registered',\n      draft_json TEXT,\n      analyzed_at TEXT,\n      last_error_class TEXT,\n      created_at TEXT NOT NULL,\n      updated_at TEXT NOT NULL\n    )"
+      },
+      {
+        "type": "table",
+        "name": "hermes_business_social_credentials",
+        "tbl_name": "hermes_business_social_credentials",
+        "sql": "CREATE TABLE hermes_business_social_credentials (\n      id TEXT PRIMARY KEY,\n      business_key TEXT NOT NULL,\n      owner_specialist_id TEXT NOT NULL,\n      vertical_key TEXT NOT NULL,\n      business_id TEXT NOT NULL,\n      provider TEXT NOT NULL,\n      state TEXT NOT NULL DEFAULT 'ready_for_owner_auth',\n      account_name TEXT,\n      username TEXT,\n      external_account_ref TEXT,\n      token_ciphertext TEXT,\n      token_expires_at TEXT,\n      granted_scope TEXT,\n      candidate_labels_json TEXT,\n      connected_at TEXT,\n      updated_at TEXT NOT NULL,\n      last_error_class TEXT,\n      UNIQUE(business_key, provider)\n    )"
+      },
+      {
+        "type": "table",
+        "name": "hermes_business_social_drive_connections",
+        "tbl_name": "hermes_business_social_drive_connections",
+        "sql": "CREATE TABLE hermes_business_social_drive_connections (\n    business_key TEXT PRIMARY KEY,\n    owner_specialist_id TEXT NOT NULL,\n    state TEXT NOT NULL DEFAULT 'connected',\n    account_email TEXT,\n    token_ciphertext TEXT NOT NULL,\n    granted_scope TEXT,\n    token_expires_at TEXT,\n    connected_at TEXT NOT NULL,\n    updated_at TEXT NOT NULL,\n    last_error_class TEXT\n  )"
+      },
+      {
+        "type": "table",
+        "name": "hermes_business_social_drive_oauth_states",
+        "tbl_name": "hermes_business_social_drive_oauth_states",
+        "sql": "CREATE TABLE hermes_business_social_drive_oauth_states (\n    state_hash TEXT PRIMARY KEY,\n    business_key TEXT NOT NULL,\n    owner_specialist_id TEXT NOT NULL,\n    vertical_key TEXT NOT NULL,\n    expires_at TEXT NOT NULL,\n    created_at TEXT NOT NULL\n  )"
+      },
+      {
+        "type": "table",
+        "name": "hermes_business_social_oauth_states",
+        "tbl_name": "hermes_business_social_oauth_states",
+        "sql": "CREATE TABLE hermes_business_social_oauth_states (\n      state_hash TEXT PRIMARY KEY,\n      business_key TEXT NOT NULL,\n      business_id TEXT NOT NULL,\n      vertical_key TEXT NOT NULL,\n      owner_specialist_id TEXT NOT NULL,\n      provider TEXT NOT NULL,\n      expires_at TEXT NOT NULL,\n      created_at TEXT NOT NULL\n    )"
+      },
+      {
+        "type": "table",
+        "name": "hermes_business_social_publications",
+        "tbl_name": "hermes_business_social_publications",
+        "sql": "CREATE TABLE hermes_business_social_publications (\n      id TEXT PRIMARY KEY,\n      business_key TEXT NOT NULL,\n      provider TEXT NOT NULL,\n      object_type TEXT NOT NULL,\n      idempotency_key TEXT NOT NULL UNIQUE,\n      payload_fingerprint TEXT NOT NULL,\n      status TEXT NOT NULL,\n      provider_media_id TEXT,\n      permalink TEXT,\n      requested_by TEXT NOT NULL,\n      created_at TEXT NOT NULL,\n      updated_at TEXT NOT NULL,\n      last_error_class TEXT\n    )"
+      },
+      {
+        "type": "table",
+        "name": "hermes_carrier_board_entitlements",
+        "tbl_name": "hermes_carrier_board_entitlements",
+        "sql": "CREATE TABLE hermes_carrier_board_entitlements (\n      company_id TEXT PRIMARY KEY,\n      status TEXT NOT NULL CHECK(status IN ('active','revoked')),\n      reviewed_by_specialist_id TEXT NOT NULL,\n      reviewed_at TEXT NOT NULL,\n      note TEXT\n    )"
+      },
+      {
+        "type": "table",
+        "name": "hermes_company_profiles",
+        "tbl_name": "hermes_company_profiles",
+        "sql": "CREATE TABLE hermes_company_profiles (\n      id TEXT PRIMARY KEY,\n      owner_specialist_id TEXT NOT NULL UNIQUE,\n      company_name TEXT NOT NULL,\n      slug TEXT NOT NULL UNIQUE,\n      company_type TEXT NOT NULL,\n      city TEXT NOT NULL,\n      state TEXT NOT NULL,\n      website TEXT,\n      authority_number TEXT,\n      catalog_opt_in INTEGER NOT NULL DEFAULT 1,\n      catalog_status TEXT NOT NULL DEFAULT 'self_submitted',\n      load_board_access INTEGER NOT NULL DEFAULT 1,\n      created_at TEXT NOT NULL,\n      updated_at TEXT NOT NULL\n    , phone TEXT, address_line1 TEXT, postal_code TEXT, country_code TEXT NOT NULL DEFAULT 'US', timezone TEXT, public_source_ref TEXT, management_mode TEXT NOT NULL DEFAULT 'owner_managed', catalog_publication_basis TEXT NOT NULL DEFAULT 'owner_opt_in')"
+      },
+      {
+        "type": "table",
+        "name": "hermes_first5_provisioning_receipts",
+        "tbl_name": "hermes_first5_provisioning_receipts",
+        "sql": "CREATE TABLE hermes_first5_provisioning_receipts (operation_id TEXT PRIMARY KEY,specialist_id TEXT NOT NULL,status TEXT NOT NULL CHECK (status IN ('pending','completed')),created_at TEXT NOT NULL,completed_at TEXT)"
+      },
+      {
+        "type": "table",
+        "name": "hermes_home_service_leads",
+        "tbl_name": "hermes_home_service_leads",
+        "sql": "CREATE TABLE hermes_home_service_leads (\n      id TEXT PRIMARY KEY,\n      owner_specialist_id TEXT NOT NULL,\n      company_id TEXT NOT NULL,\n      source TEXT NOT NULL DEFAULT 'direct',\n      search_query TEXT,\n      customer_name TEXT NOT NULL,\n      customer_phone TEXT,\n      customer_email TEXT,\n      address_line1 TEXT,\n      postal_code TEXT,\n      city TEXT,\n      job_type TEXT,\n      photo_refs_json TEXT NOT NULL DEFAULT '[]',\n      approximate_volume TEXT,\n      lead_cost_cents INTEGER NOT NULL DEFAULT 0,\n      quote_cents INTEGER NOT NULL DEFAULT 0,\n      status TEXT NOT NULL DEFAULT 'new',\n      job_start_at TEXT,\n      assigned_driver TEXT,\n      final_amount_cents INTEGER NOT NULL DEFAULT 0,\n      disposal_cost_cents INTEGER NOT NULL DEFAULT 0,\n      duration_minutes INTEGER NOT NULL DEFAULT 0,\n      payment_method TEXT,\n      loss_reason TEXT,\n      follow_up_at TEXT,\n      review_requested_at TEXT,\n      review_received_at TEXT,\n      notes TEXT,\n      created_at TEXT NOT NULL,\n      updated_at TEXT NOT NULL\n    , lead_cost_known INTEGER NOT NULL DEFAULT 0 CHECK (lead_cost_known IN (0,1)), lead_cost_source_ref TEXT, quote_known INTEGER NOT NULL DEFAULT 0 CHECK (quote_known IN (0,1)), quote_source_ref TEXT, final_amount_known INTEGER NOT NULL DEFAULT 0 CHECK (final_amount_known IN (0,1)), final_amount_source_ref TEXT, disposal_cost_known INTEGER NOT NULL DEFAULT 0 CHECK (disposal_cost_known IN (0,1)), disposal_cost_source_ref TEXT)"
+      },
+      {
+        "type": "table",
+        "name": "hermes_home_service_profiles",
+        "tbl_name": "hermes_home_service_profiles",
+        "sql": "CREATE TABLE hermes_home_service_profiles (\n      id TEXT PRIMARY KEY,\n      owner_specialist_id TEXT NOT NULL UNIQUE,\n      company_id TEXT NOT NULL UNIQUE,\n      service_subtype TEXT NOT NULL DEFAULT 'other',\n      services_json TEXT NOT NULL DEFAULT '[]',\n      service_areas_json TEXT NOT NULL DEFAULT '[]',\n      public_summary TEXT,\n      semantic_core_ref TEXT,\n      content_status TEXT NOT NULL DEFAULT 'ready_for_clustering',\n      created_at TEXT NOT NULL,\n      updated_at TEXT NOT NULL\n    )"
+      },
+      {
+        "type": "table",
+        "name": "hermes_internal_ai_events",
+        "tbl_name": "hermes_internal_ai_events",
+        "sql": "CREATE TABLE hermes_internal_ai_events (\n    id INTEGER PRIMARY KEY AUTOINCREMENT,\n    organization_scope TEXT NOT NULL CHECK (organization_scope = 'hermes_internal'),\n    task_id TEXT NOT NULL,\n    event_type TEXT NOT NULL,\n    message TEXT NOT NULL,\n    created_at TEXT NOT NULL\n  )"
+      },
+      {
+        "type": "table",
+        "name": "hermes_internal_ai_runner_state",
+        "tbl_name": "hermes_internal_ai_runner_state",
+        "sql": "CREATE TABLE hermes_internal_ai_runner_state (\n    id TEXT PRIMARY KEY,\n    organization_scope TEXT NOT NULL CHECK (organization_scope = 'hermes_internal'),\n    last_seen_at TEXT NOT NULL,\n    repo_sha TEXT,\n    runtime_version TEXT\n  )"
+      },
+      {
+        "type": "table",
+        "name": "hermes_internal_ai_tasks",
+        "tbl_name": "hermes_internal_ai_tasks",
+        "sql": "CREATE TABLE hermes_internal_ai_tasks (\n    id TEXT PRIMARY KEY,\n    organization_scope TEXT NOT NULL CHECK (organization_scope = 'hermes_internal'),\n    agent_role TEXT NOT NULL DEFAULT 'software_engineer' CHECK (agent_role = 'software_engineer'),\n    prompt TEXT NOT NULL,\n    status TEXT NOT NULL DEFAULT 'queued' CHECK (status IN ('queued','running','completed','failed','cancelled','needs_approval')),\n    created_by TEXT NOT NULL,\n    created_at TEXT NOT NULL,\n    started_at TEXT,\n    completed_at TEXT,\n    updated_at TEXT NOT NULL,\n    repo_sha TEXT,\n    branch TEXT,\n    pr_url TEXT,\n    evidence_class TEXT,\n    output_summary TEXT,\n    approval_gate TEXT,\n    cancel_requested INTEGER NOT NULL DEFAULT 0,\n    runner_id TEXT\n  , approval_granted_at TEXT, approval_granted_by TEXT, approval_attempt INTEGER NOT NULL DEFAULT 0)"
+      },
+      {
+        "type": "table",
+        "name": "hermes_internal_owner_access",
+        "tbl_name": "hermes_internal_owner_access",
+        "sql": "CREATE TABLE hermes_internal_owner_access (\n    specialist_id TEXT PRIMARY KEY,\n    active INTEGER NOT NULL DEFAULT 0 CHECK (active IN (0,1)),\n    capability TEXT NOT NULL DEFAULT 'HERMES_INTERNAL_OWNER' CHECK (capability = 'HERMES_INTERNAL_OWNER'),\n    created_at TEXT NOT NULL,\n    updated_at TEXT NOT NULL\n  )"
+      },
+      {
+        "type": "table",
+        "name": "hermes_load_interest_requests",
+        "tbl_name": "hermes_load_interest_requests",
+        "sql": "CREATE TABLE hermes_load_interest_requests (\n      id TEXT PRIMARY KEY,\n      load_record_id TEXT NOT NULL,\n      specialist_id TEXT NOT NULL,\n      company_id TEXT NOT NULL,\n      action_type TEXT NOT NULL DEFAULT 'request_details',\n      status TEXT NOT NULL DEFAULT 'requested',\n      created_at TEXT NOT NULL,\n      updated_at TEXT NOT NULL,\n      UNIQUE(load_record_id, company_id, action_type)\n    )"
+      },
+      {
+        "type": "table",
+        "name": "hermes_load_market_posts",
+        "tbl_name": "hermes_load_market_posts",
+        "sql": "CREATE TABLE hermes_load_market_posts (\n      id TEXT PRIMARY KEY,\n      record_id TEXT NOT NULL UNIQUE,\n      company_id TEXT NOT NULL,\n      specialist_id TEXT NOT NULL,\n      post_type TEXT NOT NULL CHECK (post_type IN ('load','capacity')),\n      status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active','archived','expired')),\n      rights_attested INTEGER NOT NULL DEFAULT 0 CHECK (rights_attested IN (0,1)),\n      created_at TEXT NOT NULL,\n      updated_at TEXT NOT NULL\n    )"
+      },
+      {
+        "type": "table",
+        "name": "hermes_load_quarantine",
+        "tbl_name": "hermes_load_quarantine",
+        "sql": "CREATE TABLE hermes_load_quarantine (\n      id TEXT PRIMARY KEY,\n      source_id TEXT NOT NULL,\n      source_message_id TEXT NOT NULL,\n      fingerprint TEXT NOT NULL,\n      source_name TEXT NOT NULL,\n      reason TEXT NOT NULL,\n      subject TEXT,\n      received_at TEXT NOT NULL,\n      observed_at TEXT NOT NULL,\n      raw_evidence_ref TEXT,\n      status TEXT NOT NULL DEFAULT 'pending_review',\n      created_at TEXT NOT NULL,\n      updated_at TEXT NOT NULL,\n      UNIQUE(source_id, source_message_id, fingerprint)\n    )"
+      },
+      {
+        "type": "table",
+        "name": "hermes_load_records",
+        "tbl_name": "hermes_load_records",
+        "sql": "CREATE TABLE hermes_load_records (\n      id TEXT PRIMARY KEY,\n      source_id TEXT NOT NULL,\n      source_message_id TEXT NOT NULL,\n      fingerprint TEXT NOT NULL,\n      record_type TEXT NOT NULL,\n      source_name TEXT NOT NULL,\n      equipment TEXT NOT NULL,\n      origin TEXT NOT NULL,\n      destination TEXT,\n      pickup_window TEXT,\n      availability_text TEXT,\n      team INTEGER NOT NULL DEFAULT 0,\n      rate_amount REAL,\n      rate_currency TEXT,\n      received_at TEXT NOT NULL,\n      observed_at TEXT NOT NULL,\n      last_seen_at TEXT NOT NULL,\n      expires_at TEXT NOT NULL,\n      status TEXT NOT NULL DEFAULT 'active',\n      visibility TEXT NOT NULL DEFAULT 'internal_only',\n      raw_evidence_ref TEXT,\n      created_at TEXT NOT NULL,\n      updated_at TEXT NOT NULL, provider_record_id TEXT, origin_city TEXT, origin_state TEXT, origin_zip TEXT, destination_city TEXT, destination_state TEXT, destination_zip TEXT, distance_miles REAL, deadhead_miles REAL, vehicle_count INTEGER, operable INTEGER, enclosed INTEGER, payment_terms TEXT, rate_per_mile REAL, source_quality_score REAL, dedupe_key TEXT, provider_url TEXT, delivery_window TEXT, weight_lbs REAL, length_feet REAL, risk_flags TEXT,\n      UNIQUE(source_id, source_message_id, fingerprint)\n    )"
+      },
+      {
+        "type": "table",
+        "name": "hermes_load_source_requests",
+        "tbl_name": "hermes_load_source_requests",
+        "sql": "CREATE TABLE hermes_load_source_requests (\n      id TEXT PRIMARY KEY,\n      company_id TEXT NOT NULL,\n      specialist_id TEXT NOT NULL,\n      source_name TEXT NOT NULL,\n      source_type TEXT NOT NULL,\n      provider_name TEXT,\n      feed_reference TEXT,\n      requested_redistribution_permission TEXT NOT NULL DEFAULT 'internal_only',\n      requested_contact_reveal_permission TEXT NOT NULL DEFAULT 'hidden',\n      notes TEXT,\n      status TEXT NOT NULL DEFAULT 'pending_review',\n      review_note TEXT,\n      created_at TEXT NOT NULL,\n      updated_at TEXT NOT NULL, connection_state TEXT NOT NULL DEFAULT 'not_started', source_id TEXT, approved_redistribution_permission TEXT, approved_contact_reveal_permission TEXT, connection_evidence_ref TEXT, data_rights_evidence_ref TEXT, retention_rule TEXT, revocation_rule TEXT, car_hauling_ingest_allowed INTEGER NOT NULL DEFAULT 0, connection_verified_at TEXT, ingest_enabled_at TEXT, first_record_verified_at TEXT, revoked_at TEXT, revocation_note TEXT,\n      UNIQUE(company_id, source_name)\n    )"
+      },
+      {
+        "type": "table",
+        "name": "hermes_load_sources",
+        "tbl_name": "hermes_load_sources",
+        "sql": "CREATE TABLE hermes_load_sources (\n      id TEXT PRIMARY KEY,\n      provider TEXT NOT NULL,\n      mailbox_email TEXT,\n      source_name TEXT NOT NULL,\n      source_type TEXT NOT NULL DEFAULT 'email',\n      credential_ref TEXT,\n      history_cursor TEXT,\n      watch_expires_at TEXT,\n      read_enabled INTEGER NOT NULL DEFAULT 1,\n      send_enabled INTEGER NOT NULL DEFAULT 0,\n      ingest_enabled INTEGER NOT NULL DEFAULT 1,\n      car_hauling_ingest_allowed INTEGER NOT NULL DEFAULT 0,\n      car_hauling_outreach_hold INTEGER NOT NULL DEFAULT 1,\n      redistribution_permission TEXT NOT NULL DEFAULT 'internal_only',\n      contact_reveal_permission TEXT NOT NULL DEFAULT 'hidden',\n      last_successful_sync TEXT,\n      last_error TEXT,\n      status TEXT NOT NULL DEFAULT 'active',\n      created_at TEXT NOT NULL,\n      updated_at TEXT NOT NULL\n    )"
+      },
+      {
+        "type": "table",
+        "name": "hermes_managed_client_access",
+        "tbl_name": "hermes_managed_client_access",
+        "sql": "CREATE TABLE hermes_managed_client_access (\n      specialist_id TEXT NOT NULL,\n      company_id TEXT NOT NULL,\n      access_role TEXT NOT NULL DEFAULT 'viewer' CHECK (access_role IN ('viewer','editor')),\n      active INTEGER NOT NULL DEFAULT 1 CHECK (active IN (0,1)),\n      created_at TEXT NOT NULL,\n      updated_at TEXT NOT NULL,\n      PRIMARY KEY (specialist_id, company_id)\n    )"
+      },
+      {
+        "type": "table",
+        "name": "hermes_managed_client_receipts",
+        "tbl_name": "hermes_managed_client_receipts",
+        "sql": "CREATE TABLE hermes_managed_client_receipts (\n      operation_id TEXT PRIMARY KEY,\n      company_id TEXT NOT NULL,\n      management_mode TEXT NOT NULL,\n      publication_basis TEXT NOT NULL,\n      first_completed_at TEXT NOT NULL,\n      last_verified_at TEXT NOT NULL\n    )"
+      },
+      {
+        "type": "table",
+        "name": "hermes_registration_alert_claims",
+        "tbl_name": "hermes_registration_alert_claims",
+        "sql": "CREATE TABLE hermes_registration_alert_claims (\n    id TEXT PRIMARY KEY,\n    claimed_at TEXT NOT NULL\n  )"
+      },
+      {
+        "type": "table",
+        "name": "hermes_registration_alerts",
+        "tbl_name": "hermes_registration_alerts",
+        "sql": "CREATE TABLE hermes_registration_alerts (\n    id TEXT PRIMARY KEY,\n    specialist_id TEXT NOT NULL,\n    kind TEXT NOT NULL CHECK (kind IN ('registration','profile')),\n    status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending','sent','failed','skipped')),\n    attempts INTEGER NOT NULL DEFAULT 0,\n    created_at TEXT NOT NULL,\n    updated_at TEXT NOT NULL,\n    sent_at TEXT,\n    last_error TEXT\n  )"
+      },
+      {
+        "type": "table",
+        "name": "hermes_registration_flags",
+        "tbl_name": "hermes_registration_flags",
+        "sql": "CREATE TABLE hermes_registration_flags (\n    specialist_id TEXT PRIMARY KEY,\n    synthetic INTEGER NOT NULL DEFAULT 0 CHECK (synthetic IN (0,1)),\n    reviewed_at TEXT,\n    updated_at TEXT NOT NULL\n  )"
+      },
+      {
+        "type": "table",
+        "name": "hermes_service_contexts",
+        "tbl_name": "hermes_service_contexts",
+        "sql": "CREATE TABLE hermes_service_contexts (\n      service_id TEXT PRIMARY KEY,\n      context_id TEXT NOT NULL,\n      created_at TEXT NOT NULL\n    )"
+      },
+      {
+        "type": "table",
+        "name": "hermes_site_traffic_daily",
+        "tbl_name": "hermes_site_traffic_daily",
+        "sql": "CREATE TABLE hermes_site_traffic_daily (\n      day TEXT NOT NULL,\n      route_group TEXT NOT NULL,\n      page_views INTEGER NOT NULL DEFAULT 0,\n      updated_at TEXT NOT NULL, sessions INTEGER NOT NULL DEFAULT 0,\n      PRIMARY KEY(day, route_group)\n    )"
+      },
+      {
+        "type": "table",
+        "name": "hermes_social_threads_connections",
+        "tbl_name": "hermes_social_threads_connections",
+        "sql": "CREATE TABLE hermes_social_threads_connections (\n    brand_key TEXT PRIMARY KEY,\n    provider TEXT NOT NULL DEFAULT 'threads',\n    state TEXT NOT NULL DEFAULT 'connected_unverified',\n    threads_user_id TEXT NOT NULL,\n    username TEXT NOT NULL,\n    display_name TEXT,\n    biography TEXT,\n    profile_picture_url TEXT,\n    token_ciphertext TEXT NOT NULL,\n    token_expires_at TEXT,\n    granted_scope TEXT,\n    identity_verified INTEGER NOT NULL DEFAULT 0 CHECK (identity_verified IN (0,1)),\n    verified_by TEXT,\n    verified_at TEXT,\n    connected_by TEXT NOT NULL,\n    connected_at TEXT NOT NULL,\n    updated_at TEXT NOT NULL,\n    last_error_class TEXT\n  )"
+      },
+      {
+        "type": "table",
+        "name": "hermes_social_threads_oauth_states",
+        "tbl_name": "hermes_social_threads_oauth_states",
+        "sql": "CREATE TABLE hermes_social_threads_oauth_states (\n    state_hash TEXT PRIMARY KEY,\n    brand_key TEXT NOT NULL,\n    owner_specialist_id TEXT NOT NULL,\n    expires_at TEXT NOT NULL,\n    created_at TEXT NOT NULL\n  )"
+      },
+      {
+        "type": "table",
+        "name": "hermes_social_threads_publications",
+        "tbl_name": "hermes_social_threads_publications",
+        "sql": "CREATE TABLE hermes_social_threads_publications (\n    id TEXT PRIMARY KEY,\n    brand_key TEXT NOT NULL,\n    object_type TEXT NOT NULL DEFAULT 'AUTHORED_POST',\n    idempotency_key TEXT NOT NULL UNIQUE,\n    text_fingerprint TEXT NOT NULL,\n    status TEXT NOT NULL,\n    provider_media_id TEXT,\n    permalink TEXT,\n    provider_timestamp TEXT,\n    metrics_json TEXT,\n    metrics_updated_at TEXT,\n    requested_by TEXT NOT NULL,\n    created_at TEXT NOT NULL,\n    updated_at TEXT NOT NULL,\n    last_error_class TEXT\n  )"
+      },
+      {
+        "type": "table",
+        "name": "hr_academy_links",
+        "tbl_name": "hr_academy_links",
+        "sql": "CREATE TABLE hr_academy_links (\n      candidate_id TEXT PRIMARY KEY,\n      specialist_id TEXT NOT NULL UNIQUE,\n      program_slug TEXT,\n      enrollment_id TEXT,\n      state TEXT NOT NULL CHECK (state IN ('claimed','awaiting_program','enrollment_applied')),\n      created_at TEXT NOT NULL,\n      updated_at TEXT NOT NULL\n    )"
+      },
+      {
+        "type": "table",
+        "name": "hr_calibration_reviews",
+        "tbl_name": "hr_calibration_reviews",
+        "sql": "CREATE TABLE hr_calibration_reviews (\n      id TEXT PRIMARY KEY,\n      review_id TEXT NOT NULL UNIQUE,\n      candidate_id TEXT NOT NULL,\n      reviewer_specialist_id TEXT NOT NULL,\n      human_route TEXT NOT NULL,\n      ai_route TEXT,\n      disagreement_category TEXT NOT NULL CHECK (disagreement_category IN ('MATCH','DIFFERENT_ROUTE','AI_ROUTE_MISSING')),\n      reviewer_confidence TEXT NOT NULL CHECK (reviewer_confidence IN ('LOW','MEDIUM','HIGH')),\n      created_at TEXT NOT NULL\n    )"
+      },
+      {
+        "type": "table",
+        "name": "hr_candidates",
+        "tbl_name": "hr_candidates",
+        "sql": "CREATE TABLE hr_candidates (\n      id TEXT PRIMARY KEY,\n      access_token_hash TEXT NOT NULL,\n      name TEXT NOT NULL,\n      email TEXT NOT NULL,\n      telegram_handle TEXT,\n      country TEXT NOT NULL,\n      language TEXT NOT NULL CHECK (language IN ('en','ru','uk')),\n      source TEXT NOT NULL,\n      track TEXT NOT NULL CHECK (track IN ('logistics','sales','marketing')),\n      attribution_json TEXT NOT NULL DEFAULT '{}',\n      consent_at TEXT NOT NULL,\n      specialist_id TEXT UNIQUE,\n      status TEXT NOT NULL CHECK (status IN ('interviewing','completed','academy_pending','more_evidence','supervised_test')),\n      created_at TEXT NOT NULL,\n      updated_at TEXT NOT NULL\n    )"
+      },
+      {
+        "type": "table",
+        "name": "hr_events",
+        "tbl_name": "hr_events",
+        "sql": "CREATE TABLE hr_events (\n      id TEXT PRIMARY KEY,\n      candidate_id TEXT NOT NULL,\n      session_id TEXT NOT NULL,\n      type TEXT NOT NULL,\n      occurred_at TEXT NOT NULL,\n      payload_json TEXT NOT NULL DEFAULT '{}'\n    )"
+      },
+      {
+        "type": "table",
+        "name": "hr_evidence_items",
+        "tbl_name": "hr_evidence_items",
+        "sql": "CREATE TABLE hr_evidence_items (\n      id TEXT PRIMARY KEY,\n      candidate_id TEXT NOT NULL,\n      session_id TEXT NOT NULL,\n      kind TEXT NOT NULL CHECK (kind IN ('INTERVIEW_ANSWER')),\n      source_ref TEXT NOT NULL,\n      created_at TEXT NOT NULL\n    )"
+      },
+      {
+        "type": "table",
+        "name": "hr_interview_answers",
+        "tbl_name": "hr_interview_answers",
+        "sql": "CREATE TABLE hr_interview_answers (\n      id TEXT PRIMARY KEY,\n      candidate_id TEXT NOT NULL,\n      session_id TEXT NOT NULL,\n      question_id TEXT NOT NULL,\n      phase TEXT NOT NULL,\n      parent_question_id TEXT,\n      answer_text TEXT NOT NULL,\n      submitted_at TEXT NOT NULL\n    )"
+      },
+      {
+        "type": "table",
+        "name": "hr_interview_sessions",
+        "tbl_name": "hr_interview_sessions",
+        "sql": "CREATE TABLE hr_interview_sessions (\n      id TEXT PRIMARY KEY,\n      candidate_id TEXT NOT NULL UNIQUE,\n      track TEXT NOT NULL CHECK (track IN ('logistics','sales','marketing')),\n      state TEXT NOT NULL CHECK (state IN ('in_progress','completed')),\n      started_at TEXT NOT NULL,\n      completed_at TEXT,\n      practice_signals_json TEXT,\n      recommendation_code TEXT,\n      updated_at TEXT NOT NULL\n    )"
+      },
+      {
+        "type": "table",
+        "name": "hr_question_path_events",
+        "tbl_name": "hr_question_path_events",
+        "sql": "CREATE TABLE hr_question_path_events (\n      id TEXT PRIMARY KEY,\n      candidate_id TEXT NOT NULL,\n      session_id TEXT NOT NULL,\n      question_id TEXT NOT NULL,\n      parent_question_id TEXT,\n      phase TEXT NOT NULL,\n      occurred_at TEXT NOT NULL\n    )"
+      },
+      {
+        "type": "table",
+        "name": "hr_reviewer_access",
+        "tbl_name": "hr_reviewer_access",
+        "sql": "CREATE TABLE hr_reviewer_access (\n      specialist_id TEXT PRIMARY KEY,\n      active INTEGER NOT NULL DEFAULT 0 CHECK (active IN (0,1)),\n      created_at TEXT NOT NULL,\n      updated_at TEXT NOT NULL\n    )"
+      },
+      {
+        "type": "table",
+        "name": "hr_reviews",
+        "tbl_name": "hr_reviews",
+        "sql": "CREATE TABLE hr_reviews (\n      id TEXT PRIMARY KEY,\n      candidate_id TEXT NOT NULL,\n      reviewer_specialist_id TEXT NOT NULL,\n      outcome TEXT NOT NULL CHECK (outcome IN ('ACADEMY','MORE_EVIDENCE','SUPERVISED_TEST')),\n      reason TEXT NOT NULL,\n      created_at TEXT NOT NULL\n    )"
+      },
+      {
+        "type": "table",
+        "name": "hr_route_decisions",
+        "tbl_name": "hr_route_decisions",
+        "sql": "CREATE TABLE hr_route_decisions (\n      id TEXT PRIMARY KEY,\n      candidate_id TEXT NOT NULL,\n      session_id TEXT NOT NULL,\n      recommendation TEXT NOT NULL CHECK (recommendation IN ('DIRECT_HIRE_REVIEW','ACADEMY','MORE_EVIDENCE_REQUIRED','HUMAN_SPECIAL_REVIEW','NO_CURRENT_FIT')),\n      rationale TEXT NOT NULL,\n      evidence_ids_json TEXT NOT NULL DEFAULT '[]',\n      requires_human_review INTEGER NOT NULL DEFAULT 1 CHECK (requires_human_review IN (0,1)),\n      created_at TEXT NOT NULL\n    )"
+      },
+      {
+        "type": "table",
+        "name": "hr_score_snapshots",
+        "tbl_name": "hr_score_snapshots",
+        "sql": "CREATE TABLE hr_score_snapshots (\n      id TEXT PRIMARY KEY,\n      candidate_id TEXT NOT NULL,\n      session_id TEXT NOT NULL,\n      policy_version TEXT NOT NULL,\n      interview_version TEXT NOT NULL,\n      model_version TEXT NOT NULL,\n      dimensions_json TEXT NOT NULL,\n      missing_evidence_json TEXT NOT NULL DEFAULT '[]',\n      created_at TEXT NOT NULL\n    )"
+      },
+      {
+        "type": "table",
+        "name": "password_reset_tokens",
+        "tbl_name": "password_reset_tokens",
+        "sql": "CREATE TABLE password_reset_tokens (\n      token_hash TEXT PRIMARY KEY,\n      specialist_id TEXT NOT NULL,\n      email TEXT NOT NULL,\n      created_at TEXT NOT NULL,\n      expires_at TEXT NOT NULL,\n      used_at TEXT\n    )"
+      },
+      {
+        "type": "table",
+        "name": "repair_shop_access",
+        "tbl_name": "repair_shop_access",
+        "sql": "CREATE TABLE repair_shop_access (\n      shop_id TEXT PRIMARY KEY,\n      access_state TEXT NOT NULL CHECK (access_state IN ('trialing','founding','active','past_due','cancelled','comped')),\n      plan_id TEXT NOT NULL,\n      started_at TEXT NOT NULL,\n      current_period_end TEXT,\n      updated_at TEXT NOT NULL\n    )"
+      },
+      {
+        "type": "table",
+        "name": "repair_shop_availability",
+        "tbl_name": "repair_shop_availability",
+        "sql": "CREATE TABLE repair_shop_availability (\n      shop_id TEXT NOT NULL,\n      day_of_week INTEGER NOT NULL,\n      is_open INTEGER NOT NULL DEFAULT 0,\n      start_time TEXT,\n      end_time TEXT,\n      updated_at TEXT NOT NULL,\n      PRIMARY KEY (shop_id, day_of_week)\n    )"
+      },
+      {
+        "type": "table",
+        "name": "repair_shop_booking_followups",
+        "tbl_name": "repair_shop_booking_followups",
+        "sql": "CREATE TABLE repair_shop_booking_followups (\n      booking_id TEXT PRIMARY KEY,\n      owner_specialist_id TEXT NOT NULL,\n      needed INTEGER NOT NULL DEFAULT 1,\n      updated_at TEXT NOT NULL\n    )"
+      },
+      {
+        "type": "table",
+        "name": "repair_shop_booking_history",
+        "tbl_name": "repair_shop_booking_history",
+        "sql": "CREATE TABLE repair_shop_booking_history (\n      id TEXT PRIMARY KEY,\n      booking_id TEXT NOT NULL,\n      owner_specialist_id TEXT NOT NULL,\n      from_status TEXT,\n      to_status TEXT NOT NULL,\n      changed_at TEXT NOT NULL\n    )"
+      },
+      {
+        "type": "table",
+        "name": "repair_shop_booking_vehicles",
+        "tbl_name": "repair_shop_booking_vehicles",
+        "sql": "CREATE TABLE repair_shop_booking_vehicles (\n      booking_id TEXT PRIMARY KEY,\n      owner_specialist_id TEXT NOT NULL,\n      vehicle_year INTEGER,\n      vehicle_make TEXT NOT NULL,\n      vehicle_model TEXT NOT NULL,\n      mileage INTEGER,\n      vin TEXT,\n      created_at TEXT NOT NULL,\n      updated_at TEXT NOT NULL\n    )"
+      },
+      {
+        "type": "table",
+        "name": "repair_shop_bookings",
+        "tbl_name": "repair_shop_bookings",
+        "sql": "CREATE TABLE repair_shop_bookings (\n      id TEXT PRIMARY KEY,\n      shop_id TEXT NOT NULL,\n      owner_specialist_id TEXT NOT NULL,\n      service_id TEXT NOT NULL,\n      service_name TEXT NOT NULL,\n      duration_minutes INTEGER NOT NULL,\n      appointment_date TEXT NOT NULL,\n      start_time TEXT NOT NULL,\n      end_time TEXT NOT NULL,\n      status TEXT NOT NULL DEFAULT 'pending',\n      client_name TEXT NOT NULL,\n      client_email TEXT NOT NULL,\n      client_phone TEXT NOT NULL,\n      created_at TEXT NOT NULL,\n      updated_at TEXT NOT NULL\n    , technician_id TEXT, technician_name TEXT)"
+      },
+      {
+        "type": "table",
+        "name": "repair_shop_calendar_connections",
+        "tbl_name": "repair_shop_calendar_connections",
+        "sql": "CREATE TABLE repair_shop_calendar_connections (\n      id TEXT PRIMARY KEY,\n      shop_id TEXT NOT NULL,\n      owner_specialist_id TEXT NOT NULL,\n      staff_id TEXT NOT NULL,\n      provider TEXT NOT NULL DEFAULT 'google',\n      status TEXT NOT NULL DEFAULT 'connected',\n      token_ciphertext TEXT NOT NULL,\n      calendar_ref TEXT NOT NULL DEFAULT 'primary',\n      granted_scope TEXT,\n      token_expires_at TEXT,\n      last_error_class TEXT,\n      created_at TEXT NOT NULL,\n      updated_at TEXT NOT NULL,\n      UNIQUE(shop_id, staff_id, provider)\n    )"
+      },
+      {
+        "type": "table",
+        "name": "repair_shop_calendar_oauth_states",
+        "tbl_name": "repair_shop_calendar_oauth_states",
+        "sql": "CREATE TABLE repair_shop_calendar_oauth_states (\n      state_hash TEXT PRIMARY KEY,\n      shop_id TEXT NOT NULL,\n      owner_specialist_id TEXT NOT NULL,\n      staff_id TEXT NOT NULL,\n      return_lang TEXT,\n      expires_at TEXT NOT NULL,\n      created_at TEXT NOT NULL\n    )"
+      },
+      {
+        "type": "table",
+        "name": "repair_shop_capabilities",
+        "tbl_name": "repair_shop_capabilities",
+        "sql": "CREATE TABLE repair_shop_capabilities (\n      shop_id TEXT PRIMARY KEY,\n      vehicle_types TEXT NOT NULL DEFAULT '[]',\n      fleet_service INTEGER NOT NULL DEFAULT 0,\n      mobile_roadside INTEGER NOT NULL DEFAULT 0,\n      emergency_24_7 INTEGER NOT NULL DEFAULT 0,\n      parallel_booking_capacity INTEGER NOT NULL DEFAULT 1,\n      updated_at TEXT NOT NULL\n    )"
+      },
+      {
+        "type": "table",
+        "name": "repair_shop_demo_seed_state",
+        "tbl_name": "repair_shop_demo_seed_state",
+        "sql": "CREATE TABLE repair_shop_demo_seed_state (owner_specialist_id TEXT PRIMARY KEY,seed_version TEXT NOT NULL,seeded_through TEXT NOT NULL,appointment_count INTEGER NOT NULL DEFAULT 0,updated_at TEXT NOT NULL)"
+      },
+      {
+        "type": "table",
+        "name": "repair_shop_driver_discounts",
+        "tbl_name": "repair_shop_driver_discounts",
+        "sql": "CREATE TABLE repair_shop_driver_discounts (\n      shop_id TEXT PRIMARY KEY,\n      enabled INTEGER NOT NULL DEFAULT 0 CHECK(enabled IN (0,1)),\n      service_discount_percent INTEGER NOT NULL DEFAULT 0 CHECK(service_discount_percent BETWEEN 0 AND 100),\n      service_scope TEXT NOT NULL DEFAULT 'all' CHECK(service_scope IN ('all','selected')),\n      service_ids TEXT NOT NULL DEFAULT '[]',\n      materials_discount_percent INTEGER NOT NULL DEFAULT 0 CHECK(materials_discount_percent BETWEEN 0 AND 100),\n      materials_scope TEXT NOT NULL DEFAULT 'all' CHECK(materials_scope IN ('all','selected')),\n      materials_items TEXT NOT NULL DEFAULT '[]',\n      updated_at TEXT NOT NULL\n    )"
+      },
+      {
+        "type": "table",
+        "name": "repair_shop_feedback",
+        "tbl_name": "repair_shop_feedback",
+        "sql": "CREATE TABLE repair_shop_feedback (\n      id TEXT PRIMARY KEY,\n      owner_specialist_id TEXT NOT NULL,\n      category TEXT NOT NULL,\n      rating INTEGER NOT NULL,\n      message TEXT NOT NULL,\n      created_at TEXT NOT NULL,\n      retention_until TEXT NOT NULL\n    )"
+      },
+      {
+        "type": "table",
+        "name": "repair_shop_prospects",
+        "tbl_name": "repair_shop_prospects",
+        "sql": "CREATE TABLE repair_shop_prospects (\n  id TEXT PRIMARY KEY,\n  source_system TEXT NOT NULL,\n  source_ref TEXT NOT NULL UNIQUE,\n  business_name TEXT NOT NULL,\n  shop_type TEXT,\n  state TEXT,\n  city TEXT,\n  address_line1 TEXT,\n  phone TEXT,\n  email TEXT,\n  website TEXT,\n  social_url TEXT,\n  contact_name TEXT,\n  contact_role TEXT,\n  services_summary TEXT,\n  website_observation TEXT,\n  social_observation TEXT,\n  crm_stage TEXT,\n  crm_call_result TEXT,\n  crm_decision_maker_reached TEXT,\n  crm_interest_level TEXT,\n  crm_budget_range TEXT,\n  profile_state TEXT NOT NULL DEFAULT 'prefilled',\n  claim_state TEXT NOT NULL DEFAULT 'unclaimed',\n  public_profile_enabled INTEGER NOT NULL DEFAULT 0,\n  claimed_shop_id TEXT,\n  claimed_owner_specialist_id TEXT,\n  claimed_at TEXT,\n  provenance_json TEXT,\n  created_at TEXT NOT NULL,\n  updated_at TEXT NOT NULL\n)"
+      },
+      {
+        "type": "table",
+        "name": "repair_shop_sales_attribution",
+        "tbl_name": "repair_shop_sales_attribution",
+        "sql": "CREATE TABLE repair_shop_sales_attribution (\n      owner_specialist_id TEXT PRIMARY KEY,\n      salesperson_code TEXT NOT NULL,\n      referral_token_hash TEXT NOT NULL,\n      source TEXT NOT NULL,\n      captured_at TEXT NOT NULL,\n      registered_at TEXT NOT NULL\n    )"
+      },
+      {
+        "type": "table",
+        "name": "repair_shop_staff",
+        "tbl_name": "repair_shop_staff",
+        "sql": "CREATE TABLE repair_shop_staff (\n      id TEXT PRIMARY KEY,\n      shop_id TEXT NOT NULL,\n      owner_specialist_id TEXT NOT NULL,\n      name TEXT NOT NULL,\n      role TEXT NOT NULL DEFAULT 'Technician',\n      specialties TEXT NOT NULL DEFAULT '[]',\n      active INTEGER NOT NULL DEFAULT 1 CHECK (active IN (0,1)),\n      created_at TEXT NOT NULL,\n      updated_at TEXT NOT NULL\n    )"
+      },
+      {
+        "type": "table",
+        "name": "repair_shop_staff_schedule",
+        "tbl_name": "repair_shop_staff_schedule",
+        "sql": "CREATE TABLE repair_shop_staff_schedule (\n      staff_id TEXT NOT NULL,\n      shop_id TEXT NOT NULL,\n      owner_specialist_id TEXT NOT NULL,\n      day_of_week INTEGER NOT NULL CHECK (day_of_week BETWEEN 0 AND 6),\n      is_working INTEGER NOT NULL DEFAULT 0 CHECK (is_working IN (0,1)),\n      start_time TEXT,\n      end_time TEXT,\n      breaks TEXT NOT NULL DEFAULT '[]',\n      updated_at TEXT NOT NULL,\n      PRIMARY KEY (staff_id, day_of_week)\n    )"
+      },
+      {
+        "type": "table",
+        "name": "repair_shops",
+        "tbl_name": "repair_shops",
+        "sql": "CREATE TABLE repair_shops (\n      id TEXT PRIMARY KEY,\n      owner_specialist_id TEXT NOT NULL UNIQUE,\n      name TEXT NOT NULL,\n      slug TEXT NOT NULL UNIQUE,\n      phone TEXT,\n      address_line1 TEXT,\n      city TEXT NOT NULL,\n      state TEXT NOT NULL,\n      postal_code TEXT,\n      timezone TEXT NOT NULL,\n      created_at TEXT NOT NULL,\n      updated_at TEXT NOT NULL\n    , region TEXT, country_code TEXT, website TEXT, catalog_opt_in INTEGER NOT NULL DEFAULT 0, catalog_opt_in_at TEXT, catalog_published_at TEXT, seo_geo_started_at TEXT, next_seo_report_at TEXT, instagram_url TEXT, facebook_url TEXT, threads_url TEXT, catalog_email_notifications_opt_in INTEGER NOT NULL DEFAULT 0, catalog_email_notifications_opt_in_at TEXT, review_url TEXT)"
+      },
+      {
+        "type": "table",
+        "name": "services",
+        "tbl_name": "services",
+        "sql": "CREATE TABLE services (\n  id TEXT PRIMARY KEY,\n  name TEXT NOT NULL,\n  duration_minutes INTEGER NOT NULL\n, owner_specialist_id TEXT REFERENCES specialists(id) ON DELETE CASCADE)"
+      },
+      {
+        "type": "table",
+        "name": "sessions",
+        "tbl_name": "sessions",
+        "sql": "CREATE TABLE sessions (\n  token TEXT PRIMARY KEY,\n  specialist_id TEXT NOT NULL REFERENCES specialists(id) ON DELETE CASCADE,\n  created_at TEXT NOT NULL,\n  expires_at TEXT NOT NULL\n)"
+      },
+      {
+        "type": "table",
+        "name": "specialist_availability",
+        "tbl_name": "specialist_availability",
+        "sql": "CREATE TABLE specialist_availability (\n  specialist_id TEXT NOT NULL REFERENCES specialists(id) ON DELETE CASCADE,\n  slot TEXT NOT NULL REFERENCES availability_slots(slot),\n  PRIMARY KEY (specialist_id, slot)\n)"
+      },
+      {
+        "type": "table",
+        "name": "specialist_services",
+        "tbl_name": "specialist_services",
+        "sql": "CREATE TABLE specialist_services (\n  specialist_id TEXT NOT NULL REFERENCES specialists(id) ON DELETE CASCADE,\n  service_id TEXT NOT NULL REFERENCES services(id),\n  PRIMARY KEY (specialist_id, service_id)\n)"
+      },
+      {
+        "type": "table",
+        "name": "specialists",
+        "tbl_name": "specialists",
+        "sql": "CREATE TABLE specialists (\n  id TEXT PRIMARY KEY,\n  email TEXT UNIQUE NOT NULL,\n  password_hash TEXT NOT NULL,\n  password_salt TEXT NOT NULL,\n  name TEXT NOT NULL,\n  role TEXT NOT NULL,\n  location TEXT NOT NULL,\n  bio TEXT NOT NULL,\n  created_at TEXT NOT NULL\n, telegram_id TEXT)"
+      },
+      {
+        "type": "table",
+        "name": "staff_availability",
+        "tbl_name": "staff_availability",
+        "sql": "CREATE TABLE staff_availability (\n  staff_id TEXT NOT NULL REFERENCES staff_members(id) ON DELETE CASCADE,\n  slot TEXT NOT NULL REFERENCES availability_slots(slot),\n  PRIMARY KEY (staff_id, slot)\n)"
+      },
+      {
+        "type": "table",
+        "name": "staff_members",
+        "tbl_name": "staff_members",
+        "sql": "CREATE TABLE staff_members (\n  id TEXT PRIMARY KEY,\n  specialist_id TEXT NOT NULL REFERENCES specialists(id) ON DELETE CASCADE,\n  name TEXT NOT NULL,\n  role TEXT NOT NULL,\n  created_at TEXT NOT NULL\n)"
+      },
+      {
+        "type": "table",
+        "name": "staff_services",
+        "tbl_name": "staff_services",
+        "sql": "CREATE TABLE staff_services (\n  staff_id TEXT NOT NULL REFERENCES staff_members(id) ON DELETE CASCADE,\n  service_id TEXT NOT NULL REFERENCES services(id),\n  PRIMARY KEY (staff_id, service_id)\n)"
+      }
+    ],
+    "fingerprint": "sha256:3e0f99969ae3806010a9ab67f7c1bc81c5ecad6d24fce4411198f20e26b30f7b",
+    "safety": {
+      "d1_write": false,
+      "provider_write": false,
+      "queue_provision": false,
+      "worker_deploy": false,
+      "migration_baseline_mutated": false
+    }
+  },
+  "baseline_source_sha": "f58eba92af8adac8bf88132c5d795d65df49df96",
+  "baseline_schema_fingerprint": "sha256:3e0f99969ae3806010a9ab67f7c1bc81c5ecad6d24fce4411198f20e26b30f7b",
+  "schema_evidence_ref": "github-actions://officeus-create/Hermes/runs/40206480945/hae-d1-schema-snapshot-accepted",
+  "runtime_evidence_ref": "github-actions://officeus-create/Hermes/runs/40206309648/hae-runtime-evidence-accepted",
+  "combined_evidence_fingerprint": "sha256:69582113f64b251b54a264ea762f58b8bc6ebba7b28071af8b2b4586e6a6a082",
+  "manifest_patch": {
+    "baseline_status": "VERIFIED",
+    "baseline_source_sha": "f58eba92af8adac8bf88132c5d795d65df49df96",
+    "baseline_evidence_ref": "repo://workers/automation-engine/migrations/baseline-evidence/69582113f64b251b54a264ea762f58b8bc6ebba7b28071af8b2b4586e6a6a082.json#sha256:69582113f64b251b54a264ea762f58b8bc6ebba7b28071af8b2b4586e6a6a082",
+    "baseline_schema_fingerprint": "sha256:3e0f99969ae3806010a9ab67f7c1bc81c5ecad6d24fce4411198f20e26b30f7b"
+  },
+  "safety": {
+    "d1_write": false,
+    "provider_write": false,
+    "queue_provision": false,
+    "worker_deploy": false,
+    "manifest_mutated": false,
+    "migration_created": false
+  }
+}

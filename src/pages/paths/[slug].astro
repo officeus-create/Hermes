@@ -2,7 +2,6 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import AcademySubsiteNav from "../../components/AcademySubsiteNav.astro";
 import ContactCTA from "../../components/ContactCTA.astro";
-import DirectionProductNav from "../../components/DirectionProductNav.astro";
 import HermesConnectLauncher from "../../components/HermesConnectLauncher.astro";
 import HermesPromoRail from "../../components/HermesPromoRail.astro";
 import CatalogClientBenefit from "../../components/CatalogClientBenefit.astro";
@@ -12,6 +11,8 @@ import LogisticsCommercialLinks from "../../components/LogisticsCommercialLinks.
 import MarketingEngagementModel from "../../components/MarketingEngagementModel.astro";
 import MarketingPackageSelector from "../../components/MarketingPackageSelector.astro";
 import PathDetailPage from "../../components/PathDetailPage.astro";
+import DirectionStory from "../../components/DirectionStory.astro";
+import type { DirectionStoryId } from "../../data/direction-story";
 import PathVerifiedAdvantages from "../../components/PathVerifiedAdvantages.astro";
 import SiteFooter from "../../components/SiteFooter.astro";
 import SiteHeader from "../../components/SiteHeader.astro";
@@ -99,7 +100,6 @@ const schema = [
 
 <BaseLayout title={path.seoTitle} description={path.seoDescription} image={path.image} schema={schema} alternates={alternates}>
   <SiteHeader contactHref="#contact" theme="light" />
-  <DirectionProductNav direction={path.id as "logistics" | "marketing" | "technology" | "academy"} theme="light" />
   <PathDetailPage path={path} />
   <HermesPromoRail context={path.id as "logistics" | "marketing" | "technology" | "academy"} />
   {(path.id === "marketing" || path.id === "technology") && <CatalogClientBenefit context={path.id} />}
@@ -127,6 +127,7 @@ const schema = [
   {path.id === "logistics" && <LogisticsCommercialLinks />}
   <HermesConnectLauncher variant="banner" context={path.id as any} />
   <ContactCTA selectedPath={contactInterestCategory} />
+  <DirectionStory direction={path.id as DirectionStoryId} part="final" note={path.localFocus} />
   <SiteFooter />
 </BaseLayout>
 

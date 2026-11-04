@@ -20,7 +20,7 @@ test("homepage keeps four architectural master scene and shared direction signal
       stageRadius: getComputedStyle(stage).borderRadius,
       accents: routes.map((route) => route.style.getPropertyValue("--route-accent")),
       portalWidth: routes[0].getBoundingClientRect().width,
-      footerBackground: getComputedStyle(contact).backgroundImage,
+      footerBackground: getComputedStyle(contact).backgroundColor,
       overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
     };
   });
@@ -32,16 +32,17 @@ test("homepage keeps four architectural master scene and shared direction signal
   expect(polish!.stageRadius).toBe(expectedStageRadius);
   expect(new Set(polish!.accents).size).toBe(4);
   expect(polish!.portalWidth).toBeGreaterThan(90);
-  expect(polish!.footerBackground).toContain("gradient");
+  expect(polish!.footerBackground).toBe("rgb(247, 246, 243)");
   expect(polish!.overflow).toBe(false);
 });
 
 test("homepage contact finish keeps one primary route plus office-email fallback without a form wall", async ({ page }) => {
   await page.goto("/");
 
-  const contactOptions = page.getByLabel("Hermes contact options");
-  await expect(contactOptions.getByRole("link")).toHaveCount(2);
-  await expect(contactOptions.getByRole("link", { name: /Talk to Hermes/i })).toHaveAttribute("href", "/contacts/");
+  const contactOptions = page.getByRole("navigation", { name: "Contact Hermes by direction" });
+  await expect(contactOptions.getByRole("link")).toHaveCount(4);
+  await expect(page.locator("[data-home-primary-contact]")).toHaveAttribute("href", "/contacts/");
+  await expect(page.getByRole("heading", { name: "Not sure which direction fits?" })).toBeVisible();
   await expect(page.locator("[data-home-contact-fallback]")).toHaveAttribute(
     "href",
     "mailto:officeus@hermeslogisticsus.com",

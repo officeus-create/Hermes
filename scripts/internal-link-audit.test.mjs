@@ -2,7 +2,7 @@ import { readFile, readdir } from "node:fs/promises";
 import { statSync } from "node:fs";
 import { join } from "node:path";
 
-const root = new URL("../", import.meta.url).pathname;
+const root = decodeURIComponent(new URL("../", import.meta.url).pathname);
 const dist = join(root, "dist");
 const origin = "https://hermeslogisticsus.com";
 

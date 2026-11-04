@@ -10,8 +10,18 @@ test("Marketing uses Pearl capability cards with one Obsidian growth console", a
   await page.goto("/paths/marketing/");
 
   await expect(page.locator(".marketing-service-system")).toBeVisible();
+  await expect(page.locator(".detail-page-marketing .detail-offerings")).toHaveCount(0);
+  await expect(page.locator(".detail-page-marketing .detail-process")).toHaveCount(0);
+  await expect(page.locator(".detail-page-marketing .service-group-grid")).toHaveCount(0);
   await expect(page.locator(".marketing-service-rails article").first()).toBeVisible();
   await expect(page.locator(".growth-console")).toBeVisible();
+  const signal = page.locator("[data-marketing-demand-signal]");
+  await expect(signal).toBeVisible();
+  await expect(signal.locator("li")).toHaveCount(5);
+  await expect(signal).toContainText("Content");
+  await expect(signal).toContainText("Qualified next step");
+  await expect(signal).toContainText("CRM / evidence");
+  await expect(signal).toHaveAttribute("data-active-step", "0");
 
   const visual = await page.evaluate(() => {
     const services = document.querySelector<HTMLElement>(".detail-page-marketing .marketing-service-system");
@@ -31,6 +41,7 @@ test("Marketing uses Pearl capability cards with one Obsidian growth console", a
       consoleRadius: getComputedStyle(consoleEl).borderRadius,
       selectedColor: getComputedStyle(selected).color,
       headingColor: getComputedStyle(panelHeading).color,
+      serviceColumns: getComputedStyle(document.querySelector<HTMLElement>(".detail-page-marketing .marketing-service-rails")!).gridTemplateColumns.split(" ").length,
       overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
     };
   });
@@ -48,7 +59,18 @@ test("Marketing uses Pearl capability cards with one Obsidian growth console", a
   expect(visual!.consoleRadius).toBe(expectedConsoleRadius);
   expect(visual!.selectedColor).toBe("rgb(255, 255, 255)");
   expect(visual!.headingColor).toBe("rgb(255, 255, 255)");
+  const width = page.viewportSize()?.width ?? 1440;
+  expect(visual!.serviceColumns).toBe(width <= 620 ? 1 : 2);
   expect(visual!.overflow).toBe(false);
+
+  // Verify the new causal path after the existing settled visual contract so
+  // the intentional tab color transition cannot create a timing-dependent snapshot.
+  await page.locator("#growth-tab-3").click();
+  await expect(signal).toHaveAttribute("data-active-step", "3");
+  await expect(page.locator("#growth-tab-3")).toHaveAttribute("aria-selected", "true");
+  await expect.poll(async () =>
+    page.locator("#growth-tab-3").evaluate((el) => getComputedStyle(el).color),
+  ).toBe("rgb(255, 255, 255)");
 });
 
 test("Marketing public system remains usable at 390px", async ({ page }) => {
@@ -57,12 +79,16 @@ test("Marketing public system remains usable at 390px", async ({ page }) => {
 
   await expect(page.locator(".marketing-service-rails article").first()).toBeVisible();
   await expect(page.locator(".growth-console")).toBeVisible();
+  const mobileSignal = page.locator("[data-marketing-demand-signal]");
+  await expect(mobileSignal).toBeVisible();
+  await expect(mobileSignal.locator("li")).toHaveCount(5);
 
   const mobile = await page.evaluate(() => {
     const card = document.querySelector<HTMLElement>(".detail-page-marketing .marketing-service-rails article");
     const consoleEl = document.querySelector<HTMLElement>(".detail-page-marketing .growth-console");
     if (!card || !consoleEl) return null;
     return {
+      serviceColumns: getComputedStyle(document.querySelector<HTMLElement>(".detail-page-marketing .marketing-service-rails")!).gridTemplateColumns.split(" ").length,
       overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
       cardRadius: getComputedStyle(card).borderRadius,
       consoleRadius: getComputedStyle(consoleEl).borderRadius,
@@ -71,6 +97,7 @@ test("Marketing public system remains usable at 390px", async ({ page }) => {
 
   expect(mobile).not.toBeNull();
   expect(mobile!.overflow).toBe(false);
+  expect(mobile!.serviceColumns).toBe(1);
   expect(mobile!.cardRadius).toBe("22px");
   expect(mobile!.consoleRadius).toBe("22px");
 });

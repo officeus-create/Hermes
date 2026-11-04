@@ -80,7 +80,12 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
   if (!env.DB) return jsonResponse(503, { success: false, error: "database_not_configured" }, privateHeaders);
 
   const specialist = await getAuthenticatedSpecialist(request, env.DB);
-  if (!specialist) return jsonResponse(401, { success: false, error: "not_authenticated" }, privateHeaders);
+  if (!specialist) {
+    // Public pages probe sign-in state on every load; an anonymous probe gets 200 so visitor consoles
+    // stay free of 401 noise. No account data is returned and every other caller keeps the 401 contract.
+    const isSessionProbe = request.headers.get("X-Hermes-Session-Probe") === "1";
+    return jsonResponse(isSessionProbe ? 200 : 401, { success: false, authenticated: false, error: "not_authenticated" }, privateHeaders);
+  }
 
   await ensureAcademySchema(env.DB);
 

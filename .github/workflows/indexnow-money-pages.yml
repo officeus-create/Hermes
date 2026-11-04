@@ -59,9 +59,14 @@ jobs:
             echo 'https://hermeslogisticsus.com/load-board/equipment/car-hauler/' >> /tmp/indexnow-urls.txt
           fi
 
-          if grep -Eq '^(src/pages/logistics/car-hauler-loads/|src/data/car-hauler-geo-markets\.ts$)' /tmp/indexnow-changed-files.txt; then
+          # Hub-only edits must not notify Bing of 25 unchanged city pages.
+          if grep -Eq '^src/pages/logistics/car-hauler-loads/index\.astro$' /tmp/indexnow-changed-files.txt; then
+            echo 'https://hermeslogisticsus.com/logistics/car-hauler-loads/' >> /tmp/indexnow-urls.txt
+          fi
+
+          # Shared city template/data changes legitimately change all market pages.
+          if grep -Eq '^(src/pages/logistics/car-hauler-loads/\[market\]\.astro|src/data/car-hauler-geo-markets\.ts)$' /tmp/indexnow-changed-files.txt; then
             cat >> /tmp/indexnow-urls.txt <<'URLS'
-          https://hermeslogisticsus.com/logistics/car-hauler-loads/
           https://hermeslogisticsus.com/logistics/car-hauler-loads/colorado-springs-co/
           https://hermeslogisticsus.com/logistics/car-hauler-loads/puyallup-wa/
           https://hermeslogisticsus.com/logistics/car-hauler-loads/denver-co/

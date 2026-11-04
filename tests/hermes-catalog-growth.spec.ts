@@ -68,15 +68,20 @@ test("Hermes Connect stays a secondary product entry in the pillar navigation", 
   await page.goto("/businesses/", { waitUntil: "domcontentloaded" });
   if (isMobile) {
     await page.locator("[data-menu-button]").click();
-    const launcher = page.locator('[data-hermes-connect-launcher="mobile"]');
-    await expect(launcher).toBeVisible();
-    await expect(launcher).toHaveAttribute("href", "/services/hermes-connect/");
+    const products = page.locator("#mobile-menu .mobile-products-menu");
+    await products.locator("summary").click();
+    const connect = products.getByRole("link", { name: "Hermes Connect" });
+    await expect(connect).toBeVisible();
+    await expect(connect).toHaveAttribute("href", "/services/hermes-connect/");
+    await expect(connect).toHaveAttribute("data-product", "connect");
     return;
   }
-  const launcher = page.locator('[data-hermes-connect-launcher="header"]');
-  await expect(launcher).toBeVisible();
-  await expect(launcher).toContainText("Hermes Connect");
-  await expect(launcher.locator("img")).toHaveCount(0);
-  await expect(launcher).toHaveCSS("border-radius", "0px");
-  expect(parseFloat(await launcher.evaluate((node) => getComputedStyle(node).borderLeftWidth))).toBeGreaterThanOrEqual(3);
+  // Approved shell: Hermes Connect is a secondary entry inside the desktop Products menu.
+  const products = page.locator(".desktop-nav .desktop-products-menu");
+  await products.locator("summary").click();
+  const connect = products.locator('a[data-product="connect"]');
+  await expect(connect).toBeVisible();
+  await expect(connect).toContainText("Hermes Connect");
+  await expect(connect).toHaveAttribute("href", "/services/hermes-connect/");
+  await expect(page.locator('[data-hermes-connect-launcher="header"]')).toHaveCount(0);
 });

@@ -68,7 +68,7 @@ Design principles:
 - mobile-first behavior;
 - no second design system;
 - no competing Hermes Connect logo/shell;
-- homepage remains the approved four-direction entrance: Logistics / Marketing / Academy / Technology.
+- homepage remains the approved four-direction entrance in the current shared order: Logistics / Marketing / Technology / Academy.
 
 The homepage is not to be reopened as a new redesign through SEO work.
 

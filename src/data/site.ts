@@ -46,7 +46,22 @@ export const site = {
     href: "mailto:officeus@hermeslogisticsus.com",
     note: "Email the U.S. Logistics team about freight, documents, dispatch, or operating support",
   },
-  publicPhones: [] as { label: string; value: string; href: string; note: string }[],
+  // Owner-approved 2026-10-27 (docs/CANONICAL_COMPANY_FACTS_APPROVAL.md): one line for both Logistics desks,
+  // calls and text messages, Mon–Sat 6 AM–6 PM Central. Same number as the owner's Facebook page.
+  publicPhones: [
+    {
+      label: "Dispatch desk",
+      value: "+1 (351) 777-5337",
+      href: "tel:+13517775337",
+      note: "Carrier dispatch · call or text · Mon–Sat 6 AM–6 PM CT",
+    },
+    {
+      label: "Shipper & dealer desk",
+      value: "+1 (351) 777-5337",
+      href: "tel:+13517775337",
+      note: "Vehicle transport requests · call or text · Mon–Sat 6 AM–6 PM CT",
+    },
+  ] as { label: string; value: string; href: string; note: string }[],
   telegramGroups: [
     {
       label: "Hermes Marketing | ProgressoPro Growth",
@@ -61,9 +76,9 @@ export const site = {
   ],
   navigation: [
     { label: "Logistics", href: "paths/logistics/" },
-    { label: "Marketing", href: "paths/marketing/" },
     { label: "Technology", href: "paths/technology/" },
     { label: "Academy", href: "paths/academy/" },
+    { label: "Marketing", href: "paths/marketing/" },
   ],
   hero: {
     eyebrow: "Logistics · Growth · Education · Technology",
@@ -85,7 +100,7 @@ export const site = {
       shortValue: "Move freight",
       points: ["Shippers and dealers", "Carriers and fleets", "Owner-operators"],
       cta: "Explore logistics",
-      image: "/images/path-logistics-system.jpg",
+      image: "/images/direction-logistics-real-2026.jpg",
       imageAlt: "Abstract logistics operations network with connected route lines",
       tone: "violet",
       audience: "For carriers, shippers, and logistics partners operating in the U.S. market.",
@@ -132,7 +147,7 @@ export const site = {
     },
     {
       id: "marketing",
-      number: "02",
+      number: "04",
       category: "Hermes Marketing",
       brandLabel: "Hermes Marketing",
       programLabel: "ProgressoPro · Organic Target",
@@ -141,7 +156,7 @@ export const site = {
       shortValue: "Grow demand",
       points: ["Website and conversion", "SEO optimization", "Social media marketing"],
       cta: "Explore marketing",
-      image: "/images/path-marketing-system.jpg",
+      image: "/images/direction-marketing-real-2026.jpg",
       imageAlt: "Architectural marketing system connecting content, audiences, and analytics",
       tone: "magenta",
       audience: "For companies and specialists who need a clearer, more consistent growth system.",
@@ -191,7 +206,7 @@ export const site = {
       shortValue: "Build capability",
       points: ["LearnSkill practical model", "Logistics and marketing tracks", "COO / Operational Director Program"],
       cta: "Explore the Academy",
-      image: "/images/path-academy-system.jpg",
+      image: "/images/direction-academy-real-2026.jpg",
       imageAlt: "Architectural learning environment with connected workspaces and an ascending path",
       tone: "gold",
       audience: "For learners and working professionals building practical business capabilities.",
@@ -235,7 +250,7 @@ export const site = {
     },
     {
       id: "technology",
-      number: "04",
+      number: "02",
       category: "Hermes Technology",
       brandLabel: "Hermes Technology",
       programLabel: "AI • APIs • CRM • Telegram Bots • Business Automation",
@@ -244,7 +259,7 @@ export const site = {
       shortValue: "Build systems",
       points: ["Custom websites and portals", "CRM and operations systems", "Automation and industry platforms"],
       cta: "Explore Technology",
-      image: "/images/path-technology-portal.jpg",
+      image: "/images/direction-technology-real-2026.jpg",
       imageAlt: "Sculptural glass ribbon with blue light accents",
       tone: "teal",
       audience: "For service businesses that need software shaped around their actual customer and internal workflows.",
@@ -306,6 +321,7 @@ export const site = {
     { label: "Instagram", href: "https://www.instagram.com/hermes.logistics/" },
     { label: "Threads", href: "https://www.threads.com/@hermes.logistics" },
     { label: "Telegram", href: "https://t.me/+R-GepRJDbEQ1NjVi" },
+    { label: "Facebook", href: "https://www.facebook.com/profile.php?id=61558767681287" },
   ],
   claimRegister: [
     { claim: "Hermes operates as a multi-division business ecosystem", status: "VERIFIED_INTERNAL" as ClaimStatus },

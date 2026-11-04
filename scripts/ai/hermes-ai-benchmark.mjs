@@ -99,12 +99,12 @@ async function repositoryPromptFile(promptFile) {
 }
 
 export function classifyEvidenceScope(output) {
-  const repositoryPath = repoRoot.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   // Keep this intentionally conservative across macOS and Linux. The evidence
   // gate must not certify a run merely because an external path uses a home
   // directory prefix that was absent from a local developer fixture.
-  const candidatePaths = output.match(/\/(?:Users|home|private|var|tmp|opt|etc|usr|Volumes|System)\/[^\s'"`)<>{},;]+/g) || [];
-  const outsideRepositoryReads = [...new Set(candidatePaths.filter((path) => !new RegExp(`^${repositoryPath}(?:/|$)`).test(path)))];
+  const outputWithoutRepositoryPaths = output.replaceAll(repoRoot, "");
+  const candidatePaths = outputWithoutRepositoryPaths.match(/\/(?:Users|home|private|var|tmp|opt|etc|usr|Volumes|System)\/[^\s'"`)<>{},;]+/g) || [];
+  const outsideRepositoryReads = [...new Set(candidatePaths)];
   const forbiddenLocationMentions = /(?:~\/(?:\.codex(?:-hermes)?|\.hermes-ai)|\$(?:HOME|USERPROFILE))/i.test(output);
   return {
     status: outsideRepositoryReads.length || forbiddenLocationMentions ? "REVIEW_REQUIRED_OUTSIDE_REPOSITORY_READ" : "REPOSITORY_ONLY_OBSERVED",

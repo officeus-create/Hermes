@@ -8,7 +8,7 @@ import {
   websiteServiceScopes,
 } from "../src/data/website-growth-research.ts";
 
-const root = new URL("../", import.meta.url).pathname;
+const root = decodeURIComponent(new URL("../", import.meta.url).pathname);
 const dist = join(root, "dist");
 const routeFile = (route) => join(dist, route.slice(1), "index.html");
 const normalizeHtml = (html) => html

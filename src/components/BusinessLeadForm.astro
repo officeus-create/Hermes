@@ -29,6 +29,16 @@ const services = [
 
 const budgets = ["Not sure yet", "Under $1,000", "$1,000–$3,000", "$3,000–$10,000", "$10,000–$25,000", "$25,000+"] as const;
 const horizons = ["Not sure yet", "3 months", "6 months", "9 months", "12 months"] as const;
+// Option values stay stable for the lead receiver; only the visible label follows the page language.
+const optionLabels: Record<string, Partial<Record<string, string>>> = {
+  "Not sure yet": { ru: "Пока не определено", uk: "Поки не визначено" },
+  "Under $1,000": { ru: "До $1 000", uk: "До $1 000" },
+  "3 months": { ru: "3 месяца", uk: "3 місяці" },
+  "6 months": { ru: "6 месяцев", uk: "6 місяців" },
+  "9 months": { ru: "9 месяцев", uk: "9 місяців" },
+  "12 months": { ru: "12 месяцев", uk: "12 місяців" },
+};
+const optionLabel = (value: string) => optionLabels[value]?.[locale] ?? value;
 
 const copy = {
   en: {
@@ -238,14 +248,14 @@ const t = copy[locale];
         <label>
           {t.budget}
           <select name="planning_budget">
-            {budgets.map((budget) => <option value={budget}>{budget}</option>)}
+            {budgets.map((budget) => <option value={budget}>{optionLabel(budget)}</option>)}
           </select>
           <small>{t.budgetHint}</small>
         </label>
         <label>
           {t.horizon}
           <select name="planning_horizon">
-            {horizons.map((horizon) => <option value={horizon}>{horizon}</option>)}
+            {horizons.map((horizon) => <option value={horizon}>{optionLabel(horizon)}</option>)}
           </select>
         </label>
       </div>

@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { access, readFile, readdir } from 'node:fs/promises';
 import { join } from 'node:path';
 
-const root = new URL('../', import.meta.url).pathname;
+const root = decodeURIComponent(new URL('../', import.meta.url).pathname);
 const read = (path) => readFile(join(root, path), 'utf8');
 async function htmlFiles(dir) {
   const entries = await readdir(dir, { withFileTypes: true });

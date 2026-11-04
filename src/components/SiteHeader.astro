@@ -11,6 +11,8 @@ import HermesConnectAccountSwitcher from "./HermesConnectAccountSwitcher.astro";
 import HermesConnectDomReady from "./HermesConnectDomReady.astro";
 import HermesConnectExperience from "./HermesConnectExperience.astro";
 import HermesConnectLauncher from "./HermesConnectLauncher.astro";
+import DirectionProductNav from "./DirectionProductNav.astro";
+import HermesConnectMark from "./HermesConnectMark.astro";
 
 interface Props {
   theme?: "dark" | "light";
@@ -19,9 +21,25 @@ interface Props {
   contactHref?: string;
 }
 
-const { theme = "dark", activePath, locale = "en", contactHref = "/contacts/" } = Astro.props;
+const { theme = "dark", activePath, locale: requestedPropLocale = "en", contactHref = "/contacts/" } = Astro.props;
+const locale = requestedPropLocale;
+// Localized routes (/ru/, /ua/, /es/, /it/, /fr/) whose template does not pass `locale` keep every
+// href exactly as before (English link graph) but show visible labels in the page language.
+const pathLocaleMatch = Astro.url.pathname.match(/^\/(ru|ua|es|it|fr)\//)?.[1];
+const pathLocale = (pathLocaleMatch === "ua" ? "uk" : pathLocaleMatch) as typeof requestedPropLocale | undefined;
 const currentPath = Astro.url.pathname;
 const isApprovedHome = currentPath === "/";
+const isApprovedProductsShell = currentPath === "/products/";
+const isApprovedDirectionShell = isApprovedProductsShell || /^\/paths\/(logistics|technology|academy|marketing)\/$/.test(currentPath);
+// One approved header across the public site (brand mark, Technology label, light glass pill);
+// Hermes Connect product surfaces and demos keep their product header with the Connect launcher.
+// Sign-in, registration and password pages are the public front door, so they share the approved header too.
+const isConnectAuthEntry = /^\/(?:[a-z]{2}\/)?services\/hermes-connect\/(?:[a-z-]+\/)*(?:access|auth|forgot-password|reset-password)\/$/.test(currentPath);
+// Indexable public Connect pages (product hub, Repair Shops landing/plan, support, load analyzer) are
+// marketing surfaces, so they share the approved header; private workspaces keep the product header.
+const isConnectPublicEntry = /^\/(?:[a-z]{2}\/)?services\/hermes-connect\/(?:load-analyzer\/|repair-shops\/|repair-shops\/plan\/|support\/)$/.test(currentPath);
+const isConnectProductSurface = (/^\/(?:[a-z]{2}\/)?services\/hermes-connect\//.test(currentPath) && !isConnectAuthEntry && !isConnectPublicEntry) || currentPath.startsWith("/demos/");
+const isApprovedVisualShell = isApprovedHome || isApprovedDirectionShell || !isConnectProductSurface;
 const homeUpdates = isApprovedHome ? {
   academy: latestHomeUpdate("academy"),
   insights: latestHomeUpdate("insights"),
@@ -68,6 +86,7 @@ const isCatalogLocaleRoute = currentPath === "/businesses/" || currentPath.start
 const activeLocale = requestedLocale && ((isHermesConnectExperienceRoute && siteLocales.includes(requestedLocale as SiteLocale)) || (isCatalogLocaleRoute && (requestedLocale === "en" || requestedLocale === "uk")))
   ? requestedLocale as SiteLocale
   : locale;
+const labelLocale = activeLocale !== "en" ? activeLocale : (pathLocale ?? "en");
 const localizedLabels = {
   uk: { logistics: "Логістика", marketing: "Маркетинг", academy: "Академія", technology: "IT-розробка", contact: "Почати розмову", home: "Головна", signIn: "Увійти" },
   ru: { logistics: "Логистика", marketing: "Маркетинг", academy: "Академия", technology: "IT-разработка", contact: "Начать разговор", home: "Главная", signIn: "Войти" },
@@ -75,7 +94,15 @@ const localizedLabels = {
   it: { logistics: "Logistica", marketing: "Marketing", academy: "Academy", technology: "Sviluppo IT", contact: "Inizia una conversazione", home: "Home", signIn: "Accedi" },
   fr: { logistics: "Logistique", marketing: "Marketing", academy: "Académie", technology: "Développement IT", contact: "Démarrer une conversation", home: "Accueil", signIn: "Connexion" },
 };
-const directionOrder: Record<string, number> = { logistics: 0, marketing: 1, technology: 2, academy: 3 };
+const productsCopy = {
+  en: { menu: "Products", all: "All products", allNote: "Built and run by Hermes", connectNote: "AI operating system · live pilot", catalog: "Catalog", catalogNote: "Business directory", insights: "Insights", insightsNote: "News and case studies", opportunities: "Opportunities", opportunitiesNote: "Careers and partnerships" },
+  uk: { menu: "Продукти", all: "Усі продукти", allNote: "Створені й працюють у Hermes", connectNote: "AI-система для бізнесу · живий пілот", catalog: "Каталог", catalogNote: "Каталог бізнесів", insights: "Новини", insightsNote: "Новини та кейси", opportunities: "Можливості", opportunitiesNote: "Кар'єра та партнерство" },
+  ru: { menu: "Продукты", all: "Все продукты", allNote: "Созданы и работают в Hermes", connectNote: "AI-система для бизнеса · живой пилот", catalog: "Каталог", catalogNote: "Каталог бизнесов", insights: "Новости", insightsNote: "Новости и кейсы", opportunities: "Возможности", opportunitiesNote: "Карьера и партнёрство" },
+  es: { menu: "Productos", all: "Todos los productos", allNote: "Creados y operados por Hermes", connectNote: "Sistema operativo con IA · piloto activo", catalog: "Catálogo", catalogNote: "Directorio de empresas", insights: "Insights", insightsNote: "Noticias y casos", opportunities: "Oportunidades", opportunitiesNote: "Empleo y alianzas" },
+  it: { menu: "Prodotti", all: "Tutti i prodotti", allNote: "Creati e gestiti da Hermes", connectNote: "Sistema operativo con AI · pilota attivo", catalog: "Catalogo", catalogNote: "Elenco aziende", insights: "Insights", insightsNote: "Notizie e casi", opportunities: "Opportunità", opportunitiesNote: "Carriere e partnership" },
+  fr: { menu: "Produits", all: "Tous les produits", allNote: "Conçus et exploités par Hermes", connectNote: "Système d'exploitation IA · pilote actif", catalog: "Catalogue", catalogNote: "Annuaire d'entreprises", insights: "Insights", insightsNote: "Actualités et études de cas", opportunities: "Opportunités", opportunitiesNote: "Carrières et partenariats" },
+}[labelLocale];
+const directionOrder: Record<string, number> = { logistics: 0, technology: 1, academy: 2, marketing: 3 };
 const navDirectionId = (href: string) => href.match(/^paths\/([^/]+)\//)?.[1] ?? "";
 const orderedNavigation = [...site.navigation].sort(
   (a, b) => (directionOrder[navDirectionId(a.href)] ?? 99) - (directionOrder[navDirectionId(b.href)] ?? 99),
@@ -86,7 +113,10 @@ const orderedPaths = [...site.paths].sort(
 const navigation = activeLocale === "en"
   ? orderedNavigation.map((item) => {
       const url = `/${item.href}`;
-      const label = item.href === "paths/technology/" ? (isApprovedHome ? "Technology" : "IT") : item.label;
+      const directionId = navDirectionId(item.href);
+      const label = labelLocale !== "en" && directionId in localizedLabels[labelLocale as keyof typeof localizedLabels]
+        ? localizedLabels[labelLocale as keyof typeof localizedLabels][directionId as keyof typeof localizedLabels.uk]
+        : item.href === "paths/technology/" ? "Technology" : item.label;
       return { ...item, key: navDirectionId(item.href), label, url, active: (activePath ?? currentPath) === url };
     })
   : orderedPaths.map((path) => ({
@@ -98,8 +128,11 @@ const navigation = activeLocale === "en"
 const isCatalogRoute = currentPath === "/businesses/" || currentPath.startsWith("/businesses/");
 const isInsightsRoute = currentPath === "/insights/" || currentPath.startsWith("/insights/");
 const isOpportunitiesRoute = currentPath === "/opportunities/" || currentPath.startsWith("/opportunities/");
-const contactLabel = activeLocale === "en" ? "Start a conversation" : localizedLabels[activeLocale].contact;
-const signInLabel = activeLocale === "en" ? "Sign in" : localizedLabels[activeLocale].signIn;
+const contactLabel = labelLocale === "en" ? "Start a conversation" : localizedLabels[labelLocale as keyof typeof localizedLabels].contact;
+const signInLabel = labelLocale === "en" ? "Sign in" : localizedLabels[labelLocale as keyof typeof localizedLabels].signIn;
+// The Home and localized overview Products navigation must preserve Hermes Connect's
+// supported ?lang= locale when crossing from a localized corporate page.
+const connectProductHref = activeLocale === "en" ? "/services/hermes-connect/" : `/services/hermes-connect/?lang=${activeLocale}`;
 const section = (["logistics", "marketing", "technology", "academy"] as DirectionId[]).find((slug) => currentPath.includes(`/paths/${slug}`));
 const localizedOwnerDirection = directionForOwnerPath(currentPath);
 const languageDirection = section ?? localizedOwnerDirection;
@@ -151,22 +184,42 @@ const languageLinks = siteLocales.filter((language) => !isCatalogLocaleRoute || 
 {isHermesConnectExperienceRoute && <link rel="stylesheet" href={hermesConnectSafePolishUrl} />}
 {isHermesConnectRoute && <link rel="stylesheet" href={hermesRepairPublicShellUrl} />}
 
-<header class={`site-header site-header-${theme}`} data-header>
+<header class={`site-header site-header-${isApprovedVisualShell ? "light" : theme}`} data-header data-home-portal={isApprovedHome ? "true" : undefined} data-approved-visual-shell={isApprovedVisualShell ? "true" : undefined}>
   <a class="wordmark" href={activeLocale === "en" ? "/#top" : `${localeConfig[activeLocale].path}#top`} aria-label="Hermes home">
-    <span class="wordmark-mark">H</span>
+    {/* One brand mark on every public surface, Hermes Connect product pages included (owner directive 2026-10-27). */}
+    <span class="wordmark-mark wordmark-mark-corporate"><img src="/brand/hermes-mark.svg" alt="Hermes logo" width="36" height="36" decoding="async" /></span>
     <span>{site.brand}</span>
   </a>
 
   <nav class="desktop-nav desktop-nav--ecosystem" aria-label="Primary navigation">
     {navigation.map((item) => <a class="nav-primary-link" data-nav-tone={item.key} href={item.url} aria-current={item.active ? "page" : undefined}>{item.label}{item.key === "academy" && homeUpdates?.academy && <span class="home-update-sheen" data-home-update={homeUpdates.academy.publishedAt} data-update-description="home-academy-update" hidden aria-hidden="true"></span>}</a>)}
-    <a class="nav-secondary-link nav-secondary-start" data-nav-tone="insights" href="/insights/" aria-current={isInsightsRoute ? "page" : undefined}>Insights{homeUpdates?.insights && <span class="home-update-sheen" data-home-update={homeUpdates.insights.publishedAt} data-update-description="home-insights-update" hidden aria-hidden="true"></span>}</a>
-    {isApprovedHome && <a class="nav-secondary-link" data-nav-tone="connect" href="/services/hermes-connect/">Connect{homeUpdates?.connect && <span class="home-update-sheen" data-home-update={homeUpdates.connect.publishedAt} data-update-description="home-connect-update" hidden aria-hidden="true"></span>}</a>}
-    <a class="nav-secondary-link catalog-nav-link" data-nav-tone="catalog" href="/businesses/" aria-current={isCatalogRoute ? "page" : undefined}><span>Catalog</span>{homeUpdates?.catalog && <span class="home-update-sheen" data-home-update={homeUpdates.catalog.publishedAt} data-update-description="home-catalog-update" hidden aria-hidden="true"></span>}</a>
-    <a class="nav-secondary-link opportunities-nav-link" data-nav-tone="opportunities" href="/opportunities/" aria-current={isOpportunitiesRoute ? "page" : undefined}>Opportunities</a>
+    <details class="desktop-products-menu" data-hermes-products>
+      <summary aria-controls="hermes-products-grid">{productsCopy.menu} <ChevronDown size={14} aria-hidden="true" /></summary>
+      <div class="desktop-products-grid" id="hermes-products-grid" role="group" aria-label="Hermes products and opportunities">
+        <a href="/products/" data-product="all-products" aria-current={isApprovedProductsShell ? "page" : undefined}>
+          <strong>{productsCopy.all}</strong><span>{productsCopy.allNote}</span>
+        </a>
+        <a href={connectProductHref} data-product="connect" aria-current={isHermesConnectRoute ? "page" : undefined}>
+          <strong><HermesConnectMark size={13} class="header-connect-mark" />Hermes Connect</strong><span>{productsCopy.connectNote}</span>
+          {homeUpdates?.connect && <span class="home-update-sheen" data-home-update={homeUpdates.connect.publishedAt} data-update-description="home-connect-update" hidden aria-hidden="true"></span>}
+        </a>
+        <a href="/businesses/" data-product="catalog" aria-current={isCatalogRoute ? "page" : undefined}>
+          <strong>{productsCopy.catalog}</strong><span>{productsCopy.catalogNote}</span>
+          {homeUpdates?.catalog && <span class="home-update-sheen" data-home-update={homeUpdates.catalog.publishedAt} data-update-description="home-catalog-update" hidden aria-hidden="true"></span>}
+        </a>
+        <a href="/insights/" data-product="insights" aria-current={isInsightsRoute ? "page" : undefined}>
+          <strong>{productsCopy.insights}</strong><span>{productsCopy.insightsNote}</span>
+          {homeUpdates?.insights && <span class="home-update-sheen" data-home-update={homeUpdates.insights.publishedAt} data-update-description="home-insights-update" hidden aria-hidden="true"></span>}
+        </a>
+        <a href="/opportunities/" data-product="opportunities" aria-current={isOpportunitiesRoute ? "page" : undefined}>
+          <strong>{productsCopy.opportunities}</strong><span>{productsCopy.opportunitiesNote}</span>
+        </a>
+      </div>
+    </details>
   </nav>
 
   <div class="header-actions">
-    {!isApprovedHome && <HermesConnectLauncher
+    {!isApprovedVisualShell && <HermesConnectLauncher
       variant="header"
       href="/services/hermes-connect/repair-shops/"
       label="Hermes Connect"
@@ -203,18 +256,16 @@ const languageLinks = siteLocales.filter((language) => !isCatalogLocaleRoute || 
 
   <nav class="mobile-nav" id="mobile-menu" aria-label="Mobile navigation" data-mobile-menu hidden>
     {navigation.map((item) => <a class="mobile-nav-pillar" data-nav-tone={item.key} href={item.url} aria-current={item.active ? "page" : undefined}>{item.label}{item.key === "academy" && homeUpdates?.academy && <span class="home-update-sheen" data-home-update={homeUpdates.academy.publishedAt} data-update-description="home-academy-update" hidden aria-hidden="true"></span>}</a>)}
-    <a class="mobile-nav-pillar mobile-secondary-start" data-nav-tone="insights" href="/insights/" aria-current={isInsightsRoute ? "page" : undefined}>Insights{homeUpdates?.insights && <span class="home-update-sheen" data-home-update={homeUpdates.insights.publishedAt} data-update-description="home-insights-update" hidden aria-hidden="true"></span>}</a>
-    {isApprovedHome && <a class="mobile-nav-pillar" data-nav-tone="connect" href="/services/hermes-connect/">Connect{homeUpdates?.connect && <span class="home-update-sheen" data-home-update={homeUpdates.connect.publishedAt} data-update-description="home-connect-update" hidden aria-hidden="true"></span>}</a>}
-    <a class="mobile-nav-pillar mobile-catalog-link" data-nav-tone="catalog" href="/businesses/" aria-current={isCatalogRoute ? "page" : undefined}><span>Catalog</span>{homeUpdates?.catalog && <span class="home-update-sheen" data-home-update={homeUpdates.catalog.publishedAt} data-update-description="home-catalog-update" hidden aria-hidden="true"></span>}</a>
-    <a class="mobile-nav-pillar mobile-opportunities-link" data-nav-tone="opportunities" href="/opportunities/" aria-current={isOpportunitiesRoute ? "page" : undefined}>Opportunities</a>
-    {!isApprovedHome && <HermesConnectLauncher
-      variant="mobile"
-      href="/services/hermes-connect/repair-shops/"
-      label="Hermes Connect"
-      sublabel="Repair Shops · current live pilot"
-      locale={activeLocale}
-      class="nav-tone-connect"
-    />}
+    <details class="mobile-products-menu" data-hermes-products>
+      <summary class="mobile-nav-pillar mobile-secondary-start">{productsCopy.menu} <ChevronDown size={17} aria-hidden="true" /></summary>
+      <div class="mobile-products-grid" role="group" aria-label="Products">
+        <a href="/products/" data-product="all-products" aria-current={isApprovedProductsShell ? "page" : undefined}>{productsCopy.all}</a>
+        <a href={connectProductHref} data-product="connect" aria-current={isHermesConnectRoute ? "page" : undefined}><HermesConnectMark size={14} class="header-connect-mark" />Hermes Connect</a>
+        <a href="/businesses/" data-product="catalog" aria-current={isCatalogRoute ? "page" : undefined}>{productsCopy.catalog}</a>
+        <a href="/insights/" data-product="insights" aria-current={isInsightsRoute ? "page" : undefined}>{productsCopy.insights}</a>
+        <a href="/opportunities/" data-product="opportunities" aria-current={isOpportunitiesRoute ? "page" : undefined}>{productsCopy.opportunities}</a>
+      </div>
+    </details>
     <a class="mobile-nav-pillar mobile-login-link" data-nav-tone="account" data-hermes-sign-in href="/services/hermes-connect/access/">{signInLabel}</a>
     {privateWorkspace && <div class="hc-mobile-account-panel"><HermesConnectAccountSwitcher current={privateWorkspace} locale={activeLocale} /></div>}
     {!privateWorkspace && <div class="hc-mobile-account-panel"><HermesConnectAccountSwitcher current={publicWorkspace} publicSafe locale={activeLocale} /></div>}
@@ -228,8 +279,26 @@ const languageLinks = siteLocales.filter((language) => !isCatalogLocaleRoute || 
       ))}
     </div>
   </nav>
+  {isApprovedDirectionShell && (section || isApprovedProductsShell) && <DirectionProductNav direction={section ?? "products"} theme="light" locale={activeLocale === "ru" ? "ru" : "en"} />}
+  {isApprovedVisualShell && currentPath.startsWith("/businesses/") && !/^\/businesses\/(?:concepts|italy|ukraine|marketing-growth-audit-example)\//.test(currentPath) && <DirectionProductNav direction="catalog" theme="light" locale={activeLocale === "ru" || activeLocale === "uk" ? activeLocale : "en"} />}
   {isApprovedHome && <span class="home-update-descriptions"><span id="home-academy-update" hidden>New Academy update within the last seven days.</span><span id="home-insights-update" hidden>New Insight within the last seven days.</span><span id="home-connect-update" hidden>New Connect update within the last seven days.</span><span id="home-catalog-update" hidden>New Catalog update within the last seven days.</span></span>}
 </header>
+{isCatalogLocaleRoute && (
+  <script is:inline define:vars={{ ukHeaderLabels: { Logistics: "Логістика", Technology: "IT-розробка", Academy: "Академія", Marketing: "Маркетинг", Products: "Продукти", "Sign in": "Увійти", "Start a conversation": "Почати розмову", "All products": "Усі продукти", "Built and run by Hermes": "Створені й працюють у Hermes", "AI operating system · live pilot": "AI-система для бізнесу · живий пілот", Catalog: "Каталог", "Business directory": "Каталог бізнесів", Insights: "Новини", "News and case studies": "Новини та кейси", Opportunities: "Можливості", "Careers and partnerships": "Кар'єра та партнерство" } }}>
+    // Catalog pages switch to Ukrainian in the browser (?lang=uk). Translate the header's visible
+    // labels to match; every href and canonical owner stays exactly as rendered.
+    (() => {
+      if (new URLSearchParams(location.search).get("lang") !== "uk") return;
+      const header = document.querySelector(".site-header[data-header]");
+      if (!header) return;
+      const walker = document.createTreeWalker(header, NodeFilter.SHOW_TEXT);
+      for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+        const text = node.nodeValue.trim();
+        if (text && Object.prototype.hasOwnProperty.call(ukHeaderLabels, text)) node.nodeValue = node.nodeValue.replace(text, ukHeaderLabels[text]);
+      }
+    })();
+  </script>
+)}
 
 {isHermesConnectExperienceRoute && <HermesConnectExperience loadBoardContext={isLoadBoardRoute} />}
 {isHermesConnectRoute && <HermesConnectDomReady />}
@@ -308,6 +377,22 @@ const languageLinks = siteLocales.filter((language) => !isCatalogLocaleRoute || 
     if (target instanceof Node && !menu?.contains(target) && !button.contains(target)) closeMenu();
   });
 
+  const productsMenus = document.querySelectorAll<HTMLDetailsElement>("[data-hermes-products]");
+  document.addEventListener("keydown", (event) => {
+    if (event.key !== "Escape") return;
+    productsMenus.forEach((productsMenu) => {
+      if (!productsMenu.open) return;
+      productsMenu.open = false;
+      productsMenu.querySelector<HTMLElement>("summary")?.focus();
+    });
+  });
+  document.addEventListener("click", (event) => {
+    if (!(event.target instanceof Node)) return;
+    productsMenus.forEach((productsMenu) => {
+      if (productsMenu.open && !productsMenu.contains(event.target as Node)) productsMenu.open = false;
+    });
+  });
+
   const languageMenus = document.querySelectorAll<HTMLDetailsElement>("[data-language-menu]");
   document.addEventListener("click", (event) => {
     const target = event.target;
@@ -320,15 +405,175 @@ const languageLinks = siteLocales.filter((language) => !isCatalogLocaleRoute || 
 
 <style is:global>
   .home-update-descriptions { position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap; }
+
+  /* WEB4: owner-selected four primary directions, compact functional Products menu.
+     Keep the canonical destinations, locale/account controls and non-Home routes. */
+  .site-header .desktop-products-menu { position: relative; flex: none; color: inherit; }
+  .site-header .desktop-products-menu > summary {
+    display: inline-flex; align-items: center; justify-content: center; gap: .45rem;
+    min-height: 40px; padding: .45rem .82rem; cursor: pointer; list-style: none;
+    border: 1px solid color-mix(in srgb,currentColor 17%,transparent);
+    border-radius: 999px; background: color-mix(in srgb,currentColor 5%,transparent);
+    color: inherit; font-size: .8rem; font-weight: 740; white-space: nowrap;
+  }
+  .site-header .desktop-products-menu > summary::-webkit-details-marker,
+  .site-header .mobile-products-menu > summary::-webkit-details-marker { display: none; }
+  .site-header .desktop-products-menu > summary:focus-visible,
+  .site-header .mobile-products-menu > summary:focus-visible { outline: 2px solid #2766c2; outline-offset: 3px; }
+  .site-header .desktop-products-menu[open] > summary { background: color-mix(in srgb,currentColor 9%,transparent); }
+  .site-header .desktop-products-menu > summary svg,
+  .site-header .mobile-products-menu > summary svg { transition: transform .17s ease; }
+  .site-header .desktop-products-menu[open] > summary svg,
+  .site-header .mobile-products-menu[open] > summary svg { transform: rotate(180deg); }
+  /* Horizontal Products flyout: opens to the RIGHT of its trigger, not below.
+     Native details/summary preserve keyboard, touch and Escape interaction. */
+  .site-header .desktop-products-grid {
+    position: absolute; z-index: 80; left: calc(100% + 12px); top: 50%;
+    transform: translateY(-50%);
+    display: grid; grid-template-columns: repeat(2,minmax(0,1fr));
+    width: min(368px,calc(100vw - 36px)); gap: 8px; padding: 12px;
+    border: 1px solid #dfe4e9; border-radius: 18px; background: #fbfcfd;
+    box-shadow: 0 18px 48px rgba(11,22,42,.16);
+    color: #102036;
+  }
+  .site-header .desktop-products-menu[open] > .desktop-products-grid {
+    animation: hermes-products-right-reveal .18s ease-out both;
+  }
+  @keyframes hermes-products-right-reveal {
+    from { opacity: 0; translate: -8px 0; }
+    to { opacity: 1; translate: 0 0; }
+  }
+  .site-header .desktop-products-menu:not([open]) > .desktop-products-grid { display: none; }
+  .site-header .desktop-products-grid > a {
+    position: relative; display: flex; flex-direction: column; align-items: flex-start;
+    justify-content: center; gap: 5px; min-height: 72px; padding: 12px;
+    border-radius: 12px; background: #f3f5f7; color: #102036;
+    text-decoration: none; line-height: 1.24;
+  }
+  .site-header .desktop-products-grid > a strong { font-size: .86rem; }
+  .site-header .desktop-products-grid > a > span:not(.home-update-sheen) { color: #4d5c6e; font-size: .72rem; }
+  .site-header .desktop-products-grid > a:hover,
+  .site-header .desktop-products-grid > a:focus-visible,
+  .site-header .desktop-products-grid > a[aria-current="page"] { background: #e7eef6; outline-offset: 2px; }
+  .site-header .mobile-products-menu > summary { display: flex; align-items: center; justify-content: space-between; cursor: pointer; list-style: none; }
+  .site-header .mobile-products-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 8px; padding: 8px 0 10px; }
+  .site-header .mobile-products-menu:not([open]) > .mobile-products-grid { display: none; }
+  .site-header .mobile-products-grid > a { display: flex; align-items: center; min-height: 48px; padding: 10px 12px; border: 1px solid color-mix(in srgb,currentColor 17%,transparent); border-radius: 10px; font-size: .82rem; text-decoration: none; }
+  .site-header .mobile-products-grid > a:focus-visible { outline: 2px solid #2766c2; outline-offset: 2px; }
+  /* Narrow non-Home desktop shells may need the safe compact fallback.
+     The 4-way Home switches to mobile navigation by 1180px. */
+  @media (max-width: 1180px) and (min-width: 901px) {
+    .site-header:not([data-home-portal="true"]) .desktop-products-grid {
+      left: auto; right: 0; top: calc(100% + 10px); transform: none;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .site-header .desktop-products-menu > summary svg,
+    .site-header .mobile-products-menu > summary svg { transition: none; }
+  }
+
   .site-header .has-home-update { isolation:isolate;box-shadow:inset 0 0 0 1px #7b67ec66;border-radius:8px; }
   .site-header .home-update-sheen:not([hidden]) { position:absolute;z-index:-1;inset:4px auto 4px 10%;width:32%;border-radius:999px;display:block;pointer-events:none;background:linear-gradient(90deg,transparent,#8a7ffc55,transparent);box-shadow:0 0 12px #9f94ff88;animation:home-update-glimmer 1.35s ease-in-out 2;opacity:0; }
   @keyframes home-update-glimmer { 0%,100%{opacity:0;transform:translateX(0)} 25%,70%{opacity:.9} 85%{opacity:0;transform:translateX(190%)} }
   @media (prefers-reduced-motion:reduce) { .site-header .home-update-sheen:not([hidden]){animation:none!important;opacity:.35;} }
+  /* Scope the candidate corporate mark to Home: product and inner-page identities remain untouched. */
+  .site-header .wordmark-mark-corporate { width:36px; height:36px; border:0; border-radius:9px; overflow:hidden; flex:none; }
+  .site-header .wordmark-mark-corporate img { display:block; width:100%; height:100%; }
+  .site-header[data-approved-visual-shell="true"] .wordmark > span:last-child { font-weight:700; font-size:.94rem; letter-spacing:.32em; text-transform:uppercase; }
+  /* Approved shell on the rest of the public site: the same light glass pill below the desktop
+     breakpoint, so the brand mark and menu stay readable over dark and light heroes alike. */
+  @media (max-width: 1100px) {
+    .site-header[data-approved-visual-shell="true"]:not([data-home-portal]) {
+      border: 1px solid rgba(17,19,24,.07);
+      border-radius: 999px;
+      background: #fff;
+      box-shadow: 0 10px 30px rgba(10,22,79,.07);
+      backdrop-filter: blur(18px);
+    }
+  }
+  /* Product (Connect) header on small laptops/tablets landscape: keep every nav label on one
+     line and drop the duplicate conversation CTA instead of letting it run off-screen. */
+  @media (min-width: 901px) and (max-width: 1180px) {
+    .site-header:not([data-approved-visual-shell]) .desktop-nav > a { white-space: nowrap; }
+    html body .site-header:not([data-approved-visual-shell]) .header-actions > .header-cta { display: none !important; }
+  }
+  /* Claude Directions: one fixed, inspectable header panel with the active
+     direction submenu attached underneath. Canonical links and account entry
+     stay intact while the approved narrow layout scrolls horizontally. */
+  .site-header[data-approved-visual-shell="true"]:has(> .direction-product-nav) {
+    isolation:isolate;
+    top:12px;
+    right:auto;
+    left:50%;
+    width:min(1480px,calc(100% - 24px));
+    min-height:62px;
+    margin:0;
+    padding:0 8px 0 20px;
+    border:0;
+    background:#fff;
+    box-shadow:none;
+    backdrop-filter:none;
+    transform:translateX(-50%);
+    grid-template-columns:auto minmax(0,1fr) auto;
+    grid-template-rows:62px auto;
+    column-gap:18px;
+  }
+  .site-header[data-approved-visual-shell="true"]:has(> .direction-product-nav)::before {
+    position:absolute;z-index:-1;inset:0 0 auto;height:62px;border:1px solid rgba(17,19,24,.07);border-radius:999px;
+    background:#fff;box-shadow:0 10px 30px rgba(10,22,79,.07);content:"";
+  }
+  .site-header[data-approved-visual-shell="true"]:has(> .direction-product-nav) .desktop-nav {
+    justify-self:center;max-width:100%;min-width:0;margin:0;gap:2px;overflow-x:auto;scrollbar-width:none;
+  }
+  .site-header[data-approved-visual-shell="true"]:has(> .direction-product-nav) .desktop-nav::-webkit-scrollbar{display:none}
+  .site-header[data-approved-visual-shell="true"]:has(> .direction-product-nav) .desktop-nav> a[data-nav-tone]{flex:0 0 auto;min-height:40px;padding:10px 14px;border-radius:999px;font-size:.94rem}
+  .site-header[data-approved-visual-shell="true"]:has(> .direction-product-nav) .desktop-nav> a[aria-current="page"]{background:rgba(10,22,79,.08)}
+  .site-header[data-approved-visual-shell="true"]:has(> .direction-product-nav) .desktop-nav> a[aria-current="page"]::after{display:none}
+  .site-header[data-approved-visual-shell="true"]:has(> .direction-product-nav) .desktop-products-menu>summary{min-height:40px;border:0;background:transparent;font-size:.94rem}
+  .site-header[data-approved-visual-shell="true"]:has(> .direction-product-nav) .header-actions{gap:4px}
+  .site-header[data-approved-visual-shell="true"]:has(> .direction-product-nav) .header-actions>.hc-account-menu{display:none}
+  .site-header[data-approved-visual-shell="true"]:has(> .direction-product-nav) .header-login-link{min-height:40px;padding:10px 14px;border:0;font-size:.94rem;font-weight:600}
+  .site-header[data-approved-visual-shell="true"]:has(> .direction-product-nav) .header-cta{min-height:46px;padding:0 22px;border-radius:999px;background:#0a164f;color:#fff;font-size:.94rem}
+  .site-header[data-approved-visual-shell="true"]> .direction-product-nav{
+    position:relative;top:auto;grid-column:1/-1;width:calc(100% - 56px);margin:-1px 28px 0;padding:0 14px 0 18px;border:1px solid rgba(17,19,24,.06);border-top:0;border-radius:0 0 18px 18px;background:#fff;color:#111318;box-shadow:none;overflow:hidden;
+  }
+  .site-header[data-approved-visual-shell="true"]> .direction-product-nav .direction-product-nav__inner{width:100%;max-width:none;min-height:54px;margin:0;padding:0}
+  @media(max-width:1100px){
+    .site-header[data-approved-visual-shell="true"]:has(> .direction-product-nav) .wordmark>span:last-child,
+    .site-header[data-approved-visual-shell="true"]:has(> .direction-product-nav) .header-cta{display:none}
+    .site-header[data-approved-visual-shell="true"]:has(> .direction-product-nav) .desktop-nav{display:flex}
+    .site-header[data-approved-visual-shell="true"]:has(> .direction-product-nav) .header-actions{display:flex}
+    .site-header[data-approved-visual-shell="true"]:has(> .direction-product-nav) .menu-button{display:none}
+  }
+  @media(max-width:640px){
+    .site-header[data-approved-visual-shell="true"]:has(> .direction-product-nav){padding-left:8px;column-gap:6px}
+    .site-header[data-approved-visual-shell="true"]:has(> .direction-product-nav) .header-actions{display:none}
+    .site-header[data-approved-visual-shell="true"]:has(> .direction-product-nav) .menu-button{display:grid;color:#111318}
+    .site-header[data-approved-visual-shell="true"]:has(> .direction-product-nav) .desktop-nav{justify-self:stretch}
+    .site-header[data-approved-visual-shell="true"]> .direction-product-nav{width:calc(100% - 16px);margin-inline:8px;padding-inline:8px}
+  }
+  .site-header[data-home-portal="true"],
+  .header-connect-mark { margin-right: .4rem; }
+  .site-header[data-approved-visual-shell="true"] {
+    /* The approved public shell is a light pill. Keep its surface deterministic instead of
+       relying on hero imagery/transparency, so navigation contrast is stable on every route. */
+    border: 1px solid #e7e9ed;
+    border-radius: 999px;
+    background: #fff;
+    color: #0b0d12;
+    box-shadow: 0 10px 30px rgba(10,22,79,.07);
+    /* Approved Claude Design palette on Home and the four direction pages (their heroes and
+       submenus already use --dir-*). Real product/Connect colors remain unchanged. */
+    --nav-logistics: var(--dir-logistics, var(--hermes-logistics));
+    --nav-technology: var(--dir-technology, var(--hermes-technology));
+    --nav-academy: var(--dir-academy, var(--hermes-academy));
+    --nav-marketing: var(--dir-marketing, var(--hermes-marketing));
+  }
   .site-header {
-    --nav-logistics: #1E88FF;
-    --nav-marketing: #00C853;
-    --nav-technology: #FF7A00;
-    --nav-academy: #7C5CFF;
+    --nav-logistics: var(--hermes-logistics);
+    --nav-marketing: var(--hermes-marketing);
+    --nav-technology: var(--hermes-technology);
+    --nav-academy: var(--hermes-academy);
     --nav-connect: #9D88FF;
     --nav-catalog: #22A39F;
     --nav-insights: #7C8799;
@@ -345,19 +590,40 @@ const languageLinks = siteLocales.filter((language) => !isCatalogLocaleRoute || 
     position: absolute;
     left: 0;
     width: 3px;
-    height: 18px;
+    height: 13px;
     border-radius: 999px;
     background: var(--nav-marker, currentColor);
     content: "";
     opacity: .9;
-    transition: height 180ms ease, width 180ms ease, opacity 180ms ease;
+    transform-origin: 50% 100%;
+    transition: opacity 180ms ease;
   }
+  /* Claude Design Home v3: the direction stripe hops on hover (squash → stretch → land). */
   .desktop-nav > a[data-nav-tone]:hover::before,
-  .desktop-nav > a[data-nav-tone]:focus-visible::before,
-  .desktop-nav > a[data-nav-tone][aria-current="page"]::before {
-    width: 5px;
-    height: 26px;
+  .desktop-nav > a[data-nav-tone]:focus-visible::before {
     opacity: 1;
+    animation: hermes-nav-stripe-hop 750ms cubic-bezier(.34,1.56,.64,1);
+  }
+  .desktop-nav > a[data-nav-tone][aria-current="page"]::before { opacity: 1; height: 18px; }
+  /* Home H1 dot landing nudges the same-colour stripe (class toggled by HomeMasterScene). */
+  .desktop-nav > a[data-nav-tone].is-dot-landing::before { animation: hermes-nav-dot-landing 500ms cubic-bezier(.34,1.56,.64,1); }
+  @keyframes hermes-nav-dot-landing {
+    0% { transform: scale(1, 1); }
+    35% { transform: scale(1.5, .65); }
+    70% { transform: scale(.85, 1.25); }
+    100% { transform: scale(1, 1); }
+  }
+  @keyframes hermes-nav-stripe-hop {
+    0% { transform: translateY(0) scale(1, 1); }
+    18% { transform: translateY(0) scale(1.35, .7); }
+    50% { transform: translateY(-7px) scale(.8, 1.45); }
+    82% { transform: translateY(0) scale(1.35, .7); }
+    100% { transform: translateY(0) scale(1, 1); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .desktop-nav > a[data-nav-tone]:hover::before,
+    .desktop-nav > a[data-nav-tone]:focus-visible::before,
+    .desktop-nav > a[data-nav-tone].is-dot-landing::before { animation: none; }
   }
   .desktop-nav [data-nav-tone="logistics"] { --nav-marker: var(--nav-logistics); }
   .desktop-nav [data-nav-tone="marketing"] { --nav-marker: var(--nav-marketing); }
@@ -680,4 +946,101 @@ const languageLinks = siteLocales.filter((language) => !isCatalogLocaleRoute || 
     transform: none;
   }
 }
+
+  /* Accessibility guard for every audited desktop/tablet viewport. Older route-specific
+     body:has(...) shells use translucent backgrounds below 1101px; keep the approved header's
+     actual parent surface and primary controls deterministic so contrast does not depend on hero paint. */
+  :root body .site-header[data-approved-visual-shell="true"] {
+    background: #fff;
+    color: #0b0d12;
+  }
+  :root body .site-header[data-approved-visual-shell="true"] .wordmark,
+  :root body .site-header[data-approved-visual-shell="true"] .nav-primary-link,
+  :root body .site-header[data-approved-visual-shell="true"] .header-login-link,
+  :root body .site-header[data-approved-visual-shell="true"] .desktop-products-menu > summary,
+  :root body .site-header[data-approved-visual-shell="true"] .language-menu > summary {
+    color: #111318;
+  }
+  :root body .site-header[data-approved-visual-shell="true"] .nav-primary-link,
+  :root body .site-header[data-approved-visual-shell="true"] .header-login-link,
+  :root body .site-header[data-approved-visual-shell="true"] .header-cta {
+    opacity: 1;
+  }
+  :root body .site-header[data-approved-visual-shell="true"] .header-cta {
+    background: #0a164f;
+    color: #fff;
+  }
+
+  /* Approved Claude Design header — ONE panel for Home, the four directions and Products,
+     so the header never changes place between pages. Glass pill, mark + HERMES, directions
+     with hopping stripes, Products dropping down below, quiet Sign in / language and the
+     Ink "Start a conversation" pill. The `:root body` prefix outranks the older Home shell. */
+  @media (min-width: 1101px) {
+    :root body .site-header[data-approved-visual-shell="true"] {
+      position: fixed; top: 12px; left: 50%; right: auto; transform: translateX(-50%);
+      width: min(1488px, calc(100% - 48px)); max-width: none; min-height: 64px; margin: 0;
+      padding: 0 10px 0 22px; border: 0; border-radius: 999px; background: #fff;
+      box-shadow: none; backdrop-filter: none; isolation: isolate;
+      display: grid; grid-template-columns: auto minmax(0, 1fr) auto; grid-template-rows: 64px auto;
+      align-items: center; column-gap: 18px;
+    }
+    :root body .site-header[data-approved-visual-shell="true"]::before {
+      position: absolute; z-index: -1; inset: 0 0 auto; height: 64px; content: "";
+      border: 1px solid rgba(17, 19, 24, .07); border-radius: 999px;
+      background: #fff; box-shadow: 0 10px 30px rgba(10, 22, 79, .07);
+      backdrop-filter: none;
+    }
+    :root body .site-header[data-approved-visual-shell="true"] .desktop-nav {
+      justify-self: center; display: flex; align-items: center; gap: 4px; margin: 0; overflow: visible;
+    }
+    :root body .site-header[data-approved-visual-shell="true"] .desktop-nav > a[data-nav-tone] {
+      min-height: 40px; padding: 10px 14px 10px 24px; border-radius: 999px;
+      color: #4a505c; font-size: .95rem; font-weight: 600; background-position: 14px center;
+    }
+    :root body .site-header[data-approved-visual-shell="true"] .desktop-nav > a[data-nav-tone]::before { left: 12px; }
+    :root body .site-header[data-approved-visual-shell="true"] .desktop-nav > a[data-nav-tone]:is(:hover, :focus-visible) { color: #111318; }
+    :root body .site-header[data-approved-visual-shell="true"] .desktop-nav > a[aria-current="page"] { color: #111318; background: rgba(10, 22, 79, .07); }
+    :root body .site-header[data-approved-visual-shell="true"] .desktop-nav > a[aria-current="page"]::after { display: none; }
+    :root body .site-header[data-approved-visual-shell="true"] .desktop-products-menu > summary {
+      min-height: 40px; padding: 10px 14px; border: 0; border-radius: 999px; background: transparent;
+      color: #111318; font-size: .95rem; font-weight: 700;
+    }
+    :root body .site-header[data-approved-visual-shell="true"] .desktop-products-menu[open] > summary { background: rgba(10, 22, 79, .07); }
+    /* Products drops DOWN, centred under its trigger — never up and off-screen. */
+    :root body .site-header[data-approved-visual-shell="true"] .desktop-products-grid {
+      left: 50%; top: calc(100% + 14px); transform: translateX(-50%);
+      grid-template-columns: repeat(2, minmax(0, 1fr)); width: 400px;
+    }
+    @keyframes hermes-products-drop { from { opacity: 0; translate: 0 -6px; } to { opacity: 1; translate: 0 0; } }
+    :root body .site-header[data-approved-visual-shell="true"] .desktop-products-menu[open] > .desktop-products-grid { animation: hermes-products-drop .18s ease-out both; }
+    :root body .site-header[data-approved-visual-shell="true"] .header-actions { display: flex; align-items: center; gap: 6px; }
+    :root body .site-header[data-approved-visual-shell="true"] .header-login-link {
+      min-height: 40px; padding: 10px 12px; border: 0; border-radius: 999px; background: transparent;
+      color: #111318; font-size: .9rem; font-weight: 600;
+    }
+    :root body .site-header[data-approved-visual-shell="true"] .header-login-link::before { display: none; }
+    :root body .site-header[data-approved-visual-shell="true"] .header-login-link:is(:hover, :focus-visible) { background: rgba(10, 22, 79, .06); }
+    :root body .site-header[data-approved-visual-shell="true"] .language-menu summary {
+      min-height: 40px; padding: 8px 10px; border: 0; border-radius: 999px; background: transparent;
+      color: #4a505c; font-size: .78rem; font-weight: 700;
+    }
+    :root body .site-header[data-approved-visual-shell="true"] .language-menu summary:is(:hover, :focus-visible) { background: rgba(10, 22, 79, .06); color: #111318; }
+    :root body .site-header[data-approved-visual-shell="true"] .header-cta {
+      min-height: 46px; padding: 0 22px; border: 0; border-radius: 999px; background: #0a164f; color: #fff;
+      font-size: .9rem; font-weight: 700; box-shadow: none; white-space: nowrap; max-width: none; width: auto;
+    }
+    :root body .site-header[data-approved-visual-shell="true"] .header-cta:is(:hover, :focus-visible) { background: #173271; }
+    :root body .site-header[data-approved-visual-shell="true"] > .direction-product-nav {
+      grid-column: 1 / -1; width: calc(100% - 56px); margin: -1px 28px 0;
+    }
+  }
+  /* Narrow laptops (1101–1360px): keep the larger 1440+ nav size from pushing the CTA off-screen. */
+  @media (min-width: 1101px) and (max-width: 1360px) {
+    :root body .site-header[data-approved-visual-shell="true"] { column-gap: 10px; padding-left: 16px; }
+    :root body .site-header[data-approved-visual-shell="true"] .desktop-nav > a[data-nav-tone] { padding: 10px 10px 10px 21px; font-size: .86rem; }
+    :root body .site-header[data-approved-visual-shell="true"] .desktop-nav > a[data-nav-tone]::before { left: 10px; }
+    :root body .site-header[data-approved-visual-shell="true"] .desktop-products-menu > summary { padding-inline: 10px; font-size: .86rem; }
+    :root body .site-header[data-approved-visual-shell="true"] .header-login-link { padding-inline: 8px; font-size: .86rem; }
+    :root body .site-header[data-approved-visual-shell="true"]:not(:has(> .direction-product-nav)) .header-cta { display: inline-flex; padding-inline: 16px; font-size: .86rem; }
+  }
 </style>

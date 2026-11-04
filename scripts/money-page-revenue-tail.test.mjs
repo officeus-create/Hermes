@@ -7,6 +7,7 @@ const read = (relativePath) => readFile(path.join(root, relativePath), "utf8");
 
 const pages = [
   ["dist/logistics/car-hauling-dispatch/index.html", "Start dispatch review", "/logistics/start-car-hauling-dispatch/", "mailto:officeus@hermeslogisticsus.com"],
+  ["dist/load-board/index.html", "Request free carrier access", "/load-board/?role=carrier#carrier-access", "mailto:officeus@hermeslogisticsus.com"],
   ["dist/logistics/appleton-wi-vehicle-transport/index.html", "Prepare Appleton request", "/logistics/request-vehicle-transport/#transport-intake", "mailto:officeus@hermeslogisticsus.com"],
   ["dist/logistics/wisconsin-vehicle-transport/index.html", "Prepare transport request", "/logistics/request-vehicle-transport/#transport-intake", "mailto:officeus@hermeslogisticsus.com"],
   ["dist/logistics/green-bay-wi-vehicle-transport/index.html", "Prepare transport request", "/logistics/request-vehicle-transport/#transport-intake", "mailto:officeus@hermeslogisticsus.com"],

@@ -1,5 +1,31 @@
 # Hermes website decision register
 
+## Current commercial pricing override — 2026-10-26
+
+Website commercial pricing is owned by the CEO-approved Drive source `WEB PRICING & SALES SYSTEM — CURRENT — 2026-10-26` and its quote calculator.
+
+Current ladder: **Launch $990 · Business Growth Website $2,790 (hero/default) · Growth Website System $5,490 · Signature from $9,990 · Platform / Custom from $15,000–$25,000+**.
+
+Recurring is separate: Website Care $99/mo; Care+ $249/mo; Local SEO $690/mo; SEO + GEO Growth $1,290/mo; Multi-Location SEO/GEO from $2,490/mo.
+
+The July entries below describing a public `$25-$45/hour` delivery rate, `$3k` entry point, or earlier package ranges are **HISTORICAL / SUPERSEDED** and must not be reused as current public/customer quote language. They remain in this register only as dated provenance.
+
+No package or redesign may promise rankings, traffic, leads, revenue, ROI, or a fixed delivery date before discovery. Platform/software scope remains separate from ordinary website packages.
+
+## Current production override — 2026-10-18
+
+Use current `main` and production readback before any historical snapshot below. The following slices are already implemented and must not be rebuilt from older branches:
+
+- Home: `HomeMasterScene.astro` with Logistics Spatial Operations, Marketing Attention & Demand, Technology real-product choreography, and Academy Human Progress / reviewed-practice grammar;
+- `/services/website-development/`: live capability showroom with Web Design system proof plus Website Factory / semantic build / QA / SEO-GEO / production-readback evidence loop;
+- `/services/website-redesign/`: live controlled-change showroom;
+- `/paths/logistics/`: live Spatial Operations explanation plus the canonical Path Engine / Load Board continuations;
+- `/services/seo/`: live SEO/GEO Evidence Proof Replay;
+- `/paths/technology/`: live Hermes Connect / Website Factory / QA-readback product truth and current Product Hub continuation;
+- `/paths/academy/`: five public tracks plus Explain → Practice → Self-review → Human feedback → Retry → Transfer / progression truth.
+
+Historical statements below that say these scenes/showrooms are missing are SOURCE_ONLY and superseded. Reuse current components; replay an old branch only for a unique, bounded delta after current-main comparison. Generated video is optional enhancement, never a completion dependency.
+
 ## Current V4 override — 2026-09-30
 
 This historical register remains provenance, but current design authority is `docs/design/HERMES_UNIFIED_BRAND_SYSTEM.md` V4 plus the Drive `HERMES DESIGN CONSTITUTION V4 — CURRENT`.

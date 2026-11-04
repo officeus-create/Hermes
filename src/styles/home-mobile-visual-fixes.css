@@ -4,8 +4,7 @@ body:has(.hermes-home-recovery) .site-header{top:.8rem;width:min(1400px,calc(100
 body:has(.hermes-home-recovery) .site-header.site-header-scrolled{background:#fffffff2}
 body:has(.hermes-home-recovery) .site-header .wordmark-mark{background:#fff;color:#101332;border:1px solid #d7dcf1}
 body:has(.hermes-home-recovery) .site-header .desktop-nav{gap:clamp(.65rem,1.5vw,1.5rem);margin-left:2rem;font-size:.78rem}
-body:has(.hermes-home-recovery) .site-header .nav-primary-link{padding-left:0}
-body:has(.hermes-home-recovery) .site-header .nav-primary-link::before{display:none}
+/* Keep the approved four colored direction keylines visible on Home. */
 body:has(.hermes-home-recovery) .site-header .nav-secondary-start{margin-left:0;padding-left:.68rem}
 body:has(.hermes-home-recovery) .site-header .nav-secondary-start::after{display:none}
 body:has(.hermes-home-recovery) .site-header .header-actions{gap:.5rem}
@@ -13,9 +12,9 @@ body:has(.hermes-home-recovery) .site-header .header-cta{display:inline-flex;jus
 body:has(.hermes-home-recovery) .site-header .hc-account-menu>summary{min-height:44px}
 body:has(.hermes-home-recovery) .site-header .mobile-nav{background:#fcfcff;color:#101332;box-shadow:0 16px 45px #181b4320}
 body:has(.hermes-home-recovery) .site-header .menu-button{color:#101332}
-body:has(.hermes-home-recovery) #contact.home-contact-shell{background:linear-gradient(130deg,#f8faff,#e2eeff 55%,#eee5ff);color:#101332;border-radius:36px 36px 0 0;overflow:hidden}
+body:has(.hermes-home-recovery) #contact.home-contact-shell{background:#f7f6f3;color:#0a164f;border-radius:0;overflow:hidden}
 @media(max-width:1180px){body:has(.hermes-home-recovery) .site-header{width:calc(100% - 24px)}body:has(.hermes-home-recovery) .site-header .desktop-nav,body:has(.hermes-home-recovery) .site-header .header-actions{display:none!important}body:has(.hermes-home-recovery) .site-header .menu-button{display:inline-flex!important;margin-left:auto}}
-body:has(.hermes-home-recovery) #contact .site-footer{background:#f0f1fc;color:#161a43;border-top:1px solid #dce0f2}
+body:has(.hermes-home-recovery) #contact .site-footer{background:#fff;color:#0a164f;border-top:1px solid #dce0e8}
 body:has(.hermes-home-recovery) #contact .site-footer a,body:has(.hermes-home-recovery) #contact .site-footer p,body:has(.hermes-home-recovery) #contact .site-footer strong{color:#404869}
 body:has(.hermes-home-recovery) #contact .hc-launcher-panel{background:#ffffffa6;border-color:#d3d8ef;color:#161a43}
 
