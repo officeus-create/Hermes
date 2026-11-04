@@ -22,7 +22,10 @@ assert.match(readModelEndpointSource,/readDepartmentKpiSources\(env\.DB, checked
 assert.match(readModelEndpointSource,/department_kpis/,"Owner read model must expose department KPI projection");
 assert.match(readModelEndpointSource,/provider_health/,"Owner read model must expose provider health without a provider mirror");
 assert.match(readModelEndpointSource,/plugin_registry:\s*registrySnapshot\.entries\.map/,"Owner read model must expose only minimized plugin registry metadata");
-assert.match(readModelEndpointSource,/role_id, plugin_version, observed_at/,"Plugin registry projection must remain role/version/time only");
+assert.match(readModelEndpointSource,/runtime_loaded_version/,"Plugin registry must separate HAE-loaded version from provider release truth");
+assert.match(readModelEndpointSource,/UNKNOWN_PROVIDER_RELEASE_READBACK_NOT_CONNECTED/,"missing provider-release adapter must remain explicit UNKNOWN");
+assert.match(readModelEndpointSource,/UNKNOWN_CANONICAL_HAE_PLUGIN_RECEIPT_REQUIRED/,"latest invocation must require a canonical HAE receipt");
+assert.match(readModelEndpointSource,/UNKNOWN_VERIFIED_HOLDOUT_RECEIPT_REQUIRED/,"training state must require a verified holdout receipt");
 assert.match(executionMapUiSource,/independent_review_state/,"Execution Map UI must surface independent review evidence separately");
 assert.match(executionMapUiSource,/github\.enrichment_state/,"Execution Map UI must expose GitHub enrichment scope/state");
 
