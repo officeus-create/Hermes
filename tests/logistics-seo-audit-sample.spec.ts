@@ -51,7 +51,9 @@ test("SEO services, Logistics SEO, and sitemap discover the audit sample", async
   await expect(page.getByRole("link", { name: "Logistics SEO Audit Sample" })).toHaveAttribute("href", route);
 
   await page.goto("/services/seo-for-logistics-companies/");
-  await expect(page.getByRole("link", { name: "Logistics SEO Audit Sample" })).toHaveAttribute("href", route);
+  // The sample is linked twice: as hero proof (funnel PROOF beside the CTA) and in the related paths.
+  await expect(page.locator(".digital-proof-rail").getByRole("link", { name: /Logistics SEO Audit Sample/ })).toHaveAttribute("href", route);
+  await expect(page.locator(".digital-related-section").getByRole("link", { name: "Logistics SEO Audit Sample", exact: true })).toHaveAttribute("href", route);
   await expect(page.getByRole("heading", { name: /Use the first 30 days as a controlled review and release window/i })).toBeVisible();
   await expect(page.getByText(/does not guarantee rankings, traffic, inquiries or revenue/i)).toBeVisible();
   await expect(page.getByText("What happens during the first 30 days of a Logistics SEO engagement?", { exact: true })).toBeVisible();

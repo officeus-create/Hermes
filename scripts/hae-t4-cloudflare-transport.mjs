@@ -116,7 +116,7 @@ export async function executeT4Canary({
   );
   if (accepted?.success !== true) fail("t4_queue_send_unconfirmed_no_retry");
 
-  const readSql = "SELECT dlq_item_id,message_type,disposition,reason,action_status,alert_status,alert_attempt_count,alert_channel,alert_receipt_ref,redrive_count FROM hermes_automation_dlq_items WHERE message_type=? ORDER BY first_seen_at DESC LIMIT 2";
+  const readSql = "SELECT dlq_item_id,message_type,disposition,reason,action_status,alert_status,alert_attempt_count,alert_channel,alert_receipt_ref,alert_provider_message_id,redrive_count FROM hermes_automation_dlq_items WHERE message_type=? ORDER BY first_seen_at DESC LIMIT 2";
   for (let i = 0; i < 24; i += 1) {
     const payload = await d1Query(dbId, readSql, [type]);
     const status = validateT4Receipt(payload, type);

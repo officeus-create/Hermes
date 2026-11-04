@@ -1,0 +1,88 @@
+---
+import HermesBusinessCommandCenterShell from "./HermesBusinessCommandCenterShell.astro";
+import HermesCommandCenterPublicPreview from "./HermesCommandCenterPublicPreview.astro";
+import "../styles/hermes-business-command-center.css";
+interface Props { ru?: boolean }
+const { ru=false }=Astro.props;
+const nav=[
+  {key:"how",label:ru?"Как работает":"How it works",href:"#how"},
+  {key:"preview",label:ru?"Демо":"Demo",href:"#preview"},
+  {key:"pillars",label:ru?"Направления":"Business pillars",href:"#pillars"},
+  {key:"proof",label:ru?"Контроль и evidence":"Control & evidence",href:"#proof"},
+];
+---
+  <HermesBusinessCommandCenterShell
+    mode="public"
+    ru={ru}
+    title="Hermes Business Command Center"
+    lead={ru
+      ?"Один спокойный слой, где проекты, задачи, AI, автоматизация, доказательства и решения владельца становятся одной управляемой системой."
+      :"One calm operating layer where projects, tasks, AI, automation, evidence and owner decisions become one manageable system."}
+    eyebrow={ru?"Hermes Connect · Business Operating System":"Hermes Connect · Business Operating System"}
+    badge={ru?"Публичное демо · SAMPLE DATA":"Public demo · SAMPLE DATA"}
+    nav={nav}
+  >
+    <Fragment slot="hero-actions">
+      <div class="hcc-actions">
+        <a class="hcc-primary" href="#preview">{ru?"Открыть демо":"Explore the demo"}</a>
+        <a class="hcc-secondary" href="/contacts/?path=technology&utm_source=business_command_center">{ru?"Обсудить Command Center":"Request a Command Center"}</a>
+      </div>
+    </Fragment>
+    <Fragment slot="hero-side">
+      <a class="hcc-owner-entry" href="/services/hermes-connect/internal/command-center/">{ru?"Вход для владельца →":"Owner workspace →"}</a>
+    </Fragment>
+
+    <section class="hcc-public-grid" id="how" aria-labelledby="hcc-how-title">
+      <div class="hcc-public-copy">
+        <p class="hcc-sample">{ru?"Что делает система":"What the system does"}</p>
+        <h2 id="hcc-how-title">{ru?"Не ещё один dashboard. Слой принятия решений.":"Not another dashboard. A decision layer."}</h2>
+        <p>{ru
+          ?"Command Center связывает факт или запрос с проектом, ответственным, задачей, ограниченным AI-выполнением, проверяемым evidence и отдельным решением владельца. Техническое «выполнено» не считается бизнес-результатом, пока его не приняли."
+          :"Command Center connects a fact or request to a project, an accountable owner, a task, bounded AI execution, inspectable evidence and a separate owner decision. Technical completion is not treated as a business outcome until it is accepted."}</p>
+      </div>
+      <ol class="hcc-public-flow">
+        <li><span>01</span><div><strong>{ru?"Сигнал":"Signal"}</strong><p>{ru?"Запрос, идея, событие или проблема попадает в управляемую очередь.":"A request, idea, event or problem enters a managed queue."}</p></div></li>
+        <li><span>02</span><div><strong>{ru?"Контекст":"Context"}</strong><p>{ru?"Проект, направление, приоритет и владелец сохраняют смысл задачи.":"Project, business area, priority and owner preserve the task context."}</p></div></li>
+        <li><span>03</span><div><strong>{ru?"Выполнение":"Execution"}</strong><p>{ru?"Человек, Hermes AI или автоматизация работают в заданных границах.":"A person, Hermes AI or automation works within defined boundaries."}</p></div></li>
+        <li><span>04</span><div><strong>Evidence</strong><p>{ru?"PR, CI, deployment, output и readback подтверждают реальное состояние.":"PRs, CI, deployments, output and readback prove the real state."}</p></div></li>
+        <li><span>05</span><div><strong>{ru?"Решение":"Decision"}</strong><p>{ru?"Владелец принимает результат, возвращает на доработку или меняет приоритет.":"The owner accepts, sends for rework or changes the priority."}</p></div></li>
+      </ol>
+    </section>
+
+    <section id="preview" class="hcc-public-preview">
+      <HermesCommandCenterPublicPreview ru={ru} />
+    </section>
+
+    <section class="hcc-public-section" id="pillars" aria-labelledby="hcc-pillars-title">
+      <div class="hcc-section-head"><div><p class="hcc-sample">{ru?"One Hermes · Four business pillars":"One Hermes · Four business pillars"}</p><h2 id="hcc-pillars-title">{ru?"Бизнес-направления остаются разными. Управление — единое.":"Different business realities. One operating layer."}</h2></div></div>
+      <div class="hcc-pillar-grid">
+        <article data-pillar="logistics"><span>01</span><h3>Logistics</h3><p>{ru?"Перевозчики, грузы, dispatch, документы и операционная видимость.":"Carriers, loads, dispatch, documents and operating visibility."}</p></article>
+        <article data-pillar="marketing"><span>02</span><h3>Marketing</h3><p>{ru?"Спрос, контент, поиск, social distribution и путь до квалифицированного действия.":"Demand, content, search, social distribution and the path to a qualified action."}</p></article>
+        <article data-pillar="technology"><span>03</span><h3>Technology</h3><p>{ru?"Hermes Connect, сайты, CRM, интеграции, automation и AI systems.":"Hermes Connect, websites, CRM, integrations, automation and AI systems."}</p></article>
+        <article data-pillar="academy"><span>04</span><h3>Academy</h3><p>{ru?"Обучение, практика, review, прогресс и бизнес-операции академии.":"Learning, practice, review, progression and academy business operations."}</p></article>
+      </div>
+      <p class="hcc-functions-note">{ru
+        ?"Sales, Finance и Operations отображаются внутри Command Center как операционные функции — не как отдельные суббренды Hermes."
+        :"Sales, Finance and Operations appear inside Command Center as operating functions, not as separate Hermes sub-brands."}</p>
+    </section>
+
+    <section class="hcc-focus hcc-public-proof" id="proof" aria-labelledby="hcc-proof-title">
+      <div class="hcc-section-head"><div><p class="hcc-sample">{ru?"Truth before autonomy":"Truth before autonomy"}</p><h2 id="hcc-proof-title">{ru?"AI не получает право объявлять результат успешным сам себе.":"AI does not get to declare its own business result successful."}</h2></div></div>
+      <div class="hcc-proof-grid">
+        <article><strong>{ru?"Закрытые данные остаются закрытыми":"Private data stays private"}</strong><p>{ru?"Публичная версия использует только демонстрационные данные. Внутренние задачи, клиенты, credentials и owner records не публикуются.":"The public version uses sample data only. Internal tasks, customers, credentials and owner records are not published."}</p></article>
+        <article><strong>{ru?"Выполнение ≠ приёмка":"Execution ≠ acceptance"}</strong><p>{ru?"Завершённая AI-задача переходит на проверку. Бизнес-результат принимает владелец.":"A completed AI task moves to review. The owner accepts the business outcome."}</p></article>
+        <article><strong>{ru?"Evidence привязан к работе":"Evidence travels with the work"}</strong><p>{ru?"Изменения, тесты, deployment и production readback дают проверяемую историю вместо красивого статуса.":"Changes, tests, deployment and production readback create an inspectable history instead of a decorative status."}</p></article>
+      </div>
+    </section>
+
+    <section class="hcc-public-cta hcc-panel">
+      <div><p class="hcc-sample">{ru?"Private production system · public sample":"Private production system · public sample"}</p><h2>{ru?"Хотите такой слой управления для своего бизнеса?":"Want this operating layer for your business?"}</h2><p>{ru?"Начните с карты проектов, ролей доступа и одного измеримого workflow.":"Start with a project map, access roles and one measurable workflow."}</p></div>
+      <div class="hcc-actions"><a class="hcc-primary" href="/contacts/?path=technology&utm_source=business_command_center_bottom">{ru?"Обсудить внедрение":"Discuss implementation"}</a><a class="hcc-secondary" href="/services/hermes-connect/">{ru?"Посмотреть Hermes Connect":"Explore Hermes Connect"}</a></div>
+    </section>
+  </HermesBusinessCommandCenterShell>
+<style>
+.hcc-owner-entry{color:var(--hermes-violet-text);font-weight:800;text-decoration:none}.hcc-owner-entry:hover{text-decoration:underline}
+.hcc-public-grid{display:grid;grid-template-columns:minmax(0,.9fr) minmax(360px,1.1fr);gap:clamp(1.2rem,4vw,4rem);align-items:start;padding:clamp(3rem,6vw,5.5rem) 0}.hcc-public-copy h2,.hcc-public-section h2,.hcc-public-proof h2,.hcc-public-cta h2{margin:.45rem 0 .8rem;font-family:var(--font-display);font-size:clamp(2rem,4.4vw,4.2rem);line-height:.98;letter-spacing:-.05em;text-wrap:balance}.hcc-public-copy>p:last-child,.hcc-functions-note,.hcc-public-cta p{color:var(--hermes-muted);font-size:1rem;line-height:1.7}.hcc-public-flow{display:grid;gap:.55rem;margin:0;padding:0;list-style:none}.hcc-public-flow li{display:grid;grid-template-columns:42px 1fr;gap:.8rem;padding:1rem;border:1px solid var(--hermes-line-light);border-radius:18px;background:rgba(255,255,255,.78)}.hcc-public-flow li>span{font:700 .72rem var(--font-mono);color:var(--hermes-violet-text)}.hcc-public-flow strong{font-size:1rem}.hcc-public-flow p{margin:.2rem 0 0;color:var(--hermes-muted);line-height:1.55}.hcc-public-preview{scroll-margin-top:5rem}.hcc-public-section{padding:clamp(3.5rem,7vw,6rem) 0}.hcc-pillar-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.75rem}.hcc-pillar-grid article{min-height:220px;padding:1.15rem;border:1px solid var(--hermes-line-light);border-radius:var(--hermes-radius-card);background:var(--hermes-paper)}.hcc-pillar-grid article>span{font:700 .72rem var(--font-mono)}.hcc-pillar-grid h3{margin:2.8rem 0 .6rem;font-size:1.35rem}.hcc-pillar-grid p{margin:0;color:var(--hermes-muted);line-height:1.55}.hcc-pillar-grid [data-pillar="logistics"]>span{color:var(--hermes-logistics)}.hcc-pillar-grid [data-pillar="marketing"]>span{color:#b84e35}.hcc-pillar-grid [data-pillar="technology"]>span{color:#157da5}.hcc-pillar-grid [data-pillar="academy"]>span{color:#0b7a59}.hcc-functions-note{max-width:850px;margin:1rem 0 0}.hcc-public-proof{padding:clamp(1.2rem,3vw,2rem)}.hcc-public-proof h2{max-width:900px;color:#fff}.hcc-proof-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.7rem}.hcc-proof-grid article{padding:1rem;border:1px solid rgba(255,255,255,.1);border-radius:18px;background:rgba(255,255,255,.05)}.hcc-proof-grid strong{font-size:1rem}.hcc-proof-grid p{margin:.45rem 0 0;color:#cbd5e1;line-height:1.55}.hcc-public-cta{display:flex;justify-content:space-between;gap:2rem;align-items:center;margin-top:1rem;padding:clamp(1.2rem,3vw,2rem)}.hcc-public-cta h2{font-size:clamp(1.8rem,3.2vw,3rem)}.hcc-public-cta .hcc-actions{flex:0 0 auto}
+@media(max-width:900px){.hcc-public-grid{grid-template-columns:1fr}.hcc-pillar-grid{grid-template-columns:repeat(2,1fr)}.hcc-proof-grid{grid-template-columns:1fr}.hcc-public-cta{align-items:flex-start;flex-direction:column}.hcc-public-cta .hcc-actions{width:100%}}
+@media(max-width:560px){.hcc-pillar-grid{grid-template-columns:1fr}.hcc-public-grid{padding-top:2.2rem}.hcc-public-cta .hcc-actions{display:grid}.hcc-public-cta .hcc-primary,.hcc-public-cta .hcc-secondary{width:100%}}
+</style>

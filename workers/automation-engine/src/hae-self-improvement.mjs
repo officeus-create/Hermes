@@ -94,6 +94,12 @@ export function evaluateHaeSelfImprovementSnapshot(input = {}) {
     && !finding.writer_state_verified
   ).length;
 
+  const blockedFindingCount = snapshot.findings.filter((finding) =>
+    snapshot.coverage_complete
+    && finding.verified
+    && finding.status === "BLOCKED"
+  ).length;
+
   const candidates = snapshot.findings
     .filter((finding) =>
       snapshot.coverage_complete
@@ -121,8 +127,11 @@ export function evaluateHaeSelfImprovementSnapshot(input = {}) {
     next_action: next ? "HOLD_REPAIR" : "NO_ACTION",
     routing_blocked_reason: !snapshot.coverage_complete
       ? "PARTIAL_COVERAGE"
-      : (!next && writerStateUnverifiedCount > 0 ? "WRITER_STATE_UNVERIFIED" : null),
+      : (!next && writerStateUnverifiedCount > 0
+        ? "WRITER_STATE_UNVERIFIED"
+        : (!next && blockedFindingCount > 0 ? "FINDING_BLOCKED" : null)),
     writer_state_unverified_count: writerStateUnverifiedCount,
+    blocked_finding_count: blockedFindingCount,
     repair_owner: repairOwner,
     independent_review_owner: reviewOwner,
     automatic_source_change_performed: false,

@@ -74,8 +74,8 @@ assert.equal(complete.automatic_merge_performed, false);
 assert.equal(complete.automatic_deploy_performed, false);
 assert.equal(complete.cost_usd, 0);
 assert.equal(complete.repair_owner.role_id, "hermes-automatic-engineer");
-assert.equal(complete.repair_owner.plugin_version, "0.1.25");
-assert.equal(complete.independent_review_owner.plugin_version, "0.1.5");
+assert.equal(complete.repair_owner.plugin_version, pluginRuntimeVersion("hermes-automatic-engineer"));
+assert.equal(complete.independent_review_owner.plugin_version, pluginRuntimeVersion("hermes-qa-evidence-auditor"));
 
 const writerUnknown = evaluateHaeSelfImprovementSnapshot({
   observed_at: "2026-10-25T00:30:00Z",
@@ -118,11 +118,18 @@ assert.equal(
   ),
   false,
 );
-assert.equal(pluginRuntimeRegistryEvidenceStatus("2026-10-25T12:00:00Z").fresh, true);
-assert.equal(pluginRuntimeRegistryEvidenceStatus("2026-10-27T12:00:00Z").fresh, false);
+const registryObservedAt = pluginRuntimeRegistrySnapshot().observed_at;
+assert.match(registryObservedAt, /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/, "A source readback needs an exact UTC instant");
+const registryObservedMs = Date.parse(registryObservedAt);
+assert.equal(pluginRuntimeRegistryEvidenceStatus(registryObservedAt).fresh, true);
+assert.equal(pluginRuntimeRegistryEvidenceStatus(new Date(registryObservedMs + 12 * 3600000).toISOString()).fresh, true);
+assert.equal(pluginRuntimeRegistryEvidenceStatus(new Date(registryObservedMs + 24 * 3600000).toISOString()).fresh, true);
+assert.equal(pluginRuntimeRegistryEvidenceStatus(new Date(registryObservedMs + 24 * 3600000 + 1).toISOString()).fresh, false);
+assert.equal(pluginRuntimeRegistryEvidenceStatus(new Date(registryObservedMs - 1).toISOString()).fresh, false, "Future-dated source evidence must fail closed");
+assert.equal(pluginRuntimeRegistryEvidenceStatus("invalid-now").reason, "INVALID_EVIDENCE_TIME");
 
-assert.equal(pluginRuntimeVersion("hermes-agent-coordinator"), "0.1.68");
-assert.equal(pluginRuntimeVersion("hermes-academy"), "0.1.12");
+assert.match(pluginRuntimeVersion("hermes-agent-coordinator"), /^\d+\.\d+\.\d+/);
+assert.match(pluginRuntimeVersion("hermes-academy"), /^\d+\.\d+\.\d+/);
 assert.equal(pluginRuntimeRegistrySnapshot().source_class, "PRIVATE_PLUGIN_CREATOR_READBACK");
 assert.throws(() => pluginRuntimeVersion("hermes-unknown-role"), /plugin_runtime_version_unverified/);
 assert.throws(

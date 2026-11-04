@@ -4,7 +4,7 @@ const expected = [
   ["Product Hub", "/services/hermes-connect/"],
   ["Repair Shops", "/services/hermes-connect/repair-shops/"],
   ["Load Board", "/load-board/"],
-  ["AI Command Center", "/services/hermes-connect/ai-command-center/"],
+  ["Business Command Center", "/services/hermes-connect/command-center/"],
   ["Academy", "/services/hermes-connect/academy/"],
 ];
 
@@ -74,7 +74,7 @@ test("product priority labels follow the explicit Russian Connect locale", async
   await expect(nav.locator(":scope > a").nth(0)).toHaveText("Центр продуктов");
   await expect(nav.locator(":scope > a").nth(1)).toHaveText("СТО");
   await expect(nav.locator(":scope > a").nth(2)).toHaveText("Load Board");
-  await expect(nav.locator(":scope > a").nth(3)).toHaveText("ИИ-командный центр");
+  await expect(nav.locator(":scope > a").nth(3)).toHaveText("Бизнес-командный центр");
   await expect(nav.locator(":scope > a").nth(4)).toHaveText("Академия");
   await expect(nav.locator(":scope > a").nth(0)).toHaveAttribute("aria-current", "page");
 });

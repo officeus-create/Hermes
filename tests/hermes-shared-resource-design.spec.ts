@@ -57,15 +57,19 @@ for (const route of routes) {
 
     expect(visual).not.toBeNull();
     expect(visual!.rootBackground).toBe("rgb(247, 246, 243)");
-    expect(visual!.heroBackground).toBe("rgb(11, 13, 18)");
-    expect(visual!.heroPrimaryBackground).toBe("rgb(255, 255, 255)");
-    expect(visual!.heroPrimaryColor).toBe("rgb(11, 13, 18)");
-    expect(visual!.heroPrimaryRadius).toBe("12px");
+    // Pearl shell (design wave A, 2026-10-26): Pearl hero, ink pill primary action.
+    expect(visual!.heroBackground).toBe("rgb(247, 246, 243)");
+    expect(visual!.heroPrimaryBackground).toBe("rgb(10, 22, 79)");
+    expect(visual!.heroPrimaryColor).toBe("rgb(255, 255, 255)");
+    expect(visual!.heroPrimaryRadius).toBe("999px");
     expect(visual!.safetyRadius).toBe("22px");
     expect(visual!.relatedBackground).toBe("rgb(255, 255, 255)");
     expect(visual!.relatedRadius).toBe("22px");
-    expect(visual!.accentColor).toBe("rgb(100, 70, 230)");
-    expect(visual!.darkSectionBackground).toBe("rgb(11, 13, 18)");
+    // Logistics family accents follow the H-mark Logistics blue (same token as /paths/logistics/),
+    // not Intelligence violet — execution brief phase 2, 2026-10-26.
+    expect(visual!.accentColor).toBe("color(srgb 0.158902 0.353255 0.803765)");
+    // Body sections (2026-10-26): reading surfaces are light; Focus Ink stays on one bounded closing panel.
+    expect(visual!.darkSectionBackground).toBe("rgb(255, 255, 255)");
     expect(visual!.darkRowRadius).toBe("12px");
     expect(visual!.finalBackground).toBe("rgb(11, 13, 18)");
     expect(visual!.finalRadius).toBe("30px");

@@ -13,6 +13,8 @@ test("Hermes Connect access routes one account into vertical-specific CRM", () =
   assert.match(page, /\/services\/hermes-connect\/academy\/business\/auth\/\?mode=register/);
   assert.match(page, /\/services\/hermes-connect\/academy\/auth\/\?mode=register/);
   assert.match(page, /accountDestination/);
+  assert.match(page, /data\?\.capabilities\?\.internal_ai === true/,"only server-granted internal AI capability may route to owner Command Center");
+  assert.match(page, /\/services\/hermes-connect\/internal\/command-center\//,"owner destination must reuse canonical private Command Center");
   assert.match(page, /owned_businesses/);
   assert.match(page, /owned\.length === 1/);
   assert.match(page, /String\(owned\[0\]\.href\)/);

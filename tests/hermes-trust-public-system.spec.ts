@@ -62,3 +62,28 @@ test("Trust family remains usable at 390px", async ({ page }) => {
   expect(mobile!.contactRadius).toBe("22px");
   expect(mobile!.actionWidth).toBeLessThanOrEqual(mobile!.contactWidth);
 });
+for (const route of ["/company-information/", "/about/"]) {
+  test(`${route} routes brand-intent visitors to the four direction owners`, async ({ page }) => {
+    await page.goto(route);
+    const links = page.locator(".trust-directions a.trust-direction");
+    await expect(links).toHaveCount(4);
+    expect(await links.evaluateAll((items) => items.map((item) => item.getAttribute("href")))).toEqual([
+      "/paths/logistics/",
+      "/paths/technology/",
+      "/paths/academy/",
+      "/paths/marketing/",
+    ]);
+    // The policy/correction contact stays the last block on the page.
+    await expect(page.locator(".trust-contact")).toBeVisible();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  });
+}
+
+test("/contacts/ offers one primary request action and the four direction owners", async ({ page }) => {
+  await page.goto("/contacts/");
+  await expect(page.locator(".contacts-hero .button-primary")).toHaveCount(1);
+  await expect(page.locator(".contacts-hero .button-primary")).toHaveAttribute("href", "#contact");
+  await expect(page.locator(".trust-directions a.trust-direction")).toHaveCount(4);
+  await expect(page.locator("#contact form[data-contact-form]")).toHaveCount(1);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+});

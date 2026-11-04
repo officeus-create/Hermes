@@ -29,7 +29,12 @@ assert.equal(logistics.schemaId, "https://hermeslogisticsus.com/#logistics");
 assert.equal(logistics.relationshipStatus, "approved_direction");
 assert.equal(logistics.schemaPublication, "approved");
 assert.equal(logistics.websiteOwner, "/paths/logistics/");
-assert.deepEqual(approvedHermesLogisticsSameAs, ["https://staff.am/en/company/hermes-logistics-llc"]);
+// Clutch and Facebook confirmed as owner-controlled on 2026-10-27 (docs/CANONICAL_COMPANY_FACTS_APPROVAL.md section G).
+assert.deepEqual(approvedHermesLogisticsSameAs, [
+  "https://staff.am/en/company/hermes-logistics-llc",
+  "https://clutch.co/profile/hermes-logistics",
+  "https://www.facebook.com/profile.php?id=61558767681287",
+]);
 assert.ok(
   logistics.socialProfiles
     .filter((profile) => ["instagram", "threads"].includes(profile.platform))

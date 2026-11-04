@@ -62,6 +62,23 @@ const isAccountSubject = (value) =>
   value === "[HERMES CATALOG] [CUSTOMER INQUIRY]" ||
   value === "[HERMES CATALOG] [WEEKLY REPORT]";
 
+// Owner decision 2026-10-28: carrier Load Board registrations and direct car-hauling
+// dispatch requests also reach the dispatch inbox so a dispatcher can call the carrier.
+// This is the only path that may address a dispatcher inbox; recipients come from
+// CARRIER_DISPATCH_RECIPIENTS and are not filtered by the retired-recipient list.
+const CARRIER_LOAD_BOARD_ACCESS_SUBJECT = "[HERMES SALES] [LOAD BOARD ACCESS] [CARRIER]";
+const DIRECT_CAR_HAULING_PAGE_LINE = /^Page: \/logistics\/start-car-hauling-dispatch\/$/m;
+const isCarrierDispatchLead = (subject, text) =>
+  !SYNTHETIC_LEAD_MARKERS.test(text)
+  && (subject === CARRIER_LOAD_BOARD_ACCESS_SUBJECT
+    || (subject === "[HERMES INQUIRY] [LOGISTICS]" && DIRECT_CAR_HAULING_PAGE_LINE.test(text)));
+const parseCarrierDispatchRecipients = (env) => [...new Set(
+  clean(env.CARRIER_DISPATCH_RECIPIENTS, 400)
+    .split(/[;,]/)
+    .map((item) => item.trim().toLowerCase())
+    .filter((item) => isEmail(item)),
+)].slice(0, 4);
+
 const inquiryCategory = (subject) => subject.match(COMMERCIAL_INQUIRY_SUBJECT)?.[1] || "";
 
 const isOwnerCommercialLead = (subject, text) =>
@@ -1331,6 +1348,25 @@ const worker = {
     };
     try {
       await sendMessage(env, message);
+      if (isCarrierDispatchLead(subject, text)) {
+        for (const recipient of parseCarrierDispatchRecipients(env)) {
+          if (recipient === message.to) continue;
+          const dispatchResult = await sendSafely(env, {
+            ...message,
+            to: recipient,
+            // Department voice only: this copy never speaks for a named person.
+            text: `Hermes Logistics — Dispatch Department\nNew carrier request from the website. Please call the carrier and log the outcome with Logistics Sales.\n\n${message.text}`,
+          });
+          if (!dispatchResult.ok) {
+            console.error(JSON.stringify({
+              event: "carrier_dispatch_copy_pending",
+              category: dispatchResult.mapped.error,
+              attempts: dispatchResult.attempts,
+              request_id: requestId,
+            }));
+          }
+        }
+      }
       const ownerAlert = buildOwnerLeadAlert({ env, subject, text, replyTo, requestId });
       if (!ownerAlert) return json(202, { ok: true, recipient_count: 1, owner_alert: "not_applicable" });
 

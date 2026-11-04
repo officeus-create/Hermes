@@ -36,11 +36,12 @@ assert.equal(selectFreeAiProvider(selfHostedDeepSeek)?.id, "deepseek-self-hosted
 
 const cloudflareEnv = {
   HERMES_FREE_AI_CLOUDFLARE_ENABLED: "enabled",
-  HERMES_FREE_AI_CLOUDFLARE_MODEL: "@cf/test/free-model",
-  HERMES_FREE_AI_CLOUDFLARE_FREE_ASSERTION_EXPIRES_AT: "2099-01-01T00:00:00Z",
+  HERMES_FREE_AI_CLOUDFLARE_MODEL: "@cf/zai-org/glm-4.7-flash",
+  HERMES_FREE_AI_CLOUDFLARE_PLAN_ATTESTED: "workers_free",
+  HERMES_FREE_AI_CLOUDFLARE_FREE_ASSERTION_EXPIRES_AT: new Date(Date.now() + 12 * 3600_000).toISOString(),
   AI: {
     async run(model, request) {
-      assert.equal(model, "@cf/test/free-model");
+      assert.equal(model, "@cf/zai-org/glm-4.7-flash");
       assert.equal(request.temperature, 0);
       assert.ok(Array.isArray(request.messages));
       return { response: '{"priorities":[]}' };
@@ -48,6 +49,21 @@ const cloudflareEnv = {
   },
 };
 assert.equal(selectFreeAiProvider(cloudflareEnv)?.id, "cloudflare-workers-ai");
+const neverExpiring = { ...cloudflareEnv, HERMES_FREE_AI_CLOUDFLARE_FREE_ASSERTION_EXPIRES_AT: "2099-01-01T00:00:00Z" };
+assert.equal(selectFreeAiProvider(neverExpiring), null);
+assert.equal(freeAiProviderSnapshot(neverExpiring)[0].reason, "free_assertion_horizon_invalid");
+const twoDayAttestation = { ...cloudflareEnv, HERMES_FREE_AI_CLOUDFLARE_FREE_ASSERTION_EXPIRES_AT: new Date(Date.now() + 48 * 3600_000).toISOString() };
+assert.equal(selectFreeAiProvider(twoDayAttestation), null, "Workers Free plan evidence older than one day must fail closed");
+assert.equal(freeAiProviderSnapshot(twoDayAttestation)[0].reason, "free_assertion_horizon_invalid");
+const missingPlan = { ...cloudflareEnv, HERMES_FREE_AI_CLOUDFLARE_PLAN_ATTESTED: undefined };
+assert.equal(selectFreeAiProvider(missingPlan), null);
+assert.equal(freeAiProviderSnapshot(missingPlan)[0].reason, "workers_free_plan_not_verified");
+const paidPlan = { ...cloudflareEnv, HERMES_FREE_AI_CLOUDFLARE_PLAN_ATTESTED: "workers_paid" };
+assert.equal(selectFreeAiProvider(paidPlan), null, "Workers Paid might incur overages beyond free allocation");
+const unreviewedModel = { ...cloudflareEnv, HERMES_FREE_AI_CLOUDFLARE_MODEL: "@cf/zai-org/glm-5.3" };
+assert.equal(selectFreeAiProvider(unreviewedModel), null);
+assert.equal(freeAiProviderSnapshot(unreviewedModel)[0].reason, "model_not_approved_for_free_plan");
+
 const expiredCloudflare = {
   ...cloudflareEnv,
   HERMES_FREE_AI_CLOUDFLARE_FREE_ASSERTION_EXPIRES_AT: "2020-01-01T00:00:00Z",

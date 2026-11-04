@@ -45,6 +45,13 @@ Before changing shared headers, sub-navigation, hero templates, locale chrome, C
 - Do not publish unsupported business, product-status, location, ranking, traffic, customer, revenue, availability or office claims as decorative copy.
 - Do not add mass indexable pages, doorway variants, hidden SEO text, keyword stuffing, synthetic reviews, or artificial backlink surfaces as part of a redesign.
 
+### Locale mechanisms (two, deliberately different)
+
+- `/ru/` and `/ua/` (and the other locale prefixes) are server-rendered site locales. Their HTML already carries the page language (`<html lang>`, header/footer labels, copy), a self canonical and the hreflang cluster owned by `scripts/hreflang-audit.test.mjs`.
+- Catalog `?lang=uk` / `?lang=ru` is a browser-side interface switch on the same static Catalog document. The server HTML is identical to the English route, the canonical stays query-free, and no hreflang or sitemap entry may point at a `?lang=` URL.
+- Shared chrome may translate visible labels from the URL path (`labelLocale` in `SiteHeader.astro`, `textLocale` in `SiteFooter.astro`), but hrefs follow the template-passed `locale` only. A design PR must not change the link graph by "localizing" links.
+- `tests/locale-mechanisms.spec.ts` locks both mechanisms on desktop and 390 px.
+
 ### Design PR search preflight
 
 Use the narrow checks first when the touched surface overlaps Search, then run the full repository gate:

@@ -150,6 +150,61 @@ export const ROLE_CONTRACTS = Object.freeze([
     retention: "business_runtime_evidence",
   }),
   Object.freeze({
+    role_id: "hermes-automatic-engineer",
+    plugin_version: pluginRuntimeVersion("hermes-automatic-engineer"),
+    contract_version: "hae-self-patch-propose-v1",
+    job_type: "hae.self.patch.propose",
+    business_lane: "automation",
+    permission_class: "READ_ONLY",
+    semantic_required: true,
+    free_ai_policy: "free_only_wait_if_unavailable",
+    trigger: "authenticated_single_test_repair_packet",
+    input_schema: {
+      work_id: "HAE-SELF:*",
+      finding_id: "verified finding id",
+      repair_job_id: "persisted hae.self.repair.packet job id",
+      artifact_key: "exact allowlisted scripts/(automation-engine|hae)-*.test.mjs path",
+      base_sha: "exact 40-char git SHA",
+      observed_base_sha: "must equal base_sha",
+      defect_evidence_ref: "HAE-EVIDENCE:*",
+      source_status: "HOLD_REPAIR",
+      source_coverage_complete: "true",
+      finding_verified: "true",
+      writer_state_verified: "true",
+      writer_active: "false",
+      source_excerpt: "bounded exact-file source excerpt from authenticated adapter",
+      source_excerpt_sha256: "sha256:*",
+      failure_summary: "bounded minimized deterministic failure evidence"
+    },
+    runtime_config: {
+      scheduled: false,
+      max_source_chars: 6000,
+      max_failure_chars: 800,
+      max_output_tokens: 1200,
+      max_cost_usd: 0,
+      retry_seconds: 900
+    },
+    preconditions: [
+      "parent repair packet is persisted and source-authenticated",
+      "artifact is one exact allowlisted deterministic JS test file",
+      "base SHA is current and independently observed",
+      "source excerpt contains no credential material",
+      "semantic provider is explicitly zero-cost eligible or job waits in WAITING_FREE_AI"
+    ],
+    deterministic_steps: [
+      "validate immutable repair identity and bounded repository source evidence",
+      "ask free-only semantic specialist for one unified-diff proposal",
+      "validate exact file headers, hunk and changed-line bounds, and unsafe added-code patterns",
+      "return proposal only; separate Node preflight and independent QA are required before any git write"
+    ],
+    output_schema: "HOLD_BOUNDED_REPAIR_PREFLIGHT + one bounded unified diff + rationale",
+    kpi: ["work_id", "proposal_status", "changed_line_count", "hunk_count", "paid_inference_cost_usd"],
+    owner_gate: "authenticated_source_adapter_required_no_git_write",
+    readback: "structured result_json receipt with provider id, usage id and cost_usd=0",
+    failure: "WAITING_FREE_AI when free capacity unavailable; fail closed on stale evidence or invalid diff",
+    retention: "technical_runtime_evidence"
+  }),
+  Object.freeze({
     role_id: "hermes-agent-coordinator",
     plugin_version: pluginRuntimeVersion("hermes-agent-coordinator"),
     contract_version: "work-portfolio-reconcile-v1",
@@ -193,7 +248,7 @@ export const ROLE_CONTRACTS = Object.freeze([
 
 export const ROLE_CONTRACT_JOB_TYPES = Object.freeze(ROLE_CONTRACTS.map((contract) => contract.job_type));
 
-const DORMANT_GRAPH_JOB_TYPES = new Set(["hae.self.release.verify"]);
+const DORMANT_GRAPH_JOB_TYPES = new Set(["hae.self.patch.propose", "hae.self.release.verify"]);
 export const CAPABILITY_GRAPH_ROLE_CONTRACT_JOB_TYPES = Object.freeze(
   ROLE_CONTRACT_JOB_TYPES.filter((jobType) => !DORMANT_GRAPH_JOB_TYPES.has(jobType)),
 );
@@ -314,7 +369,144 @@ function validateSearchDefectPayload(payload) {
   return { defects: normalized, parentJobId: parentJobId || null };
 }
 
+const HAE_PATCH_SHA=/^[a-f0-9]{40}$/;
+const HAE_PATCH_DIGEST=/^sha256:[a-f0-9]{64}$/;
+const HAE_PATCH_PATH=/^scripts\/(?:automation-engine|hae)-[a-z0-9][a-z0-9._-]*\.test\.mjs$/;
+const HAE_PATCH_EVIDENCE=/^HAE-EVIDENCE:[A-Za-z0-9._-]{6,90}$/;
+const HAE_PATCH_JOB=/^job:[A-Za-z0-9._:-]{6,180}$/;
+const HAE_PATCH_FIELDS=new Set([
+  "work_id","finding_id","repair_job_id","artifact_key","base_sha","observed_base_sha",
+  "defect_evidence_ref","source_status","source_coverage_complete","finding_verified",
+  "writer_state_verified","writer_active","source_excerpt","source_excerpt_sha256","failure_summary"
+]);
+
+function validateHaeSelfPatchPayload(payload) {
+  if (!payload || Array.isArray(payload) || typeof payload !== "object" ||
+      Object.keys(payload).length !== HAE_PATCH_FIELDS.size ||
+      Object.keys(payload).some((key) => !HAE_PATCH_FIELDS.has(key))) {
+    throw new Error("hae_patch_payload_contract_invalid");
+  }
+  const findingId=cleanText(payload.finding_id, 96);
+  const workId=cleanText(payload.work_id, 120);
+  const artifactKey=cleanText(payload.artifact_key, 160);
+  const repairJobId=cleanText(payload.repair_job_id, 200);
+  const defectEvidenceRef=cleanText(payload.defect_evidence_ref, 120);
+  const failureSummary=cleanText(payload.failure_summary, 800);
+  const sourceExcerpt=typeof payload.source_excerpt==="string" ? payload.source_excerpt : "";
+  if (!findingId || workId!=="HAE-SELF:"+findingId) throw new Error("hae_patch_work_identity_invalid");
+  if (!HAE_PATCH_JOB.test(repairJobId)) throw new Error("hae_patch_repair_job_invalid");
+  if (!HAE_PATCH_PATH.test(artifactKey) || artifactKey.includes("..") || artifactKey.includes("\\")) {
+    throw new Error("hae_patch_artifact_invalid");
+  }
+  if (!HAE_PATCH_SHA.test(payload.base_sha||"") || payload.base_sha!==payload.observed_base_sha) {
+    throw new Error("hae_patch_base_sha_invalid");
+  }
+  if (!HAE_PATCH_EVIDENCE.test(defectEvidenceRef)) throw new Error("hae_patch_evidence_ref_invalid");
+  if (payload.source_status!=="HOLD_REPAIR" || payload.source_coverage_complete!==true ||
+      payload.finding_verified!==true || payload.writer_state_verified!==true || payload.writer_active!==false) {
+    throw new Error("hae_patch_source_not_eligible");
+  }
+  if (!sourceExcerpt || new TextEncoder().encode(sourceExcerpt).byteLength>6000 ||
+      /[\0\x01-\x08\x0b\x0c\x0e-\x1f\x7f]/.test(sourceExcerpt)) {
+    throw new Error("hae_patch_source_excerpt_invalid");
+  }
+  if (/(?:sk-proj-|ghp_[A-Za-z0-9]{12,}|BEGIN [A-Z ]*PRIVATE KEY|Authorization:\s*Bearer\s+[A-Za-z0-9._-]{12,})/i.test(sourceExcerpt)) {
+    throw new Error("hae_patch_source_excerpt_secret_like");
+  }
+  if (!HAE_PATCH_DIGEST.test(payload.source_excerpt_sha256||"")) throw new Error("hae_patch_source_digest_invalid");
+  if (!failureSummary || failureSummary.length<8) throw new Error("hae_patch_failure_summary_invalid");
+  return {
+    work_id: workId,
+    finding_id: findingId,
+    repair_job_id: repairJobId,
+    artifact_key: artifactKey,
+    base_sha: payload.base_sha,
+    observed_base_sha: payload.observed_base_sha,
+    defect_evidence_ref: defectEvidenceRef,
+    source_status: payload.source_status,
+    source_coverage_complete: true,
+    finding_verified: true,
+    writer_state_verified: true,
+    writer_active: false,
+    source_excerpt: sourceExcerpt,
+    source_excerpt_sha256: payload.source_excerpt_sha256,
+    failure_summary: failureSummary
+  };
+}
+
+function validateHaePatchDiff(diff, artifactKey) {
+  if (typeof diff!=="string" || !diff.endsWith("\n") ||
+      new TextEncoder().encode(diff).byteLength>8192 ||
+      /[\r\0\x01-\x08\x0b\x0c\x0e-\x1f\x7f]/.test(diff)) throw new Error("hae_patch_diff_invalid");
+  const lines=diff.trimEnd().split("\n");
+  if (lines.some((line)=>line.length>480)) throw new Error("hae_patch_diff_line_too_long");
+  if (lines[0]!=="diff --git a/"+artifactKey+" b/"+artifactKey ||
+      lines.filter((line)=>line.startsWith("diff --git ")).length!==1) throw new Error("hae_patch_diff_file_invalid");
+  const from=lines.indexOf("--- a/"+artifactKey);
+  const to=lines.indexOf("+++ b/"+artifactKey);
+  if (from<1 || to!==from+1) throw new Error("hae_patch_diff_headers_invalid");
+  const metadata=lines.slice(1,from);
+  if (metadata.length>1 || metadata.some((line)=>!/^index [a-f0-9]{7,64}\.\.[a-f0-9]{7,64}(?: 100644)?$/.test(line))) {
+    throw new Error("hae_patch_diff_metadata_invalid");
+  }
+  let hunks=0,changed=0,oldCount=null,newCount=null,added=0,removed=0;
+  const finish=()=>{ if(oldCount!==null && (oldCount!==0||newCount!==0)) throw new Error("hae_patch_diff_unbalanced_hunk"); };
+  for (const line of lines.slice(to+1)) {
+    if (line.startsWith("@@ ")) {
+      finish();
+      const match=line.match(/^@@ -([1-9]\d*)(?:,(\d+))? \+([1-9]\d*)(?:,(\d+))? @@(?: [^\r\n]{0,80})?$/);
+      if(!match) throw new Error("hae_patch_diff_hunk_header_invalid");
+      hunks+=1;
+      if(hunks>2) throw new Error("hae_patch_diff_too_many_hunks");
+      oldCount=match[2]===undefined?1:Number(match[2]);
+      newCount=match[4]===undefined?1:Number(match[4]);
+      if(oldCount>150||newCount>150) throw new Error("hae_patch_diff_hunk_too_large");
+      continue;
+    }
+    if(oldCount===null) throw new Error("hae_patch_diff_line_outside_hunk");
+    const ch=line.slice(0,1);
+    if(![" ","+","-"].includes(ch)) throw new Error("hae_patch_diff_line_invalid");
+    if(ch===" "){oldCount-=1;newCount-=1;}
+    if(ch==="-"){oldCount-=1;changed+=1;removed+=1;}
+    if(ch==="+"){
+      newCount-=1;changed+=1;added+=1;
+      if (/(?:child_process|execSync|spawnSync|(?:process|globalThis)\s*(?:\.|\[)|fetch\s*\(|WebSocket\b|https?:\/\/|eval\s*\(|Function\s*\(|import\s*\(|\brequire\s*\(|from\s+["']node:|import\s+.*["']node:|sk-proj-|ghp_|BEGIN [A-Z ]*PRIVATE KEY)/i.test(line)) {
+        throw new Error("hae_patch_diff_unsafe_added_code");
+      }
+    }
+    if(oldCount<0||newCount<0) throw new Error("hae_patch_diff_hunk_count_mismatch");
+  }
+  finish();
+  if(!hunks || !changed || changed>50 || !added || !removed) throw new Error("hae_patch_diff_bounds_invalid");
+  return {changed_line_count:changed,hunk_count:hunks};
+}
+
 export function buildRoleContractSemanticRequest(jobType, payload) {
+  if (jobType === "hae.self.patch.propose") {
+    const input=validateHaeSelfPatchPayload(payload);
+    return {
+      system_prompt: [
+        "You are the Hermes Automatic Engineer in PATCH_PROPOSAL_ONLY mode.",
+        "Use only the supplied exact test-file excerpt and minimized failure summary.",
+        "Return JSON only with exactly two keys: diff and rationale.",
+        "The diff must modify only artifact_key, use unified diff format, contain at most two hunks and at most 50 changed lines.",
+        "Do not add network, filesystem, process, dynamic-import, credential, provider, migration, deployment, merge, publication or destructive behavior.",
+        "Do not claim that the patch was applied, tested, merged or deployed.",
+        "If evidence is insufficient, return an empty diff; invalid output will fail closed."
+      ].join(" "),
+      user_prompt: JSON.stringify({
+        work_id:input.work_id,
+        finding_id:input.finding_id,
+        artifact_key:input.artifact_key,
+        base_sha:input.base_sha,
+        defect_evidence_ref:input.defect_evidence_ref,
+        failure_summary:input.failure_summary,
+        source_excerpt_sha256:input.source_excerpt_sha256,
+        source_excerpt:input.source_excerpt
+      }),
+      max_output_tokens: Number(roleContractForJobType(jobType)?.runtime_config?.max_output_tokens || 1200)
+    };
+  }
   if (jobType !== "search.defect.prioritize") throw new Error("semantic_role_contract_not_supported");
   const { defects } = validateSearchDefectPayload(payload);
   return {
@@ -333,6 +525,35 @@ export function buildRoleContractSemanticRequest(jobType, payload) {
 }
 
 export function validateRoleContractSemanticResult(jobType, payload, value) {
+  if (jobType === "hae.self.patch.propose") {
+    const input=validateHaeSelfPatchPayload(payload);
+    if (!value || Array.isArray(value) || typeof value!=="object" ||
+        Object.keys(value).length!==2 || !Object.hasOwn(value,"diff") || !Object.hasOwn(value,"rationale")) {
+      throw new Error("hae_patch_semantic_result_contract_invalid");
+    }
+    const rationale=cleanText(value.rationale, 600);
+    if(!rationale || rationale.length<8) throw new Error("hae_patch_semantic_rationale_invalid");
+    const metrics=validateHaePatchDiff(value.diff,input.artifact_key);
+    return {
+      work_id:input.work_id,
+      finding_id:input.finding_id,
+      repair_job_id:input.repair_job_id,
+      artifact_key:input.artifact_key,
+      base_sha:input.base_sha,
+      defect_evidence_ref:input.defect_evidence_ref,
+      diff:value.diff,
+      rationale,
+      ...metrics,
+      proposal_status:"HOLD_BOUNDED_REPAIR_PREFLIGHT",
+      required_next_gate:"hae-bounded-repair-preflight-v1",
+      automatic_git_write:false,
+      automatic_branch_creation:false,
+      automatic_merge:false,
+      automatic_deploy:false,
+      knowledge_auto_promotion:false,
+      paid_inference_cost_usd:0
+    };
+  }
   if (jobType !== "search.defect.prioritize") throw new Error("semantic_role_contract_not_supported");
   const { defects } = validateSearchDefectPayload(payload);
   if (!value || typeof value !== "object" || !Array.isArray(value.priorities)) {
@@ -374,6 +595,7 @@ export function validateRoleContractInput(jobType, payload) {
   if (jobType === "marketing.content.dedupe.audit") return validateMarketingPayload(payload);
   if (jobType === "logistics.source.freshness.audit") return validateLogisticsPayload(payload);
   if (jobType === "search.defect.prioritize") return validateSearchDefectPayload(payload);
+  if (jobType === "hae.self.patch.propose") return validateHaeSelfPatchPayload(payload);
   if (jobType === "work.portfolio.reconcile") return normalizeWorkPortfolioSnapshot(payload);
   if (isZeroTokenPluginTask(jobType)) return validateZeroTokenPluginTaskInput(jobType, payload);
   throw new Error("role_contract_job_type_not_allowed");
@@ -484,7 +706,7 @@ export function runRoleContractPrimitive(jobType, payload, observedAt = new Date
   if (jobType === "search.snapshot.evaluate") return evaluateSearch(payload);
   if (jobType === "marketing.content.dedupe.audit") return evaluateMarketing(payload);
   if (jobType === "logistics.source.freshness.audit") return evaluateLogistics(payload, observedAt);
-  if (jobType === "search.defect.prioritize") throw new Error("semantic_job_requires_free_ai");
+  if (jobType === "search.defect.prioritize" || jobType === "hae.self.patch.propose") throw new Error("semantic_job_requires_free_ai");
   if (jobType === "work.portfolio.reconcile") {
     return reconcileWorkPortfolioSnapshot(payload, ROLE_CONTRACT_JOB_TYPES);
   }
