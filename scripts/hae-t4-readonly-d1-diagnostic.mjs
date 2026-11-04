@@ -3,6 +3,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import crypto from "node:crypto";
+import { validT4EmailReceipt } from "./hae-t4-dlq-canary.mjs";
 
 const REPO = "officeus-create/Hermes";
 const API = "https://api.cloudflare.com/client/v4";
@@ -56,7 +57,7 @@ export function classifyT4DlqReceipt(response, expectedId) {
     receipt_length:receipt.length,
     receipt_sha256:"sha256:"+crypto.createHash("sha256").update(receipt).digest("hex"),
     receipt_safe_char_class:/^[a-zA-Z0-9:/._@+<>-]*$/.test(receipt),
-    receipt_matches_existing_verifier:/^cloudflare-email:\/\/(?:accepted|message)\/[a-zA-Z0-9:_-]+$/.test(receipt),
+    receipt_matches_existing_verifier:validT4EmailReceipt(receipt, expectedId, r.alert_provider_message_id),
     upstream_transport_proof_only:true,
     independent_inbox_verified:false,
   };

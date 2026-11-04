@@ -4,6 +4,7 @@ import {
   HAE_SELF_RELEASE_LIMITS,
   normalizeHaeSelfReleaseEvidence,
 } from "../workers/automation-engine/src/hae-self-release-gate.mjs";
+import { pluginRuntimeVersion } from "../workers/automation-engine/src/plugin-runtime-registry.mjs";
 
 const request = {
   work_id: "HAE-SELF:contract-drift",
@@ -29,9 +30,9 @@ assert.equal(result.self_improvement_should_pause, false);
 assert.equal(result.next_lane, "SELF_IMPROVEMENT");
 assert.equal(result.cost_usd, 0);
 assert.equal(result.verifier.role_id, "hermes-qa-evidence-auditor");
-assert.equal(result.verifier.plugin_version, "0.1.5");
+assert.equal(result.verifier.plugin_version, pluginRuntimeVersion("hermes-qa-evidence-auditor"));
 assert.equal(result.repair_owner.role_id, "hermes-automatic-engineer");
-assert.equal(result.repair_owner.plugin_version, "0.1.25");
+assert.equal(result.repair_owner.plugin_version, pluginRuntimeVersion("hermes-automatic-engineer"));
 assert.ok(result.future_required_evidence.includes("D1_AUTHENTICATED_QA_VERIFIER_RECEIPT"));
 assert.ok(result.future_required_evidence.includes("GITHUB_AUTHENTICATED_ROLLBACK_EQUIVALENCE"));
 

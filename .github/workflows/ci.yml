@@ -40,6 +40,9 @@ jobs:
       - name: Validate static output
         run: npm test
 
+      - name: Validate Command Center D1 owner project and work-item contracts
+        run: node --experimental-strip-types scripts/internal-command-center-runtime.test.mjs
+
       - name: Validate Hermes Connect registration operations
         run: node scripts/hermes-connect-registration-ops-contract.test.mjs
 

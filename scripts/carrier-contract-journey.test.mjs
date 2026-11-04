@@ -60,7 +60,7 @@ assert.doesNotMatch(signPage, /(?:carrier|driver)[_-]?(?:name|email|phone|mc|usd
 for (const required of [
   '"/carrier/"',
   '"/sign/"',
-  '"/logistics/carrier/"',
+  '"/logistics/car-hauling-dispatch/"',
   '"/logistics/carrier-offer/"',
   '"/logistics/carrier-agreement/"',
   'primaryLabel: "Continue to carrier packet"',
