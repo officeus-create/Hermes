@@ -16,7 +16,7 @@ export async function onRequestGet({request,env}:{request:Request;env:Env}){
   if(!/^\d{1,6}$/.test(offsetText))return jsonResponse(400,{success:false,error:"invalid_offset"},headers);
   const offset=Number(offsetText);
   if(!Number.isSafeInteger(offset)||offset>100000)return jsonResponse(400,{success:false,error:"invalid_offset"},headers);
-  const result=await env.DB.prepare(`SELECT w.*, t.status AS linked_task_status, t.updated_at AS linked_task_updated_at,
+  const result=await env.DB.prepare(`SELECT w.*, t.status AS linked_task_status, t.started_at AS linked_task_started_at,\n    t.completed_at AS linked_task_completed_at, t.updated_at AS linked_task_updated_at,
     t.pr_url AS linked_task_pr_url, t.output_summary AS linked_task_output_summary
     FROM hermes_owner_work_items w
     LEFT JOIN hermes_internal_ai_tasks t ON t.id = w.linked_task_id AND t.organization_scope = w.organization_scope
