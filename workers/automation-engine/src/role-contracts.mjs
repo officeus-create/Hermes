@@ -333,8 +333,9 @@ export const ROLE_CONTRACTS = Object.freeze([
       "classify dependencies and writer conflicts",
       "preserve UNKNOWN and incomplete coverage",
       "identify bounded READ_ONLY routing candidates without executing them",
+      "record one deterministic route decision per work item with selected role/version or fail-closed omission reason",
     ],
-    output_schema: "coverage + ready/blocked/stale/conflict/routing candidate ids",
+    output_schema: "coverage + ready/blocked/stale/conflict ids + per-work-item routing decisions",
     kpi: ["unfinished_count", "ready_count", "blocked_count", "writer_conflict_count", "unknown_count"],
     owner_gate: "authorized_source_adapter_required",
     readback: "result_json bound to source_kind and snapshot_id",
@@ -445,8 +446,9 @@ const AUDITOR_JOB_TYPES = new Set([
 ]);
 const AUDIT_SEVERITIES = new Set(["P0", "P1", "P2", "P3"]);
 const AUDIT_STATUSES = new Set(["OPEN", "HOLD", "CLOSED", "UNKNOWN"]);
+const AUDIT_SECRET_LIKE = /(?:sk-(?:proj-)?[A-Za-z0-9_-]{12,}|ghp_[A-Za-z0-9]{12,}|AIza[0-9A-Za-z_-]{20,}|xox[baprs]-[A-Za-z0-9-]{10,}|AKIA[0-9A-Z]{16}|Authorization:\s*Bearer\s+[A-Za-z0-9._-]{12,}|\b\d{6,12}:[A-Za-z0-9_-]{30,50}\b|BEGIN [A-Z ]*PRIVATE KEY)/i;
 
-function validateAuditorSnapshot(payload) {
+function validateAuditorSnapshot(jobType, payload) {
   if (!payload || typeof payload !== "object" || Array.isArray(payload)) throw new Error("audit_snapshot_object_required");
   const observedAt = cleanText(payload.observed_at, 80);
   if (!observedAt || !Number.isFinite(Date.parse(observedAt))) throw new Error("audit_observed_at_invalid");
@@ -454,6 +456,9 @@ function validateAuditorSnapshot(payload) {
       typeof payload.source_authenticated !== "boolean" ||
       typeof payload.source_trusted !== "boolean") {
     throw new Error("audit_coverage_state_invalid");
+  }
+  if (jobType !== "audit.website.journey" && payload.source_authenticated !== true) {
+    throw new Error("audit_source_authentication_required");
   }
   const findings = boundedArray(payload.findings, "audit_findings");
   if (findings.length > 200) throw new Error("audit_findings_too_large");
@@ -468,6 +473,9 @@ function validateAuditorSnapshot(payload) {
     if (!findingId || !category || !AUDIT_SEVERITIES.has(severity) || !AUDIT_STATUSES.has(status)) {
       throw new Error("audit_finding_fields_invalid");
     }
+    if (AUDIT_SECRET_LIKE.test(findingId) || AUDIT_SECRET_LIKE.test(category)) {
+      throw new Error("audit_finding_secret_like");
+    }
     if (seen.has(findingId)) throw new Error("audit_finding_duplicate");
     seen.add(findingId);
     normalized.push({ finding_id: findingId, category, severity, status });
@@ -481,10 +489,10 @@ function validateAuditorSnapshot(payload) {
   };
 }
 
-function evaluateAuditorSnapshot(payload) {
-  const input = validateAuditorSnapshot(payload);
+function evaluateAuditorSnapshot(jobType, payload) {
+  const input = validateAuditorSnapshot(jobType, payload);
   const open = input.findings.filter((item) => item.status === "OPEN" || item.status === "HOLD");
-  const sourceVerified = input.sourceAuthenticated || input.sourceTrusted;
+  const sourceVerified = jobType === "audit.website.journey" ? (input.sourceAuthenticated || input.sourceTrusted) : input.sourceAuthenticated;
   return {
     observed_at: input.observedAt,
     coverage_complete: input.coverageComplete && sourceVerified,
@@ -753,7 +761,7 @@ export function validateRoleContractSemanticResult(jobType, payload, value) {
 }
 
 export function validateRoleContractInput(jobType, payload) {
-  if (AUDITOR_JOB_TYPES.has(jobType)) return validateAuditorSnapshot(payload);
+  if (AUDITOR_JOB_TYPES.has(jobType)) return validateAuditorSnapshot(jobType, payload);
   if (jobType === "search.snapshot.evaluate") return validateSearchPayload(payload);
   if (jobType === "marketing.content.dedupe.audit") return validateMarketingPayload(payload);
   if (jobType === "logistics.source.freshness.audit") return validateLogisticsPayload(payload);
@@ -866,13 +874,13 @@ function evaluateLogistics(payload, observedAt) {
 }
 
 export function runRoleContractPrimitive(jobType, payload, observedAt = new Date().toISOString()) {
-  if (AUDITOR_JOB_TYPES.has(jobType)) return evaluateAuditorSnapshot(payload);
+  if (AUDITOR_JOB_TYPES.has(jobType)) return evaluateAuditorSnapshot(jobType, payload);
   if (jobType === "search.snapshot.evaluate") return evaluateSearch(payload);
   if (jobType === "marketing.content.dedupe.audit") return evaluateMarketing(payload);
   if (jobType === "logistics.source.freshness.audit") return evaluateLogistics(payload, observedAt);
   if (jobType === "search.defect.prioritize" || jobType === "hae.self.patch.propose") throw new Error("semantic_job_requires_free_ai");
   if (jobType === "work.portfolio.reconcile") {
-    return reconcileWorkPortfolioSnapshot(payload, ROLE_CONTRACT_JOB_TYPES);
+    return reconcileWorkPortfolioSnapshot(payload, ROLE_CONTRACT_JOB_TYPES, ROLE_CONTRACTS);
   }
   if (isZeroTokenPluginTask(jobType)) return runZeroTokenPluginTask(jobType, payload);
   throw new Error("role_contract_job_type_not_allowed");
