@@ -83,6 +83,7 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
     provider_health,
     plugin_registry: registrySnapshot.entries.map(({ role_id, plugin_version, observed_at }) => ({
       role_id,
+      plugin_version,
       runtime_loaded_version: plugin_version,
       runtime_observed_at: observed_at,
       provider_release_version: null,
