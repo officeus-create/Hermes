@@ -1,5 +1,6 @@
-import { pluginRuntimeRegistrySnapshot } from "../../../workers/automation-engine/src/plugin-runtime-registry.mjs";
+import { pluginRuntimeRegistryEvidenceStatus, pluginRuntimeRegistrySnapshot } from "../../../workers/automation-engine/src/plugin-runtime-registry.mjs";
 import { roleContractForJobType, roleContractSha256 } from "../../../workers/automation-engine/src/role-contracts.mjs";
+import { commandCenterHaeIdempotencyKey, verifyCommandCenterHaeReceipt } from "./command-center-hae-receipt-verifier.mjs";
 
 const BRIDGE_POLICY_VERSION="command-center-plugin-bridge-v1";
 const ROLE_JOB_MAP=Object.freeze({
@@ -10,18 +11,13 @@ const PRIORITY=Object.freeze({p0:100,p1:85,p2:60,p3:40});
 async function expectedIdempotencyKey(item,route,plan,linkedTaskId=null,contractSha=null){
   const id=clean(item?.id,160);
   const taskId=clean(linkedTaskId||item?.linked_task_id,160);
-  const policy=clean(route?.policy_version,120);
-  const sha=contractSha||await roleContractSha256(plan.contract);
-  if(!id||!taskId||!policy||!plan?.role_id||!plan?.plugin_version||!plan?.job_type||!plan?.contract?.contract_version||!/^[a-f0-9]{64}$/.test(String(sha||"")))return null;
-  // Keep byte-for-byte identity semantics aligned with #2264 verifier.
-  const identity=JSON.stringify([
-    "hermes-command-center-hae-v1","hermes_internal",
-    id,taskId,policy,plan.role_id,plan.plugin_version,
-    plan.job_type,plan.contract.contract_version,sha,
-  ]);
-  const digest=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(identity));
-  const hex=[...new Uint8Array(digest)].map(value=>value.toString(16).padStart(2,"0")).join("");
-  return "hae:cc:v1:"+hex;
+  if(!id||!taskId||!plan?.contract)return null;
+  return commandCenterHaeIdempotencyKey({
+    workItem:{...item,organization_scope:"hermes_internal",id,linked_task_id:taskId},
+    route,
+    roleContract:plan.contract,
+    contractSha:contractSha||await roleContractSha256(plan.contract),
+  });
 }
 
 function clean(value,max=500){
@@ -167,6 +163,9 @@ export async function readCommandCenterHaeExecution(env,item,route){
   const jobId=clean(item?.hae_job_id,180);
   if(!jobId)return{state:"PLUGIN_SELECTED_NOT_EXECUTED",reason:null,job_id:null,receipt_verified:false};
   const expectedSha=await roleContractSha256(plan.contract);
+  const expectedKey=await expectedIdempotencyKey(item,route,plan,item?.linked_task_id,expectedSha);
+  if(!expectedKey)return{state:"PLUGIN_ROUTE_VERSION_DRIFT",reason:"command_center_idempotency_identity_invalid",job_id:jobId,receipt_verified:false};
+
   const response=await haeJson(env,"/v1/jobs/"+encodeURIComponent(jobId));
   if(!response.ok)return{
     state:"PLUGIN_EXECUTION_UNAVAILABLE",
@@ -174,60 +173,57 @@ export async function readCommandCenterHaeExecution(env,item,route){
     job_id:jobId,receipt_verified:false,
   };
   const job=response.payload?.job||{};
-  if(clean(job.job_id,180)!==jobId||clean(job.job_type,120)!==plan.job_type||clean(job.project_key,120)!=="command-center-plugin-route")
-    return{state:"PLUGIN_ROUTE_VERSION_DRIFT",reason:"hae_job_identity_mismatch",job_id:jobId,receipt_verified:false};
-  const expectedKey=await expectedIdempotencyKey(item,route,plan,item?.linked_task_id,expectedSha);
-  let sourcePayload=null;
-  try{sourcePayload=JSON.parse(String(job.payload_json||"null"));}catch{}
-  const task=Array.isArray(sourcePayload?.tasks)&&sourcePayload.tasks.length===1?sourcePayload.tasks[0]:null;
-  const sourceContract=sourcePayload?._role_contract;
-  const bindingMatches=Boolean(
-    item?.organization_scope==="hermes_internal" &&
-    expectedKey &&
-    clean(job.idempotency_key,240)===expectedKey &&
-    clean(job.policy_version,120)===BRIDGE_POLICY_VERSION &&
-    clean(job.business_lane,120)===plan.contract.business_lane &&
-    clean(job.account_key,120)==="hermes_logistics" &&
-    sourcePayload?.source_kind==="CHATGPT_SELECTED" &&
-    task?.work_id===clean(item?.id,160) &&
-    task?.writer_key==="internal-ai:"+clean(item?.linked_task_id,160) &&
-    task?.permission_class==="READ_ONLY" &&
-    sourceContract?.role_id===plan.role_id &&
-    sourceContract?.plugin_version===plan.plugin_version &&
-    sourceContract?.contract_version===plan.contract.contract_version &&
-    sourceContract?.sha256===expectedSha
+  const basicBindingMatches=Boolean(
+    clean(job.job_id,180)===jobId&&
+    clean(job.job_type,120)===plan.job_type&&
+    clean(job.project_key,120)==="command-center-plugin-route"&&
+    clean(job.business_lane,120)===plan.contract.business_lane&&
+    clean(job.account_key,120)==="hermes_logistics"&&
+    clean(job.policy_version,120)===BRIDGE_POLICY_VERSION&&
+    clean(job.idempotency_key,240)===expectedKey
   );
-  if(!bindingMatches)return{state:"PLUGIN_ROUTE_VERSION_DRIFT",reason:"hae_job_source_binding_mismatch",job_id:jobId,receipt_verified:false};
+  if(!basicBindingMatches)return{state:"PLUGIN_ROUTE_VERSION_DRIFT",reason:"hae_job_identity_mismatch",job_id:jobId,receipt_verified:false};
+
   const jobState=clean(job.state,40).toUpperCase();
   if(jobState!=="SUCCEEDED")return{
     state:routeStateFromJob(jobState),
     reason:jobState==="FAILED"?clean(job.last_error_class,160)||"hae_job_failed":null,
     job_id:jobId,job_state:jobState,receipt_verified:false,
   };
-  let receipt=null;
-  try{receipt=JSON.parse(String(job.result_json||"null"));}catch{}
-  const successEvents=Array.isArray(response.payload?.events)
-    ?response.payload.events.filter(event=>event?.event_type==="job.succeeded"&&event?.to_state==="SUCCEEDED")
-    :[];
-  const verified=Boolean(
-    successEvents.length===1&&
-    receipt&&
-    receipt.role_contract?.contract_version===plan.contract.contract_version&&
-    receipt.provider_write_performed!==true&&
-    receipt.result?.provider_write_performed!==true&&
-    sourcePayload?.external_provider_write!==true&&
-    receipt.capability===plan.job_type&&
-    receipt.external_write===false&&
-    receipt.role_contract?.role_id===plan.role_id&&
-    receipt.role_contract?.plugin_version===plan.plugin_version&&
-    receipt.role_contract?.sha256===expectedSha
-  );
+
+  const registry=pluginRuntimeRegistrySnapshot();
+  const registryEvidence=pluginRuntimeRegistryEvidenceStatus(new Date().toISOString(),24);
+  const workItem={
+    ...item,
+    organization_scope:"hermes_internal",
+    plugin_route_json:item?.plugin_route_json||JSON.stringify(route),
+  };
+  const binding={
+    work_item_id:clean(item?.id,160),
+    linked_task_id:clean(item?.linked_task_id,160),
+    hae_job_id:jobId,
+    idempotency_key:expectedKey,
+    job_type:plan.job_type,
+    contract_sha256:expectedSha,
+  };
+  const verdict=await verifyCommandCenterHaeReceipt({
+    workItem,
+    registryEntries:registry.entries,
+    registryEvidence,
+    binding,
+    haeJob:job,
+    jobEvents:response.payload?.events,
+    roleContract:plan.contract,
+  });
+  const verified=verdict.state==="MATCHED_SOURCE_ONLY";
   return{
     state:verified?"PLUGIN_EXECUTION_SUCCEEDED_RECEIPT_VERIFIED":"PLUGIN_ROUTE_VERSION_DRIFT",
-    reason:verified?null:"hae_receipt_binding_or_success_event_unverified",
+    reason:verified?null:verdict.reason||"hae_receipt_verification_failed",
     job_id:jobId,
     job_state:jobState,
     receipt_verified:verified,
+    source_verification_state:verdict.state,
+    independent_qa_verified:false,
     capability:verified?plan.job_type:null,
     role_id:verified?plan.role_id:null,
     plugin_version:verified?plan.plugin_version:null,
