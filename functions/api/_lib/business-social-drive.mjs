@@ -285,6 +285,143 @@ export async function readBusinessSocialDriveSource(db,env,business,ownerId,sour
   return{ok:true,source:{id:String(meta.id),name:clean(meta.name,300),mime_type:String(meta.mimeType||""),url:String(sourceUrl)},assets};
 }
 
+const DRIVE_GOVERNANCE_WRITE_ROLES=new Set(["owner","organizer","fileOrganizer","writer"]);
+const DRIVE_GOVERNANCE_READ_ROLES=new Set(["commenter","reader"]);
+
+function governanceFinding(findingId,category,severity,status="OPEN"){
+  return{finding_id:findingId,category,severity,status};
+}
+function governancePermissionCounts(files=[]){
+  const counts={anyone_write:0,anyone_read:0,domain_write:0,domain_read:0,discoverable:0,trashed:0};
+  for(const file of files){
+    if(file?.trashed===true)counts.trashed+=1;
+    const permissions=Array.isArray(file?.permissions)?file.permissions:[];
+    for(const permission of permissions){
+      if(permission?.deleted===true)continue;
+      const type=clean(permission?.type,40);
+      const role=clean(permission?.role,40);
+      const write=DRIVE_GOVERNANCE_WRITE_ROLES.has(role);
+      const read=DRIVE_GOVERNANCE_READ_ROLES.has(role);
+      if(type==="anyone"){
+        if(write)counts.anyone_write+=1;
+        else if(read)counts.anyone_read+=1;
+        if(permission?.allowFileDiscovery===true)counts.discoverable+=1;
+      }else if(type==="domain"){
+        if(write)counts.domain_write+=1;
+        else if(read)counts.domain_read+=1;
+      }
+    }
+  }
+  return counts;
+}
+
+export function classifyBusinessSocialDriveGovernance({
+  files=[],
+  truncated=false,
+  nestedFolder=false,
+  observedAt=new Date().toISOString(),
+}={}){
+  if(!Array.isArray(files)||files.length>51||!Number.isFinite(Date.parse(String(observedAt||""))))
+    throw new Error("drive_governance_input_invalid");
+  const counts=governancePermissionCounts(files);
+  const findings=[];
+  if(counts.anyone_write>0)findings.push(governanceFinding("drive-public-write-exposure","PUBLIC_WRITE_EXPOSURE","P0"));
+  if(counts.anyone_read>0)findings.push(governanceFinding("drive-public-read-exposure","PUBLIC_READ_EXPOSURE","P1"));
+  if(counts.domain_write>0)findings.push(governanceFinding("drive-domain-write-exposure","DOMAIN_WRITE_EXPOSURE","P1"));
+  if(counts.domain_read>0)findings.push(governanceFinding("drive-domain-read-exposure","DOMAIN_READ_EXPOSURE","P2"));
+  if(counts.discoverable>0)findings.push(governanceFinding("drive-public-discovery-enabled","PUBLIC_DISCOVERY_ENABLED","P1"));
+  if(counts.trashed>0)findings.push(governanceFinding("drive-trashed-source","TRASHED_SOURCE","P2"));
+  if(truncated)findings.push(governanceFinding("drive-source-set-truncated","SOURCE_SET_TRUNCATED","P1","UNKNOWN"));
+  if(nestedFolder)findings.push(governanceFinding("drive-nested-folder-scope-partial","NESTED_FOLDER_SCOPE_PARTIAL","P2","UNKNOWN"));
+  return{
+    observed_at:new Date(observedAt).toISOString(),
+    coverage_complete:!truncated&&!nestedFolder,
+    source_authenticated:true,
+    source_trusted:true,
+    findings,
+  };
+}
+
+async function readonlyBusinessSocialDriveAccessToken(db,env,business,ownerId){
+  await ensureBusinessSocialDriveSchema(db);
+  const row=await db.prepare(
+    "SELECT state,token_ciphertext,granted_scope,token_expires_at FROM hermes_business_social_drive_connections WHERE business_key=? AND owner_specialist_id=? LIMIT 1"
+  ).bind(business.business_key,String(ownerId)).first();
+  if(!row||String(row.state||"")!=="connected")return{ok:false,error_class:"drive_authorization_required"};
+  const scopes=String(row.granted_scope||"").split(/\s+/).filter(Boolean);
+  if(!scopes.includes(DRIVE_SCOPE))return{ok:false,error_class:"drive_readonly_scope_required"};
+  let payload;
+  try{payload=await decryptPayload(env,row.token_ciphertext);}catch{return{ok:false,error_class:"drive_token_decrypt_failed"};}
+  const accessToken=clean(payload?.access_token,4096);
+  const expires=Date.parse(String(payload?.expires_at||row.token_expires_at||""));
+  if(!accessToken||!Number.isFinite(expires)||expires<=Date.now()+60_000)
+    return{ok:false,error_class:"drive_authorization_refresh_required"};
+  return{ok:true,access_token:accessToken};
+}
+
+async function driveGovernanceJson(url,token,fetchImpl=fetch){
+  try{
+    const response=await fetchImpl(url,{method:"GET",headers:{Authorization:"Bearer "+token,Accept:"application/json"}});
+    const data=await response.json().catch(()=>({}));
+    return{ok:response.ok,status:response.status,data};
+  }catch{return{ok:false,status:0,data:null};}
+}
+async function driveGovernanceMeta(id,token,fetchImpl=fetch){
+  const url=new URL(id,DRIVE_FILES_BASE);
+  url.searchParams.set("fields","id,mimeType,modifiedTime,trashed,permissions(type,role,allowFileDiscovery,deleted)");
+  url.searchParams.set("supportsAllDrives","true");
+  const result=await driveGovernanceJson(url.toString(),token,fetchImpl);
+  return result.ok?result.data:null;
+}
+async function driveGovernanceChildren(id,token,fetchImpl=fetch){
+  const url=new URL("https://www.googleapis.com/drive/v3/files");
+  url.searchParams.set("q","'"+id+"' in parents and trashed=false");
+  url.searchParams.set("fields","nextPageToken,files(id,mimeType,modifiedTime,trashed,permissions(type,role,allowFileDiscovery,deleted))");
+  url.searchParams.set("pageSize","50");
+  url.searchParams.set("orderBy","modifiedTime desc");
+  url.searchParams.set("supportsAllDrives","true");
+  url.searchParams.set("includeItemsFromAllDrives","true");
+  const result=await driveGovernanceJson(url.toString(),token,fetchImpl);
+  if(!result.ok||!Array.isArray(result.data?.files))return null;
+  return{files:result.data.files,next_page_token:clean(result.data?.nextPageToken,1024)||null};
+}
+
+export async function readBusinessSocialDriveGovernanceSnapshot(
+  db,env,business,ownerId,sourceUrl,{fetchImpl=fetch,observedAt=new Date().toISOString()}={}
+){
+  const parsed=parseGoogleDriveResourceUrl(sourceUrl);
+  if(!parsed)return{ok:false,error_class:"google_drive_source_url_invalid"};
+  const token=await readonlyBusinessSocialDriveAccessToken(db,env,business,ownerId);
+  if(!token.ok)return token;
+  const meta=await driveGovernanceMeta(parsed.id,token.access_token,fetchImpl);
+  if(!meta){
+    return{ok:true,snapshot:{
+      observed_at:new Date(observedAt).toISOString(),
+      coverage_complete:false,
+      source_authenticated:true,
+      source_trusted:true,
+      findings:[governanceFinding("drive-source-probe-unavailable","PROBE_UNAVAILABLE","P1","UNKNOWN")],
+    }};
+  }
+  let files=[meta],truncated=false,nestedFolder=false;
+  if(String(meta.mimeType||"")==="application/vnd.google-apps.folder"){
+    const children=await driveGovernanceChildren(parsed.id,token.access_token,fetchImpl);
+    if(!children){
+      return{ok:true,snapshot:{
+        observed_at:new Date(observedAt).toISOString(),
+        coverage_complete:false,
+        source_authenticated:true,
+        source_trusted:true,
+        findings:[governanceFinding("drive-folder-probe-unavailable","PROBE_UNAVAILABLE","P1","UNKNOWN")],
+      }};
+    }
+    nestedFolder=children.files.some((file)=>String(file?.mimeType||"")==="application/vnd.google-apps.folder");
+    truncated=Boolean(children.next_page_token);
+    files=[meta,...children.files].slice(0,51);
+  }
+  return{ok:true,snapshot:classifyBusinessSocialDriveGovernance({files,truncated,nestedFolder,observedAt})};
+}
+
 export async function disconnectBusinessSocialDrive(db,env,business,ownerId){
   await ensureBusinessSocialDriveSchema(db);
   const row=await db.prepare("SELECT token_ciphertext FROM hermes_business_social_drive_connections WHERE business_key=? AND owner_specialist_id=? LIMIT 1")
