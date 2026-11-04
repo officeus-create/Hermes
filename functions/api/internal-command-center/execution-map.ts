@@ -81,7 +81,16 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
     github_developments,
     department_kpis,
     provider_health,
-    plugin_registry: registrySnapshot.entries.map(({ role_id, plugin_version, observed_at }) => ({ role_id, plugin_version, observed_at })),
+    plugin_registry: registrySnapshot.entries.map(({ role_id, plugin_version, observed_at }) => ({
+      role_id,
+      runtime_loaded_version: plugin_version,
+      runtime_observed_at: observed_at,
+      provider_release_version: null,
+      provider_release_state: "UNKNOWN_PROVIDER_RELEASE_READBACK_NOT_CONNECTED",
+      latest_invocation_state: "UNKNOWN_CANONICAL_HAE_PLUGIN_RECEIPT_REQUIRED",
+      latest_invocation_at: null,
+      training_holdout_state: "UNKNOWN_VERIFIED_HOLDOUT_RECEIPT_REQUIRED",
+    })),
     registry_evidence: registryEvidence,
   }, headers);
 }
