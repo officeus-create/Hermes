@@ -86,7 +86,7 @@ const primaryCta = isBrokerCapacityPath
     ? { label: "Start car-hauling dispatch review", href: "/logistics/start-car-hauling-dispatch/" }
     : customerIntake?.primary ?? recommendation.primaryCta;
 const demoCta = isBrokerCapacityPath
-  ? { label: "Preview broker Load Board demo", href: "/load-board/?role=broker#post-load" }
+  ? { label: "Explore broker Load Board preview", href: "/load-board/?role=broker#post-load" }
   : isCarHaulingPath
     ? { label: "Preview carrier Load Board demo", href: "/load-board/?role=carrier&equipment=car_hauler#available-loads" }
     : customerIntake?.demo ?? null;
@@ -158,7 +158,7 @@ import "../../../styles/features/case.css";
             <div>
               <p class="eyebrow">Commercial intake versus product demo</p>
               <h2 id="broker-intake-boundary-title">Use the direct intake for a real opportunity.</h2>
-              <p>The broker intake collects route, timing, equipment, vehicle condition, quantity, contact, and review context for Logistics Sales. The Load Board remains a fictional product demonstration and does not publish a load, notify a carrier, confirm capacity, or create a booking.</p>
+              <p>Use the broker intake to prepare route, timing, equipment, vehicle condition, quantity, contact, and review context for Logistics Sales. The separate Load Board combines source-gated active records, which may be zero, with non-bookable market examples. Preparing an intake does not publish a load, notify a carrier, confirm capacity, or create a booking.</p>
             </div>
             <div>
               <a class="button button-primary" href={primaryCta.href}>Prepare broker opportunity <ArrowRight size={18} aria-hidden="true" /></a>
@@ -173,7 +173,7 @@ import "../../../styles/features/case.css";
             <div>
               <p class="eyebrow">Commercial intake versus product demo</p>
               <h2 id="car-hauling-intake-boundary-title">Use direct intake for a real car-hauling dispatch review.</h2>
-              <p>The direct carrier workspace collects authority, insurance, equipment, practical capacity, operating area, availability, current dispatch status, business contact, and consent for Logistics Sales review. The Load Board remains a fictional product demonstration and does not create an account, assign a dispatcher, publish a load, guarantee acceptance, or book freight.</p>
+              <p>The direct carrier workspace collects authority, insurance, equipment, practical capacity, operating area, availability, current dispatch status, business contact, and consent for Logistics Sales review. The separate Load Board combines source-gated active records, which may be zero, with non-bookable market examples. Using either surface does not assign a dispatcher, publish a load, guarantee acceptance, or book freight.</p>
             </div>
             <div>
               <a class="button button-primary" href={primaryCta.href}>Start car-hauling dispatch review <ArrowRight size={18} aria-hidden="true" /></a>

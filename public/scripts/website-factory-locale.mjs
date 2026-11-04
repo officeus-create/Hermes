@@ -18,7 +18,7 @@ const privateContext = {
   uk: {
     status: "ПРИВАТНИЙ ПРОЦЕС WEBSITE FACTORY",
     product: "Приватний процес: Website Factory",
-    content: "Мова контенту: англійська",
+    content: "Мова контенту: українська",
     nav: "Website Factory",
   },
   es: {
@@ -70,7 +70,7 @@ function applyPrivateFactoryContext() {
     nav.append(link);
   }
 
-  if (locale === "ru") context.querySelector("[data-hc-english-only]")?.remove();
+  if (locale === "ru" || locale === "uk") context.querySelector("[data-hc-english-only]")?.remove();
 }
 
 const ru = new Map(Object.entries({
@@ -253,7 +253,187 @@ const ru = new Map(Object.entries({
   "No automated build started.": "Автоматическая сборка сайта не запускалась.",
 }));
 
-const patterns = [
+const uk = new Map(Object.entries({
+  "Hermes Connect · Technology": "Hermes Connect · Технології",
+  "Build the brief before the website.": "Спочатку складіть бриф — потім створюйте сайт.",
+  "Give Hermes the business truth, the outcome you want and three useful references. The result is a saved, reviewable website brief — not a fake promise that a production build has already started.": "Передайте Hermes підтверджені дані про бізнес, бажаний результат і три корисні референси. На виході ви отримаєте збережений бриф для перевірки — без хибної обіцянки, що production-збірку вже запущено.",
+  "Private · noindex": "Приватно · noindex",
+  "Checking your Hermes account…": "Перевіряємо ваш акаунт Hermes…",
+  "Website Factory uses the same Hermes identity and session as the rest of Hermes Connect.": "Website Factory використовує той самий акаунт і ту саму сесію Hermes, що й решта Hermes Connect.",
+  "One Hermes identity": "Один акаунт Hermes",
+  "Sign in or create your Hermes account.": "Увійдіть або створіть акаунт Hermes.",
+  "No separate Website Factory password store is created. This form uses the shared Hermes account endpoints; drafts are owner-scoped to that authenticated identity.": "Website Factory не створює окреме сховище паролів. Форма використовує спільні endpoints акаунта Hermes, а чернетки прив’язані до автентифікованого власника.",
+  "Authentication mode": "Режим автентифікації",
+  "Sign in": "Увійти",
+  "Create account": "Створити акаунт",
+  "Email": "Email",
+  "Password": "Пароль",
+  "Full name": "Ім’я та прізвище",
+  "Country and city": "Країна та місто",
+  "Create Hermes account": "Створити акаунт Hermes",
+  "Hermes account and workspaces": "Акаунт Hermes і робочі простори",
+  "Draft sync": "Синхронізація",
+  "Saved": "Збережено",
+  "Saving…": "Зберігаємо…",
+  "Save failed": "Помилка збереження",
+  "Unsaved changes": "Є незбережені зміни",
+  "Brief created": "Бриф створено",
+  "Log out": "Вийти",
+  "Your website briefs": "Ваші брифи сайтів",
+  "Resume or start a new website.": "Продовжте наявний бриф або почніть новий.",
+  "Drafts autosave to your Hermes account. Submitted briefs stay immutable as a handoff snapshot.": "Чернетки автоматично зберігаються в акаунті Hermes. Після надсилання бриф фіксується як незмінний snapshot для передачі в роботу.",
+  "Start new website": "Почати новий сайт",
+  "Website brief progress": "Прогрес брифа сайту",
+  "Brief steps": "Кроки брифа",
+  "All drafts": "Усі чернетки",
+  "Website brief": "Бриф сайту",
+  "Draft title": "Назва чернетки",
+  "My new website": "Мій новий сайт",
+  "Sources": "Джерела",
+  "Business truth": "Дані про бізнес",
+  "Outcome": "Результат",
+  "Owner brief": "Бриф власника",
+  "References": "Референси",
+  "Pages & capabilities": "Сторінки та функції",
+  "Brand": "Бренд",
+  "Review": "Перевірка",
+  "Handoff": "Передача",
+  "01 · Sources": "01 · Джерела",
+  "Where does your business already exist?": "Де ваш бізнес уже представлений?",
+  "Add public URLs only. Hermes never asks for social-media passwords here. B1 saves these sources for the brief; automated source reading is not yet connected, so imported facts remain owner-entered for now.": "Додавайте лише публічні URL. Hermes ніколи не просить тут паролі від соцмереж. B1 зберігає ці джерела в брифі; автоматичне читання джерел поки не підключено, тому факти наразі підтверджує власник.",
+  "Public business URL": "Публічний URL бізнесу",
+  "Add source": "Додати джерело",
+  "I’m starting from zero": "Я починаю з нуля",
+  "Continue without an existing website or public profile.": "Продовжити без наявного сайту чи публічного профілю.",
+  "02 · Business truth": "02 · Дані про бізнес",
+  "Confirm the facts the website should use.": "Підтвердьте дані, які має використовувати сайт.",
+  "Until automated extraction is connected, these are owner-confirmed facts. Nothing is silently inferred from a public profile.": "Доки автоматичне вилучення даних не підключено, ці факти підтверджує власник. Система нічого мовчки не домислює з публічного профілю.",
+  "Business name": "Назва бізнесу",
+  "Category": "Категорія",
+  "Short description": "Короткий опис",
+  "Phone": "Телефон",
+  "Public email": "Публічний email",
+  "Address or service area": "Адреса або зона обслуговування",
+  "Services / products": "Послуги / продукти",
+  "One per line": "По одному в рядок",
+  "03 · Outcome": "03 · Результат",
+  "What should the website do for the business?": "Що сайт має робити для бізнесу?",
+  "Primary goal": "Головна мета",
+  "Choose primary goal": "Оберіть головну мету",
+  "Get calls": "Отримувати дзвінки",
+  "Collect leads": "Збирати ліди",
+  "Bookings / appointments": "Записи / бронювання",
+  "Sell services": "Продавати послуги",
+  "Show portfolio / work": "Показувати портфоліо / роботи",
+  "Explain a complex offer": "Пояснювати складну пропозицію",
+  "Recruit people": "Наймати людей",
+  "Support local SEO": "Підтримувати локальне SEO",
+  "Establish credibility": "Підвищувати довіру",
+  "Other": "Інше",
+  "Primary visitor action": "Головна дія відвідувача",
+  "Call, request quote, book…": "Зателефонувати, запитати ціну, записатися…",
+  "Target customer": "Цільовий клієнт",
+  "Geography / market": "Географія / ринок",
+  "Languages": "Мови",
+  "English, Russian…": "Англійська, російська…",
+  "04 · Owner brief": "04 · Бриф власника",
+  "Explain what you want naturally.": "Опишіть своїми словами, чого ви хочете.",
+  "Write what should change, what matters most, what you dislike and any constraints. Your original text is preserved as owner input.": "Напишіть, що потрібно змінити, що найважливіше, що вам не подобається і які є обмеження. Початковий текст зберігається як ввід власника.",
+  "Typed brief": "Текстовий бриф",
+  "Tell Hermes what you want the new site to achieve, emphasize, remove or feel like…": "Розкажіть Hermes, якого результату має досягти новий сайт, що підкреслити, прибрати і яке враження він має створювати…",
+  "Voice brief boundary": "Межа голосового брифа",
+  "Secure audio storage/transcription is not connected in B1, so this version does not pretend to save voice recordings. The typed brief is fully production-persisted; voice will be enabled only with an observable storage/transcription path.": "У B1 поки не підключено безпечне зберігання та транскрибацію аудіо, тому ця версія не вдає, що зберігає голосові записи. Текстовий бриф надійно зберігається; голос буде ввімкнено лише після появи перевірюваного шляху зберігання та транскрибації.",
+  "Brand tone": "Тон бренду",
+  "Premium, calm, direct…": "Преміальний, спокійний, прямий…",
+  "Constraints": "Обмеження",
+  "One per line or comma separated": "По одному в рядок або через кому",
+  "05 · References": "05 · Референси",
+  "Three references, three different jobs.": "Три референси — три різні завдання.",
+  "These teach principles. Hermes is not instructed to clone competitor text, layout or assets.": "Вони задають принципи. Hermes не отримує завдання копіювати тексти, макети чи матеріали конкурентів.",
+  "Visual direction": "Візуальний напрям",
+  "Which site has the visual feeling you want?": "Який сайт передає потрібне вам візуальне відчуття?",
+  "What do you like?": "Що вам подобається?",
+  "Functionality": "Функціональність",
+  "Which site works the way you want yours to work?": "Який сайт працює так, як має працювати ваш?",
+  "What works well?": "Що працює добре?",
+  "Structure / content": "Структура / контент",
+  "Which site explains or organizes the business well?": "Який сайт добре пояснює чи структурує бізнес?",
+  "What is organized well?": "Що добре організовано?",
+  "06 · Pages & capabilities": "06 · Сторінки та функції",
+  "Choose the first build brief scope.": "Оберіть обсяг першого брифа на створення сайту.",
+  "Pages": "Сторінки",
+  "Capabilities": "Функції",
+  "Home": "Головна",
+  "Services": "Послуги",
+  "About / Trust": "Про компанію / довіра",
+  "Work / Portfolio": "Роботи / портфоліо",
+  "FAQ": "FAQ",
+  "Contact": "Контакти",
+  "Lead form": "Форма ліда",
+  "Click to call": "Дзвінок в один клік",
+  "Booking": "Запис",
+  "Maps / directions": "Мапа / маршрут",
+  "Reviews / proof": "Відгуки / докази",
+  "Gallery": "Галерея",
+  "Multilingual": "Кілька мов",
+  "Analytics": "Аналітика",
+  "CRM handoff": "Передача в CRM",
+  "AI assistant": "ШІ-асистент",
+  "07 · Brand": "07 · Бренд",
+  "Use what already exists — or describe the direction.": "Використайте те, що вже є, або опишіть напрям.",
+  "Existing public logo URL": "Публічний URL наявного логотипа",
+  "Optional HTTPS URL": "Необов’язковий HTTPS URL",
+  "Known colors": "Відомі кольори",
+  "Brand notes": "Нотатки про бренд",
+  "File upload boundary": "Межа завантаження файлів",
+  "B1 does not invent an upload backend. Logo/photo uploads stay deferred until secure object storage, retention and delete behavior are connected. A public logo URL and brand notes are saved now.": "B1 не вдає неіснуючий upload-backend. Завантаження логотипів і фото відкладено до підключення безпечного object storage, правил зберігання та видалення. Наразі зберігаються публічний URL логотипа та нотатки про бренд.",
+  "08 · Review": "08 · Перевірка",
+  "Review what Hermes understands.": "Перевірте, як Hermes зрозумів завдання.",
+  "09 · Handoff": "09 · Передача",
+  "Create the website brief.": "Створіть бриф сайту.",
+  "Ready when the required inputs are complete.": "Буде готово після заповнення обов’язкових даних.",
+  "Your brief ID and submitted time will appear here.": "Тут з’являться ID брифа та час надсилання.",
+  "Create website brief": "Створити бриф сайту",
+  "Previous": "Назад",
+  "Save & continue": "Зберегти й продовжити",
+  "No website briefs yet.": "Брифів сайтів поки немає.",
+  "Start with one public source — or choose starting from zero.": "Почніть з одного публічного джерела або оберіть варіант «починаю з нуля».",
+  "View brief": "Відкрити бриф",
+  "Resume": "Продовжити",
+  "New website brief": "Новий бриф сайту",
+  "Authentication failed": "Помилка автентифікації",
+  "Could not load Website Factory drafts": "Не вдалося завантажити чернетки Website Factory",
+  "Could not create draft": "Не вдалося створити чернетку",
+  "Could not delete draft": "Не вдалося видалити чернетку",
+  "Could not save draft": "Не вдалося зберегти чернетку",
+  "Use a public HTTPS URL without embedded credentials.": "Використовуйте публічний HTTPS URL без вбудованих облікових даних.",
+  "Brief is not ready": "Бриф ще не готовий",
+  "Website Factory unavailable": "Website Factory недоступний",
+  "Needs these answers first": "Спочатку потрібні ці відповіді",
+  "Ready to create brief": "Готово до створення брифа",
+  "Required decision inputs are present.": "Усі обов’язкові дані для рішення заповнено.",
+  "Website brief created": "Бриф сайту створено",
+  "Brief already created": "Бриф уже створено",
+  "Ready to create website brief.": "Готово до створення брифа сайту.",
+  "This creates the handoff record only.": "Це створить лише запис передачі брифа.",
+  "Add a source or choose starting from zero": "Додайте джерело або оберіть «починаю з нуля»",
+  "Choose a primary goal": "Оберіть головну мету",
+  "Add a meaningful owner brief": "Додайте змістовний бриф власника",
+  "Resolve critical conflicting facts": "Усуньте критичні суперечності в даних",
+  "Not named": "Назву не вказано",
+  "Category not set": "Категорію не вказано",
+  "Market & goal": "Ринок і мета",
+  "Primary goal missing": "Головну мету не вказано",
+  "Geography not set": "Географію не вказано",
+  "Brief missing": "Бриф не заповнено",
+  "No pages selected": "Сторінки не вибрано",
+  "None selected": "Нічого не вибрано",
+  "No brand direction supplied": "Напрям бренду не задано",
+  "website": "сайт",
+  "No automated build started.": "Автоматичну збірку сайту не запускали.",
+}));
+
+const patternsRu = [
   [/\bStep (\d+) of 9\b/g, "Шаг $1 из 9"],
   [/\bStep (\d+)\b/g, "Шаг $1"],
   [/\b(\d+) services\b/g, "$1 услуг"],
@@ -269,24 +449,43 @@ const patterns = [
   [/^Delete (.+)\?$/g, "Удалить $1?"],
 ];
 
+const patternsUk = [
+  [/\bStep (\d+) of 9\b/g, "Крок $1 з 9"],
+  [/\bStep (\d+)\b/g, "Крок $1"],
+  [/\b(\d+) services\b/g, "$1 послуг"],
+  [/\b(\d+) of 3 roles supplied\b/g, "$1 з 3 референсів заповнено"],
+  [/\bAdd the visual reference\b/g, "Додайте візуальний референс"],
+  [/\bAdd the functionality reference\b/g, "Додайте референс функціональності"],
+  [/\bAdd the structure reference\b/g, "Додайте референс структури"],
+  [/\bBrief needs (\d+) item\.?/g, "Для брифа потрібен ще $1 пункт."],
+  [/\bBrief needs (\d+) items\.?/g, "Для брифа потрібно ще $1 пунктів."],
+  [/No automated build started\./g, "Автоматичну збірку сайту не запускали."],
+  [/\bdraft · Крок/g, "чернетка · Крок"],
+  [/\bsubmitted · Крок/g, "надіслано · Крок"],
+  [/^Delete (.+)\?$/g, "Видалити $1?"],
+];
+
+const dictionary = locale === "ru" ? ru : locale === "uk" ? uk : null;
+const patterns = locale === "uk" ? patternsUk : patternsRu;
+
 function translateString(value) {
-  if (!value || locale !== "ru") return value;
+  if (!value || !dictionary) return value;
   const trimmed = value.trim();
-  if (ru.has(trimmed)) {
-    const replacement = ru.get(trimmed);
+  if (dictionary.has(trimmed)) {
+    const replacement = dictionary.get(trimmed);
     return trimmed === value ? replacement : value.replace(trimmed, replacement);
   }
 
   let output = value;
-  for (const [english, russian] of ru.entries()) {
-    if (output.includes(english)) output = output.split(english).join(russian);
+  for (const [english, translated] of dictionary.entries()) {
+    if (output.includes(english)) output = output.split(english).join(translated);
   }
   for (const [pattern, replacement] of patterns) output = output.replace(pattern, replacement);
   return output;
 }
 
 function translateElement(element) {
-  if (!(element instanceof Element) || locale !== "ru") return;
+  if (!(element instanceof Element) || !dictionary) return;
   for (const attribute of ["placeholder", "aria-label", "title"]) {
     const current = element.getAttribute(attribute);
     if (current) element.setAttribute(attribute, translateString(current));
@@ -294,7 +493,7 @@ function translateElement(element) {
 }
 
 function translateTree(root) {
-  if (locale !== "ru") return;
+  if (!dictionary) return;
   const scope = root instanceof Element || root instanceof DocumentFragment ? root : document;
   if (scope instanceof Element) translateElement(scope);
   scope.querySelectorAll?.("*").forEach(translateElement);
@@ -309,19 +508,25 @@ function translateTree(root) {
   }
 }
 
-const handoffRussianText = "Передача фиксирует эту версию как snapshot для проверки. Она не утверждает, что production-процесс создания сайта уже запущен.";
+const handoffCopyByLocale = {
+  ru: ["Передача фиксирует эту версию как snapshot для проверки. Она ", "не", " утверждает, что production-процесс создания сайта уже запущен."],
+  uk: ["Передача фіксує цю версію як snapshot для перевірки. Вона ", "не", " стверджує, що production-процес створення сайту вже запущено."],
+};
+const removeLabel = { ru: "Удалить", uk: "Видалити" };
 
-function normalizeRussianRuntime() {
-  if (locale !== "ru") return;
+function normalizeLocalizedRuntime() {
+  if (!dictionary) return;
 
+  const handoff = handoffCopyByLocale[locale];
+  const handoffText = handoff.join("");
   const handoffCopy = document.querySelector('[data-step="9"] > p:not(.factory-kicker)');
-  if (handoffCopy && handoffCopy.textContent?.replace(/\s+/g, " ").trim() !== handoffRussianText) {
+  if (handoffCopy && handoffCopy.textContent?.replace(/\s+/g, " ").trim() !== handoffText) {
     const emphasis = document.createElement("strong");
-    emphasis.textContent = "не";
+    emphasis.textContent = handoff[1];
     handoffCopy.replaceChildren(
-      document.createTextNode("Передача фиксирует эту версию как snapshot для проверки. Она "),
+      document.createTextNode(handoff[0]),
       emphasis,
-      document.createTextNode(" утверждает, что production-процесс создания сайта уже запущен."),
+      document.createTextNode(handoff[2]),
     );
   }
 
@@ -330,17 +535,17 @@ function normalizeRussianRuntime() {
     if (translated !== node.textContent) node.textContent = translated;
   });
   document.querySelectorAll("[data-draft-list] button[aria-label^='Delete ']").forEach((node) => {
-    node.setAttribute("aria-label", `Удалить ${node.getAttribute("aria-label").slice(7)}`);
+    node.setAttribute("aria-label", `${removeLabel[locale]} ${node.getAttribute("aria-label").slice(7)}`);
   });
   document.querySelectorAll("[data-source-list] button[aria-label^='Remove ']").forEach((node) => {
-    node.setAttribute("aria-label", `Удалить ${node.getAttribute("aria-label").slice(7)}`);
+    node.setAttribute("aria-label", `${removeLabel[locale]} ${node.getAttribute("aria-label").slice(7)}`);
   });
 
   const back = document.querySelector(".factory-back");
   if (back instanceof HTMLAnchorElement) {
     const url = new URL(back.href, window.location.origin);
-    if (url.searchParams.get("lang") !== "ru") {
-      url.searchParams.set("lang", "ru");
+    if (url.searchParams.get("lang") !== locale) {
+      url.searchParams.set("lang", locale);
       back.href = `${url.pathname}${url.search}${url.hash}`;
     }
   }
@@ -348,9 +553,9 @@ function normalizeRussianRuntime() {
 
 applyPrivateFactoryContext();
 translateTree(document.querySelector(".factory-page") || document);
-normalizeRussianRuntime();
+normalizeLocalizedRuntime();
 
-if (locale === "ru") {
+if (dictionary) {
   const nativeConfirm = window.confirm.bind(window);
   window.confirm = (message) => nativeConfirm(translateString(String(message)));
 
@@ -370,7 +575,7 @@ if (locale === "ru") {
         }
       });
     }
-    normalizeRussianRuntime();
+    normalizeLocalizedRuntime();
   });
 
   observer.observe(document.querySelector(".factory-page") || document.body, {

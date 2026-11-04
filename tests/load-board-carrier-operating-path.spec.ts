@@ -84,8 +84,11 @@ test("canonical Load Board source is wired to separate live load, capacity and t
   expect(live).toContain('href="/carrier/"');
   expect(parser).not.toContain('reason: "car_hauling_hold"');
   expect(parser).toContain('return "car_hauler"');
-  expect(intake).toContain("car_hauling_ingest_allowed = 1");
-  expect(intake).toContain("car_hauling_outreach_hold = 1");
+  expect(intake).toContain("Number(managedSource.car_hauling_ingest_allowed || 0) === 1");
+  expect(intake).toContain("car_hauling_broker_outreach_hold: true");
+  expect(intake).toContain("source_approval_required");
+  expect(intake).toContain("source_ingest_not_enabled");
+  expect(intake).not.toContain("INSERT INTO hermes_load_sources");
   expect(intake).toContain("outbound_enabled: false");
 });
 
@@ -116,11 +119,12 @@ test("mobile carrier journey stays connected from Home to intake", async ({ page
   const carrierPath = page.getByRole("link", { name: /Carrier or owner-operator/i }).first();
   await expect(carrierPath).toBeVisible();
   await carrierPath.click();
-  await expect(page).toHaveURL(/\/logistics\/carrier\/$/);
+  // The carrier path is the car-hauling dispatch service page (carrier audience merged 2026-10-28).
+  await expect(page).toHaveURL(/\/logistics\/car-hauling-dispatch\/$/);
 
-  const rpm = page.getByRole("link", { name: /RPM & profitability/i }).first();
-  const loadBoard = page.getByRole("link", { name: /Open Load Board|Live Load Board/i }).first();
-  const dispatch = page.getByRole("link", { name: /Start dispatch review|Dispatch review/i }).first();
+  const rpm = page.getByRole("link", { name: /RPM & (profitability|Deadhead)/i }).first();
+  const loadBoard = page.getByRole("link", { name: /Open the Car Hauling Load Board|Open Load Board|Live Load Board/i }).first();
+  const dispatch = page.getByRole("link", { name: /Start (car-hauling )?dispatch review|Dispatch review/i }).first();
   await expect(rpm).toBeVisible();
   await expect(loadBoard).toBeVisible();
   await expect(dispatch).toBeVisible();

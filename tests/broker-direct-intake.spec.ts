@@ -18,9 +18,9 @@ test("broker recommendation uses the direct commercial intake and labels the dem
   }
 
   await expect(page.locator("[data-recommendation-demo]")).toHaveAttribute("href", demo);
-  await expect(page.locator("[data-recommendation-demo]")).toHaveText("Preview broker Load Board demo");
+  await expect(page.locator("[data-recommendation-demo]")).toHaveText("Explore broker Load Board preview");
   await expect(page.getByRole("heading", { name: "Use the direct intake for a real opportunity." })).toBeVisible();
-  await expect(page.getByText(/The Load Board remains a fictional product demonstration/i)).toBeVisible();
+  await expect(page.getByText(/The separate Load Board combines source-gated active records, which may be zero, with non-bookable market examples/i)).toBeVisible();
   await expect(page.getByText(/does not publish a load, notify a carrier, confirm capacity, or create a booking/i)).toBeVisible();
 
   await expect(page.locator('[data-recommendation-primary][href*="/load-board/"]')).toHaveCount(0);

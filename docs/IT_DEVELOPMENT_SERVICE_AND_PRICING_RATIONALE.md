@@ -1,5 +1,15 @@
 # IT Development Service and Pricing Rationale
 
+> **HISTORICAL COMMERCIAL RATIONALE — SUPERSEDED 2026-10-26**
+>
+> The July 2026 hourly rate and planning ranges below are retained only as provenance. They are **not** the current website quote source and must not be copied into public/customer-facing website offers.
+>
+> Current website commercial source: `WEB PRICING & SALES SYSTEM — CURRENT — 2026-10-26` (Google Drive).
+>
+> Current website ladder: **Launch $990 · Business Growth Website $2,790 (hero/default) · Growth Website System $5,490 · Signature from $9,990 · Platform / Custom from $15,000–$25,000+**. Recurring website/search services are quoted separately. Software/platform scope remains discovery-led.
+>
+> No website package guarantees rankings, traffic, leads, revenue, ROI, or a fixed delivery date before discovery.
+
 Updated: 2026-07-13
 
 ## Positioning

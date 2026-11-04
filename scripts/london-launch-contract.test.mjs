@@ -85,6 +85,16 @@ for(const route of expectedRoutes){
 
   if(/our london office|visit our office in london|london office address/i.test(html)) errors.push(`${route}: unsupported London physical-office claim detected`);
   if(/data:image\//i.test(html)) errors.push(`${route}: embedded data-URI image detected`);
+  if(commercialRoutes.includes(route)){
+    const relatedTags=[...html.matchAll(/<a\b[^>]*data-london-related[^>]*>/gi)].map((match)=>match[0]);
+    const relatedHrefs=relatedTags.map((tag)=>tagAttr(tag,"href"));
+    if(relatedHrefs.length!==3) errors.push(`${route}: expected 3 related London commercial links, found ${relatedHrefs.length}`);
+    if(new Set(relatedHrefs).size!==relatedHrefs.length) errors.push(`${route}: related London commercial links must be unique`);
+    for(const href of relatedHrefs){
+      if(href===route) errors.push(`${route}: related London commercial links must not self-link`);
+      if(!commercialRoutes.includes(href)) errors.push(`${route}: related link ${href} must target an existing commercial London owner`);
+    }
+  }
 
   for(const match of html.matchAll(/<img\b[^>]*>/gi)){
     const tag=match[0];
@@ -130,7 +140,7 @@ for(const relative of londonSources){
 const commercialSource=await readFile(join(root,"src/pages/gb/london/[slug].astro"),"utf8");
 const commercialData=await readFile(join(root,"src/data/london-commercial-pages.ts"),"utf8");
 if(commercialSource.includes("Scope is selected from the business need, existing assets, budget and measurable next step rather than a fixed bundle.")) errors.push("London commercial indexing recovery: repeated legacy body copy returned");
-for(const required of ["page.fit","point.body","page.measurement","page.faq","provider:{\"@id\":organizationId}"]){
+for(const required of ["page.fit","point.body","page.measurement","page.faq","relatedPages","data-london-related","provider:{\"@id\":organizationId}"]){
   if(!commercialSource.includes(required)) errors.push(`London commercial indexing recovery: missing ${required}`);
 }
 for(const required of ["fit:","measurement:","faq:","body:"]){

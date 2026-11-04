@@ -43,7 +43,7 @@ assert.equal(
     external_effect: true,
     provider_outcome: "NONE",
   }).disposition,
-  "SAFE_REDRIVE"
+  "OWNER_ACTION"
 );
 
 assert.equal(
@@ -65,7 +65,7 @@ assert.equal(
     external_effect: true,
     provider_outcome: "NONE",
   }).disposition,
-  "SAFE_REDRIVE"
+  "OWNER_ACTION"
 );
 
 assert.equal(
@@ -104,9 +104,21 @@ assert.deepEqual(
   { disposition: "SAFE_REDRIVE", reason: "read_only_retryable" }
 );
 
+for (const state of ["provider_accepted_readback_pending", "unknown_outcome_readback_pending"]) {
+  assert.deepEqual(
+    classifyDlqDisposition({
+      message_type: "publication.readback",
+      d1_state: state,
+      idempotency_key: `readback-${state}`,
+      external_effect: false,
+    }),
+    { disposition: "SAFE_REDRIVE", reason: "readback_retryable" },
+  );
+}
+
 assert.deepEqual(
   classifyDlqDisposition({ message_type: "publication.write", d1_state: "reserved", idempotency_key: "k-write-proven", external_effect: true, provider_outcome: "NONE" }),
-  { disposition: "SAFE_REDRIVE", reason: "proven_pre_side_effect_state" }
+  { disposition: "OWNER_ACTION", reason: "external_write_redrive_handler_unavailable" }
 );
 
 assert.deepEqual(

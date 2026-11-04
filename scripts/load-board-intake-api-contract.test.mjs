@@ -35,13 +35,6 @@ assert.match(schema, /CREATE TABLE IF NOT EXISTS hermes_load_quarantine/);
 assert.match(schema, /UNIQUE\(source_id, source_message_id, fingerprint\)/);
 assert.match(schema, /credential_ref TEXT/);
 assert.match(schema, /car_hauling_ingest_allowed INTEGER NOT NULL DEFAULT 0/);
-assert.match(schema, /trust_status TEXT NOT NULL DEFAULT 'review_required'/);
-assert.match(schema, /trust_tier INTEGER NOT NULL DEFAULT 3/);
-assert.match(schema, /verification_kind TEXT/);
-assert.match(schema, /authority_identifier TEXT/);
-assert.match(schema, /authority_evidence_ref TEXT/);
-assert.match(schema, /trust_verified_at TEXT/);
-assert.match(schema, /idx_load_sources_trust/);
 assert.match(schema, /pending_review/);
 for (const column of [
   "provider_record_id", "origin_city", "origin_state", "origin_zip", "destination_city", "destination_state",
@@ -56,36 +49,20 @@ assert.doesNotMatch(schema, /password_hash|password_salt|refresh_token|access_to
 for (const column of [
   "connection_state", "source_id", "approved_redistribution_permission", "approved_contact_reveal_permission",
   "connection_evidence_ref", "data_rights_evidence_ref",
-  "retention_rule", "revocation_rule", "trust_status", "trust_tier", "verification_kind",
-  "authority_identifier", "authority_evidence_ref", "trust_verified_at", "car_hauling_ingest_allowed",
+  "retention_rule", "revocation_rule", "car_hauling_ingest_allowed",
   "connection_verified_at", "ingest_enabled_at", "first_record_verified_at", "revoked_at", "revocation_note",
 ]) assert.match(schema, new RegExp(`${column}: `));
 assert.match(schema, /idx_load_source_requests_source/);
 
 assert.match(sourceRequests, /connection_state/);
-assert.match(sourceRequests, /trust_status/);
-assert.match(sourceRequests, /trust_evidence_recorded/);
 assert.match(sourceRequests, /source_active/);
 assert.match(sourceReviews, /connection_state/);
-assert.match(sourceReviews, /trust_status/);
-assert.match(sourceReviews, /authority_identifier_recorded/);
 assert.match(sourceReviews, /source_connection_lifecycle/);
 assert.match(sourceSetupPage, /Connection:/);
 
 assert.match(sourceConnections, /requireInternalOwner/);
 assert.match(sourceConnections, /sameOriginMutation/);
-assert.match(sourceConnections, /"initialize", "verify_trust", "verify_connection", "enable_ingest", "verify_first_record", "revoke"/);
-assert.match(sourceConnections, /broker_authority/);
-assert.match(sourceConnections, /provider_entitlement/);
-assert.match(sourceConnections, /direct_shipper_relationship/);
-assert.match(sourceConnections, /direct_dealer_relationship/);
-assert.match(sourceConnections, /source_trust_verification_required/);
-assert.match(sourceConnections, /trust_evidence_required/);
-assert.match(sourceConnections, /broker_authority_identifier_required/);
-assert.match(sourceConnections, /USDOT/);
-assert.match(sourceConnections, /trust_decision_invalid/);
-assert.match(sourceConnections, /trust_status = \?, trust_tier = \?, verification_kind = \?/);
-assert.match(sourceConnections, /trustDecision === "blocked" \? "trust_blocked" : "connection_pending"/);
+assert.match(sourceConnections, /"initialize", "verify_connection", "enable_ingest", "verify_first_record", "revoke"/);
 for (const state of ["connection_pending", "connection_verified", "ingest_enabled", "active", "revoked"]) {
   assert.match(sourceConnections, new RegExp(`'${state}'|"${state}"`));
 }
@@ -175,12 +152,15 @@ assert.match(active, /reviewFlags/);
 assert.match(summary, /COUNT\(DISTINCT CASE/);
 assert.match(summary, /r\.record_type \|\| '\|' \|\| r\.dedupe_key/);
 assert.match(intake, /send_enabled = 0/);
-assert.match(intake, /car_hauling_ingest_allowed = 1/);
-assert.match(intake, /car_hauling_outreach_hold = 1/);
+assert.doesNotMatch(intake, /INSERT INTO hermes_load_sources/, "intake may not create unapproved sources");
+assert.doesNotMatch(intake, /car_hauling_ingest_allowed = 1/);
+assert.doesNotMatch(intake, /car_hauling_outreach_hold = 1/);
 assert.doesNotMatch(intake, /reason: "car_hauling_hold"/);
-assert.match(intake, /const carHaulingIngestAllowed = managedSource/);
+assert.match(intake, /const carHaulingIngestAllowed = Number\(managedSource\.car_hauling_ingest_allowed/);
 assert.match(intake, /Number\(managedSource\.car_hauling_ingest_allowed \|\| 0\) === 1/);
-assert.match(intake, /: true;/);
+assert.match(intake, /source_approval_required/);
+assert.match(intake, /source_ingest_not_enabled/);
+assert.match(intake, /source_ingest_state_changed/);
 assert.match(intake, /car_hauling_ingest_allowed: carHaulingIngestAllowed/);
 assert.match(intake, /car_hauling_broker_outreach_hold: true/);
 assert.match(intake, /ON CONFLICT DO UPDATE SET/);
@@ -201,12 +181,14 @@ assert.match(intake, /source_type_mismatch/);
 assert.match(intake, /managed_source_lifecycle/);
 assert.match(intake, /car_hauling_not_approved_for_source/);
 assert.match(intake, /LEFT JOIN hermes_load_sources/);
+assert.match(intake, /registered_source_status/);
+assert.match(intake, /registered_ingest_enabled/);
 assert.match(intake, /requestedRedistributionPermission/);
 assert.match(intake, /approved_redistribution_permission/);
 assert.match(intake, /approved_contact_reveal_permission/);
 assert.ok(
-  intake.indexOf("source_connection_not_ingest_enabled") < intake.indexOf("INSERT INTO hermes_load_sources"),
-  "managed source intake must not bypass lifecycle before source upsert",
+  intake.indexOf("source_connection_not_ingest_enabled") < intake.indexOf("UPDATE hermes_load_sources"),
+  "managed source intake must not bypass lifecycle before guarded source update",
 );
 
 assert.match(active, /getAuthenticatedSpecialist/);
@@ -324,3 +306,20 @@ assert.match(seoLanding, /\/load-board\/#live-marketplace/);
 console.log("load-board-intake-api-contract: normalized opportunity schema, company-aware access, scoring, safe search, planning, AI context, official Ship.Cars sync, DAT certification-ready gates, and SEO/GEO distribution verified");
 await import("./load-board-email-bridge-contract.test.mjs");
 await import("./load-board-marketplace-posting-contract.test.mjs");
+
+
+assert.match(schema, /trust_status TEXT NOT NULL DEFAULT 'review_required'/);
+assert.match(schema, /trust_tier INTEGER NOT NULL DEFAULT 3/);
+assert.match(schema, /verification_kind TEXT/);
+assert.match(schema, /authority_identifier TEXT/);
+assert.match(schema, /authority_evidence_ref TEXT/);
+assert.match(schema, /trust_verified_at TEXT/);
+assert.match(schema, /idx_load_sources_trust/);
+assert.match(sourceRequests, /trust_status/);
+assert.match(sourceRequests, /trust_evidence_recorded/);
+assert.match(sourceReviews, /trust_status/);
+assert.match(sourceReviews, /authority_identifier_recorded/);
+assert.match(sourceConnections, /"initialize", "verify_trust", "verify_connection", "enable_ingest", "verify_first_record", "revoke"/);
+for (const marker of ["broker_authority","provider_entitlement","direct_shipper_relationship","direct_dealer_relationship","source_trust_verification_required","trust_evidence_required","broker_authority_identifier_required","trust_decision_invalid","trust_blocked"]) {
+  assert.match(sourceConnections, new RegExp(marker));
+}

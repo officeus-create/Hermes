@@ -272,6 +272,32 @@
     });
   };
 
+  const trackResourceCommercialClick = (link: HTMLAnchorElement, event: MouseEvent) => {
+    if (!event.isTrusted || !link.hasAttribute("data-resource-commercial-cta")) return;
+
+    const serviceGroup = link.dataset.serviceGroup?.trim() || "";
+    const audienceType = link.dataset.audienceType?.trim() || "business";
+    if (!serviceGroup) return;
+
+    let target: URL;
+    try {
+      target = new URL(link.href, window.location.origin);
+    } catch {
+      return;
+    }
+    if (target.origin !== window.location.origin) return;
+
+    pushAnalyticsEvent({
+      event: "commercial_cta_click",
+      cta_type: "resource_to_commercial_click",
+      audience_type: audienceType,
+      page_group: "resource",
+      service_group: serviceGroup,
+      page_path: window.location.pathname,
+      destination_path: target.pathname,
+    });
+  };
+
   const trackWebsiteProjectClick = (link: HTMLAnchorElement) => {
     if (!link.hasAttribute("data-website-project-cta")) return;
     const href = link.getAttribute("href") || "";
@@ -307,6 +333,7 @@
     if (anyLink instanceof HTMLAnchorElement) {
       trackLoadBoardClick(anyLink);
       trackWebsiteProjectClick(anyLink);
+      trackResourceCommercialClick(anyLink, event);
     }
 
     const link = source.closest("a[href^='tel:'], a[href^='mailto:']");

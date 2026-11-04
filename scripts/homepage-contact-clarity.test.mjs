@@ -13,7 +13,9 @@ const logisticsPages = [
 
 for (const relativePath of logisticsPages) {
   const html = await readBuiltPage(relativePath);
-  assert.doesNotMatch(html, /href="tel:/, `${relativePath} must not publish a phone route until a dedicated Logistics number is approved`);
+  for (const [, number] of html.matchAll(/href="tel:([^"]+)"/g)) {
+    assert.equal(number, "+13517775337", `${relativePath} may only publish the owner-approved Logistics desk phone`);
+  }
   assert.match(html, /href="mailto:officeus@hermeslogisticsus\.com"/, `${relativePath} must expose the approved Logistics email route`);
 }
 

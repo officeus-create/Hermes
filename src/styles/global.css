@@ -2236,3 +2236,8 @@ h3 { font-size: 1.75rem; }
 @media (max-width: 480px) {
   main { overflow-wrap: anywhere; }
 }
+
+/* Catalog submenu now lives inside the approved header (like the four directions); keep the
+   space the old standalone bar used so page heads are never covered. */
+body:has(.site-header > [data-direction-product-nav="catalog"]) #main-content { margin-top: 60px; }
+html:has(.site-header > [data-direction-product-nav]) { scroll-padding-top: 150px; }

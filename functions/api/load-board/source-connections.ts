@@ -43,13 +43,13 @@ function safeLifecycle(row: any) {
     requested_contact_reveal_permission: row.requested_contact_reveal_permission,
     approved_redistribution_permission: row.approved_redistribution_permission || null,
     approved_contact_reveal_permission: row.approved_contact_reveal_permission || null,
-    car_hauling_ingest_allowed: Number(row.car_hauling_ingest_allowed || 0) === 1,
     trust_status: row.trust_status || "review_required",
     trust_tier: Number(row.trust_tier || 3),
     verification_kind: row.verification_kind || null,
     authority_identifier_recorded: Boolean(row.authority_identifier),
     authority_evidence_recorded: Boolean(row.authority_evidence_ref),
     trust_verified_at: row.trust_verified_at || null,
+    car_hauling_ingest_allowed: Number(row.car_hauling_ingest_allowed || 0) === 1,
     connection_evidence_recorded: Boolean(row.connection_evidence_ref),
     data_rights_evidence_recorded: Boolean(row.data_rights_evidence_ref),
     retention_rule_recorded: Boolean(row.retention_rule),
@@ -254,6 +254,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     if (verificationKind === "broker_authority" && !/^(?:MC|FF|MX|USDOT)[\s:#-]*\d{3,12}$/i.test(authorityIdentifier)) {
       return jsonResponse(400, { success: false, error: "broker_authority_identifier_required" }, privateHeaders);
     }
+
     const trustTier = trustDecision === "verified"
       ? (requestedTier === 1 || requestedTier === 2 ? requestedTier : 2)
       : 3;
@@ -272,6 +273,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
       authorityIdentifier || null, authorityEvidenceRef, verifiedAt,
       sourceStatus, now, sourceId,
     ).run();
+
     await env.DB.prepare(`
       UPDATE hermes_load_source_requests
       SET trust_status = ?, trust_tier = ?, verification_kind = ?,

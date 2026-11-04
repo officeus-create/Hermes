@@ -140,6 +140,43 @@ const proofLabel = websiteContext
   : isLogisticsSeoProof
     ? "View the logistics SEO case"
     : "Review verified case studies";
+// Funnel PROOF beside the hero CTA: real, already-published assets only (no new claims).
+type ProofLink = { kind: string; title: string; href: string };
+const appletonCase: ProofLink = { kind: "Released case", title: "From one local service query to a useful logistics resource cluster", href: "/case/appleton-vehicle-transport-seo/" };
+const ownBaseline: ProofLink = { kind: "Our own numbers", title: "The Hermes search baseline, October 2026", href: "/insights/marketing/hermes-own-search-baseline-october-2026/" };
+const seoProofLinks: Record<SeoProofVariant, ProofLink[]> = {
+  logistics: [
+    appletonCase,
+    { kind: "Sample deliverable", title: "Logistics SEO Audit Sample", href: "/resources/logistics-seo-audit-sample/" },
+    ownBaseline,
+  ],
+  general: [
+    ownBaseline,
+    appletonCase,
+    { kind: "Free checklist", title: "Technical SEO Checklist", href: "/resources/technical-seo-checklist/" },
+  ],
+  local: [
+    { kind: "Field evidence", title: "MZM Junk Removal: evidence-driven local SEO", href: "/insights/marketing/mzm-junk-removal-real-job-evidence-local-seo/" },
+    appletonCase,
+    ownBaseline,
+  ],
+  repair: [
+    { kind: "Released cases", title: "Case studies built from released work", href: "/case/" },
+    { kind: "Free checklist", title: "Search-to-Inquiry Conversion Checklist", href: "/resources/search-to-inquiry-conversion-checklist/" },
+    ownBaseline,
+  ],
+  dealer: [
+    { kind: "Released cases", title: "Case studies built from released work", href: "/case/" },
+    { kind: "Free checklist", title: "Search-to-Inquiry Conversion Checklist", href: "/resources/search-to-inquiry-conversion-checklist/" },
+    ownBaseline,
+  ],
+};
+const websiteProofLinks: ProofLink[] = [
+  { kind: "Released case", title: "One digital front door for four businesses", href: "/case/it-development/" },
+  { kind: "Free template", title: "Website Project Brief Template", href: "/resources/website-project-brief-template/" },
+  { kind: "Free checklist", title: "Search-to-Inquiry Conversion Checklist", href: "/resources/search-to-inquiry-conversion-checklist/" },
+];
+const proofLinks = seoProofVariant ? seoProofLinks[seoProofVariant] : websiteContext ? websiteProofLinks : [];
 const websiteSocialProof = content.slug === "/services/website-development/" || content.slug === "/services/website-redesign/"
   ? {
       image: "/images/hermes-live-home-2026.jpg",
@@ -189,7 +226,8 @@ const faqSchema = {
   <SiteHeader contactHref="#contact" activePath={parentHref} theme={websiteContext ? "light" : "dark"} />
   <main id="main-content" class="digital-service-page">
     <section class="digital-service-hero" id="top">
-      <div class="shell">
+      <div class:list={["shell", { "digital-hero-grid": proofLinks.length > 0 }]}>
+        <div class="digital-hero-copy">
         <nav class="digital-breadcrumb" aria-label="Breadcrumb">
           <a href="/">Home</a><span aria-hidden="true">/</span>
           <a href={parentHref}>{parentLabel}</a><span aria-hidden="true">/</span>
@@ -227,6 +265,25 @@ const faqSchema = {
           <p class="digital-project-note">The SEO intake opens with the relevant service context selected. On production, the form submits the request through the Hermes intake; success means accepted for delivery, not human receipt or qualification. Preview environments remain non-sending. Rankings, traffic, leads, revenue, or timing are not guaranteed.</p>
         )}
         <p class="digital-review-date">Scope reviewed {content.reviewedAt}</p>
+        </div>
+        {proofLinks.length > 0 && (
+          <aside class="digital-proof-rail" aria-labelledby="digital-proof-title">
+            <p class="eyebrow">Check before you call</p>
+            <h2 id="digital-proof-title">Proof you can open now</h2>
+            <ol>
+              {proofLinks.map((item) => (
+                <li>
+                  <a href={item.href}>
+                    <small>{item.kind}</small>
+                    <strong>{item.title}</strong>
+                    <ArrowRight size={16} aria-hidden="true" />
+                  </a>
+                </li>
+              ))}
+            </ol>
+            <p class="digital-proof-note">Released work and dated numbers. Rankings and leads are measured, never promised.</p>
+          </aside>
+        )}
       </div>
     </section>
 
@@ -353,8 +410,9 @@ const faqSchema = {
       </section>
     )}
 
-    <HermesConnectLauncher variant="banner" context={seoContext ? "marketing" : "general"} />
     <ContactCTA selectedPath={seoContext ? "ProgressoPro" : "IT Development"} />
+    <!-- Product cross-sell sits after the inquiry form so the closing call to action leads straight into it. -->
+    <HermesConnectLauncher variant="banner" context={seoContext ? "marketing" : "general"} />
   </main>
   <SiteFooter />
 </BaseLayout>

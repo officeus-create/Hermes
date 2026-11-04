@@ -74,7 +74,7 @@ const schema = [
                 </p>
                 <div class="logistics-audience-actions">
                   <a class="button button-primary" href="#calculator">Calculate a trip <ArrowRight size={18} aria-hidden="true" /></a>
-                  <a class="button" href={intakeHref}>Request dispatch-fit review</a>
+                  <a class="button" href={intakeHref} data-resource-commercial-cta data-service-group="car_hauling_dispatch" data-audience-type="carrier">Request dispatch-fit review</a>
                 </div>
               </div>
               <aside class="resource-safety-card">
@@ -125,7 +125,7 @@ const schema = [
             <div class="resource-related-grid">
               <a href="/logistics/resources/dispatch-service-vs-self-dispatch/"><Gauge size={22} aria-hidden="true" /><h3>Dispatch vs self-dispatch</h3><p>Compare workload, control, calls, paperwork, fees, and approval boundaries.</p><strong>Open comparison <ArrowRight size={16} aria-hidden="true" /></strong></a>
               <a href="/logistics/car-hauling-dispatch/"><Route size={22} aria-hidden="true" /><h3>Car hauling dispatch</h3><p>Review dispatch scope, carrier control, qualification, communication, and paperwork.</p><strong>Review service <ArrowRight size={16} aria-hidden="true" /></strong></a>
-              <a href={intakeHref}><Fuel size={22} aria-hidden="true" /><h3>Dispatch-fit review</h3><p>Prepare authority, equipment, capacity, operating area, availability, and contact information for review.</p><strong>Open carrier intake <ArrowRight size={16} aria-hidden="true" /></strong></a>
+              <a href={intakeHref} data-resource-commercial-cta data-service-group="car_hauling_dispatch" data-audience-type="carrier"><Fuel size={22} aria-hidden="true" /><h3>Dispatch-fit review</h3><p>Prepare authority, equipment, capacity, operating area, availability, and contact information for review.</p><strong>Open carrier intake <ArrowRight size={16} aria-hidden="true" /></strong></a>
             </div>
           </div>
         </section>
@@ -137,7 +137,7 @@ const schema = [
               <h2>Need help evaluating whether a dispatch workflow fits your carrier?</h2>
               <p>Use the carrier intake to prepare a structured review. Hermes does not guarantee acceptance, loads, rates, lanes, mileage, utilization, payment, profit, or revenue.</p>
             </div>
-            <a class="button button-primary" href={intakeHref} data-rpm-cta>Open carrier intake <ArrowRight size={18} aria-hidden="true" /></a>
+            <a class="button button-primary" href={intakeHref} data-resource-commercial-cta data-service-group="car_hauling_dispatch" data-audience-type="carrier" data-rpm-cta>Open carrier intake <ArrowRight size={18} aria-hidden="true" /></a>
           </div>
         </section>
       </article>

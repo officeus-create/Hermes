@@ -5,6 +5,9 @@
   "compatibility_date": "2026-10-13",
   "workers_dev": false,
   "preview_urls": false,
+  "ai": {
+    "binding": "AI"
+  },
   "triggers": {
     "crons": ["17 * * * *"]
   },
@@ -13,6 +16,15 @@
       "binding": "DB",
       "database_name": "hermes-connect-prototype",
       "database_id": "DISCOVER_FROM_HERMES_PAGES_PRODUCTION_DB_BINDING"
+    }
+  ],
+  "send_email": [
+    {
+      "name": "OWNER_ALERT_EMAIL",
+      "destination_address": "officeus@hermeslogisticsus.com",
+      "allowed_sender_addresses": [
+        "website@hermeslogisticsus.com"
+      ]
     }
   ],
   "queues": {
@@ -33,6 +45,12 @@
         "max_batch_timeout": 5,
         "max_retries": 3,
         "dead_letter_queue": "hermes-automation-dlq"
+      },
+      {
+        "queue": "hermes-automation-dlq",
+        "max_batch_size": 5,
+        "max_batch_timeout": 5,
+        "max_retries": 3
       }
     ]
   },
@@ -40,6 +58,12 @@
     "HERMES_AUTOMATION_MODE": "dry_run",
     "HERMES_AUTOMATION_PUBLISH": "disabled",
     "HERMES_AUTOMATION_SOURCE_SHA": "INJECT_EXACT_MAIN_SHA_AT_RELEASE",
+    "HERMES_HAE_OWNER_ALERT_RECIPIENT": "officeus@hermeslogisticsus.com",
+    "HERMES_HAE_OWNER_ALERT_SENDER": "website@hermeslogisticsus.com",
+    "HERMES_FREE_AI_CLOUDFLARE_ENABLED": "disabled",
+    "HERMES_FREE_AI_CLOUDFLARE_PLAN_ATTESTED": "unverified",
+    "HERMES_FREE_AI_CLOUDFLARE_MODEL": "@cf/zai-org/glm-4.7-flash",
+    "HERMES_FREE_AI_CLOUDFLARE_FREE_ASSERTION_EXPIRES_AT": "2026-11-01T00:00:00Z",
     "WINDSOR_THREADS_ACCOUNT_ID": "28419597014385166"
   }
 }
@@ -49,6 +73,10 @@
 // existing `hermes` Pages project. Never create a second HAE database.
 // Production deployment must discover that binding ID from authenticated
 // Cloudflare Pages project state; the ID is intentionally not versioned here.
+//
+// OWNER_ACTION / QUARANTINE alerts use a bounded Cloudflare send_email binding
+// restricted to officeus@hermeslogisticsus.com. No alert API secret is required.
+// Telegram remains an optional fallback only when separately configured.
 //
 // Required secrets before any live canary:
 //   HERMES_AUTOMATION_TOKEN
@@ -64,3 +92,12 @@
 // delayed readback against the connected Threads account before marking VERIFIED.
 //
 // Do not place provider tokens, account secrets, D1 IDs or queue credentials in Git.
+
+// Enable Workers AI only after authenticated account-level readback establishes Workers Free
+// (not Workers Paid with overage billing) and an owner-reviewed plan attestation is present.
+// HERMES_FREE_AI_CLOUDFLARE_PLAN_ATTESTED=workers_free is an operator assertion,
+// NOT proof that a paid plan cannot bill. The source-only example intentionally leaves
+// inference disabled until the provider account is actually verified.
+// Workers AI free eligibility was re-verified from current official Cloudflare docs on 2026-10-24.
+// The free assertion intentionally expires. After expiry the semantic lane must enter WAITING_FREE_AI
+// until current official eligibility/pricing is re-verified and this date is explicitly renewed.

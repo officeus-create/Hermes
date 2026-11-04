@@ -1,0 +1,45 @@
+---
+interface Props {
+  caseId: string;
+  trackOpen?: boolean;
+}
+
+const { caseId, trackOpen = true } = Astro.props;
+---
+
+<span hidden data-case-funnel data-case-id={caseId} data-track-open={String(trackOpen)}></span>
+
+<script>
+  import { trackCaseOpened, trackEvent } from "../lib/analytics";
+
+  const root = document.querySelector<HTMLElement>("[data-case-funnel]");
+  const caseId = root?.dataset.caseId?.trim() || "";
+  const trackOpen = root?.dataset.trackOpen !== "false";
+
+  if (caseId && trackOpen) trackCaseOpened(caseId);
+
+  document.addEventListener("click", (event) => {
+    if (!event.isTrusted || !caseId) return;
+    const source = event.target;
+    if (!(source instanceof Element)) return;
+
+    const link = source.closest<HTMLAnchorElement>("a[data-case-cta]");
+    if (!link) return;
+
+    let target: URL;
+    try {
+      target = new URL(link.href, window.location.origin);
+    } catch {
+      return;
+    }
+
+    if (target.origin !== window.location.origin) return;
+
+    trackEvent("case_study_cta", {
+      caseId,
+      destination: target.pathname,
+      action: link.dataset.caseAction || "next_step",
+      placement: link.dataset.caseCta || "unknown",
+    });
+  });
+</script>

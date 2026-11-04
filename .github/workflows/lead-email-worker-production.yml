@@ -23,13 +23,17 @@ jobs:
     environment: production
     timeout-minutes: 15
     env:
-      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN || secrets.CF_API_TOKEN || secrets.CLOUDFLARE_TOKEN }}
+      # Prefer the dedicated lead-email aliases. The existing HAE production
+      # release credential is a final bounded fallback: it already performs
+      # Wrangler Worker deployments in this same Cloudflare account and its
+      # value never leaves the production Environment.
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN || secrets.CF_API_TOKEN || secrets.CLOUDFLARE_TOKEN || secrets.CLOUDFLARE_HAE_RELEASE_TOKEN }}
 
     steps:
-      - name: Check out approved main
+      - name: Check out approved exact SHA
         uses: actions/checkout@v6
         with:
-          ref: main
+          ref: ${{ github.sha }}
 
       - name: Set up Node.js
         uses: actions/setup-node@v6
@@ -58,10 +62,20 @@ jobs:
       - name: Validate Cloudflare credentials
         run: |
           if [ -z "$CLOUDFLARE_API_TOKEN" ]; then
-            echo "Cloudflare API token required for hermes-lead-email deployment." >&2
+            echo "Cloudflare production Worker credential required for hermes-lead-email deployment." >&2
             exit 1
           fi
           echo "::add-mask::$CLOUDFLARE_API_TOKEN"
+
+      - name: Verify existing Worker access before mutation
+        run: |
+          set -euo pipefail
+          npx --yes wrangler@4 deployments list --config workers/lead-email/wrangler.production.jsonc >/tmp/hermes-lead-email-deployments.txt
+          if ! grep -q . /tmp/hermes-lead-email-deployments.txt; then
+            echo "Cloudflare Worker deployment readback returned no data." >&2
+            exit 1
+          fi
+          rm -f /tmp/hermes-lead-email-deployments.txt
 
       - name: Deploy only hermes-lead-email
         uses: cloudflare/wrangler-action@v4
@@ -71,20 +85,23 @@ jobs:
           command: deploy --config workers/lead-email/wrangler.production.jsonc --keep-vars
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Verify deployed Worker inventory
+        run: npx --yes wrangler@4 deployments list --config workers/lead-email/wrangler.production.jsonc
+
       - name: Publish release summary
         if: success()
         run: |
           {
             echo "# Hermes lead email Worker"
             echo
-            echo "- Worker: \`hermes-lead-email\`"
-            echo "- Commit: \`${GITHUB_SHA}\`"
-            echo "- Config: \`workers/lead-email/wrangler.production.jsonc\`"
-            echo "- Outbound account route: \`/v1/send-account\`"
-            echo "- Cold Fair route: \`/v1/cold-fair/send\` (runtime and promotional gates remain BLOCKED)"
+            echo "- Worker: hermes-lead-email"
+            echo "- Commit: ${GITHUB_SHA}"
+            echo "- Config: workers/lead-email/wrangler.production.jsonc"
+            echo "- Outbound account route: /v1/send-account"
+            echo "- Cold Fair route: /v1/cold-fair/send (runtime and promotional gates remain BLOCKED)"
             echo "- Cold Fair activation requires an approved canonical-source service binding whose immutable snapshot supplies campaignOwnerId and an explicit windowKey for atomic cap scope; this release does not configure one."
             echo "- Car Hauling delivery: SQLite Durable Object outbox with per-destination receipts and alarms"
-            echo "- Inbound Load Board target: \`loads@loadboard.hermeslogisticsus.com\`"
-            echo "- Gmail read-only Load Board poller is deployed fail-closed and remains disabled unless \`LOADBOARD_GMAIL_INTAKE_ENABLED=true\` plus dedicated read-only OAuth/query/source configuration are supplied."
+            echo "- Inbound Load Board target: loads@loadboard.hermeslogisticsus.com"
+            echo "- Gmail read-only Load Board poller is deployed fail-closed and remains disabled unless LOADBOARD_GMAIL_INTAKE_ENABLED=true plus dedicated read-only OAuth/query/source configuration are supplied."
             echo "- Gmail intake code has no send endpoint; company-wide no-email-send policy remains unchanged."
           } >> "$GITHUB_STEP_SUMMARY"

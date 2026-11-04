@@ -24,7 +24,7 @@ for (const route of localizedRoutes) {
     await expect(page.locator('link[rel="alternate"][hreflang="it"]')).toHaveAttribute("href", new RegExp(`${route.path.replaceAll("/", "\\/")}$`));
     await expect(page.locator('link[rel="alternate"][hreflang="en"]')).toHaveAttribute("href", new RegExp(`${route.englishPath.replaceAll("/", "\\/")}$`));
     await expect(page.locator(`a[lang="en"][href="${route.englishPath}"]`)).toHaveCount(2);
-    const schemaText = await page.locator('script[type="application/ld+json"]').textContent();
+    const schemaText = (await page.locator('script[type="application/ld+json"]').allTextContents()).join(" ");
     expect(schemaText).toContain('"@type":"Service"');
     expect(schemaText).toContain('"@type":"FAQPage"');
   });

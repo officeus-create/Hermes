@@ -87,4 +87,17 @@ const ruCourse = readRoute("/ru/academy/us-logistics-operations/");
 assert.ok(ruCourse.includes("Курсы логистики США"), "Russian course owner must state the natural Russian logistics-course intent");
 assert.ok(ruCourse.includes("Hermes"), "Russian course owner must identify Hermes");
 
+// Owner-approved dispatch phone must give localized carriers a direct call path on the Logistics
+// owner page only (docs/CANONICAL_COMPANY_FACTS_APPROVAL.md); other directions stay email-only.
+const dispatchTel = 'href="tel:+13517775337"';
+for (const locale of locales.filter((item) => item !== "en")) {
+  const logisticsHtml = readRoute(directionOwnerRoutes[locale]["logistics"]);
+  assert.ok(logisticsHtml.includes(dispatchTel), `${directionOwnerRoutes[locale]["logistics"]} must offer a direct dispatch call`);
+  for (const direction of ["marketing", "academy", "technology"]) {
+    if (!directionOwnerRoutes[locale][direction]) continue;
+    const html = readRoute(directionOwnerRoutes[locale][direction]);
+    assert.ok(!html.includes(dispatchTel), `${directionOwnerRoutes[locale][direction]} must not carry the dispatch phone`);
+  }
+}
+
 console.log("localized owner parity: 24 direction owners + 6 Academy Logistics course owners verified");
