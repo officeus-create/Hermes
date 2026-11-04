@@ -47,6 +47,10 @@ assert.match(ownerWorkspace,/Execution environment|Среда исполнени
 assert.match(ownerWorkspace,/HAE 24\/7 processes/,"owner must have one visible autonomous-process control surface");
 assert.match(ownerWorkspace,/External sends and paid AI are disabled in this layer/,"first autonomous slice must expose its safe execution boundary");
 assert.match(ownerWorkspace,/data-cc-view="today"/,"owner home must prioritize the Today decision layer");
+assert.match(ownerWorkspace,/data-command-center-launch/,"Today must expose canonical launch readiness");
+assert.match(ownerWorkspace,/data-launch-progress/,"Today launch card must expose evidence-backed project progress");
+assert.match(ownerWorkspace,/ETA[\s\S]*UNKNOWN/,"launch ETA must stay UNKNOWN without accepted duration history");
+assert.match(page,/renderCommandCenterLaunch/,"Today launch state must be rendered from the canonical project API");
 for(const selector of ["data-live-threads-state","data-live-hae-state","data-live-automation-state","data-live-ai-state"]) assert.match(ownerWorkspace,new RegExp(selector),`owner Overview must expose ${selector}`);
 assert.match(ownerWorkspace,/data-cc-view="hae"[\s\S]*data-hae-runtime-state/,"HAE must have a dedicated owner runtime view");
 assert.match(commandCenterShell,/hcc-private-sidebar/,"private Command Center must use a persistent owner sidebar shell");
