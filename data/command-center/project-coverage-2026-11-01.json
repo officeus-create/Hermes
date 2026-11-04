@@ -237,7 +237,7 @@
     },
     {
       "id": "hae-command-center",
-      "label": "HAE / Command Center / Hermes AI",
+      "label": "HAE / Command Center / Hermes AI / VIKTOR / DeepSeek",
       "source_state": "CURRENT_SOURCE_IDENTIFIED",
       "department": "technology",
       "representative_work_ids": [
@@ -246,7 +246,8 @@
       ],
       "active_work_id_count": null,
       "count_state": "UNKNOWN_NOT_EXHAUSTIVELY_MAPPED",
-      "client_exposure": "NO"
+      "client_exposure": "NO",
+      "notes": "Current Command Center project map separates HAE runtime, AI Operations, Windows VIKTOR, Mac fallback, plugin workforce and DeepSeek specialist lane. DeepSeek remains subordinate and PREPARED/NOT RUNNING until #2266 sandbox + HAE receipt gates pass."
     }
   ]
 }
