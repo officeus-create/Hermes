@@ -1,8 +1,10 @@
 import { directionOwnerRoutes, type DirectionId } from '../data/localized-direction-owners';
 
-/** Only the three existing bilingual authentication pages call this adapter. */
-export function syncConnectAuthChrome(language: 'en' | 'uk') {
-  const labels = language === 'uk'
+/** Only the existing Connect authentication pages (EN / UK / RU) call this adapter. */
+export function syncConnectAuthChrome(language: 'en' | 'uk' | 'ru') {
+  const labels = language === 'ru'
+    ? { logistics: 'Логистика', marketing: 'Маркетинг', technology: 'IT-разработка', academy: 'Академия', signIn: 'Войти', contact: 'Начать разговор', content: 'Язык контента: русский' }
+    : language === 'uk'
     ? { logistics: 'Логістика', marketing: 'Маркетинг', technology: 'IT-розробка', academy: 'Академія', signIn: 'Увійти', contact: 'Почати розмову', content: 'Мова контенту: українська' }
     : { logistics: 'Logistics', marketing: 'Marketing', technology: 'Technology', academy: 'Academy', signIn: 'Sign in', contact: 'Start a conversation', content: 'Content language: English' };
   const header = document.querySelector<HTMLElement>('.site-header');
@@ -21,7 +23,7 @@ export function syncConnectAuthChrome(language: 'en' | 'uk') {
     if (text) text.textContent = labels.contact;
   });
   const home = header.querySelector<HTMLAnchorElement>('a.wordmark');
-  if (home) home.href = language === 'uk' ? '/ua/#top' : '/#top';
+  if (home) home.href = language === 'uk' ? '/ua/#top' : language === 'ru' ? '/ru/#top' : '/#top';
   const contentLanguage = document.querySelector<HTMLElement>('[data-hc-product-context] .hc-content-language');
   if (contentLanguage) contentLanguage.textContent = labels.content;
   // Both EN and UK dictionaries exist on these routes, so the generic English-only notice is false here.

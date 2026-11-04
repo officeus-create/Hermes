@@ -154,12 +154,12 @@ const { loadBoardContext = false } = Astro.props;
     };
 
     const moduleLabels = {
-      en: { hub: "Product Hub", repair: "Repair Shops", loadBoard: "Load Board", aiCommand: "AI Command Center", inbox: "Unified Inbox", loadAnalyzer: "Load Analyzer", rateNegotiator: "Rate Negotiator", proposalBuilder: "Proposal Builder", roi: "ROI Calculator", automation: "Business Automation" },
-      uk: { hub: "Центр продуктів", repair: "СТО", loadBoard: "Load Board", aiCommand: "Центр керування ШІ", inbox: "Єдиний центр повідомлень", loadAnalyzer: "Аналізатор вантажів", rateNegotiator: "Переговорник ставок", proposalBuilder: "Конструктор пропозицій", roi: "Калькулятор ROI", automation: "Автоматизація бізнесу" },
-      ru: { hub: "Центр продуктов", repair: "СТО", loadBoard: "Load Board", aiCommand: "ИИ-командный центр", inbox: "Единый центр сообщений", loadAnalyzer: "Анализатор грузов", rateNegotiator: "Переговорщик по ставкам", proposalBuilder: "Конструктор предложений", roi: "Калькулятор ROI", automation: "Автоматизация бизнеса" },
-      es: { hub: "Centro de productos", repair: "Talleres", loadBoard: "Load Board", aiCommand: "Centro de mando de IA", inbox: "Bandeja unificada", loadAnalyzer: "Analizador de cargas", rateNegotiator: "Negociador de tarifas", proposalBuilder: "Generador de propuestas", roi: "Calculadora de ROI", automation: "Automatización empresarial" },
-      it: { hub: "Centro prodotti", repair: "Officine", loadBoard: "Load Board", aiCommand: "Centro di comando IA", inbox: "Posta unificata", loadAnalyzer: "Analizzatore carichi", rateNegotiator: "Negoziazione tariffe", proposalBuilder: "Generatore proposte", roi: "Calcolatore ROI", automation: "Automazione aziendale" },
-      fr: { hub: "Centre produits", repair: "Ateliers", loadBoard: "Load Board", aiCommand: "Centre de commande IA", inbox: "Boîte de réception unifiée", loadAnalyzer: "Analyseur de chargements", rateNegotiator: "Négociateur de tarifs", proposalBuilder: "Générateur de propositions", roi: "Calculateur ROI", automation: "Automatisation d’entreprise" },
+      en: { hub: "Product Hub", repair: "Repair Shops", loadBoard: "Load Board", aiCommand: "Business Command Center", inbox: "Unified Inbox", loadAnalyzer: "Load Analyzer", rateNegotiator: "Rate Negotiator", proposalBuilder: "Proposal Builder", roi: "ROI Calculator", automation: "Business Automation" },
+      uk: { hub: "Центр продуктів", repair: "СТО", loadBoard: "Load Board", aiCommand: "Бізнес-командний центр", inbox: "Єдиний центр повідомлень", loadAnalyzer: "Аналізатор вантажів", rateNegotiator: "Переговорник ставок", proposalBuilder: "Конструктор пропозицій", roi: "Калькулятор ROI", automation: "Автоматизація бізнесу" },
+      ru: { hub: "Центр продуктов", repair: "СТО", loadBoard: "Load Board", aiCommand: "Бизнес-командный центр", inbox: "Единый центр сообщений", loadAnalyzer: "Анализатор грузов", rateNegotiator: "Переговорщик по ставкам", proposalBuilder: "Конструктор предложений", roi: "Калькулятор ROI", automation: "Автоматизация бизнеса" },
+      es: { hub: "Centro de productos", repair: "Talleres", loadBoard: "Load Board", aiCommand: "Business Command Center", inbox: "Bandeja unificada", loadAnalyzer: "Analizador de cargas", rateNegotiator: "Negociador de tarifas", proposalBuilder: "Generador de propuestas", roi: "Calculadora de ROI", automation: "Automatización empresarial" },
+      it: { hub: "Centro prodotti", repair: "Officine", loadBoard: "Load Board", aiCommand: "Business Command Center", inbox: "Posta unificata", loadAnalyzer: "Analizzatore carichi", rateNegotiator: "Negoziazione tariffe", proposalBuilder: "Generatore proposte", roi: "Calcolatore ROI", automation: "Automazione aziendale" },
+      fr: { hub: "Centre produits", repair: "Ateliers", loadBoard: "Load Board", aiCommand: "Business Command Center", inbox: "Boîte de réception unifiée", loadAnalyzer: "Analyseur de chargements", rateNegotiator: "Négociateur de tarifs", proposalBuilder: "Générateur de propositions", roi: "Calculateur ROI", automation: "Automatisation d’entreprise" },
     };
 
     const withLocale = (href) => {
@@ -263,7 +263,7 @@ const { loadBoardContext = false } = Astro.props;
       ["hub", "/services/hermes-connect/"],
       ["repair", "/services/hermes-connect/repair-shops/"],
       ["loadBoard", "/load-board/"],
-      ["aiCommand", "/services/hermes-connect/ai-command-center/"],
+      ["aiCommand", "/services/hermes-connect/command-center/"],
       ["inbox", "/services/hermes-connect/unified-inbox/"],
       ["rateNegotiator", "/services/hermes-connect/rate-negotiator/"],
       ["proposalBuilder", "/services/hermes-connect/proposal-builder/"],
@@ -317,13 +317,18 @@ const { loadBoardContext = false } = Astro.props;
       try {
         const response = await fetch("/api/internal-ai/status", { credentials: "same-origin", headers: { Accept: "application/json" } });
         const payload = await response.json().catch(() => null);
-        if (!response.ok || !payload?.success || nav.querySelector("[data-hc-internal-ai-link]")) return;
-        const link = document.createElement("a");
-        link.textContent = "AI Connect";
-        link.href = withLocale("/services/hermes-connect/internal/ai-connect/");
-        link.setAttribute("data-hc-internal-ai-link", "true");
-        if (path.replace(/\/+$/, "/") === "/services/hermes-connect/internal/ai-connect/") link.setAttribute("aria-current", "page");
-        nav.append(link);
+        if (!response.ok || !payload?.success || nav.querySelector("[data-hc-owner-command-link]")) return;
+        const command = document.createElement("a");
+        command.textContent = locale === "ru" ? "Центр управления" : "Command Center";
+        command.href = withLocale("/services/hermes-connect/internal/command-center/");
+        command.setAttribute("data-hc-owner-command-link", "true");
+        if (path.replace(/\/+$/, "/") === "/services/hermes-connect/internal/command-center/") command.setAttribute("aria-current", "page");
+        const ai = document.createElement("a");
+        ai.textContent = "AI Connect";
+        ai.href = withLocale("/services/hermes-connect/internal/ai-connect/");
+        ai.setAttribute("data-hc-internal-ai-link", "true");
+        if (path.replace(/\/+$/, "/") === "/services/hermes-connect/internal/ai-connect/") ai.setAttribute("aria-current", "page");
+        nav.append(command, ai);
         updateFamilyNavCue();
       } catch {
         // Fail closed: an unavailable authorization endpoint never exposes an
@@ -346,13 +351,13 @@ const { loadBoardContext = false } = Astro.props;
   /* D036 — Connect header carries product identity, not the whole corporate nav twice. */
   .hc-experience .site-header{
     color:#0b0d12!important;
-    background:rgba(247,246,243,.88)!important;
+    background:#f7f6f3!important;
     border-bottom-color:rgba(11,13,18,.08)!important;
-    backdrop-filter:blur(20px) saturate(1.05);
+    backdrop-filter:none;
   }
   .hc-experience .site-header-scrolled{
     color:#0b0d12!important;
-    background:rgba(247,246,243,.95)!important;
+    background:#f7f6f3!important;
     border-bottom-color:rgba(11,13,18,.09)!important;
   }
   .hc-experience .site-header .desktop-nav,

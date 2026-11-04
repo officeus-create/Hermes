@@ -60,9 +60,9 @@ test("offer routes through signing review while agreement continues to onboardin
   }
 });
 
-test("carrier audience keeps dispatch review primary and exposes the proposal path", async ({ page }) => {
-  await page.goto("/logistics/carrier/");
-  await expect(page.getByRole("link", { name: "Start dispatch review" }).first()).toHaveAttribute("href", "/logistics/start-car-hauling-dispatch/");
+test("car-hauling dispatch service keeps dispatch review primary and exposes the proposal path", async ({ page }) => {
+  await page.goto("/logistics/car-hauling-dispatch/");
+  await expect(page.getByRole("link", { name: /Start car-hauling dispatch review/i }).first()).toHaveAttribute("href", "/logistics/start-car-hauling-dispatch/");
   const journey = page.locator("[data-carrier-contract-journey]");
   await expect(journey).toBeVisible();
   await expect(journey.locator("[data-commercial-primary-cta]")).toContainText("Review plans and carrier packet");
