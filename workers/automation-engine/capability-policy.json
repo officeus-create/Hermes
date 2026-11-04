@@ -378,6 +378,40 @@
       "free_ai_policy": "not_required"
     },
     {
+      "job_type": "report.catalog.weekly.build",
+      "permission_class": "READ_ONLY",
+      "execution_runtime": "canonical_hae_queue",
+      "external_provider_write": false,
+      "allowed_side_effects": [
+        "d1_job_state",
+        "d1_job_events"
+      ],
+      "submission_auth": "HERMES_AUTOMATION_TOKEN",
+      "retention_class": "business_runtime_evidence",
+      "role_id": "hermes-search-growth",
+      "plugin_version": "0.1.18",
+      "contract_version": "catalog-weekly-command-center-report-v1",
+      "semantic_required": false,
+      "free_ai_policy": "not_required"
+    },
+    {
+      "job_type": "report.hr-tech.weekly.build",
+      "permission_class": "READ_ONLY",
+      "execution_runtime": "canonical_hae_queue",
+      "external_provider_write": false,
+      "allowed_side_effects": [
+        "d1_job_state",
+        "d1_job_events"
+      ],
+      "submission_auth": "HERMES_AUTOMATION_TOKEN",
+      "retention_class": "business_runtime_evidence",
+      "role_id": "hermes-agent-coordinator",
+      "plugin_version": "0.1.101",
+      "contract_version": "hr-tech-weekly-radar-v1",
+      "semantic_required": false,
+      "free_ai_policy": "not_required"
+    },
+    {
       "job_type": "search.defect.prioritize",
       "permission_class": "READ_ONLY",
       "execution_runtime": "canonical_hae_queue",
