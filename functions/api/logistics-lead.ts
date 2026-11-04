@@ -102,9 +102,8 @@ const isKnownCarHaulingQa = (emailBody: string) => {
 
 const leadSubject = (leadType: string, salesTag: string, pagePath: string, emailBody: string) => {
   if (leadType === "load_board_access" && salesTag === CARRIER_SALES_TAG && pagePath === DIRECT_CAR_HAULING_PATH) {
-    // Real Car Hauling leads use the Logistics inquiry subject (CEO routing override 2026-10-10).
-    // Since 2026-10-28 the lead-email Worker also copies them to the dispatch department inbox
-    // (CARRIER_DISPATCH_RECIPIENTS) in the department voice, never as a named person.
+    // Direct Car Hauling website leads use the accountable Logistics Sales route.
+    // Dispatcher assignment is a separate contract/RBAC-gated workflow, never an automatic email copy.
     return isKnownCarHaulingQa(emailBody) ? CAR_HAULING_TEST_SUBJECT : CAR_HAULING_SALES_ONLY_SUBJECT;
   }
   if (leadType === "load_board_access" && salesTag === CARRIER_SALES_TAG) {
@@ -337,7 +336,7 @@ export async function onRequestPost({ request, env }: Context) {
     && subject === CAR_HAULING_SALES_ONLY_SUBJECT;
   const messageText = [
     ...(subject === CAR_HAULING_TEST_SUBJECT ? ["Lead classification: TEST/QA — exclude from Sales/CRM KPI.", ""] : []),
-    ...(directCarHaulingSalesOnly ? ["Routing policy: Logistics Sales and the dispatch department inbox. Reply as Hermes Logistics, never as a named person.", ""] : []),
+    ...(directCarHaulingSalesOnly ? ["Routing policy: Logistics Sales intake; dispatcher assignment requires separate authorized workflow. Reply as Hermes Logistics, never as a named person.", ""] : []),
     deliveredBody,
     "",
     ...(brokerWeight ? [brokerWeightSummary(brokerWeight), `Broker weight record: ${JSON.stringify(brokerWeight)}`, ""] : []),
