@@ -157,7 +157,7 @@ assert.equal(dispatched.payload.task.status,"queued");
 assert(dispatched.payload.work_item.linked_task_id);
 assert.equal(dispatched.payload.work_item.plugin_route?.state,"PLUGIN_SELECTED_NOT_EXECUTED");
 const routedPrompt=sqlite.prepare("SELECT prompt FROM hermes_internal_ai_tasks WHERE id=?").get(dispatched.payload.task.id).prompt;
-assert.match(routedPrompt,/Selected owner capability: hermes-technology-developer@0\.1\.61/);
+const routedOwner=dispatched.payload.work_item.plugin_route?.owner;\nassert.ok(routedOwner?.role_id&&routedOwner?.plugin_version,"dispatch must preserve the registry-backed owner route");\nassert.ok(routedPrompt.includes("Selected owner capability: "+routedOwner.role_id+"@"+routedOwner.plugin_version),"prompt must use the exact registry-backed owner release instead of a stale hardcoded version");
 assert.match(routedPrompt,/PLUGIN_SELECTED_NOT_EXECUTED/);
 
 const blockedSecond=await patch(second.id,"dispatch");
