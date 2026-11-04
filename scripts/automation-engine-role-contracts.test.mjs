@@ -41,6 +41,8 @@ assert.deepEqual(
     "market.car-hauling.snapshot.evaluate",
     "marketing.content.dedupe.audit",
     "marketing.mentions.audit",
+    "report.catalog.weekly.build",
+    "report.hr-tech.weekly.build",
     "search.defect.prioritize",
     "search.snapshot.evaluate",
     "technology.release.radar",
@@ -160,6 +162,10 @@ assert.ok(roleContractForJobType("marketing.content.dedupe.audit").runtime_confi
 assert.equal(roleContractForJobType("logistics.source.freshness.audit").runtime_config.max_age_minutes, 1440);
 assert.equal(roleContractForJobType("ai.gateway.readiness.audit").runtime_config.cadence_hours, 24);
 assert.equal(roleContractForJobType("academy.english.practice.build").runtime_config.cadence_hours, 24);
+assert.equal(roleContractForJobType("report.catalog.weekly.build").runtime_config.scheduled,false,"Catalog report uses the exact-Kyiv report scheduler, not generic cadence");
+assert.equal(roleContractForJobType("report.hr-tech.weekly.build").runtime_config.scheduled,false,"HR-tech report uses the exact-Kyiv report scheduler, not generic cadence");
+assert.equal(roleContractForJobType("report.catalog.weekly.build").runtime_config.max_cost_usd,0);
+assert.equal(roleContractForJobType("report.hr-tech.weekly.build").runtime_config.max_cost_usd,0);
 assert.equal(roleContractForJobType("work.portfolio.reconcile").plugin_version, pluginRuntimeVersion("hermes-agent-coordinator"));
 assert.equal(roleContractForJobType("hae.self.improvement.audit").plugin_version, pluginRuntimeVersion("hermes-automatic-engineer"));
 assert.equal(roleContractForJobType("hae.self.release.verify").role_id, "hermes-qa-evidence-auditor");
