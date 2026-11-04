@@ -16,7 +16,15 @@ const current=plan(base,"2026-10-26T16:00:00Z");
 assert.equal(current.status,"HOLD_RUNTIME_COMPATIBILITY_PROOF");
 assert.equal(current.readback_fresh,true);
 assert.equal(current.version_mismatches.length,0);
-assert.equal(current.registered_roles,9);
+assert.ok(current.registered_roles >= 13);
+for (const mandatoryRole of [
+ "hermes-github-auditor",
+ "hermes-cloudflare-auditor",
+ "hermes-drive-auditor",
+ "hermes-website-auditor",
+]) {
+  assert.ok(known.some((entry)=>entry.role_id===mandatoryRole), `mandatory runtime role missing: ${mandatoryRole}`);
+}
 assert.equal(current.automatic_dispatch_allowed,false);
 assert.equal(current.one_brain_write_allowed,false);
 assert.equal(current.automatic_plugin_update_allowed,false);
