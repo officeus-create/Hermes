@@ -61,8 +61,11 @@ import {
 } from "./plugin-runtime-registry.mjs";
 import { haeSelfRepairPacketReplayMatches } from "./hae-self-improvement.mjs";
 import { verifyGithubCIQueueEnvelope } from "./github-ci-runtime-intake.mjs";
+import { githubAuditorJobFromEnvelope } from "./github-auditor-runtime-intake.mjs";
+import { cloudflareAuditorJobFromEnvelope } from "./cloudflare-auditor-runtime-intake.mjs";
 import { verifyGithubCIPatchProposalEnvelope } from "./github-ci-patch-runtime-intake.mjs";
 import { verifyGithubCIIndependentQaEnvelope } from "./github-ci-independent-qa-runtime-intake.mjs";
+import { buildWebsiteAuditSnapshot } from "./website-audit-source.mjs";
 import { materializeIndependentQaReceipt } from "./hae-independent-qa-receipt.mjs";
 import { socialAccountReadinessSnapshot } from "./social-account-readiness.mjs";
 import { socialReplyPreflight } from "./social-reply-preflight.mjs";
@@ -2354,6 +2357,22 @@ async function enqueueScheduledCommandCenterReports(env, scheduledAt) {
 
 async function buildScheduledRoleContractPayload(env, contract, scheduledAt) {
   if (contract.job_type === "search.snapshot.evaluate") return buildScheduledSearchPayload(contract);
+  if (contract.job_type === "audit.website.journey") {
+    const canonicalUrls = Array.isArray(contract?.runtime_config?.target_urls)
+      ? contract.runtime_config.target_urls.slice(0, 20)
+      : [];
+    const statusOnlyUrls = Array.isArray(contract?.runtime_config?.status_only_urls)
+      ? contract.runtime_config.status_only_urls.slice(0, 20)
+      : [];
+    const probeContract = { runtime_config: { target_urls: [...canonicalUrls, ...statusOnlyUrls] } };
+    const snapshot = await buildScheduledSearchPayload(probeContract);
+    return buildWebsiteAuditSnapshot({
+      pages: snapshot.pages,
+      canonicalUrls,
+      statusOnlyUrls,
+      observedAt: new Date().toISOString(),
+    });
+  }
   if (contract.job_type === "marketing.content.dedupe.audit") return buildScheduledMarketingPayload(env, contract);
   if (contract.job_type === "logistics.source.freshness.audit") return buildScheduledLogisticsPayload(env, contract);
   if (contract.job_type === "ai.gateway.readiness.audit") {
@@ -2567,6 +2586,26 @@ export default {
       const payload = item.body || {};
       const messageType = clean(payload?.type, 80) || "UNKNOWN";
       try {
+        if (messageType === "cloudflare.audit.snapshot") {
+          if (!env.DB) throw new Error("database_not_configured");
+          await ensureSchema(env.DB);
+          const auditJob = cloudflareAuditorJobFromEnvelope(payload, {
+            deployedSourceSha: clean(env.HERMES_AUTOMATION_SOURCE_SHA, 80),
+          });
+          await createGenericJob(env, auditJob);
+          item.ack();
+          continue;
+        }
+        if (messageType === "github.audit.snapshot") {
+          if (!env.DB) throw new Error("database_not_configured");
+          await ensureSchema(env.DB);
+          const auditJob = githubAuditorJobFromEnvelope(payload, {
+            deployedSourceSha: clean(env.HERMES_AUTOMATION_SOURCE_SHA, 80),
+          });
+          await createGenericJob(env, auditJob);
+          item.ack();
+          continue;
+        }
         if (messageType === "github.ci.audit") {
           // The canonical GitHub Actions producer authenticates the exact run and
           // commit with its ephemeral token, then sends only a minimized snapshot
