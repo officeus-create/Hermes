@@ -7,7 +7,7 @@
     "node": ">=20 <25"
   },
   "scripts": {
-    "pretest": "node scripts/http-cache-semantics-security.test.mjs && node --experimental-strip-types scripts/contact-delivery-dedupe.test.mjs && node scripts/registration-alert-claim.test.mjs",
+    "pretest": "node scripts/http-cache-semantics-security.test.mjs && node --experimental-strip-types scripts/contact-delivery-dedupe.test.mjs && node scripts/registration-alert-claim.test.mjs && node --experimental-strip-types scripts/load-board-source-admission-runtime.test.mjs && node scripts/load-board-intake-api-contract.test.mjs",
     "dev": "astro dev",
     "build": "astro check && astro build",
     "preview": "astro preview",
