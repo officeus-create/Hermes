@@ -25,7 +25,7 @@ assert.ok(portfolio.some((project) => project.id === "investor-intelligence" && 
 assert.ok(portfolio.some((project) => project.id === "ai-operations" && project.status === "in_progress"), "AI Operations must remain in progress until role-scoped production acceptance");
 assert.ok(portfolio.some((project) => project.id === "hermes-command-center" && project.evidence_level === "SOURCE_RELEASE_CANDIDATE_REVIEW_PENDING"), "release-candidate source must not become production verification");
 const commandCenter=portfolio.find((project)=>project.id==="hermes-command-center");
-for(const gate of ["runtime-registry","source-adapters","receipt-verifier","plugin-hae-bridge","viktor-canary","free-ai","deployment","production-readback","final-independent-qa"])
+for(const gate of ["runtime-registry","adapter-gap-detector","github-auditor-source","website-auditor-source","cloudflare-auditor-source","drive-auditor-source","audit-attention","receipt-verifier","plugin-hae-bridge","viktor-canary","free-ai","deployment","production-readback","final-independent-qa"])
   assert.ok(commandCenter.milestones.some((item)=>item.id===gate),"Command Center progress must include closure gate: "+gate);
 assert.notEqual(commandCenter.status,"done","Command Center cannot be done while release/runtime gates remain");
 assert.ok(portfolio.some((project) => project.id === "ai-operations" && project.evidence_level === "SOURCE_RELEASE_CANDIDATE_REVIEW_PENDING"), "AI Operations must remain a release candidate until protected review and runtime acceptance");
