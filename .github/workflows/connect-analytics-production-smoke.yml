@@ -1,15 +1,23 @@
 name: Verify Hermes Connect consent analytics production
 
 on:
+  schedule:
+    - cron: "41 */6 * * *"
   workflow_dispatch:
   pull_request:
     paths:
       - .github/workflows/connect-analytics-production-smoke.yml
+      - scripts/connect-analytics-production-withdrawal-smoke.mjs
+      - public/demos/hermes-connect/connect-analytics-consent.mjs
+      - src/components/TrackingConsent.astro
   push:
     branches:
       - main
     paths:
       - .github/workflows/connect-analytics-production-smoke.yml
+      - scripts/connect-analytics-production-withdrawal-smoke.mjs
+      - public/demos/hermes-connect/connect-analytics-consent.mjs
+      - src/components/TrackingConsent.astro
 
 permissions:
   contents: read
@@ -106,3 +114,19 @@ jobs:
           console.error(JSON.stringify({ ok: false, ...last }, null, 2));
           process.exit(1);
           NODE
+
+  verify-withdrawal-hard-stop:
+    if: github.event_name != 'pull_request'
+    name: Verify grant-withdrawal GA hard stop
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      PLAYWRIGHT_USE_SYSTEM_CHROME: "1"
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: node scripts/connect-analytics-production-withdrawal-smoke.mjs

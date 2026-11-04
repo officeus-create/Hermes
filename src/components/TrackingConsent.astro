@@ -201,17 +201,6 @@ const isRepairShopRoute = Astro.url.pathname.startsWith("/services/hermes-connec
       }
     };
 
-    const denyGoogleConsent = () => {
-      if (typeof window.gtag === "function") {
-        window.gtag('consent', 'update', {
-          analytics_storage: 'denied',
-          ad_storage: 'denied',
-          ad_user_data: 'denied',
-          ad_personalization: 'denied'
-        });
-      }
-    };
-
     const denyClarityConsent = () => {
       if (typeof window.clarity === "function") {
         window.clarity("consentv2", { ad_Storage: "denied", analytics_Storage: "denied" });
@@ -324,9 +313,10 @@ const isRepairShopRoute = Astro.url.pathname.startsWith("/services/hermes-connec
 
     decline?.addEventListener("click", () => {
       const wasGranted = readChoice() === "granted";
-      // After withdrawal, stop GA transport before sending the consent update.
+      // Withdrawal is a hard stop: set the GA kill switch first and never
+      // call gtag again on the already-loaded page. A consent-update call can flush
+      // an already-queued enhanced-measurement event before navigation.
       setGoogleAnalyticsDisabled(true);
-      denyGoogleConsent();
       denyClarityConsent();
       clearGaCookies();
       saveChoice("denied");
@@ -354,10 +344,10 @@ const isRepairShopRoute = Astro.url.pathname.startsWith("/services/hermes-connec
     padding: .82rem .9rem .88rem;
     border: 1px solid rgba(11,13,18,.13);
     border-radius: 16px;
-    background: rgba(247,246,243,.97);
+    background: #f7f6f3;
     color: #0b0d12;
     box-shadow: 0 18px 52px rgba(11,13,18,.13);
-    backdrop-filter: blur(18px) saturate(1.04);
+    backdrop-filter: none;
   }
   .tracking-consent-banner[hidden] { display: none; }
   .tracking-consent-eyebrow {
@@ -377,7 +367,7 @@ const isRepairShopRoute = Astro.url.pathname.startsWith("/services/hermes-connec
   .tracking-consent-banner p {
     max-width: 68ch;
     margin-bottom: 0;
-    color: #5f6472;
+    color: #3f4550;
     font-size: .82rem;
     line-height: 1.42;
   }
@@ -427,7 +417,7 @@ const isRepairShopRoute = Astro.url.pathname.startsWith("/services/hermes-connec
     padding: .45rem .72rem;
     border: 1px solid rgba(11,13,18,.14);
     border-radius: 999px;
-    background: rgba(247,246,243,.96);
+    background: #f7f6f3;
     color: #0b0d12;
     font: inherit;
     font-size: .74rem;

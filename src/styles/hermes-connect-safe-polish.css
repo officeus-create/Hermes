@@ -13,10 +13,7 @@
   --hc-green: #28b487;
   --hc-action: #1a73e8;
   color: var(--hc-ink);
-  background:
-    radial-gradient(circle at 78% 5%, rgba(124,92,255,.10), transparent 27rem),
-    radial-gradient(circle at 88% 9%, rgba(90,200,250,.10), transparent 22rem),
-    var(--hc-pearl);
+  background: var(--hc-pearl);
 }
 
 .hc-experience .repair-pilot-page .repair-live-hero {
@@ -96,9 +93,7 @@
   color: #f7f8fb;
   border: 1px solid rgba(255,255,255,.09);
   border-radius: 26px;
-  background:
-    radial-gradient(circle at 82% 12%, rgba(124,92,255,.16), transparent 16rem),
-    linear-gradient(160deg, #1c2940 0%, #172033 72%);
+  background: #172033;
   box-shadow: 0 30px 90px rgba(18,22,34,.20);
 }
 

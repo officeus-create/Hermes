@@ -11,7 +11,7 @@
     border: 1px solid rgba(255,255,255,.16);
     border-radius: 28px;
     box-shadow: 0 18px 50px rgba(0,0,0,.12), inset 0 1px 0 rgba(255,255,255,.05);
-    backdrop-filter: blur(22px) saturate(1.12);
+    backdrop-filter: none;
   }
 
   .site-header-dark {
@@ -28,7 +28,7 @@
   .site-header-light.site-header-scrolled {
     color: #0b0d12;
     border-color: rgba(11,13,18,.10);
-    background: rgba(247,246,243,.92);
+    background: #f7f6f3;
     box-shadow: 0 16px 42px rgba(11,13,18,.08), inset 0 1px 0 rgba(255,255,255,.72);
   }
 }
@@ -90,7 +90,7 @@
     color: #0b0d12 !important;
     border: 1px solid rgba(11,13,18,.10) !important;
     border-radius: 28px !important;
-    background: rgba(247,246,243,.94) !important;
+    background: #f7f6f3 !important;
     box-shadow: 0 16px 42px rgba(11,13,18,.09), inset 0 1px 0 rgba(255,255,255,.75) !important;
   }
   .hc-experience .site-header .desktop-nav a {
