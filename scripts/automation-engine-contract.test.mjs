@@ -68,6 +68,16 @@ const windsorAdapter = readFileSync(new URL("../workers/automation-engine/src/wi
 const wrangler = readFileSync(new URL("../workers/automation-engine/wrangler.jsonc.example", import.meta.url), "utf8");
 const releaseWorkflow = readFileSync(new URL("../.github/workflows/automation-engine-release.yml", import.meta.url), "utf8");
 
+assert.match(wrangler, /"workers_dev": false/, "HAE must not reopen workers.dev for Windows node activation");
+assert.match(wrangler, /"pattern": "hae-node\.hermeslogisticsus\.com"[\s\S]*"custom_domain": true/, "Windows node must use the dedicated reviewed custom domain");
+assert.match(wrangler, /"HERMES_WINDOWS_NODE_ENABLED": "disabled"/, "Windows node remains disabled by default in versioned config");
+assert.match(wrangler, /"HERMES_WINDOWS_NODE_HOST": "hae-node\.hermeslogisticsus\.com"/, "Versioned config must bind the exact Windows node host");
+assert.match(worker, /windowsNodeHost[\s\S]*!url\.pathname\.startsWith\("\/v1\/nodes\/windows\/"\)[\s\S]*not_found/, "Dedicated node host must not expose generic HAE endpoints");
+assert.match(releaseWorkflow, /windows_node_activate/, "HAE release workflow must have a bounded Windows activation operation");
+assert.match(releaseWorkflow, /HAE_WINDOWS_NODE_ACTIVATE/, "Owner issue-comment activation command must be explicit");
+assert.match(releaseWorkflow, /HERMES_WINDOWS_NODE_ENABLED"[\s\S]*"enabled"/, "Activation operation must only flip the Windows node feature gate in generated production config");
+assert.match(releaseWorkflow, /hae-node\.hermeslogisticsus\.com\/v1\/nodes\/windows\/status/, "Activation must verify the dedicated edge");
+assert.match(releaseWorkflow, /windows_node_edge=PASS unsigned_http=401/, "Activation must prove unsigned edge traffic fails closed");
 assert.ok(worker.includes("AUTOMATION_QUEUE.send"), "Cron must enqueue work instead of doing a heavy task inline");
 assert.ok(worker.includes("unknown_outcome"), "Ambiguous provider outcome must be fail-closed");
 assert.match(worker, /unknown_outcome_readback_pending/, "Ambiguous provider writes must enter readback-only recovery");
