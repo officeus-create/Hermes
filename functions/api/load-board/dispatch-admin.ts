@@ -152,16 +152,28 @@ export async function onRequestPost(context:Context){
     return reply(200,{success:true,action,carrierCompanyId:companyId,outboundPerformed:false});
   }
   const entitlement=await db.prepare(`
-    SELECT status,agreement_state,agreement_sha256,authority_status,insurance_status,source_rights_status,
-      trial_start_date,trial_end_date,evidence_id FROM hermes_carrier_board_entitlements WHERE company_id=?`
+    SELECT status,agreement_state,agreement_version,agreement_sha256,agreement_effective_at,
+      trial_start_date,trial_end_date,no_auto_continuation_confirmed,
+      authority_status,insurance_status,source_rights_status,evidence_id
+      FROM hermes_carrier_board_entitlements WHERE company_id=?`
   ).bind(companyId).first();
   const today=now.slice(0,10);
-  const agreementEffective=entitlement?.agreement_state==="ONGOING_EFFECTIVE" ||
+  const ongoingEffectiveAt=Date.parse(String(entitlement?.agreement_effective_at||""));
+  const trialStart=validDateOnly(entitlement?.trial_start_date);
+  const trialEnd=validDateOnly(entitlement?.trial_end_date);
+  const expectedTrialEnd=trialStart ? new Date(trialStart.date.getTime()+13*86400000).toISOString().slice(0,10) : "";
+  const agreementEffective=
+    (entitlement?.agreement_state==="ONGOING_EFFECTIVE" &&
+      Number.isFinite(ongoingEffectiveAt) && ongoingEffectiveAt<=Date.now()) ||
     (entitlement?.agreement_state==="TRIAL_ACTIVE" &&
+      trialStart && trialEnd &&
+      String(entitlement?.trial_end_date||"")===expectedTrialEnd &&
+      Number(entitlement?.no_auto_continuation_confirmed)===1 &&
       String(entitlement?.trial_start_date||"")<=today && String(entitlement?.trial_end_date||"")>=today);
   if(entitlement?.status!=="active" || !agreementEffective ||
      entitlement?.authority_status!=="verified" || entitlement?.insurance_status!=="verified" ||
      entitlement?.source_rights_status!=="verified" || !/^[a-f0-9]{64}$/.test(String(entitlement?.agreement_sha256||"")) ||
+     !String(entitlement?.agreement_version||"") || /draft|review/i.test(String(entitlement?.agreement_version||"")) ||
      !String(entitlement?.evidence_id||""))
     return reply(409,{success:false,error:"effective_carrier_agreement_and_verification_required"});
   const dispatcherId=cleanWorkspaceId(body.dispatcherId);
