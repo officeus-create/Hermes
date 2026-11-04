@@ -6,6 +6,14 @@ import {
 } from "../_lib/carrier-dispatch-workspace.mjs";
 type Context={request:Request;env:{DB?:any}};
 const reply=(status:number,data:Record<string,unknown>)=>jsonResponse(status,data,privateWorkspaceHeaders);
+const validDateOnly=(value:unknown)=>{
+  const raw=String(value||"");
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(raw))return null;
+  const [year,month,day]=raw.split("-").map(Number);
+  const date=new Date(Date.UTC(year,month-1,day));
+  if(date.getUTCFullYear()!==year||date.getUTCMonth()!==month-1||date.getUTCDate()!==day)return null;
+  return {raw,date};
+};
 async function owner(context:Context) {
   if(!context.env.DB)return {error:reply(503,{success:false,error:"database_not_configured"})};
   const user=await getAuthenticatedSpecialist(context.request,context.env.DB);
