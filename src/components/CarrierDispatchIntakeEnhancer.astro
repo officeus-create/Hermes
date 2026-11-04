@@ -30,11 +30,21 @@
     const availableFrom = root?.querySelector<HTMLInputElement>('input[name="available_from"]');
     if (!root || !form || !alert || !result || !decision || !state || !preview || !email || !sendButton || !deliveryStatus || !boundary) return;
 
-    const canonicalProductionHost = window.location.protocol === "https:" && window.location.hostname === "hermeslogisticsus.com";
-    if (canonicalProductionHost) {
-      form.dataset.leadMode = "live";
-      if (!form.dataset.leadEndpoint) form.dataset.leadEndpoint = "/api/logistics-lead";
+    // Server-declared mode is authoritative. Hostname is never permission to send.
+    const declaredLive = form.dataset.leadMode === "live";
+    let configuredLive = false;
+    if (declaredLive && form.dataset.leadEndpoint) {
+      try {
+        const configuredEndpoint = new URL(form.dataset.leadEndpoint, window.location.origin);
+        configuredLive = configuredEndpoint.protocol === "https:" &&
+          configuredEndpoint.origin === window.location.origin &&
+          configuredEndpoint.pathname === "/api/logistics-lead" &&
+          !configuredEndpoint.search && !configuredEndpoint.hash;
+      } catch {
+        // Invalid or absent receiver remains preview-only.
+      }
     }
+    form.dataset.leadMode = configuredLive ? "live" : "preview";
 
     const modeNote = root.querySelector<HTMLElement>(".dispatch-mode-note");
     if (modeNote) {
