@@ -2208,3 +2208,62 @@ ai_name: Codex; role: delegated Academy owner; contribution_type: Implementation
 - Tests: `npm run build` ok, `npm test` exit 0, Playwright desktop + mobile 44/44 on the carrier specs.
 - Left for the owner: cookie banner covering the first-screen CTA at 1280×800; public "ChatGPT" mentions on `/privacy/` and `/services/hermes-connect/` (intentional integration or leak?). Small catalog findings (two connect profile pages without og:image, `/ru/privacy/` without JSON-LD) are not in this PR.
 - Next action — Claude: read back the six pages on the live site at 1440 and 390 after deploy.
+
+## 2026-10-29 — Claude Code — Access page: header Sign in no longer a dead link, registration is signposted
+
+- Owner report: on `/services/hermes-connect/access/` "Sign in" did nothing and registration seemed impossible. Reproduced on live: the header Sign in links to the same page (no-op there), and registration only exists behind the business-type cards, with nothing pointing to them from the form. The form itself, the 401 message and the success redirect were verified working (mocked success → `/services/hermes-connect/`).
+- Fix: header/mobile Sign in on this page focuses the email field; a hint under the form ("No account yet? Choose your business type to register →", EN/RU/UK) jumps to the type cards (`#new-business`). No change to the sign-in or registration APIs.
+- Branch `claude/access-signin-fix-main`, replayed onto main `0c8c9d3` after #2174 and #2179 were merged (the earlier stacked PR #2178 is superseded).
+- Tests: `npm test` exit 0; Playwright desktop + mobile 22/22 on auth-language and account specs; manual desktop and 390 px check of focus and anchor.
+- Next action — owner: confirm which account/method failed if the problem persists after this fix (password vs Google).
+
+## 2026-10-30 — Claude Code — chat-wide audit (gate ledger) and lessons
+
+- Method: 12 runnable gates (unlazy skill, outside the repo) against the live site and `main`. Result: 11 met, 1 unmet. Unmet = the Access page sign-in fix (not on `main`/live; PRs #2178 and #2186 were closed without merge) → re-opened as #2197. Met: Russian Access page and Home Services, carrier funnel without violet, homepage jargon gone, catalog og:image and `/ru/privacy/` JSON-LD live, retired phone absent, `/logistics/` 301, Load Board RU/UK, Website Factory Google hook, lead Worker not exposed on workers.dev.
+- Open and not code: owner decision on the cookie banner covering the first CTA; Website Factory Ukrainian; a real Google round-trip (needs the owner's account); Gmail intake stays off until OAuth is verified; GSC recheck 2026-11-10 (trigger armed) and carrier positions 2026-11-23; `#2041` supersede (owner).
+- New finding: the internal carrier call script (Drive "SCRIPT CALL CARRIER.docx") makes claims the public site deliberately does not make: gross increase "$1,500 to $4,000", "$2,500–$6,000 per year in taxes", rate markup "10–20%", "multiple accounts / work in pairs", plus a personal first name. Public pages disclaim income guarantees. Recommend the owner reviews the script (tax and earnings claims) before it is used with carriers; nothing from it was copied to the site.
+- Lessons to keep (process):
+  1. Do not stack a PR on a branch another agent may merge or rewrite; open against `main` and keep the diff small. Stacked #2178 was stranded when #2174 merged.
+  2. Before reporting a fix as done, check the live page or `main` for the exact marker, not only CI green. Use a grep gate.
+  3. A shared file like `docs/AI_HANDOFF.md` conflicts constantly; append, then merge `main` last.
+  4. Bundled Astro scripts do not appear in the HTML; check the `_astro/*.js` file for strings in dictionaries.
+  5. `gate-check` `EXPECT:` needs `/regex/` form; plain text is a substring.
+  6. Header links that point at the current page are dead clicks; give them an action on that page.
+- Next action — owner: merge or close #2197; answer the cookie-banner and Website Factory questions. Claude: read #2197 live after merge; keep the two scheduled rechecks.
+
+## 2026-10-30 — Claude Code — Website Factory in Ukrainian
+
+- `public/scripts/website-factory-locale.mjs` now carries a Ukrainian dictionary (177 strings, same keys as the Russian one), Ukrainian number/label patterns, localized handoff sentence and "Видалити" labels, and the private-context banner in Ukrainian. The Russian runtime was generalized (`dictionary`, `normalizeLocalizedRuntime`) with no change to Russian output.
+- Tests: `connect-auth-language.test.mjs` asserts uk keys equal ru keys; new Playwright case `Ukrainian Website Factory …` (desktop + mobile) next to the Russian one; `website-factory-design4` and the Russian case still pass; `npm test` exit 0.
+- Not touched: Website Factory markup, API, auth; Command Center.
+- Next action — owner: native-speaker read of the Ukrainian wording if it will be shown to clients.
+
+## 2026-10-30 — Claude Code — cookie notice no longer covers left hero actions on wide screens
+
+- Finding (design audit 2026-10-29): at 1280×800 the analytics notice (960 px wide bar at bottom) sat over the left-aligned primary hero buttons on the dispatch and geo pages.
+- Change: `TrackingConsent.astro` only — from 1101 px up the notice is 560 px wide, single column, aligned right; text, choices, storage and consent logic unchanged; tablet and mobile layouts untouched.
+- Checked at 1280×800 on `/`, `/logistics/car-hauling-dispatch/`, `/logistics/car-hauler-loads/chicago-il/`: no overlap with the first hero actions. `npm test` exit 0; Playwright consent and repair-public-design specs 20/20 (desktop + mobile).
+- Next action — Claude: read back the live pages at 1280 after deploy.
+
+## 2026-11-01 — Claude Code — Russian carrier semantic core (query hypotheses)
+
+- Owner input: a real inbound call came from a Russian-speaking US carrier who needs a Russian-speaking dispatcher for car hauling (1–10 trucks), referencing specific states. Owner asked for the Russian semantic core for how such a carrier searches.
+- Did NOT create a parallel doc: the governed home already exists — `src/data/carrier-language-research.ts` (`ru` entry, research-only query hypotheses). Enriched the `ru` hypotheses from 2 → 15, mapped to the allowed intents (dispatch_support, new_authority_support, documents_setup, direct_freight_development, backhaul_deadhead): "диспетчер под кархолинг", "диспетчер для автовоза", "русскоязычный диспетчер для автовоза в США", "диспетчерские услуги для перевозчиков автовозов", one-truck / small-fleet / by-state variants, "грузы для автовоза", "загрузки кархолинг", new-MC dispatcher, documents/invoicing, direct dealer freight, empty-backhaul.
+- All flagged `researchOnly: true` per the registry (not auto-published; terminology + publication requirements still gate any live use). Note: OpenRush does not support Russian for US (English/Spanish only), so volumes are UNKNOWN by measurement discipline, not zero — the value is covering the real phrasings.
+- Tests: `carrier-language-research`, `carrier-content-operations`, `carrier-research-registry` pass; `npm run build` ok; `npm test` exit 0.
+- Article/news question (not done here, needs owner decision): the "news" section is Insights, which is an English, evidence-scored, human-approval pipeline (`insights-human-approval-contract`, `publish-insight.mjs`) — not a home for a Russian SEO guide. Options for the owner: (a) a Russian carrier guide as a localized/resource page, or (b) an English Insights analysis "what Russian-speaking US car haulers search for" using this registry as first-party evidence (still needs human approval). Recommend (a) for the Russian audience; I can draft it on your word.
+## 2026-11-01 — Claude Code — localized Logistics owner pages: direct dispatch call path
+
+- Business goal (owner, ongoing): a Russian-speaking car-hauling carrier who needs a dispatcher must be able to call. Primary-source check of live main: `/ru/logistics/` (and the uk/es/it/fr logistics owner pages) had no phone and no tel link — email only. The approved dispatch phone +1 (351) 777-5337 was present on `/contacts/`, `/logistics/car-hauling-dispatch/`, `/logistics/owner-operator-dispatch-support/` but not on the localized carrier funnel.
+- Verified the retired 262 number is NOT in the repo or on live production anywhere; the "262 on owner-operator/new-authority pages" seen in search was stale index results, not current production. No change needed there.
+- Change: `LocalizedDirectionOwnerPage.astro` now renders a localized "Позвонить диспетчеру · <phone>" (uk/ru/es/it/fr) click-to-call in the hero actions and the contact card, using `site.publicPhones[0]` (single source of truth), gated to `directionId === "logistics"` only. Marketing/Academy/Technology localized pages stay email-only. tel: link, no network/form — preview-first contract untouched.
+- Tests: extended `scripts/localized-owner-parity.test.mjs` (each non-en logistics owner must carry the dispatch tel; other directions must not). `npm run build` 0 errors; `npm test` exit 0. Browser check at 1440 and 390 on `/ru/logistics/`: two call buttons, correct href/label, email preserved, no horizontal overflow.
+- Not done here (owner decisions / larger scope): English `/paths/logistics/` has no tel link (deliberately demotes carrier links — owner call on the English hero); phone-click GA4 event not added (E16: owner must mark GA4 key events first — no speculative event invented); Command Center / HAE untouched per owner.
+- Next action — Claude: read back `/ru/logistics/` live after merge.
+
+## 2026-11-01 — Claude Code — call line on the remaining carrier dispatch-support pages
+
+- Finding: `LogisticsCommercialPage` shows the approved desk phone only when a page sets `phoneDesk`. owner-operator-dispatch-support and car-hauling-dispatch had it; fleet-owner-dispatch-support and new-authority-car-hauler-support (carrier-facing) and auction-vehicle-pickup (shipper-facing) did not — no call line.
+- Change: added `phoneDesk: "dispatch"` to the two carrier support pages and `phoneDesk: "shippers"` to auction-vehicle-pickup. One line each; same approved number +1 (351) 777-5337; no design/markup change (the component already renders the desk line).
+- Tests: `npm run build` 0 errors; `npm test` exit 0; built HTML of all three pages now carries the tel link.
+- Next action — Claude: live readback after merge.

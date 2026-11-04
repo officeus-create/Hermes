@@ -1,8 +1,11 @@
-import { validateThreadsText, readThreadsMedia } from "./threads-brand-connector.mjs";
+import {
+  createMetaThreadsTransport,
+  validateThreadsText,
+  safeThreadsPermalink,
+} from "../../../shared/social/meta-threads-provider.mjs";
 
 const clean = (value, max = 240) => String(value ?? "").trim().slice(0, max);
 const META_VERSION_FALLBACK = "v26.0";
-const THREADS_GRAPH_BASE = "https://graph.threads.com/v1.0/";
 
 function metaGraphVersion(env) {
   const value = clean(env?.HERMES_META_GRAPH_VERSION, 24);
@@ -100,68 +103,61 @@ export async function publishInstagramStoryImage(env, credential, imageUrl) {
   return { ...published, permalink: null, readback_ok: true };
 }
 
-async function createThreadsContainer(userId, token, values) {
-  const createUrl = new URL(`${clean(userId, 160)}/threads`, THREADS_GRAPH_BASE);
-  const created = await providerJson(createUrl.toString(), {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded", Accept: "application/json" },
-    body: formBody({ ...values, access_token: token }),
+function threadsTransportFromCredential(credential) {
+  const userId = clean(credential?.threads_user_id, 160);
+  const token = clean(credential?.access_token, 4096);
+  const expectedUsername = clean(credential?.username, 160).replace(/^@/, "").toLowerCase();
+  if (!userId || !token || !expectedUsername) return null;
+  return createMetaThreadsTransport({
+    accessToken: token,
+    accountId: userId,
+    expectedUsername,
   });
-  if (!created.ok || !created.data?.id) {
-    return { ok: false, error_class: created.network_error ? "provider_outcome_unknown" : "provider_rejected" };
-  }
-  return { ok: true, container_id: clean(created.data.id, 240) };
 }
-async function publishThreadsContainer(userId, token, containerId) {
-  const publishUrl = new URL(`${clean(userId, 160)}/threads_publish`, THREADS_GRAPH_BASE);
-  const published = await providerJson(publishUrl.toString(), {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded", Accept: "application/json" },
-    body: formBody({ creation_id: containerId, access_token: token }),
-  });
-  if (!published.ok || !published.data?.id) {
-    return { ok: false, error_class: published.network_error ? "provider_outcome_unknown" : "provider_rejected" };
-  }
-  return { ok: true, media_id: clean(published.data.id, 240) };
+
+async function verifiedThreadsReadback(transport, providerObjectId, expectedText = null) {
+  const readback = await transport.readMedia(providerObjectId);
+  if (!readback.ok) return { permalink: null, readback_ok: false };
+  const permalink = safeThreadsPermalink(readback.media?.permalink);
+  const expectedUsername = transport.expectedUsername;
+  const textOk = expectedText === null || String(readback.media?.text || "") === String(expectedText);
+  const exact = Boolean(
+    readback.media?.id === providerObjectId
+    && readback.media?.username === expectedUsername
+    && textOk
+    && permalink
+  );
+  return { permalink: exact ? permalink : null, readback_ok: exact };
 }
 
 export async function publishThreadsImage(credential, text, imageUrl) {
   const validated = validateThreadsText(text);
-  if (!validated.ok) return { ok: false, error_class: validated.error };
+  if (!validated.ok) return { ok: false, error_class: validated.error_class };
   const image = httpsUrl(imageUrl);
   if (!image) return { ok: false, error_class: "threads_image_requires_https_url" };
-  const userId = clean(credential?.threads_user_id, 160);
-  const token = clean(credential?.access_token, 4096);
-  if (!userId || !token) return { ok: false, error_class: "authorization_required" };
-  const created = await createThreadsContainer(userId, token, { media_type: "IMAGE", image_url: image, text: validated.text });
-  if (!created.ok) return created;
-  const published = await publishThreadsContainer(userId, token, created.container_id);
+  const transport = threadsTransportFromCredential(credential);
+  if (!transport) return { ok: false, error_class: "authorization_required" };
+  const identity = await transport.verifyIdentity();
+  if (!identity.ok) return identity;
+  const published = await transport.publishImage({ text: validated.text, imageUrl: image });
   if (!published.ok) return published;
-  const readback = await readThreadsMedia(token, published.media_id);
-  return { ...published, permalink: readback.ok ? readback.media.permalink : null, readback_ok: readback.ok };
+  const readback = await verifiedThreadsReadback(transport, published.provider_object_id, validated.text);
+  return { ok: true, media_id: published.provider_object_id, ...readback };
 }
 
 export async function publishThreadsCarousel(credential, text, imageUrls) {
   const validated = validateThreadsText(text);
-  if (!validated.ok) return { ok: false, error_class: validated.error };
+  if (!validated.ok) return { ok: false, error_class: validated.error_class };
   const urls = normalizeImageUrls(imageUrls, 10);
   if (urls.length < 2) return { ok: false, error_class: "threads_carousel_requires_2_to_10_https_images" };
-  const userId = clean(credential?.threads_user_id, 160);
-  const token = clean(credential?.access_token, 4096);
-  if (!userId || !token) return { ok: false, error_class: "authorization_required" };
-
-  const children = [];
-  for (const imageUrl of urls) {
-    const child = await createThreadsContainer(userId, token, { media_type: "IMAGE", image_url: imageUrl, is_carousel_item: "true" });
-    if (!child.ok) return child;
-    children.push(child.container_id);
-  }
-  const parent = await createThreadsContainer(userId, token, { media_type: "CAROUSEL", children: children.join(","), text: validated.text });
-  if (!parent.ok) return parent;
-  const published = await publishThreadsContainer(userId, token, parent.container_id);
+  const transport = threadsTransportFromCredential(credential);
+  if (!transport) return { ok: false, error_class: "authorization_required" };
+  const identity = await transport.verifyIdentity();
+  if (!identity.ok) return identity;
+  const published = await transport.publishCarousel({ text: validated.text, imageUrls: urls });
   if (!published.ok) return published;
-  const readback = await readThreadsMedia(token, published.media_id);
-  return { ...published, permalink: readback.ok ? readback.media.permalink : null, readback_ok: readback.ok };
+  const readback = await verifiedThreadsReadback(transport, published.provider_object_id, validated.text);
+  return { ok: true, media_id: published.provider_object_id, ...readback };
 }
 
 export async function readRecentSocialMedia(env, credential, provider, limit = 6) {
@@ -202,19 +198,21 @@ export async function readRecentSocialMedia(env, credential, provider, limit = 6
   }
 
   if (provider === "threads") {
-    const accountId = clean(credential?.threads_user_id, 160);
-    if (!accountId) return { ok: false, error_class: "authorization_required", items: [] };
-    const url = new URL(`${accountId}/threads`, THREADS_GRAPH_BASE);
-    url.searchParams.set("fields", "id,text,media_type,media_url,permalink,timestamp,is_reply,reposted_post");
-    url.searchParams.set("limit", String(max));
-    url.searchParams.set("access_token", token);
-    const result = await providerJson(url.toString(), { headers: { Accept: "application/json" } });
-    if (!result.ok || !Array.isArray(result.data?.data)) return { ok: false, error_class: "readback_failed", items: [] };
-    return { ok: true, items: result.data.data.map((item) => ({
-      id: clean(item?.id, 240), text: String(item?.text || "").slice(0, 1600),
-      media_type: clean(item?.media_type, 80), media_url: clean(item?.media_url, 1500),
-      permalink: clean(item?.permalink, 1500), timestamp: clean(item?.timestamp, 100),
-      is_reply: Boolean(item?.is_reply), is_repost: Boolean(item?.reposted_post),
+    const transport = threadsTransportFromCredential(credential);
+    if (!transport) return { ok: false, error_class: "authorization_required", items: [] };
+    const identity = await transport.verifyIdentity();
+    if (!identity.ok) return { ok: false, error_class: identity.error_class || "readback_failed", items: [] };
+    const recent = await transport.listRecentAuthored({ limit: max, maxPages: 3 });
+    if (!recent.ok || recent.complete !== true) return { ok: false, error_class: recent.error_class || "readback_failed", items: [] };
+    return { ok: true, items: recent.rows.map((item) => ({
+      id: clean(item?.id, 240),
+      text: String(item?.text || "").slice(0, 1600),
+      media_type: clean(item?.media_type, 80),
+      media_url: "",
+      permalink: clean(item?.permalink, 1500),
+      timestamp: clean(item?.timestamp, 100),
+      is_reply: Boolean(item?.is_reply),
+      is_repost: Boolean(item?.reposted_post),
     })) };
   }
 
