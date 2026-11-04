@@ -66,17 +66,9 @@ try {
         throw new Error(`Production contact runtime check followed an unapproved redirect: ${runtimeFinalUrl.origin}`);
       }
 
-      await runtimePage.waitForFunction(
-        () => {
-          const form = document.querySelector("[data-contact-form]");
-          const label = form?.querySelector("[data-submit-label]");
-          return form?.getAttribute("data-contact-mode") === "live"
-            && form?.getAttribute("data-contact-endpoint") === "/api/logistics-lead"
-            && label?.textContent?.trim() === "Send request";
-        },
-        undefined,
-        { timeout: 15_000 },
-      );
+      // Hydration may add attribution, but it may not elevate Preview to Live.
+      await runtimePage.waitForLoadState("load", { timeout: 15_000 });
+      await runtimePage.waitForTimeout(500);
 
       const runtimeStatus = runtimeResponse?.status() ?? 0;
       const runtime = await runtimePage.locator("[data-contact-form]").first().evaluate((form) => ({
@@ -88,7 +80,10 @@ try {
       lastResult = { raw: { status: rawStatus, ...rawForm }, runtime: { status: runtimeStatus, ...runtime } };
 
       if (runtimeStatus !== 200) throw new Error(`Production runtime page returned HTTP ${runtimeStatus}.`);
-      console.log("Production contact raw shell and runtime verified without submitting the form:", lastResult);
+      if (runtime.mode !== rawForm.mode || runtime.endpoint !== rawForm.endpoint || runtime.label !== rawForm.label) {
+        throw new Error("Hydrated contact form elevated server Preview or modified receiver/CTA.");
+      }
+      console.log("Production contact server-to-browser parity verified without submitting:", lastResult);
       process.exitCode = 0;
       break;
     } catch (error) {
@@ -104,5 +99,5 @@ try {
 }
 
 if (!lastResult || "error" in lastResult) {
-  throw new Error(`Production contact runtime activation was not verified: ${JSON.stringify(lastResult)}`);
+  throw new Error(`Production contact server-to-browser parity was not verified: ${JSON.stringify(lastResult)}`);
 }
