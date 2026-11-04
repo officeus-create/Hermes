@@ -53,6 +53,8 @@ assert.match(arch,/pluginRuntimeRegistrySnapshot/);
 assert.match(arch,/Missing values stay UNKNOWN/);
 assert.match(docs,/no new planner, Worker, D1 database/i);
 assert.match(docs,/PLUGIN_SELECTED_NOT_EXECUTED/);
+assert.match(docs,/DeepSeek is a subordinate specialist lane/);
+assert.match(docs,/prepared sandbox are insufficient/);
 assert.doesNotMatch(docs,/Mac remains the declared primary executor/);
 const projects=get("functions/api/_lib/command-center-projects.mjs");
 assert.match(projects,/id: "deepseek-specialist"/);
