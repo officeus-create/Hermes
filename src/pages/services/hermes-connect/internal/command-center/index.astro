@@ -49,7 +49,7 @@ type HaeProcess={id:string;name:string;job_type:string;business_lane:string;work
 const isRu=new URLSearchParams(location.search).get("lang")==="ru";
 const q=<T extends HTMLElement=HTMLElement>(s:string)=>document.querySelector<T>(s);
 const t=(en:string,ru:string)=>isRu?ru:en;
-let items:WorkItem[]=[],processes:HaeProcess[]=[],filter="open",projectFilter="all",searchTerm="",runtime:any=null,processRuntime:any=null,socialSnapshot:any=null,threadsSnapshot:any=null,tasks:any[]=[],projects:{id:string;title:string;department:string}[]=[];
+let items:WorkItem[]=[],processes:HaeProcess[]=[],filter="open",projectFilter="all",searchTerm="",runtime:any=null,processRuntime:any=null,socialSnapshot:any=null,threadsSnapshot:any=null,tasks:any[]=[],projects:any[]=[];
 const stamp=(v?:string|null)=>v?new Date(v).toLocaleString(isRu?"ru-RU":"en-US",{dateStyle:"medium",timeStyle:"short"}):"—";
 async function jsonFetch(url:string,options:RequestInit={}){const r=await fetch(url,{credentials:"same-origin",cache:"no-store",...options,headers:{Accept:"application/json",...(options.body?{"Content-Type":"application/json"}:{}),...(options.headers||{})}});let d:any={};try{d=await r.json()}catch{}return{r,d}}
 function setText(sel:string,value:string){const n=q(sel);if(n)n.textContent=value}
@@ -137,13 +137,43 @@ async function loadProjects(){
           visited.add(offset);const next=await jsonFetch("/api/internal-command-center/projects?offset="+offset);
           if(!next.r.ok||!next.d.success)break;known.push(...(next.d.projects||[]));offset=next.d.next_offset;
         }
-        projects=known.map((project:any)=>({id:String(project.id),title:String(project.title),department:String(project.department)}));
+        projects=known.map((project:any)=>({
+          ...project,
+          id:String(project.id),
+          title:String(project.title),
+          department:String(project.department),
+        }));
         refreshProjectSelectors();
+        renderAgentRoster();
       }
   } catch(error) {
     console.warn("Command Center project metadata unavailable; task backlog remains usable.");
   }
   renderItems();renderOwnerOverview();
+}
+function renderAgentRoster(){
+  const root=q<HTMLElement>("[data-agent-roster]");if(!root)return;
+  const wanted=["windows-ai","deepseek-specialist","mac-ai"];
+  const roster=wanted.map(id=>projects.find(project=>project.id===id)).filter(Boolean);
+  root.replaceChildren();
+  if(!roster.length){const p=document.createElement("p");p.className="muted";p.textContent=t("AI project state is UNKNOWN until the canonical project map loads.","Состояние AI-проектов UNKNOWN до загрузки канонической карты проектов.");root.append(p);return}
+  roster.forEach((project:any)=>{
+    const card=document.createElement("article");card.className="hcc-card";
+    const top=document.createElement("div");top.className="owner-pillar-top";
+    const label=document.createElement("span");label.className="owner-live-kicker";label.textContent=String(project.agent_role||project.title||"AI");
+    const state=document.createElement("span");state.className="module-state";state.textContent=String(project.status||"UNKNOWN").replaceAll("_"," ").toUpperCase();
+    top.append(label,state);
+    const h=document.createElement("h3");h.textContent=String(project.title||project.id);
+    const evidence=document.createElement("p");evidence.className="muted";evidence.textContent=t("Evidence: ","Evidence: ")+String(project.evidence_level||"UNKNOWN");
+    const progress=document.createElement("p");progress.className="muted";progress.textContent=Number.isFinite(project.progress?.percent)
+      ?t("Declared milestone progress: ","Прогресс объявленных этапов: ")+String(project.progress.percent)+"%"
+      :t("Declared milestone progress: UNKNOWN","Прогресс объявленных этапов: UNKNOWN");
+    const blocker=document.createElement("p");blocker.textContent=Array.isArray(project.blockers)&&project.blockers.length?String(project.blockers[0]):t("No source-backed blocker returned.","Нет подтверждённого блокера в источнике.");
+    card.append(top,h,evidence,progress,blocker);
+    const href=Array.isArray(project.links)?project.links.map((link:any)=>safePr(link.href)||(/^https:\/\/github\.com\/officeus-create\/Hermes\/issues\/\d+\/?$/.test(String(link.href||""))?String(link.href):null)).find(Boolean):null;
+    if(href){const a=document.createElement("a");a.className="owner-text-link";a.href=href;a.target="_blank";a.rel="noopener noreferrer";a.textContent=t("Open evidence →","Открыть evidence →");card.append(a)}
+    root.append(card);
+  });
 }
 function priorityRank(value:string){return ({p0:0,p1:1,p2:2,p3:3} as Record<string,number>)[value]??9}
 function liveTone(selector:string,tone:"good"|"warn"|"bad"|"neutral"){
