@@ -11,6 +11,7 @@ on:
         options:
           - verify
           - provision_dry_run
+          - windows_node_activate
           - runtime_readonly_proof
           - schema_snapshot
       target_sha:
@@ -39,6 +40,7 @@ jobs:
             (
               startsWith(github.event.comment.body, 'HAE_VERIFY ') ||
               startsWith(github.event.comment.body, 'HAE_PROVISION_DRY_RUN ') ||
+              startsWith(github.event.comment.body, 'HAE_WINDOWS_NODE_ACTIVATE ') ||
               startsWith(github.event.comment.body, 'HAE_RUNTIME_READONLY_PROOF ')
             )
           ) ||
@@ -73,6 +75,7 @@ jobs:
             case "$DISPATCH_OPERATION" in
               verify) OPERATION="verify" ;;
               provision_dry_run) OPERATION="provision_dry_run" ;;
+              windows_node_activate) OPERATION="windows_node_activate" ;;
               runtime_readonly_proof) OPERATION="runtime_readonly_proof" ;;
               schema_snapshot) OPERATION="schema_snapshot" ;;
               *) echo "unsupported_operation"; exit 1 ;;
@@ -84,6 +87,7 @@ jobs:
             case "$COMMAND" in
               HAE_VERIFY) OPERATION="verify" ;;
               HAE_PROVISION_DRY_RUN) OPERATION="provision_dry_run" ;;
+              HAE_WINDOWS_NODE_ACTIVATE) OPERATION="windows_node_activate" ;;
               HAE_RUNTIME_READONLY_PROOF) OPERATION="runtime_readonly_proof" ;;
               HAE_SCHEMA_SNAPSHOT) OPERATION="schema_snapshot" ;;
               *) echo "unsupported_comment_command"; exit 1 ;;
@@ -331,6 +335,7 @@ jobs:
           DB_ID: ${{ steps.d1.outputs.database_id }}
           DB_NAME: ${{ steps.d1.outputs.database_name }}
           TARGET_SHA: ${{ steps.request.outputs.target_sha }}
+          OPERATION: ${{ steps.request.outputs.operation }}
         run: |
           set -euo pipefail
           node --input-type=module - <<'NODE'
@@ -345,6 +350,9 @@ jobs:
             .replace("DISCOVER_FROM_HERMES_PAGES_PRODUCTION_DB_BINDING", process.env.DB_ID)
             .replace('"database_name": "hermes-connect-prototype"', `"database_name": "${process.env.DB_NAME || "hermes-connect-prototype"}"`)
             .replace("INJECT_EXACT_MAIN_SHA_AT_RELEASE", targetSha);
+          if (String(process.env.OPERATION || "") === "windows_node_activate") {
+            config = config.replace('"HERMES_WINDOWS_NODE_ENABLED": "disabled"', '"HERMES_WINDOWS_NODE_ENABLED": "enabled"');
+          }
           if (config.includes("INJECT_EXACT_MAIN_SHA_AT_RELEASE")) {
             throw new Error("HAE_release_source_sha_placeholder_not_replaced");
           }
@@ -356,7 +364,7 @@ jobs:
         run: npx --yes wrangler@4 deploy --dry-run --config workers/automation-engine/wrangler.production.generated.jsonc --outdir "${RUNNER_TEMP}/hae-dry-run"
 
       - name: Re-verify exact current main before dry-run deploy
-        if: steps.request.outputs.operation == 'provision_dry_run'
+        if: steps.request.outputs.operation == 'provision_dry_run' || steps.request.outputs.operation == 'windows_node_activate'
         shell: bash
         env:
           TARGET_SHA: ${{ steps.request.outputs.target_sha }}
@@ -368,13 +376,13 @@ jobs:
             exit 1
           fi
 
-      - name: Deploy HAE in fail-closed dry-run mode
-        if: steps.request.outputs.operation == 'provision_dry_run'
+      - name: Deploy HAE in fail-closed mode
+        if: steps.request.outputs.operation == 'provision_dry_run' || steps.request.outputs.operation == 'windows_node_activate'
         run: npx --yes wrangler@4 deploy --config workers/automation-engine/wrangler.production.generated.jsonc
 
 
       - name: Re-verify exact current main after dry-run deploy
-        if: steps.request.outputs.operation == 'provision_dry_run'
+        if: steps.request.outputs.operation == 'provision_dry_run' || steps.request.outputs.operation == 'windows_node_activate'
         shell: bash
         env:
           TARGET_SHA: ${{ steps.request.outputs.target_sha }}
@@ -387,12 +395,33 @@ jobs:
           fi
 
       - name: Verify deployed Worker inventory
-        if: steps.request.outputs.operation == 'provision_dry_run'
+        if: steps.request.outputs.operation == 'provision_dry_run' || steps.request.outputs.operation == 'windows_node_activate'
         run: npx --yes wrangler@4 deployments list --config workers/automation-engine/wrangler.production.generated.jsonc
 
 
+      - name: Verify signed Windows node edge fails closed without identity
+        if: steps.request.outputs.operation == 'windows_node_activate'
+        shell: bash
+        run: |
+          set -euo pipefail
+          url="https://hae-node.hermeslogisticsus.com/v1/nodes/windows/status"
+          for attempt in $(seq 1 18); do
+            http="$(curl -sS -o "${RUNNER_TEMP}/hae-windows-edge.json" -w '%{http_code}' "$url" || true)"
+            if [[ "$http" == "401" ]]; then
+              echo "windows_node_edge=PASS unsigned_http=401"
+              rm -f "${RUNNER_TEMP}/hae-windows-edge.json"
+              exit 0
+            fi
+            if [[ "$attempt" -eq 18 ]]; then
+              echo "windows_node_edge_fail_closed_check_failed http=$http"
+              cat "${RUNNER_TEMP}/hae-windows-edge.json" 2>/dev/null || true
+              exit 1
+            fi
+            sleep 5
+          done
+
       - name: Run private Queue → Worker → D1 dry-run canary
-        if: steps.request.outputs.operation == 'provision_dry_run'
+        if: steps.request.outputs.operation == 'provision_dry_run' || steps.request.outputs.operation == 'windows_node_activate'
         id: canary
         shell: bash
         env:
@@ -459,7 +488,7 @@ jobs:
           done
 
       - name: Re-verify exact current main after dry-run canary
-        if: steps.request.outputs.operation == 'provision_dry_run'
+        if: steps.request.outputs.operation == 'provision_dry_run' || steps.request.outputs.operation == 'windows_node_activate'
         shell: bash
         env:
           TARGET_SHA: ${{ steps.request.outputs.target_sha }}
@@ -471,8 +500,8 @@ jobs:
             exit 1
           fi
 
-      - name: Publish dry-run evidence summary
-        if: steps.request.outputs.operation == 'provision_dry_run'
+      - name: Publish fail-closed deployment evidence summary
+        if: steps.request.outputs.operation == 'provision_dry_run' || steps.request.outputs.operation == 'windows_node_activate'
         shell: bash
         env:
           TARGET_SHA: ${{ steps.request.outputs.target_sha }}
