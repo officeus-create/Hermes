@@ -7,6 +7,12 @@ const ROLE_JOB_MAP=Object.freeze({
 });
 const PRIORITY=Object.freeze({p0:100,p1:85,p2:60,p3:40});
 
+function expectedIdempotencyKey(item,route,plan){
+  const id=clean(item?.id,160),taskId=clean(item?.linked_task_id,160),policy=clean(route?.policy_version,120);
+  if(!id||!taskId||!policy)return null;
+  return ["hae","command-center","hermes_internal",id,taskId,policy,plan.plugin_version,plan.contract.contract_version].join(":").slice(0,240);
+}
+
 function clean(value,max=500){
   return typeof value==="string"
     ?value.replace(/[<>\u0000-\u001f\u007f]/g," ").replace(/\s+/g," ").trim().slice(0,max)
@@ -157,6 +163,28 @@ export async function readCommandCenterHaeExecution(env,item,route){
   const job=response.payload?.job||{};
   if(clean(job.job_id,180)!==jobId||clean(job.job_type,120)!==plan.job_type||clean(job.project_key,120)!=="command-center-plugin-route")
     return{state:"PLUGIN_ROUTE_VERSION_DRIFT",reason:"hae_job_identity_mismatch",job_id:jobId,receipt_verified:false};
+  const expectedKey=expectedIdempotencyKey(item,route,plan);
+  let sourcePayload=null;
+  try{sourcePayload=JSON.parse(String(job.payload_json||"null"));}catch{}
+  const task=Array.isArray(sourcePayload?.tasks)&&sourcePayload.tasks.length===1?sourcePayload.tasks[0]:null;
+  const sourceContract=sourcePayload?._role_contract;
+  const bindingMatches=Boolean(
+    item?.organization_scope==="hermes_internal" &&
+    expectedKey &&
+    clean(job.idempotency_key,240)===expectedKey &&
+    clean(job.policy_version,120)===BRIDGE_POLICY_VERSION &&
+    clean(job.business_lane,120)===plan.contract.business_lane &&
+    clean(job.account_key,120)==="hermes_logistics" &&
+    sourcePayload?.source_kind==="CHATGPT_SELECTED" &&
+    task?.work_id===clean(item?.id,160) &&
+    task?.writer_key==="internal-ai:"+clean(item?.linked_task_id,160) &&
+    task?.permission_class==="READ_ONLY" &&
+    sourceContract?.role_id===plan.role_id &&
+    sourceContract?.plugin_version===plan.plugin_version &&
+    sourceContract?.contract_version===plan.contract.contract_version &&
+    sourceContract?.sha256===expectedSha
+  );
+  if(!bindingMatches)return{state:"PLUGIN_ROUTE_VERSION_DRIFT",reason:"hae_job_source_binding_mismatch",job_id:jobId,receipt_verified:false};
   const jobState=clean(job.state,40).toUpperCase();
   if(jobState!=="SUCCEEDED")return{
     state:routeStateFromJob(jobState),
@@ -165,8 +193,16 @@ export async function readCommandCenterHaeExecution(env,item,route){
   };
   let receipt=null;
   try{receipt=JSON.parse(String(job.result_json||"null"));}catch{}
+  const successEvents=Array.isArray(response.payload?.events)
+    ?response.payload.events.filter(event=>event?.event_type==="job.succeeded"&&event?.to_state==="SUCCEEDED")
+    :[];
   const verified=Boolean(
+    successEvents.length===1&&
     receipt&&
+    receipt.role_contract?.contract_version===plan.contract.contract_version&&
+    receipt.provider_write_performed!==true&&
+    receipt.result?.provider_write_performed!==true&&
+    sourcePayload?.external_provider_write!==true&&
     receipt.capability===plan.job_type&&
     receipt.external_write===false&&
     receipt.role_contract?.role_id===plan.role_id&&
@@ -175,7 +211,7 @@ export async function readCommandCenterHaeExecution(env,item,route){
   );
   return{
     state:verified?"PLUGIN_EXECUTION_SUCCEEDED_RECEIPT_VERIFIED":"PLUGIN_ROUTE_VERSION_DRIFT",
-    reason:verified?null:"hae_receipt_role_version_mismatch",
+    reason:verified?null:"hae_receipt_binding_or_success_event_unverified",
     job_id:jobId,
     job_state:jobState,
     receipt_verified:verified,
