@@ -13,6 +13,8 @@ const access=get("functions/api/internal-command-center/access.ts");
 const docs=get("docs/HERMES_AI_ARCHITECTURE_COMMAND_CENTER.md");
 assert.match(page,/HermesBusinessCommandCenterShell/);
 assert.match(page,/HermesCommandCenterOwnerWorkspace/);
+assert.match(page,/renderAgentRoster/,"owner page must render the project-backed AI roster");
+assert.match(page,/deepseek-specialist/,"DeepSeek project lane must be included in the owner Agents roster");
 assert.match(owner,/data-private hidden/);
 assert.match(owner,/data-cc-view="agents"/);
 assert.match(owner,/HermesAiArchitecture/);
