@@ -51,6 +51,20 @@ const functions=[
       </div>
     </section>
 
+    <section class="hcc-panel owner-today-focus" data-command-center-launch>
+      <div class="owner-section-head">
+        <div><p class="hcc-sample">{ru?"Готовность системы":"System launch readiness"}</p><h2>{ru?"Command Center → HAE → VIKTOR / DeepSeek":"Command Center → HAE → VIKTOR / DeepSeek"}</h2><p>{ru?"Процент считается только по объявленным доказуемым milestones. CI, review, deploy, runtime receipt и QA не объединяются в один зелёный статус.":"The percentage is derived only from declared evidence-backed milestones. CI, review, deploy, runtime receipt and QA never collapse into one green status."}</p></div>
+        <span class="owner-cloud-note" data-launch-state>UNKNOWN</span>
+      </div>
+      <div class="owner-decision-grid">
+        <article><span>{ru?"Прогресс":"Progress"}</span><strong data-launch-progress>UNKNOWN</strong><small>{ru?"По каноническим milestones":"Canonical milestones"}</small></article>
+        <article><span>{ru?"Закрыто":"Completed"}</span><strong data-launch-completed>UNKNOWN</strong><small data-launch-total>{ru?"из UNKNOWN":"of UNKNOWN"}</small></article>
+        <article><span>{ru?"Текущий hold":"Current hold"}</span><strong data-launch-hold>UNKNOWN</strong><small>{ru?"Первый доказанный блокер":"First source-backed blocker"}</small></article>
+        <article><span>ETA</span><strong>UNKNOWN</strong><small>{ru?"Пока нет принятой истории длительности":"No accepted duration history yet"}</small></article>
+      </div>
+      <div class="owner-today-list" data-launch-milestones><p class="muted">{ru?"Загружаем launch gates…":"Loading launch gates…"}</p></div>
+    </section>
+
     <div class="owner-decision-grid" aria-label={ru?"Сводка владельца":"Owner summary"}>
       <article><span>{ru?"Нужно моё решение":"Needs my decision"}</span><strong data-today-decision>0</strong><small>{ru?"Результаты ждут приёмки":"Results awaiting acceptance"}</small></article>
       <article><span>{ru?"Выполняется":"Running now"}</span><strong data-today-running>0</strong><small>{ru?"AI-задачи и активные процессы":"AI tasks and active processes"}</small></article>
