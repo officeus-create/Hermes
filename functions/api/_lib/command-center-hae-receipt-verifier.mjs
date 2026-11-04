@@ -131,6 +131,19 @@ export async function verifyCommandCenterHaeReceipt({
   const payload = parseObject(haeJob.payload_json);
   const receipt = parseObject(haeJob.result_json);
   if (!payload || !receipt) return hold("RECEIPT_MISSING_OR_INVALID");
+  const sourceTasks = Array.isArray(payload.tasks) ? payload.tasks : [];
+  const sourceTask = sourceTasks.length === 1 ? sourceTasks[0] : null;
+  if (
+    payload.source_kind !== "CHATGPT_SELECTED" ||
+    payload.snapshot_id !== `command-center:${workItem.id}:${workItem.linked_task_id}` ||
+    !sourceTask ||
+    sourceTask.work_id !== workItem.id ||
+    sourceTask.writer_key !== `internal-ai:${workItem.linked_task_id}` ||
+    sourceTask.permission_class !== "READ_ONLY" ||
+    sourceTask.source_ref !== `chatgpt-selected://command-center/${workItem.id}`
+  ) {
+    return hold("SOURCE_PAYLOAD_BINDING_MISMATCH");
+  }
   const expected = {
     role_id: route.owner.role_id,
     plugin_version: route.owner.plugin_version,
