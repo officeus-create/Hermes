@@ -333,7 +333,7 @@ function renderItems(){
    const elapsed=started?durationLabel(started,finished||new Date().toISOString()):"UNKNOWN";
    const duration=started&&finished?durationLabel(started,finished):"UNKNOWN";
    const timing=document.createElement("p");timing.className="linked task-timing";
-   timing.textContent=t("Started: ","Старт: ")+(started?stamp(started):"UNKNOWN")+" · "+t("Elapsed: ","Прошло: ")+elapsed+" · "+t("Duration: ","Длительность: ")+duration+" · ETA: UNKNOWN";
+   timing.textContent=t("Started: ","Старт: ")+(started?stamp(started):"UNKNOWN")+" · "+t("Elapsed: ","Прошло: ")+elapsed+" · "+t("Duration: ","Длительность: ")+duration+" · "+t("Progress: UNKNOWN · ","Прогресс: UNKNOWN · ")+"ETA: UNKNOWN";
    card.append(timing);
  }
  if(item.status==="awaiting_acceptance"){const review=document.createElement("p");review.className="acceptance-note";review.textContent=t("Execution finished. Review the evidence before accepting the business result.","Выполнение закончено. Проверь результат и доказательства перед приёмкой.");card.append(review)}
