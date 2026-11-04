@@ -1,6 +1,6 @@
 const DONE_STATES = new Set(["done", "accepted"]);
 
-export const PROJECT_PORTFOLIO_SNAPSHOT_OBSERVED_AT = "2026-11-04T21:07:00.000Z";
+export const PROJECT_PORTFOLIO_SNAPSHOT_OBSERVED_AT = "2026-11-04T21:23:30.000Z";
 export const PROJECT_PORTFOLIO_COVERAGE_STATE = "PARTIAL_DECLARED_REGISTRY";
 export const PROJECT_PORTFOLIO_COVERAGE_NOTE = "Declared Command Center project families plus owner-created D1 projects; not a complete One Brain or company-wide project inventory.";
 
@@ -79,7 +79,7 @@ const projects = Object.freeze([
     related_ids: ["self-learning", "free-ai", "hermes-command-center"],
     started_at: "2026-10-21T00:00:00.000Z",
     target_at: null,
-    blockers: ["Current-main HAE_VERIFY and read-only runtime proof are accepted; remaining gate is exact merge-SHA HAE acceptance after #2236 plus repeated unattended/runtime acceptance where required."],
+    blockers: ["Current-main HAE read-only runtime proof is repeatably accepted with independent QA; remaining gate for the Command Center release is exact merge-SHA HAE acceptance after protected #2236/#2283 release."],
     evidence_level: "CURRENT_MAIN_RUNTIME_READONLY_PROOF_ACCEPTED_RELEASE_PENDING",
     links: [{ label: "Issue #2033", href: "https://github.com/officeus-create/Hermes/issues/2033" }],
     milestones: [
@@ -89,7 +89,7 @@ const projects = Object.freeze([
       milestone("repair-packet", "Stable HAE-SELF work and repair packet", "done", "#2090"),
       milestone("process-control", "Owner process control", "done", "a19466b6"),
       milestone("runtime-readonly-proof", "Current-main HAE read-only runtime proof + independent QA", "done", "GitHub Actions run 41401665910 · job:0feedf6e-c5fd-414d-9522-55e1b1a8127e"),
-      milestone("repeatable-proof", "Repeated production autonomous acceptance", "active"),
+      milestone("repeatable-proof", "Repeated production autonomous acceptance", "done", "GitHub Actions run 41915451497 · job:45cdebaf-bd94-4f86-b997-7080adf60403 · attempts 1 · replay suppressed · queue 0 · DLQ 0 · independent QA PASS"),
     ],
   },
   {
