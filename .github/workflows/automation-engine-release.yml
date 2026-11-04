@@ -376,7 +376,7 @@ jobs:
             exit 1
           fi
 
-      - name: Deploy HAE in fail-closed mode
+      - name: Deploy HAE in fail-closed dry-run mode
         if: steps.request.outputs.operation == 'provision_dry_run' || steps.request.outputs.operation == 'windows_node_activate'
         run: npx --yes wrangler@4 deploy --config workers/automation-engine/wrangler.production.generated.jsonc
 
@@ -500,7 +500,7 @@ jobs:
             exit 1
           fi
 
-      - name: Publish fail-closed deployment evidence summary
+      - name: Publish dry-run evidence summary
         if: steps.request.outputs.operation == 'provision_dry_run' || steps.request.outputs.operation == 'windows_node_activate'
         shell: bash
         env:
