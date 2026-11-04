@@ -57,14 +57,17 @@ assert.equal(unsupported.reason,"safe_role_contract_mapping_missing");
 
 const endpoint=await readFile(new URL("../functions/api/internal-command-center/work-items/[id].ts",import.meta.url),"utf8");
 const helper=await readFile(new URL("../functions/api/_lib/command-center-hae-bridge.mjs",import.meta.url),"utf8");
+const verifier=await readFile(new URL("../functions/api/_lib/command-center-hae-receipt-verifier.mjs",import.meta.url),"utf8");
 const schema=await readFile(new URL("../functions/api/_lib/internal-command-center.mjs",import.meta.url),"utf8");
 assert.match(endpoint,/action==="execute_plugin"/);
 assert.match(endpoint,/readWorkItemPluginRoute\(row\)/);
 assert.doesNotMatch(endpoint,/payload\?\.role_id|payload\?\.plugin_version/);
-assert.match(helper,/receipt\.external_write===false/);
-assert.match(helper,/receipt\.role_contract\?\.role_id===plan\.role_id/);
-assert.match(helper,/receipt\.role_contract\?\.plugin_version===plan\.plugin_version/);
-assert.match(helper,/receipt\.role_contract\?\.sha256===expectedSha/);
+assert.match(helper,/verifyCommandCenterHaeReceipt/);
+assert.match(helper,/pluginRuntimeRegistryEvidenceStatus/);
+assert.match(helper,/commandCenterHaeIdempotencyKey/);
+assert.match(verifier,/IDEMPOTENCY_BINDING_MISMATCH/);
+assert.match(verifier,/DURABLE_SUCCESS_EVENT_UNVERIFIED/);
+assert.match(verifier,/RECEIPT_COST_OR_PROVIDER_WRITE_UNVERIFIED/);
 assert.match(schema,/hae_job_id TEXT/);
 assert.doesNotMatch(schema,/hae_result_json|plugin_result_json/);
 
@@ -75,6 +78,7 @@ const boundItem={
   organization_scope:"hermes_internal",
   linked_task_id:"aitask_test_001",
   hae_job_id:"job:11111111-1111-4111-8111-111111111111",
+  plugin_route_json:JSON.stringify(route),
 };
 const contractIdentity={
   role_id:plan.expected.role_id,
@@ -99,7 +103,7 @@ const canonicalJob={
     result:{},
   }),
 };
-const successEvent={event_type:"job.succeeded",to_state:"SUCCEEDED"};
+const successEvent={job_id:boundItem.hae_job_id,event_type:"job.succeeded",to_state:"SUCCEEDED"};
 const oldFetch=globalThis.fetch;
 const env={HERMES_AUTOMATION_BASE_URL:"https://hae.example",HERMES_AUTOMATION_TOKEN:"read-only-test-token-1234567890"};
 const readFake=async(job=canonicalJob,events=[successEvent])=>{
