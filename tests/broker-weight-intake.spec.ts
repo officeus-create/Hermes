@@ -17,6 +17,14 @@ test('broker original weight survives review and mock submitted receipt, without
   });
   await page.goto(`${origin}/logistics/request-vehicle-transport/?role=broker#transport-intake`);
   const form = page.locator('[data-transport-form]');
+  await expect(form).toHaveAttribute('data-lead-mode', 'preview');
+  // Exercise the secure-send branch only through an explicit test authorization fixture.
+  // Hostname itself must never promote Preview to Live.
+  await form.evaluate((element) => {
+    const liveForm = element as HTMLFormElement;
+    liveForm.dataset.leadMode = 'live';
+    liveForm.dataset.leadEndpoint = '/api/logistics-lead';
+  });
   await expect(form.locator('[data-broker-weight]')).toBeVisible();
   await expect(form.locator('[name="broker_weight_state"]')).toHaveValue('unknown');
   for (const [name, value] of Object.entries({ contact_name: 'Fixture Broker', email: 'broker@example.test', phone: '+1 312 555 0100', pickup_location: 'Chicago, IL', delivery_location: 'Madison, WI', ready_date: '2099-10-08', year_make_model: '2025 Fixture Vehicle', quantity: '1' })) await form.locator(`[name="${name}"]`).fill(value);
