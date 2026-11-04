@@ -8,8 +8,13 @@ import { ensureAiUsageLedgerSchema } from "./ai-usage-ledger.mjs";
 
 export const WINDOWS_NODE_ID = "VIKTOR-WINDOWS";
 export const WINDOWS_NODE_CONTRACT_VERSION = "windows-node-v1";
+export const WINDOWS_NODE_KEY_ID = "viktor-windows-20261104";
+export const WINDOWS_NODE_PUBLIC_KEY_SPKI_B64 = "MCowBQYDK2VwAyEAy17ps0O6s7Hj1iN01RuKCYNBZdoN0m2EeEu2xk7DSEQ=";
 const WINDOWS_NODE_PROVIDER_ID = "viktor-windows-ollama";
 const LEASE_SECONDS = 5 * 60;
+const AUTH_MAX_SKEW_SECONDS = 3 * 60;
+const AUTH_NONCE_TTL_SECONDS = 10 * 60;
+const importedNodeKeys = new Map();
 const ELIGIBLE_JOB_TYPES = new Set(["search.defect.prioritize", "hae.self.patch.propose"]);
 
 function clean(value, max = 500) {
@@ -48,14 +53,84 @@ function parsePayload(row) {
 }
 function nodeEnabled(env) { return enabled(env?.HERMES_WINDOWS_NODE_ENABLED); }
 
-export function windowsNodeAuthorized(request, env) {
+function base64UrlBytes(value) {
+  const normalized=String(value||"").replace(/-/g,"+").replace(/_/g,"/");
+  const padded=normalized+"=".repeat((4-normalized.length%4)%4);
+  try {
+    const binary=atob(padded);
+    return Uint8Array.from(binary,(char)=>char.charCodeAt(0));
+  } catch { return new Uint8Array(); }
+}
+function base64Bytes(value) {
+  try {
+    const binary=atob(String(value||""));
+    return Uint8Array.from(binary,(char)=>char.charCodeAt(0));
+  } catch { return new Uint8Array(); }
+}
+async function sha256Text(value) {
+  const digest=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(String(value||"")));
+  return [...new Uint8Array(digest)].map((byte)=>byte.toString(16).padStart(2,"0")).join("");
+}
+export async function buildWindowsNodeAuthMessage(request, rawBody, timestamp, nonce) {
+  const url=new URL(request.url);
+  const bodySha=await sha256Text(rawBody||"");
+  return ["HERMES-HAE-NODE-V1",String(request.method||"GET").toUpperCase(),url.pathname,String(timestamp||""),String(nonce||""),bodySha].join("\n");
+}
+async function windowsNodePublicKey(spkiB64) {
+  const encoded=String(spkiB64||"");
+  if(importedNodeKeys.has(encoded)) return importedNodeKeys.get(encoded);
+  const keyPromise=crypto.subtle.importKey("spki",base64Bytes(encoded),{name:"Ed25519"},false,["verify"]);
+  importedNodeKeys.set(encoded,keyPromise);
+  return keyPromise;
+}
+export async function windowsNodeAuthorized(request, env, rawBody="", now=new Date().toISOString()) {
   if (!nodeEnabled(env)) return { ok: false, status: 503, error: "windows_node_disabled" };
+  const expectedHost=clean(env?.HERMES_WINDOWS_NODE_HOST,253).toLowerCase();
+  if(expectedHost) {
+    let host="";
+    try { host=new URL(request?.url||"").hostname.toLowerCase(); } catch {}
+    if(host!==expectedHost) return { ok:false,status:403,error:"windows_node_host_invalid" };
+  }
+
   const expected = String(env?.HERMES_WINDOWS_NODE_TOKEN || "");
-  if (expected.length < 32) return { ok: false, status: 503, error: "windows_node_token_not_configured" };
   const authorization = request?.headers?.get?.("Authorization") || "";
   const supplied = authorization.startsWith("Bearer ") ? authorization.slice(7) : "";
-  if (!supplied || !timingSafeEqualText(supplied, expected)) return { ok: false, status: 401, error: "windows_node_auth_required" };
-  return { ok: true };
+  if (expected.length >= 32 && supplied && timingSafeEqualText(supplied, expected)) return { ok: true, auth_type:"bearer" };
+
+  const nodeId=clean(request?.headers?.get?.("X-Hermes-Node-Id"),80);
+  const keyId=clean(request?.headers?.get?.("X-Hermes-Node-Key-Id"),120);
+  const timestamp=clean(request?.headers?.get?.("X-Hermes-Node-Timestamp"),40);
+  const nonce=clean(request?.headers?.get?.("X-Hermes-Node-Nonce"),160);
+  const signatureText=clean(request?.headers?.get?.("X-Hermes-Node-Signature"),512);
+  if(nodeId!==WINDOWS_NODE_ID||keyId!==WINDOWS_NODE_KEY_ID||!/^\d{10}$/.test(timestamp)||!/^[A-Za-z0-9_-]{24,160}$/.test(nonce)||!signatureText) {
+    return { ok:false,status:401,error:"windows_node_auth_required" };
+  }
+  const nowMs=Date.parse(now);
+  const requestMs=Number(timestamp)*1000;
+  if(!Number.isFinite(nowMs)||!Number.isFinite(requestMs)||Math.abs(nowMs-requestMs)>AUTH_MAX_SKEW_SECONDS*1000) {
+    return { ok:false,status:401,error:"windows_node_signature_expired" };
+  }
+  const signature=base64UrlBytes(signatureText);
+  if(signature.length!==64) return { ok:false,status:401,error:"windows_node_signature_invalid" };
+  const publicSpki=String(env?.HERMES_WINDOWS_NODE_PUBLIC_KEY_SPKI_B64||WINDOWS_NODE_PUBLIC_KEY_SPKI_B64);
+  try {
+    const key=await windowsNodePublicKey(publicSpki);
+    const message=await buildWindowsNodeAuthMessage(request,rawBody,timestamp,nonce);
+    const verified=await crypto.subtle.verify("Ed25519",key,signature,new TextEncoder().encode(message));
+    if(!verified) return { ok:false,status:401,error:"windows_node_signature_invalid" };
+  } catch {
+    return { ok:false,status:503,error:"windows_node_public_key_invalid" };
+  }
+  if(!env?.DB) return { ok:false,status:503,error:"runtime_not_configured" };
+  await ensureWindowsNodeSchema(env.DB);
+  const nowIso=new Date(nowMs).toISOString();
+  const expiresAt=new Date(nowMs+AUTH_NONCE_TTL_SECONDS*1000).toISOString();
+  await env.DB.prepare("DELETE FROM hermes_automation_node_auth_nonces WHERE expires_at<=?").bind(nowIso).run();
+  const inserted=await env.DB.prepare(`INSERT OR IGNORE INTO hermes_automation_node_auth_nonces
+    (nonce,node_id,key_id,observed_at,expires_at) VALUES (?,?,?,?,?)`)
+    .bind(nonce,WINDOWS_NODE_ID,WINDOWS_NODE_KEY_ID,nowIso,expiresAt).run();
+  if(Number(inserted?.meta?.changes||0)!==1) return { ok:false,status:409,error:"windows_node_signature_replay" };
+  return { ok:true,auth_type:"ed25519",key_id:WINDOWS_NODE_KEY_ID };
 }
 
 export async function ensureWindowsNodeSchema(db) {
@@ -84,6 +159,14 @@ export async function ensureWindowsNodeSchema(db) {
   await db.prepare("CREATE UNIQUE INDEX IF NOT EXISTS idx_hae_node_active_lease ON hermes_automation_node_leases(node_id) WHERE state='ACTIVE'").run();
   await db.prepare("CREATE UNIQUE INDEX IF NOT EXISTS idx_hae_node_inflight_lease ON hermes_automation_node_leases(node_id) WHERE state IN ('ACTIVE','COMPLETING')").run();
   await db.prepare("CREATE INDEX IF NOT EXISTS idx_hae_node_lease_expiry ON hermes_automation_node_leases(state,lease_until)").run();
+  await db.prepare(`CREATE TABLE IF NOT EXISTS hermes_automation_node_auth_nonces (
+    nonce TEXT PRIMARY KEY,
+    node_id TEXT NOT NULL,
+    key_id TEXT NOT NULL,
+    observed_at TEXT NOT NULL,
+    expires_at TEXT NOT NULL
+  )`).run();
+  await db.prepare("CREATE INDEX IF NOT EXISTS idx_hae_node_auth_nonce_expiry ON hermes_automation_node_auth_nonces(expires_at)").run();
 }
 
 async function appendEvent(db, { jobId, eventType, fromState, toState, step, errorClass = null, createdAt = new Date().toISOString() }) {
