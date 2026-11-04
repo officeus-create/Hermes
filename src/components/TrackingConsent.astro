@@ -481,12 +481,15 @@ const isRepairShopRoute = Astro.url.pathname.startsWith("/services/hermes-connec
     .tracking-consent-actions { flex-wrap: wrap; justify-content: flex-start; }
   }
 
-  /* Wide screens: a narrower notice stays to the right, so it does not cover the left-aligned primary hero actions. */
+  /* Wide screens: keep the choice compact and clear of first-screen commercial CTAs. */
   @media (min-width: 1101px) {
     .tracking-consent-banner {
       width: min(560px, calc(100vw - 2rem));
       grid-template-columns: minmax(0, 1fr);
+      gap: .38rem;
     }
+    .tracking-consent-detail { display: none; }
+    .tracking-consent-compact-copy { display: block; }
     .tracking-consent-actions { flex-wrap: wrap; justify-content: flex-start; }
   }
 
@@ -529,7 +532,7 @@ const isRepairShopRoute = Astro.url.pathname.startsWith("/services/hermes-connec
       margin-top: 0;
     }
     .tracking-consent-actions .button {
-      min-height: 44px;
+      min-height: 45px;
       padding: .34rem .34rem;
       font-size: .66rem;
       line-height: 1.08;
