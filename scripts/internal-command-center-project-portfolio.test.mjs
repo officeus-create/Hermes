@@ -5,6 +5,7 @@ import { commandCenterProjectCoverageSnapshot } from "../functions/api/_lib/comm
 
 const api = fs.readFileSync("functions/api/internal-command-center/projects.ts", "utf8");
 const ownerWorkspace = fs.readFileSync("src/components/HermesCommandCenterOwnerWorkspace.astro", "utf8");
+const privatePage = fs.readFileSync("src/pages/services/hermes-connect/internal/command-center/index.astro", "utf8");
 const ownerComponent = fs.readFileSync("src/components/HermesOwnerProjectPortfolio.astro", "utf8");
 const publicPage = fs.readFileSync("src/pages/services/hermes-connect/command-center/index.astro", "utf8");
 const publicDemo = fs.readFileSync("src/components/HermesCommandCenterPublicPreview.astro", "utf8");
@@ -27,6 +28,12 @@ assert.ok(portfolio.some((project) => project.id === "ai-operations" && project.
 assert.ok(portfolio.some((project) => project.id === "hae-runtime" && project.evidence_level === "CURRENT_MAIN_RUNTIME_READONLY_PROOF_ACCEPTED_RELEASE_PENDING"), "HAE project must separate accepted current-main runtime proof from the unmerged Command Center release");
 assert.ok(portfolio.some((project) => project.id === "windows-ai" && project.evidence_level === "HISTORICAL_LOCAL_VERIFIED_CURRENT_OFFLINE"), "historical Windows evidence must not be presented as current live runtime");
 assert.ok(portfolio.some((project) => project.id === "mac-ai" && project.evidence_level === "HOST_ONLINE_FALLBACK_RUNTIME_UNVERIFIED"), "Mac host liveness must remain separate from Hermes AI/HAE execution proof");
+const deepseek = portfolio.find((project) => project.id === "deepseek-specialist");
+assert.ok(deepseek, "DeepSeek specialist lane must exist in the canonical Command Center registry");
+assert.equal(deepseek.parent_id, "ai-operations", "DeepSeek must remain subordinate to AI Operations");
+assert.ok(deepseek.dependency_ids.includes("hae-runtime") && deepseek.dependency_ids.includes("windows-ai"), "DeepSeek must depend on canonical HAE and the assigned Windows executor");
+assert.equal(deepseek.evidence_level, "LOCAL_MODEL_AND_GUARD_SOURCE_PRESENT_RUNTIME_RECEIPT_UNVERIFIED", "DeepSeek source/local readiness must not impersonate a canonical HAE receipt");
+assert.match(privatePage, /deepseek-specialist/, "private Agent Roster must render the canonical DeepSeek project id");
 
 assert.match(api, /requireInternalOwner/);
 assert.match(api, /Cache-Control.*private, no-store/);
