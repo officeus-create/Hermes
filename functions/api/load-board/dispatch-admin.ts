@@ -28,7 +28,7 @@ export async function onRequestGet(context:Context){
   const rows=await context.env.DB.prepare(`
     SELECT c.id,c.company_name,c.company_type,c.state,c.load_board_access,
       e.status AS entitlement,e.agreement_state,e.agreement_version,e.agreement_sha256,
-      e.agreement_effective_at,e.trial_start_date,e.trial_end_date,
+      e.agreement_effective_at,e.trial_start_date,e.trial_end_date,e.no_auto_continuation_confirmed,
       e.authority_status,e.insurance_status,e.source_rights_status,e.evidence_id,e.revoked_at,
       a.status AS assignment_status,a.dispatcher_specialist_id,s.name AS dispatcher_name,a.business_phone
     FROM hermes_company_profiles c
@@ -49,6 +49,7 @@ export async function onRequestGet(context:Context){
       effectiveAt:c.agreement_effective_at||null,
       trialStartDate:c.trial_start_date||null,
       trialEndDate:c.trial_end_date||null,
+      noAutomaticContinuationConfirmed:Boolean(c.no_auto_continuation_confirmed),
       authority:c.authority_status||"pending",
       insurance:c.insurance_status||"pending",
       sourceRights:c.source_rights_status||"pending",
@@ -114,9 +115,10 @@ export async function onRequestPost(context:Context){
       trialEndDate=safeWorkspaceText(body.trialEndDate,10);
       if(!/^\d{4}-\d{2}-\d{2}$/.test(trialStartDate)||!/^\d{4}-\d{2}-\d{2}$/.test(trialEndDate))
         return reply(400,{success:false,error:"trial_window_required"});
-      const start=new Date(`${trialStartDate}T00:00:00.000Z`);
-      const expectedEnd=new Date(start.getTime()+13*86400000).toISOString().slice(0,10);
-      if(Number.isNaN(start.getTime())||trialEndDate!==expectedEnd||
+      const start=validDateOnly(trialStartDate);
+      const end=validDateOnly(trialEndDate);
+      const expectedEnd=start ? new Date(start.date.getTime()+13*86400000).toISOString().slice(0,10) : "";
+      if(!start||!end||trialEndDate!==expectedEnd||
          trialStartDate>now.slice(0,10)||trialEndDate<now.slice(0,10))
         return reply(409,{success:false,error:"trial_not_current_or_not_14_days"});
       if(body.noAutomaticContinuationConfirmed!==true)
