@@ -6,17 +6,20 @@ Canonical owner: GitHub #1018 — Growth Bridge.
 
 ## Architecture
 
-Hermes Logistics stays on the verified Windsor.ai connection. This adapter exists only for:
+This connector is now a **donor/read surface**, not a production writer owner.
 
-- `office_test` — first live canary;
-- `progressopro` — secondary Marketing / Technology lane;
-- `business_academy` — secondary Academy lane.
+Current commercial social lanes are:
+- **HERMES_LOGISTICS** — all logistics activity, including carriers, owner-operators, small fleets, dispatch/load-board, shippers/dealers and car hauling. Logistics writes converge through HAE + the shared Meta provider; this legacy connector must not become a second Hermes Logistics publisher.
+- **PROGRESSOPRO** — marketing, IT/software/Hermes Connect and Academy/training. Existing `progressopro` and `business_academy` connector keys remain compatibility identities inside this one business lane.
+- `office_test` remains a technical canary identity only.
 
-`hermes_logistics` is deliberately not an allowed brand key, so this adapter cannot become a second publisher for the logistics account.
+The connector adds no scheduler. **HAE #2033 is the only recurring/autonomous orchestration runtime.**
 
-The adapter adds no scheduler. The existing `Hermes Social Publisher` remains the orchestration surface.
+## Official Threads contracts
 
-## Official Threads contracts checked 2026-09-29
+Fresh 2026-10-29 verification uses Meta’s current official Threads workspace with `api_host=https://graph.threads.net`; repository `.com` constants are provider-drift candidates and must not be copied into new shared-provider code.
+
+### Historical contracts checked 2026-09-29
 
 - OAuth authorization: https://developers.facebook.com/documentation/threads/get-started/get-access-tokens-and-permissions
 - Long-lived tokens: https://developers.facebook.com/documentation/threads/get-started/long-lived-tokens
@@ -44,6 +47,7 @@ threads_basic
 threads_content_publish
 threads_read_replies
 threads_manage_replies
+threads_manage_mentions
 threads_manage_insights
 ```
 
@@ -173,3 +177,43 @@ DEPLOY CODE WITH PUBLISH OFF
 ```
 
 No code readiness claim equals production activation.
+
+
+## 2026-10-26 — read-only discovery draft PR #2092 (NOT MERGED / NOT LIVE)
+
+**Owner:** GitHub issue #1018. Reuse the encrypted native secondary-brand connection (Office Test / ProgressoPro / Academy), not Windsor's Hermes Logistics connection and not a second publisher.
+
+Draft endpoint (internal owner only, noindex/no-store):
+- \`GET /api/internal/social/threads/read?brand=progressopro&mode=owned\`
+- \`GET /api/internal/social/threads/read?brand=progressopro&mode=search&q=website%20design&search_type=RECENT&limit=25\`
+- \`GET /api/internal/social/threads/read?brand=progressopro&mode=thread&thread_id=PROVIDER_VERIFIED_NUMERIC_ID\`
+- \`GET /api/internal/social/threads/read?brand=progressopro&mode=thread&post_url=ENCODED_PUBLIC_THREADS_URL\`
+
+**Meta permission gates:**
+- Own posts: \`threads_basic\`.
+- Search other public accounts: app-reviewed \`threads_keyword_search\` plus \`threads_basic\`.
+- Read a known ID's conversation: \`threads_read_replies\` plus \`threads_basic\`; third-party eligibility must be validated with the actual provider readback.
+- Resolve a public permalink from an author's visible profile: \`threads_profile_discovery\` additionally. It is *allowlisted but not a default OAuth scope*. Request app review, set \`THREADS_BRAND_SCOPES\`, reconnect the exact brand, and inspect the stored \`granted_scope\` before testing.
+- Meta may restrict access to third-party conversations even with scopes, and search ranking is not exhaustive; a \`complete=false\` result is not all comments.
+
+**One-post acceptance target:** \`https://www.threads.com/@tsapushel_olena/post/De6z1w-iAC5\`. Do not claim competitors' prices were collected until provider returns the author's post, accessible comment pages, stable IDs, and a bounded coverage record. There is no third-party cookie/anti-bot bypass.
+
+**Commercial follow-up:** Treat raw quotes as proposals (not verified prices). Human review -> compare scope/currency/delivery/hosting/SEO/design -> optional approved reply -> tracked CTA -> human-qualified CRM opportunity -> revenue receipt. The private reply endpoint `POST /api/internal/social/threads/reply` now performs owner/scopes/target/owned-root proof only and then submits an idempotent `social.reply` job to HAE. It does **not** write Meta directly and does not maintain a second publication lifecycle. Until HAE independently enables and accepts `social.reply`, the endpoint fails closed with `hae_social_reply_capability_not_ready`. Never bulk unsolicited comments, scraped-profile messaging, automated posting on outside discussions, or blind retries after ambiguous provider outcomes.
+
+**Status gates:** CODED \`#2092\` does not mean CI_GREEN, MERGED, LIVE_VERIFIED, META_SCOPE_APPROVED, or SOURCE_COMPLETE. The Threads contract unit tests run inside \`scripts/threads-brand-connector.test.mjs\`; owner and release gates are unchanged.
+
+
+## 2026-10-29 — Social Acquisition supersession
+
+This runbook is no longer authority for an independent brand publisher. The canonical execution model is `VIKTOR/content policy -> HAE #2033 -> shared Meta provider -> provider receipt/readback -> Unified Inbox/Command Center`. Current read modes include owned posts, conversations, keyword-search candidates and mentions. Keyword results never authorize replies. Threads DMs remain manual until an official API endpoint and exact app/account entitlement are freshly proven.
+
+
+### HAE reply handoff configuration
+The owner-only reply gateway requires server-side Pages/Worker secrets/variables:
+
+```text
+HERMES_AUTOMATION_BASE_URL=https://<authorized-hae-host>
+HERMES_AUTOMATION_TOKEN=<server-side bearer secret; never exposed to browser>
+```
+
+The endpoint submits `POST /v1/jobs` with `job_type=social.reply` and `max_attempts=1`. Missing configuration, an unavailable HAE endpoint, or `job_type_not_allowed` all fail closed with `provider_write_performed=false`.

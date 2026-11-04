@@ -5,6 +5,14 @@ on:
     paths:
       - "workers/automation-engine/**"
       - "scripts/automation-engine-contract.test.mjs"
+      - "scripts/hae-meta-threads-transport.test.mjs"
+      - "scripts/meta-threads-provider-contract.test.mjs"
+      - "scripts/hae-social-account-readiness.test.mjs"
+      - "scripts/hae-social-reply-preflight.test.mjs"
+      - "scripts/hae-social-reply-prepare.test.mjs"
+      - "scripts/hae-threads-provider-provenance.test.mjs"
+      - "scripts/hae-windsor-plan-gate.test.mjs"
+      - "scripts/hae-threads-schedule-contract.test.mjs"
       - "scripts/automation-engine-historical-learning.test.mjs"
       - "scripts/automation-engine-role-contracts.test.mjs"
       - "scripts/automation-engine-free-ai-runtime.test.mjs"
@@ -51,6 +59,14 @@ jobs:
       - name: Run automation engine contract
         run: |
           node scripts/automation-engine-contract.test.mjs
+          node scripts/hae-meta-threads-transport.test.mjs
+          node scripts/meta-threads-provider-contract.test.mjs
+          node scripts/hae-social-account-readiness.test.mjs
+          node scripts/hae-social-reply-preflight.test.mjs
+          node scripts/hae-social-reply-prepare.test.mjs
+          node scripts/hae-threads-provider-provenance.test.mjs
+          node scripts/hae-windsor-plan-gate.test.mjs
+          node scripts/hae-threads-schedule-contract.test.mjs
           node scripts/automation-engine-historical-learning.test.mjs
           node scripts/automation-engine-role-contracts.test.mjs
           node scripts/automation-engine-free-ai-runtime.test.mjs
