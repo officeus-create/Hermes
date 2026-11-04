@@ -57,10 +57,11 @@ for (const route of routes) {
     expect(visual!.primaryRadius).toBe("12px");
     expect(visual!.cardBackground).toBe("rgb(255, 255, 255)");
     expect(visual!.cardRadius).toBe("22px");
-    expect(visual!.boundaryBackground).toBe("rgb(11, 13, 18)");
+    // Body sections (2026-10-26): reading surfaces are light; Focus Ink stays on one bounded closing panel.
+    expect(visual!.boundaryBackground).toBe("rgb(255, 255, 255)");
     expect(visual!.faqBackground).toBe("rgb(255, 255, 255)");
     expect(visual!.faqRadius).toBe("22px");
-    expect(visual!.projectBackground).toBe("rgb(11, 13, 18)");
+    expect(visual!.projectBackground).toBe("rgba(0, 0, 0, 0)");
     expect(visual!.overflow).toBe(false);
     expect(visual!.primaryRight).toBeLessThanOrEqual(visual!.viewportWidth);
   });

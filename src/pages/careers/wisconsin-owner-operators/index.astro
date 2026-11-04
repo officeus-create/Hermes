@@ -1,5 +1,5 @@
 ---
-import { ArrowRight, Check, Clock3, ExternalLink, MapPin, Phone, ShieldCheck, Truck } from "@lucide/astro";
+import { ArrowRight, Check, Clock3, Mail, MapPin, Phone, ShieldCheck, Truck } from "@lucide/astro";
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 import Breadcrumbs from "../../../components/Breadcrumbs.astro";
 import SiteHeader from "../../../components/SiteHeader.astro";
@@ -11,16 +11,14 @@ if (!vacancy) throw new Error("Wisconsin Owner-Operators vacancy record is missi
 
 const vacancyIsCurrent = isVacancyEligibleForJobPosting(vacancy);
 const canonicalUrl = new URL(`/careers/${vacancy.slug}/`, Astro.site).toString();
-const sourceUrl = vacancy.submissionUrl!;
+const historicalSourceUrl = "https://100hires.com/j/G4ek3eN";
+const recruitingApplyEmail = "mailto:officeus@hermeslogisticsus.com?subject=Wisconsin%20Owner-Operator%20Application";
+const recruitingEmail = "officeus@hermeslogisticsus.com";
+const recruitingStatusEmail = `mailto:${recruitingEmail}?subject=Wisconsin%20Owner-Operator%20Recruiting%20Question`;
 const title = "Wisconsin Owner-Operator Recruiting | Hermes Logistics";
-const description = "Review Wisconsin owner-operator recruiting, equipment-fit questions, individual operating terms, and the source review status before contacting Hermes.";
-const reviewExpiryLabel = new Intl.DateTimeFormat("en-US", {
-  month: "long",
-  day: "numeric",
-  year: "numeric",
-  timeZone: "UTC",
-}).format(new Date(`${vacancy.expiresAt}T00:00:00Z`));
-
+const description = vacancyIsCurrent
+  ? "Hermes Logistics continuously recruits Wisconsin owner-operators with their own truck and trailer. No forced dispatch. Call Yuri for an interview during the listed Central Time hours or apply by email."
+  : "Information on Wisconsin owner-operator trucking with Hermes Logistics. This opportunity is not currently accepting applications; contact us for updates.";
 const equipment = [
   "Dry Van",
   "Reefer",
@@ -71,32 +69,51 @@ const faq = [
     answer: "No. The opportunity does not guarantee loads, income, weekly gross, miles, dedicated freight, authority, insurance, or universal weekend home time. Compensation, deductions, authority arrangements, carrier requirements, and final terms are discussed individually.",
   },
   {
-    question: "Where is the verified external vacancy source?",
-    answer: "The 100Hires source and the ongoing recruiting decision were reviewed on October 8, 2026. Current vacancy status requires another fresh recruiting review after the publication review expires. Source availability alone does not confirm operating authority, insurance, or a specific transportation-company program.",
+    question: "Which Wisconsin markets can an owner-operator ask about?",
+    answer: vacancyIsCurrent
+      ? "Recruiting is ongoing for owner-operators based in Wisconsin, including Milwaukee, Madison, Green Bay, Appleton, Kenosha, Racine, Waukesha, Eau Claire, Oshkosh, and Wausau. These are markets for a fit discussion, not office addresses, local job guarantees, or confirmed freight lanes."
+      : "If Wisconsin owner-operator recruiting reopens, applicants may ask about Milwaukee, Madison, Green Bay, Appleton, Kenosha, Racine, Waukesha, Eau Claire, Oshkosh, and Wausau. These are discussion markets, not office addresses, local job guarantees, or confirmed freight lanes.",
+  },
+  {
+    question: "What equipment should I have before contacting Hermes?",
+    answer: "The reference is intended for owners with their own commercial truck and trailer. Dry van, reefer, flatbed, step deck, car hauler, hotshot, box truck, Conestoga, and RGN or lowboy equipment may be discussed individually; inclusion does not guarantee acceptance. Be ready to describe equipment, home base, experience, safety history, preferred lanes, and schedule.",
+  },
+  {
+    question: "Is Hermes still accepting Wisconsin owner-operator applications?",
+    answer: vacancyIsCurrent
+      ? "Yes. Hermes Logistics continuously recruits Wisconsin owner-operators with their own commercial truck and trailer. To apply, call Yuri at +1 (414) 269-7377 during the listed Central Time hours or email officeus@hermeslogisticsus.com with the subject Wisconsin Owner-Operator Application and a short summary of your truck and trailer, home base, experience, and preferred lanes. Applying does not guarantee onboarding or a particular carrier arrangement."
+      : "This opportunity is temporarily unavailable for applications. Contact Hermes to ask about future status; no carrier or onboarding approval is implied.",
+  },
+  {
+    question: "Do I need a 100Hires account to apply?",
+    answer: vacancyIsCurrent
+      ? "No. Call Yuri for the Wisconsin owner-operator interview during the published Central Time hours or apply through the company recruiting email on this page. An earlier 100Hires listing is kept as historical context only; it is not the application route. No loads, income, carrier approval, authority, or insurance are guaranteed."
+      : "No. The earlier 100Hires listing is historical context only and is not a current application route. While recruiting is paused, use the Hermes status-question contact on this page rather than submitting an application.",
   },
 ];
 
+// Use paragraph HTML in JobPosting when, and only when, a fresh approved opening exists.
 const jobDescription = [
-  "Hermes Logistics LLC works as an agent with multiple transportation companies and reviews Wisconsin owner-operators with their own commercial truck and trailer when a current owner-approved recruiting review is active.",
-  `Wisconsin markets: ${wisconsinMarkets.join(", ")}.`,
-  `Equipment that may be considered: ${equipment.join(", ")}.`,
-  "No forced dispatch. The owner-operator reviews the load, rate, route, and operating conditions before accepting where the applicable carrier program permits.",
-  "Compensation, percentage, transportation-company requirements, deductions, support configuration, and final operating terms are discussed individually after reviewing skills, experience, equipment, locations, shippers, dealers, and preferred lanes. No loads, income, weekly gross, miles, dedicated freight, authority, insurance, or universal weekend home time are guaranteed.",
-  "Application route: review the live 100Hires source or call Owner-Operator Recruiting — Wisconsin during the published Central Time hours.",
-].join("\n\n");
+  "<p>Hermes Logistics LLC continuously recruits Wisconsin owner-operators with their own commercial truck and trailer. Hermes works as an agent with multiple transportation companies; actual program fit and operating arrangements are assessed individually.</p>",
+  `<p>Wisconsin markets to discuss (not local offices or guaranteed lanes): ${wisconsinMarkets.join(", ")}.</p>`,
+  `<p>Equipment considered individually (not automatic acceptance): ${equipment.join(", ")}.</p>`,
+  "<p>No forced dispatch. The owner-operator reviews each load, rate, route, and operating conditions before accepting where the applicable carrier program permits.</p>",
+  "<p>Compensation, percentage, carrier requirements, deductions, dispatch support, and final terms are discussed individually after review of experience, equipment, safety history, home base, and preferred lanes. No loads, income, weekly gross, miles, or weekend home time are guaranteed.</p>",
+  "<p>Working hours and operating schedule are reviewed individually; this posting does not promise a fixed schedule or universal weekend home time. No specific education credential is published as a requirement. Experience, safety history, equipment fit, home base, and operating readiness are reviewed individually.</p>",
+  "<p>For a recruiting interview, call Yuri (an owner-operator supporting recruitment) at +1 (414) 269-7377. Central Time: Monday–Friday after 2:15 PM; Saturday–Sunday 10:00 AM–9:00 PM. You can also email officeus@hermeslogisticsus.com with the subject Wisconsin Owner-Operator Application and a short equipment/experience summary. Contact does not guarantee acceptance.</p>",
+].join("");
 
 const schema = [
   ...(vacancyIsCurrent ? [{
     "@context": "https://schema.org",
     "@type": "JobPosting",
-    title: vacancy.title,
+    title: "Owner-Operator", // JobPosting title describes the role, not the marketing headline.
     description: jobDescription,
     datePosted: vacancy.datePosted,
-    validThrough: `${vacancy.expiresAt}T23:59:59Z`,
+    identifier: { "@type": "PropertyValue", name: "Hermes Logistics LLC", value: "WI-OO-2026-10-03" },
     employmentType: vacancy.employmentType,
     directApply: false,
     url: canonicalUrl,
-    sameAs: sourceUrl,
     jobLocation: {
       "@type": "Place",
       address: {
@@ -105,14 +122,29 @@ const schema = [
         addressCountry: "US",
       },
     },
-    applicantLocationRequirements: { "@type": "AdministrativeArea", name: "Wisconsin, United States" },
+    // This is a physical trucking operation, not a work-from-home/TELECOMMUTE vacancy.
+    // applicantLocationRequirements is reserved for remotely performed jobs in Google Job Search.
     hiringOrganization: {
       "@type": "Organization",
-      "@id": "https://hermeslogisticsus.com/#organization",
+      "@id": "https://hermeslogisticsus.com/#logistics",
       name: "Hermes Logistics LLC",
-      sameAs: "https://hermeslogisticsus.com/",
+      url: "https://hermeslogisticsus.com/paths/logistics/",
     },
   }] : []),
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "@id": `${canonicalUrl}#webpage`,
+    url: canonicalUrl,
+    name: title,
+    description,
+    inLanguage: "en-US",
+    publisher: { "@id": "https://hermeslogisticsus.com/#organization" },
+    about: [
+      { "@type": "Thing", name: "Owner-operator trucking" },
+      { "@type": "Place", name: "Wisconsin", address: { "@type": "PostalAddress", addressRegion: "WI", addressCountry: "US" } },
+    ],
+  },
   {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -149,27 +181,33 @@ const schema = [
           />
           <p class="eyebrow">Hermes Logistics · Owner-Operator Recruiting — Wisconsin</p>
           <h1>{vacancy.title}</h1>
-          <p class="career-lead">Hermes Logistics LLC works as an agent with multiple transportation companies and keeps this Wisconsin owner-operator recruiting reference available for operators with their own commercial truck and trailer. A fresh owner review is required before the page represents a current opening. Skills, experience, equipment, safety history, home base, knowledge of locations, shippers and dealers, preferred lanes, schedule, and support needs are reviewed before individual terms are discussed.</p>
-          <p class="career-updated">Source reviewed October 8, 2026</p>
+          <p class="career-lead" data-wi-vacancy-status-lead>{vacancyIsCurrent
+            ? "Hermes Logistics LLC continuously recruits Wisconsin owner-operators with their own commercial truck and trailer. We work as an agent with multiple transportation companies and review equipment, experience, safety history, home base, preferred lanes, schedule, and operating needs individually before discussing terms. No forced dispatch; loads and income are never guaranteed."
+            : "Hermes Logistics LLC has a Wisconsin owner-operator information page, but this opportunity is temporarily unavailable for applications. We review truck and trailer equipment, experience, safety history, and operating needs individually before any carrier arrangement is discussed."}</p>
+          <p class="career-updated" data-wi-vacancy-status-updated>{vacancyIsCurrent ? "Ongoing recruiting · Owner-confirmed October 19, 2026 · Original posting October 3, 2026" : "Recruiting temporarily unavailable · Original posting October 3, 2026"}</p>
           <div class="career-facts" aria-label="Opportunity facts">
             <span><MapPin size={18} aria-hidden="true" /> Wisconsin</span>
             <span><Truck size={18} aria-hidden="true" /> Own truck · equipment fit verified individually</span>
             <span><ShieldCheck size={18} aria-hidden="true" /> No forced dispatch</span>
           </div>
+          <div class="career-summary" aria-label="Wisconsin recruiting summary">
+            <h2>Wisconsin owner-operator recruiting at a glance</h2>
+            <p data-wi-vacancy-status-summary>{vacancyIsCurrent
+              ? "Applications remain open for independent truck owners with their own commercial truck and trailer, not company-driver applicants. Hermes reviews equipment, safety history, preferred lanes, and operating fit individually. Recruiting is ongoing; contracting and carrier arrangements are considered case by case."
+              : "For independent owners with their own commercial truck and trailer, not company-driver applicants. This opportunity is currently not accepting applications; contact Hermes about a possible future status change."}</p>
+          </div>
           {vacancyIsCurrent && (
             <section class="career-actions" data-wi-vacancy-current>
-              <a class="button button-primary" href={sourceUrl} target="_blank" rel="noopener noreferrer" data-external-job-apply>
-                View and apply on 100Hires <ExternalLink size={18} aria-hidden="true" />
-              </a>
-              <a class="button" href="tel:+14142697377"><Phone size={18} aria-hidden="true" /> Call recruiting</a>
+              <a class="button button-primary" href="tel:+14142697377" data-owner-operator-call><Phone size={18} aria-hidden="true" /> Call Yuri · interview</a>
+              <a class="button" href={recruitingApplyEmail} data-owner-operator-apply><Mail size={18} aria-hidden="true" /> Apply by email</a>
             </section>
           )}
           <section class="career-review-required" data-wi-vacancy-expired hidden={vacancyIsCurrent} aria-labelledby="vacancy-review-title">
-            <h2 id="vacancy-review-title">Publication review due</h2>
-            <p>This vacancy is awaiting a fresh recruiting review. This page remains available for reference; it does not confirm a current opening, carrier program, operating authority, insurance, or onboarding availability.</p>
+            <h2 id="vacancy-review-title">Recruiting temporarily unavailable</h2>
+            <p>This opportunity is not currently accepting applications. The page remains available for information; contact Hermes with status questions. Carrier programs, authority, insurance and onboarding availability are never assumed.</p>
             <div class="career-actions">
               <a class="button button-primary" href="/logistics/careers/">Review careers information <ArrowRight size={18} aria-hidden="true" /></a>
-              <a class="button" href="tel:+14142697377"><Phone size={18} aria-hidden="true" /> Ask recruiting about current status</a>
+              <a class="button" href={recruitingStatusEmail}><Mail size={18} aria-hidden="true" /> Email recruiting status question</a>
             </div>
           </section>
         </div>
@@ -177,23 +215,26 @@ const schema = [
 
       <section class="section source-section" aria-labelledby="vacancy-sources-title">
         <div class="shell split-grid">
-          <div>
-            <p class="eyebrow">Verified vacancy sources</p>
-            <h2 id="vacancy-sources-title">Review the dated recruiting source.</h2>
-            <p>As of October 8, 2026, the exact 100Hires vacancy remains accessible with status Unlisted. The separate 100Hires employer page reported no active postings on October 3, so it remains an employer-profile reference rather than a complete vacancy directory.</p>
+          <div data-wi-vacancy-current-source-intro={vacancyIsCurrent ? "true" : undefined}>
+            <p class="eyebrow">{vacancyIsCurrent ? "Where to apply" : "Recruiting status"}</p>
+            <h2 id="vacancy-sources-title">{vacancyIsCurrent ? "Apply directly to Hermes, not through an unlisted job board." : "Applications are temporarily paused."}</h2>
+            <p>{vacancyIsCurrent
+              ? "Recruitment is ongoing, regardless of the status of third-party listing services. Call Yuri during the published Central Time interview hours or send a brief equipment-and-experience introduction by corporate email. The older 100Hires listing is unlisted and is retained only as historical reference."
+              : "The older 100Hires listing remains historical context only. Use the status-question contact on this page if you want to ask about future Wisconsin owner-operator recruiting."}</p>
           </div>
-          <article class="source-card">
-            <span>Source reviewed October 8, 2026</span>
-            <h3>100Hires</h3>
-            <p>Wisconsin Owner-Operators — Own Truck & Trailer | No Forced Dispatch</p>
-            <a href={sourceUrl} target="_blank" rel="noopener noreferrer" data-external-vacancy-source>
-              Open the 100Hires vacancy <ExternalLink size={17} aria-hidden="true" />
-            </a>
-            <a href={vacancy.sourceDirectoryUrl} target="_blank" rel="noopener noreferrer" data-external-vacancy-directory>
-              Open the Hermes employer page on 100Hires <ExternalLink size={17} aria-hidden="true" />
-            </a>
-            <small>The employer page said “There are no active job postings right now” at the October 3 source review. Use the exact vacancy link above for this role.</small>
-            <small>The publication review expires on {reviewExpiryLabel} at 23:59:59 UTC. After expiry, this page is a recruiting reference until a new review confirms current publication status.</small>
+          <article class="source-card" data-wi-vacancy-open-source hidden={!vacancyIsCurrent}>
+            <span>Applications accepted continuously</span>
+            <h3>Hermes Recruiting</h3>
+            <p>Email subject: Wisconsin Owner-Operator Application. Include your home base, equipment (truck and trailer), experience, preferred lanes and a way to contact you. Do not send sensitive identity documents with your first email.</p>
+            <a href="tel:+14142697377" data-owner-operator-call-secondary><Phone size={17} aria-hidden="true" /> Call Yuri for interview</a>
+            <a href={recruitingApplyEmail} data-owner-operator-apply-secondary><Mail size={17} aria-hidden="true" /> Email your application</a>
+            <small>Previously listed on <a href={historicalSourceUrl} target="_blank" rel="noopener noreferrer">100Hires (historical, unlisted)</a>; not required to apply.</small>
+          </article>
+          <article class="source-card" data-wi-vacancy-closed-source hidden={vacancyIsCurrent}>
+            <span>Not currently accepting applications</span>
+            <h3>Ask recruiting about status</h3>
+            <p>This recruiting opportunity is temporarily unavailable. The email below is for status questions only.</p>
+            <a href={recruitingStatusEmail}><Mail size={17} aria-hidden="true" /> Ask about future Wisconsin recruiting</a>
           </article>
         </div>
       </section>
@@ -215,6 +256,7 @@ const schema = [
               <MapPin size={22} aria-hidden="true" />
               <h3>Wisconsin coverage</h3>
               <ul>{wisconsinMarkets.map((item) => <li><Check size={16} aria-hidden="true" />{item}</li>)}</ul>
+              <p class="market-note">Markets to discuss, not confirmed local offices, dedicated freight, or guaranteed lanes.</p>
             </article>
             <article>
               <ShieldCheck size={22} aria-hidden="true" />
@@ -225,20 +267,31 @@ const schema = [
         </div>
       </section>
 
-      <section class="section recruiting-section" aria-labelledby="recruiting-contact-title">
+      <section class="section recruiting-section" data-wi-vacancy-recruiting-current={vacancyIsCurrent ? "true" : undefined} aria-labelledby="recruiting-contact-title">
         <div class="shell recruiting-grid">
           <div>
             <p class="eyebrow">Public recruiting contact</p>
             <h2 id="recruiting-contact-title">Owner-Operator Recruiting — Wisconsin</h2>
-            <a class="recruiting-phone" href="tel:+14142697377">+1 (414) 269-7377</a>
-            <p>This candidate-facing number reaches the Hermes Logistics LLC contracting contact for individual recruiting and operating-term discussions. Account-verification numbers are not published on this page.</p>
+            <p>{vacancyIsCurrent ? "Yuri is an owner-operator who receives Wisconsin candidate calls and conducts interviews on the agreed schedule. His number is for owner-operator recruiting calls, not registration or SMS verification." : "Wisconsin owner-operator applications are temporarily paused. Use the status-question email on this page if you want to ask whether recruiting has reopened."}</p>
+            {vacancyIsCurrent && <a class="recruiting-phone" href="tel:+14142697377" data-owner-operator-call-contact>+1 (414) 269-7377</a>}
+            {vacancyIsCurrent
+              ? <p>Prefer email? <a data-owner-operator-apply-contact href={recruitingApplyEmail}>Apply directly at {recruitingEmail}</a>. Include your home base, truck and trailer, experience and preferred lanes. Do not send identity documents in your initial inquiry.</p>
+              : <p>To ask about future recruitment, <a href={recruitingStatusEmail}>email {recruitingEmail}</a>. Applications are not currently being accepted.</p>}
           </div>
           <div class="hours-card">
-            <Clock3 size={24} aria-hidden="true" />
+            {vacancyIsCurrent ? <Clock3 size={24} aria-hidden="true" /> : <Mail size={24} aria-hidden="true" />}
             <div>
-              <h3>Call hours · Central Time</h3>
-              <p><strong>Monday–Friday:</strong> after 2:15 PM CT</p>
-              <p><strong>Saturday–Sunday:</strong> 10:00 AM–9:00 PM CT</p>
+              {vacancyIsCurrent
+                ? <>
+                    <h3>Yuri's interview call hours · Central Time</h3>
+                    <p><strong>Monday–Friday:</strong> after 2:15 PM CT</p>
+                    <p><strong>Saturday–Sunday:</strong> 10:00 AM–9:00 PM CT</p>
+                    <p>You may apply by email outside these phone hours.</p>
+                  </>
+                : <>
+                    <h3>Recruiting status</h3>
+                    <p>Applications are not currently being accepted. Use the status-question email to ask about a future reopening.</p>
+                  </>}
             </div>
           </div>
         </div>
@@ -250,7 +303,8 @@ const schema = [
             <p class="eyebrow">Operating terms</p>
             <h2 id="terms-title">No forced dispatch. No invented income promise.</h2>
             <p>The owner-operator keeps the final decision on the loads they run. Review the load, rate, route, and operating conditions before accepting where the applicable carrier program permits.</p>
-            <p>Compensation, percentage, transportation-company requirements, deductions, dispatcher support, Load Board access, infrastructure, and final operating terms are discussed individually by phone after the interview and fit review.</p>
+            <p>Compensation, percentage, transportation-company requirements, deductions, dispatcher support, Load Board access, infrastructure, and final operating terms are discussed individually after the application and fit review.</p>
+            <p>Working hours and operating schedule are reviewed individually; this posting does not promise fixed hours or universal weekend home time. No specific education credential is published as a requirement. Experience, safety history, equipment fit, home base, and operating readiness are reviewed individually.</p>
           </div>
           <aside class="boundary-card">
             <h3>This posting does not guarantee:</h3>
@@ -269,7 +323,8 @@ const schema = [
           <p class="eyebrow">Verified Hermes resources</p>
           <h2 id="resources-title">Review the operation before choosing the next step.</h2>
           <div class="resource-grid">
-            <a href="/logistics/owner-operator-dispatch-support/"><h3>Owner-Operator Support</h3><p>Review the business-to-business dispatch and back-office support scope.</p><span>Open support overview <ArrowRight size={16} aria-hidden="true" /></span></a>\n            <a href="/logistics/car-hauling-dispatch/"><h3>Car Hauler Dispatch Service</h3><p>Already operating a car hauler? Review separate carrier-side load-search and dispatch support. This is not a job application or a freight guarantee.</p><span>Review carrier dispatch scope <ArrowRight size={16} aria-hidden="true" /></span></a>
+            <a href="/logistics/owner-operator-dispatch-support/"><h3>Owner-Operator Support</h3><p>Review the business-to-business dispatch and back-office support scope.</p><span>Open support overview <ArrowRight size={16} aria-hidden="true" /></span></a>
+            <a href="/logistics/car-hauling-dispatch/"><h3>Car Hauler Dispatch Service</h3><p>Already operating a car hauler? Review separate carrier-side load-search and dispatch support. This is not a job application or a freight guarantee.</p><span>Review carrier dispatch scope <ArrowRight size={16} aria-hidden="true" /></span></a>
             <a href="/load-board/"><h3>Hermes Load Board</h3><p>Use decision-support infrastructure without treating preview rows as guaranteed freight.</p><span>Open Load Board <ArrowRight size={16} aria-hidden="true" /></span></a>
             <a href="/logistics/resources/rpm-calculator/"><h3>RPM & Profitability</h3><p>Compare revenue-per-mile assumptions before accepting an operating opportunity.</p><span>Open calculator <ArrowRight size={16} aria-hidden="true" /></span></a>
             <a href="/logistics/new-authority-car-hauler-support/"><h3>New Authority Readiness</h3><p>Review readiness support without assuming automatic authority or freight access.</p><span>Review readiness <ArrowRight size={16} aria-hidden="true" /></span></a>
@@ -278,7 +333,7 @@ const schema = [
         </div>
       </section>
 
-      <section class="section faq-section" aria-labelledby="faq-title">
+      <section class="section faq-section" data-wi-vacancy-current-faq={vacancyIsCurrent ? "true" : undefined} aria-labelledby="faq-title">
         <div class="shell faq-grid">
           <div><p class="eyebrow">Common questions</p><h2 id="faq-title">Before you contact recruiting.</h2></div>
           <div>{faq.map((item) => <details><summary>{item.question}</summary><p>{item.answer}</p></details>)}</div>
@@ -295,6 +350,9 @@ const schema = [
   .career-hero h1 { max-width: 18ch; margin: .7rem 0 1rem; font-size: clamp(2.5rem, 6vw, 5.4rem); line-height: .98; letter-spacing: -.045em; }
   .career-lead { max-width: 780px; color: #d8e2ff; font-size: clamp(1.05rem, 1.7vw, 1.25rem); line-height: 1.7; }
   .career-updated { margin-top: 1rem; color: #aebdff; font-weight: 750; }
+  .career-summary { margin-top: 1.5rem; max-width: 820px; border-left: 3px solid #8aa9ff; padding-left: 1rem; }
+  .career-summary h2 { font-size: clamp(1.2rem, 2vw, 1.55rem); line-height: 1.2; margin: 0 0 .5rem; }
+  .career-summary p { color: #d8e2ff; line-height: 1.7; margin: 0; }
   .career-review-required[hidden] { display: none; }
   .career-review-required { margin-top: 1.5rem; padding: 1.25rem; border: 1px solid rgba(255,255,255,.3); border-radius: 14px; }
   .career-review-required h2 { margin: 0 0 .6rem; font-size: 1.35rem; }
@@ -308,6 +366,7 @@ const schema = [
   .source-section p, .section-heading p, .recruiting-section p, .terms-section p, .resource-grid p, .faq-section p { color: #526181; line-height: 1.7; }
   .source-card, .hours-card, .boundary-card { padding: 1.4rem; border: 1px solid rgba(28,62,141,.14); border-radius: 18px; background: #f7f9fc; }
   .source-card > span { color: #166534; font-size: .8rem; font-weight: 850; letter-spacing: .06em; text-transform: uppercase; }
+  .source-card[hidden] { display: none; }
   .source-card h3 { margin: .45rem 0; font-size: 1.5rem; }
   .source-card a { display: flex; align-items: center; gap: .45rem; min-height: 44px; color: #1746b3; font-weight: 800; text-underline-offset: 4px; }
   .section-heading { max-width: 820px; margin-bottom: 1.5rem; }
@@ -316,10 +375,11 @@ const schema = [
   .detail-grid article > svg { color: #315fd7; }
   .detail-grid h3 { margin: .8rem 0; color: #122b72; }
   .detail-grid ul, .boundary-card ul { display: grid; gap: .6rem; margin: 0; padding: 0; list-style: none; }
+  .detail-grid .market-note { margin-top: 1rem; font-size: .87rem; line-height: 1.5; }
   .detail-grid li { display: flex; gap: .5rem; align-items: flex-start; color: #526181; line-height: 1.45; }
   .detail-grid li svg { flex: none; margin-top: .15rem; color: #267548; }
   .recruiting-section { background: #eef3ff; }
-  .recruiting-phone { display: inline-block; margin: .2rem 0 .7rem; color: #122b72; font-size: clamp(1.6rem, 4vw, 2.6rem); font-weight: 850; }
+  .recruiting-phone { display: inline-block; margin: .2rem 0 .7rem; color: #122b72; font-size: clamp(1.15rem, 3vw, 1.75rem); font-weight: 800; overflow-wrap: anywhere; }
   .hours-card { display: flex; gap: 1rem; background: white; }
   .hours-card svg { flex: none; color: #315fd7; }
   .hours-card h3 { margin: 0 0 .75rem; }

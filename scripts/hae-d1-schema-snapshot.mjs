@@ -4,11 +4,13 @@ import fs from "node:fs";
 const SHA40 = /^[0-9a-f]{40}$/;
 const FINGERPRINT = /^sha256:[0-9a-f]{64}$/;
 const ALLOWED_TYPES = new Set(["table", "index", "trigger", "view"]);
+const RESERVED_D1_OBJECTS = new Set(["_cf_KV"]);
 const SNAPSHOT_FIELDS = new Set([
   "schema_version",
   "evidence_type",
   "target_sha",
   "database_name",
+  "database_binding_fingerprint",
   "normalization",
   "object_count",
   "objects",
@@ -59,7 +61,7 @@ export function normalizeSchemaObjects(rows) {
 
     if (!ALLOWED_TYPES.has(type)) fail("schema_object_type_invalid");
     if (!name) fail("schema_object_name_missing");
-    if (name.startsWith("sqlite_")) continue;
+    if (name.startsWith("sqlite_") || RESERVED_D1_OBJECTS.has(name)) continue;
     if (!tableName) fail("schema_table_name_missing");
     if (!sql) fail("schema_sql_missing");
 
@@ -98,12 +100,14 @@ export function schemaFingerprint(objects) {
   return `sha256:${createHash("sha256").update(canonical, "utf8").digest("hex")}`;
 }
 
-export function buildSchemaSnapshot({ response, targetSha, databaseName }) {
+export function buildSchemaSnapshot({ response, targetSha, databaseName, databaseBindingFingerprint }) {
   const sourceSha = text(targetSha);
   const canonicalDatabase = text(databaseName);
+  const bindingFingerprint = text(databaseBindingFingerprint).toLowerCase();
 
   if (!SHA40.test(sourceSha)) fail("target_sha_invalid");
   if (!canonicalDatabase) fail("database_name_missing");
+  if (!FINGERPRINT.test(bindingFingerprint)) fail("database_binding_fingerprint_invalid");
 
   const objects = normalizeSchemaObjects(extractRowsFromCloudflareResponse(response));
   const fingerprint = schemaFingerprint(objects);
@@ -113,7 +117,8 @@ export function buildSchemaSnapshot({ response, targetSha, databaseName }) {
     evidence_type: "hae_d1_schema_snapshot",
     target_sha: sourceSha,
     database_name: canonicalDatabase,
-    normalization: "sqlite_master_non_internal_v1",
+    database_binding_fingerprint: bindingFingerprint,
+    normalization: "sqlite_master_non_internal_v2",
     object_count: objects.length,
     objects,
     fingerprint,
@@ -135,11 +140,11 @@ export function validateMigrationManifestForSnapshot(manifest) {
   return manifest.canonical_database;
 }
 
-export function validateSchemaSnapshotArtifact(artifact, { expectedTargetSha, expectedDatabaseName } = {}) {
+export function validateSchemaSnapshotArtifact(artifact, { expectedTargetSha, expectedDatabaseName, expectedDatabaseBindingFingerprint } = {}) {
   if (!artifact || typeof artifact !== "object" || Array.isArray(artifact)) fail("snapshot_artifact_invalid");
   if (!hasExactKeys(artifact, SNAPSHOT_FIELDS)) fail("snapshot_top_level_fields_invalid");
   if (artifact.schema_version !== 1 || artifact.evidence_type !== "hae_d1_schema_snapshot") fail("snapshot_identity_invalid");
-  if (artifact.normalization !== "sqlite_master_non_internal_v1") fail("snapshot_normalization_invalid");
+  if (artifact.normalization !== "sqlite_master_non_internal_v2") fail("snapshot_normalization_invalid");
 
   const targetSha = text(artifact.target_sha);
   if (!SHA40.test(targetSha)) fail("snapshot_target_sha_invalid");
@@ -148,6 +153,10 @@ export function validateSchemaSnapshotArtifact(artifact, { expectedTargetSha, ex
   const databaseName = text(artifact.database_name);
   if (!databaseName) fail("snapshot_database_name_missing");
   if (expectedDatabaseName !== undefined && databaseName !== text(expectedDatabaseName)) fail("snapshot_database_name_mismatch");
+
+  const bindingFingerprint = text(artifact.database_binding_fingerprint).toLowerCase();
+  if (!FINGERPRINT.test(bindingFingerprint)) fail("snapshot_database_binding_fingerprint_invalid");
+  if (expectedDatabaseBindingFingerprint !== undefined && bindingFingerprint !== text(expectedDatabaseBindingFingerprint).toLowerCase()) fail("snapshot_database_binding_fingerprint_mismatch");
 
   const normalized = normalizeSchemaObjects(artifact.objects);
   if (JSON.stringify(normalized) !== JSON.stringify(artifact.objects)) fail("snapshot_objects_not_canonical");
@@ -164,7 +173,7 @@ export function validateSchemaSnapshotArtifact(artifact, { expectedTargetSha, ex
     if (safety[key] !== false) fail("snapshot_safety_violation_" + key);
   }
 
-  return { target_sha: targetSha, database_name: databaseName, object_count: normalized.length, fingerprint: expectedFingerprint };
+  return { target_sha: targetSha, database_name: databaseName, database_binding_fingerprint: bindingFingerprint, object_count: normalized.length, fingerprint: expectedFingerprint };
 }
 
 function argValue(argv, name) {
@@ -194,8 +203,9 @@ export function runCli(argv = process.argv.slice(2)) {
     const outputPath = argValue(argv, "--output");
     const targetSha = argValue(argv, "--target-sha");
     const databaseName = argValue(argv, "--database-name");
+    const databaseBindingFingerprint = argValue(argv, "--database-binding-fingerprint");
     const response = readJson(responsePath, "cloudflare_response_read_failed");
-    const artifact = buildSchemaSnapshot({ response, targetSha, databaseName });
+    const artifact = buildSchemaSnapshot({ response, targetSha, databaseName, databaseBindingFingerprint });
     writeJson(outputPath, artifact);
     process.stdout.write(`schema_snapshot_built objects=${artifact.object_count} fingerprint=${artifact.fingerprint}\n`);
     return artifact;

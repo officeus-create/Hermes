@@ -192,12 +192,28 @@ jobs:
             echo "production_db_binding_missing"
             exit 1
           fi
+          echo "::add-mask::$DB_ID"
+          DB_BINDING_FINGERPRINT="$(printf '%s' "$DB_ID" | sha256sum | awk '{print "sha256:"$1}')"
+          echo "database_binding_fingerprint=$DB_BINDING_FINGERPRINT" >> "$GITHUB_OUTPUT"
           if [[ "$OPERATION" == "schema_snapshot" && -z "$DB_NAME" ]]; then
-            echo "production_db_name_missing_for_schema_snapshot"
-            exit 1
+            detail="${RUNNER_TEMP}/hermes-d1-database.json"
+            detail_http="$(curl -sS -o "$detail" -w '%{http_code}' \
+              "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/d1/database/${DB_ID}" \
+              -H "Authorization: Bearer ${HAE_CLOUDFLARE_ACTIVE_TOKEN}" \
+              -H 'Content-Type: application/json')"
+            if [[ "$detail_http" != "200" ]] || [[ "$(jq -r '.success // false' "$detail")" != "true" ]]; then
+              echo "production_db_metadata_read_failed http=$detail_http"
+              rm -f "$detail"
+              exit 1
+            fi
+            DB_NAME="$(jq -r '.result.name // empty' "$detail")"
+            rm -f "$detail"
+            if [[ -z "$DB_NAME" ]]; then
+              echo "production_db_name_missing_after_d1_read"
+              exit 1
+            fi
           fi
           DB_NAME="${DB_NAME:-hermes-connect-prototype}"
-          echo "::add-mask::$DB_ID"
           echo "database_id=$DB_ID" >> "$GITHUB_OUTPUT"
           echo "database_name=$DB_NAME" >> "$GITHUB_OUTPUT"
 
@@ -208,6 +224,7 @@ jobs:
         env:
           DB_ID: ${{ steps.d1.outputs.database_id }}
           DB_NAME: ${{ steps.d1.outputs.database_name }}
+          DB_BINDING_FINGERPRINT: ${{ steps.d1.outputs.database_binding_fingerprint }}
           TARGET_SHA: ${{ steps.request.outputs.target_sha }}
           SCHEMA_SNAPSHOT_TOKEN: ${{ secrets.CLOUDFLARE_HAE_RELEASE_TOKEN }}
         run: |
@@ -230,7 +247,7 @@ jobs:
           }
           trap cleanup EXIT
 
-          sql="SELECT type,name,tbl_name,sql FROM sqlite_master WHERE name NOT LIKE 'sqlite_%' AND type IN ('table','index','trigger','view') ORDER BY type,name,tbl_name"
+          sql="SELECT type,name,tbl_name,sql FROM sqlite_master WHERE name NOT LIKE 'sqlite_%' AND name <> '_cf_KV' AND type IN ('table','index','trigger','view') ORDER BY type,name,tbl_name"
           body="$(jq -nc --arg sql "$sql" '{sql:$sql,params:[]}')"
           http="$(curl -sS -o "$raw" -w '%{http_code}' \
             -X POST \
@@ -256,6 +273,7 @@ jobs:
             --response "$raw" \
             --target-sha "$TARGET_SHA" \
             --database-name "$DB_NAME" \
+            --database-binding-fingerprint "$DB_BINDING_FINGERPRINT" \
             --output "$artifact"
 
           node scripts/hae-d1-schema-snapshot.mjs verify \
@@ -337,13 +355,41 @@ jobs:
         if: steps.request.outputs.operation != 'schema_snapshot'
         run: npx --yes wrangler@4 deploy --dry-run --config workers/automation-engine/wrangler.production.generated.jsonc --outdir "${RUNNER_TEMP}/hae-dry-run"
 
+      - name: Re-verify exact current main before dry-run deploy
+        if: steps.request.outputs.operation == 'provision_dry_run'
+        shell: bash
+        env:
+          TARGET_SHA: ${{ steps.request.outputs.target_sha }}
+        run: |
+          set -euo pipefail
+          CURRENT_MAIN="$(gh api "repos/${GITHUB_REPOSITORY}/branches/main" --jq '.commit.sha')"
+          if [[ "$CURRENT_MAIN" != "$TARGET_SHA" ]]; then
+            echo "stale_main_before_dry_run_deploy target=$TARGET_SHA current=$CURRENT_MAIN"
+            exit 1
+          fi
+
       - name: Deploy HAE in fail-closed dry-run mode
         if: steps.request.outputs.operation == 'provision_dry_run'
         run: npx --yes wrangler@4 deploy --config workers/automation-engine/wrangler.production.generated.jsonc
 
+
+      - name: Re-verify exact current main after dry-run deploy
+        if: steps.request.outputs.operation == 'provision_dry_run'
+        shell: bash
+        env:
+          TARGET_SHA: ${{ steps.request.outputs.target_sha }}
+        run: |
+          set -euo pipefail
+          CURRENT_MAIN="$(gh api "repos/${GITHUB_REPOSITORY}/branches/main" --jq '.commit.sha')"
+          if [[ "$CURRENT_MAIN" != "$TARGET_SHA" ]]; then
+            echo "stale_main_after_dry_run_deploy target=$TARGET_SHA current=$CURRENT_MAIN"
+            exit 1
+          fi
+
       - name: Verify deployed Worker inventory
         if: steps.request.outputs.operation == 'provision_dry_run'
         run: npx --yes wrangler@4 deployments list --config workers/automation-engine/wrangler.production.generated.jsonc
+
 
       - name: Run private Queue → Worker → D1 dry-run canary
         if: steps.request.outputs.operation == 'provision_dry_run'
@@ -412,6 +458,19 @@ jobs:
             sleep 5
           done
 
+      - name: Re-verify exact current main after dry-run canary
+        if: steps.request.outputs.operation == 'provision_dry_run'
+        shell: bash
+        env:
+          TARGET_SHA: ${{ steps.request.outputs.target_sha }}
+        run: |
+          set -euo pipefail
+          CURRENT_MAIN="$(gh api "repos/${GITHUB_REPOSITORY}/branches/main" --jq '.commit.sha')"
+          if [[ "$CURRENT_MAIN" != "$TARGET_SHA" ]]; then
+            echo "stale_main_after_dry_run_canary target=$TARGET_SHA current=$CURRENT_MAIN"
+            exit 1
+          fi
+
       - name: Publish dry-run evidence summary
         if: steps.request.outputs.operation == 'provision_dry_run'
         shell: bash
@@ -437,9 +496,16 @@ jobs:
         shell: bash
         env:
           DB_ID: ${{ steps.d1.outputs.database_id }}
+          DB_BINDING_FINGERPRINT: ${{ steps.d1.outputs.database_binding_fingerprint }}
           TARGET_SHA: ${{ steps.request.outputs.target_sha }}
         run: |
           set -euo pipefail
+
+          CURRENT_MAIN="$(gh api "repos/${GITHUB_REPOSITORY}/branches/main" --jq '.commit.sha')"
+          if [[ "$CURRENT_MAIN" != "$TARGET_SHA" ]]; then
+            echo "stale_main_before_runtime_readonly_proof target=$TARGET_SHA current=$CURRENT_MAIN"
+            exit 1
+          fi
 
           d1_query() {
             local sql="$1"
@@ -618,8 +684,15 @@ jobs:
           queue_evidence="cloudflare://queues/hermes-automation/metrics/run-${GITHUB_RUN_ID}"
           dlq_evidence="cloudflare://queues/hermes-automation-dlq/metrics/run-${GITHUB_RUN_ID}"
 
+          CURRENT_MAIN="$(gh api "repos/${GITHUB_REPOSITORY}/branches/main" --jq '.commit.sha')"
+          if [[ "$CURRENT_MAIN" != "$TARGET_SHA" ]]; then
+            echo "stale_main_during_runtime_readonly_proof target=$TARGET_SHA current=$CURRENT_MAIN"
+            exit 1
+          fi
+
           jq -n \
             --arg target_sha "$TARGET_SHA" \
+            --arg database_binding_fingerprint "$DB_BINDING_FINGERPRINT" \
             --arg deployment_ref "github-actions://${GITHUB_REPOSITORY}/runs/${GITHUB_RUN_ID}/deployed-worker" \
             --arg health_ref "$health_evidence" \
             --slurpfile health "$proof_dir/health.json" \
@@ -635,6 +708,7 @@ jobs:
             --argjson duplicate_receipts "$duplicate_receipts" \
             '{
               target_sha: $target_sha,
+              database_binding_fingerprint: $database_binding_fingerprint,
               deployment: {evidence_ref: $deployment_ref, source_sha: $target_sha},
               runtime: {automation_mode: "dry_run", publication_enabled: false},
               health: ($health[0] + {evidence_ref: $health_ref}),
@@ -709,8 +783,15 @@ jobs:
       - name: Independently validate executor evidence and attest QA
         env:
           EVIDENCE_PATH: ${{ runner.temp }}/hae-runtime-evidence/hae-runtime-evidence.json
+          TARGET_SHA: ${{ needs.release.outputs.target_sha }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
+          CURRENT_MAIN="$(gh api "repos/${GITHUB_REPOSITORY}/branches/main" --jq '.commit.sha')"
+          if [[ "$CURRENT_MAIN" != "$TARGET_SHA" ]]; then
+            echo "stale_main_during_runtime_evidence_qa target=$TARGET_SHA current=$CURRENT_MAIN"
+            exit 1
+          fi
           node --input-type=module - <<'NODE'
           import fs from "node:fs";
           import { evaluateHaeRuntimeEvidence } from "./scripts/hae-runtime-evidence-check.mjs";
@@ -812,3 +893,137 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
+# Single owner-triggered DLQ canary; no deploy, no scheduler, no new endpoint.
+  t4_dlq_canary:
+    if: >-
+      github.event_name == 'issue_comment' &&
+      github.actor == 'officeus-create' &&
+      github.event.issue.number == 2033 &&
+      !github.event.issue.pull_request &&
+      startsWith(github.event.comment.body, 'HAE_T4_DLQ_CANARY ')
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    environment: production
+    permissions:
+      contents: read
+    env:
+      GH_TOKEN: ${{ github.token }}
+      CLOUDFLARE_HAE_RELEASE_TOKEN: ${{ secrets.CLOUDFLARE_HAE_RELEASE_TOKEN }}
+      T4_OWNER_COMMENT: ${{ github.event.comment.body }}
+    steps:
+      - name: Checkout canonical main
+        uses: actions/checkout@v6
+        with:
+          ref: main
+          persist-credentials: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+
+      - name: Validate T4 contract and immutable D1 baseline
+        run: |
+          node scripts/hae-t4-dlq-canary.test.mjs
+          node scripts/automation-engine-migration-gate.test.mjs
+
+      - name: Inject once into the existing DLQ and capture D1 transport receipt
+        id: transport
+        run: node scripts/hae-t4-cloudflare-transport.mjs
+
+      - name: Retain sanitized D1 transport receipt for independent inbox readback
+        if: steps.transport.outputs.dlq_item_id != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: hae-t4-dlq-transport-receipt
+          path: ${{ runner.temp }}/t4-d1-transport-receipt.json
+          if-no-files-found: error
+          retention-days: 90
+
+# Strictly read-only D1 receipt diagnostic. Existing issue #2033 owner command only.
+  t4_readback:
+    if: >-
+      github.event_name == 'issue_comment' &&
+      github.actor == 'officeus-create' &&
+      github.event.issue.number == 2033 &&
+      !github.event.issue.pull_request &&
+      startsWith(github.event.comment.body, 'HAE_T4_READBACK ')
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    environment: production
+    permissions:
+      contents: read
+    env:
+      GH_TOKEN: ${{ github.token }}
+      CLOUDFLARE_HAE_RELEASE_TOKEN: ${{ secrets.CLOUDFLARE_HAE_RELEASE_TOKEN }}
+      T4_READBACK_COMMENT: ${{ github.event.comment.body }}
+    steps:
+      - name: Checkout exact current main
+        uses: actions/checkout@v6
+        with:
+          ref: main
+          persist-credentials: false
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+      - name: Run bounded read-only D1 receipt validator
+        id: readback
+        run: |
+          set -euo pipefail
+          node scripts/hae-t4-readonly-d1-diagnostic.test.mjs
+          node scripts/hae-t4-readonly-d1-diagnostic.mjs
+      - name: Save sanitized receipt evidence
+        if: steps.readback.outputs.dlq_item_id != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: hae-t4-readonly-d1-diagnostic
+          path: ${{ runner.temp }}/hae-t4-readonly-d1-diagnostic.json
+          retention-days: 90
+          if-no-files-found: error
+
+
+# Read-only reconciliation for one already-submitted GitHub CI source event.
+# It may SELECT from canonical D1 but cannot enqueue, retry, deploy, email or infer.
+  ci_readback:
+    if: >-
+      github.event_name == 'issue_comment' &&
+      github.actor == 'officeus-create' &&
+      github.event.issue.number == 2033 &&
+      !github.event.issue.pull_request &&
+      startsWith(github.event.comment.body, 'HAE_CI_READBACK ')
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    environment: production
+    permissions:
+      actions: read
+      contents: read
+    env:
+      GH_TOKEN: ${{ github.token }}
+      CLOUDFLARE_HAE_RELEASE_TOKEN: ${{ secrets.CLOUDFLARE_HAE_RELEASE_TOKEN }}
+      HAE_CI_READBACK_COMMAND: ${{ github.event.comment.body }}
+    steps:
+      - name: Checkout exact current main
+        uses: actions/checkout@v6
+        with:
+          ref: main
+          persist-credentials: false
+
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+
+      - name: Validate no-resend readback contract
+        run: node scripts/hae-github-ci-readback.test.mjs
+
+      - name: Read canonical D1 state for the existing CI source event
+        run: node scripts/hae-github-ci-readback.mjs
+
+      - name: Retain sanitized reconciliation evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: hae-ci-readback
+          path: ${{ runner.temp }}/hae-ci-readback.json
+          if-no-files-found: error
+          retention-days: 90

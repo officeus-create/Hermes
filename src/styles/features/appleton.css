@@ -17,7 +17,7 @@
 .appleton-audiences, .appleton-process, .appleton-faq { background: #fff; }
 .appleton-card-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1rem; }
 .appleton-card-grid article { display: flex; min-height: 300px; flex-direction: column; padding: 1.4rem; border: 1px solid #d7ddec; border-radius: 10px; background: #f8f9fd; }
-.appleton-card-grid article > svg { color: #7250dd; }
+.appleton-card-grid article > svg { color: var(--family-accent-text, #1f4fc4); }
 .appleton-card-grid h3 { margin: 2rem 0 .7rem; color: var(--color-navy-900); }
 .appleton-card-grid p { color: var(--color-muted); }
 .appleton-card-grid a { display: inline-flex; gap: .4rem; align-items: center; margin-top: auto; color: #3d2aa0; font-weight: 780; }
@@ -26,7 +26,7 @@
 .appleton-two-column p { color: var(--color-muted); }
 .appleton-checklist { display: grid; grid-template-columns: 1fr 1fr; gap: .85rem; margin: 0; padding: 0; list-style: none; }
 .appleton-checklist li { display: flex; gap: .65rem; padding: 1rem; border: 1px solid #d7ddec; border-radius: 8px; background: #fff; }
-.appleton-checklist svg { flex: 0 0 auto; color: #5f45c8; }
+.appleton-checklist svg { flex: 0 0 auto; color: var(--family-accent-text, #1f4fc4); }
 .appleton-planning { background: #0a1749; color: #fff; }
 .appleton-planning .section-heading h2 { max-width: 880px; color: #fff; }
 .appleton-planning-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: rgba(255,255,255,.2); }
@@ -37,12 +37,12 @@
 .appleton-section-link { display: inline-flex; gap: .45rem; align-items: center; margin-top: 1rem; color: #d9e2ff; font-weight: 760; }
 .appleton-section-link:hover, .appleton-section-link:focus-visible { color: #fff; }
 .appleton-process-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: .85rem; margin: 0; padding: 0; list-style: none; }
-.appleton-process-grid li { padding: 1.2rem; border-top: 3px solid #684cd2; background: #f5f6fb; }
-.appleton-process-grid span { color: #7250dd; font: 750 .72rem/1 var(--font-mono); }
+.appleton-process-grid li { padding: 1.2rem; border-top: 3px solid var(--family-accent, #2f6bf6); background: #f5f6fb; }
+.appleton-process-grid span { color: var(--family-accent-text, #1f4fc4); font: 750 .72rem/1 var(--font-mono); }
 .appleton-process-grid h3 { margin: 2rem 0 .6rem; font-size: 1.1rem; }
 .appleton-process-grid p { margin: 0; color: var(--color-muted); font-size: .88rem; }
 .appleton-equipment { background: #eef1f8; }
-.appleton-equipment .appleton-two-column > div:last-child { padding: clamp(1.4rem, 3vw, 2.2rem); border-left: 4px solid #7250dd; background: #fff; }
+.appleton-equipment .appleton-two-column > div:last-child { padding: clamp(1.4rem, 3vw, 2.2rem); border-left: 4px solid var(--family-accent, #2f6bf6); background: #fff; }
 .appleton-carrier-note { background: #111a41; color: #fff; }
 .appleton-carrier-card { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 1.5rem; align-items: center; }
 .appleton-carrier-card > svg { color: #9fb2ff; }

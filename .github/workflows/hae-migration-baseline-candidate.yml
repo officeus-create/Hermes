@@ -1,0 +1,276 @@
+name: HAE Migration Baseline Candidate
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_sha:
+        description: Exact deployed/main SHA shared by schema and runtime evidence
+        required: true
+        type: string
+      schema_run_id:
+        description: Successful run containing hae-d1-schema-snapshot-accepted
+        required: true
+        type: string
+      runtime_run_id:
+        description: Successful run containing hae-runtime-evidence-accepted
+        required: true
+        type: string
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  build-candidate:
+    name: Build same-SHA migration baseline candidate
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (
+        github.actor == 'officeus-create' &&
+        github.event.issue.number == 2033 &&
+        startsWith(github.event.comment.body, 'HAE_BASELINE_CANDIDATE ')
+      )
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      source_sha: ${{ steps.candidate.outputs.source_sha }}
+      database_name: ${{ steps.candidate.outputs.database_name }}
+      schema_fingerprint: ${{ steps.candidate.outputs.schema_fingerprint }}
+    steps:
+      - name: Resolve explicit owner request
+        id: inputs
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          DISPATCH_TARGET_SHA: ${{ inputs.target_sha }}
+          DISPATCH_SCHEMA_RUN_ID: ${{ inputs.schema_run_id }}
+          DISPATCH_RUNTIME_RUN_ID: ${{ inputs.runtime_run_id }}
+          COMMENT_BODY: ${{ github.event.comment.body }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          if [[ "$EVENT_NAME" == "workflow_dispatch" ]]; then
+            TARGET_SHA="$DISPATCH_TARGET_SHA"
+            SCHEMA_RUN_ID="$DISPATCH_SCHEMA_RUN_ID"
+            RUNTIME_RUN_ID="$DISPATCH_RUNTIME_RUN_ID"
+          else
+            field_count="$(awk '{print NF}' <<<"$COMMENT_BODY")"
+            command="$(awk '{print $1}' <<<"$COMMENT_BODY")"
+            TARGET_SHA="$(awk '{print $2}' <<<"$COMMENT_BODY")"
+            SCHEMA_RUN_ID="$(awk '{print $3}' <<<"$COMMENT_BODY")"
+            RUNTIME_RUN_ID="$(awk '{print $4}' <<<"$COMMENT_BODY")"
+            if [[ "$field_count" != "4" || "$command" != "HAE_BASELINE_CANDIDATE" ]]; then
+              echo "baseline_comment_command_invalid"
+              exit 1
+            fi
+          fi
+
+          if [[ ! "$TARGET_SHA" =~ ^[0-9a-f]{40}$ ]]; then
+            echo "baseline_target_sha_invalid"
+            exit 1
+          fi
+          if [[ ! "$SCHEMA_RUN_ID" =~ ^[0-9]+$ || ! "$RUNTIME_RUN_ID" =~ ^[0-9]+$ ]]; then
+            echo "baseline_run_id_invalid"
+            exit 1
+          fi
+
+          CURRENT_MAIN="$(gh api "repos/${GITHUB_REPOSITORY}/branches/main" --jq '.commit.sha')"
+          if [[ "$CURRENT_MAIN" != "$TARGET_SHA" ]]; then
+            echo "baseline_target_not_current_main target=$TARGET_SHA current=$CURRENT_MAIN"
+            exit 1
+          fi
+
+          SCHEMA_STARTED_AT=""
+          RUNTIME_COMPLETED_AT=""
+          for pair in "schema:$SCHEMA_RUN_ID" "runtime:$RUNTIME_RUN_ID"; do
+            kind="${pair%%:*}"
+            run_id="${pair#*:}"
+            run_json="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}")"
+            conclusion="$(jq -r '.conclusion // ""' <<<"$run_json")"
+            run_path="$(jq -r '.path // ""' <<<"$run_json")"
+            run_head_sha="$(jq -r '.head_sha // ""' <<<"$run_json")"
+            run_started_at="$(jq -r '.run_started_at // ""' <<<"$run_json")"
+            run_completed_at="$(jq -r '.updated_at // ""' <<<"$run_json")"
+            if [[ "$conclusion" != "success" ]]; then
+              echo "baseline_${kind}_run_not_success run_id=$run_id conclusion=$conclusion"
+              exit 1
+            fi
+            if [[ "$run_path" != ".github/workflows/automation-engine-release.yml" ]]; then
+              echo "baseline_${kind}_run_wrong_workflow run_id=$run_id path=$run_path"
+              exit 1
+            fi
+            if [[ "$run_head_sha" != "$TARGET_SHA" ]]; then
+              echo "baseline_${kind}_run_head_mismatch run_id=$run_id head=$run_head_sha target=$TARGET_SHA"
+              exit 1
+            fi
+            if [[ -z "$run_started_at" || -z "$run_completed_at" ]]; then
+              echo "baseline_${kind}_run_timestamp_missing run_id=$run_id"
+              exit 1
+            fi
+            if [[ "$kind" == "schema" ]]; then
+              SCHEMA_STARTED_AT="$run_started_at"
+            else
+              RUNTIME_COMPLETED_AT="$run_completed_at"
+            fi
+          done
+
+          schema_started_epoch="$(date -u -d "$SCHEMA_STARTED_AT" +%s)"
+          runtime_completed_epoch="$(date -u -d "$RUNTIME_COMPLETED_AT" +%s)"
+          if (( schema_started_epoch <= runtime_completed_epoch )); then
+            echo "baseline_schema_not_after_runtime schema_started=$SCHEMA_STARTED_AT runtime_completed=$RUNTIME_COMPLETED_AT"
+            exit 1
+          fi
+
+          echo "target_sha=$TARGET_SHA" >> "$GITHUB_OUTPUT"
+          echo "schema_run_id=$SCHEMA_RUN_ID" >> "$GITHUB_OUTPUT"
+          echo "runtime_run_id=$RUNTIME_RUN_ID" >> "$GITHUB_OUTPUT"
+
+      - name: Check out exact target
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ steps.inputs.outputs.target_sha }}
+          fetch-depth: 1
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+
+      - name: Download accepted schema evidence
+        uses: actions/download-artifact@v5
+        with:
+          name: hae-d1-schema-snapshot-accepted
+          path: ${{ runner.temp }}/hae-baseline/schema
+          run-id: ${{ steps.inputs.outputs.schema_run_id }}
+          github-token: ${{ github.token }}
+
+      - name: Download accepted runtime evidence
+        uses: actions/download-artifact@v5
+        with:
+          name: hae-runtime-evidence-accepted
+          path: ${{ runner.temp }}/hae-baseline/runtime
+          run-id: ${{ steps.inputs.outputs.runtime_run_id }}
+          github-token: ${{ github.token }}
+
+      - name: Build and verify baseline promotion candidate
+        id: candidate
+        env:
+          TARGET_SHA: ${{ steps.inputs.outputs.target_sha }}
+          SCHEMA_RUN_ID: ${{ steps.inputs.outputs.schema_run_id }}
+          RUNTIME_RUN_ID: ${{ steps.inputs.outputs.runtime_run_id }}
+          ROOT: ${{ runner.temp }}/hae-baseline
+        run: |
+          set -euo pipefail
+          schema="${ROOT}/schema/hae-d1-schema-snapshot.json"
+          runtime="${ROOT}/runtime/hae-runtime-evidence.json"
+          out_dir="${ROOT}/candidate"
+          candidate="${out_dir}/hae-migration-baseline-candidate.json"
+          mkdir -p "$out_dir"
+
+          for file in "$schema" "$runtime"; do
+            if [[ ! -f "$file" ]]; then
+              echo "baseline_expected_evidence_file_missing file=$file"
+              exit 1
+            fi
+          done
+
+          schema_count="$(find "${ROOT}/schema" -type f | wc -l | tr -d ' ')"
+          runtime_count="$(find "${ROOT}/runtime" -type f | wc -l | tr -d ' ')"
+          if [[ "$schema_count" != "1" || "$runtime_count" != "1" ]]; then
+            echo "baseline_evidence_artifact_boundary_invalid schema_count=$schema_count runtime_count=$runtime_count"
+            exit 1
+          fi
+
+          database_name="$(jq -r '.database_name // empty' "$schema")"
+          if [[ -z "$database_name" ]]; then
+            echo "baseline_schema_database_missing"
+            exit 1
+          fi
+
+          schema_ref="github-actions://${GITHUB_REPOSITORY}/runs/${SCHEMA_RUN_ID}/hae-d1-schema-snapshot-accepted"
+          runtime_ref="github-actions://${GITHUB_REPOSITORY}/runs/${RUNTIME_RUN_ID}/hae-runtime-evidence-accepted"
+
+          node scripts/hae-migration-baseline-candidate.mjs build             --schema-artifact "$schema"             --runtime-evidence "$runtime"             --migration-manifest workers/automation-engine/migrations/manifest.json             --schema-evidence-ref "$schema_ref"             --runtime-evidence-ref "$runtime_ref"             --output "$candidate"
+
+          node scripts/hae-migration-baseline-candidate.mjs verify             --candidate "$candidate"             --source-sha "$TARGET_SHA"             --database-name "$database_name"
+
+          source_sha="$(jq -r '.baseline_source_sha' "$candidate")"
+          schema_fingerprint="$(jq -r '.baseline_schema_fingerprint' "$candidate")"
+          echo "source_sha=$source_sha" >> "$GITHUB_OUTPUT"
+          echo "database_name=$database_name" >> "$GITHUB_OUTPUT"
+          echo "schema_fingerprint=$schema_fingerprint" >> "$GITHUB_OUTPUT"
+
+      - name: Upload baseline candidate evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: hae-migration-baseline-candidate
+          path: ${{ runner.temp }}/hae-baseline/candidate/hae-migration-baseline-candidate.json
+          if-no-files-found: error
+          retention-days: 14
+
+  candidate-qa:
+    name: Independently verify baseline candidate
+    needs: build-candidate
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - name: Check out exact target
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ needs.build-candidate.outputs.source_sha }}
+          fetch-depth: 1
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+
+      - name: Download candidate from current run
+        uses: actions/download-artifact@v5
+        with:
+          name: hae-migration-baseline-candidate
+          path: ${{ runner.temp }}/hae-baseline-candidate
+
+      - name: Recompute candidate fingerprint and safety boundary
+        env:
+          TARGET_SHA: ${{ needs.build-candidate.outputs.source_sha }}
+          DATABASE_NAME: ${{ needs.build-candidate.outputs.database_name }}
+          CANDIDATE: ${{ runner.temp }}/hae-baseline-candidate/hae-migration-baseline-candidate.json
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          CURRENT_MAIN="$(gh api "repos/${GITHUB_REPOSITORY}/branches/main" --jq '.commit.sha')"
+          if [[ "$CURRENT_MAIN" != "$TARGET_SHA" ]]; then
+            echo "baseline_target_stale_during_candidate_qa target=$TARGET_SHA current=$CURRENT_MAIN"
+            exit 1
+          fi
+
+          mapfile -t files < <(find "$(dirname "$CANDIDATE")" -type f -print | sort)
+          if [[ "${#files[@]}" -ne 1 || "${files[0]}" != "$CANDIDATE" ]]; then
+            echo "baseline_candidate_artifact_boundary_invalid count=${#files[@]}"
+            exit 1
+          fi
+
+          node scripts/hae-migration-baseline-candidate.mjs verify             --candidate "$CANDIDATE"             --source-sha "$TARGET_SHA"             --database-name "$DATABASE_NAME"
+
+          jq -e '
+            .promotion_state == "ELIGIBLE_FOR_MANUAL_PROMOTION"
+            and .manifest_patch.baseline_status == "VERIFIED"
+            and (.manifest_patch.baseline_evidence_ref | startswith("repo://workers/automation-engine/migrations/baseline-evidence/"))
+            and .safety.manifest_mutated == false
+            and .safety.migration_created == false
+            and .safety.d1_write == false
+            and .safety.worker_deploy == false
+          ' "$CANDIDATE" >/dev/null
+
+      - name: Upload independently accepted baseline candidate
+        uses: actions/upload-artifact@v4
+        with:
+          name: hae-migration-baseline-candidate-accepted
+          path: ${{ runner.temp }}/hae-baseline-candidate/hae-migration-baseline-candidate.json
+          if-no-files-found: error
+          retention-days: 90

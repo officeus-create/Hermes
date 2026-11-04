@@ -6,6 +6,8 @@ export type CarHaulerGeoMarket = {
   region: string;
   marketContext: string;
   nearby: string[];
+  localOperatingNotes?: string[];
+  officialSources?: Array<{ label: string; url: string }>;
 };
 
 export const carHaulerGeoMarkets: CarHaulerGeoMarket[] = [
@@ -31,7 +33,24 @@ export const carHaulerGeoMarkets: CarHaulerGeoMarket[] = [
   { slug: "seattle-wa", city: "Seattle", state: "WA", stateName: "Washington", region: "Central Puget Sound", marketContext: "Seattle anchors the central Puget Sound market, with Renton and Auburn to the south and Lynnwood/Marysville to the north. A carrier's useful search area can span several municipalities while still respecting pickup access, timing, and equipment fit.", nearby: ["Renton, WA", "Auburn, WA", "Lynnwood, WA", "Marysville, WA"] },
   { slug: "auburn-wa", city: "Auburn", state: "WA", stateName: "Washington", region: "South King County / Puget Sound", marketContext: "Auburn sits between Seattle/Renton and Puyallup/Tacoma, making it a practical cross-metro search point for car haulers. Hermes can review radius, direction, deadhead, and carrier-approved operating preferences across the surrounding market.", nearby: ["Renton, WA", "Puyallup, WA", "Tacoma, WA", "Seattle, WA"] },
   { slug: "fremont-ca", city: "Fremont", state: "CA", stateName: "California", region: "San Francisco Bay Area", marketContext: "Fremont is a Bay Area operating point with access to the East Bay and South Bay. Dense metro geography makes route-aware searching, appointment timing, equipment fit, and deadhead review more useful than a city-only search.", nearby: ["San Jose, CA", "Oakland, CA", "San Francisco, CA"] },
-  { slug: "brighton-co", city: "Brighton", state: "CO", stateName: "Colorado", region: "North Denver metro / Front Range", marketContext: "Brighton is a north Denver-metro search point near Commerce City, Denver, and Aurora. Carriers can widen or narrow the search based on available capacity, destination preference, deadhead, and pickup timing.", nearby: ["Commerce City, CO", "Denver, CO", "Aurora, CO"] },
+  {
+    slug: "brighton-co",
+    city: "Brighton",
+    state: "CO",
+    stateName: "Colorado",
+    region: "North Denver metro / Front Range",
+    marketContext: "Brighton is a north Denver-metro search point where a carrier can compare Denver-area work with northbound Front Range repositioning. The useful search depends on which corridor the truck is actually positioned for, not only the city name.",
+    nearby: ["Commerce City, CO", "Denver, CO", "Aurora, CO"],
+    localOperatingNotes: [
+      "US 85 is the north-south corridor through Brighton. CDOT identifies the urban US 85 corridor north of I-76 as a route that carries truck freight, so northbound versus southbound direction is a meaningful search input for a carrier positioned here.",
+      "CO 7 reaches US 85 at Brighton on CDOT's Brighton-to-Boulder corridor. That gives Brighton a distinct east-west decision point in addition to Denver-metro and north-south Front Range movement.",
+      "Before widening the radius, record the truck's actual position, open deck capacity, pickup appointment constraints, destination preference, and acceptable deadhead. Hermes can then compare Brighton with Commerce City, Denver, and Aurora without assuming that a wider radius automatically improves the load.",
+    ],
+    officialSources: [
+      { label: "CDOT — US 85 corridor profile", url: "https://www.codot.gov/programs/planning/transportation-plans-and-studies/assets/rtp-dev-documents/upper-front-range-2040-corridor-profiles.pdf" },
+      { label: "CDOT — CO 7 Brighton to Boulder corridor", url: "https://www.codot.gov/projects/studies/co7brightonboulder" },
+    ],
+  },
   { slug: "graham-wa", city: "Graham", state: "WA", stateName: "Washington", region: "Pierce County / South Puget Sound", marketContext: "Graham sits in Pierce County near Puyallup and Tacoma. For car haulers, the more useful search is often a practical radius around the truck rather than the city boundary alone.", nearby: ["Puyallup, WA", "Tacoma, WA", "Auburn, WA"] },
   { slug: "commerce-city-co", city: "Commerce City", state: "CO", stateName: "Colorado", region: "Denver metro / Front Range", marketContext: "Commerce City is a Denver-metro operating point close to Denver, Brighton, and Aurora. A carrier can use it as an anchor for metro load search while comparing route direction, deadhead, timing, and equipment requirements.", nearby: ["Denver, CO", "Brighton, CO", "Aurora, CO"] },
 ];

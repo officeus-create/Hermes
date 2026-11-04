@@ -20,6 +20,7 @@ For SEO/revenue execution, start with `docs/SEARCH_GROWTH_GUARDRAIL.md`, the cur
 
 | ID | Status | Area | Evidence / current condition | Required next action | Do not do |
 | --- | --- | --- | --- | --- | --- |
+| ERR-AI-OPS-CANONICAL-PR-20261028 | ACTIVE | Hermes AI Operations / Command Center architecture | Canonical Command Center PR #2107 has two zero-behind stacked continuations: #2125 contains live AI operations telemetry while #2159 contains Team View/plugin-registry work. Their heads diverge and #2159 has no exact-head check evidence in the current audit. The owner project registry therefore exposes the collision as blocked rather than inventing a winner. | Maintainer compares the two exact diffs, selects one canonical continuation or cleanly replays the non-overlapping surviving delta after #2107, then runs exact-head contracts/browser CI. | Do not merge both divergent stacks, create a third admin/runtime/brain, hide the collision with a fabricated progress/ETA value, or deploy without owner authorization. |
 | ERR-IAM-EDITORIAL-MAILTO-20261008 | RESOLVED | Technology Insights editorial boundary | #1789 and #1785 merged; independent published-page readback 2026-10-12 confirms no article-specific `mailto:` or claim of active conversations in `/insights/technology/i-am-vision/`, intact standard footer contact (`/contacts/` and officeus email), self-canonical, and `index,follow`. | Preserve the editorial/footer boundary; require a new dated review only if the public article/CTA changes. | Do not conflate footer contact with article lead/partnership, or publication with traffic or revenue. |
 | ERR-REPAIR-INTAKE-ATTRIBUTION-20261008 | WATCH | Repair Website/SEO event attribution | #1783 merged as `a7372ddf93f0f7f2e94922612d91218e53b01879` after exact-head CI; current main includes fixed `repair-attribution.ts`, allowlisted events in Website and SEO handlers and negative/symmetric test fixtures. Later Cloudflare Pages release covers merged source, but consented production GA4/DebugView receipt and real human disposition are not proven. Original ACTIVE draft/review/release instruction is stale. | One narrow authorized consented runtime readback for exact repair Website/SEO source click → intake events (fixed allowlist, no PII, no sends) and GA4 receipt when available. Remain WATCH / RUNTIME_EVENT_PROOF_OPEN; no duplicate implementation. | Do not submit forms, call a synthetic click a qualified lead, copy arbitrary query values, generate parallel tracking work, or change search owners. |
 | ERR-PRODUCTION-VERIFIER-EMPTY-ENV-20261008 | RESOLVED | GitHub Actions release verification | #1782 merged as `70b7eaabbb154a5de9cef7f138f1b7bc423b9616` at 2026-10-08 14:57Z; subsequent `workflow_dispatch` runs [main verifier #37796819242](https://github.com/officeus-create/Hermes/actions/runs/37796819242) and [domain verifier #37796823941](https://github.com/officeus-create/Hermes/actions/runs/37796823941) both started 14:58Z on the exact merged SHA and completed SUCCESS with `verify` jobs. Historic jobless failures are superseded. | Preserve the five-workflow empty-env contract and verify again only on a fresh change. | Do not restore old issue-comment routers/permissions or claim these runs prove unrelated business metrics. |
@@ -137,6 +138,32 @@ Add or update one row with:
 - owner or agent;
 - smallest safe next action;
 - verification required to close.
+
+## 2026-10-27 — Command Center AI completion was incorrectly treated as owner acceptance
+
+PROBLEM: The Business Command Center automatically changed a linked owner work item to `done` when its Internal AI task reported `completed`.
+
+ROOT_CAUSE: The first reconciliation contract collapsed execution completion and owner acceptance into one status transition.
+
+FAILED_APPROACH: Treating a runner terminal state and green technical evidence as proof that the owner's requested business outcome was accepted.
+
+WORKING_APPROACH: Preserve the existing D1 backlog and Internal AI queue, add a backward-compatible acceptance receipt, project completed execution as `awaiting_acceptance`, and require an authenticated owner to choose Accept or Needs rework. Generic manual completion fails closed for linked AI results.
+
+EVIDENCE: Focused SQLite state/runtime/contract coverage exercises legacy-schema migration, completed-to-review reconciliation, rejection of premature acceptance, durable acceptance actor/time, and the owner review UI. Exact-head full CI remains required before release.
+
+LESSON: `SUCCEEDED` is execution evidence; `ACCEPTED` is a separate owner decision.
+
+REUSE_RULE: Every HAE/plugin/agent workflow must preserve execution, independent evidence, and business acceptance as separate receipts. Never infer acceptance from a terminal worker state, PR, test, or plugin release.
+
+## ERR-E2E-INTERACTION-STABILITY-20261027 — unrelated public-page controls never become stable in local full-suite preview
+
+STATUS: OPEN / OUTSIDE COMMAND CENTER SCOPE.
+
+EVIDENCE: The required 2,544-scenario Playwright run completed with 2,518 PASS, 16 expected skips, and 10 timeouts: the same five interaction scenarios on desktop/mobile (`catalog-knb-client-strategy`, `hermes-connect-hub-locale-seo-safe`, `load-board-carrier-operating-path`, and two `repair-public-entry-context` cases). A sequential one-worker rerun reproduced all five desktop timeouts while waiting for already-visible controls to become stable. The focused Command Center browser suite passed 14/14 on the same build and preview. The autonomous-process continuation reproduced the same 10 desktop/mobile timeouts with 2,520 PASS and 16 expected skips; its expanded focused Command Center suite passed 16/16. The project-portfolio continuation ran 2,552 scenarios: 2,525 PASS, 16 expected skips and the same 10 known interaction timeouts plus one concurrent Repair booking i18n timeout. A one-worker rerun of all five affected files produced 42 PASS, reproduced the same 10 known timeouts, and passed the Repair booking i18n scenario on desktop and mobile. Its Command Center suite passed 22/22 independently and inside the full matrix.
+
+BOUNDARY: None of the failing files, selectors, routes, or shared components changed in the Command Center acceptance slice. Do not weaken or rewrite those public/design tests in PR #2107.
+
+NEXT: The active visual owner should inspect the retained traces for perpetual layout/motion instability and repair the shared public interaction boundary on its own branch; then rerun the five files and full E2E.
 
 
 ## 2026-09-12 — Load Board source setup release reconciliation
@@ -749,3 +776,23 @@ REUSE_RULE: Never change bytes behind an existing `/media/*` URL — always ship
 - **False-fix guard:** Do not edit unrelated UI/product code merely because a long browser shard times out. Reproduce the exact failing test on clean current `main` first; if it fails identically, classify it as baseline/test-environment evidence rather than a candidate-branch regression.
 - **#2033 evidence:** KNB locale navigation, Hermes Connect locale selector, Load Board mobile journey, and both repair-public-entry interaction timeouts were independently compared against clean `main`; where compared, the same failure reproduced outside the schema-snapshot branch. One Home touch timeout did not reproduce on clean `main` and requires an isolated branch rerun before final classification.
 - **Safety:** No production, D1, secret, provider-write, or migration change is authorized by this error record.
+
+## ERR-DESIGN-2027-STALE-BRANCH-LOCALE-LINK-GRAPH-20261026 — LIVE_VERIFIED (#2027, d17e80fe)
+
+PROBLEM: Claude design PR #2027 (EN/RU/UA chrome, light commercial hero, Catalog submenu in the header) sat 132 commits behind `main` after a long session pause. Its first localized-footer version dropped the English footer's internal links (direction owners, money pages, trust/legal routes) from 10 RU/UA pages, and the embedded Catalog submenu stayed English on `?lang=uk` because the header passed only `en | ru` and the static build cannot see query strings.
+
+ROOT_CAUSE: Design work was validated against its own old base and by screenshots rather than by a build-to-build diff against current `main`; localization replaced a link-bearing component instead of translating its labels; query-string locales were assumed to be visible at build time.
+
+WORKING_APPROACH: Replayed only the bounded design delta onto fresh `main` (no whole-file blobs); RU/UA footers render the same hrefs with translated labels; Catalog submenu and header labels switch in the browser on `?lang=uk` without new URLs or owners; full-site build diff vs `main` proves canonical/hreflang/robots/title/description/H1/JSON-LD/form names/hooks unchanged and zero lost internal links; #2087 Search gates, 390/1440 overflow, keyboard/reduced-motion and Lighthouse LCP/CLS checked on the fresh head.
+
+REUSE_RULE: For any design PR touching shared chrome, run a build-to-build diff against current `main` (canonical, hreflang, robots, H1, schema, form names/hooks, internal links per page) before review; localize labels, never the link set; treat `?lang=` locales as runtime-only on static routes; re-replay onto fresh `main` whenever the branch falls behind instead of merging old blobs.
+
+## ERR-DESIGN-SCOPE-NARROWED-TO-OPEN-PR-20261026 — OPEN (program active)
+
+PROBLEM: The owner asked to bring *all remaining* design to the new brand book, Home and structure and publish it. Claude finished and merged PR #2027 and reported the design work as done and live, while ~120 public pages (car-hauler geo, logistics path results, Academy, resources, careers, case, legal, contracts, 404, localized overviews) still rendered the legacy dark navy/obsidian heroes. The owner experienced Home + header as new and every inner page as "another website".
+
+ROOT_CAUSE: The task was scoped by the open PR instead of by the owner's outcome; "done" was not checked against a site-wide measurement; the repository's own gap analysis already listed the unfinished families.
+
+WORKING_APPROACH: Measured every built page (hero surface, H1 colour/tracking, buttons, template) and classified dark heroes as LEGACY vs PRODUCT ACCENT (Insights, Load Board, Connect stay by brand rule). Wave A moves legacy heroes to the Pearl shell through one shared layer (`src/styles/hermes-public-pearl-shell.css`). Remaining waves B–F with exit criteria live in `docs/design/HERMES_DESIGN_SEARCH_FUNNEL_PROGRAM_2026-10-26.md` (Russian copy in One Brain on Drive).
+
+REUSE_RULE: Scope design work by the owner's outcome; before reporting "done", re-run the site-wide crawl and report per wave with page counts and the rows still open; never call the design finished while the program's convergence matrix has open rows.

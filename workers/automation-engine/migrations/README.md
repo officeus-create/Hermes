@@ -36,3 +36,9 @@ The snapshot operation is evidence-only. It must:
 An accepted snapshot artifact does **not** edit `manifest.json`. Promotion from `PENDING_RUNTIME_SNAPSHOT` to `VERIFIED` remains a separate bounded source change after artifact readback and independent QA.
 
 The repository contract test fails if SQL migration files appear while the baseline is still pending.
+
+## Durable baseline evidence promotion
+
+A VERIFIED promotion must persist the exact accepted baseline-candidate JSON under its content-addressed `workers/automation-engine/migrations/baseline-evidence/<fingerprint>.json` path. The durable candidate embeds the normalized schema snapshot (schema metadata/DDL only; no D1 rows, credentials, or PII).
+
+The migration gate fails closed if the referenced repository evidence file is missing or malformed, if its source SHA/schema fingerprint differs from the manifest, or if its embedded schema no longer validates. Temporary GitHub Actions artifacts are transport/review evidence only and are not the durable baseline source of truth.

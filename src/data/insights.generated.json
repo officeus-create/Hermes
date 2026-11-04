@@ -1,9 +1,104 @@
 [
   {
+    "id": "hermes-own-search-baseline-october-2026",
+    "direction": "marketing",
+    "slug": "hermes-own-search-baseline-october-2026",
+    "title": "Our Own Search Baseline: What Google and Bing Show | Hermes",
+    "description": "Hermes publishes its own search numbers: 42 Google clicks and 2,173 impressions in three months, 149 indexed pages, one real script error fixed. What we changed and how we will measure the next readback.",
+    "eyebrow": "Marketing / Search Evidence · Hermes on Hermes · 26 October 2026",
+    "h1": "We test our marketing on ourselves first: the Hermes search baseline, October 2026",
+    "conciseAnswer": "Between 29 July and 26 October 2026 the Hermes website earned 42 clicks and 2,173 impressions in Google Search at an average position of 39.8, up from 1 click and 11 impressions in the three months before. Google lists 149 pages as indexed. Bing shows 12 clicks and 239 impressions. We fixed a script error that affected 5.8% of recorded sessions, moved about 120 inner pages onto one visual system without changing a single URL, and will publish the next readback here.",
+    "explanation": [
+      "Hermes sells websites, search visibility and marketing systems, so our own website is the first place those claims should be tested. This page is a dated baseline, not a success story: it records what Google Search Console, Bing Webmaster Tools and our consented session analytics show today, what we changed, and what we expect to measure next. The numbers are small because the site is young; that is exactly why they are useful as a starting point.",
+      "Google Search, 29 July – 26 October 2026: 42 clicks, 2,173 impressions, 1.9% click-through rate, average position 39.8. The previous three months showed 1 click and 11 impressions. Most clicks still come from people who search for the company by name (\"hermes logistics\", \"hermes logistics llc\"), the home page, the Ukrainian and Russian home pages, and the car-hauling dispatcher role. Service searches such as car hauler dispatch, car hauling load board and auto transport in Wisconsin cities already produce impressions, but at positions 40–75, which means the pages are understood but not yet trusted enough to rank.",
+      "The three-month total hides the shape of the curve. Most impressions arrived between 9 and 28 August — roughly 60 to 110 a day, largely for logistics-SEO searches where our service page sat around positions 40–55. From 29 August Google showed the site far less often, about 5 to 15 impressions a day, while searches for the company name and the dispatcher role kept working. The pages stayed indexed, so we read this as Google re-evaluating a young domain on competitive searches rather than a technical block; the next readback compares those exact windows page by page.",
+      "Indexing, as reported on 23 October 2026: 149 pages indexed and 267 not indexed. Most of the 267 are expected: 61 are language or parameter variants that correctly point to another canonical page, and 60 are private or utility routes that we deliberately mark noindex. 130 are discovered but not yet crawled, which usually reflects how much authority a young domain has rather than a page defect. Seven old addresses returning 404 and one 403 are already in Google's validation queue.",
+      "Bing, 12 August – 24 October 2026: 12 clicks and 239 impressions. Bing's SEO/GEO report lists exactly one issue, of medium severity: not enough inbound links from high-quality domains. No on-page errors are reported. That gap is closed through real partners, directories and published work, not through purchased links.",
+      "Session analytics, last 90 days, consented visitors only: 445 sessions, 3.6 pages per session, a largest-content paint of 1.3 seconds and a layout shift of 0.012, both in the good range. Interaction responsiveness sits at the 200 ms boundary, and one real defect stood out: a script error in 5.8% of sessions. The cause was how our structured data was packaged — one combined block that a third-party analytics reader could not parse. We now publish one structured-data block per entity; search engines receive exactly the same facts.",
+      "What changed in the same week: about 120 inner pages — carrier market pages, logistics paths, Academy programmes, guides, careers, case studies, legal pages and the Spanish, French, Italian, Russian and Ukrainian overviews — moved from older dark page heads onto the same light visual system as the home page. Every URL, title, heading, canonical link, language alternate and internal link stayed the same, which we verified by comparing the full site build before and after.",
+      "How we will measure: the next readback compares the same windows — clicks, impressions, average position, indexed pages and session errors — and is published on this page with its date. We do not promise rankings, traffic or leads; we show the method and the numbers, the same way we would for a client."
+    ],
+    "takeaways": [
+      "Publish a dated baseline before claiming any growth",
+      "Separate expected non-indexed pages (canonical variants, noindex) from real defects",
+      "Fix measurable runtime errors first; one script error affected 5.8% of sessions",
+      "Redesign without changing URLs, headings, canonicals or internal links, and prove it with a build comparison",
+      "Earn authority with real links and published work, not purchased links"
+    ],
+    "faq": [
+      {
+        "question": "Why publish small numbers?",
+        "answer": "Because a baseline is only useful if it is honest. The next readback is compared against these exact figures and windows."
+      },
+      {
+        "question": "Are 267 non-indexed pages a problem?",
+        "answer": "Mostly not. 121 of them are canonical variants or deliberately private pages. The 130 discovered-but-not-crawled pages depend mainly on domain authority and internal linking."
+      },
+      {
+        "question": "Did the redesign change any URLs?",
+        "answer": "No. A full build comparison showed zero changes to links, canonical URLs, language alternates, titles, headings and structured-data facts."
+      },
+      {
+        "question": "Can Hermes run the same review for my business website?",
+        "answer": "Yes. Hermes Marketing reviews search visibility, indexing, analytics and site errors and turns them into a prioritised plan. Results are measured, not guaranteed."
+      }
+    ],
+    "related": [
+      {
+        "title": "Hermes Marketing",
+        "body": "Websites, SEO/GEO, social media and sales follow-up connected into one measurable growth system.",
+        "href": "/paths/marketing/"
+      },
+      {
+        "title": "Technical SEO checklist",
+        "body": "The checks behind this baseline: indexing, canonicals, structured data and performance.",
+        "href": "/resources/technical-seo-checklist/"
+      },
+      {
+        "title": "Hermes Technology",
+        "body": "Websites and systems built with tests, performance budgets and cache-safe releases.",
+        "href": "/paths/technology/"
+      }
+    ],
+    "primaryAction": {
+      "label": "Request a search review for your site",
+      "href": "/paths/marketing/"
+    },
+    "secondaryAction": {
+      "label": "See the technical SEO checklist",
+      "href": "/resources/technical-seo-checklist/"
+    },
+    "sourceLabel": "Hermes first-party readback — Google Search Console, Bing Webmaster Tools and consented session analytics, 26 October 2026",
+    "sourceUrl": "https://search.google.com/search-console/about",
+    "sourcePublishedAt": "2026-10-26",
+    "datePublished": "2026-10-26",
+    "dateModified": "2026-10-26",
+    "authorName": "Hermes Marketing",
+    "keywords": [
+      "search console baseline",
+      "own website seo case",
+      "indexing report explained",
+      "structured data fix",
+      "website redesign without seo loss",
+      "Hermes Marketing"
+    ],
+    "contentTier": "standalone",
+    "currentMarketClaim": false,
+    "publicationScore": {
+      "score": 82,
+      "recommendation": "standalone",
+      "reasons": [
+        "First-party measured data with dates and windows",
+        "Reusable method for service businesses (baseline → fix → readback)",
+        "Links to Marketing and Technology owners without duplicating their intent"
+      ]
+    }
+  },
+  {
     "id": "hermes-automatic-engineer-2026",
     "direction": "technology",
     "slug": "hermes-automatic-engineer-business-automation",
-    "title": "Hermes Automatic Engineer: AI Sales and Operations Assistant | Hermes Insights",
+    "title": "Hermes Automatic Engineer: AI Sales Assistant | Hermes",
     "description": "Hermes Automatic Engineer is a product in development at Hermes: an AI assistant that follows up every lead, asks the right discovery questions and keeps routine business work moving for small teams.",
     "eyebrow": "Technology / Hermes Products · In development · 23 October 2026",
     "h1": "Hermes Automatic Engineer: an AI assistant that keeps sales and routine work moving",
@@ -77,7 +172,7 @@
     "sourceUrl": "https://hermeslogisticsus.com/insights/technology/hermes-automatic-engineer-business-automation/",
     "sourcePublishedAt": "2026-10-23",
     "datePublished": "2026-10-23",
-    "dateModified": "2026-10-23",
+    "dateModified": "2026-10-25",
     "authorName": "Hermes Technology",
     "contentTier": "standalone",
     "currentMarketClaim": false,
@@ -103,7 +198,7 @@
     "id": "us-service-search-discovery-checklist-2026",
     "direction": "marketing",
     "slug": "us-service-business-search-discovery-checklist",
-    "title": "How US Service Businesses Get Found in Search and Maps | Hermes Insights",
+    "title": "US Service Business Search & Maps Checklist | Hermes",
     "description": "A source-checked practical SEO and GEO checklist for US service businesses: truthful service pages, Google Business Profile eligibility, internal links and qualified-lead measurement without promises of rankings.",
     "eyebrow": "Marketing / Practical guide · 23 October 2026",
     "h1": "How service businesses get found: an evidence-first SEO and GEO checklist",
@@ -171,7 +266,7 @@
     "sourceUrl": "https://developers.google.com/search/blog/2024/02/ssg-gets-a-makeover",
     "sourcePublishedAt": "2024-02-02",
     "datePublished": "2026-10-23",
-    "dateModified": "2026-10-23",
+    "dateModified": "2026-10-25",
     "authorName": "Hermes Marketing Editorial Team",
     "keywords": [
       "local SEO for service businesses",
@@ -226,7 +321,7 @@
     "id": "hermes-academy-international-roadmap-2026",
     "direction": "academy",
     "slug": "academy-international-roadmap-where-we-train",
-    "title": "Hermes Academy International Roadmap: Where We Train and Why | Hermes Insights",
+    "title": "Hermes Academy International Training Roadmap | Hermes",
     "description": "How Hermes Business Academy organises international entry routes — a dedicated London path for U.S. logistics training, country pages and email-coordinated applications — and why every route starts with readiness and human review.",
     "eyebrow": "Academy / Roadmap · International Entry Routes · 22 October 2026",
     "h1": "Hermes Academy international roadmap: where we train and why",
@@ -304,7 +399,7 @@
     },
     "sourcePublishedAt": "2026-10-22",
     "datePublished": "2026-10-22",
-    "dateModified": "2026-10-22",
+    "dateModified": "2026-10-25",
     "contentTier": "standalone",
     "currentMarketClaim": false
   },
@@ -397,7 +492,7 @@
     "id": "hermes-technology-custom-ai-automation-project-brief-2026",
     "direction": "technology",
     "slug": "custom-ai-automation-business-systems-project-brief",
-    "title": "Custom AI, Automation and Business Systems: Start With a Project Brief | Hermes Insights",
+    "title": "Custom AI & Automation Project Brief | Hermes",
     "description": "How Hermes Technology turns one defined business process into custom software — websites, CRM, automation and AI assistants — and why every project starts with a structured project brief.",
     "eyebrow": "Technology / Method · Project Brief · 22 October 2026",
     "h1": "Custom AI, automation and business systems — starting with your project brief",
@@ -465,7 +560,7 @@
     ],
     "sourcePublishedAt": "2026-10-22",
     "datePublished": "2026-10-22",
-    "dateModified": "2026-10-22",
+    "dateModified": "2026-10-25",
     "contentTier": "standalone",
     "currentMarketClaim": false,
     "publicationScore": {
@@ -482,7 +577,7 @@
     "id": "hermes-logistics-find-your-path-clear-operations-2026",
     "direction": "logistics",
     "slug": "find-your-logistics-path-clear-freight-operations",
-    "title": "Find Your Logistics Path: Freight Operations Built Around Clear Roles | Hermes Insights",
+    "title": "Find Your Logistics Path: Clear Freight Roles | Hermes",
     "description": "How Hermes Logistics organises dispatch, carrier back office and car hauling around clear operations for carriers, shippers, dealers, fleets and owner-operators — and how the Find Your Path tool routes each visitor.",
     "eyebrow": "Logistics / Operations Guide · Find Your Path · 22 October 2026",
     "h1": "Move freight with a team built around clear operations: find your logistics path",
@@ -550,7 +645,7 @@
     ],
     "sourcePublishedAt": "2026-10-22",
     "datePublished": "2026-10-22",
-    "dateModified": "2026-10-22",
+    "dateModified": "2026-10-25",
     "contentTier": "standalone",
     "currentMarketClaim": false,
     "publicationScore": {
@@ -653,7 +748,7 @@
     "id": "hermes-home-redesign-four-live-windows-2026",
     "direction": "technology",
     "slug": "home-redesign-four-live-video-windows",
-    "title": "Hermes Home Redesign: Four Live Video Windows That Stay Fast | Hermes Insights",
+    "title": "Hermes Home Redesign: Four Fast Video Windows | Hermes",
     "description": "How Hermes rebuilt its home page around four live multi-shot video windows — one per direction — while keeping every film under 1.5 MB, honoring reduced motion and Save-Data, and never breaking cached media.",
     "eyebrow": "Technology / Website Release · Hermes Home · 22 October 2026",
     "h1": "Four live windows, one fast page: what we changed on the Hermes home page",
@@ -714,7 +809,7 @@
     "sourceUrl": "https://hermeslogisticsus.com/",
     "sourcePublishedAt": "2026-10-22",
     "datePublished": "2026-10-22",
-    "dateModified": "2026-10-22",
+    "dateModified": "2026-10-25",
     "authorName": "Hermes Technology",
     "keywords": [
       "website redesign",
@@ -740,7 +835,7 @@
     "id": "hermes-website-built-inside-its-system-2026",
     "direction": "technology",
     "slug": "how-the-hermes-website-was-built",
-    "title": "How This Website Was Built Inside the System It Represents | Hermes Insights",
+    "title": "How the Hermes Website Was Built | Hermes",
     "description": "How Hermes built its own corporate website as a product: discovery, information architecture, an original interface system, static engineering, quality assurance and a repeatable production release.",
     "eyebrow": "Technology / How We Built It · Website Case · 22 October 2026",
     "h1": "How this website was built inside the system it represents",
@@ -818,7 +913,7 @@
     },
     "sourcePublishedAt": "2026-10-22",
     "datePublished": "2026-10-22",
-    "dateModified": "2026-10-22",
+    "dateModified": "2026-10-25",
     "contentTier": "standalone",
     "currentMarketClaim": false
   },
@@ -912,7 +1007,7 @@
     "id": "hermes-academy-skills-real-business-work-2026",
     "direction": "academy",
     "slug": "learn-skills-real-business-work-academy-path",
-    "title": "Learn Skills That Connect to Real Business Work: The Hermes Academy Path | Hermes Insights",
+    "title": "Hermes Academy Path: Skills for Real Business Work | Hermes",
     "description": "How Hermes Business Academy structures practical learning in logistics operations, marketing and operational leadership — from awareness to understanding to application — and how to try a public exercise before you apply.",
     "eyebrow": "Academy / Learning Method · Practical Tracks · 22 October 2026",
     "h1": "Learn skills that connect to real business work: choosing your Academy path",
@@ -980,7 +1075,7 @@
     ],
     "sourcePublishedAt": "2026-10-22",
     "datePublished": "2026-10-22",
-    "dateModified": "2026-10-22",
+    "dateModified": "2026-10-25",
     "contentTier": "standalone",
     "currentMarketClaim": false,
     "publicationScore": {
@@ -997,7 +1092,7 @@
     "id": "hermes-load-board-live-vs-preview-2026",
     "direction": "logistics",
     "slug": "load-board-live-freight-vs-previews",
-    "title": "How the Hermes Load Board Separates Live Freight From Previews | Hermes Insights",
+    "title": "Hermes Load Board: Live Freight vs Previews | Hermes",
     "description": "Why the Hermes car-hauling Load Board keeps approved live records and labelled, non-bookable preview rows in two separate layers — and why the live section is allowed to show zero.",
     "eyebrow": "Logistics / How We Built It · Load Board · 22 October 2026",
     "h1": "How the Load Board separates live freight from previews",
@@ -1075,7 +1170,7 @@
     },
     "sourcePublishedAt": "2026-10-22",
     "datePublished": "2026-10-22",
-    "dateModified": "2026-10-22",
+    "dateModified": "2026-10-25",
     "contentTier": "standalone",
     "currentMarketClaim": false
   },
@@ -1083,7 +1178,7 @@
     "id": "hermes-logistics-direction-page-refresh-2026",
     "direction": "logistics",
     "slug": "logistics-page-refresh-dispatch-load-board",
-    "title": "Hermes Logistics Page Refresh: Dispatch and Load Board Up Front | Hermes Insights",
+    "title": "Hermes Logistics: Dispatch & Load Board Refresh | Hermes",
     "description": "The Hermes Logistics page now leads with car-hauling dispatch for owner-operators and small fleets, puts the Load Board one click away and states the month-to-month model before anyone fills in a form.",
     "eyebrow": "Logistics / Website Update · Car Hauling Dispatch · 22 October 2026",
     "h1": "The Hermes Logistics page now starts with dispatch and the Load Board",
@@ -1142,7 +1237,7 @@
     "sourceUrl": "https://hermeslogisticsus.com/paths/logistics/",
     "sourcePublishedAt": "2026-10-22",
     "datePublished": "2026-10-22",
-    "dateModified": "2026-10-22",
+    "dateModified": "2026-10-25",
     "authorName": "Hermes Logistics",
     "keywords": [
       "car hauling dispatch",
@@ -1168,7 +1263,7 @@
     "id": "hermes-logistics-request-to-handoff-2026",
     "direction": "logistics",
     "slug": "logistics-review-request-to-handoff",
-    "title": "From Request to Handoff: Inside a Hermes Logistics Review | Hermes Insights",
+    "title": "Hermes Logistics Review: Request to Handoff | Hermes",
     "description": "The five steps a logistics request moves through at Hermes — context, route and equipment fit, source and capacity boundary, human review and a controlled handoff — and why a person confirms the decision.",
     "eyebrow": "Logistics / How We Built It · Review Process · 22 October 2026",
     "h1": "From request to handoff: inside a Hermes logistics review",
@@ -1246,7 +1341,7 @@
     },
     "sourcePublishedAt": "2026-10-22",
     "datePublished": "2026-10-22",
-    "dateModified": "2026-10-22",
+    "dateModified": "2026-10-25",
     "contentTier": "standalone",
     "currentMarketClaim": false
   },
@@ -1340,7 +1435,7 @@
     "id": "hermes-marketing-one-signal-growth-path-2026",
     "direction": "marketing",
     "slug": "one-signal-carried-to-learning-growth-path",
-    "title": "One Signal, Carried All the Way to Learning: Our Growth Path | Hermes Insights",
+    "title": "From Signal to Learning: Hermes Growth Path | Hermes",
     "description": "How Hermes Marketing connects strategy, content, distribution, qualified leads and learning into one loop — and why the next channel is added only when the data from the previous one justifies it.",
     "eyebrow": "Marketing / Growth Method · Strategy to Learning · 22 October 2026",
     "h1": "One signal, carried all the way to learning: our growth path",
@@ -1418,7 +1513,7 @@
     },
     "sourcePublishedAt": "2026-10-22",
     "datePublished": "2026-10-22",
-    "dateModified": "2026-10-22",
+    "dateModified": "2026-10-25",
     "contentTier": "standalone",
     "currentMarketClaim": false
   },
@@ -1426,7 +1521,7 @@
     "id": "hermes-real-footage-instead-of-ai-artwork-2026",
     "direction": "marketing",
     "slug": "real-work-footage-instead-of-abstract-ai-artwork",
-    "title": "Why We Replaced Abstract AI Artwork With Real Work Footage | Hermes Insights",
+    "title": "Why Hermes Uses Real Work Footage | Hermes",
     "description": "Hermes removed the abstract AI illustrations from its direction pages and service pages and replaced them with frames from real work footage. Here is why, what changed and what it means for a service business website.",
     "eyebrow": "Marketing / Brand Decision · Website Imagery · 22 October 2026",
     "h1": "Why we replaced abstract AI artwork with real work footage",
@@ -1486,7 +1581,7 @@
     "sourceUrl": "https://hermeslogisticsus.com/case/it-development/",
     "sourcePublishedAt": "2026-10-22",
     "datePublished": "2026-10-22",
-    "dateModified": "2026-10-22",
+    "dateModified": "2026-10-25",
     "authorName": "Hermes Marketing",
     "keywords": [
       "website imagery",
@@ -1598,7 +1693,7 @@
     "id": "hermes-marketing-repeatable-growth-system-brief-2026",
     "direction": "marketing",
     "slug": "repeatable-growth-system-marketing-brief",
-    "title": "Turn Attention Into a Repeatable Growth System: Prepare a Marketing Brief | Hermes Insights",
+    "title": "Build a Repeatable Growth System: Marketing Brief | Hermes",
     "description": "How Hermes Marketing (ProgressoPro) connects website, SEO, social media and sales follow-up into one measurable growth system — and what to include in a marketing brief before the first working cycle.",
     "eyebrow": "Marketing / Growth Method · Marketing Brief · 22 October 2026",
     "h1": "Turn attention into a repeatable growth system: how to prepare a marketing brief",
@@ -1666,7 +1761,7 @@
     ],
     "sourcePublishedAt": "2026-10-22",
     "datePublished": "2026-10-22",
-    "dateModified": "2026-10-22",
+    "dateModified": "2026-10-25",
     "contentTier": "standalone",
     "currentMarketClaim": false,
     "publicationScore": {

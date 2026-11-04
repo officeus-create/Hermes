@@ -14,6 +14,11 @@ const PRE_SIDE_EFFECT_STATES = new Set([
   "plan_enqueue_failed",
 ]);
 
+const READBACK_RETRYABLE_STATES = new Set([
+  "provider_accepted_readback_pending",
+  "unknown_outcome_readback_pending",
+]);
+
 const READ_ONLY_MESSAGE_TYPES = new Set(["job.execute", "publication.readback"]);
 const EXTERNAL_WRITE_MESSAGE_TYPES = new Set(["publication.write"]);
 
@@ -54,7 +59,10 @@ export function classifyDlqDisposition(input = {}) {
       return { disposition: "QUARANTINE", reason: "terminal_state_no_replay" };
     }
     if (PRE_SIDE_EFFECT_STATES.has(state) && providerOutcome === "NONE") {
-      return { disposition: "SAFE_REDRIVE", reason: "proven_pre_side_effect_state" };
+      // publication.write is not a canonical main-queue message type today.
+      // Fail closed rather than classifying a write as redrivable when the
+      // receiving queue has no trusted handler for that write message.
+      return { disposition: "OWNER_ACTION", reason: "external_write_redrive_handler_unavailable" };
     }
     if (PRE_SIDE_EFFECT_STATES.has(state) && !providerOutcome) {
       return { disposition: "OWNER_ACTION", reason: "provider_outcome_unknown" };
@@ -64,6 +72,9 @@ export function classifyDlqDisposition(input = {}) {
 
   if (TERMINAL_STATES.has(state)) {
     return { disposition: "QUARANTINE", reason: "terminal_state_no_replay" };
+  }
+  if (messageType === "publication.readback" && READBACK_RETRYABLE_STATES.has(state)) {
+    return { disposition: "SAFE_REDRIVE", reason: "readback_retryable" };
   }
   if (PRE_SIDE_EFFECT_STATES.has(state)) {
     return { disposition: "SAFE_REDRIVE", reason: "read_only_retryable" };
