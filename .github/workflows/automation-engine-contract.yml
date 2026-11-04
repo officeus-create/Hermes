@@ -41,6 +41,16 @@ on:
       - "scripts/hae-bounded-repair-preflight.test.mjs"
       - "scripts/hae-evidence-lesson-preflight.test.mjs"
       - "scripts/hae-github-ci-*.mjs"
+      - "scripts/hae-github-auditor-*.mjs"
+      - "scripts/hae-cloudflare-auditor-*.mjs"
+      - "scripts/hae-drive-auditor-*.mjs"
+      - "scripts/hae-website-auditor-*.mjs"
+      - "workers/automation-engine/src/github-auditor-runtime-intake.mjs"
+      - "workers/automation-engine/src/cloudflare-auditor-runtime-intake.mjs"
+      - "workers/automation-engine/src/website-audit-source.mjs"
+      - "functions/api/_lib/business-social-drive.mjs"
+      - "functions/api/internal/audit/drive.ts"
+      - ".github/workflows/cloudflare-five-surface-synthetic.yml"
       - ".github/workflows/hae-github-ci-sensor.yml"
       - "docs/HERMES_AUTOMATION_ENGINE_*.md"
       - ".github/workflows/automation-engine-contract.yml"
@@ -107,3 +117,7 @@ jobs:
           node scripts/hae-github-ci-integration-sqlite.test.mjs
           node scripts/hae-github-ci-independent-qa-source.test.mjs
           node scripts/hae-github-ci-independent-qa-runtime-intake.test.mjs
+          node scripts/hae-github-auditor-source.test.mjs
+          node scripts/hae-cloudflare-auditor-source.test.mjs
+          node scripts/hae-drive-auditor-source.test.mjs
+          node scripts/hae-website-auditor-source.test.mjs
