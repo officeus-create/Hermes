@@ -8,7 +8,8 @@ const sameOriginMutation=(request:Request)=>request.headers.get("Sec-Fetch-Site"
 const safeReason=(value:unknown)=>String(value||"").replace(/\u0000/g,"").trim().slice(0,1000);
 
 async function getItem(db:any,id:string){
-  return db.prepare(`SELECT w.*, t.status AS linked_task_status, t.updated_at AS linked_task_updated_at,
+  return db.prepare(`SELECT w.*, t.status AS linked_task_status, t.started_at AS linked_task_started_at,
+    t.completed_at AS linked_task_completed_at, t.updated_at AS linked_task_updated_at,
     t.pr_url AS linked_task_pr_url, t.output_summary AS linked_task_output_summary
     FROM hermes_owner_work_items w LEFT JOIN hermes_internal_ai_tasks t
     ON t.id=w.linked_task_id AND t.organization_scope=w.organization_scope
