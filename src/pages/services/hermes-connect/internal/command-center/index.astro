@@ -151,11 +151,36 @@ async function loadProjects(){
         }));
         refreshProjectSelectors();
         renderAgentRoster();
+        renderCommandCenterLaunch();
       }
   } catch(error) {
     console.warn("Command Center project metadata unavailable; task backlog remains usable.");
   }
   renderItems();renderOwnerOverview();
+}
+function renderCommandCenterLaunch(){
+  const project=projects.find((item:any)=>item.id==="hermes-command-center");
+  const list=q<HTMLElement>("[data-launch-milestones]");
+  if(!project){
+    setText("[data-launch-state]","UNKNOWN");setText("[data-launch-progress]","UNKNOWN");setText("[data-launch-completed]","UNKNOWN");setText("[data-launch-total]",t("of UNKNOWN","из UNKNOWN"));setText("[data-launch-hold]","UNKNOWN");
+    if(list){list.replaceChildren();const p=document.createElement("p");p.className="muted";p.textContent=t("Canonical Command Center project state is unavailable.","Каноническое состояние проекта Command Center недоступно.");list.append(p)}
+    return;
+  }
+  const progress=project.progress||{};
+  setText("[data-launch-state]",String(project.status||"UNKNOWN").replaceAll("_"," ").toUpperCase());
+  setText("[data-launch-progress]",Number.isFinite(progress.percent)?String(progress.percent)+"%":"UNKNOWN");
+  setText("[data-launch-completed]",Number.isFinite(progress.completed)?String(progress.completed):"UNKNOWN");
+  setText("[data-launch-total]",Number.isFinite(progress.total)?t("of ","из ")+String(progress.total):t("of UNKNOWN","из UNKNOWN"));
+  setText("[data-launch-hold]",Array.isArray(project.blockers)&&project.blockers.length?String(project.blockers[0]):"UNKNOWN");
+  if(!list)return;list.replaceChildren();
+  const milestones=Array.isArray(project.milestones)?project.milestones:[];
+  milestones.forEach((item:any)=>{
+    const row=document.createElement("article");row.className="owner-today-item";
+    const identity=document.createElement("div");const strong=document.createElement("strong");strong.textContent=String(item.label||item.id||"Gate");
+    const evidence=document.createElement("small");evidence.textContent=String(item.evidence||t("No evidence reference yet","Ссылка на evidence пока отсутствует"));identity.append(strong,evidence);
+    const state=document.createElement("span");state.className="module-state";state.textContent=String(item.state||"UNKNOWN").replaceAll("_"," ").toUpperCase();
+    row.append(identity,state);list.append(row);
+  });
 }
 function renderAgentRoster(){
   const root=q<HTMLElement>("[data-agent-roster]");if(!root)return;
