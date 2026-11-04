@@ -75,6 +75,16 @@ Windows is the assigned primary executor, but its HAE runtime/heartbeat has not 
 
 This preserves the architecture boundary: one Command Center, one existing runner-state row, one HAE, no second planner, Worker, D1 database, scheduler, or task authority.
 
+## DeepSeek specialist boundary
+
+DeepSeek is a subordinate specialist lane, not Hermes AI itself and not a second HAE. The Command Center project map must keep this distinction visible.
+
+- Existing local DeepSeek/VIKTOR evidence remains read-only evidence; a model being installed or answering locally is not canonical execution proof.
+- `#2266` owns the separate dsh-superagent sandbox experiment and remains `PREPARED / NOT RUNNING` until dedicated OS/container/VM isolation, scoped GitHub identity, pinned reviewed source/dependencies and one isolated Ticket → PR → CI → independent-review smoke are accepted.
+- DeepSeek may propose or validate bounded output only through its declared schema/validator contract. It has no direct merge, deploy, publication, provider-write, credential, billing or production-data authority.
+- Any real DeepSeek execution shown as executed in Command Center must correlate to the same HAE `WORK_ID` / job identity and durable receipt rules as every other executor. Heartbeat, process presence, model availability, issue/PR text or a prepared sandbox are insufficient.
+- VIKTOR remains the coordinator/operator role for the local Hermes AI environment; HAE remains the durable execution/control-plane owner.
+
 ## Plugin selection and execution evidence
 
 New owner tasks persist a versioned `plugin_route_json` in the **existing** `hermes_owner_work_items` D1 table. The deterministic route selects a verified registry role and eligible helpers by workstream, with a narrow marketing/search-intent override. Edits reselect; dispatch atomically refreshes the route alongside the existing AI task linkage and adds the route policy to the prompt. Owner cards display the selected role/version and **PLUGIN_SELECTED_NOT_EXECUTED**. No private-plugin tool invocation, actual HAE claim, independent QA, lesson promotion, or provider write is inferred from selection; those need separate runtime receipts. The legacy `software_engineer` internal AI task remains the existing executor and is **not** renamed as a plugin. This source change adds no scheduler, worker, provider access or background job.
