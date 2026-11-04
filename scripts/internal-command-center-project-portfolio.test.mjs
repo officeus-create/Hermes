@@ -14,6 +14,7 @@ const retiredAiPage = fs.readFileSync("src/pages/services/hermes-connect/ai-comm
 const portfolio = commandCenterProjectPortfolio();
 const coverage = commandCenterProjectCoverageSnapshot();
 const coverageArtifact = JSON.parse(fs.readFileSync("data/command-center/project-coverage-2026-11-01.json","utf8"));
+assert.ok(coverageArtifact.families.some((family)=>family.id==="hae-command-center"&&/VIKTOR/.test(family.label)&&/DeepSeek/.test(family.label)),"coverage family must not hide VIKTOR/DeepSeek under generic AI wording");
 
 assert.deepEqual(validateCommandCenterProjects(portfolio), []);
 assert.ok(portfolio.length >= 10, "the initial owner registry must cover the consolidated project families");
