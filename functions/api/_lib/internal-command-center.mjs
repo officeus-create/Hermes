@@ -1,6 +1,6 @@
 import { INTERNAL_AI_ORGANIZATION_SCOPE, nowIso } from "./internal-ai.mjs";
-import { pluginRuntimeRegistrySnapshot } from "../../../workers/automation-engine/src/plugin-runtime-registry.mjs";
 import { seedHistoricalCommandCenterBacklog } from "./command-center-history-backlog.mjs";
+import { pluginRuntimeRegistrySnapshot } from "../../../workers/automation-engine/src/plugin-runtime-registry.mjs";
 
 export const COMMAND_CENTER_SCOPE = INTERNAL_AI_ORGANIZATION_SCOPE;
 const WORKSTREAMS = new Set(["marketing","logistics","sales","technology","academy","finance","operations"]);
@@ -26,6 +26,7 @@ export async function ensureCommandCenterSchema(db) {
     linked_task_id TEXT,
     project_id TEXT,
     plugin_route_json TEXT,
+    hae_job_id TEXT,
     completed_at TEXT,
     acceptance_status TEXT NOT NULL DEFAULT 'not_required' CHECK (acceptance_status IN ('not_required','awaiting','accepted')),
     accepted_by TEXT,
@@ -44,6 +45,7 @@ export async function ensureCommandCenterSchema(db) {
     ["accepted_at","TEXT"],
     ["project_id","TEXT"],
     ["plugin_route_json","TEXT"],
+    ["hae_job_id","TEXT"],
     ["source_kind","TEXT"],
     ["source_label","TEXT"],
     ["source_ref","TEXT"],
@@ -57,6 +59,7 @@ export async function ensureCommandCenterSchema(db) {
   }
   await db.prepare("CREATE INDEX IF NOT EXISTS idx_owner_work_items_scope_state_priority ON hermes_owner_work_items(organization_scope,status,priority,created_at)").run();
   await db.prepare("CREATE INDEX IF NOT EXISTS idx_owner_work_items_scope_project ON hermes_owner_work_items(organization_scope,project_id)").run();
+  await seedHistoricalCommandCenterBacklog(db);
   await db.prepare(`CREATE TABLE IF NOT EXISTS hermes_internal_owner_access_audit (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     organization_scope TEXT NOT NULL CHECK (organization_scope = 'hermes_internal'),
@@ -65,7 +68,6 @@ export async function ensureCommandCenterSchema(db) {
     action TEXT NOT NULL CHECK (action IN ('grant','revoke')),
     created_at TEXT NOT NULL
   )`).run();
-  await seedHistoricalCommandCenterBacklog(db);
 }
 
 export function normalizeWorkstream(value) { const v=String(value||"").trim().toLowerCase(); return WORKSTREAMS.has(v)?v:null; }
@@ -99,7 +101,7 @@ export function publicWorkItem(row){
   if(!row)return null;
   const status=String(row.status)==="in_progress"&&String(row.acceptance_status)==="awaiting"?"awaiting_acceptance":String(row.status);
   return {
-    id:String(row.id), workstream:String(row.workstream), priority:String(row.priority), title:String(row.title), details:String(row.details), project_id:row.project_id||null, plugin_route:readWorkItemPluginRoute(row),
+    id:String(row.id), workstream:String(row.workstream), priority:String(row.priority), title:String(row.title), details:String(row.details), project_id:row.project_id||null, plugin_route:readWorkItemPluginRoute(row), hae_job_id:row.hae_job_id||null,
     source:String(row.source||"text"), status, acceptance_status:String(row.acceptance_status||"not_required"), created_at:row.created_at||null, updated_at:row.updated_at||null,
     linked_task_id:row.linked_task_id||null, completed_at:row.completed_at||null,
     accepted_by:row.accepted_by||null, accepted_at:row.accepted_at||null, blocked_reason:row.blocked_reason||null,
