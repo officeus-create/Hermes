@@ -10,6 +10,7 @@ import { onRequestPatch as editProject } from "../functions/api/internal-command
 import { ensureInternalAiSchema } from "../functions/api/_lib/internal-ai.mjs";
 import { ensureCommandCenterSchema, selectWorkItemPluginRoute } from "../functions/api/_lib/internal-command-center.mjs";
 import { onRequest as commandCenterMiddleware } from "../functions/_middleware.js";
+import { pluginRuntimeVersion } from "../workers/automation-engine/src/plugin-runtime-registry.mjs";
 
 class Statement {
   constructor(statement,args=[]){this.statement=statement;this.args=args}
@@ -159,6 +160,7 @@ assert.equal(dispatched.payload.work_item.plugin_route?.state,"PLUGIN_SELECTED_N
 const routedPrompt=sqlite.prepare("SELECT prompt FROM hermes_internal_ai_tasks WHERE id=?").get(dispatched.payload.task.id).prompt;
 const routedOwner=dispatched.payload.work_item.plugin_route?.owner;
 assert.ok(routedOwner?.role_id&&routedOwner?.plugin_version,"dispatch must preserve the registry-backed owner route");
+assert.equal(routedOwner.plugin_version,pluginRuntimeVersion(routedOwner.role_id),"persisted owner route must match the canonical plugin runtime registry");
 assert.ok(routedPrompt.includes("Selected owner capability: "+routedOwner.role_id+"@"+routedOwner.plugin_version),"prompt must use the exact registry-backed owner release instead of a stale hardcoded version");
 assert.match(routedPrompt,/PLUGIN_SELECTED_NOT_EXECUTED/);
 
