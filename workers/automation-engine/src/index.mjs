@@ -1436,7 +1436,7 @@ async function getGenericJob(env, jobId) {
   ).bind(jobId).first();
   if (!job) return null;
   const events = await env.DB.prepare(
-    "SELECT event_id,event_type,from_state,to_state,step,evidence_ref,provider_ref,error_class,created_at FROM hermes_automation_job_events WHERE job_id=? ORDER BY created_at ASC LIMIT 100"
+    "SELECT event_id,job_id,event_type,from_state,to_state,step,evidence_ref,provider_ref,error_class,created_at FROM hermes_automation_job_events WHERE job_id=? ORDER BY created_at ASC LIMIT 100"
   ).bind(jobId).all();
   return { job, events: events?.results || [] };
 }
