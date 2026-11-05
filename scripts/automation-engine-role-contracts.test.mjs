@@ -47,6 +47,7 @@ assert.deepEqual(
     "search.defect.prioritize",
     "search.snapshot.evaluate",
     "technology.release.radar",
+    "work.item.plan",
     "work.portfolio.reconcile",
   ].sort(),
 );
@@ -61,7 +62,7 @@ for (const contract of ROLE_CONTRACTS) {
   }
   assert.equal(contract.permission_class, "READ_ONLY");
   if (contract.semantic_required) {
-    assert.ok(["search.defect.prioritize", "hae.self.patch.propose"].includes(contract.job_type));
+    assert.ok(["search.defect.prioritize", "hae.self.patch.propose", "work.item.plan"].includes(contract.job_type));
     assert.equal(contract.free_ai_policy, "free_only_wait_if_unavailable");
     assert.equal(contract.runtime_config.retry_seconds, 900);
     assert.equal(contract.runtime_config.max_cost_usd, 0, "Semantic contract must be zero-dollar by default");
