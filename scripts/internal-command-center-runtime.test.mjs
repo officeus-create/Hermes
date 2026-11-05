@@ -105,6 +105,8 @@ assert.equal(projectList.status,200);
 const projectListBody=await projectList.json();
 assert(projectListBody.projects.some(item=>item.id===createdProject.id),"D1 project is merged into registry");
 assert(projectListBody.projects.some(item=>item.id==="hermes-command-center"),"canonical project remains visible");
+const canonicalBaseline=projectListBody.projects.find(item=>item.id==="hermes-command-center")?.work_items_summary;
+assert.ok(canonicalBaseline,"canonical project must expose a work-item summary after historical backlog seed");
 assert.equal(projectListBody.next_offset,null);
 const projectEditRequest=(body,id=createdProject.id)=>editProject({request:request("/api/internal-command-center/projects/"+id,{method:"PATCH",body}),env:{DB:db},params:{id}});
 const editProjectResponse=await projectEditRequest({title:"Land CRM V2",department:"operations",purpose:"Track documented land objects and tenders.",status:"in_progress",updated_at:createdProject.updated_at});
@@ -129,7 +131,7 @@ assert.equal(first.project_id,createdProject.id,"owner-managed project is linked
 const withOneTask=(await (await listProjects({request:request("/api/internal-command-center/projects"),env:{DB:db}})).json()).projects;
 const ownerCount=withOneTask.find(project=>project.id===createdProject.id)?.work_items_summary;
 assert.deepEqual(ownerCount,{total:1,open:1,done:0,blocked:0},"one D1 task appears on owner project without inventing milestone progress");
-assert.equal(withOneTask.find(project=>project.id==="hermes-command-center")?.work_items_summary.total,0);
+assert.equal(withOneTask.find(project=>project.id==="hermes-command-center")?.work_items_summary.total,canonicalBaseline.total,"creating work under a separate owner project must not change canonical backlog totals");
 const second=await create("Second cloud task","marketing");
 assert.notEqual(first.id,second.id);
 assert.equal(second.project_id,null,"older and unassigned tasks retain NULL project");
@@ -149,7 +151,12 @@ assert.equal(editedPayload.work_item.details,"Revised instructions for owner rev
 assert.equal(editedPayload.work_item.project_id,"hermes-command-center","owner may reassign to an immutable canonical project");
 const afterReassign=(await (await listProjects({request:request("/api/internal-command-center/projects"),env:{DB:db}})).json()).projects;
 assert.equal(afterReassign.find(project=>project.id===createdProject.id)?.work_items_summary.total,0,"old project stops counting reassigned work");
-assert.equal(afterReassign.find(project=>project.id==="hermes-command-center")?.work_items_summary.open,1,"canonical project counts reassigned open work");
+assert.deepEqual(afterReassign.find(project=>project.id==="hermes-command-center")?.work_items_summary,{
+  total:canonicalBaseline.total+1,
+  open:canonicalBaseline.open+1,
+  done:canonicalBaseline.done,
+  blocked:canonicalBaseline.blocked,
+},"canonical project counts reassigned open work on top of the recovered backlog");
 const badEdit=await mutateWorkItem({request:request("/api/internal-command-center/work-items/"+first.id,{method:"PATCH",body:{action:"edit",updated_at:editedPayload.work_item.updated_at,title:"Do not overwrite",details:"Do not overwrite",workstream:"technology",priority:"p0",project_id:"nonexistent"}}),env:{DB:db},params:{id:first.id}});
 assert.equal(badEdit.status,400,"unknown project on edit must be rejected without modifying task");
 const staleEditResponse=await mutateWorkItem({
@@ -196,7 +203,7 @@ sqlite.prepare("UPDATE hermes_internal_ai_tasks SET status='completed',started_a
 const projectsAfterAiCompletion=(await (await listProjects({request:request("/api/internal-command-center/projects"),env:{DB:db}})).json()).projects;
 assert.deepEqual(
   projectsAfterAiCompletion.find(project=>project.id==="hermes-command-center")?.work_items_summary,
-  {total:1,open:1,done:0,blocked:0},
+  {total:canonicalBaseline.total+1,open:canonicalBaseline.open+1,done:canonicalBaseline.done,blocked:canonicalBaseline.blocked},
   "Projects GET must reconcile linked AI completion but keep work unfinished until explicit owner acceptance",
 );
 listResponse=await listWorkItems({request:request("/api/internal-command-center/work-items"),env:{DB:db}});
@@ -221,7 +228,7 @@ assert.ok(accepted.payload.work_item.completed_at);
 const projectsAfterAccept=(await (await listProjects({request:request("/api/internal-command-center/projects"),env:{DB:db}})).json()).projects;
 assert.deepEqual(
   projectsAfterAccept.find(project=>project.id==="hermes-command-center")?.work_items_summary,
-  {total:1,open:0,done:1,blocked:0},
+  {total:canonicalBaseline.total+1,open:canonicalBaseline.open,done:canonicalBaseline.done+1,blocked:canonicalBaseline.blocked},
   "project done count advances only after explicit owner acceptance",
 );
 
@@ -243,7 +250,7 @@ sqlite.prepare("UPDATE hermes_internal_ai_tasks SET status='failed',updated_at=?
 const projectsAfterAiFailure=(await (await listProjects({request:request("/api/internal-command-center/projects"),env:{DB:db}})).json()).projects;
 assert.deepEqual(
   projectsAfterAiFailure.find(project=>project.id==="hermes-command-center")?.work_items_summary,
-  {total:2,open:1,done:1,blocked:1},
+  {total:canonicalBaseline.total+2,open:canonicalBaseline.open+1,done:canonicalBaseline.done+1,blocked:canonicalBaseline.blocked+1},
   "Projects GET alone must reconcile a failed linked AI task into the blocked counter",
 );
 listResponse=await listWorkItems({request:request("/api/internal-command-center/work-items"),env:{DB:db}});
