@@ -56,6 +56,11 @@ import {
   ownerManagedJobTypes,
 } from "./owner-process-runtime.mjs";
 import {
+  enqueueNextOwnerWorkPlan,
+  ownerWorkRuntimeSnapshot,
+  reconcileOwnerWorkRuntime,
+} from "./owner-work-runtime.mjs";
+import {
   pluginRuntimeRegistryEvidenceStatus,
   pluginRuntimeRegistrySnapshot,
 } from "./plugin-runtime-registry.mjs";
@@ -2442,6 +2447,30 @@ export default {
       : new Date(rawScheduledTime);
     await ensureSchema(env.DB);
     const cronExpression=clean(controller?.cron,80);
+    if(cronExpression==="*/5 * * * *"){
+      const deps={
+        createJob:createGenericJob,
+        buildPayload:buildScheduledRoleContractPayload,
+        contractForJobType:roleContractForJobType,
+      };
+      try {
+        await reconcileOwnerWorkRuntime(env,scheduledAt,deps);
+      } catch(error) {
+        await recordRuntimeEvent(env,{
+          eventType:"cron.owner_work_reconcile_failed",
+          errorClass:safeRuntimeErrorClass(error,"owner_work_reconcile_failed"),
+        });
+      }
+      try {
+        await enqueueNextOwnerWorkPlan(env,scheduledAt,{createJob:createGenericJob});
+      } catch(error) {
+        await recordRuntimeEvent(env,{
+          eventType:"cron.owner_work_intake_failed",
+          errorClass:safeRuntimeErrorClass(error,"owner_work_intake_failed"),
+        });
+      }
+      return;
+    }
     const reportWake=cronExpression==="0 * * * *";
     if(reportWake){
       try {
@@ -2696,13 +2725,17 @@ export default {
         normal_loop_requires_paid_ai: false,
         scheduled_role_contracts: true,
         role_contract_cadence: "per-contract; current deterministic slice every 6 hours",
+        owner_work_runtime: true,
+        owner_work_runtime_cadence: "every 5 minutes",
+        owner_work_source: "canonical hermes_owner_work_items in shared D1",
+        owner_work_requires_chatgpt_or_codex_runtime: false,
         free_semantic_only: true,
         paid_ai_fallback_enabled: false,
         windows_semantic_node: {
           configured: String(env.HERMES_WINDOWS_NODE_ENABLED || "").trim().toLowerCase() === "enabled",
           transport: "outbound_poll",
           inbound_exposure_required: false,
-          eligible_job_types: ["search.defect.prioritize", "hae.self.patch.propose"],
+          eligible_job_types: ["search.defect.prioritize", "hae.self.patch.propose", "work.item.plan"],
           production_write_authorized: false,
         },
         dlq_runtime_consumer: true,
@@ -2724,6 +2757,11 @@ export default {
         provider_configured: metaThreadsMode(env) ? Boolean(metaThreadsConfig(env)) : Boolean(windsorThreadsConfig(env)),
         publication_enabled: publicationEnabled(env),
       });
+    }
+    if (request.method === "GET" && url.pathname === "/v1/owner-work-runtime") {
+      if (!authorized(request, env)) return json(401, { success: false, error: "unauthorized" });
+      if (!env.DB) return json(503, { success: false, error: "runtime_not_configured" });
+      return json(200, { success: true, ...(await ownerWorkRuntimeSnapshot(env.DB)) });
     }
     if (request.method === "GET" && url.pathname === "/v1/plugin-runtime-registry") {
       if (!authorized(request, env)) return json(401, { success: false, error: "unauthorized" });
