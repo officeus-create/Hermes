@@ -18,6 +18,7 @@ const socialAcquisition=read("functions/api/internal-command-center/social-acqui
 const processItem=read("functions/api/internal-command-center/processes/[id].ts");
 const processControl=read("src/lib/hae-process-control.mjs");
 const processRuntime=read("workers/automation-engine/src/owner-process-runtime.mjs");
+const ownerWorkRuntime=read("workers/automation-engine/src/owner-work-runtime.mjs");
 const haeWorker=read("workers/automation-engine/src/index.mjs");
 const nav=read("src/components/HermesConnectInternalAiNav.astro");
 const ownerWorkspace=read("src/components/HermesCommandCenterOwnerWorkspace.astro");
@@ -184,6 +185,7 @@ assert.match(processItem,/action === "pause"/,"owner must be able to stop future
 assert.match(processRuntime,/owner_process_contract_not_allowed/,"runtime must fail closed on a non-read-only or semantic contract");
 assert.match(processRuntime,/idempotency_key: `hae:process:/,"every recurring process run must have a durable idempotency key");
 assert.match(processRuntime,/lease_until/,"HAE must atomically lease a due process before dispatch");
+assert.match(ownerWorkRuntime,/CASE WHEN revenue_status='active' THEN 0 ELSE 1 END/,"HAE owner-work intake must prioritize the active revenue mission before ordinary technical work");
 assert.match(haeWorker,/ownerManagedJobTypes/,"owner-managed capabilities must replace their static schedule instead of duplicating it");
 assert.match(haeWorker,/enqueueDueOwnerProcesses/,"the existing HAE cron must own process dispatch");
 
