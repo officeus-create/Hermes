@@ -1,5 +1,6 @@
 import { INTERNAL_AI_ORGANIZATION_SCOPE, nowIso } from "./internal-ai.mjs";
 import { seedHistoricalCommandCenterBacklog } from "./command-center-history-backlog.mjs";
+import { pluginRuntimeRegistrySnapshot } from "../../../workers/automation-engine/src/plugin-runtime-registry.mjs";
 
 export const COMMAND_CENTER_SCOPE = INTERNAL_AI_ORGANIZATION_SCOPE;
 const WORKSTREAMS = new Set(["marketing","logistics","sales","technology","academy","finance","operations"]);
@@ -24,6 +25,7 @@ export async function ensureCommandCenterSchema(db) {
     updated_at TEXT NOT NULL,
     linked_task_id TEXT,
     project_id TEXT,
+    plugin_route_json TEXT,
     completed_at TEXT,
     acceptance_status TEXT NOT NULL DEFAULT 'not_required' CHECK (acceptance_status IN ('not_required','awaiting','accepted')),
     accepted_by TEXT,
@@ -41,6 +43,7 @@ export async function ensureCommandCenterSchema(db) {
     ["accepted_by","TEXT"],
     ["accepted_at","TEXT"],
     ["project_id","TEXT"],
+    ["plugin_route_json","TEXT"],
     ["source_kind","TEXT"],
     ["source_label","TEXT"],
     ["source_ref","TEXT"],
@@ -72,20 +75,40 @@ export function normalizeWorkItemSource(value) { const v=String(value||"").trim(
 export function normalizeWorkItemTitle(value) { const v=String(value||"").replace(/\u0000/g,"").replace(/\s+/g," ").trim(); return v && v.length<=MAX_TITLE?v:null; }
 export function normalizeWorkItemDetails(value) { const v=String(value||"").replace(/\u0000/g,"").trim(); return v && v.length<=MAX_DETAILS?v:null; }
 export function newWorkItemId(){ return `hcwi_${crypto.randomUUID()}`; }
+// Selection is evidence of routing policy, never of plugin execution.
+const ROUTE_POLICY_VERSION = "command-center-route-v1";
+const ROUTE_OWNERS = Object.freeze({ marketing:"hermes-marketing-growth", logistics:"hermes-dispatch-os", sales:"hermes-agent-coordinator", technology:"hermes-technology-developer", academy:"hermes-academy", finance:"hermes-agent-coordinator", operations:"hermes-automatic-engineer" });
+export function selectWorkItemPluginRoute(item){
+  const registry=pluginRuntimeRegistrySnapshot();
+  const versions=new Map(registry.entries.map(entry=>[entry.role_id,entry.plugin_version]));
+  const workstream=normalizeWorkstream(item?.workstream);
+  if(!workstream) throw new Error("invalid_workstream_plugin_route");
+  const context=String(item.title||"")+" "+String(item.details||"");
+  const searchIntent=workstream==="marketing"&&/\b(seo|geo|aeo|llmo|indexation|canonical|bing|indexing)\b/i.test(context);
+  const ownerId=searchIntent?"hermes-search-growth":ROUTE_OWNERS[workstream];
+  const role=id=>{const version=versions.get(id);if(!version)throw new Error("plugin_route_release_unverified");return {role_id:id,plugin_version:version}};
+  return {policy_version:ROUTE_POLICY_VERSION,state:"PLUGIN_SELECTED_NOT_EXECUTED",source_class:registry.source_class,registry_observed_at:registry.observed_at,basis:searchIntent?"marketing_search_intent":"workstream:"+workstream,owner:role(ownerId),helpers:["hermes-agent-coordinator","hermes-qa-evidence-auditor"].filter(id=>id!==ownerId).map(role)};
+}
+export function readWorkItemPluginRoute(row){
+  try {const value=JSON.parse(String(row?.plugin_route_json||"null"));return value?.policy_version===ROUTE_POLICY_VERSION&&value?.owner?.role_id&&value?.state==="PLUGIN_SELECTED_NOT_EXECUTED"?value:null}
+  catch {return null}
+}
 export function publicWorkItem(row){
   if(!row)return null;
   const status=String(row.status)==="in_progress"&&String(row.acceptance_status)==="awaiting"?"awaiting_acceptance":String(row.status);
   return {
-    id:String(row.id), workstream:String(row.workstream), priority:String(row.priority), title:String(row.title), details:String(row.details), project_id:row.project_id||null,
+    id:String(row.id), workstream:String(row.workstream), priority:String(row.priority), title:String(row.title), details:String(row.details), project_id:row.project_id||null, plugin_route:readWorkItemPluginRoute(row),
     source:String(row.source||"text"), status, acceptance_status:String(row.acceptance_status||"not_required"), created_at:row.created_at||null, updated_at:row.updated_at||null,
     linked_task_id:row.linked_task_id||null, completed_at:row.completed_at||null,
     accepted_by:row.accepted_by||null, accepted_at:row.accepted_at||null, blocked_reason:row.blocked_reason||null,
     source_kind:row.source_kind||null, source_label:row.source_label||null, source_ref:row.source_ref||null, next_action:row.next_action||null,
-    linked_task_status:row.linked_task_status||null, linked_task_updated_at:row.linked_task_updated_at||null,
+    linked_task_status:row.linked_task_status||null, linked_task_started_at:row.linked_task_started_at||null,
+    linked_task_completed_at:row.linked_task_completed_at||null, linked_task_updated_at:row.linked_task_updated_at||null,
     linked_task_pr_url:row.linked_task_pr_url||null, linked_task_output_summary:row.linked_task_output_summary||null,
   };
 }
 export function workItemPrompt(item){
+  const route=readWorkItemPluginRoute(item)||selectWorkItemPluginRoute(item);
   return [
     "HERMES OWNER WORK ITEM",
     `Work item: ${item.id}`,
@@ -93,6 +116,11 @@ export function workItemPrompt(item){
     `Priority: ${item.priority}`,
     ...(item.project_id ? [`Project ID: ${item.project_id}`] : []),
     `Title: ${item.title}`,
+    "Plugin route policy: "+route.policy_version,
+    "Selected owner capability: "+route.owner.role_id+"@"+route.owner.plugin_version,
+    "Eligible helpers: "+route.helpers.map(x=>x.role_id+"@"+x.plugin_version).join(", "),
+    "Route basis: "+route.basis,
+    "PLUGIN_SELECTED_NOT_EXECUTED — do not claim this capability was executed without a separate HAE provider receipt.",
     "", item.details, "",
     "Execution rules:",
     "- Reuse current Hermes architecture and canonical sources of truth; do not create a second CRM, scheduler, brain, or data owner.",
