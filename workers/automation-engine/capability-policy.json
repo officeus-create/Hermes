@@ -472,6 +472,26 @@
       "free_ai_policy": "not_required"
     },
     {
+      "job_type": "work.item.plan",
+      "permission_class": "READ_ONLY",
+      "execution_runtime": "canonical_hae_queue",
+      "external_provider_write": false,
+      "allowed_side_effects": [
+        "d1_job_state",
+        "d1_job_events",
+        "d1_ai_usage_receipt",
+        "d1_owner_work_dispatch_binding"
+      ],
+      "submission_auth": "INTERNAL_HAE_CRON_ONLY",
+      "retention_class": "business_runtime_evidence",
+      "role_id": "hermes-agent-coordinator",
+      "plugin_version": "0.1.102",
+      "contract_version": "owner-work-plan-v1",
+      "semantic_required": true,
+      "free_ai_policy": "free_only_wait_if_unavailable",
+      "max_cost_usd": 0
+    },
+    {
       "job_type": "work.portfolio.reconcile",
       "permission_class": "READ_ONLY",
       "execution_runtime": "canonical_hae_queue",
