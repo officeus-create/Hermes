@@ -315,7 +315,7 @@ export const ROLE_CONTRACTS = Object.freeze([
       scheduled: false,
       max_output_tokens: 700,
       max_cost_usd: 0,
-      retry_seconds: 300
+      retry_seconds: 900
     },
     preconditions: [
       "work item comes from canonical hermes_owner_work_items in the shared D1",
