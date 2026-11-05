@@ -140,6 +140,39 @@ assert.equal(work.status,"in_progress");
 assert.equal(work.acceptance_status,"awaiting");
 assert.equal(work.hae_dispatch_state,"EXECUTION_SUCCEEDED");
 
+const revenueOld="2026-11-05T10:00:00.000Z";
+await DB.prepare(`
+INSERT INTO hermes_owner_work_items
+(id,organization_scope,workstream,priority,title,details,source,status,created_by,created_at,updated_at,project_id,source_kind,source_label,next_action,
+ revenue_gate_usd,revenue_target_usd,revenue_actual_usd,revenue_rank,revenue_status,revenue_source_work_id)
+VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+`).bind(
+  "hcwi_test_revenue_001","hermes_internal","sales","p2",
+  "[REVENUE] Website Pricing & Sales System",
+  "Keep working until verified paid revenue is at least one dollar.",
+  "imported","ready","test",revenueOld,revenueOld,"revenue-website-progresso","one_brain_revenue_4m","REVENUE_4M_BACKLOG",
+  "Advance the smallest safe revenue step.",1,990,0,1,"active","W-TEST-REVENUE"
+).run();
+
+const revenueQueued=await enqueueNextOwnerWorkPlan(env,new Date(Date.parse(now)+180_000),{createJob});
+assert.equal(revenueQueued.work_id,"hcwi_test_revenue_001","active revenue mission must outrank ordinary technical backlog");
+await DB.prepare("UPDATE hermes_automation_jobs SET state='SUCCEEDED',result_json=? WHERE job_id=?")
+  .bind(JSON.stringify({
+    capability:"work.item.plan",external_write:false,
+    result:{work_id:"hcwi_test_revenue_001",disposition:"NEEDS_CAPABILITY",recommended_job_type:null,
+      rationale:"No bounded sales capability exists yet.",next_action:"Create the smallest safe quote-preparation capability."}
+  }),revenueQueued.job_id).run();
+await reconcileOwnerWorkRuntime(env,new Date(Date.parse(now)+240_000),deps);
+let revenueWork=await DB.prepare("SELECT * FROM hermes_owner_work_items WHERE id=?").bind("hcwi_test_revenue_001").first();
+assert.equal(revenueWork.status,"ready","revenue mission must remain open when no money was earned");
+assert.equal(revenueWork.hae_dispatch_state,"REVENUE_NEEDS_CAPABILITY");
+assert.equal(revenueWork.hae_plan_job_id,null,"revenue mission must be retryable after bounded capability improvement");
+const tooSoon=await enqueueNextOwnerWorkPlan(env,new Date(Date.parse(now)+60*60*1000),{createJob});
+assert.equal(tooSoon.status,"NO_READY_OWNER_WORK","revenue loop must not spin every five minutes");
+const revenueRetry=await enqueueNextOwnerWorkPlan(env,new Date(Date.parse(now)+7*60*60*1000),{createJob});
+assert.equal(revenueRetry.work_id,"hcwi_test_revenue_001","unfinished revenue mission must retry after the bounded cooldown");
+await DB.prepare("UPDATE hermes_owner_work_items SET status='done',revenue_status='proven',revenue_actual_usd=1 WHERE id=?").bind("hcwi_test_revenue_001").run();
+
 await DB.prepare(`
 INSERT INTO hermes_owner_work_items
 (id,organization_scope,workstream,priority,title,details,source,status,created_by,created_at,updated_at,project_id,source_kind,source_label,next_action)
