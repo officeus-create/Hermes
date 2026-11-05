@@ -79,6 +79,14 @@ function minimizedWorkItemPayload(item, route) {
     selected_owner_role: clean(route?.owner?.role_id, 120),
     selected_owner_version: clean(route?.owner?.plugin_version, 80),
     route_basis: clean(route?.basis, 160),
+    revenue_gate_usd: Math.max(0, Number(item?.revenue_gate_usd || 0)),
+    actual_revenue_usd: Math.max(0, Number(item?.actual_revenue_usd || 0)),
+    estimated_first_win_usd: Math.max(0, Number(item?.estimated_first_win_usd || 0)),
+    revenue_rank: item?.revenue_rank == null ? null : Number(item.revenue_rank),
+    revenue_selected_now: Boolean(Number(item?.revenue_selected_now || 0)),
+    monetization_lane: clean(item?.monetization_lane, 240) || null,
+    monetization_path: clean(item?.monetization_path, 1200) || null,
+    source_work_id: clean(item?.source_work_id, 160) || null,
     available_execution_job_types: OWNER_WORK_EXECUTABLE_JOB_TYPES,
   };
 }
@@ -156,9 +164,15 @@ async function reserveNextItem(db, now) {
       AND status IN ('ready','planned')
       AND (hae_plan_job_id IS NULL OR hae_plan_job_id='')
       AND (hae_execution_job_id IS NULL OR hae_execution_job_id='')
+      AND COALESCE(financial_done,0)=0
+      AND COALESCE(financial_done,0)=0
       AND (hae_dispatch_state IS NULL OR hae_dispatch_state IN ('','RETRY_READY'))
     ORDER BY
+      CASE WHEN COALESCE(financial_done,0)=0 AND COALESCE(revenue_selected_now,0)=1 THEN 0
+           WHEN COALESCE(financial_done,0)=0 AND source_work_id IS NOT NULL THEN 1
+           ELSE 2 END,
       CASE status WHEN 'ready' THEN 0 ELSE 1 END,
+      COALESCE(revenue_rank,999999) ASC,
       CASE priority WHEN 'p0' THEN 0 WHEN 'p1' THEN 1 WHEN 'p2' THEN 2 ELSE 3 END,
       created_at ASC
     LIMIT 1
@@ -340,8 +354,12 @@ async function reconcileExecution(env, item, scheduledAt) {
   if (state === "SUCCEEDED") {
     await env.DB.prepare(`
       UPDATE hermes_owner_work_items
-      SET status='in_progress',acceptance_status='awaiting',hae_dispatch_state='EXECUTION_SUCCEEDED',
-          completed_at=NULL,blocked_reason=NULL,updated_at=?
+      SET status='in_progress',
+          acceptance_status=CASE WHEN COALESCE(revenue_gate_usd,0)>0 THEN 'not_required' ELSE 'awaiting' END,
+          hae_dispatch_state=CASE WHEN COALESCE(revenue_gate_usd,0)>0 THEN 'REVENUE_STEP_SUCCEEDED' ELSE 'EXECUTION_SUCCEEDED' END,
+          completed_at=NULL,
+          blocked_reason=CASE WHEN COALESCE(revenue_gate_usd,0)>0 THEN 'Financial completion pending: actual_revenue_usd must reach at least revenue_gate_usd and $1.' ELSE NULL END,
+          updated_at=?
       WHERE id=? AND organization_scope='hermes_internal' AND hae_execution_job_id=?
     `).bind(now, item.id, executionJobId).run();
     return 1;
@@ -388,10 +406,14 @@ export async function ownerWorkRuntimeSnapshot(db) {
     ORDER BY state
   `).all();
   const next = await db.prepare(`
-    SELECT id,workstream,priority,title,status,hae_dispatch_state,hae_plan_job_id,hae_execution_job_id
+    SELECT id,workstream,priority,title,status,hae_dispatch_state,hae_plan_job_id,hae_execution_job_id,
+           revenue_gate_usd,actual_revenue_usd,financial_done,estimated_first_win_usd,revenue_rank,revenue_selected_now,
+           monetization_lane,source_work_id
     FROM hermes_owner_work_items
     WHERE organization_scope='hermes_internal' AND status IN ('ready','planned','in_progress')
-    ORDER BY CASE priority WHEN 'p0' THEN 0 WHEN 'p1' THEN 1 WHEN 'p2' THEN 2 ELSE 3 END,created_at ASC
+    ORDER BY CASE WHEN COALESCE(financial_done,0)=0 AND COALESCE(revenue_selected_now,0)=1 THEN 0
+                  WHEN COALESCE(financial_done,0)=0 AND source_work_id IS NOT NULL THEN 1 ELSE 2 END,
+             COALESCE(revenue_rank,999999),CASE priority WHEN 'p0' THEN 0 WHEN 'p1' THEN 1 WHEN 'p2' THEN 2 ELSE 3 END,created_at ASC
     LIMIT 10
   `).all();
   return {
@@ -402,6 +424,8 @@ export async function ownerWorkRuntimeSnapshot(db) {
     execution_owner: "HAE",
     semantic_node: "VIKTOR-WINDOWS",
     semantic_model_policy: "local_zero_cost_only",
+    completion_rule: "financial_done only when actual_revenue_usd >= max(1,revenue_gate_usd)",
+    revenue_first: true,
     counts: counts?.results || [],
     next_items: next?.results || [],
   };
