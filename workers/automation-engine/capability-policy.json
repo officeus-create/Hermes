@@ -142,7 +142,7 @@
       "submission_auth": "HERMES_AUTOMATION_TOKEN",
       "retention_class": "business_runtime_evidence",
       "role_id": "hermes-dispatch-os",
-      "plugin_version": "0.1.26",
+      "plugin_version": "0.1.27",
       "contract_version": "dispatch-daily-closeout-v1",
       "semantic_required": false,
       "free_ai_policy": "not_required"
@@ -159,7 +159,7 @@
       "submission_auth": "HERMES_AUTOMATION_TOKEN",
       "retention_class": "business_runtime_evidence",
       "role_id": "hermes-marketing-growth",
-      "plugin_version": "0.1.19",
+      "plugin_version": "0.1.20",
       "contract_version": "growth-error-closure-v1",
       "semantic_required": false,
       "free_ai_policy": "not_required"
@@ -321,7 +321,7 @@
       "submission_auth": "HERMES_AUTOMATION_TOKEN",
       "retention_class": "business_runtime_evidence",
       "role_id": "hermes-dispatch-os",
-      "plugin_version": "0.1.26",
+      "plugin_version": "0.1.27",
       "contract_version": "logistics-source-freshness-v1",
       "semantic_required": false,
       "free_ai_policy": "not_required"
@@ -338,7 +338,7 @@
       "submission_auth": "HERMES_AUTOMATION_TOKEN",
       "retention_class": "business_runtime_evidence",
       "role_id": "hermes-dispatch-os",
-      "plugin_version": "0.1.26",
+      "plugin_version": "0.1.27",
       "contract_version": "car-hauling-market-snapshot-v1",
       "semantic_required": false,
       "free_ai_policy": "not_required"
@@ -355,7 +355,7 @@
       "submission_auth": "HERMES_AUTOMATION_TOKEN",
       "retention_class": "business_runtime_evidence",
       "role_id": "hermes-marketing-growth",
-      "plugin_version": "0.1.19",
+      "plugin_version": "0.1.20",
       "contract_version": "marketing-content-dedupe-v1",
       "semantic_required": false,
       "free_ai_policy": "not_required"
@@ -372,7 +372,7 @@
       "submission_auth": "HERMES_AUTOMATION_TOKEN",
       "retention_class": "business_runtime_evidence",
       "role_id": "hermes-marketing-growth",
-      "plugin_version": "0.1.19",
+      "plugin_version": "0.1.20",
       "contract_version": "internet-mentions-audit-v1",
       "semantic_required": false,
       "free_ai_policy": "not_required"
