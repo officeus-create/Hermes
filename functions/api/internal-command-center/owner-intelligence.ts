@@ -18,6 +18,40 @@ function safeObject(value:any){
   }catch{return null;}
 }
 
+async function windowsNodeReadModel(db:any){
+  const empty=(state:string)=>({
+    state,node_id:"VIKTOR-WINDOWS",online:null,last_seen_at:null,model:null,status:"UNKNOWN",
+    current_job_id:null,active_lease:null,last_succeeded_job_id:null,last_succeeded_at:null,
+    production_write_authorized:false,execution_proof:"NO_WINDOWS_HAE_RECEIPT",
+  });
+  if(!db)return empty("DATABASE_UNAVAILABLE");
+  try{
+    const node=await db.prepare("SELECT node_id,model,status,current_job_id,last_seen_at FROM hermes_automation_nodes WHERE node_id='VIKTOR-WINDOWS' LIMIT 1").first();
+    if(!node)return empty("NOT_SEEN");
+    let lease=null,lastSuccess=null;
+    try{lease=await db.prepare("SELECT job_id,lease_id,fence,lease_until,state FROM hermes_automation_node_leases WHERE node_id='VIKTOR-WINDOWS' AND state IN ('ACTIVE','COMPLETING') ORDER BY updated_at DESC LIMIT 1").first()}catch{}
+    try{lastSuccess=await db.prepare("SELECT job_id,created_at FROM hermes_automation_job_events WHERE event_type='job.windows_node_succeeded' AND provider_ref='viktor-windows-ollama' ORDER BY created_at DESC LIMIT 1").first()}catch{}
+    const seen=node.last_seen_at?Date.parse(String(node.last_seen_at)):0;
+    const online=Boolean(seen&&Date.now()-seen<=90000);
+    return{
+      state:online?"ONLINE":"OFFLINE",
+      node_id:String(node.node_id||"VIKTOR-WINDOWS"),
+      online,
+      last_seen_at:node.last_seen_at||null,
+      model:node.model||null,
+      status:node.status||"UNKNOWN",
+      current_job_id:node.current_job_id||null,
+      active_lease:lease?{job_id:lease.job_id||null,state:lease.state||null,lease_until:lease.lease_until||null,fence:Number(lease.fence||0)}:null,
+      last_succeeded_job_id:lastSuccess?.job_id||null,
+      last_succeeded_at:lastSuccess?.created_at||null,
+      production_write_authorized:false,
+      execution_proof:lastSuccess?"WINDOWS_HAE_RECEIPT_OBSERVED":"NO_WINDOWS_HAE_RECEIPT",
+    };
+  }catch{
+    return empty("NOT_RELEASED_OR_UNINITIALIZED");
+  }
+}
+
 async function learningRuntimeSnapshot(db:any){
   const base={job_type:"knowledge.lesson.evaluate",source_state:"UNKNOWN",recent_job_count:null,succeeded_job_count:null,promotion_candidate_count:null,hold_count:null,runtime_consumption_state:"SEPARATE_RECEIPT_REQUIRED",items:[] as any[]};
   if(!db) return {...base,reason:"DB_UNAVAILABLE"};
@@ -72,6 +106,7 @@ export async function onRequestGet({request,env}:{request:Request;env:Env}){
   const oneBrain=project("one-brain");
   const investor=project("investor-intelligence");
   const learningRuntime=await learningRuntimeSnapshot(env.DB);
+  const windowsNode=await windowsNodeReadModel(env.DB);
   return jsonResponse(200,{
     success:true,
     checked_at:new Date().toISOString(),
@@ -89,6 +124,10 @@ export async function onRequestGet({request,env}:{request:Request;env:Env}){
       learning_runtime:learningRuntime,
       one_brain_project:oneBrain,
       self_learning_project:selfLearning,
+    },
+    agents:{
+      windows_node:windowsNode,
+      truth_rule:"HEARTBEAT_IS_NOT_EXECUTION; WINDOWS_HAE_RECEIPT_REQUIRED",
     },
     investor:{
       state:investor?.evidence_level||"UNKNOWN",
