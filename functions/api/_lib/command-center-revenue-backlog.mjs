@@ -25,7 +25,7 @@ export async function seedRevenue4mBacklog(db){
        completed_at,acceptance_status,blocked_reason,source_kind,source_label,source_ref,next_action,
        revenue_gate_usd,actual_revenue_usd,financial_done,estimated_first_win_usd,revenue_rank,revenue_selected_now,
        monetization_lane,monetization_path,system_can_start,hae_ready,source_work_id)
-      VALUES (?,'hermes_internal',?,?,?,?,'imported',?,'revenue_4m_import',?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`)
+      VALUES (?,'hermes_internal',?,?,?,?,'imported',?,'revenue_4m_import',?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`)
       .bind(
         item.id,item.workstream,item.priority,clean(item.title,160),
         clean([
