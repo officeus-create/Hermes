@@ -75,9 +75,11 @@ export function selectWorkItemPluginRoute(item){
   if(!workstream) throw new Error("invalid_workstream_plugin_route");
   const context=String(item.title||"")+" "+String(item.details||"");
   const searchIntent=workstream==="marketing"&&/\b(seo|geo|aeo|llmo|indexation|canonical|bing|indexing)\b/i.test(context);
+  const connectIntent=workstream==="technology"&&/\b(command center|hermes connect|crm|admin|workspace|catalog|client|customer)\b/i.test(context);
   const ownerId=searchIntent?"hermes-search-growth":ROUTE_OWNERS[workstream];
   const role=id=>{const version=versions.get(id);if(!version)throw new Error("plugin_route_release_unverified");return {role_id:id,plugin_version:version}};
-  return {policy_version:ROUTE_POLICY_VERSION,state:"PLUGIN_SELECTED_NOT_EXECUTED",source_class:registry.source_class,registry_observed_at:registry.observed_at,basis:searchIntent?"marketing_search_intent":"workstream:"+workstream,owner:role(ownerId),helpers:["hermes-agent-coordinator","hermes-qa-evidence-auditor"].filter(id=>id!==ownerId).map(role)};
+  const helperIds=["hermes-agent-coordinator",...(connectIntent?["hermes-connect-operator"]:[]),"hermes-qa-evidence-auditor"];
+  return {policy_version:ROUTE_POLICY_VERSION,state:"PLUGIN_SELECTED_NOT_EXECUTED",source_class:registry.source_class,registry_observed_at:registry.observed_at,basis:searchIntent?"marketing_search_intent":connectIntent?"technology_connect_intent":"workstream:"+workstream,owner:role(ownerId),helpers:helperIds.filter((id,index)=>id!==ownerId&&helperIds.indexOf(id)===index).map(role)};
 }
 export function readWorkItemPluginRoute(row){
   try {const value=JSON.parse(String(row?.plugin_route_json||"null"));return value?.policy_version===ROUTE_POLICY_VERSION&&value?.owner?.role_id&&value?.state==="PLUGIN_SELECTED_NOT_EXECUTED"?value:null}
