@@ -68,7 +68,7 @@ await ensureCommandCenterSchema(DB);
 const importedAfter=(await DB.prepare("SELECT COUNT(*) AS c FROM hermes_owner_work_items WHERE created_by='history_backlog_import'").first()).c;
 assert.equal(importedAfter,importedBefore,"history import must be idempotent across repeated schema ensures");
 const revenueCount=(await DB.prepare("SELECT COUNT(*) AS c FROM hermes_owner_work_items WHERE created_by='revenue_4m_import'").first()).c;
-assert.equal(Number(revenueCount),128,"four-month revenue reconciliation must seed all 128 source/recovered-chat revenue items");
+assert.equal(Number(revenueCount),132,"four-month revenue reconciliation must seed all 132 canonical/recovered revenue items");
 const revenueActive=(await DB.prepare("SELECT id,revenue_source_work_id,revenue_gate_usd,revenue_target_usd,revenue_actual_usd,revenue_status,status FROM hermes_owner_work_items WHERE created_by='revenue_4m_import' AND revenue_status='active' ORDER BY revenue_rank").all()).results;
 assert.equal(revenueActive.length,1,"exactly one revenue mission must be active initially");
 assert.equal(revenueActive[0].revenue_source_work_id,"W-20261026-109");
