@@ -2,6 +2,7 @@
 // Canonical knowledge source: One Brain REVENUE_4M_BACKLOG, 2026-07-04..2026-11-06.
 // Same D1 owner-work queue; no second runtime/task registry.
 // Revenue rule: 100% only after verified financial benefit >= $1.
+// Superseded source WORK_IDs remain audit-only and can never enter the revenue execution sequence.
 
 export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
   {
@@ -1006,13 +1007,13 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
   },
   {
     id:"hcwi_rev4m_w_20260729_077", project_id:"revenue-logistics", workstream:"logistics", priority:"p2",
-    title:"[REVENUE] Productize Hermes AI logistics capabilities one module at a time", details:"Revenue reconciliation overlay for W-20260729-077. Original four-month ledger status: SUPERSEDED. CEO rule: 100% requires verified actual revenue/financial benefit >= $1; code, CI, deploy, lead, quote or technical acceptance alone are not completion. Estimated first-win target: $37.5. Monetization path: Produce one real paid logistics outcome. Conservative first-win reference: 5% margin on a $750 load = $37.50; financial gate itself is minimum $1 settled. Canonical knowledge source remains One Brain W-20260729-077; this row is the runtime revenue mission.",
-    status:"blocked", created_at:"2026-07-29T00:00:00.000Z",
+    title:"[REVENUE] Productize Hermes AI logistics capabilities one module at a time", details:"Revenue reconciliation overlay for W-20260729-077. Original four-month ledger status: SUPERSEDED. This source is superseded and retained for audit only. Never revive or auto-unlock it. Estimated first-win target: $37.5. Monetization path: Produce one real paid logistics outcome. Conservative first-win reference: 5% margin on a $750 load = $37.50; financial gate itself is minimum $1 settled. Canonical knowledge source remains One Brain W-20260729-077; this row is the runtime revenue mission.",
+    status:"cancelled", created_at:"2026-07-29T00:00:00.000Z",
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20260729-077",
     revenue_gate_usd:1, revenue_target_usd:37.5, revenue_actual_usd:0, revenue_rank:101,
-    revenue_status:"queued", revenue_source_work_id:"W-20260729-077",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
-    next_action:"Route current execution to #960/#2106/#2033 and the existing product-specific issue. Do not create six child products from the historical July list unless a distinct current owner and real execution path exist."
+    revenue_status:"superseded", revenue_source_work_id:"W-20260729-077",
+    
+    next_action:"Do not execute; follow the current canonical successor work item."
   },
   {
     id:"hcwi_rev4m_w_20261020_011", project_id:"revenue-ai-operations", workstream:"technology", priority:"p2",
@@ -1026,13 +1027,13 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
   },
   {
     id:"hcwi_rev4m_w_20260725_078", project_id:"revenue-academy", workstream:"academy", priority:"p2",
-    title:"[REVENUE] Evaluate 100Hires integration only if it improves the canonical Hermes recruiting pipeline", details:"Revenue reconciliation overlay for W-20260725-078. Original four-month ledger status: SUPERSEDED. CEO rule: 100% requires verified actual revenue/financial benefit >= $1; code, CI, deploy, lead, quote or technical acceptance alone are not completion. Estimated first-win target: $1. Monetization path: Convert one learner/candidate/company into a paid Academy or recruiting-related outcome; minimum accepted financial proof is $1. Canonical knowledge source remains One Brain W-20260725-078; this row is the runtime revenue mission.",
-    status:"blocked", created_at:"2026-07-25T00:00:00.000Z",
+    title:"[REVENUE] Evaluate 100Hires integration only if it improves the canonical Hermes recruiting pipeline", details:"Revenue reconciliation overlay for W-20260725-078. Original four-month ledger status: SUPERSEDED. This source is superseded and retained for audit only. Never revive or auto-unlock it. Estimated first-win target: $1. Monetization path: Convert one learner/candidate/company into a paid Academy or recruiting-related outcome; minimum accepted financial proof is $1. Canonical knowledge source remains One Brain W-20260725-078; this row is the runtime revenue mission.",
+    status:"cancelled", created_at:"2026-07-25T00:00:00.000Z",
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20260725-078",
     revenue_gate_usd:1, revenue_target_usd:1, revenue_actual_usd:0, revenue_rank:103,
-    revenue_status:"queued", revenue_source_work_id:"W-20260725-078",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
-    next_action:"Route recruiting implementation to current #513 / W-20261104-128. Do not revive old 100Hires iframe/feed/seed paths or count provider seed records as Hermes candidates."
+    revenue_status:"superseded", revenue_source_work_id:"W-20260725-078",
+    
+    next_action:"Do not execute; follow the current canonical successor work item."
   },
   {
     id:"hcwi_rev4m_w_20260910_067", project_id:"revenue-ai-operations", workstream:"technology", priority:"p2",
@@ -1066,23 +1067,23 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
   },
   {
     id:"hcwi_rev4m_w_20260829_070", project_id:"revenue-ai-operations", workstream:"technology", priority:"p2",
-    title:"[REVENUE] Owner Control Center for bounded AI execution and evidence", details:"Revenue reconciliation overlay for W-20260829-070. Original four-month ledger status: SUPERSEDED. CEO rule: 100% requires verified actual revenue/financial benefit >= $1; code, CI, deploy, lead, quote or technical acceptance alone are not completion. Estimated first-win target: $1. Monetization path: Use automation to remove the blocker for a direct revenue mission; technical success is not DONE until a linked paid outcome reaches $1. Canonical knowledge source remains One Brain W-20260829-070; this row is the runtime revenue mission.",
-    status:"blocked", created_at:"2026-08-29T00:00:00.000Z",
+    title:"[REVENUE] Owner Control Center for bounded AI execution and evidence", details:"Revenue reconciliation overlay for W-20260829-070. Original four-month ledger status: SUPERSEDED. This source is superseded and retained for audit only. Never revive or auto-unlock it. Estimated first-win target: $1. Monetization path: Use automation to remove the blocker for a direct revenue mission; technical success is not DONE until a linked paid outcome reaches $1. Canonical knowledge source remains One Brain W-20260829-070; this row is the runtime revenue mission.",
+    status:"cancelled", created_at:"2026-08-29T00:00:00.000Z",
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20260829-070",
     revenue_gate_usd:1, revenue_target_usd:1, revenue_actual_usd:0, revenue_rank:107,
-    revenue_status:"queued", revenue_source_work_id:"W-20260829-070",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
-    next_action:"Route current control-plane work to #2106 → #2159 → #2170/#2219/#2221/#2222 and HAE #2033. Do not revive the August Owner Control Center; implement only a verified unique gap in the current architecture."
+    revenue_status:"superseded", revenue_source_work_id:"W-20260829-070",
+    
+    next_action:"Do not execute; follow the current canonical successor work item."
   },
   {
     id:"hcwi_rev4m_w_20261023_025", project_id:"revenue-ai-operations", workstream:"technology", priority:"p2",
-    title:"[REVENUE] HAE post-gate reliability hardening — historical parent", details:"Revenue reconciliation overlay for W-20261023-025. Original four-month ledger status: SUPERSEDED. CEO rule: 100% requires verified actual revenue/financial benefit >= $1; code, CI, deploy, lead, quote or technical acceptance alone are not completion. Estimated first-win target: $1. Monetization path: Use automation to remove the blocker for a direct revenue mission; technical success is not DONE until a linked paid outcome reaches $1. Canonical knowledge source remains One Brain W-20261023-025; this row is the runtime revenue mission.",
-    status:"blocked", created_at:"2026-10-23T00:00:00.000Z",
+    title:"[REVENUE] HAE post-gate reliability hardening — historical parent", details:"Revenue reconciliation overlay for W-20261023-025. Original four-month ledger status: SUPERSEDED. This source is superseded and retained for audit only. Never revive or auto-unlock it. Estimated first-win target: $1. Monetization path: Use automation to remove the blocker for a direct revenue mission; technical success is not DONE until a linked paid outcome reaches $1. Canonical knowledge source remains One Brain W-20261023-025; this row is the runtime revenue mission.",
+    status:"cancelled", created_at:"2026-10-23T00:00:00.000Z",
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261023-025",
     revenue_gate_usd:1, revenue_target_usd:1, revenue_actual_usd:0, revenue_rank:108,
-    revenue_status:"queued", revenue_source_work_id:"W-20261023-025",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
-    next_action:"Do not rebuild/restack #2023. Continue W-20261021-008 and #2033 current sequence."
+    revenue_status:"superseded", revenue_source_work_id:"W-20261023-025",
+    
+    next_action:"Do not execute; follow the current canonical successor work item."
   },
   {
     id:"hcwi_rev4m_w_20261016_022", project_id:"revenue-logistics", workstream:"logistics", priority:"p2",
@@ -1096,13 +1097,13 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
   },
   {
     id:"hcwi_rev4m_w_20260816_076", project_id:"revenue-ai-operations", workstream:"technology", priority:"p2",
-    title:"[REVENUE] One evidence-driven customer path engine across Hermes directions", details:"Revenue reconciliation overlay for W-20260816-076. Original four-month ledger status: SUPERSEDED. CEO rule: 100% requires verified actual revenue/financial benefit >= $1; code, CI, deploy, lead, quote or technical acceptance alone are not completion. Estimated first-win target: $1. Monetization path: Use this task only as an enabler for a commercial lane; count success only when a linked paid outcome produces at least $1. Canonical knowledge source remains One Brain W-20260816-076; this row is the runtime revenue mission.",
-    status:"blocked", created_at:"2026-08-16T00:00:00.000Z",
+    title:"[REVENUE] One evidence-driven customer path engine across Hermes directions", details:"Revenue reconciliation overlay for W-20260816-076. Original four-month ledger status: SUPERSEDED. This source is superseded and retained for audit only. Never revive or auto-unlock it. Estimated first-win target: $1. Monetization path: Use this task only as an enabler for a commercial lane; count success only when a linked paid outcome produces at least $1. Canonical knowledge source remains One Brain W-20260816-076; this row is the runtime revenue mission.",
+    status:"cancelled", created_at:"2026-08-16T00:00:00.000Z",
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20260816-076",
     revenue_gate_usd:1, revenue_target_usd:1, revenue_actual_usd:0, revenue_rank:110,
-    revenue_status:"queued", revenue_source_work_id:"W-20260816-076",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
-    next_action:"None for the old standalone program. Test the Path Engine acceptance model only when a current Home/direction/Sales/Connect change is already being made."
+    revenue_status:"superseded", revenue_source_work_id:"W-20260816-076",
+    
+    next_action:"Do not execute; follow the current canonical successor work item."
   },
   {
     id:"hcwi_rev4m_w_20261002_052", project_id:"revenue-website-progresso", workstream:"marketing", priority:"p2",
@@ -1185,7 +1186,8 @@ export async function seedFourMonthRevenueBacklog(db){
       VALUES (?,'hermes_internal',?,?,?,?,'imported',?,'revenue_4m_import',?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`)
       .bind(
         item.id,item.workstream,item.priority,clean(item.title,160),clean(item.details),item.status,
-        item.created_at,item.created_at,item.project_id??null,null,"not_required",item.blocked_reason??null,
+        item.created_at,item.created_at,item.project_id??null,item.status==="cancelled"?item.created_at:null,
+        item.status==="cancelled"?"accepted":"not_required",item.blocked_reason??null,
         item.source_kind,clean(item.source_label,240),clean(item.source_ref,1000),clean(item.next_action,2000),
         item.revenue_gate_usd,item.revenue_target_usd,item.revenue_actual_usd,item.revenue_rank,item.revenue_status,item.revenue_source_work_id
       ).run();
