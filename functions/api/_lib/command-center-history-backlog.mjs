@@ -460,12 +460,20 @@ export const COMMAND_CENTER_HISTORY_BACKLOG = Object.freeze([
     source_kind:"management_backlog", source_label:"Hermes finance automation", source_ref:"Owner operating backlog",
     blocked_reason:"Canonical current finance-automation task source was not recovered.",
     next_action:"Locate current AP/AR/invoice/payment sources with Finance Accounting, deduplicate existing automations and define the smallest evidence-backed automation sequence."
+  },
+  {
+    id:"hcwi_hist_20261105_054", project_id:"hermes-command-center", workstream:"technology", priority:"p1",
+    title:"Restore Hermes Connect CRM/Operator as the Command Center product specialist",
+    details:"Recover the existing Hermes Connect plugin lineage instead of recreating it. Historical private packages include Hermes Connect Operator v1.0/v1.2 and Hermes Connect CRM v1.3/v1.4, while the current 34-plugin inventory no longer exposes a Hermes Connect role. Use it as the CRM/product workflow specialist for Command Center together with Agent Coordinator, Technology Developer, Design Hub/UX, COO, HAE and independent QA; do not make it a second CRM, scheduler, runtime or receipt store.",
+    status:"ready", created_at:"2026-11-05T10:45:00.000Z",
+    source_kind:"plugin_recovery", source_label:"Hermes Connect CRM / Operator historical private packages", source_ref:"Library · /00 · C-level — CEO/hermes-connect-crm-v1.4.0.zip",
+    next_action:"Validate the latest recoverable internal Hermes Connect package against the current plugin schema and security boundaries, restore/update it as a private plugin, bind Agent Coordinator routing for Command Center/CRM tasks, and expose selected-role plus execution-receipt truth in Command Center."
   }
 ]);
 
 const clean=(value,max=10000)=>String(value??"").replace(/\u0000/g,"").trim().slice(0,max);
 
-const IMPORT_KEY="owner_history_backlog_2026-11-05_v1";
+const IMPORT_KEY="owner_history_backlog_2026-11-05_v2";
 
 export async function seedHistoricalCommandCenterBacklog(db){
   if(!db?.prepare)return;
