@@ -86,6 +86,67 @@ function minimizedWorkItemPayload(item, route) {
 function itemPriority(value) {
   return PRIORITY[clean(value, 10).toLowerCase()] ?? 50;
 }
+function ownerPlanEnvelope(input, disposition, recommendedJobType, rationale, nextAction) {
+  return {
+    work_id: clean(input?.work_id, 160),
+    disposition,
+    recommended_job_type: recommendedJobType || null,
+    rationale: clean(rationale, 900),
+    next_action: clean(nextAction, 1200),
+    selected_owner_role: clean(input?.selected_owner_role, 120),
+    selected_owner_version: clean(input?.selected_owner_version, 80),
+    route_basis: clean(input?.route_basis, 160),
+    external_write: false,
+    paid_inference_cost_usd: 0,
+    planner: "hae-deterministic-zero-token-v1",
+  };
+}
+
+export function deterministicOwnerWorkPlan(payload) {
+  const workId=clean(payload?.work_id,160);
+  const workstream=clean(payload?.workstream,40).toLowerCase();
+  const title=clean(payload?.title,160);
+  const details=clean(payload?.details,1800);
+  const nextAction=clean(payload?.next_action,1200);
+  const ownerRole=clean(payload?.selected_owner_role,120);
+  const ownerVersion=clean(payload?.selected_owner_version,80);
+  const routeBasis=clean(payload?.route_basis,160);
+  const available=Array.isArray(payload?.available_execution_job_types)
+    ? payload.available_execution_job_types.map((value)=>clean(value,120)).filter(Boolean)
+    : [];
+  if(!/^hcwi_[A-Za-z0-9._:-]{6,150}$/.test(workId)) throw new Error("owner_work_plan_work_id_invalid");
+  if(!["marketing","logistics","sales","technology","academy","finance","operations"].includes(workstream)) throw new Error("owner_work_plan_workstream_invalid");
+  if(!title||!ownerRole||!ownerVersion||!routeBasis||!available.length) throw new Error("owner_work_plan_identity_invalid");
+  const text=[title,details,nextAction].filter(Boolean).join(" ").toLowerCase();
+  if(SECRET_LIKE.test(text)) throw new Error("owner_work_sensitive_or_invalid");
+  const input={...payload,work_id:workId,workstream,title,details,next_action:nextAction,selected_owner_role:ownerRole,selected_owner_version:ownerVersion,route_basis:routeBasis};
+  if(/(?:\bmerge\b|\bdeploy\b|publish|send\b|email\b|call\b|credential|password|billing|payment|pay\b|hire\b|fire\b|legal|contract signature|delete\b|destructive|production write)/i.test(text)) {
+    return ownerPlanEnvelope(input,"NEEDS_OWNER_GATE",null,
+      "This work item contains an action protected by the existing owner gate.",
+      "Execute only read-only preparation until the protected action is explicitly authorized.");
+  }
+  if(/(?:missing|not recovered|unknown|locate current|source truth|evidence gap|blocked reason)/i.test(text)) {
+    return ownerPlanEnvelope(input,"BLOCKED_EVIDENCE",null,
+      "The task explicitly indicates missing or unverified source truth.",
+      "Recover the canonical source evidence first, then return the work item to ready.");
+  }
+  let jobType=null;
+  if(workstream==="academy" && /english|practice|lesson|language/i.test(text)) jobType="academy.english.practice.build";
+  else if(workstream==="marketing" && /duplicate|dedupe|content/i.test(text)) jobType="marketing.content.dedupe.audit";
+  else if(workstream==="marketing" && /seo|index|canonical|sitemap|crawl|search/i.test(text)) jobType="search.snapshot.evaluate";
+  else if(workstream==="logistics" && /fresh|stale|source|feed|load/i.test(text)) jobType="logistics.source.freshness.audit";
+  else if(/ai gateway|free provider|provider readiness|gateway readiness/i.test(text)) jobType="ai.gateway.readiness.audit";
+  else if(/hae|command center|autonom|runtime|pipeline|queue|receipt|\bci\b|self.improv/i.test(text)) jobType="hae.self.improvement.audit";
+  if(jobType && available.includes(jobType)) {
+    return ownerPlanEnvelope(input,"EXECUTE_EXISTING_CAPABILITY",jobType,
+      "A bounded existing HAE read-only capability matches this work item.",
+      "Run the selected HAE capability and persist its canonical D1 receipt before advancing the work item.");
+  }
+  return ownerPlanEnvelope(input,"NEEDS_CAPABILITY",null,
+    "No current bounded HAE capability safely covers this work item.",
+    "Create or map the smallest read-only capability for this task, then return the item to ready.");
+}
+
 
 async function reserveNextItem(db, now) {
   const candidate = await db.prepare(`
