@@ -315,7 +315,7 @@ export async function seedHistoricalCommandCenterBacklog(db){
     await db.prepare(`INSERT OR IGNORE INTO hermes_owner_work_items
       (id,organization_scope,workstream,priority,title,details,source,status,created_by,created_at,updated_at,project_id,
        completed_at,acceptance_status,blocked_reason,source_kind,source_label,source_ref,next_action)
-      VALUES (?,'hermes_internal',?,?,?,?,?,'imported',?,'history_backlog_import',?,?,?,?,?,?,?, ?,?,?)`)
+      VALUES (?,'hermes_internal',?,?,?,?,'imported',?,'history_backlog_import',?,?,?,?,?,?,?,?,?,?)`)
       .bind(
         item.id,item.workstream,item.priority,clean(item.title,160),clean(item.details),item.status,
         item.created_at,item.created_at,item.project_id??null,completed,acceptance,item.blocked_reason??null,
