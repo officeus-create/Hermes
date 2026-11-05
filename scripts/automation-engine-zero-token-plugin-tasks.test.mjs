@@ -129,6 +129,10 @@ const migration = taskMigrationSnapshot(ZERO_TOKEN_PLUGIN_TASK_CONTRACTS.map((it
   "search.snapshot.evaluate",
   "work.portfolio.reconcile",
   "marketing.content.dedupe.audit",
+  "audit.github.snapshot",
+  "audit.cloudflare.runtime",
+  "audit.drive.truth",
+  "audit.website.journey",
 ]));
 assert.equal(migration.recovered_task_count, 14);
 assert.equal(migration.unsupported_capability_count, 0);
