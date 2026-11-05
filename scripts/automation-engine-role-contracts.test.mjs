@@ -13,11 +13,22 @@ import {
 } from "../workers/automation-engine/src/role-contracts.mjs";
 import { pluginRuntimeVersion } from "../workers/automation-engine/src/plugin-runtime-registry.mjs";
 
-assert.equal(ROLE_CONTRACTS.length, 19, "Runtime must expose seventeen deterministic contracts plus two free-only semantic contracts");
+for (const jobType of [
+  "audit.github.snapshot",
+  "audit.cloudflare.runtime",
+  "audit.drive.truth",
+  "audit.website.journey",
+]) {
+  assert.ok(ROLE_CONTRACT_JOB_TYPES.includes(jobType), `missing auditor contract: ${jobType}`);
+}
 assert.deepEqual(
   [...ROLE_CONTRACT_JOB_TYPES].sort(),
   [
     "academy.english.practice.build",
+    "audit.cloudflare.runtime",
+    "audit.drive.truth",
+    "audit.github.snapshot",
+    "audit.website.journey",
     "ai.gateway.readiness.audit",
     "dispatch.daily.closeout.audit",
     "growth.error.closure.audit",
@@ -63,6 +74,87 @@ for (const contract of ROLE_CONTRACTS) {
   assert.equal(sha, await roleContractSha256(JSON.parse(stableRoleContractJson(contract))), "Contract digest must be canonical/deterministic");
   assert.equal(roleContractForJobType(contract.job_type)?.contract_version, contract.contract_version);
 }
+const trustedWebsiteAudit = runRoleContractPrimitive("audit.website.journey", {
+  observed_at: "2026-11-03T08:00:00.000Z",
+  coverage_complete: true,
+  source_authenticated: false,
+  source_trusted: true,
+  findings: [],
+});
+assert.equal(trustedWebsiteAudit.coverage_complete, true);
+assert.equal(trustedWebsiteAudit.source_authenticated, false);
+assert.equal(trustedWebsiteAudit.source_trusted, true);
+assert.equal(trustedWebsiteAudit.source_verified, true);
+
+const unauthenticatedAudit = runRoleContractPrimitive("audit.website.journey", {
+  observed_at: "2026-11-03T08:00:00.000Z",
+  coverage_complete: true,
+  source_authenticated: false,
+  source_trusted: false,
+  findings: [],
+});
+assert.equal(unauthenticatedAudit.coverage_complete, false);
+assert.equal(unauthenticatedAudit.source_verified, false);
+
+for (const authenticatedAuditJob of [
+  "audit.github.snapshot",
+  "audit.cloudflare.runtime",
+  "audit.drive.truth",
+]) {
+  assert.throws(
+    () => runRoleContractPrimitive(authenticatedAuditJob, {
+      observed_at: "2026-11-03T08:00:00.000Z",
+      coverage_complete: true,
+      source_authenticated: false,
+      source_trusted: true,
+      findings: [],
+    }),
+    /audit_source_authentication_required/,
+    `${authenticatedAuditJob} must reject trusted-only spoofing`,
+  );
+  const authenticatedAudit = runRoleContractPrimitive(authenticatedAuditJob, {
+    observed_at: "2026-11-03T08:00:00.000Z",
+    coverage_complete: true,
+    source_authenticated: true,
+    source_trusted: false,
+    findings: [],
+  });
+  assert.equal(authenticatedAudit.coverage_complete, true);
+  assert.equal(authenticatedAudit.source_verified, true);
+}
+
+const safeSecretExposureFinding = runRoleContractPrimitive("audit.drive.truth", {
+  observed_at: "2026-11-03T08:00:00.000Z",
+  coverage_complete: true,
+  source_authenticated: true,
+  source_trusted: false,
+  findings: [{
+    finding_id: "drive-domain-config-secret-exposure",
+    category: "SECRET_EXPOSURE",
+    severity: "P0",
+    status: "OPEN",
+  }],
+});
+assert.deepEqual(safeSecretExposureFinding.finding_ids, ["drive-domain-config-secret-exposure"]);
+assert.equal(safeSecretExposureFinding.p0_count, 1);
+
+for (const secretLikeFinding of [
+  { finding_id: "123456789:ABCDEFGHIJKLMNOPQRSTUVWXYZabcd123456", category: "SECRET_EXPOSURE" },
+  { finding_id: "drive-secret-exposure", category: "Authorization: Bearer abcdefghijklmnopqrstuvwxyz" },
+]) {
+  assert.throws(
+    () => runRoleContractPrimitive("audit.drive.truth", {
+      observed_at: "2026-11-03T08:00:00.000Z",
+      coverage_complete: true,
+      source_authenticated: true,
+      source_trusted: false,
+      findings: [{ ...secretLikeFinding, severity: "P0", status: "OPEN" }],
+    }),
+    /audit_finding_secret_like/,
+    "auditor receipts must classify secret exposure without persisting secret-like values",
+  );
+}
+
 const searchContract = roleContractForJobType("search.snapshot.evaluate");
 assert.ok(searchContract.runtime_config.target_urls.length >= 3);
 assert.ok(searchContract.runtime_config.target_urls.every((url) => url.startsWith("https://hermeslogisticsus.com/")));
@@ -86,7 +178,7 @@ assert.equal(roleContractForJobType("hae.self.patch.propose").runtime_config.max
 assert.equal(CAPABILITY_GRAPH_ROLE_CONTRACT_JOB_TYPES.length, ROLE_CONTRACT_JOB_TYPES.length - 2);
 assert.equal(roleContractForJobType("knowledge.evidence.audit").role_id, "hermes-knowledge-curator");
 assert.equal(roleContractForJobType("knowledge.evidence.audit").plugin_version, pluginRuntimeVersion("hermes-knowledge-curator"));
-assert.equal(ROLE_CONTRACTS.filter((contract) => !contract.semantic_required).length, 17);
+assert.ok(ROLE_CONTRACTS.filter((contract) => !contract.semantic_required).length >= 19);
 assert.equal(ROLE_CONTRACTS.filter((contract) => contract.semantic_required).length, 2);
 
 const searchInput = {
@@ -234,4 +326,4 @@ assert.throws(()=>validateRoleContractSemanticResult("hae.self.patch.propose",pa
 }),/hae_patch_diff_unsafe_added_code/);
 assert.throws(()=>runRoleContractPrimitive("hae.self.patch.propose",patchPayload),/semantic_job_requires_free_ai/);
 
-console.log("HAE plugin role contracts PASS: 15 zero-model + 2 free-only semantic contracts");
+console.log(`HAE plugin role contracts PASS: ${ROLE_CONTRACTS.filter((contract)=>!contract.semantic_required).length} zero-model + ${ROLE_CONTRACTS.filter((contract)=>contract.semantic_required).length} free-only semantic contracts`);

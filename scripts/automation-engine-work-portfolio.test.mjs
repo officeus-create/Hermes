@@ -24,10 +24,15 @@ const normalized = normalizeWorkPortfolioSnapshot(input);
 assert.equal(normalized.source_kind, "ONE_BRAIN");
 assert.equal(normalized.tasks.length, 6);
 
+const routeContracts = [
+  { job_type:"search.snapshot.evaluate", role_id:"hermes-search-growth", plugin_version:"0.1.16", permission_class:"READ_ONLY", semantic_required:false, runtime_config:{max_cost_usd:0} },
+  { job_type:"marketing.content.dedupe.audit", role_id:"hermes-marketing-growth", plugin_version:"0.1.17", permission_class:"READ_ONLY", semantic_required:false, runtime_config:{max_cost_usd:0} },
+];
+
 const result = reconcileWorkPortfolioSnapshot(input, [
   "search.snapshot.evaluate",
   "marketing.content.dedupe.audit",
-]);
+], routeContracts);
 assert.equal(result.coverage_status, "PARTIAL");
 assert.equal(result.unfinished_count, 5);
 assert.deepEqual(result.ready_work_ids, ["W-2"]);
@@ -45,9 +50,30 @@ assert.equal(result.raw_chat_history_persisted, false);
 const completeResult = reconcileWorkPortfolioSnapshot({ ...input, coverage_complete: true }, [
   "search.snapshot.evaluate",
   "marketing.content.dedupe.audit",
-]);
+], routeContracts);
 assert.deepEqual(completeResult.routing_candidate_work_ids, ["W-2"]);
 assert.equal(completeResult.routing_blocked_reason, null);
+const w2Route=completeResult.routing_decisions.find((item)=>item.work_id==="W-2");
+assert.deepEqual(w2Route,{
+  work_id:"W-2",
+  route_decision:"CANDIDATE",
+  route_reason:"MATCHED_READ_ONLY_ROLE",
+  capability_job_type:"search.snapshot.evaluate",
+  selected_role_id:"hermes-search-growth",
+  selected_plugin_version:"0.1.16",
+  execution_permission:"READ_ONLY_CANDIDATE_ONLY",
+  semantic_required:false,
+  model_cost_usd:0,
+  evidence_id:"HAE-ROUTE:one-brain:2026-10-24T18:00Z:W-2",
+});
+const w3Route=completeResult.routing_decisions.find((item)=>item.work_id==="W-3");
+assert.equal(w3Route.route_decision,"OMIT");
+assert.equal(w3Route.route_reason,"WRITER_CONFLICT");
+assert.equal(w3Route.execution_permission,"NONE");
+const partialW2=result.routing_decisions.find((item)=>item.work_id==="W-2");
+assert.equal(partialW2.route_decision,"HOLD");
+assert.equal(partialW2.route_reason,"PARTIAL_COVERAGE");
+assert.equal(result.automatic_execution_performed,false);
 
 assert.throws(
   () => normalizeWorkPortfolioSnapshot({ ...input, source_kind: "CHATGPT_ALL" }),
