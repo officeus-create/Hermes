@@ -97,8 +97,10 @@ async function reserveNextItem(db, now) {
       AND (hae_execution_job_id IS NULL OR hae_execution_job_id='')
       AND (hae_dispatch_state IS NULL OR hae_dispatch_state IN ('','RETRY_READY'))
     ORDER BY
+      CASE WHEN revenue_status='active' THEN 0 ELSE 1 END,
       CASE status WHEN 'ready' THEN 0 ELSE 1 END,
       CASE priority WHEN 'p0' THEN 0 WHEN 'p1' THEN 1 WHEN 'p2' THEN 2 ELSE 3 END,
+      CASE WHEN revenue_rank IS NULL THEN 999999 ELSE revenue_rank END ASC,
       created_at ASC
     LIMIT 1
   `).first();
