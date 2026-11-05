@@ -360,6 +360,22 @@ const ownerPlanRequest=buildRoleContractSemanticRequest("work.item.plan",ownerPl
 assert.match(ownerPlanRequest.system_prompt,/canonical HAE runtime/);
 assert.ok(ownerPlanRequest.user_prompt.includes("hcwi_test_owner_work_001"));
 assert.ok(ownerPlanRequest.max_output_tokens<=700);
+const revenueOwnerPlanPayload={
+  ...ownerPlanPayload,
+  work_id:"hcwi_test_revenue_plan_002",
+  title:"[REVENUE] Website Pricing & Sales System",
+  next_action:"Prepare the smallest safe step toward a paid $990 Launch sale.",
+  revenue_mission:true,
+  revenue_gate_usd:1,
+  revenue_target_usd:990,
+  revenue_actual_usd:0,
+  revenue_source_work_id:"W-TEST-REVENUE",
+};
+const revenuePlanRequest=buildRoleContractSemanticRequest("work.item.plan",revenueOwnerPlanPayload);
+assert.match(revenuePlanRequest.system_prompt,/revenue target.*not an owner gate/i);
+assert.match(revenuePlanRequest.system_prompt,/NEXT EXECUTABLE ACTION/);
+assert.match(revenuePlanRequest.user_prompt,/"revenue_mission":true/);
+assert.match(revenuePlanRequest.user_prompt,/"revenue_target_usd":990/);
 const ownerPlanResult=validateRoleContractSemanticResult("work.item.plan",ownerPlanPayload,{
   disposition:"EXECUTE_EXISTING_CAPABILITY",
   recommended_job_type:"ai.gateway.readiness.audit",
