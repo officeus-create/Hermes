@@ -39,6 +39,9 @@ on:
       - "scripts/hae-github-ci-*.mjs"
       - "scripts/hae-github-auditor-*.mjs"
       - "scripts/hae-cloudflare-auditor-*.mjs"
+      - "scripts/hae-drive-auditor-*.mjs"
+      - "functions/api/_lib/business-social-drive.mjs"
+      - "functions/api/internal/audit/drive.ts"
       - "workers/automation-engine/src/github-auditor-runtime-intake.mjs"
       - "workers/automation-engine/src/cloudflare-auditor-runtime-intake.mjs"
       - ".github/workflows/cloudflare-five-surface-synthetic.yml"
@@ -100,6 +103,7 @@ jobs:
           node scripts/hae-github-ci-event-sensor.test.mjs
           node scripts/hae-github-auditor-source.test.mjs
           node scripts/hae-cloudflare-auditor-source.test.mjs
+          node scripts/hae-drive-auditor-source.test.mjs
           node scripts/hae-github-ci-runtime-intake.test.mjs
           node scripts/hae-github-ci-source.test.mjs
           node scripts/hae-github-ci-patch-runtime-intake.test.mjs
