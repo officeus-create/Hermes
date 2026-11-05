@@ -307,8 +307,16 @@ export const COMMAND_CENTER_HISTORY_BACKLOG = Object.freeze([
 
 const clean=(value,max=10000)=>String(value??"").replace(/\u0000/g,"").trim().slice(0,max);
 
+const IMPORT_KEY="owner_history_backlog_2026-11-05_v1";
+
 export async function seedHistoricalCommandCenterBacklog(db){
   if(!db?.prepare)return;
+  await db.prepare(`CREATE TABLE IF NOT EXISTS hermes_command_center_imports (
+    import_key TEXT PRIMARY KEY,
+    imported_at TEXT NOT NULL
+  )`).run();
+  const already=await db.prepare("SELECT import_key FROM hermes_command_center_imports WHERE import_key=? LIMIT 1").bind(IMPORT_KEY).first();
+  if(already)return;
   for(const item of COMMAND_CENTER_HISTORY_BACKLOG){
     const completed=item.status==="done"?item.created_at:null;
     const acceptance=item.status==="done"?"accepted":"not_required";
@@ -322,4 +330,6 @@ export async function seedHistoricalCommandCenterBacklog(db){
         item.source_kind??"history",clean(item.source_label,240),clean(item.source_ref,1000),clean(item.next_action,2000)
       ).run();
   }
+  await db.prepare("INSERT OR IGNORE INTO hermes_command_center_imports (import_key,imported_at) VALUES (?,?)")
+    .bind(IMPORT_KEY,"2026-11-05T10:30:00.000Z").run();
 }
