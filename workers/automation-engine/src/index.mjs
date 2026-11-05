@@ -994,6 +994,9 @@ async function runReadOnlyGenericCapability(env, job) {
     let result;
     let semanticExecution = null;
     if (contract.semantic_required) {
+      if (job.job_type === "work.item.plan") {
+        throw new FreeAiUnavailableError("windows_node_required", 60);
+      }
       const semanticRequest = buildRoleContractSemanticRequest(job.job_type, executionPayload);
       const budgetUsd = Number(contract?.runtime_config?.max_cost_usd);
       if (!Number.isFinite(budgetUsd) || budgetUsd < 0) throw new Error("semantic_budget_invalid");
