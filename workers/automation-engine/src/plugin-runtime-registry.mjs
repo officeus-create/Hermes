@@ -2,7 +2,7 @@
 // It uses the newest current release creation instant observed in that same readback as a
 // millisecond-truncated lower bound, so freshness is never overstated by a fabricated local clock instant.
 // This is bounded release evidence, NOT proof of runtime loading or automatic refreshing.
-const OBSERVED_AT = "2026-11-04T15:41:12.219Z";
+const OBSERVED_AT = "2026-11-04T22:47:58.446Z";
 
 export const PLUGIN_RUNTIME_REGISTRY = Object.freeze({
   "hermes-automatic-engineer": Object.freeze({ version: "0.1.38", observed_at: OBSERVED_AT }),
@@ -10,10 +10,10 @@ export const PLUGIN_RUNTIME_REGISTRY = Object.freeze({
   "hermes-technology-developer": Object.freeze({ version: "0.1.63", observed_at: OBSERVED_AT }),
   "hermes-qa-evidence-auditor": Object.freeze({ version: "0.1.25", observed_at: OBSERVED_AT }),
   "hermes-knowledge-curator": Object.freeze({ version: "0.1.111", observed_at: OBSERVED_AT }),
-  "hermes-marketing-growth": Object.freeze({ version: "0.1.19", observed_at: OBSERVED_AT }),
+  "hermes-marketing-growth": Object.freeze({ version: "0.1.20", observed_at: OBSERVED_AT }),
   "hermes-search-growth": Object.freeze({ version: "0.1.18", observed_at: OBSERVED_AT }),
   "hermes-academy": Object.freeze({ version: "0.1.17", observed_at: OBSERVED_AT }),
-  "hermes-dispatch-os": Object.freeze({ version: "0.1.26", observed_at: OBSERVED_AT }),
+  "hermes-dispatch-os": Object.freeze({ version: "0.1.27", observed_at: OBSERVED_AT }),
   "hermes-github-auditor": Object.freeze({ version: "0.1.4", observed_at: OBSERVED_AT }),
   "hermes-cloudflare-auditor": Object.freeze({ version: "0.1.4", observed_at: OBSERVED_AT }),
   "hermes-drive-auditor": Object.freeze({ version: "0.1.5", observed_at: OBSERVED_AT }),
