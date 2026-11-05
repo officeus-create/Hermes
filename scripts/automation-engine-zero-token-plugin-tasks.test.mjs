@@ -23,6 +23,39 @@ const fixtures = {
     { evidence_id: "E-1", fingerprint: hash, source_ref: "gmail-metadata://thread/E-1", status: "VERIFIED", observed_at: "2026-10-24T10:00:00Z" },
     { evidence_id: "E-2", fingerprint: hash, source_ref: "drive://evidence/E-2", status: "HOLD", observed_at: "2026-10-24T11:00:00Z" },
   ] },
+  "knowledge.lesson.evaluate": {
+    observed_at: "2026-11-05T13:00:00Z",
+    candidates: [
+      {
+        lesson_id: "lesson:receipt-truth",
+        fingerprint: "c".repeat(64),
+        source_role: "hermes-qa-evidence-auditor",
+        source_ref: "hae://receipt/job:lesson-source-1",
+        target_roles: ["hermes-agent-coordinator","hermes-automatic-engineer"],
+        evidence_count: 3,
+        positive_test_count: 2,
+        negative_test_count: 1,
+        quality_delta_pct: 8,
+        productivity_delta_pct: 12,
+        contradiction_open: false,
+        permission_expansion: false
+      },
+      {
+        lesson_id: "lesson:unsafe-shortcut",
+        fingerprint: "d".repeat(64),
+        source_role: "hermes-automatic-engineer",
+        source_ref: "github://officeus-create/Hermes/pull/2295",
+        target_roles: ["hermes-agent-coordinator"],
+        evidence_count: 1,
+        positive_test_count: 1,
+        negative_test_count: 0,
+        quality_delta_pct: -2,
+        productivity_delta_pct: -3,
+        contradiction_open: false,
+        permission_expansion: true
+      }
+    ]
+  },
   "technology.release.radar": { observed_at: "2026-10-24T18:00:00Z", components: [
     { component_id: "astro", current_version: "7.4.1", candidate_version: "7.4.2", security_update: true, source_ref: "https://github.com/withastro/astro/releases/tag/astro%407.4.2" },
   ] },
@@ -77,7 +110,7 @@ const fixtures = {
   },
 };
 
-assert.equal(ZERO_TOKEN_PLUGIN_TASK_CONTRACTS.length, 13);
+assert.equal(ZERO_TOKEN_PLUGIN_TASK_CONTRACTS.length, 14);
 for (const contract of ZERO_TOKEN_PLUGIN_TASK_CONTRACTS) {
   assert.equal(contract.semantic_required, false);
   assert.equal(contract.permission_class, "READ_ONLY");
@@ -109,6 +142,15 @@ assert.equal(hrReport.ai_tokens_used,0);
 assert.equal(hrReport.cost_usd,0);
 assert.equal(hrReport.accepted_change_count,1);
 assert.equal(hrReport.source_snapshots[0].changed,false,"first/baseline source must not be promoted to a change");
+const lessonEval=runZeroTokenPluginTask("knowledge.lesson.evaluate",fixtures["knowledge.lesson.evaluate"]);
+assert.equal(lessonEval.promotion_candidate_count,1);
+assert.equal(lessonEval.hold_count,1);
+assert.equal(lessonEval.independent_qa_required,true);
+assert.equal(lessonEval.automatic_plugin_update_performed,false);
+assert.equal(lessonEval.automatic_one_brain_promotion_performed,false);
+assert.deepEqual(lessonEval.promotion_candidates[0].target_roles,["hermes-agent-coordinator","hermes-automatic-engineer"]);
+assert.ok(lessonEval.holds[0].reasons.includes("QUALITY_REGRESSION"));
+assert.ok(lessonEval.holds[0].reasons.includes("PRODUCTIVITY_REGRESSION"));
 assert.equal(runZeroTokenPluginTask("hae.self.improvement.audit", fixtures["hae.self.improvement.audit"]).next_action, "HOLD_REPAIR");
 assert.equal(runZeroTokenPluginTask("hae.self.repair.packet", fixtures["hae.self.repair.packet"]).repair_state, "HOLD_REPAIR");
 assert.equal(runZeroTokenPluginTask("hae.self.repair.packet", fixtures["hae.self.repair.packet"]).source_change_performed, false);
@@ -118,12 +160,15 @@ assert.equal(runZeroTokenPluginTask("hae.self.release.verify", fixtures["hae.sel
 assert.equal(ZERO_TOKEN_PLUGIN_TASK_CONTRACTS.find((item) => item.job_type === "hae.self.improvement.audit")?.runtime_config.cadence_hours, 6);
 assert.equal(ZERO_TOKEN_PLUGIN_TASK_CONTRACTS.find((item) => item.job_type === "knowledge.evidence.audit")?.role_id, "hermes-knowledge-curator");
 assert.equal(ZERO_TOKEN_PLUGIN_TASK_CONTRACTS.find((item) => item.job_type === "knowledge.evidence.audit")?.plugin_version, pluginRuntimeVersion("hermes-knowledge-curator"));
+assert.equal(ZERO_TOKEN_PLUGIN_TASK_CONTRACTS.find((item) => item.job_type === "knowledge.lesson.evaluate")?.role_id, "hermes-knowledge-curator");
+assert.equal(ZERO_TOKEN_PLUGIN_TASK_CONTRACTS.find((item) => item.job_type === "knowledge.lesson.evaluate")?.plugin_version, pluginRuntimeVersion("hermes-knowledge-curator"));
 assert.equal(ZERO_TOKEN_PLUGIN_TASK_CONTRACTS.find((item) => item.job_type === "technology.release.radar")?.plugin_version, pluginRuntimeVersion("hermes-automatic-engineer"));
 assert.equal(ZERO_TOKEN_PLUGIN_TASK_CONTRACTS.find((item) => item.job_type === "academy.english.practice.build")?.plugin_version, pluginRuntimeVersion("hermes-academy"));
 
 assert.throws(() => validateZeroTokenPluginTaskInput("dispatch.daily.closeout.audit", { ...fixtures["dispatch.daily.closeout.audit"], coverage_complete: "yes" }), /dispatch_coverage_complete_required/);
 assert.throws(() => validateZeroTokenPluginTaskInput("knowledge.evidence.audit", { observed_at: "2026-10-24T18:00:00Z", evidence: [{ evidence_id: "E", fingerprint: hash, source_ref: "gmail://raw/body", status: "VERIFIED", observed_at: "2026-10-24T17:00:00Z" }] }), /knowledge_source_ref_invalid/);
 assert.throws(() => validateZeroTokenPluginTaskInput("marketing.mentions.audit", { observed_at: "2026-10-24T18:00:00Z", mentions: [{ mention_id: "M", fingerprint: hash, source_url: "javascript:alert(1)", classification: "SOCIAL", first_seen_at: "2026-10-24T17:00:00Z" }] }), /mention_invalid/);
+assert.throws(() => validateZeroTokenPluginTaskInput("knowledge.lesson.evaluate", { observed_at:"2026-11-05T13:00:00Z", candidates:[{ lesson_id:"bad", fingerprint:"e".repeat(64), source_role:"hermes-qa-evidence-auditor", source_ref:"https://raw.example/", target_roles:["hermes-agent-coordinator"], evidence_count:2, positive_test_count:1, negative_test_count:1, quality_delta_pct:1, productivity_delta_pct:1, contradiction_open:false, permission_expansion:false }] }), /lesson_source_ref_invalid/);
 assert.equal(new Set(CHATGPT_TASK_MIGRATIONS.map((item) => item.task_key)).size, CHATGPT_TASK_MIGRATIONS.length);
 const migration = taskMigrationSnapshot(ZERO_TOKEN_PLUGIN_TASK_CONTRACTS.map((item) => item.job_type).concat([
   "search.snapshot.evaluate",
@@ -160,4 +205,4 @@ assert.ok(worker.includes('cronExpression==="0 * * * *"'),"exact-hour report wak
 assert.ok(worker.includes('hae:command-center-report:${job.key}:${localDate}'),"weekly report runs need local-date idempotency");
 assert.ok(worker.includes('report.hr-tech.weekly.build'));
 assert.ok(worker.includes('report.catalog.weekly.build'));
-console.log("HAE zero-token plugin task migration PASS: 14 recovered schedules, 13 deterministic plugin capabilities, no ChatGPT runtime dependency");
+console.log("HAE zero-token plugin task migration PASS: 14 recovered schedules, 14 deterministic plugin capabilities, no ChatGPT runtime dependency");
