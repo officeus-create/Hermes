@@ -2,10 +2,10 @@
 // It uses the newest current release creation instant observed in that same readback as a
 // millisecond-truncated lower bound, so freshness is never overstated by a fabricated local clock instant.
 // This is bounded release evidence, NOT proof of runtime loading or automatic refreshing.
-const OBSERVED_AT = "2026-11-05T15:09:14.859Z";
+const OBSERVED_AT = "2026-11-05T18:22:10.814Z";
 
 export const PLUGIN_RUNTIME_REGISTRY = Object.freeze({
-  "hermes-automatic-engineer": Object.freeze({ version: "0.1.39", observed_at: OBSERVED_AT }),
+  "hermes-automatic-engineer": Object.freeze({ version: "0.1.42", observed_at: OBSERVED_AT }),
   "hermes-agent-coordinator": Object.freeze({ version: "0.1.102", observed_at: OBSERVED_AT }),
   "hermes-technology-developer": Object.freeze({ version: "0.1.63", observed_at: OBSERVED_AT }),
   "hermes-connect-operator": Object.freeze({ version: "1.4.43", observed_at: OBSERVED_AT }),
