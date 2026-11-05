@@ -2267,3 +2267,16 @@ ai_name: Codex; role: delegated Academy owner; contribution_type: Implementation
 - Change: added `phoneDesk: "dispatch"` to the two carrier support pages and `phoneDesk: "shippers"` to auction-vehicle-pickup. One line each; same approved number +1 (351) 777-5337; no design/markup change (the component already renders the desk line).
 - Tests: `npm run build` 0 errors; `npm test` exit 0; built HTML of all three pages now carries the tel link.
 - Next action — Claude: live readback after merge.
+
+
+## 2026-11-05 — ChatGPT — three-month owner backlog recovery into Command Center
+
+- Owner/task: recover work from roughly 2026-08-05 through 2026-11-05 and make surviving tasks visible in the existing private Command Center rather than forcing repeated chat archaeology.
+- Branch/PR: `feat/command-center-history-backlog-20261105`, PR #2293.
+- Files: `functions/api/_lib/command-center-history-backlog.mjs`, `functions/api/_lib/internal-command-center.mjs`, private Command Center task renderer, contract/state tests, owner Command Center docs.
+- Behavior: 35 deduplicated high-confidence tasks are seeded idempotently into the existing `hermes_owner_work_items` D1 backlog with source kind/label/reference, blocker and concrete next action. Sources include ChatGPT history, GitHub, One Brain/Drive, Audit & Order, plugins and Windows/Mac handoffs. Imported tasks never auto-dispatch.
+- Governance: no second registry, scheduler, queue, database, brain or runtime. Historical tasks that may be stale remain blocked pending current-evidence reconciliation.
+- Verification: source tests extended; exact-head GitHub CI still required on PR #2293. No merge/deploy/provider/credential changes performed.
+- Compounding: Primary outcome = continuity and owner visibility. Knowledge = durable provenance/next-action fields. AI/product = imported work uses the existing Hermes AI dispatch/acceptance path. Data/privacy = no raw chats, credentials or private payloads are stored; only bounded task summaries/provenance. Architecture = existing D1 backlog reused.
+- Remaining: expand the recovered manifest as additional canonical sources are reconciled, then after independent review/owner release verify production D1 import and owner readback in Tasks/Today.
+- Next owner: Hermes Technology Developer + Agent Coordinator; independent QA before protected release.
