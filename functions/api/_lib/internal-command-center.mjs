@@ -1,5 +1,6 @@
 import { INTERNAL_AI_ORGANIZATION_SCOPE, nowIso } from "./internal-ai.mjs";
 import { pluginRuntimeRegistrySnapshot } from "../../../workers/automation-engine/src/plugin-runtime-registry.mjs";
+import { seedHistoricalCommandCenterBacklog } from "./command-center-history-backlog.mjs";
 
 export const COMMAND_CENTER_SCOPE = INTERNAL_AI_ORGANIZATION_SCOPE;
 const WORKSTREAMS = new Set(["marketing","logistics","sales","technology","academy","finance","operations"]);
@@ -29,7 +30,11 @@ export async function ensureCommandCenterSchema(db) {
     acceptance_status TEXT NOT NULL DEFAULT 'not_required' CHECK (acceptance_status IN ('not_required','awaiting','accepted')),
     accepted_by TEXT,
     accepted_at TEXT,
-    blocked_reason TEXT
+    blocked_reason TEXT,
+    source_kind TEXT,
+    source_label TEXT,
+    source_ref TEXT,
+    next_action TEXT
   )`).run();
   const columns=await db.prepare("PRAGMA table_info(hermes_owner_work_items)").all();
   const names=new Set((columns?.results||[]).map((column)=>String(column.name)));
@@ -39,6 +44,10 @@ export async function ensureCommandCenterSchema(db) {
     ["accepted_at","TEXT"],
     ["project_id","TEXT"],
     ["plugin_route_json","TEXT"],
+    ["source_kind","TEXT"],
+    ["source_label","TEXT"],
+    ["source_ref","TEXT"],
+    ["next_action","TEXT"],
   ]) if(!names.has(name)) {
     try { await db.prepare(`ALTER TABLE hermes_owner_work_items ADD COLUMN ${name} ${definition}`).run(); }
     catch(error) {
@@ -56,6 +65,7 @@ export async function ensureCommandCenterSchema(db) {
     action TEXT NOT NULL CHECK (action IN ('grant','revoke')),
     created_at TEXT NOT NULL
   )`).run();
+  await seedHistoricalCommandCenterBacklog(db);
 }
 
 export function normalizeWorkstream(value) { const v=String(value||"").trim().toLowerCase(); return WORKSTREAMS.has(v)?v:null; }
@@ -93,6 +103,7 @@ export function publicWorkItem(row){
     source:String(row.source||"text"), status, acceptance_status:String(row.acceptance_status||"not_required"), created_at:row.created_at||null, updated_at:row.updated_at||null,
     linked_task_id:row.linked_task_id||null, completed_at:row.completed_at||null,
     accepted_by:row.accepted_by||null, accepted_at:row.accepted_at||null, blocked_reason:row.blocked_reason||null,
+    source_kind:row.source_kind||null, source_label:row.source_label||null, source_ref:row.source_ref||null, next_action:row.next_action||null,
     linked_task_status:row.linked_task_status||null, linked_task_started_at:row.linked_task_started_at||null,
     linked_task_completed_at:row.linked_task_completed_at||null, linked_task_updated_at:row.linked_task_updated_at||null,
     linked_task_pr_url:row.linked_task_pr_url||null, linked_task_output_summary:row.linked_task_output_summary||null,
