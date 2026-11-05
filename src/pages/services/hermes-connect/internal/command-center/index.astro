@@ -371,6 +371,7 @@ function visible(item:WorkItem){
   if(filter==="open")return !["done","cancelled"].includes(item.status);
   if(filter==="done")return item.status==="done";
   if(filter==="awaiting_acceptance")return item.status==="awaiting_acceptance";
+  if(filter==="revenue")return item.revenue_gate_usd!=null;
   return item.workstream===filter;
 }
 function renderItems(){
