@@ -305,6 +305,26 @@ const homeFooterGroups = [
 <RussianLocaleIntegrity />
 
 <style>
+  /* The public footer uses light navigation copy. Prevent route-shell CSS from
+     repainting its shared backing surface white and breaking WCAG contrast. */
+  :global(body) .site-footer {
+    background-color: #050b2b !important;
+    color: #fff;
+  }
+  /* Homepage route-shells can override descendant ink independently of the footer shell.
+     Keep shared foreground and background on the same contrast surface. */
+  :global(body) .site-footer :where(
+    .footer-brand, .footer-brand span,
+    .footer-intro > p,
+    .footer-link-group h2, .footer-link-group a,
+    .footer-contacts-label, .footer-contacts a,
+    .footer-social a, .footer-social a span,
+    .footer-meta > span, .footer-meta a,
+    .hc-launcher-panel p, .hc-launcher-panel strong,
+    .hc-launcher-panel a, .hc-launcher-panel-head > span
+  ) {
+    color: #eef0f5 !important;
+  }
   .footer-primary-nav--grouped {
     grid-column: 2 / 5;
     display: grid;
@@ -314,13 +334,13 @@ const homeFooterGroups = [
   .footer-link-group { min-width: 0; }
   .footer-link-group h2 {
     margin: 0 0 .8rem;
-    color: rgba(255,255,255,.58);
+    color: #d9dce3;
     font: 700 .68rem/1.2 var(--font-mono);
     letter-spacing: .11em;
     text-transform: uppercase;
   }
   .footer-link-group div { display: grid; gap: .58rem; }
-  .footer-link-group a { color: rgba(255,255,255,.78); font-size: .87rem; line-height: 1.35; }
+  .footer-link-group a { color: #eef0f5; font-size: .87rem; line-height: 1.35; }
   .footer-link-group a:hover,.footer-link-group a:focus-visible { color:#fff; }
   @media (max-width: 1050px) {
     .footer-primary-nav--grouped { grid-column: 1 / -1; grid-template-columns: repeat(3, minmax(0,1fr)); }
@@ -345,7 +365,7 @@ const homeFooterGroups = [
       min-height: 44px;
       align-items: center;
       padding: .35rem 0;
-      color: rgba(255,255,255,.76);
+      color: #eef0f5;
       font-size: .82rem;
       line-height: 1.22;
     }
@@ -385,4 +405,16 @@ const homeFooterGroups = [
   .footer-social-icon { display: grid; place-items: center; width: 34px; height: 34px; border: 1px solid color-mix(in srgb, currentColor 28%, transparent); border-radius: 50%; transition: background-color .2s ease, transform .2s ease; }
   .footer-social-icon svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
   .footer-social a:is(:hover, :focus-visible) .footer-social-icon { background: color-mix(in srgb, currentColor 12%, transparent); transform: translateY(-2px); }
+</style>
+
+<style is:global>
+  /* HermesConnectLauncher is a separate Astro component: SiteFooter's scoped
+     :where() rules cannot reach its generated elements. Keep its computed ink
+     readable over the shared dark footer on every public route. */
+  body .site-footer .hc-launcher-panel p,
+  body .site-footer .hc-launcher-panel strong,
+  body .site-footer .hc-launcher-panel a,
+  body .site-footer .footer-location {
+    color: #eef0f5 !important;
+  }
 </style>

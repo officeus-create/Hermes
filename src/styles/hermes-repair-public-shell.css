@@ -11,10 +11,7 @@
    still contains the pre-convergence dark root background. */
 html.hc-experience body .repair-pilot-page {
   color: var(--hermes-ink) !important;
-  background:
-    radial-gradient(circle at 78% 5%, rgba(124,92,255,.10), transparent 27rem),
-    radial-gradient(circle at 88% 9%, rgba(90,200,250,.10), transparent 22rem),
-    var(--hermes-pearl) !important;
+  background: var(--hermes-pearl) !important;
 }
 
 html.hc-experience body .repair-pilot-page .repair-live-hero,

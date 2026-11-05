@@ -1,0 +1,271 @@
+---
+import { ArrowLeft, ArrowRight, Check, ClipboardList, Phone, ShieldCheck, Truck } from "@lucide/astro";
+import BaseLayout from "../../../../layouts/BaseLayout.astro";
+import SiteFooter from "../../../../components/SiteFooter.astro";
+import SiteHeader from "../../../../components/SiteHeader.astro";
+import { site } from "../../../../data/site";
+
+const dispatchPhone = site.publicPhones[0];
+
+const title = "Диспетчер для автовоза в США — русскоязычная поддержка | Hermes";
+const description =
+  "Русскоязычная диспетчерская поддержка для перевозчиков автовозов (car hauler) в США: поиск загрузок, звонки брокерам, документы и инвойсы. Перевозчик утверждает каждый груз. Загрузки и доход не гарантируются.";
+const canonicalUrl = new URL("/ru/logistics/dispetcher-dlya-avtovoza/", Astro.site).toString();
+const intakeHref = "/logistics/start-car-hauling-dispatch/";
+const published = "2026-11-01";
+
+const whatDispatchDoes = [
+  {
+    title: "Поиск загрузок под ваш автовоз",
+    body: "Диспетчер ищет и организует загрузки под ваше оборудование, район работы, сроки и предпочтения — на загрузочных досках, у дилеров и в прямых источниках. Перевозчик утверждает каждый груз до бронирования.",
+  },
+  {
+    title: "Звонки брокерам и дилерам",
+    body: "Диспетчер согласовывает общение, готовит setup-пакеты и информацию по ставке, пока окончательное решение остаётся за перевозчиком.",
+  },
+  {
+    title: "Маршрут, дедхед и сроки",
+    body: "Проверка того, как груз ложится на автовоз: загрузка, пустой пробег (deadhead), окна погрузки и выгрузки, доступ и мили — чтобы вы видели конфликты заранее.",
+  },
+  {
+    title: "Документы и инвойсы",
+    body: "W-9, authority, страховой сертификат (COI), rate confirmation, BOL/POD, инвойсы и напоминания об оплате можно вести централизованно в рамках согласованного объёма.",
+  },
+  {
+    title: "Обратная загрузка",
+    body: "Поиск обратной загрузки, чтобы не гнать автовоз пустым, — с учётом маршрута, оборудования и времени.",
+  },
+  {
+    title: "Новый MC без опыта",
+    body: "Разбор готовности нового authority: MC/DOT, страховка, оборудование, требования брокеров и документы, которые нужно привести в порядок до активной работы.",
+  },
+];
+
+const howToStart = [
+  "Позвоните диспетчеру или оставьте заявку на разбор.",
+  "Расскажите про MC/DOT, страховку, тип автовоза, домашнюю базу, предпочтительные штаты и доступность.",
+  "Диспетчер разбирает готовность и пробелы (документы, требования брокеров, ограничения оборудования).",
+  "Собираем профиль перевозчика: вместимость, лейны, минимальные ожидания, правила утверждения.",
+  "Начинаем контролируемый разбор загрузок — каждый груз утверждаете вы.",
+];
+
+const faq = [
+  {
+    question: "Вы говорите на русском?",
+    answer: "Да. Поддержку перевозчиков автовозов ведёт русскоязычный диспетчер. Рабочие термины (dispatch, broker, load, MC, DOT, COI, BOL, POD) используем так, как они звучат в работе в США.",
+  },
+  {
+    question: "Работаете с одной машиной или небольшим автопарком?",
+    answer: "Да. Разбор одинаково подходит владельцу-оператору с одной машиной и небольшому автопарку (обычно 1–10 автовозов). Профиль и правила утверждения документируются по каждой машине.",
+  },
+  {
+    question: "Гарантируете загрузки, ставки или доход?",
+    answer: "Нет. Загрузки, ставки, мили, загруженность, прибыль и выручка зависят от рынка и условий работы и не гарантируются. Диспетчерская поддержка меняет рабочий процесс, а не рыночный результат.",
+  },
+  {
+    question: "Кто принимает решение по грузу?",
+    answer: "Перевозчик. Hermes исследует, согласовывает и координирует информацию, но за грузовик, водителя, безопасность, соответствие требованиям и окончательное утверждение каждого груза отвечает перевозчик.",
+  },
+  {
+    question: "В каких штатах работаете?",
+    answer: "Разбор загрузок строится вокруг ваших предпочтительных штатов и лейнов. Назовите домашнюю базу и районы работы — маршруты оцениваются под ваше оборудование и сроки.",
+  },
+  {
+    question: "Сколько это стоит?",
+    answer: "Стоимость обсуждается относительно конкретного объёма работ. Сравнивайте согласованную плату или процент с фактически включённым объёмом (поиск, звонки, документы, инвойсы) и сэкономленным временем.",
+  },
+];
+
+const schema = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    inLanguage: "ru",
+    headline: "Русскоязычный диспетчер для перевозчиков автовозов в США",
+    description,
+    datePublished: published,
+    dateModified: published,
+    mainEntityOfPage: canonicalUrl,
+    author: { "@type": "Organization", name: "Hermes Logistics" },
+    publisher: {
+      "@type": "Organization",
+      name: "Hermes",
+      url: "https://hermeslogisticsus.com/",
+      logo: { "@type": "ImageObject", url: "https://hermeslogisticsus.com/favicon.svg" },
+    },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    name: "Русскоязычная диспетчерская поддержка для автовозов",
+    description:
+      "Диспетчерская поддержка для перевозчиков автовозов в США с русскоязычным общением: поиск загрузок, общение с брокерами, маршрут и дедхед, документы и инвойсы. Перевозчик утверждает каждый груз.",
+    url: canonicalUrl,
+    areaServed: { "@type": "Country", name: "United States" },
+    availableLanguage: ["ru", "en"],
+    provider: { "@id": "https://hermeslogisticsus.com/#logistics" },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    inLanguage: "ru",
+    mainEntity: faq.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: { "@type": "Answer", text: item.answer },
+    })),
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Hermes", item: "https://hermeslogisticsus.com/ru/" },
+      { "@type": "ListItem", position: 2, name: "Логистика", item: "https://hermeslogisticsus.com/ru/logistics/" },
+      { "@type": "ListItem", position: 3, name: "Диспетчер для автовоза", item: canonicalUrl },
+    ],
+  },
+];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  schema={schema}
+  locale="ru"
+  htmlLang="ru"
+  ogType="article"
+  articlePublishedTime={published}
+  articleModifiedTime={published}
+>
+  <div class="logistics-resource-page logistics-resource-carrier">
+    <SiteHeader theme="dark" activePath="/paths/logistics/" />
+    <main id="main-content">
+      <article>
+        <header class="resource-hero resource-hero-carrier" id="top">
+          <div class="shell">
+            <nav class="appleton-breadcrumbs" aria-label="Хлебные крошки">
+              <a href="/ru/">Hermes</a><span aria-hidden="true">/</span>
+              <a href="/ru/logistics/">Логистика</a><span aria-hidden="true">/</span>
+              <span aria-current="page">Диспетчер для автовоза</span>
+            </nav>
+            <a class="detail-back" href="/ru/logistics/"><ArrowLeft size={18} aria-hidden="true" />Логистика</a>
+            <div class="resource-hero-grid">
+              <div>
+                <p class="eyebrow">Hermes Logistics · Диспетчер для автовоза</p>
+                <h1>Русскоязычный диспетчер для перевозчиков автовозов в США</h1>
+                <p>
+                  Если вы возите автомобили (car hauler) и ищете диспетчера, который говорит на русском, — Hermes
+                  разбирает вашу готовность и помогает с поиском загрузок, звонками брокерам, документами и инвойсами.
+                  Подходит для одной машины и небольшого автопарка (1–10 автовозов), в том числе для нового MC.
+                  Загрузки, ставки и доход не гарантируются — решение по каждому грузу остаётся за вами.
+                </p>
+                <div class="logistics-audience-actions">
+                  <a class="button button-primary" href={dispatchPhone.href} data-dispatch-call>
+                    <Phone size={18} aria-hidden="true" />Позвонить диспетчеру · {dispatchPhone.value}
+                  </a>
+                  <a class="button" href={intakeHref} data-resource-commercial-cta data-service-group="car_hauling_dispatch" data-audience-type="carrier">
+                    Оставить заявку на разбор <ArrowRight size={18} aria-hidden="true" />
+                  </a>
+                </div>
+                <p class="resource-language-note">Звонки и SMS · Пн–Сб 6:00–18:00 CT · диспетчер отвечает на русском</p>
+              </div>
+              <aside class="resource-safety-card">
+                <ShieldCheck size={30} aria-hidden="true" />
+                <h2>Перевозчик сохраняет контроль.</h2>
+                <p>Диспетчер исследует и координирует согласованную работу, но за грузовик, водителя, безопасность, соответствие требованиям и окончательное утверждение каждого груза отвечает перевозчик.</p>
+              </aside>
+            </div>
+          </div>
+        </header>
+
+        <section class="section resource-intro">
+          <div class="shell resource-lead">
+            <Truck size={36} aria-hidden="true" />
+            <div>
+              <p class="eyebrow">Кому это подходит</p>
+              <h2>Владельцам-операторам и небольшим автопаркам, которые возят автомобили.</h2>
+              <p>Открытые и крытые автовозы, hotshot и multi-car, перевозка неисправных авто. Разбор строится вокруг вашего оборудования, домашней базы, предпочтительных штатов и доступности — без обещаний по загрузкам или доходу.</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="section capacity-pillars" aria-labelledby="what-title">
+          <div class="shell">
+            <div class="section-heading split-heading">
+              <div><p class="eyebrow">Что делает диспетчер</p><h2 id="what-title">Работа, которую можно делегировать, сохранив контроль.</h2></div>
+              <p>Это рабочая информация, а не юридическая, налоговая, страховая или финансовая консультация.</p>
+            </div>
+            <div class="capacity-pillar-grid">
+              {whatDispatchDoes.map((item, index) => (
+                <article>
+                  <span>{String(index + 1).padStart(2, "0")}</span>
+                  <Truck size={23} aria-hidden="true" />
+                  <h3>{item.title}</h3>
+                  <p>{item.body}</p>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section class="section capacity-example" aria-labelledby="start-title">
+          <div class="shell capacity-example-grid">
+            <div>
+              <p class="eyebrow">Как начать</p>
+              <h2 id="start-title">Пять шагов от звонка до контролируемого разбора загрузок.</h2>
+              <p>Заявка готовит локальный предпросмотр и передачу в Logistics Sales. Она не назначает диспетчера автоматически, не создаёт аккаунт, не бронирует груз и не гарантирует приём, ставки, лейны или выручку.</p>
+            </div>
+            <dl>
+              {howToStart.map((item, index) => (
+                <div><dt>Шаг {index + 1}</dt><dd>{item}</dd></div>
+              ))}
+            </dl>
+          </div>
+        </section>
+
+        <section class="section" aria-labelledby="ru-dispatch-faq-title">
+          <div class="shell digital-faq-layout">
+            <div><p class="eyebrow">Частые вопросы</p><h2 id="ru-dispatch-faq-title">Что спрашивают перевозчики автовозов.</h2></div>
+            <div class="digital-faq-list">
+              {faq.map((item) => <details><summary>{item.question}</summary><p>{item.answer}</p></details>)}
+            </div>
+          </div>
+        </section>
+
+        <section class="section resource-related" aria-labelledby="ru-dispatch-related-title">
+          <div class="shell">
+            <div class="section-heading"><p class="eyebrow">Продолжить</p><h2 id="ru-dispatch-related-title">Следующие шаги и материалы для перевозчиков.</h2></div>
+            <div class="resource-related-grid">
+              <a href="/ru/logistics/"><Truck size={22} aria-hidden="true" /><h3>Логистика Hermes</h3><p>Обзор направления и контакты на русском.</p><strong>Открыть <ArrowRight size={16} aria-hidden="true" /></strong></a>
+              <a href="/logistics/car-hauling-dispatch/"><ClipboardList size={22} aria-hidden="true" /><h3>Car hauling dispatch</h3><p>Полный разбор услуги, процесса и контроля перевозчика (на английском).</p><strong>Открыть <ArrowRight size={16} aria-hidden="true" /></strong></a>
+              <a href="/carrier/"><Check size={22} aria-hidden="true" /><h3>Планы и пакет перевозчика</h3><p>Варианты поддержки, границы договора, шаги онбординга (на английском).</p><strong>Открыть <ArrowRight size={16} aria-hidden="true" /></strong></a>
+            </div>
+          </div>
+        </section>
+
+        <section class="section resource-final-cta" id="contact">
+          <div class="shell resource-final-card">
+            <div>
+              <p class="eyebrow">Разбор под ваш автовоз</p>
+              <h2>Позвоните диспетчеру или оставьте заявку.</h2>
+              <p>Разберём authority, оборудование, вместимость, район работы, доступность и текущий процесс. Загрузки, ставки и выручка не гарантируются.</p>
+            </div>
+            <div class="logistics-audience-actions">
+              <a class="button button-primary" href={dispatchPhone.href} data-dispatch-call><Phone size={18} aria-hidden="true" />Позвонить · {dispatchPhone.value}</a>
+              <a class="button" href={intakeHref} data-resource-commercial-cta data-service-group="car_hauling_dispatch" data-audience-type="carrier">Оставить заявку <ArrowRight size={18} aria-hidden="true" /></a>
+            </div>
+          </div>
+        </section>
+      </article>
+    </main>
+    <SiteFooter />
+  </div>
+</BaseLayout>
+
+<style>
+  .resource-language-note {
+    margin-top: 0.75rem;
+    font-size: 0.9rem;
+    opacity: 0.8;
+  }
+</style>

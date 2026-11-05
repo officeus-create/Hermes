@@ -134,6 +134,18 @@ const routes = [
       "/carrier/",
     ],
   },
+  {
+    path: "ru/logistics/dispetcher-dlya-avtovoza/index.html",
+    required: [
+      "Русскоязычный диспетчер для перевозчиков автовозов в США",
+      "Позвонить диспетчеру",
+      "диспетчер отвечает на русском",
+      "Перевозчик сохраняет контроль.",
+      "Загрузки, ставки и доход не гарантируются",
+      "tel:+13517775337",
+      "/logistics/start-car-hauling-dispatch/",
+    ],
+  },
   { path: "paths/academy/index.html", required: ["Learn AI automation by building one useful assistant.", "Fitness AI Telegram Assistant", "Learning preview only", "Ask about learning AI automation"] },
 ];
 const emailOnlyRoutes = [

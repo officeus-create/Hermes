@@ -258,13 +258,13 @@ const localizedRepairHref = localizeConnectHref("/services/hermes-connect/repair
   /* D036B — server-visible Connect marker prevents a dark-to-Pearl first-paint flash before JS adds .hc-experience. */
   .site-header:has([data-hc-server-route="connect"]) {
     color: #0b0d12 !important;
-    background: rgba(247,246,243,.88) !important;
+    background: #f7f6f3 !important;
     border-bottom-color: rgba(11,13,18,.08) !important;
-    backdrop-filter: blur(20px) saturate(1.05);
+    backdrop-filter: none;
   }
   .site-header:has([data-hc-server-route="connect"]).site-header-scrolled {
     color: #0b0d12 !important;
-    background: rgba(247,246,243,.95) !important;
+    background: #f7f6f3 !important;
     border-bottom-color: rgba(11,13,18,.09) !important;
   }
   .site-header:has([data-hc-server-route="connect"]) .desktop-nav,

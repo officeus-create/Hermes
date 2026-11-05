@@ -134,3 +134,46 @@ Scorecard rules:
 - an outreach send, reply, accepted pitch, membership payment, raw backlink count or domain-rating proxy is not a qualified referral or revenue result;
 - missing measurement is `UNKNOWN`, not zero;
 - stop or downgrade opportunity classes that produce links but no useful audience, entity-corroboration or referral signal.
+
+## Car-hauling dispatch free-listing opportunities — 2026-11-01 (Claude Code)
+
+Goal of this slice: give Russian-speaking and US car-hauling carriers (1–10 trucks) who need a
+dispatcher a legitimate, free way to find Hermes and the approved dispatch number
+`+1 (351) 777-5337`. Same activation rules as above apply: NAP must match
+`CANONICAL_COMPANY_FACTS_APPROVAL.md`, no fabricated claims, submission/outreach is a Sales/owner
+action (SEO supplies target + destination + evidence + measurement), and measurement is referral
+domains + qualified calls, not raw backlink count.
+
+### Reality check (verified 2026-11-01)
+
+There is **no high-value free directory specific to US car hauling** worth chasing. A web check for
+"free US car-hauling / truck-dispatch directories" returned mostly gig-seller "50+ free load board"
+lists and a UK haulier directory (RHA) — not useful, not relevant. **Mass free-directory submission
+is the exact pattern that already hurt Hermes** (E23: ~2,732 spam "SEO-checker" referring domains
+the owner disavowed 2026-10-27). Do not pursue generic free-directory submission. The free levers
+that are worth owner time are the major map/search profiles and a few credential-gated industry
+listings, kept to the same approved facts everywhere.
+
+### Free, owner-action opportunities (priority order)
+
+| # | Destination | Why it fits | Cost | Owner action | Status |
+|---|---|---|---|---|---|
+| L1 | **Google Business Profile** (service-area business) | Primary free lever; carries the approved phone + site; also addresses brand-entity gap (E24). SAB rule: ONE profile for the whole service area — never one profile per city, that is a suspension risk. Needs verification. | Free | Create/verify as a service-area logistics/dispatch business, set service area by state, phone `+1 (351) 777-5337`, link hermeslogisticsus.com | OWNER — not started |
+| L2 | **Bing Places for Business** | Free; mirrors the GBP data to Bing (Hermes already gets Bing impressions). | Free | Create/import from GBP once L1 exists | OWNER — not started |
+| L3 | **Apple Business Connect** | Free; Apple Maps / Siri place card. | Free | Create a place card with the same NAP + phone | OWNER — not started |
+| L4 | **Owned profiles — consistent phone** (Facebook, Instagram, Clutch) | Not new listings; make the approved number and site consistent on profiles that already rank for the brand (Facebook #6, Clutch #9, Instagram #3 on "hermes logistics"). Entity consistency feeds E2/E24. | Free | Put `+1 (351) 777-5337` + the car-hauling-dispatch URL in the Facebook/Instagram/Clutch intro | OWNER — Facebook already shows the number |
+| L5 | Credential-gated industry listings (evaluate, do not mass-submit) | A few trucking/dispatch listings accept a real company with insurance + DOT/MC; only list where truthful and where the directory owner is identifiable and placement is not pay-to-rank. VendorLink / Road Rescue Network is towing/roadside-focused — weak fit, note only. | Free tier | Evaluate 1–2 per quarter against the activation rules before submitting | HOLD — fit/quality check first |
+
+### What NOT to do
+
+- No bulk free-directory submission, PBNs, paid links counted as earned authority, or per-city GBP
+  profiles. These either breach GBP rules or repeat the E23 spam-authority problem.
+
+### Measurement
+
+For any activated listing: record the live URL, the exact entity/NAP used, and track referring
+domain + qualified inbound calls separately. Missing data is `UNKNOWN`, not zero.
+
+Sources checked 2026-11-01: Google Business Profile service-area guidance
+(support.google.com/business/answer/9157481), general free-directory search (no relevant US
+car-hauling free directory found).

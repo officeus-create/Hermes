@@ -99,6 +99,26 @@ for (const forbiddenTrigger of [
   );
 }
 
+// Bing submission efficiency: a hub-only edit must not spray 25 unchanged city URLs.
+const grepPatterns = [...moneyWorkflow.matchAll(/if grep -Eq '([^']+)' \/tmp\/indexnow-changed-files\.txt/g)].map((x) => x[1]);
+const hubPattern = grepPatterns.find((x) => x.includes("car-hauler-loads/index"));
+const marketsPattern = grepPatterns.find((x) => x.includes("car-hauler-geo-markets"));
+assert.ok(hubPattern, "IndexNow needs an explicit independent car-hauler hub trigger");
+assert.ok(marketsPattern, "IndexNow needs an explicit shared-city-template/data trigger");
+const hubTrigger = new RegExp(hubPattern);
+const cityTrigger = new RegExp(marketsPattern);
+assert.equal(hubTrigger.test("src/pages/logistics/car-hauler-loads/index.astro"), true);
+assert.equal(cityTrigger.test("src/pages/logistics/car-hauler-loads/index.astro"), false,
+  "A hub-only edit must never re-notify Bing of 25 unchanged city owners.");
+assert.equal(cityTrigger.test("src/pages/logistics/car-hauler-loads/[market].astro"), true,
+  "A shared city template edit changes all city owners.");
+assert.equal(cityTrigger.test("src/data/car-hauler-geo-markets.ts"), true,
+  "Changes to shared market data affect all city owners.");
+assert.equal(cityTrigger.test("src/pages/logistics/car-hauler-loads/readme.md"), false);
+assert.equal(cityTrigger.test("src/pages/logistics/car-hauler-loads/unrelated.js"), false);
+assert.equal((moneyWorkflow.match(/https:\/\/hermeslogisticsus\.com\/logistics\/car-hauler-loads\/[a-z-]+\/\n/g) || []).length, 25,
+  "Only the 25 named current city owners belong in the family notification.");
+
 const submitter = await readFile(new URL("./indexnow-submit.mjs", import.meta.url), "utf8");
 for (const required of [
   'if (url.hostname !== host)',
