@@ -22,6 +22,8 @@ on:
       - "scripts/automation-engine-free-ai-runtime.test.mjs"
       - "scripts/automation-engine-windows-node-runtime.test.mjs"
       - "scripts/automation-engine-work-portfolio.test.mjs"
+      - "scripts/automation-engine-owner-work-runtime.test.mjs"
+      - "workers/automation-engine/src/owner-work-runtime.mjs"
       - "workers/automation-engine/src/work-portfolio.mjs"
       - "scripts/automation-engine-zero-token-plugin-tasks.test.mjs"
       - "scripts/automation-engine-self-improvement.test.mjs"
@@ -78,6 +80,7 @@ jobs:
           node scripts/automation-engine-free-ai-runtime.test.mjs
           node scripts/automation-engine-windows-node-runtime.test.mjs
           node scripts/automation-engine-work-portfolio.test.mjs
+          node scripts/automation-engine-owner-work-runtime.test.mjs
           node scripts/automation-engine-zero-token-plugin-tasks.test.mjs
           node scripts/automation-engine-self-improvement.test.mjs
           node scripts/hae-plugin-release-drift-preflight.test.mjs
