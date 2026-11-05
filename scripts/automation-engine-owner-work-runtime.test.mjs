@@ -67,9 +67,9 @@ CREATE TABLE hermes_automation_jobs (
 await ensureOwnerWorkRuntimeSchema(DB);
 
 const seeded=await DB.prepare("SELECT COUNT(*) AS count FROM hermes_owner_work_items").first();
-assert.ok(Number(seeded.count)>=178,"historical + 4-month revenue backlog must be available to HAE without a ChatGPT scheduler");
+assert.ok(Number(seeded.count)>=182,"historical + 4-month revenue backlog must be available to HAE without a ChatGPT scheduler");
 const revenueCount=await DB.prepare("SELECT COUNT(*) AS count FROM hermes_owner_work_items WHERE source_work_id IS NOT NULL").first();
-assert.equal(Number(revenueCount.count),128);
+assert.equal(Number(revenueCount.count),132);
 const selectedRevenue=await DB.prepare(`
   SELECT source_work_id,title,status,revenue_gate_usd,actual_revenue_usd,financial_done,revenue_selected_now
   FROM hermes_owner_work_items
