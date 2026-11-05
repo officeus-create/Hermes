@@ -1,5 +1,4 @@
 import { INTERNAL_AI_ORGANIZATION_SCOPE, nowIso } from "./internal-ai.mjs";
-import { seedHistoricalCommandCenterBacklog } from "./command-center-history-backlog.mjs";
 import { pluginRuntimeRegistrySnapshot } from "../../../workers/automation-engine/src/plugin-runtime-registry.mjs";
 
 export const COMMAND_CENTER_SCOPE = INTERNAL_AI_ORGANIZATION_SCOPE;
@@ -30,11 +29,7 @@ export async function ensureCommandCenterSchema(db) {
     acceptance_status TEXT NOT NULL DEFAULT 'not_required' CHECK (acceptance_status IN ('not_required','awaiting','accepted')),
     accepted_by TEXT,
     accepted_at TEXT,
-    blocked_reason TEXT,
-    source_kind TEXT,
-    source_label TEXT,
-    source_ref TEXT,
-    next_action TEXT
+    blocked_reason TEXT
   )`).run();
   const columns=await db.prepare("PRAGMA table_info(hermes_owner_work_items)").all();
   const names=new Set((columns?.results||[]).map((column)=>String(column.name)));
@@ -44,10 +39,6 @@ export async function ensureCommandCenterSchema(db) {
     ["accepted_at","TEXT"],
     ["project_id","TEXT"],
     ["plugin_route_json","TEXT"],
-    ["source_kind","TEXT"],
-    ["source_label","TEXT"],
-    ["source_ref","TEXT"],
-    ["next_action","TEXT"],
   ]) if(!names.has(name)) {
     try { await db.prepare(`ALTER TABLE hermes_owner_work_items ADD COLUMN ${name} ${definition}`).run(); }
     catch(error) {
@@ -57,7 +48,6 @@ export async function ensureCommandCenterSchema(db) {
   }
   await db.prepare("CREATE INDEX IF NOT EXISTS idx_owner_work_items_scope_state_priority ON hermes_owner_work_items(organization_scope,status,priority,created_at)").run();
   await db.prepare("CREATE INDEX IF NOT EXISTS idx_owner_work_items_scope_project ON hermes_owner_work_items(organization_scope,project_id)").run();
-  await seedHistoricalCommandCenterBacklog(db);
   await db.prepare(`CREATE TABLE IF NOT EXISTS hermes_internal_owner_access_audit (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     organization_scope TEXT NOT NULL CHECK (organization_scope = 'hermes_internal'),
@@ -85,9 +75,11 @@ export function selectWorkItemPluginRoute(item){
   if(!workstream) throw new Error("invalid_workstream_plugin_route");
   const context=String(item.title||"")+" "+String(item.details||"");
   const searchIntent=workstream==="marketing"&&/\b(seo|geo|aeo|llmo|indexation|canonical|bing|indexing)\b/i.test(context);
+  const connectIntent=workstream==="technology"&&/\b(command center|hermes connect|crm|admin|workspace|catalog|client|customer)\b/i.test(context);
   const ownerId=searchIntent?"hermes-search-growth":ROUTE_OWNERS[workstream];
   const role=id=>{const version=versions.get(id);if(!version)throw new Error("plugin_route_release_unverified");return {role_id:id,plugin_version:version}};
-  return {policy_version:ROUTE_POLICY_VERSION,state:"PLUGIN_SELECTED_NOT_EXECUTED",source_class:registry.source_class,registry_observed_at:registry.observed_at,basis:searchIntent?"marketing_search_intent":"workstream:"+workstream,owner:role(ownerId),helpers:["hermes-agent-coordinator","hermes-qa-evidence-auditor"].filter(id=>id!==ownerId).map(role)};
+  const helperIds=["hermes-agent-coordinator",...(connectIntent?["hermes-connect-operator"]:[]),"hermes-qa-evidence-auditor"];
+  return {policy_version:ROUTE_POLICY_VERSION,state:"PLUGIN_SELECTED_NOT_EXECUTED",source_class:registry.source_class,registry_observed_at:registry.observed_at,basis:searchIntent?"marketing_search_intent":connectIntent?"technology_connect_intent":"workstream:"+workstream,owner:role(ownerId),helpers:helperIds.filter((id,index)=>id!==ownerId&&helperIds.indexOf(id)===index).map(role)};
 }
 export function readWorkItemPluginRoute(row){
   try {const value=JSON.parse(String(row?.plugin_route_json||"null"));return value?.policy_version===ROUTE_POLICY_VERSION&&value?.owner?.role_id&&value?.state==="PLUGIN_SELECTED_NOT_EXECUTED"?value:null}
@@ -101,7 +93,6 @@ export function publicWorkItem(row){
     source:String(row.source||"text"), status, acceptance_status:String(row.acceptance_status||"not_required"), created_at:row.created_at||null, updated_at:row.updated_at||null,
     linked_task_id:row.linked_task_id||null, completed_at:row.completed_at||null,
     accepted_by:row.accepted_by||null, accepted_at:row.accepted_at||null, blocked_reason:row.blocked_reason||null,
-    source_kind:row.source_kind||null, source_label:row.source_label||null, source_ref:row.source_ref||null, next_action:row.next_action||null,
     linked_task_status:row.linked_task_status||null, linked_task_started_at:row.linked_task_started_at||null,
     linked_task_completed_at:row.linked_task_completed_at||null, linked_task_updated_at:row.linked_task_updated_at||null,
     linked_task_pr_url:row.linked_task_pr_url||null, linked_task_output_summary:row.linked_task_output_summary||null,

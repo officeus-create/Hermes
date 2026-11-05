@@ -24,6 +24,10 @@ assert.equal(seoRoute.owner.role_id,"hermes-search-growth","marketing/search int
 assert.equal(seoRoute.state,"PLUGIN_SELECTED_NOT_EXECUTED","selection alone must not imply execution");
 assert.ok(seoRoute.helpers.some(x=>x.role_id==="hermes-agent-coordinator"));
 assert.equal(selectWorkItemPluginRoute({workstream:"finance",title:"Reconcile invoices"}).owner.role_id,"hermes-agent-coordinator","workstreams without a verified runtime plugin use Coordinator, not a fictitious Finance worker");
+const connectRoute=selectWorkItemPluginRoute({workstream:"technology",title:"Command Center CRM admin",details:"Hermes Connect workspace and customer operations"});
+assert.equal(connectRoute.owner.role_id,"hermes-technology-developer","Technology Developer remains the single implementation writer");
+assert.equal(connectRoute.basis,"technology_connect_intent");
+assert.ok(connectRoute.helpers.some(x=>x.role_id==="hermes-connect-operator"&&x.plugin_version===pluginRuntimeVersion("hermes-connect-operator")),"Hermes Connect operator must be a registry-backed CRM/product helper");
 // Backwards-compatible migration: real older D1 rows may have no project column.
 const legacySqlite=new DatabaseSync(":memory:");
 legacySqlite.exec("CREATE TABLE hermes_owner_work_items (id TEXT PRIMARY KEY,organization_scope TEXT,status TEXT,priority TEXT,created_at TEXT); INSERT INTO hermes_owner_work_items VALUES ('legacy','hermes_internal','planned','p2','2026-10-01');");
