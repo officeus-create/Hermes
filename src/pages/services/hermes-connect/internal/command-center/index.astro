@@ -48,6 +48,22 @@ function setText(sel:string,value:string){const n=q(sel);if(n)n.textContent=valu
 function showOwnerToast(message:string){const n=q<HTMLElement>("[data-owner-toast]");if(!n)return;n.textContent=message;n.hidden=false}
 function safePr(value?:string|null){if(!value)return null;try{const u=new URL(value);return u.protocol==="https:"&&u.hostname==="github.com"&&/^\/officeus-create\/Hermes\/pull\/\d+\/?$/.test(u.pathname)?u.href:null}catch{return null}}
 function safeSource(value?:string|null){if(!value)return null;try{const u=new URL(value);const allowed=new Set(["github.com","docs.google.com","drive.google.com"]);return u.protocol==="https:"&&allowed.has(u.hostname)?u.href:null}catch{return null}}
+function plannedExecutionRoute(item:WorkItem){
+  const context=[item.title,item.details,item.source_label||"",item.source_ref||""].join(" ");
+  if(item.workstream==="technology"&&/(command center|hermes connect|crm|admin)/i.test(context)){
+    return "Agent Coordinator → Hermes Connect CRM/Operator → Technology Developer → Design/UX → HAE → QA Evidence";
+  }
+  const routes:Record<string,string>={
+    logistics:"Agent Coordinator → Dispatch OS → HAE → QA Evidence",
+    sales:"Agent Coordinator → Sales → HAE → QA Evidence",
+    marketing:"Agent Coordinator → Marketing Growth → HAE → QA Evidence",
+    academy:"Agent Coordinator → Academy → HAE → QA Evidence",
+    finance:"Agent Coordinator → Finance & Accounting → HAE → QA Evidence",
+    operations:"Agent Coordinator → COO → HAE → QA Evidence",
+    technology:"Agent Coordinator → Technology Developer → HAE → QA Evidence",
+  };
+  return routes[item.workstream]||"Agent Coordinator → HAE → QA Evidence";
+}
 async function loadAll(){
   const status=await jsonFetch("/api/internal-ai/status");
   if(!status.r.ok||!status.d.success){q("[data-private]")!.hidden=true;const access=q("[data-access]")!;access.hidden=false;access.querySelector("strong")!.textContent=status.r.status===401?t("Sign in required","Нужно войти"):t("Owner access required","Нужен доступ владельца");return}
@@ -156,7 +172,7 @@ function renderItems(){
  const box=q("[data-work-list]");if(!box)return;box.replaceChildren();const rows=items.filter(visible);
  if(!rows.length){const p=document.createElement("p");p.className="muted";p.textContent=t("No work items in this view.","В этом списке задач нет.");box.append(p);return}
  rows.forEach(item=>{const card=document.createElement("article");card.className="work-card";const top=document.createElement("div");top.className="work-top";const meta=document.createElement("div");const title=document.createElement("strong");title.textContent=item.title;const line=document.createElement("span");line.textContent=item.workstream.toUpperCase()+" · "+item.priority.toUpperCase()+" · "+item.status.replaceAll("_"," ");if(item.project_id){const name=projects.find(project=>project.id===item.project_id)?.title||item.project_id;line.textContent+=" · "+name;}meta.append(title,line);const time=document.createElement("small");time.textContent=stamp(item.updated_at||item.created_at);top.append(meta,time);
- const body=document.createElement("p");body.textContent=item.details;card.append(top,body);if(item.source_label||item.source_ref){const s=document.createElement("p");s.className="linked";s.textContent=t("Source: ","Источник: ")+(item.source_label||item.source_ref||"");const href=safeSource(item.source_ref);if(href){const a=document.createElement("a");a.href=href;a.target="_blank";a.rel="noopener";a.textContent=" ↗";s.append(a)}card.append(s)}if(item.next_action){const n=document.createElement("p");n.className="linked";n.textContent=t("Next: ","Дальше: ")+item.next_action;card.append(n)}if(item.blocked_reason){const b=document.createElement("p");b.className="blocked";b.textContent=item.blocked_reason;card.append(b)}
+ const body=document.createElement("p");body.textContent=item.details;card.append(top,body);if(item.source_label||item.source_ref){const s=document.createElement("p");s.className="linked";s.textContent=t("Source: ","Источник: ")+(item.source_label||item.source_ref||"");const href=safeSource(item.source_ref);if(href){const a=document.createElement("a");a.href=href;a.target="_blank";a.rel="noopener";a.textContent=" ↗";s.append(a)}card.append(s)}if(item.next_action){const n=document.createElement("p");n.className="linked";n.textContent=t("Next: ","Дальше: ")+item.next_action;card.append(n)}const route=document.createElement("p");route.className="linked";route.textContent=t("Planned route: ","Плановая команда: ")+plannedExecutionRoute(item)+" · "+t("route only; execution requires a receipt","это маршрут, не доказательство запуска");card.append(route);if(item.blocked_reason){const b=document.createElement("p");b.className="blocked";b.textContent=item.blocked_reason;card.append(b)}
  if(item.linked_task_status){const l=document.createElement("p");l.className="linked";l.textContent=t("Execution: ","Выполнение: ")+item.linked_task_status;card.append(l)}
  if(item.status==="awaiting_acceptance"){const review=document.createElement("p");review.className="acceptance-note";review.textContent=t("Execution finished. Review the evidence before accepting the business result.","Выполнение закончено. Проверь результат и доказательства перед приёмкой.");card.append(review)}
  if(item.linked_task_output_summary){const output=document.createElement("p");output.className="output-summary";output.textContent=t("Result: ","Результат: ")+item.linked_task_output_summary;card.append(output)}
