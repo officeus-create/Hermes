@@ -4,6 +4,7 @@ import { onRequestGet as listWorkItems, onRequestPost as createWorkItem } from "
 import { onRequestPatch as mutateWorkItem } from "../functions/api/internal-command-center/work-items/[id].ts";
 import { onRequestGet as listAccess, onRequestPost as mutateAccess } from "../functions/api/internal-command-center/access.ts";
 import { onRequestGet as aiStatus } from "../functions/api/internal-ai/status.ts";
+import { onRequestGet as ownerIntelligence } from "../functions/api/internal-command-center/owner-intelligence.ts";
 import { onRequestGet as listAiTasks } from "../functions/api/internal-ai/tasks.ts";
 import { onRequestGet as listProjects, onRequestPost as createProject } from "../functions/api/internal-command-center/projects.ts";
 import { onRequestPatch as editProject } from "../functions/api/internal-command-center/projects/[id].ts";
@@ -58,6 +59,38 @@ const request=(path,{method="GET",body,owner="owner"}={})=>new Request("https://
   method,headers:{Cookie:"hermes_session=session-"+owner,Origin:"https://example.invalid","Sec-Fetch-Site":"same-origin",...(body?{"Content-Type":"application/json"}:{})},
   ...(body?{body:JSON.stringify(body)}:{}),
 });
+
+let intelligenceResponse=await ownerIntelligence({request:request("/api/internal-command-center/owner-intelligence"),env:{DB:db}});
+assert.equal(intelligenceResponse.status,200);
+let intelligencePayload=await intelligenceResponse.json();
+assert.equal(intelligencePayload.agents.windows_node.state,"NOT_RELEASED_OR_UNINITIALIZED","missing Windows node schema must remain explicit UNKNOWN/release state");
+assert.equal(intelligencePayload.agents.windows_node.execution_proof,"NO_WINDOWS_HAE_RECEIPT");
+assert.equal(intelligencePayload.agents.windows_node.production_write_authorized,false);
+
+sqlite.exec(`CREATE TABLE hermes_automation_nodes (
+  node_id TEXT PRIMARY KEY, model TEXT, status TEXT, current_job_id TEXT, last_seen_at TEXT
+);
+CREATE TABLE hermes_automation_node_leases (
+  job_id TEXT, node_id TEXT, lease_id TEXT, fence INTEGER, lease_until TEXT, state TEXT, updated_at TEXT
+);
+CREATE TABLE IF NOT EXISTS hermes_automation_job_events (
+  event_id TEXT PRIMARY KEY, job_id TEXT, event_type TEXT, from_state TEXT, to_state TEXT, step TEXT, evidence_ref TEXT, provider_ref TEXT, error_class TEXT, created_at TEXT
+);`);
+const viktorSeen=new Date().toISOString();
+sqlite.prepare("INSERT INTO hermes_automation_nodes (node_id,model,status,current_job_id,last_seen_at) VALUES (?,?,?,?,?)")
+  .run("VIKTOR-WINDOWS","deepseek-r1:7b","IDLE",null,viktorSeen);
+sqlite.prepare("INSERT INTO hermes_automation_job_events (event_id,job_id,event_type,from_state,to_state,step,evidence_ref,provider_ref,error_class,created_at) VALUES (?,?,?,?,?,?,?,?,?,?)")
+  .run("evt:viktor:test","job:00000000-0000-4000-8000-000000000001","job.windows_node_succeeded","RUNNING","SUCCEEDED","windows_free_ai","HAE-EVIDENCE:VIKTOR","viktor-windows-ollama",null,viktorSeen);
+
+intelligenceResponse=await ownerIntelligence({request:request("/api/internal-command-center/owner-intelligence"),env:{DB:db}});
+assert.equal(intelligenceResponse.status,200);
+intelligencePayload=await intelligenceResponse.json();
+assert.equal(intelligencePayload.agents.windows_node.state,"ONLINE","fresh VIKTOR heartbeat should report availability only");
+assert.equal(intelligencePayload.agents.windows_node.model,"deepseek-r1:7b");
+assert.equal(intelligencePayload.agents.windows_node.last_succeeded_job_id,"job:00000000-0000-4000-8000-000000000001","canonical Windows success event must surface as receipt evidence");
+assert.equal(intelligencePayload.agents.windows_node.execution_proof,"WINDOWS_HAE_RECEIPT_OBSERVED");
+assert.equal(intelligencePayload.agents.windows_node.production_write_authorized,false);
+
 async function create(title,workstream="marketing",projectId=null){
   const response=await createWorkItem({request:request("/api/internal-command-center/work-items",{method:"POST",body:{workstream,priority:"p1",title,details:"Synthetic acceptance task: "+title,source:"text",project_id:projectId}}),env:{DB:db}});
   assert.equal(response.status,201); const payload=await response.json(); assert.equal(payload.work_item.status,"planned");
