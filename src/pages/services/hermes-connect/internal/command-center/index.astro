@@ -50,8 +50,16 @@ function safePr(value?:string|null){if(!value)return null;try{const u=new URL(va
 function safeSource(value?:string|null){if(!value)return null;try{const u=new URL(value);const allowed=new Set(["github.com","docs.google.com","drive.google.com"]);return u.protocol==="https:"&&allowed.has(u.hostname)?u.href:null}catch{return null}}
 function plannedExecutionRoute(item:WorkItem){
   const context=[item.title,item.details,item.source_label||"",item.source_ref||""].join(" ");
-  if(item.workstream==="technology"&&/(command center|hermes connect|crm|admin)/i.test(context)){
-    return "Agent Coordinator → Hermes Connect CRM/Operator → Technology Developer → Design/UX → HAE → QA Evidence";
+  // Routing is an advisory plan, never proof that a plugin or HAE job executed.
+  // Match task intent before the broad workstream so HR/search work is not lost in operations/marketing.
+  if(/(command center|hermes connect|crm|admin|админк|командн.{0,8}центр)/i.test(context)){
+    return "Agent Coordinator → Hermes Connect CRM/Operator → Technology Developer → Design/UX → HAE → independent QA";
+  }
+  if(/(recruit|hiring|candidate|interview|onboarding|ваканси|найм|собеседован|рекрутер)/i.test(context)){
+    return "Agent Coordinator → HR/Recruiter → HAE → independent QA";
+  }
+  if(/(seo|geo|search console|bing webmaster|indexing|sitemap|поисков|индексаци)/i.test(context)){
+    return "Agent Coordinator → Search Growth → HAE → independent QA";
   }
   const routes:Record<string,string>={
     logistics:"Agent Coordinator → Dispatch OS → HAE → QA Evidence",
