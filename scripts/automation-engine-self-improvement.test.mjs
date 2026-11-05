@@ -128,13 +128,20 @@ assert.equal(pluginRuntimeRegistryEvidenceStatus(new Date(registryObservedMs + 2
 assert.equal(pluginRuntimeRegistryEvidenceStatus(new Date(registryObservedMs - 1).toISOString()).fresh, false, "Future-dated source evidence must fail closed");
 assert.equal(pluginRuntimeRegistryEvidenceStatus("invalid-now").reason, "INVALID_EVIDENCE_TIME");
 
-assert.equal(pluginRuntimeVersion("hermes-automatic-engineer"), "0.1.35");
-assert.equal(pluginRuntimeVersion("hermes-agent-coordinator"), "0.1.86");
-assert.equal(pluginRuntimeVersion("hermes-technology-developer"), "0.1.61");
-assert.equal(pluginRuntimeVersion("hermes-qa-evidence-auditor"), "0.1.20");
-assert.equal(pluginRuntimeVersion("hermes-knowledge-curator"), "0.1.91");
-assert.match(pluginRuntimeVersion("hermes-agent-coordinator"), /^\d+\.\d+\.\d+/);
-assert.match(pluginRuntimeVersion("hermes-academy"), /^\d+\.\d+\.\d+/);
+const runtimeSnapshot = pluginRuntimeRegistrySnapshot();
+const runtimeVersions = new Map(runtimeSnapshot.entries.map((entry) => [entry.role_id, entry.plugin_version]));
+for (const roleId of [
+  "hermes-automatic-engineer",
+  "hermes-agent-coordinator",
+  "hermes-technology-developer",
+  "hermes-qa-evidence-auditor",
+  "hermes-knowledge-curator",
+  "hermes-academy",
+]) {
+  const version = pluginRuntimeVersion(roleId);
+  assert.match(version, /^\d+\.\d+\.\d+$/, roleId+" must expose a semver plugin version");
+  assert.equal(version, runtimeVersions.get(roleId), roleId+" lookup must match canonical registry snapshot");
+}
 assert.equal(pluginRuntimeRegistrySnapshot().source_class, "PRIVATE_PLUGIN_CREATOR_READBACK");
 assert.throws(() => pluginRuntimeVersion("hermes-unknown-role"), /plugin_runtime_version_unverified/);
 assert.throws(
