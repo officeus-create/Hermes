@@ -47,6 +47,17 @@ const migratedColumns=new Set(sqlite.prepare("PRAGMA table_info(hermes_owner_wor
 assert(migratedColumns.has("acceptance_status"),"existing owner backlog must gain acceptance state without replacement");
 assert(migratedColumns.has("accepted_by"),"existing owner backlog must gain acceptance actor receipt");
 assert(migratedColumns.has("accepted_at"),"existing owner backlog must gain acceptance time receipt");
+assert(migratedColumns.has("source_ref"),"existing owner backlog must gain provenance reference");
+assert(migratedColumns.has("next_action"),"existing owner backlog must gain next-action guidance");
+const importedBefore=(await DB.prepare("SELECT COUNT(*) AS c FROM hermes_owner_work_items WHERE created_by='history_backlog_import'").first()).c;
+assert(importedBefore>=50,"history import must recover the expanded deduplicated backlog");
+const importedCommandCenter=await DB.prepare("SELECT source_label,source_ref,next_action FROM hermes_owner_work_items WHERE id='hcwi_hist_20261105_002'").first();
+assert.match(String(importedCommandCenter?.source_label||""),/PR #2236/,"imported work must retain source label");
+assert.match(String(importedCommandCenter?.source_ref||""),/github\.com\/officeus-create\/Hermes\/pull\/2236/,"imported work must retain source link");
+assert.ok(importedCommandCenter?.next_action,"imported work must expose next action");
+await ensureCommandCenterSchema(DB);
+const importedAfter=(await DB.prepare("SELECT COUNT(*) AS c FROM hermes_owner_work_items WHERE created_by='history_backlog_import'").first()).c;
+assert.equal(importedAfter,importedBefore,"history import must be idempotent across repeated schema ensures");
 const now="2026-10-26T16:00:00.000Z";
 await DB.prepare("INSERT INTO hermes_internal_owner_access (specialist_id,active,capability,created_at,updated_at) VALUES ('owner-1',1,'HERMES_INTERNAL_OWNER',?,?)").bind(now,now).run();
 
