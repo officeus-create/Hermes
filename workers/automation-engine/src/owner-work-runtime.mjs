@@ -266,8 +266,14 @@ async function reconcileExecution(env, item, scheduledAt) {
   const now = new Date(scheduledAt || Date.now()).toISOString();
   const state = clean(job.state, 40).toUpperCase();
   if (["QUEUED","RUNNING","RETRY_SCHEDULED","WAITING_FREE_AI"].includes(state)) {
-    await env.DB.prepare("UPDATE hermes_owner_work_items SET hae_dispatch_state='EXECUTION_RUNNING',updated_at=? WHERE id=? AND organization_scope='hermes_internal'")
-      .bind(now, item.id).run();
+    const stateMap = {
+      QUEUED: "EXECUTION_QUEUED",
+      RUNNING: "EXECUTION_RUNNING",
+      RETRY_SCHEDULED: "EXECUTION_RETRY_SCHEDULED",
+      WAITING_FREE_AI: "EXECUTION_WAITING_FREE_AI",
+    };
+    await env.DB.prepare("UPDATE hermes_owner_work_items SET hae_dispatch_state=?,updated_at=? WHERE id=? AND organization_scope='hermes_internal'")
+      .bind(stateMap[state], now, item.id).run();
     return 0;
   }
   if (state === "SUCCEEDED") {
