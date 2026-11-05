@@ -32,6 +32,8 @@ const fixtures = {
         source_role: "hermes-qa-evidence-auditor",
         source_ref: "hae://receipt/job:lesson-source-1",
         target_roles: ["hermes-agent-coordinator","hermes-automatic-engineer"],
+        baseline_case_fingerprint: "a".repeat(64),
+        candidate_case_fingerprint: "a".repeat(64),
         evidence_count: 3,
         positive_test_count: 2,
         negative_test_count: 1,
@@ -46,6 +48,8 @@ const fixtures = {
         source_role: "hermes-automatic-engineer",
         source_ref: "github://officeus-create/Hermes/pull/2295",
         target_roles: ["hermes-agent-coordinator"],
+        baseline_case_fingerprint: "b".repeat(64),
+        candidate_case_fingerprint: "f".repeat(64),
         evidence_count: 1,
         positive_test_count: 1,
         negative_test_count: 0,
@@ -149,8 +153,10 @@ assert.equal(lessonEval.independent_qa_required,true);
 assert.equal(lessonEval.automatic_plugin_update_performed,false);
 assert.equal(lessonEval.automatic_one_brain_promotion_performed,false);
 assert.deepEqual(lessonEval.promotion_candidates[0].target_roles,["hermes-agent-coordinator","hermes-automatic-engineer"]);
+assert.ok(lessonEval.holds[0].reasons.includes("CASE_SET_MISMATCH"));
 assert.ok(lessonEval.holds[0].reasons.includes("QUALITY_REGRESSION"));
 assert.ok(lessonEval.holds[0].reasons.includes("PRODUCTIVITY_REGRESSION"));
+assert.equal(lessonEval.promotion_candidates[0].evaluation_case_fingerprint,"a".repeat(64));
 assert.equal(runZeroTokenPluginTask("hae.self.improvement.audit", fixtures["hae.self.improvement.audit"]).next_action, "HOLD_REPAIR");
 assert.equal(runZeroTokenPluginTask("hae.self.repair.packet", fixtures["hae.self.repair.packet"]).repair_state, "HOLD_REPAIR");
 assert.equal(runZeroTokenPluginTask("hae.self.repair.packet", fixtures["hae.self.repair.packet"]).source_change_performed, false);
@@ -168,7 +174,8 @@ assert.equal(ZERO_TOKEN_PLUGIN_TASK_CONTRACTS.find((item) => item.job_type === "
 assert.throws(() => validateZeroTokenPluginTaskInput("dispatch.daily.closeout.audit", { ...fixtures["dispatch.daily.closeout.audit"], coverage_complete: "yes" }), /dispatch_coverage_complete_required/);
 assert.throws(() => validateZeroTokenPluginTaskInput("knowledge.evidence.audit", { observed_at: "2026-10-24T18:00:00Z", evidence: [{ evidence_id: "E", fingerprint: hash, source_ref: "gmail://raw/body", status: "VERIFIED", observed_at: "2026-10-24T17:00:00Z" }] }), /knowledge_source_ref_invalid/);
 assert.throws(() => validateZeroTokenPluginTaskInput("marketing.mentions.audit", { observed_at: "2026-10-24T18:00:00Z", mentions: [{ mention_id: "M", fingerprint: hash, source_url: "javascript:alert(1)", classification: "SOCIAL", first_seen_at: "2026-10-24T17:00:00Z" }] }), /mention_invalid/);
-assert.throws(() => validateZeroTokenPluginTaskInput("knowledge.lesson.evaluate", { observed_at:"2026-11-05T13:00:00Z", candidates:[{ lesson_id:"bad", fingerprint:"e".repeat(64), source_role:"hermes-qa-evidence-auditor", source_ref:"https://raw.example/", target_roles:["hermes-agent-coordinator"], evidence_count:2, positive_test_count:1, negative_test_count:1, quality_delta_pct:1, productivity_delta_pct:1, contradiction_open:false, permission_expansion:false }] }), /lesson_source_ref_invalid/);
+assert.throws(() => validateZeroTokenPluginTaskInput("knowledge.lesson.evaluate", { observed_at:"2026-11-05T13:00:00Z", candidates:[{ lesson_id:"bad", fingerprint:"e".repeat(64), source_role:"hermes-qa-evidence-auditor", source_ref:"https://raw.example/", target_roles:["hermes-agent-coordinator"], baseline_case_fingerprint:"a".repeat(64), candidate_case_fingerprint:"a".repeat(64), evidence_count:2, positive_test_count:1, negative_test_count:1, quality_delta_pct:1, productivity_delta_pct:1, contradiction_open:false, permission_expansion:false }] }), /lesson_source_ref_invalid/);
+assert.throws(() => validateZeroTokenPluginTaskInput("knowledge.lesson.evaluate", { observed_at:"2026-11-05T13:00:00Z", candidates:[{ lesson_id:"bad-cases", fingerprint:"e".repeat(64), source_role:"hermes-qa-evidence-auditor", source_ref:"hae://receipt/job:case-test", target_roles:["hermes-agent-coordinator"], evidence_count:2, positive_test_count:1, negative_test_count:1, quality_delta_pct:1, productivity_delta_pct:1, contradiction_open:false, permission_expansion:false }] }), /lesson_case_fingerprint_invalid/);
 assert.equal(new Set(CHATGPT_TASK_MIGRATIONS.map((item) => item.task_key)).size, CHATGPT_TASK_MIGRATIONS.length);
 const migration = taskMigrationSnapshot(ZERO_TOKEN_PLUGIN_TASK_CONTRACTS.map((item) => item.job_type).concat([
   "search.snapshot.evaluate",
