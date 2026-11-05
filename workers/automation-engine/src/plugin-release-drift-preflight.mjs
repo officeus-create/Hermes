@@ -1,7 +1,7 @@
 // HAE existing plugin registry: source-only comparison with an independent
 // Plugin Creator release inventory. This does NOT establish runtime/plugin
 // compatibility or grant permission to update any plugin.
-import { pluginRuntimeRegistrySnapshot } from "./plugin-runtime-registry.mjs";
+import { pluginRuntimeRegistrySnapshot, pluginRuntimeRegistryEvidenceStatus } from "./plugin-runtime-registry.mjs";
 
 const ID = /^hermes-[a-z0-9-]{2,70}$/;
 const SEMVER = /^\d+\.\d+\.\d+(?:[-+][a-zA-Z0-9.-]+)?$/;
@@ -46,7 +46,7 @@ export function planPluginReleaseReconciliation(input = {}, nowIso) {
   const registered = new Map(expected.entries.map(x => [x.role_id, x.plugin_version]));
   const mismatches = [];
   const missing = [];
-  const unknown = [];
+  const providerOnly = [];
   for (const [roleId, expectedVersion] of registered) {
     const release = actual.get(roleId);
     if (!release)missing.push(roleId);
@@ -58,11 +58,13 @@ export function planPluginReleaseReconciliation(input = {}, nowIso) {
       });
     }
   }
-  for (const roleId of actual.keys())if (!registered.has(roleId))unknown.push(roleId);
+  for (const roleId of actual.keys())if (!registered.has(roleId))providerOnly.push(roleId);
 
+  const registeredEvidence = pluginRuntimeRegistryEvidenceStatus(nowIso);
   const complete = input.inventory_complete === true && input.redaction_verified === true &&
-    missing.length === 0 && unknown.length === 0;
+    missing.length === 0;
   const status = !fresh ? "HOLD_STALE_READBACK" :
+    !registeredEvidence.fresh ? "HOLD_STALE_REGISTERED_REGISTRY" :
     !complete ? "HOLD_INCOMPLETE_OR_UNREDACTED" :
     mismatches.length ? "HOLD_VERSION_DRIFT_REVIEW" : "HOLD_RUNTIME_COMPATIBILITY_PROOF";
 
@@ -70,8 +72,10 @@ export function planPluginReleaseReconciliation(input = {}, nowIso) {
     status, readback_fresh:fresh, readback_age_hours:Math.round(ageHours*100)/100,
     source_class:input.source_class, source_ref:input.source_ref,
     registered_roles:registered.size, observed_roles:actual.size,
-    missing_roles:missing, unknown_roles:unknown, version_mismatches:mismatches,
+    missing_roles:missing, provider_only_roles:providerOnly, version_mismatches:mismatches,
     registered_inventory_observed_at:expected.observed_at,
+    registered_inventory_fresh:registeredEvidence.fresh,
+    registered_inventory_age_hours:registeredEvidence.age_hours,
     proof_limit:"CALLER_PROVIDED_METADATA_NOT_INDEPENDENTLY_ATTESTED",
     requires_external_provider_release_readback:true,
     requires_runtime_role_contract_test:true,
