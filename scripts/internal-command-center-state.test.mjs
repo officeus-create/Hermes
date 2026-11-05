@@ -71,7 +71,7 @@ const revenueCount=(await DB.prepare("SELECT COUNT(*) AS c FROM hermes_owner_wor
 assert.equal(Number(revenueCount),132,"four-month revenue reconciliation must seed all 132 canonical/recovered revenue items");
 const revenueActive=(await DB.prepare("SELECT id,revenue_source_work_id,revenue_gate_usd,revenue_target_usd,revenue_actual_usd,revenue_status,status FROM hermes_owner_work_items WHERE created_by='revenue_4m_import' AND revenue_status='active' ORDER BY revenue_rank").all()).results;
 assert.equal(revenueActive.length,1,"exactly one revenue mission must be active initially");
-assert.equal(revenueActive[0].revenue_source_work_id,"W-20261026-109");
+assert.equal(revenueActive[0].revenue_source_work_id,"W-20261019-015");
 assert.equal(revenueActive[0].status,"ready");
 assert.equal(Number(revenueActive[0].revenue_gate_usd),1);
 assert.equal(Number(revenueActive[0].revenue_target_usd),990);
