@@ -37,6 +37,7 @@ assert.deepEqual(
     "hae.self.patch.propose",
     "hae.self.release.verify",
     "knowledge.evidence.audit",
+    "knowledge.lesson.evaluate",
     "logistics.source.freshness.audit",
     "market.car-hauling.snapshot.evaluate",
     "marketing.content.dedupe.audit",
@@ -178,6 +179,10 @@ assert.equal(roleContractForJobType("hae.self.patch.propose").runtime_config.max
 assert.equal(CAPABILITY_GRAPH_ROLE_CONTRACT_JOB_TYPES.length, ROLE_CONTRACT_JOB_TYPES.length - 2);
 assert.equal(roleContractForJobType("knowledge.evidence.audit").role_id, "hermes-knowledge-curator");
 assert.equal(roleContractForJobType("knowledge.evidence.audit").plugin_version, pluginRuntimeVersion("hermes-knowledge-curator"));
+assert.equal(roleContractForJobType("knowledge.lesson.evaluate").role_id, "hermes-knowledge-curator");
+assert.equal(roleContractForJobType("knowledge.lesson.evaluate").plugin_version, pluginRuntimeVersion("hermes-knowledge-curator"));
+assert.equal(roleContractForJobType("knowledge.lesson.evaluate").permission_class, "READ_ONLY");
+assert.equal(roleContractForJobType("knowledge.lesson.evaluate").runtime_config.max_cost_usd, 0);
 assert.ok(ROLE_CONTRACTS.filter((contract) => !contract.semantic_required).length >= 19);
 assert.equal(ROLE_CONTRACTS.filter((contract) => contract.semantic_required).length, 2);
 
