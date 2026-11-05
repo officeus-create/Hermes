@@ -7,16 +7,24 @@ import HermesCommandCenterOwnerWorkspace from "../../../../../components/HermesC
 import "../../../../../styles/hermes-business-command-center.css";
 const ru=Astro.url.searchParams.get("lang")==="ru";
 const nav=[
-  {key:"today",label:ru?"Сегодня":"Today"},
+  {key:"today",label:ru?"Обзор":"Overview"},
   {key:"projects",label:ru?"Проекты":"Projects"},
   {key:"tasks",label:ru?"Задачи":"Tasks"},
+  {key:"social",label:"Threads"},
+  {key:"hae",label:"HAE"},
   {key:"automations",label:ru?"Автоматизации":"Automations"},
-  {key:"agents",label:ru?"Агенты":"Agents"},
-  {key:"evidence",label:"Evidence"},
-  {key:"access",label:ru?"Доступ":"Access"},
+  {key:"agents",label:"Hermes AI"},
+  {key:"plugins",label:ru?"Плагины":"Plugins"},
+  {key:"executions",label:ru?"Исполнения":"Executions"},
+  {key:"evidence",label:ru?"Evidence / QA":"Evidence / QA"},
+  {key:"knowledge",label:"One Brain"},
+  {key:"reports",label:ru?"Отчёты":"Reports"},
+  {key:"crm",label:"CRM"},
+  {key:"access",label:ru?"Accounts & Access":"Accounts & Access"},
+  {key:"investor",label:"Investor"},
 ];
 ---
-<BaseLayout title={ru?"Business Command Center | Hermes Connect":"Business Command Center | Hermes Connect"} description={ru?"Закрытое рабочее пространство владельца Hermes: решения, проекты, задачи, AI, автоматизация и evidence.":"Private Hermes owner workspace for decisions, projects, tasks, AI, automation and evidence."} robots="noindex,nofollow,noarchive" htmlLang={ru?"ru":"en"}>
+<BaseLayout title={ru?"Business Command Center | Hermes Connect":"Business Command Center | Hermes Connect"} description={ru?"Закрытое рабочее пространство владельца Hermes: решения, проекты, CRM, задачи, AI, автоматизация, отчёты, знания и evidence.":"Private Hermes owner workspace for decisions, projects, CRM, tasks, AI, automation, reports, knowledge and evidence."} robots="noindex,nofollow,noarchive" htmlLang={ru?"ru":"en"}>
   <SiteHeader activePath="/paths/technology/"/>
   <HermesBusinessCommandCenterShell
     mode="private"
@@ -36,49 +44,72 @@ const nav=[
 </BaseLayout>
 
 <script>
-type WorkItem={id:string;project_id?:string|null;workstream:string;priority:string;title:string;details:string;source:string;status:string;created_at?:string;updated_at?:string;completed_at?:string|null;accepted_by?:string|null;accepted_at?:string|null;linked_task_id?:string|null;linked_task_status?:string|null;linked_task_pr_url?:string|null;linked_task_output_summary?:string|null;blocked_reason?:string|null;source_kind?:string|null;source_label?:string|null;source_ref?:string|null;next_action?:string|null};
+type WorkItem={id:string;project_id?:string|null;workstream:string;priority:string;title:string;details:string;source:string;status:string;created_at?:string;updated_at?:string;completed_at?:string|null;accepted_by?:string|null;accepted_at?:string|null;linked_task_id?:string|null;linked_task_status?:string|null;linked_task_started_at?:string|null;linked_task_completed_at?:string|null;linked_task_updated_at?:string|null;linked_task_pr_url?:string|null;linked_task_output_summary?:string|null;blocked_reason?:string|null;source_kind?:string|null;source_label?:string|null;source_ref?:string|null;next_action?:string|null;plugin_route?:{policy_version:string;state:string;owner:{role_id:string;plugin_version:string};helpers:{role_id:string;plugin_version:string}[]}|null};
 type HaeProcess={id:string;name:string;job_type:string;business_lane:string;workstream:string;role_id:string;cadence_hours:number;status:string;next_run_at?:string|null;last_run_at?:string|null;last_job_id?:string|null;last_job_state?:string|null;last_job_completed_at?:string|null;last_error_class?:string|null;template_label:string;template_label_ru:string};
 const isRu=new URLSearchParams(location.search).get("lang")==="ru";
 const q=<T extends HTMLElement=HTMLElement>(s:string)=>document.querySelector<T>(s);
 const t=(en:string,ru:string)=>isRu?ru:en;
-let items:WorkItem[]=[],processes:HaeProcess[]=[],filter="open",projectFilter="all",searchTerm="",runtime:any=null,tasks:any[]=[],projects:{id:string;title:string;department:string}[]=[];
+let items:WorkItem[]=[],processes:HaeProcess[]=[],filter="open",projectFilter="all",searchTerm="",runtime:any=null,processRuntime:any=null,socialSnapshot:any=null,threadsSnapshot:any=null,tasks:any[]=[],projects:any[]=[];
 const stamp=(v?:string|null)=>v?new Date(v).toLocaleString(isRu?"ru-RU":"en-US",{dateStyle:"medium",timeStyle:"short"}):"—";
+const durationLabel=(start?:string|null,end?:string|null)=>{
+  const startMs=Date.parse(String(start||"")),endMs=Date.parse(String(end||""));
+  if(!Number.isFinite(startMs)||!Number.isFinite(endMs)||endMs<startMs)return "UNKNOWN";
+  const minutes=Math.floor((endMs-startMs)/60000),days=Math.floor(minutes/1440),hours=Math.floor((minutes%1440)/60),mins=minutes%60;
+  return days?days+"d "+hours+"h":hours?hours+"h "+mins+"m":minutes+"m";
+};
 async function jsonFetch(url:string,options:RequestInit={}){const r=await fetch(url,{credentials:"same-origin",cache:"no-store",...options,headers:{Accept:"application/json",...(options.body?{"Content-Type":"application/json"}:{}),...(options.headers||{})}});let d:any={};try{d=await r.json()}catch{}return{r,d}}
 function setText(sel:string,value:string){const n=q(sel);if(n)n.textContent=value}
 function showOwnerToast(message:string){const n=q<HTMLElement>("[data-owner-toast]");if(!n)return;n.textContent=message;n.hidden=false}
+function renderAiArchitecture(data:any){
+  // Only called after the server confirms full internal owner authorization.
+  const ops=data?.operations||null;
+  const observed=(value:unknown)=>typeof value==="string"&&value.trim()?value:"UNKNOWN";
+  const count=(value:unknown)=>typeof value==="number"&&Number.isSafeInteger(value)&&value>=0?String(value):"UNKNOWN";
+  setText("[data-ai-map-runner]",data?.online?t("Online","Онлайн"):t("Offline","Офлайн"));
+  setText("[data-ai-map-runner-time]",data?.last_seen_at?stamp(data.last_seen_at):"UNKNOWN");
+  setText("[data-ai-ops-primary]",data?.primary_executor==="windows"?(data?.primary_executor_verified?"Windows":t("Windows assigned · runtime UNVERIFIED","Windows назначен · запуск НЕ ПОДТВЕРЖДЁН")):"UNKNOWN");
+  for(const [selector,value] of [
+    ["[data-ai-ops-phase]",observed(ops?.phase)],
+    ["[data-ai-ops-model]",observed(ops?.model)],
+    ["[data-ai-ops-cycle]",count(ops?.cycle)],
+    ["[data-ai-ops-current]",observed(ops?.current_task)],
+    ["[data-ai-ops-next]",observed(ops?.next_action)],
+    ["[data-ai-ops-training-phase]",observed(ops?.last_training_phase)],
+    ["[data-ai-ops-training-task]",observed(ops?.last_training_task)],
+    ["[data-ai-ops-cooldown]",count(ops?.autonomy?.cooldown_skipped)],
+    ["[data-ai-ops-scanned]",count(ops?.autonomy?.manifest_scanned)],
+    ["[data-ai-ops-external-actions]",count(ops?.autonomy?.external_actions)],
+    ["[data-ai-ops-provider-writes]",count(ops?.autonomy?.provider_writes)]
+  ] as const)setText(selector,value);
+  // The embedded employee preview must not echo owner/customer task, phase or model.
+  const teamStatus=new Set(["IDLE","RUNNING","PAUSED","STOPPED","OFFLINE","LEARNING"]);
+  setText("[data-ai-team-status]",teamStatus.has(ops?.status)?ops.status:"UNKNOWN");
+  setText("[data-ai-team-current]",ops?.current_task?t("Task active — details private","Задача выполняется — детали закрыты"):"UNKNOWN");
+  setText("[data-ai-team-phase]","PRIVATE");
+  setText("[data-ai-team-model]","PRIVATE");
+  setText("[data-ai-team-heartbeat]",data?.online?t("Fresh","Актуален"):t("Offline","Офлайн"));
+}
+
 function safePr(value?:string|null){if(!value)return null;try{const u=new URL(value);return u.protocol==="https:"&&u.hostname==="github.com"&&/^\/officeus-create\/Hermes\/pull\/\d+\/?$/.test(u.pathname)?u.href:null}catch{return null}}
 function safeSource(value?:string|null){if(!value)return null;try{const u=new URL(value);const allowed=new Set(["github.com","docs.google.com","drive.google.com"]);return u.protocol==="https:"&&allowed.has(u.hostname)?u.href:null}catch{return null}}
-function plannedExecutionRoute(item:WorkItem){
-  const context=[item.title,item.details,item.source_label||"",item.source_ref||""].join(" ");
-  // Routing is an advisory plan, never proof that a plugin or HAE job executed.
-  // Match task intent before the broad workstream so HR/search work is not lost in operations/marketing.
-  if(/(command center|hermes connect|crm|admin|админк|командн.{0,8}центр)/i.test(context)){
-    return "Agent Coordinator → Hermes Connect CRM/Operator → Technology Developer → Design/UX → HAE → independent QA";
-  }
-  if(/(recruit|hiring|candidate|interview|onboarding|ваканси|найм|собеседован|рекрутер)/i.test(context)){
-    return "Agent Coordinator → HR/Recruiter → HAE → independent QA";
-  }
-  if(/(seo|geo|search console|bing webmaster|indexing|sitemap|поисков|индексаци)/i.test(context)){
-    return "Agent Coordinator → Search Growth → HAE → independent QA";
-  }
-  const routes:Record<string,string>={
-    logistics:"Agent Coordinator → Dispatch OS → HAE → QA Evidence",
-    sales:"Agent Coordinator → Sales → HAE → QA Evidence",
-    marketing:"Agent Coordinator → Marketing Growth → HAE → QA Evidence",
-    academy:"Agent Coordinator → Academy → HAE → QA Evidence",
-    finance:"Agent Coordinator → Finance & Accounting → HAE → QA Evidence",
-    operations:"Agent Coordinator → COO → HAE → QA Evidence",
-    technology:"Agent Coordinator → Technology Developer → HAE → QA Evidence",
-  };
-  return routes[item.workstream]||"Agent Coordinator → HAE → QA Evidence";
-}
 async function loadAll(){
   const status=await jsonFetch("/api/internal-ai/status");
   if(!status.r.ok||!status.d.success){q("[data-private]")!.hidden=true;const access=q("[data-access]")!;access.hidden=false;access.querySelector("strong")!.textContent=status.r.status===401?t("Sign in required","Нужно войти"):t("Owner access required","Нужен доступ владельца");return}
   q("[data-access]")!.hidden=true;q("[data-private]")!.hidden=false;runtime=status.d.runtime||{};const active=status.d.active_task||null;
-  setText("[data-runner-state]",runtime.online?t("Online","Онлайн"):t("Offline","Офлайн"));setText("[data-runner-copy]",runtime.online?t("Mac runner is accepting work","Mac runner принимает работу"):t("Cloud backlog remains safe","Облачная очередь сохранена"));
+  setText("[data-runner-state]",runtime.online?t("Online","Онлайн"):t("Offline","Офлайн"));setText("[data-runner-copy]",runtime.online?t("Internal AI runner heartbeat observed","Получен heartbeat Internal AI runner"):t("Internal AI runner heartbeat unavailable; cloud backlog preserved","Heartbeat Internal AI runner недоступен; облачная очередь сохранена"));
+  renderAiArchitecture(runtime);
   setText("[data-agent-badge]",runtime.online?t("Online","Онлайн"):t("Offline","Офлайн"));setText("[data-agent-status]",runtime.online?t("Online","Онлайн"):t("Offline","Офлайн"));setText("[data-agent-seen]",stamp(runtime.last_seen_at));setText("[data-agent-sha]",runtime.repo_sha||"—");setText("[data-active-task]",active?(String(active.status||"")+(active.id?" · "+String(active.id).slice(-10):"")):t("None","Нет"));
-  const [work,taskList,accessList,account,processList]=await Promise.all([jsonFetch("/api/internal-command-center/work-items"),jsonFetch("/api/internal-ai/tasks"),jsonFetch("/api/internal-command-center/access"),jsonFetch("/api/hermes-connect/account"),jsonFetch("/api/internal-command-center/processes")]);
+  const [work,taskList,accessList,account,processList,reportList,intelligence,socialAcquisition,threadsConnections]=await Promise.all([
+    jsonFetch("/api/internal-command-center/work-items"),
+    jsonFetch("/api/internal-ai/tasks"),
+    jsonFetch("/api/internal-command-center/access"),
+    jsonFetch("/api/hermes-connect/account"),
+    jsonFetch("/api/internal-command-center/processes"),
+    jsonFetch("/api/internal-command-center/reports"),
+    jsonFetch("/api/internal-command-center/owner-intelligence"),
+    jsonFetch("/api/internal-command-center/social-acquisition"),
+    jsonFetch("/api/internal/social/threads/connections"),
+  ]);
   if(work.r.ok&&work.d.success){
     const all:WorkItem[]=[...(work.d.work_items||[])];
     let offset=work.d.next_offset;
@@ -92,7 +123,12 @@ async function loadAll(){
     }
     items=all;
   }
-  if(taskList.r.ok&&taskList.d.success)tasks=taskList.d.tasks||[]; if(account.r.ok&&account.d.success)renderAccount(account.d);if(processList.r.ok&&processList.d.success)processes=processList.d.processes||[];
+  if(taskList.r.ok&&taskList.d.success)tasks=taskList.d.tasks||[];
+  if(account.r.ok&&account.d.success)renderAccount(account.d);
+  if(processList.r.ok&&processList.d.success){processes=processList.d.processes||[];processRuntime=processList.d}else{processRuntime=null}
+  if(reportList.r.ok&&reportList.d.success)renderReports(reportList.d);
+  if(intelligence.r.ok&&intelligence.d.success)renderIntelligence(intelligence.d);
+  socialSnapshot=socialAcquisition.r.ok&&socialAcquisition.d.success?socialAcquisition.d:null;threadsSnapshot=threadsConnections.r.ok&&threadsConnections.d.success?threadsConnections.d:null;renderSocialAcquisition(socialSnapshot,threadsSnapshot);
   setText("[data-backlog-count]",String(items.filter(x=>!["done","cancelled"].includes(x.status)).length));setText("[data-approval-count]",String(tasks.filter(x=>x.status==="needs_approval").length));
   document.querySelectorAll<HTMLElement>("[data-module]").forEach(card=>{const key=card.dataset.module||"";const count=items.filter(x=>x.workstream===key&&!["done","cancelled"].includes(x.status)).length;const badge=card.querySelector<HTMLElement>(".module-state");if(badge)badge.textContent=count?String(count)+" "+t("open","открыто"):t("Clear","Чисто")});
   renderItems();renderProcesses();renderOwnerOverview();renderEvidence();if(accessList.r.ok&&accessList.d.success)renderOwners(accessList.d);
@@ -108,16 +144,126 @@ async function loadProjects(){
           visited.add(offset);const next=await jsonFetch("/api/internal-command-center/projects?offset="+offset);
           if(!next.r.ok||!next.d.success)break;known.push(...(next.d.projects||[]));offset=next.d.next_offset;
         }
-        projects=known.map((project:any)=>({id:String(project.id),title:String(project.title),department:String(project.department)}));
+        projects=known.map((project:any)=>({
+          ...project,
+          id:String(project.id),
+          title:String(project.title),
+          department:String(project.department),
+        }));
         refreshProjectSelectors();
+        renderAgentRoster();
+        renderCommandCenterLaunch();
       }
   } catch(error) {
     console.warn("Command Center project metadata unavailable; task backlog remains usable.");
   }
   renderItems();renderOwnerOverview();
 }
+function renderCommandCenterLaunch(){
+  const project=projects.find((item:any)=>item.id==="hermes-command-center");
+  const list=q<HTMLElement>("[data-launch-milestones]");
+  if(!project){
+    setText("[data-launch-state]","UNKNOWN");setText("[data-launch-progress]","UNKNOWN");setText("[data-launch-completed]","UNKNOWN");setText("[data-launch-total]",t("of UNKNOWN","из UNKNOWN"));setText("[data-launch-hold]","UNKNOWN");
+    if(list){list.replaceChildren();const p=document.createElement("p");p.className="muted";p.textContent=t("Canonical Command Center project state is unavailable.","Каноническое состояние проекта Command Center недоступно.");list.append(p)}
+    return;
+  }
+  const progress=project.progress||{};
+  setText("[data-launch-state]",String(project.status||"UNKNOWN").replaceAll("_"," ").toUpperCase());
+  setText("[data-launch-progress]",Number.isFinite(progress.percent)?String(progress.percent)+"%":"UNKNOWN");
+  setText("[data-launch-completed]",Number.isFinite(progress.completed)?String(progress.completed):"UNKNOWN");
+  setText("[data-launch-total]",Number.isFinite(progress.total)?t("of ","из ")+String(progress.total):t("of UNKNOWN","из UNKNOWN"));
+  setText("[data-launch-hold]",Array.isArray(project.blockers)&&project.blockers.length?String(project.blockers[0]):"UNKNOWN");
+  if(!list)return;list.replaceChildren();
+  const milestones=Array.isArray(project.milestones)?project.milestones:[];
+  milestones.forEach((item:any)=>{
+    const row=document.createElement("article");row.className="owner-today-item";
+    const identity=document.createElement("div");const strong=document.createElement("strong");strong.textContent=String(item.label||item.id||"Gate");
+    const evidence=document.createElement("small");evidence.textContent=String(item.evidence||t("No evidence reference yet","Ссылка на evidence пока отсутствует"));identity.append(strong,evidence);
+    const state=document.createElement("span");state.className="module-state";state.textContent=String(item.state||"UNKNOWN").replaceAll("_"," ").toUpperCase();
+    row.append(identity,state);list.append(row);
+  });
+}
+function renderAgentRoster(){
+  const root=q<HTMLElement>("[data-agent-roster]");if(!root)return;
+  const wanted=["windows-ai","deepseek-specialist","mac-ai"];
+  const roster=wanted.map(id=>projects.find(project=>project.id===id)).filter(Boolean);
+  root.replaceChildren();
+  if(!roster.length){const p=document.createElement("p");p.className="muted";p.textContent=t("AI project state is UNKNOWN until the canonical project map loads.","Состояние AI-проектов UNKNOWN до загрузки канонической карты проектов.");root.append(p);return}
+  roster.forEach((project:any)=>{
+    const card=document.createElement("article");card.className="hcc-card";
+    const top=document.createElement("div");top.className="owner-pillar-top";
+    const label=document.createElement("span");label.className="owner-live-kicker";label.textContent=String(project.agent_role||project.title||"AI");
+    const state=document.createElement("span");state.className="module-state";state.textContent=String(project.status||"UNKNOWN").replaceAll("_"," ").toUpperCase();
+    top.append(label,state);
+    const h=document.createElement("h3");h.textContent=String(project.title||project.id);
+    const evidence=document.createElement("p");evidence.className="muted";evidence.textContent=t("Evidence: ","Evidence: ")+String(project.evidence_level||"UNKNOWN");
+    const progress=document.createElement("p");progress.className="muted";progress.textContent=Number.isFinite(project.progress?.percent)
+      ?t("Declared milestone progress: ","Прогресс объявленных этапов: ")+String(project.progress.percent)+"%"
+      :t("Declared milestone progress: UNKNOWN","Прогресс объявленных этапов: UNKNOWN");
+    const blocker=document.createElement("p");blocker.textContent=Array.isArray(project.blockers)&&project.blockers.length?String(project.blockers[0]):t("No source-backed blocker returned.","Нет подтверждённого блокера в источнике.");
+    card.append(top,h,evidence,progress,blocker);
+    const href=Array.isArray(project.links)?project.links.map((link:any)=>safePr(link.href)||(/^https:\/\/github\.com\/officeus-create\/Hermes\/issues\/\d+\/?$/.test(String(link.href||""))?String(link.href):null)).find(Boolean):null;
+    if(href){const a=document.createElement("a");a.className="owner-text-link";a.href=href;a.target="_blank";a.rel="noopener noreferrer";a.textContent=t("Open evidence →","Открыть evidence →");card.append(a)}
+    root.append(card);
+  });
+}
 function priorityRank(value:string){return ({p0:0,p1:1,p2:2,p3:3} as Record<string,number>)[value]??9}
+function liveTone(selector:string,tone:"good"|"warn"|"bad"|"neutral"){
+  const node=q<HTMLElement>(selector);if(!node)return;
+  node.classList.toggle("is-good",tone==="good");
+  node.classList.toggle("is-warn",tone==="warn");
+  node.classList.toggle("is-bad",tone==="bad");
+}
+function renderLiveOperations(){
+  const providers=Array.isArray(threadsSnapshot?.connections)?threadsSnapshot.connections:[];
+  const verifiedProviders=providers.filter((item:any)=>item?.identity_verified===true).length;
+  const socialConnected=socialSnapshot?.content_queue?.source_state==="CONNECTED"||socialSnapshot?.publication_receipts?.source_state==="CONNECTED";
+  const threadsState=threadsSnapshot?.success&&providers.length?(verifiedProviders===providers.length?t("Connected","Подключено"):t("Needs attention","Требует внимания")):(threadsSnapshot?.success?t("Not configured","Не настроено"):"UNKNOWN");
+  setText("[data-live-threads-title]",providers.length?String(providers.length)+" "+t("connection(s)","подключений"):"UNKNOWN");
+  setText("[data-live-threads-detail]",providers.length
+    ? (socialConnected?t("Provider identity and HAE social read model available; publishing stays separately gated.","Provider identity и HAE social read model доступны; публикация остаётся отдельным gate."):t("Provider identity observed; HAE social rows remain UNKNOWN until their source read succeeds.","Provider identity виден; HAE social rows остаются UNKNOWN до успешного чтения источника."))
+    : t("No verified provider connection was returned by the current owner read.","Текущий owner read не вернул подтверждённого provider connection."));
+  setText("[data-live-threads-state]",threadsState);
+  liveTone("[data-live-threads-state]",threadsState===t("Connected","Подключено")?"good":threadsState==="UNKNOWN"?"neutral":"warn");
+
+  const haeObserved=processRuntime?.runtime_owner==="hermes-automation-engine";
+  const active=processes.filter((process)=>process.status==="active").length;
+  const blockedProcesses=processes.filter((process)=>process.status==="blocked");
+  setText("[data-live-hae-title]",haeObserved?"Hermes Automation Engine":"UNKNOWN");
+  setText("[data-live-hae-detail]",haeObserved
+    ? String(active)+" "+t("active process(es)","активных процессов")+" · "+String(processRuntime?.tick_interval||"UNKNOWN")+" · "+t("chat required: ","чат нужен: ")+(processRuntime?.normal_loop_requires_chat===false?t("no","нет"):"UNKNOWN")
+    : t("HAE owner read model unavailable; runtime state remains UNKNOWN.","HAE owner read model недоступен; runtime state остаётся UNKNOWN."));
+  setText("[data-live-hae-state]",haeObserved?t("Configured","Настроен"):"UNKNOWN");
+  liveTone("[data-live-hae-state]",haeObserved?"warn":"neutral");
+
+  const nextRuns=processes.map((process)=>process.next_run_at).filter(Boolean).sort();
+  const autoState=blockedProcesses.length?t("Needs attention","Требует внимания"):active?t("Running","Работает"):processes.length?t("Paused","На паузе"):"UNKNOWN";
+  setText("[data-live-automation-title]",active?String(active)+" "+t("active","активно"):processes.length?String(processes.length)+" "+t("configured","настроено"):"UNKNOWN");
+  setText("[data-live-automation-detail]",blockedProcesses.length
+    ? String(blockedProcesses.length)+" "+t("blocked · open Automations for the exact error.","заблокировано · откройте Automations для точной ошибки.")
+    : nextRuns[0]?t("Next run: ","Следующий запуск: ")+stamp(nextRuns[0]):t("No verified next run timestamp.","Нет подтверждённого времени следующего запуска."));
+  setText("[data-live-automation-state]",autoState);
+  liveTone("[data-live-automation-state]",blockedProcesses.length?"bad":active?"good":processes.length?"warn":"neutral");
+
+  const aiOnline=runtime?.online===true;
+  const aiName=String(runtime?.display_name||runtime?.runner_id||runtime?.primary_executor||t("Internal AI runner","Internal AI runner"));
+  const aiReady=runtime?.task_executor_ready===true||runtime?.primary_executor_verified===true;
+  setText("[data-live-ai-title]",aiOnline?aiName:t("No fresh runner heartbeat","Нет свежего heartbeat runner"));
+  setText("[data-live-ai-detail]",aiOnline
+    ? (aiReady?t("Task-capable executor verified","Task-capable executor подтверждён"):t("Heartbeat observed; task execution is not independently verified","Heartbeat получен; выполнение задач отдельно не подтверждено"))+" · "+t("last seen ","последняя связь ")+stamp(runtime?.last_seen_at)
+    : t("Cloud backlog remains available even when the local executor is offline.","Облачная очередь остаётся доступной, даже если локальный executor offline."));
+  setText("[data-live-ai-state]",aiOnline?(aiReady?t("Running","Работает"):t("Heartbeat only","Только heartbeat")):t("Offline","Офлайн"));
+  liveTone("[data-live-ai-state]",aiOnline&&aiReady?"good":aiOnline?"warn":"bad");
+
+  setText("[data-hae-runtime-state]",haeObserved?t("CONFIGURED · runtime receipt separate","НАСТРОЕН · runtime receipt отдельно"):"UNKNOWN");
+  setText("[data-hae-owner]",String(processRuntime?.runtime_owner||"UNKNOWN"));
+  setText("[data-hae-loop]",String(processRuntime?.tick_interval||"UNKNOWN"));
+  setText("[data-hae-active]",haeObserved?String(active):"UNKNOWN");
+  setText("[data-hae-cost]",typeof processRuntime?.automatic_paid_ai_cost_usd==="number"?"$"+String(processRuntime.automatic_paid_ai_cost_usd):"UNKNOWN");
+  const recent=q("[data-hae-recent]");if(recent){recent.replaceChildren();const rows=[...processes].sort((a,b)=>String(b.last_run_at||"").localeCompare(String(a.last_run_at||""))).slice(0,5);if(!rows.length){const p=document.createElement("p");p.className="muted";p.textContent=t("No owner-managed HAE processes returned by the current read.","Текущий read не вернул owner-managed процессы HAE.");recent.append(p)}else rows.forEach((process)=>{const row=document.createElement("article");row.className="owner-evidence-item";const body=document.createElement("div");const title=document.createElement("strong");title.textContent=process.name;const meta=document.createElement("small");meta.textContent=process.status+" · "+process.job_type+" · "+(process.last_job_state||"NO RECEIPT");body.append(title,meta);if(process.last_error_class){const error=document.createElement("p");error.textContent=process.last_error_class;body.append(error)}const state=document.createElement("span");state.textContent=process.last_job_state||process.status;row.append(body,state);recent.append(row)})}
+}
 function renderOwnerOverview(){
+  renderLiveOperations();
   const pending=items.filter(item=>item.status==="awaiting_acceptance");
   const runningTasks=tasks.filter((task:any)=>["queued","running"].includes(String(task.status))).length;
   const activeProcesses=processes.filter(process=>process.status==="active").length;
@@ -139,14 +285,63 @@ function renderEvidence(){
   if(!rows.length){const p=document.createElement("p");p.className="muted";p.textContent=t("No task-linked evidence yet.","Пока нет evidence, привязанного к задачам.");box.append(p);return}
   rows.forEach(item=>{const card=document.createElement("article");card.className="owner-evidence-item";const body=document.createElement("div");const title=document.createElement("strong");title.textContent=item.title;const meta=document.createElement("small");meta.textContent=(item.linked_task_status||item.status)+" · "+stamp(item.updated_at||item.created_at);body.append(title,meta);if(item.linked_task_output_summary){const p=document.createElement("p");p.textContent=item.linked_task_output_summary;body.append(p)}const pr=safePr(item.linked_task_pr_url);if(pr){const a=document.createElement("a");a.href=pr;a.target="_blank";a.rel="noopener";a.textContent="PR ↗";body.append(a)}const state=document.createElement("span");state.textContent=item.accepted_at?t("ACCEPTED","ПРИНЯТО"):item.status==="awaiting_acceptance"?t("REVIEW","ПРОВЕРКА"):t("EVIDENCE","EVIDENCE");card.append(body,state);box.append(card)});
 }
+function renderSocialAcquisition(data:any,threads:any){
+  const queue=q("[data-social-queue]"),receipts=q("[data-social-receipts]"),connections=q("[data-social-connections]");
+  const content=Array.isArray(data?.content_queue?.items)?data.content_queue.items:[];
+  const pubs=Array.isArray(data?.publication_receipts?.items)?data.publication_receipts.items:[];
+  const providers=Array.isArray(threads?.connections)?threads.connections:[];
+  setText("[data-social-state]",data?.checked_at?stamp(data.checked_at):"UNKNOWN");
+  setText("[data-social-content-count]",data?.content_queue?.source_state==="CONNECTED"?String(content.length):"UNKNOWN");
+  setText("[data-social-receipt-count]",data?.publication_receipts?.source_state==="CONNECTED"?String(pubs.length):"UNKNOWN");
+  setText("[data-social-connection-count]",threads?.success?String(providers.length):"UNKNOWN");
+  if(connections){connections.replaceChildren();if(!providers.length){const p=document.createElement("p");p.className="muted";p.textContent=t("Threads provider state unavailable or no connections are configured.","Состояние Threads provider недоступно или подключения не настроены.");connections.append(p)}else providers.forEach((item:any)=>{const card=document.createElement("article");card.className="workspace-card";const title=document.createElement("strong");title.textContent=String(item.label||item.brand||"Threads");const state=document.createElement("span");state.textContent=item.identity_verified?t("VERIFIED","ПОДТВЕРЖДЁН"):String(item.state||"UNKNOWN").replaceAll("_"," ");const note=document.createElement("small");const scopes=Array.isArray(item.granted_scopes)&&item.granted_scopes.length?item.granted_scopes.join(", "):"UNKNOWN";const expiry=item.token_expired?t("TOKEN EXPIRED","ТОКЕН ИСТЁК"):(item.token_expires_at?stamp(item.token_expires_at):"UNKNOWN");note.textContent=((item.publish_enabled&&item.identity_verified)?t("Provider publish gate enabled outside this view","Provider publish gate включён вне этого view"):t("Publish off / separately gated","Публикация выключена / отдельный gate"))+" · scopes: "+scopes+" · expiry: "+expiry;card.append(title,state,note);connections.append(card)})}
+  if(queue){queue.replaceChildren();if(!content.length){const p=document.createElement("p");p.className="muted";p.textContent=data?.content_queue?.source_state==="CONNECTED"?t("No recent HAE content rows.","Нет свежих HAE content rows."):t("HAE content source unavailable; count remains UNKNOWN.","HAE content source недоступен; количество остаётся UNKNOWN.");queue.append(p)}else content.slice(0,10).forEach((item:any)=>{const card=document.createElement("article");card.className="owner-evidence-item";const body=document.createElement("div");const title=document.createElement("strong");title.textContent=String(item.account_key||"UNKNOWN")+" · "+String(item.platform||"UNKNOWN");const meta=document.createElement("small");meta.textContent=String(item.slot_key||item.content_id||"")+" · "+String(item.state||"UNKNOWN")+" · "+stamp(item.updated_at);body.append(title,meta);const state=document.createElement("span");state.textContent=String(item.state||"UNKNOWN");card.append(body,state);queue.append(card)})}
+  if(receipts){receipts.replaceChildren();if(!pubs.length){const p=document.createElement("p");p.className="muted";p.textContent=data?.publication_receipts?.source_state==="CONNECTED"?t("No recent publication receipts.","Нет свежих publication receipts."):t("Publication receipt source unavailable; state remains UNKNOWN.","Источник publication receipts недоступен; состояние остаётся UNKNOWN.");receipts.append(p)}else pubs.slice(0,10).forEach((item:any)=>{const card=document.createElement("article");card.className="owner-evidence-item";const body=document.createElement("div");const title=document.createElement("strong");title.textContent=String(item.account_key||"UNKNOWN")+" · "+String(item.platform||"UNKNOWN");const meta=document.createElement("small");meta.textContent=String(item.status||"UNKNOWN")+" · attempts "+String(item.attempt_count??"UNKNOWN")+" · "+stamp(item.updated_at);body.append(title,meta);if(item.permalink){try{const u=new URL(String(item.permalink));if(u.protocol==="https:"&&["threads.net","www.threads.net","threads.com","www.threads.com"].includes(u.hostname)){const a=document.createElement("a");a.href=u.href;a.target="_blank";a.rel="noopener noreferrer";a.textContent=t("Provider receipt ↗","Provider receipt ↗");body.append(a)}}catch{}}const state=document.createElement("span");state.textContent=String(item.provider_post_id?"RECEIPT":"NO RECEIPT");card.append(body,state);receipts.append(card)})}
+}
+window.addEventListener("hermes:execution-map",(event)=>{const data=(event as CustomEvent).detail;renderPluginRegistry(data);renderHaeEventTimeline(data)});
+queueMicrotask(()=>{const cached=(window as any).__hermesCommandCenterExecutionMap;if(cached){renderPluginRegistry(cached);renderHaeEventTimeline(cached)}});
+function renderHaeEventTimeline(data:any){
+  const box=q<HTMLElement>("[data-hae-events]");if(!box)return;box.replaceChildren();
+  const source=data?.hae_recent_events||{source_state:"UNKNOWN",items:[]};
+  setText("[data-hae-events-state]",String(source.source_state||"UNKNOWN").replaceAll("_"," "));
+  const rows=Array.isArray(source.items)?source.items.slice(0,20):[];
+  if(!rows.length){const p=document.createElement("p");p.className="muted";p.textContent=t("No bounded HAE events are available from the current read.","Текущий read не вернул безопасные HAE events.");box.append(p);return}
+  rows.forEach((item:any)=>{
+    const row=document.createElement("article");row.className="owner-evidence-item";
+    const body=document.createElement("div");const title=document.createElement("strong");title.textContent=String(item.job_type||"HAE job");
+    const meta=document.createElement("small");meta.textContent=String(item.event_type||"UNKNOWN")+" · "+String(item.from_state||"—")+" → "+String(item.to_state||"UNKNOWN")+" · "+String(item.step||"—")+" · "+stamp(item.created_at);
+    body.append(title,meta);
+    if(item.error_class){const error=document.createElement("p");error.textContent=t("Error class: ","Класс ошибки: ")+String(item.error_class);body.append(error)}
+    const state=document.createElement("span");state.textContent=String(item.to_state||"UNKNOWN");
+    row.append(body,state);box.append(row);
+  });
+}
+function renderPluginRegistry(data:any){
+  const box=q('[data-cc-view="plugins"] [data-plugin-registry]');if(!box)return;box.replaceChildren();
+  const rows=Array.isArray(data?.plugin_registry)?data.plugin_registry:[];
+  const evidence=data?.registry_evidence||{};
+  setText("[data-plugin-registry-state]",evidence.fresh===true?t("FRESH","АКТУАЛЬНО"):String(evidence.reason||"UNKNOWN"));
+  if(!rows.length){const p=document.createElement("p");p.className="muted";p.textContent=t("Plugin registry unavailable; no capability was inferred.","Реестр плагинов недоступен; возможности не были придуманы.");box.append(p);return}
+  rows.forEach((item:any)=>{
+    const card=document.createElement("article");card.className="workspace-card";
+    const title=document.createElement("strong");title.textContent=String(item.role_id||"UNKNOWN");
+    const runtime=document.createElement("span");runtime.textContent=t("Runtime loaded: ","Runtime загружен: ")+"@"+String(item.runtime_loaded_version||item.plugin_version||"UNKNOWN");
+    const release=document.createElement("small");release.textContent=t("Provider release: ","Provider release: ")+(item.provider_release_version?String(item.provider_release_version):"UNKNOWN")+" · "+String(item.provider_release_state||"UNKNOWN").replaceAll("_"," ");
+    const invocation=document.createElement("small");invocation.textContent=t("Latest verified invocation: ","Последний подтверждённый запуск: ")+String(item.latest_invocation_state||"UNKNOWN").replaceAll("_"," ")+(item.latest_invocation_at?" · "+stamp(item.latest_invocation_at):"");
+    const training=document.createElement("small");training.textContent=t("Training / holdout: ","Обучение / holdout: ")+String(item.training_holdout_state||"UNKNOWN").replaceAll("_"," ");
+    const note=document.createElement("small");note.textContent=t("REGISTERED / LOADED is not execution · a canonical HAE receipt is required","REGISTERED / LOADED не означает выполнение · нужен канонический HAE receipt");
+    card.append(title,runtime,release,invocation,training,note);box.append(card)
+  });
+}
 function switchView(view:string){
-  const valid=new Set(["today","projects","tasks","automations","agents","evidence","access"]);
+  const valid=new Set(["today","projects","tasks","crm","social","hae","automations","agents","plugins","executions","evidence","reports","knowledge","investor","access"]);
   const next=valid.has(view)?view:"today";
   document.querySelectorAll<HTMLElement>("[data-cc-view]").forEach(section=>{const active=section.dataset.ccView===next;section.hidden=!active;section.classList.toggle("is-active",active)});
   document.querySelectorAll<HTMLButtonElement>("[data-cc-nav]").forEach(button=>{const active=button.dataset.ccNav===next;button.classList.toggle("is-active",active);button.setAttribute("aria-current",active?"page":"false")});
   const url=new URL(location.href);if(next==="today")url.searchParams.delete("view");else url.searchParams.set("view",next);history.replaceState(null,"",url);
 }
-document.querySelectorAll<HTMLButtonElement>("[data-cc-nav]").forEach(button=>button.addEventListener("click",()=>{switchView(button.dataset.ccNav||"today");button.closest("details")?.removeAttribute("open")}));
+document.querySelectorAll<HTMLButtonElement>("[data-cc-nav]").forEach(button=>button.addEventListener("click",()=>{switchView(button.dataset.ccNav||"today");if(window.matchMedia("(max-width: 900px)").matches)button.closest("details")?.removeAttribute("open")}));
+document.querySelectorAll<HTMLButtonElement>("[data-open-view]").forEach(button=>button.addEventListener("click",()=>switchView(button.dataset.openView||"today")));
 const captureDialog=q<HTMLDialogElement>("[data-capture-dialog]");
 document.querySelectorAll<HTMLButtonElement>("[data-new-task]").forEach(button=>button.addEventListener("click",()=>captureDialog?.showModal()));
 q("[data-capture-cancel]")?.addEventListener("click",()=>captureDialog?.close());
@@ -180,8 +375,18 @@ function renderItems(){
  const box=q("[data-work-list]");if(!box)return;box.replaceChildren();const rows=items.filter(visible);
  if(!rows.length){const p=document.createElement("p");p.className="muted";p.textContent=t("No work items in this view.","В этом списке задач нет.");box.append(p);return}
  rows.forEach(item=>{const card=document.createElement("article");card.className="work-card";const top=document.createElement("div");top.className="work-top";const meta=document.createElement("div");const title=document.createElement("strong");title.textContent=item.title;const line=document.createElement("span");line.textContent=item.workstream.toUpperCase()+" · "+item.priority.toUpperCase()+" · "+item.status.replaceAll("_"," ");if(item.project_id){const name=projects.find(project=>project.id===item.project_id)?.title||item.project_id;line.textContent+=" · "+name;}meta.append(title,line);const time=document.createElement("small");time.textContent=stamp(item.updated_at||item.created_at);top.append(meta,time);
- const body=document.createElement("p");body.textContent=item.details;card.append(top,body);if(item.source_label||item.source_ref){const s=document.createElement("p");s.className="linked";s.textContent=t("Source: ","Источник: ")+(item.source_label||item.source_ref||"");const href=safeSource(item.source_ref);if(href){const a=document.createElement("a");a.href=href;a.target="_blank";a.rel="noopener";a.textContent=" ↗";s.append(a)}card.append(s)}if(item.next_action){const n=document.createElement("p");n.className="linked";n.textContent=t("Next: ","Дальше: ")+item.next_action;card.append(n)}const route=document.createElement("p");route.className="linked";route.textContent=t("Planned route: ","Плановая команда: ")+plannedExecutionRoute(item)+" · "+t("route only; execution requires a receipt","это маршрут, не доказательство запуска");card.append(route);if(item.blocked_reason){const b=document.createElement("p");b.className="blocked";b.textContent=item.blocked_reason;card.append(b)}
+ const body=document.createElement("p");body.textContent=item.details;card.append(top,body);if(item.source_label||item.source_ref){const s=document.createElement("p");s.className="linked";s.textContent=t("Source: ","Источник: ")+(item.source_label||item.source_ref||"");const href=safeSource(item.source_ref);if(href){const a=document.createElement("a");a.href=href;a.target="_blank";a.rel="noopener";a.textContent=" ↗";s.append(a)}card.append(s)}if(item.next_action){const n=document.createElement("p");n.className="linked";n.textContent=t("Next: ","Дальше: ")+item.next_action;card.append(n)}
+  if(item.plugin_route?.owner?.role_id){const receipt=document.createElement("p");receipt.className="linked";receipt.textContent=t("Selected plugin (not executed): ","Плагин выбран (не запущен): ")+item.plugin_route.owner.role_id+" v"+item.plugin_route.owner.plugin_version+" · "+item.plugin_route.policy_version;card.append(receipt)}if(item.blocked_reason){const b=document.createElement("p");b.className="blocked";b.textContent=item.blocked_reason;card.append(b)}
  if(item.linked_task_status){const l=document.createElement("p");l.className="linked";l.textContent=t("Execution: ","Выполнение: ")+item.linked_task_status;card.append(l)}
+ if(item.linked_task_id){
+   const started=item.linked_task_started_at||null;
+   const finished=item.linked_task_completed_at||null;
+   const elapsed=started?durationLabel(started,finished||new Date().toISOString()):"UNKNOWN";
+   const duration=started&&finished?durationLabel(started,finished):"UNKNOWN";
+   const timing=document.createElement("p");timing.className="linked task-timing";
+   timing.textContent=t("Started: ","Старт: ")+(started?stamp(started):"UNKNOWN")+" · "+t("Elapsed: ","Прошло: ")+elapsed+" · "+t("Duration: ","Длительность: ")+duration+" · "+t("Progress: UNKNOWN · ","Прогресс: UNKNOWN · ")+"ETA: UNKNOWN";
+   card.append(timing);
+ }
  if(item.status==="awaiting_acceptance"){const review=document.createElement("p");review.className="acceptance-note";review.textContent=t("Execution finished. Review the evidence before accepting the business result.","Выполнение закончено. Проверь результат и доказательства перед приёмкой.");card.append(review)}
  if(item.linked_task_output_summary){const output=document.createElement("p");output.className="output-summary";output.textContent=t("Result: ","Результат: ")+item.linked_task_output_summary;card.append(output)}
  const actions=document.createElement("div");actions.className="work-actions";
@@ -233,8 +438,60 @@ q<HTMLInputElement>("[data-work-search]")?.addEventListener("input",event=>{
 document.querySelectorAll<HTMLButtonElement>("[data-focus-workstream]").forEach(button=>button.addEventListener("click",()=>{const next=button.dataset.focusWorkstream||"open";filter=next;switchView("tasks");const filterButton=q("[data-filters]")?.querySelector<HTMLButtonElement>(`[data-filter="${CSS.escape(next)}"]`);q("[data-filters]")?.querySelectorAll("button").forEach(x=>x.classList.toggle("active",x===filterButton));setText("[data-backlog-title]",t("Work queue · ","Очередь · ")+next.charAt(0).toUpperCase()+next.slice(1));renderItems();const url=new URL(location.href);url.searchParams.set("direction",next);history.replaceState(null,"",url);q("[data-work-list]")?.scrollIntoView({behavior:"smooth",block:"start"})}));
 const initialDirection=new URLSearchParams(location.search).get("direction");if(initialDirection&&["marketing","logistics","sales","technology","academy","finance","operations"].includes(initialDirection)){filter=initialDirection;switchView("tasks");const initialButton=q("[data-filters]")?.querySelector<HTMLButtonElement>(`[data-filter="${CSS.escape(initialDirection)}"]`);q("[data-filters]")?.querySelectorAll("button").forEach(x=>x.classList.toggle("active",x===initialButton));setText("[data-backlog-title]",t("Work queue · ","Очередь · ")+initialDirection.charAt(0).toUpperCase()+initialDirection.slice(1));}
 q("[data-filters]")?.addEventListener("click",(e)=>{const b=(e.target as HTMLElement).closest<HTMLButtonElement>("[data-filter]");if(!b)return;filter=b.dataset.filter||"open";q("[data-filters]")?.querySelectorAll("button").forEach(x=>x.classList.toggle("active",x===b));renderItems()});
-function renderAccount(data:any){const box=q("[data-account-workspaces]");if(!box)return;box.replaceChildren();const identity=data.identity||{};setText("[data-account-identity]",identity.name||identity.email||t("Owner account","Аккаунт владельца"));const rows=[...(data.owned_businesses||[]).map((x:any)=>({label:x.name||x.key,href:x.href,state:x.workspace_state||"business"})),...(data.workspaces||[]).map((x:any)=>({label:String(x.key||"workspace").replaceAll("_"," "),href:x.href,state:x.kind||"workspace"}))];if(!rows.length){const p=document.createElement("p");p.className="muted";p.textContent=t("No connected business workspaces for this account yet.","У этого аккаунта пока нет подключённых бизнес-workspaces.");box.append(p);return}rows.forEach((row:any)=>{const a=document.createElement("a");a.className="workspace-tile";a.href=String(row.href||"#");const strong=document.createElement("strong");strong.textContent=String(row.label||"Workspace");const small=document.createElement("small");small.textContent=String(row.state||"workspace").replaceAll("_"," ");a.append(strong,small);box.append(a)})}
-function renderOwners(data:any){const box=q("[data-owner-list]");if(!box)return;box.replaceChildren();(data.access||[]).forEach((owner:any)=>{const row=document.createElement("div");row.className="owner-row";const identity=document.createElement("div");const strong=document.createElement("strong");strong.textContent=owner.name||owner.email||owner.specialist_id;const small=document.createElement("small");small.textContent=(owner.email||"")+" · "+(owner.active?t("active","активен"):t("revoked","отозван"));identity.append(strong,small);const tag=document.createElement("span");tag.textContent=owner.specialist_id===data.current_specialist_id?t("You","Вы"):(owner.active?t("Owner","Владелец"):t("Inactive","Неактивен"));row.append(identity,tag);box.append(row)})}
-q<HTMLFormElement>("[data-access-form]")?.addEventListener("submit",async(e)=>{e.preventDefault();const submit=(e as SubmitEvent).submitter as HTMLButtonElement|null;const action=submit?.value||"grant";const form=e.currentTarget as HTMLFormElement;const data=new FormData(form);if(!confirm(action==="grant"?t("Grant internal owner access to this existing Hermes account?","Выдать этому существующему Hermes-аккаунту внутренний owner-доступ?"):t("Revoke internal owner access from this account?","Отозвать внутренний owner-доступ у этого аккаунта?")))return;const x=await jsonFetch("/api/internal-command-center/access",{method:"POST",body:JSON.stringify({action,email:data.get("email")})});setText("[data-access-status]",x.r.ok?t("Access updated.","Доступ обновлён."):String(x.d.error||"access_update_failed"));if(x.r.ok){form.reset();await loadAll()}});
+function renderWorkspaceTiles(selector:string,rows:any[],emptyCopy:string){
+  const box=q(selector);if(!box)return;box.replaceChildren();
+  if(!rows.length){const p=document.createElement("p");p.className="muted";p.textContent=emptyCopy;box.append(p);return}
+  rows.forEach((row:any)=>{const a=document.createElement("a");a.className="workspace-tile";a.href=String(row.href||"#");const strong=document.createElement("strong");strong.textContent=String(row.label||"Workspace");const small=document.createElement("small");small.textContent=String(row.state||"workspace").replaceAll("_"," ");a.append(strong,small);box.append(a)});
+}
+function renderAccount(data:any){
+  const identity=data.identity||{};setText("[data-account-identity]",identity.name||identity.email||t("Owner account","Аккаунт владельца"));
+  const rows=[...(data.owned_businesses||[]).map((x:any)=>({label:x.name||x.key,href:x.href,state:x.workspace_state||"business"})),...(data.workspaces||[]).map((x:any)=>({label:String(x.key||"workspace").replaceAll("_"," "),href:x.href,state:x.kind||"workspace"}))].filter((row:any)=>row.href);
+  const empty=t("No connected business workspaces for this account yet.","У этого аккаунта пока нет подключённых бизнес-workspaces.");
+  renderWorkspaceTiles("[data-account-workspaces]",rows,empty);
+  renderWorkspaceTiles("[data-crm-workspaces]",rows,empty);
+}
+function renderReports(data:any){
+  const schedules=q("[data-report-schedules]");if(schedules){schedules.replaceChildren();for(const item of data.schedules||[]){const card=document.createElement("article");card.className="workspace-tile";const strong=document.createElement("strong");strong.textContent=String(item.job_type||"report").replace("report.","").replace(".build","");const small=document.createElement("small");small.textContent=String(item.weekday||"")+" · "+String(item.local_time||"")+" · "+String(item.timezone||"")+" · $0";card.append(strong,small);schedules.append(card)}}
+  const box=q("[data-report-list]");if(!box)return;box.replaceChildren();const reports=Array.isArray(data.reports)?data.reports:[];
+  if(!reports.length){const p=document.createElement("p");p.className="muted";p.textContent=t("No completed report receipt yet. Source schedule is configured but release/runtime acceptance is still required.","Подтверждённых report receipts пока нет. Расписание настроено в source, но ещё нужны release/runtime acceptance.");box.append(p);return}
+  reports.forEach((item:any)=>{const card=document.createElement("article");card.className="owner-evidence-item";const body=document.createElement("div");const strong=document.createElement("strong");strong.textContent=String(item.report?.report_type||item.job_type||"Report");const meta=document.createElement("small");meta.textContent=String(item.state||"UNKNOWN")+" · "+stamp(item.completed_at||item.updated_at||item.created_at);body.append(strong,meta);const report=item.report||{};if(report.next_action){const p=document.createElement("p");p.textContent=t("Next: ","Далее: ")+String(report.next_action);body.append(p)}if(report.done_criteria){const p=document.createElement("p");p.textContent="DONE: "+String(report.done_criteria);body.append(p)}const state=document.createElement("span");state.textContent=report.cost_usd===0&&report.external_send===false?"$0 · INTERNAL":String(item.state||"UNKNOWN");card.append(body,state);box.append(card)});
+}
+function renderIntelligence(data:any){
+  const knowledge=data.knowledge||{};setText("[data-knowledge-state]",String(knowledge.coverage_status||knowledge.source_state||"UNKNOWN"));
+  const sources=q("[data-knowledge-sources]");if(sources){sources.replaceChildren();const rows=Array.isArray(knowledge.sources)?knowledge.sources:[];if(!rows.length){const p=document.createElement("p");p.className="muted";p.textContent="UNKNOWN";sources.append(p)}else rows.forEach((item:any)=>{const card=document.createElement("article");card.className="workspace-tile";const strong=document.createElement("strong");strong.textContent=String(item.title||item.source_class||"One Brain source");const small=document.createElement("small");small.textContent=String(item.authority||"UNKNOWN")+" · "+stamp(item.observed_at);card.append(strong,small);sources.append(card)})}
+  const learning=q("[data-learning-state]");if(learning){learning.replaceChildren();const p=document.createElement("p");p.className="muted";p.textContent=knowledge.governance?.automatic_promotion===false?t("Lessons require independent review before One Brain promotion; runtime consumption requires its own receipt.","Уроки требуют независимой проверки до продвижения в One Brain; runtime-consumption требует отдельного receipt."):t("Knowledge governance unavailable.","Knowledge governance недоступен.");learning.append(p)}
+  const investor=data.investor||{};setText("[data-investor-state]",String(investor.state||"UNKNOWN"));const box=q("[data-investor-details]");if(box){box.replaceChildren();const p=document.createElement("p");p.className="muted";p.textContent=investor.trigger_policy==="EVENT_TRIGGER_ONLY"?t("EVENT_TRIGGER_ONLY: no continuous polling. Fresh finance/legal/owner evidence is required before investor work resumes.","EVENT_TRIGGER_ONLY: постоянного polling нет. Для возобновления investor work нужен свежий finance/legal/owner evidence."):t("Investor trigger state unavailable.","Investor trigger state недоступен.");box.append(p);const project=investor.project;if(project?.blockers?.length){const b=document.createElement("p");b.textContent=t("Current hold: ","Текущий hold: ")+project.blockers.join(" ");box.append(b)}}
+}
+function renderOwners(data:any){
+  const box=q("[data-owner-list]");if(!box)return;box.replaceChildren();
+  const owners=(Array.isArray(data.access)?data.access:[]).map((entry:any)=>({...entry,permission:"owner"}));
+  const viewers=(Array.isArray(data.team_access)?data.team_access:[]).map((entry:any)=>({...entry,permission:"team_view"}));
+  const all=[...owners,...viewers];
+  if(!all.length){const p=document.createElement("p");p.className="muted";p.textContent=t("No granted access yet.","Доступы ещё не выданы.");box.append(p);return}
+  all.forEach((entry:any)=>{
+    const row=document.createElement("div");row.className="owner-row";
+    const identity=document.createElement("div");const strong=document.createElement("strong");
+    strong.textContent=String(entry.name||entry.email||entry.specialist_id||"Hermes account");
+    const small=document.createElement("small");
+    const role=entry.permission==="team_view"?t("Team View · read only","Team View · только чтение"):t("Owner · full access","Владелец · полный доступ");
+    small.textContent=String(entry.email||"")+" · "+role+" · "+(entry.active?t("active","активен"):t("revoked","отозван"));
+    identity.append(strong,small);
+    const tag=document.createElement("span");
+    tag.textContent=entry.specialist_id===data.current_specialist_id?t("You","Вы"):(entry.active?t("Granted","Выдан"):t("Inactive","Неактивен"));
+    row.append(identity,tag);box.append(row);
+  });
+}
+q<HTMLFormElement>("[data-access-form]")?.addEventListener("submit",async(e)=>{
+  e.preventDefault();
+  const submit=(e as SubmitEvent).submitter as HTMLButtonElement|null;
+  const action=submit?.value||"grant";const form=e.currentTarget as HTMLFormElement;const data=new FormData(form);
+  const capability=data.get("capability")==="owner"?"owner":"team_view";
+  const permissionLabel=capability==="owner"?t("full owner access","полные права владельца"):t("read-only Team View","Team View только для чтения");
+  const prompt=action==="grant"?t("Grant ","Выдать "):t("Revoke ","Отозвать ");
+  if(!confirm(prompt+permissionLabel+"?"))return;
+  const x=await jsonFetch("/api/internal-command-center/access",{method:"POST",body:JSON.stringify({action,email:data.get("email"),capability})});
+  setText("[data-access-status]",x.r.ok?t("Access updated.","Доступ обновлён."):String(x.d.error||"access_update_failed"));
+  if(x.r.ok){form.reset();await loadAll()}
+});
 void loadAll();const timer=setInterval(()=>void loadAll(),15000);addEventListener("pagehide",()=>clearInterval(timer),{once:true});
 </script>
