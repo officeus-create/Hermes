@@ -331,4 +331,50 @@ assert.throws(()=>validateRoleContractSemanticResult("hae.self.patch.propose",pa
 }),/hae_patch_diff_unsafe_added_code/);
 assert.throws(()=>runRoleContractPrimitive("hae.self.patch.propose",patchPayload),/semantic_job_requires_free_ai/);
 
+const ownerPlanPayload={
+  work_id:"hcwi_test_owner_work_001",
+  project_id:"hermes-command-center",
+  workstream:"technology",
+  priority:"p1",
+  title:"Continue Command Center automation without ChatGPT runtime",
+  details:"Use the canonical HAE runtime and existing D1 backlog.",
+  next_action:"Choose the safest existing read-only capability or identify the capability gap.",
+  source_kind:"history",
+  source_label:"canonical owner backlog",
+  selected_owner_role:"hermes-technology-developer",
+  selected_owner_version:"0.1.63",
+  route_basis:"workstream:technology",
+  available_execution_job_types:[
+    "search.snapshot.evaluate",
+    "marketing.content.dedupe.audit",
+    "logistics.source.freshness.audit",
+    "ai.gateway.readiness.audit",
+    "academy.english.practice.build",
+    "hae.self.improvement.audit",
+  ],
+};
+validateRoleContractInput("work.item.plan",ownerPlanPayload);
+const ownerPlanRequest=buildRoleContractSemanticRequest("work.item.plan",ownerPlanPayload);
+assert.match(ownerPlanRequest.system_prompt,/canonical HAE runtime/);
+assert.ok(ownerPlanRequest.user_prompt.includes("hcwi_test_owner_work_001"));
+assert.ok(ownerPlanRequest.max_output_tokens<=700);
+const ownerPlanResult=validateRoleContractSemanticResult("work.item.plan",ownerPlanPayload,{
+  disposition:"EXECUTE_EXISTING_CAPABILITY",
+  recommended_job_type:"ai.gateway.readiness.audit",
+  rationale:"The existing read-only gateway audit is a bounded useful step.",
+  next_action:"Run the existing gateway readiness audit and persist its HAE receipt.",
+});
+assert.equal(ownerPlanResult.work_id,ownerPlanPayload.work_id);
+assert.equal(ownerPlanResult.recommended_job_type,"ai.gateway.readiness.audit");
+assert.equal(ownerPlanResult.external_write,false);
+assert.equal(ownerPlanResult.paid_inference_cost_usd,0);
+assert.throws(()=>validateRoleContractSemanticResult("work.item.plan",ownerPlanPayload,{
+  disposition:"EXECUTE_EXISTING_CAPABILITY",
+  recommended_job_type:"social.reply.prepare",
+  rationale:"Not allowed.",
+  next_action:"Do not execute.",
+}),/owner_work_plan_capability_not_allowed/);
+assert.throws(()=>validateRoleContractInput("work.item.plan",{...ownerPlanPayload,title:"token ghp_12345678901234567890"}),/owner_work_plan_secret_like/);
+assert.throws(()=>runRoleContractPrimitive("work.item.plan",ownerPlanPayload),/semantic_job_requires_free_ai/);
+
 console.log(`HAE plugin role contracts PASS: ${ROLE_CONTRACTS.filter((contract)=>!contract.semantic_required).length} zero-model + ${ROLE_CONTRACTS.filter((contract)=>contract.semantic_required).length} free-only semantic contracts`);
