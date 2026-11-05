@@ -306,6 +306,11 @@ export const ROLE_CONTRACTS = Object.freeze([
       title: "bounded owner task title",
       details: "bounded internal task context or null",
       next_action: "bounded current next action or null",
+      revenue_mission: "optional boolean; true means financial KPI remains open until verified revenue gate",
+      revenue_gate_usd: "optional minimum verified financial result",
+      revenue_target_usd: "optional estimated first-win target",
+      revenue_actual_usd: "optional verified revenue recorded so far",
+      revenue_source_work_id: "optional canonical One Brain source WORK_ID",
       selected_owner_role: "server-selected plugin role",
       selected_owner_version: "server-verified plugin version",
       route_basis: "server routing basis",
@@ -706,6 +711,11 @@ function validateOwnerWorkPlanPayload(payload) {
   const selectedOwnerRole=cleanText(payload.selected_owner_role,120);
   const selectedOwnerVersion=cleanText(payload.selected_owner_version,80);
   const routeBasis=cleanText(payload.route_basis,160);
+  const revenueMission=payload.revenue_mission===true;
+  const revenueGateUsd=payload.revenue_gate_usd==null?null:Number(payload.revenue_gate_usd);
+  const revenueTargetUsd=payload.revenue_target_usd==null?null:Number(payload.revenue_target_usd);
+  const revenueActualUsd=payload.revenue_actual_usd==null?null:Number(payload.revenue_actual_usd);
+  const revenueSourceWorkId=payload.revenue_source_work_id==null?null:cleanText(payload.revenue_source_work_id,160);
   const available=boundedArray(payload.available_execution_job_types,"available_execution_job_types")
     .map((value)=>cleanText(value,120)).filter(Boolean);
   if(!/^hcwi_[A-Za-z0-9._:-]{6,150}$/.test(workId)) throw new Error("owner_work_plan_work_id_invalid");
@@ -717,6 +727,11 @@ function validateOwnerWorkPlanPayload(payload) {
   if(OWNER_WORK_PLAN_SECRET_LIKE.test(sensitive)) throw new Error("owner_work_plan_secret_like");
   return {
     work_id:workId,project_id:projectId,workstream,priority,title,details,next_action:nextAction,
+    revenue_mission:revenueMission,
+    revenue_gate_usd:Number.isFinite(revenueGateUsd)?revenueGateUsd:null,
+    revenue_target_usd:Number.isFinite(revenueTargetUsd)?revenueTargetUsd:null,
+    revenue_actual_usd:Number.isFinite(revenueActualUsd)?revenueActualUsd:null,
+    revenue_source_work_id:revenueSourceWorkId,
     selected_owner_role:selectedOwnerRole,selected_owner_version:selectedOwnerVersion,
     route_basis:routeBasis,available_execution_job_types:available,
   };
@@ -737,7 +752,8 @@ export function buildRoleContractSemanticRequest(jobType, payload) {
         "Example valid output when an existing capability applies: {\"disposition\":\"EXECUTE_EXISTING_CAPABILITY\",\"recommended_job_type\":\"ai.gateway.readiness.audit\",\"rationale\":\"Existing read-only audit matches the requested verification step.\",\"next_action\":\"Run the existing audit and persist its HAE receipt.\"}.",
         "Never put a job type such as ai.gateway.readiness.audit into disposition.",
         "Use NEEDS_CAPABILITY when the task is valid but HAE lacks a safe bounded capability.",
-        "Use NEEDS_OWNER_GATE for money, hiring, credentials, legal/commercial commitments, external communication, merge/deploy, production writes or destructive actions.",
+        "A revenue target, price, payment KPI or desired sale is context, not an owner gate by itself. Keep advancing safe READ_ONLY/DRAFT_ONLY steps toward the financial goal.",
+        "Use NEEDS_OWNER_GATE only when the NEXT EXECUTABLE ACTION itself would spend/transfer money, send external communication, create a legal/commercial commitment, use credentials, merge/deploy, perform a production write or do something destructive.",
         "Use BLOCKED_EVIDENCE when required source truth is missing or contradictory.",
         "Do not claim execution, completion, external research, source reads, code changes or business results."
       ].join(" "),
