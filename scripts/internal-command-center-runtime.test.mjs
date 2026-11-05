@@ -10,6 +10,7 @@ import { onRequestPatch as editProject } from "../functions/api/internal-command
 import { ensureInternalAiSchema } from "../functions/api/_lib/internal-ai.mjs";
 import { ensureCommandCenterSchema, selectWorkItemPluginRoute } from "../functions/api/_lib/internal-command-center.mjs";
 import { onRequest as commandCenterMiddleware } from "../functions/_middleware.js";
+import { pluginRuntimeVersion } from "../workers/automation-engine/src/plugin-runtime-registry.mjs";
 
 class Statement {
   constructor(statement,args=[]){this.statement=statement;this.args=args}
@@ -157,7 +158,7 @@ assert.equal(dispatched.payload.task.status,"queued");
 assert(dispatched.payload.work_item.linked_task_id);
 assert.equal(dispatched.payload.work_item.plugin_route?.state,"PLUGIN_SELECTED_NOT_EXECUTED");
 const routedPrompt=sqlite.prepare("SELECT prompt FROM hermes_internal_ai_tasks WHERE id=?").get(dispatched.payload.task.id).prompt;
-assert.match(routedPrompt,/Selected owner capability: hermes-technology-developer@0\.1\.61/);
+assert.ok(routedPrompt.includes("Selected owner capability: hermes-technology-developer@" + pluginRuntimeVersion("hermes-technology-developer")));
 assert.match(routedPrompt,/PLUGIN_SELECTED_NOT_EXECUTED/);
 
 const blockedSecond=await patch(second.id,"dispatch");
