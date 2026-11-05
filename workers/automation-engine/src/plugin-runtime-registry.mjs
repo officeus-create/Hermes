@@ -2,15 +2,15 @@
 // It uses the newest current release creation instant observed in that same readback as a
 // millisecond-truncated lower bound, so freshness is never overstated by a fabricated local clock instant.
 // This is bounded release evidence, NOT proof of runtime loading or automatic refreshing.
-const OBSERVED_AT = "2026-11-04T22:47:58.446Z";
+const OBSERVED_AT = "2026-11-05T13:45:58.040Z";
 
 export const PLUGIN_RUNTIME_REGISTRY = Object.freeze({
-  "hermes-automatic-engineer": Object.freeze({ version: "0.1.38", observed_at: OBSERVED_AT }),
-  "hermes-agent-coordinator": Object.freeze({ version: "0.1.101", observed_at: OBSERVED_AT }),
+  "hermes-automatic-engineer": Object.freeze({ version: "0.1.39", observed_at: OBSERVED_AT }),
+  "hermes-agent-coordinator": Object.freeze({ version: "0.1.102", observed_at: OBSERVED_AT }),
   "hermes-technology-developer": Object.freeze({ version: "0.1.63", observed_at: OBSERVED_AT }),
   "hermes-connect-operator": Object.freeze({ version: "1.4.43", observed_at: OBSERVED_AT }),
-  "hermes-qa-evidence-auditor": Object.freeze({ version: "0.1.25", observed_at: OBSERVED_AT }),
-  "hermes-knowledge-curator": Object.freeze({ version: "0.1.111", observed_at: OBSERVED_AT }),
+  "hermes-qa-evidence-auditor": Object.freeze({ version: "0.1.26", observed_at: OBSERVED_AT }),
+  "hermes-knowledge-curator": Object.freeze({ version: "0.1.112", observed_at: OBSERVED_AT }),
   "hermes-marketing-growth": Object.freeze({ version: "0.1.20", observed_at: OBSERVED_AT }),
   "hermes-search-growth": Object.freeze({ version: "0.1.18", observed_at: OBSERVED_AT }),
   "hermes-academy": Object.freeze({ version: "0.1.17", observed_at: OBSERVED_AT }),
