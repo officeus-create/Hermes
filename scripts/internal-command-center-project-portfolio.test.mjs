@@ -39,12 +39,14 @@ assert.ok(operationsFeed.milestones.some((item)=>item.id==="mail-triage"&&item.s
 assert.ok(portfolio.some((project) => project.id === "ai-operations" && project.evidence_level === "SOURCE_RELEASE_CANDIDATE_REVIEW_PENDING"), "AI Operations must remain a release candidate until protected review and runtime acceptance");
 assert.ok(portfolio.some((project) => project.id === "hae-runtime" && project.evidence_level === "CURRENT_MAIN_RUNTIME_READONLY_PROOF_ACCEPTED_RELEASE_PENDING"), "HAE project must separate accepted current-main runtime proof from the unmerged Command Center release");
 assert.ok(portfolio.some((project) => project.id === "windows-ai" && project.evidence_level === "PRIMARY_ASSIGNED_HAE_EXECUTION_UNVERIFIED"), "Windows assignment must stay separate from dynamic host liveness and canonical HAE execution proof");
-assert.ok(portfolio.some((project) => project.id === "deepseek-specialist" && project.evidence_level === "PREPARED_NOT_RUNNING_SANDBOX_GATED"), "DeepSeek must remain a separate subordinate specialist lane until sandbox and HAE receipt gates pass");
+assert.ok(portfolio.some((project) => project.id === "deepseek-specialist" && project.evidence_level === "LOCAL_SCHEDULED_READONLY_VERIFIED_SANDBOX_GATED"), "DeepSeek must distinguish verified local read-only audit from the still-gated autonomous sandbox");
 const deepseek=portfolio.find((project)=>project.id==="deepseek-specialist");
 assert.equal(deepseek.parent_id,"ai-operations");
 assert.ok(deepseek.dependency_ids.includes("hae-runtime"));
 assert.ok(deepseek.milestones.some((item)=>item.id==="hae-receipt"&&item.state==="planned"));
 assert.ok(deepseek.milestones.some((item)=>item.id==="sandbox-boundary"&&item.state==="blocked"));
+assert.ok(deepseek.milestones.some((item)=>item.id==="local-specialist"&&item.state==="done"&&/scheduled read-only audit verified/i.test(item.evidence||"")), "DeepSeek local audit proof must remain explicit");
+
 assert.ok(portfolio.some((project) => project.id === "mac-ai" && project.evidence_level === "FALLBACK_RUNTIME_SOURCE_PRESENT_HAE_EXECUTION_UNVERIFIED"), "Mac fallback role must stay separate from dynamic host liveness and Hermes AI/HAE execution proof");
 
 assert.match(api, /requireInternalOwner/);

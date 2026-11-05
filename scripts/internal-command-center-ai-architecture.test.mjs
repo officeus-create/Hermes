@@ -60,6 +60,7 @@ assert.match(docs,/prepared sandbox are insufficient/);
 assert.doesNotMatch(docs,/Mac remains the declared primary executor/);
 const projects=get("functions/api/_lib/command-center-projects.mjs");
 assert.match(projects,/id: "deepseek-specialist"/);
-assert.match(projects,/PREPARED_NOT_RUNNING_SANDBOX_GATED/);
+assert.match(projects,/LOCAL_SCHEDULED_READONLY_VERIFIED_SANDBOX_GATED/);
+assert.match(projects,/separate issue #2266 remains PREPARED \/ NOT RUNNING/);
 assert.match(projects,/DeepSeek output must remain schema\/validator bounded/);
 console.log("Hermes AI Operations and Team View role-scoped integration: PASS");

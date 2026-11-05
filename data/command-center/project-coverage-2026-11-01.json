@@ -2,9 +2,9 @@
   "schema_version": 1,
   "snapshot_id": "command-center-project-coverage-2026-11-01",
   "coverage_status": "PARTIAL",
-  "coverage_reason": "Current canonical sources are identified and sampled, but production Command Center has no safe live Drive connector and active WORK_ID counts are not yet independently accepted per family.",
+  "coverage_reason": "Current canonical sources were re-read through 2026-11-05 and the Ledger now has 128 WORK_ID rows, but active per-family counts remain intentionally UNKNOWN until a reviewed deterministic family mapping is accepted; production Command Center still has no live Drive connector.",
   "source_method": "REVIEWED_STATIC_SNAPSHOT_FROM_CURRENT_ONE_BRAIN",
-  "ledger_row_count_observed": 116,
+  "ledger_row_count_observed": 128,
   "sources": [
     {
       "source_class": "ONE_BRAIN_CONTROL_LOOP",
@@ -24,7 +24,7 @@
       "source_class": "EXECUTION_IDEAS_LEDGER",
       "title": "HERMES EXECUTION & IDEAS LEDGER — CANONICAL — CURRENT",
       "drive_id": "1Ya2fgHZVISV3XHd_w9JHSJBrizCy-LeKczD9H_qJErc",
-      "observed_at": "2026-11-01T19:07:03.830Z",
+      "observed_at": "2026-11-05T09:52:00.000Z",
       "authority": "CURRENT"
     }
   ],
@@ -247,7 +247,7 @@
       "active_work_id_count": null,
       "count_state": "UNKNOWN_NOT_EXHAUSTIVELY_MAPPED",
       "client_exposure": "NO",
-      "notes": "Current Command Center project map separates HAE runtime, AI Operations, Windows VIKTOR, Mac fallback, plugin workforce and DeepSeek specialist lane. DeepSeek remains subordinate and PREPARED/NOT RUNNING until #2266 sandbox + HAE receipt gates pass."
+      "notes": "Current Command Center project map separates HAE runtime, AI Operations, Windows VIKTOR, Mac fallback, plugin workforce and DeepSeek. DeepSeek local scheduled read-only audit is VERIFIED on Windows (Task Scheduler result 0; MODEL_OUTPUT_ACCEPTED; 2476 files; production writes 0), while the separate #2266 autonomous coding sandbox remains PREPARED/NOT RUNNING until isolation, scoped identity, reviewed source and HAE receipt gates pass."
     }
   ]
 }
