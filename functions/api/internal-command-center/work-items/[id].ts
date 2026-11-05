@@ -7,6 +7,7 @@ type Env={DB?:any;HERMES_AUTOMATION_BASE_URL?:string;HERMES_AUTOMATION_TOKEN?:st
 const headers={"Cache-Control":"private, no-store","X-Robots-Tag":"noindex, nofollow"};
 const sameOriginMutation=(request:Request)=>request.headers.get("Sec-Fetch-Site")!=="cross-site"&&(!request.headers.get("Origin")||request.headers.get("Origin")===new URL(request.url).origin);
 const safeReason=(value:unknown)=>String(value||"").replace(/\u0000/g,"").trim().slice(0,1000);
+const safeRevenueAmount=(value:unknown)=>{const n=Number(value);return Number.isFinite(n)&&n>0?Math.round(n*100)/100:null};
 
 async function getItem(db:any,id:string){
   return db.prepare(`SELECT w.*, t.status AS linked_task_status, t.started_at AS linked_task_started_at,
@@ -36,6 +37,41 @@ export async function onRequestPatch({request,env,params}:{request:Request;env:E
   let payload:any; try{payload=await request.json()}catch{return jsonResponse(400,{success:false,error:"invalid_json"},headers)}
   const action=String(payload?.action||"").trim(), now=nowIso();
   if(["done","cancelled"].includes(String(row.status)))return jsonResponse(409,{success:false,error:"work_item_terminal",work_item:publicWorkItem(row)},headers);
+
+  if(action==="record_revenue"){
+    if(String(row.source_kind)!=="one_brain_revenue_4m")return jsonResponse(409,{success:false,error:"not_revenue_mission",work_item:publicWorkItem(row)},headers);
+    const amount=safeRevenueAmount(payload?.amount_usd), evidenceRef=safeReason(payload?.evidence_ref);
+    if(!amount)return jsonResponse(400,{success:false,error:"positive_revenue_amount_required"},headers);
+    if(!evidenceRef)return jsonResponse(400,{success:false,error:"revenue_evidence_ref_required"},headers);
+    const current=Math.max(0,Number(row.revenue_actual_usd||0));
+    const gate=Math.max(1,Number(row.revenue_gate_usd||1));
+    const total=Math.round((current+amount)*100)/100;
+    const reached=total>=gate;
+    if(reached){
+      const result=await env.DB.prepare(`UPDATE hermes_owner_work_items
+        SET revenue_actual_usd=?,revenue_status='proven',revenue_evidence_ref=?,revenue_recorded_at=?,
+            status='done',acceptance_status='accepted',completed_at=?,accepted_by=?,accepted_at=?,
+            blocked_reason=NULL,updated_at=?
+        WHERE id=? AND organization_scope=? AND source_kind='one_brain_revenue_4m' AND status NOT IN ('done','cancelled')`)
+        .bind(total,evidenceRef,now,now,String(owner.specialist.id),now,now,id,INTERNAL_AI_ORGANIZATION_SCOPE).run();
+      if(!result?.meta?.changes)return jsonResponse(409,{success:false,error:"revenue_record_conflict",work_item:publicWorkItem(await getItem(env.DB,id))},headers);
+      const next=await env.DB.prepare(`SELECT id FROM hermes_owner_work_items
+        WHERE organization_scope=? AND source_kind='one_brain_revenue_4m'
+          AND status='blocked' AND revenue_status='queued'
+        ORDER BY revenue_rank ASC,id ASC LIMIT 1`).bind(INTERNAL_AI_ORGANIZATION_SCOPE).first();
+      if(next?.id)await env.DB.prepare(`UPDATE hermes_owner_work_items
+        SET status='ready',revenue_status='active',blocked_reason=NULL,updated_at=?
+        WHERE id=? AND organization_scope=? AND status='blocked' AND revenue_status='queued'`)
+        .bind(now,String(next.id),INTERNAL_AI_ORGANIZATION_SCOPE).run();
+      return jsonResponse(200,{success:true,financial_done:true,revenue_total_usd:total,next_revenue_work_item_id:next?.id||null,work_item:publicWorkItem(await getItem(env.DB,id))},headers);
+    }
+    const result=await env.DB.prepare(`UPDATE hermes_owner_work_items
+      SET revenue_actual_usd=?,revenue_status='active',revenue_evidence_ref=?,revenue_recorded_at=?,updated_at=?
+      WHERE id=? AND organization_scope=? AND source_kind='one_brain_revenue_4m' AND status NOT IN ('done','cancelled')`)
+      .bind(total,evidenceRef,now,now,id,INTERNAL_AI_ORGANIZATION_SCOPE).run();
+    if(!result?.meta?.changes)return jsonResponse(409,{success:false,error:"revenue_record_conflict",work_item:publicWorkItem(await getItem(env.DB,id))},headers);
+    return jsonResponse(200,{success:true,financial_done:false,revenue_total_usd:total,work_item:publicWorkItem(await getItem(env.DB,id))},headers);
+  }
 
   if(action==="execute_plugin"){
     const linkedTaskId=String(row.linked_task_id||"");
@@ -144,10 +180,14 @@ export async function onRequestPatch({request,env,params}:{request:Request;env:E
     const blockResult=await env.DB.prepare("UPDATE hermes_owner_work_items SET status='blocked', acceptance_status='not_required', blocked_reason=?, completed_at=NULL, accepted_by=NULL, accepted_at=NULL, updated_at=? WHERE id=? AND organization_scope=? AND status NOT IN ('done','cancelled')").bind(reason,now,id,INTERNAL_AI_ORGANIZATION_SCOPE).run();
     if(!blockResult?.meta?.changes)return jsonResponse(409,{success:false,error:"work_item_state_conflict",work_item:publicWorkItem(await getItem(env.DB,id))},headers);
   } else if(action==="accept"){
+    if(String(row.source_kind)==="one_brain_revenue_4m"&&Number(row.revenue_actual_usd||0)<Math.max(1,Number(row.revenue_gate_usd||1)))
+      return jsonResponse(409,{success:false,error:"financial_result_required",required_usd:Math.max(1,Number(row.revenue_gate_usd||1)),actual_usd:Number(row.revenue_actual_usd||0),work_item:publicWorkItem(row)},headers);
     if(String(row.status)!=="in_progress"||String(row.acceptance_status)!=="awaiting"||String(row.linked_task_status)!=="completed")return jsonResponse(409,{success:false,error:"work_item_not_awaiting_acceptance",work_item:publicWorkItem(row)},headers);
     const accepted=await env.DB.prepare("UPDATE hermes_owner_work_items SET status='done', acceptance_status='accepted', completed_at=?, accepted_by=?, accepted_at=?, blocked_reason=NULL, updated_at=? WHERE id=? AND organization_scope=? AND status='in_progress' AND acceptance_status='awaiting'").bind(now,String(owner.specialist.id),now,now,id,INTERNAL_AI_ORGANIZATION_SCOPE).run();
     if(!accepted?.meta?.changes)return jsonResponse(409,{success:false,error:"work_item_state_conflict",work_item:publicWorkItem(await getItem(env.DB,id))},headers);
   } else if(action==="complete"){
+    if(String(row.source_kind)==="one_brain_revenue_4m"&&Number(row.revenue_actual_usd||0)<Math.max(1,Number(row.revenue_gate_usd||1)))
+      return jsonResponse(409,{success:false,error:"financial_result_required",required_usd:Math.max(1,Number(row.revenue_gate_usd||1)),actual_usd:Number(row.revenue_actual_usd||0),work_item:publicWorkItem(row)},headers);
     if(row.linked_task_id)return jsonResponse(409,{success:false,error:"linked_ai_result_requires_acceptance",work_item:publicWorkItem(row)},headers);
     if(["queued","running","needs_approval"].includes(String(row.linked_task_status||"")))return jsonResponse(409,{success:false,error:"linked_ai_task_active",work_item:publicWorkItem(row)},headers);
     const completed=await env.DB.prepare("UPDATE hermes_owner_work_items SET status='done', acceptance_status='accepted', completed_at=?, accepted_by=?, accepted_at=?, blocked_reason=NULL, updated_at=? WHERE id=? AND organization_scope=? AND status NOT IN ('done','cancelled') AND linked_task_id IS NULL").bind(now,String(owner.specialist.id),now,now,id,INTERNAL_AI_ORGANIZATION_SCOPE).run();
