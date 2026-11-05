@@ -37,6 +37,7 @@ assert.deepEqual(
     "hae.self.patch.propose",
     "hae.self.release.verify",
     "knowledge.evidence.audit",
+    "knowledge.lesson.evaluate",
     "logistics.source.freshness.audit",
     "market.car-hauling.snapshot.evaluate",
     "marketing.content.dedupe.audit",
@@ -46,6 +47,7 @@ assert.deepEqual(
     "search.defect.prioritize",
     "search.snapshot.evaluate",
     "technology.release.radar",
+    "work.item.plan",
     "work.portfolio.reconcile",
   ].sort(),
 );
@@ -60,7 +62,7 @@ for (const contract of ROLE_CONTRACTS) {
   }
   assert.equal(contract.permission_class, "READ_ONLY");
   if (contract.semantic_required) {
-    assert.ok(["search.defect.prioritize", "hae.self.patch.propose"].includes(contract.job_type));
+    assert.ok(["search.defect.prioritize", "hae.self.patch.propose", "work.item.plan"].includes(contract.job_type));
     assert.equal(contract.free_ai_policy, "free_only_wait_if_unavailable");
     assert.equal(contract.runtime_config.retry_seconds, 900);
     assert.equal(contract.runtime_config.max_cost_usd, 0, "Semantic contract must be zero-dollar by default");
@@ -173,13 +175,18 @@ assert.equal(roleContractForJobType("hae.self.release.verify").plugin_version, p
 assert.ok(ROLE_CONTRACT_JOB_TYPES.includes("hae.self.release.verify"), "Dormant self-release capability remains directly inspectable");
 assert.ok(!CAPABILITY_GRAPH_ROLE_CONTRACT_JOB_TYPES.includes("hae.self.release.verify"), "Dormant self-release capability must not be graph-routable before authenticated activation");
 assert.ok(!CAPABILITY_GRAPH_ROLE_CONTRACT_JOB_TYPES.includes("hae.self.patch.propose"), "Patch proposal must not be graph-routable before authenticated source adapter activation");
+assert.ok(!CAPABILITY_GRAPH_ROLE_CONTRACT_JOB_TYPES.includes("work.item.plan"), "Owner work planner must be reachable only from canonical HAE owner intake");
 assert.equal(roleContractForJobType("hae.self.patch.propose").role_id, "hermes-automatic-engineer");
 assert.equal(roleContractForJobType("hae.self.patch.propose").runtime_config.max_cost_usd, 0);
-assert.equal(CAPABILITY_GRAPH_ROLE_CONTRACT_JOB_TYPES.length, ROLE_CONTRACT_JOB_TYPES.length - 2);
+assert.equal(CAPABILITY_GRAPH_ROLE_CONTRACT_JOB_TYPES.length, ROLE_CONTRACT_JOB_TYPES.length - 3);
 assert.equal(roleContractForJobType("knowledge.evidence.audit").role_id, "hermes-knowledge-curator");
 assert.equal(roleContractForJobType("knowledge.evidence.audit").plugin_version, pluginRuntimeVersion("hermes-knowledge-curator"));
+assert.equal(roleContractForJobType("knowledge.lesson.evaluate").role_id, "hermes-knowledge-curator");
+assert.equal(roleContractForJobType("knowledge.lesson.evaluate").plugin_version, pluginRuntimeVersion("hermes-knowledge-curator"));
+assert.equal(roleContractForJobType("knowledge.lesson.evaluate").permission_class, "READ_ONLY");
+assert.equal(roleContractForJobType("knowledge.lesson.evaluate").runtime_config.max_cost_usd, 0);
 assert.ok(ROLE_CONTRACTS.filter((contract) => !contract.semantic_required).length >= 19);
-assert.equal(ROLE_CONTRACTS.filter((contract) => contract.semantic_required).length, 2);
+assert.equal(ROLE_CONTRACTS.filter((contract) => contract.semantic_required).length, 3);
 
 const searchInput = {
   pages: [
@@ -325,5 +332,51 @@ assert.throws(()=>validateRoleContractSemanticResult("hae.self.patch.propose",pa
   rationale:"Unsafe network addition."
 }),/hae_patch_diff_unsafe_added_code/);
 assert.throws(()=>runRoleContractPrimitive("hae.self.patch.propose",patchPayload),/semantic_job_requires_free_ai/);
+
+const ownerPlanPayload={
+  work_id:"hcwi_test_owner_work_001",
+  project_id:"hermes-command-center",
+  workstream:"technology",
+  priority:"p1",
+  title:"Continue Command Center automation without ChatGPT runtime",
+  details:"Use the canonical HAE runtime and existing D1 backlog.",
+  next_action:"Choose the safest existing read-only capability or identify the capability gap.",
+  source_kind:"history",
+  source_label:"canonical owner backlog",
+  selected_owner_role:"hermes-technology-developer",
+  selected_owner_version:"0.1.63",
+  route_basis:"workstream:technology",
+  available_execution_job_types:[
+    "search.snapshot.evaluate",
+    "marketing.content.dedupe.audit",
+    "logistics.source.freshness.audit",
+    "ai.gateway.readiness.audit",
+    "academy.english.practice.build",
+    "hae.self.improvement.audit",
+  ],
+};
+validateRoleContractInput("work.item.plan",ownerPlanPayload);
+const ownerPlanRequest=buildRoleContractSemanticRequest("work.item.plan",ownerPlanPayload);
+assert.match(ownerPlanRequest.system_prompt,/canonical HAE runtime/);
+assert.ok(ownerPlanRequest.user_prompt.includes("hcwi_test_owner_work_001"));
+assert.ok(ownerPlanRequest.max_output_tokens<=700);
+const ownerPlanResult=validateRoleContractSemanticResult("work.item.plan",ownerPlanPayload,{
+  disposition:"EXECUTE_EXISTING_CAPABILITY",
+  recommended_job_type:"ai.gateway.readiness.audit",
+  rationale:"The existing read-only gateway audit is a bounded useful step.",
+  next_action:"Run the existing gateway readiness audit and persist its HAE receipt.",
+});
+assert.equal(ownerPlanResult.work_id,ownerPlanPayload.work_id);
+assert.equal(ownerPlanResult.recommended_job_type,"ai.gateway.readiness.audit");
+assert.equal(ownerPlanResult.external_write,false);
+assert.equal(ownerPlanResult.paid_inference_cost_usd,0);
+assert.throws(()=>validateRoleContractSemanticResult("work.item.plan",ownerPlanPayload,{
+  disposition:"EXECUTE_EXISTING_CAPABILITY",
+  recommended_job_type:"social.reply.prepare",
+  rationale:"Not allowed.",
+  next_action:"Do not execute.",
+}),/owner_work_plan_capability_not_allowed/);
+assert.throws(()=>validateRoleContractInput("work.item.plan",{...ownerPlanPayload,title:"token ghp_12345678901234567890"}),/owner_work_plan_secret_like/);
+assert.throws(()=>runRoleContractPrimitive("work.item.plan",ownerPlanPayload),/semantic_job_requires_free_ai/);
 
 console.log(`HAE plugin role contracts PASS: ${ROLE_CONTRACTS.filter((contract)=>!contract.semantic_required).length} zero-model + ${ROLE_CONTRACTS.filter((contract)=>contract.semantic_required).length} free-only semantic contracts`);

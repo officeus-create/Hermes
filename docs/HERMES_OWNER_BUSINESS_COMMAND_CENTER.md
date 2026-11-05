@@ -167,3 +167,21 @@ Configuration is progressively disclosed through Projects, Tasks, CRM, Social, A
 The public and private surfaces share one Command Center shell and the canonical Hermes brand system so they cannot drift into separate products. Pearl/Paper/Ink are the base; violet is Intelligence; the four business-pillar colors are orientation cues only. Primary controls keep 44px touch targets. Large workspace panels use the canonical panel radius.
 
 Anonymous requests to the private route must be intercepted at the edge. They receive only a minimal secure sign-in/access shell; internal operational markup must not be served before server-side owner verification.
+
+
+## Historical owner-task recovery
+
+The private Command Center is also the convergence surface for owner work recovered from prior operating sources. It does not create a second task registry.
+
+The bounded importer in `functions/api/_lib/command-center-history-backlog.mjs` idempotently seeds high-confidence recovered work into the existing `hermes_owner_work_items` D1 table. Imported rows preserve:
+
+- source class and human-readable source label;
+- a bounded source reference when available;
+- current reconciled status;
+- blocker/reason when applicable;
+- concrete next action;
+- canonical project/workstream assignment when known.
+
+Current recovery scope begins with the owner work period 2026-08-05 through 2026-11-05 and includes ChatGPT work history, GitHub issues/PRs, One Brain/Drive handoffs, plugin work, Audit & Order evidence and local Windows/Mac handoff records. Old historical checkboxes are not automatically treated as active work: stale items stay blocked until current main/runtime evidence confirms they still survive.
+
+Owner edits and execution continue through the normal Command Center APIs. The importer never auto-dispatches AI, never creates another scheduler/queue/database, and never overwrites an existing row with the same deterministic imported ID.

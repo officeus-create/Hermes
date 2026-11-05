@@ -4,6 +4,7 @@ import { onRequestGet as listWorkItems, onRequestPost as createWorkItem } from "
 import { onRequestPatch as mutateWorkItem } from "../functions/api/internal-command-center/work-items/[id].ts";
 import { onRequestGet as listAccess, onRequestPost as mutateAccess } from "../functions/api/internal-command-center/access.ts";
 import { onRequestGet as aiStatus } from "../functions/api/internal-ai/status.ts";
+import { onRequestGet as ownerIntelligence } from "../functions/api/internal-command-center/owner-intelligence.ts";
 import { onRequestGet as listAiTasks } from "../functions/api/internal-ai/tasks.ts";
 import { onRequestGet as listProjects, onRequestPost as createProject } from "../functions/api/internal-command-center/projects.ts";
 import { onRequestPatch as editProject } from "../functions/api/internal-command-center/projects/[id].ts";
@@ -30,7 +31,28 @@ assert.equal(connectRoute.basis,"technology_connect_intent");
 assert.ok(connectRoute.helpers.some(x=>x.role_id==="hermes-connect-operator"&&x.plugin_version===pluginRuntimeVersion("hermes-connect-operator")),"Hermes Connect operator must be a registry-backed CRM/product helper");
 // Backwards-compatible migration: real older D1 rows may have no project column.
 const legacySqlite=new DatabaseSync(":memory:");
-legacySqlite.exec("CREATE TABLE hermes_owner_work_items (id TEXT PRIMARY KEY,organization_scope TEXT,status TEXT,priority TEXT,created_at TEXT); INSERT INTO hermes_owner_work_items VALUES ('legacy','hermes_internal','planned','p2','2026-10-01');");
+legacySqlite.exec(`
+  CREATE TABLE hermes_owner_work_items (
+    id TEXT PRIMARY KEY,
+    organization_scope TEXT,
+    workstream TEXT,
+    priority TEXT,
+    title TEXT,
+    details TEXT,
+    source TEXT,
+    status TEXT,
+    created_by TEXT,
+    created_at TEXT,
+    updated_at TEXT,
+    linked_task_id TEXT,
+    completed_at TEXT,
+    blocked_reason TEXT
+  );
+  INSERT INTO hermes_owner_work_items
+    (id,organization_scope,workstream,priority,title,details,source,status,created_by,created_at,updated_at)
+  VALUES
+    ('legacy','hermes_internal','technology','p2','Legacy owner task','Legacy pre-project row','text','planned','owner','2026-10-01','2026-10-01');
+`);
 const legacyDB={prepare:sql=>new Statement(legacySqlite.prepare(sql))};
 await ensureCommandCenterSchema(legacyDB);
 assert(legacySqlite.prepare("PRAGMA table_info(hermes_owner_work_items)").all().some(x=>x.name==="project_id"),"migration must add nullable project_id");
@@ -58,6 +80,38 @@ const request=(path,{method="GET",body,owner="owner"}={})=>new Request("https://
   method,headers:{Cookie:"hermes_session=session-"+owner,Origin:"https://example.invalid","Sec-Fetch-Site":"same-origin",...(body?{"Content-Type":"application/json"}:{})},
   ...(body?{body:JSON.stringify(body)}:{}),
 });
+
+let intelligenceResponse=await ownerIntelligence({request:request("/api/internal-command-center/owner-intelligence"),env:{DB:db}});
+assert.equal(intelligenceResponse.status,200);
+let intelligencePayload=await intelligenceResponse.json();
+assert.equal(intelligencePayload.agents.windows_node.state,"NOT_RELEASED_OR_UNINITIALIZED","missing Windows node schema must remain explicit UNKNOWN/release state");
+assert.equal(intelligencePayload.agents.windows_node.execution_proof,"NO_WINDOWS_HAE_RECEIPT");
+assert.equal(intelligencePayload.agents.windows_node.production_write_authorized,false);
+
+sqlite.exec(`CREATE TABLE hermes_automation_nodes (
+  node_id TEXT PRIMARY KEY, model TEXT, status TEXT, current_job_id TEXT, last_seen_at TEXT
+);
+CREATE TABLE hermes_automation_node_leases (
+  job_id TEXT, node_id TEXT, lease_id TEXT, fence INTEGER, lease_until TEXT, state TEXT, updated_at TEXT
+);
+CREATE TABLE IF NOT EXISTS hermes_automation_job_events (
+  event_id TEXT PRIMARY KEY, job_id TEXT, event_type TEXT, from_state TEXT, to_state TEXT, step TEXT, evidence_ref TEXT, provider_ref TEXT, error_class TEXT, created_at TEXT
+);`);
+const viktorSeen=new Date().toISOString();
+sqlite.prepare("INSERT INTO hermes_automation_nodes (node_id,model,status,current_job_id,last_seen_at) VALUES (?,?,?,?,?)")
+  .run("VIKTOR-WINDOWS","deepseek-r1:7b","IDLE",null,viktorSeen);
+sqlite.prepare("INSERT INTO hermes_automation_job_events (event_id,job_id,event_type,from_state,to_state,step,evidence_ref,provider_ref,error_class,created_at) VALUES (?,?,?,?,?,?,?,?,?,?)")
+  .run("evt:viktor:test","job:00000000-0000-4000-8000-000000000001","job.windows_node_succeeded","RUNNING","SUCCEEDED","windows_free_ai","HAE-EVIDENCE:VIKTOR","viktor-windows-ollama",null,viktorSeen);
+
+intelligenceResponse=await ownerIntelligence({request:request("/api/internal-command-center/owner-intelligence"),env:{DB:db}});
+assert.equal(intelligenceResponse.status,200);
+intelligencePayload=await intelligenceResponse.json();
+assert.equal(intelligencePayload.agents.windows_node.state,"ONLINE","fresh VIKTOR heartbeat should report availability only");
+assert.equal(intelligencePayload.agents.windows_node.model,"deepseek-r1:7b");
+assert.equal(intelligencePayload.agents.windows_node.last_succeeded_job_id,"job:00000000-0000-4000-8000-000000000001","canonical Windows success event must surface as receipt evidence");
+assert.equal(intelligencePayload.agents.windows_node.execution_proof,"WINDOWS_HAE_RECEIPT_OBSERVED");
+assert.equal(intelligencePayload.agents.windows_node.production_write_authorized,false);
+
 async function create(title,workstream="marketing",projectId=null){
   const response=await createWorkItem({request:request("/api/internal-command-center/work-items",{method:"POST",body:{workstream,priority:"p1",title,details:"Synthetic acceptance task: "+title,source:"text",project_id:projectId}}),env:{DB:db}});
   assert.equal(response.status,201); const payload=await response.json(); assert.equal(payload.work_item.status,"planned");
@@ -84,6 +138,8 @@ assert.equal(projectList.status,200);
 const projectListBody=await projectList.json();
 assert(projectListBody.projects.some(item=>item.id===createdProject.id),"D1 project is merged into registry");
 assert(projectListBody.projects.some(item=>item.id==="hermes-command-center"),"canonical project remains visible");
+const canonicalBaseline=projectListBody.projects.find(item=>item.id==="hermes-command-center")?.work_items_summary;
+assert.ok(canonicalBaseline,"canonical project must expose a work-item summary after historical backlog seed");
 assert.equal(projectListBody.next_offset,null);
 const projectEditRequest=(body,id=createdProject.id)=>editProject({request:request("/api/internal-command-center/projects/"+id,{method:"PATCH",body}),env:{DB:db},params:{id}});
 const editProjectResponse=await projectEditRequest({title:"Land CRM V2",department:"operations",purpose:"Track documented land objects and tenders.",status:"in_progress",updated_at:createdProject.updated_at});
@@ -108,7 +164,7 @@ assert.equal(first.project_id,createdProject.id,"owner-managed project is linked
 const withOneTask=(await (await listProjects({request:request("/api/internal-command-center/projects"),env:{DB:db}})).json()).projects;
 const ownerCount=withOneTask.find(project=>project.id===createdProject.id)?.work_items_summary;
 assert.deepEqual(ownerCount,{total:1,open:1,done:0,blocked:0},"one D1 task appears on owner project without inventing milestone progress");
-assert.equal(withOneTask.find(project=>project.id==="hermes-command-center")?.work_items_summary.total,0);
+assert.equal(withOneTask.find(project=>project.id==="hermes-command-center")?.work_items_summary.total,canonicalBaseline.total,"creating work under a separate owner project must not change canonical backlog totals");
 const second=await create("Second cloud task","marketing");
 assert.notEqual(first.id,second.id);
 assert.equal(second.project_id,null,"older and unassigned tasks retain NULL project");
@@ -128,7 +184,12 @@ assert.equal(editedPayload.work_item.details,"Revised instructions for owner rev
 assert.equal(editedPayload.work_item.project_id,"hermes-command-center","owner may reassign to an immutable canonical project");
 const afterReassign=(await (await listProjects({request:request("/api/internal-command-center/projects"),env:{DB:db}})).json()).projects;
 assert.equal(afterReassign.find(project=>project.id===createdProject.id)?.work_items_summary.total,0,"old project stops counting reassigned work");
-assert.equal(afterReassign.find(project=>project.id==="hermes-command-center")?.work_items_summary.open,1,"canonical project counts reassigned open work");
+assert.deepEqual(afterReassign.find(project=>project.id==="hermes-command-center")?.work_items_summary,{
+  total:canonicalBaseline.total+1,
+  open:canonicalBaseline.open+1,
+  done:canonicalBaseline.done,
+  blocked:canonicalBaseline.blocked,
+},"canonical project counts reassigned open work on top of the recovered backlog");
 const badEdit=await mutateWorkItem({request:request("/api/internal-command-center/work-items/"+first.id,{method:"PATCH",body:{action:"edit",updated_at:editedPayload.work_item.updated_at,title:"Do not overwrite",details:"Do not overwrite",workstream:"technology",priority:"p0",project_id:"nonexistent"}}),env:{DB:db},params:{id:first.id}});
 assert.equal(badEdit.status,400,"unknown project on edit must be rejected without modifying task");
 const staleEditResponse=await mutateWorkItem({
@@ -144,14 +205,19 @@ let listResponse=await listWorkItems({request:request("/api/internal-command-cen
 assert.equal(listResponse.status,200);
 assert.match(listResponse.headers.get("Cache-Control")||"",/no-store/);
 let listPayload=await listResponse.json();
-assert.equal(listPayload.work_items.length,2);
-assert.equal(listPayload.next_offset,null,"short cloud backlog must have no next page");
-const offsetPage=await listWorkItems({request:request("/api/internal-command-center/work-items?offset=1"),env:{DB:db}});
+const expectedWorkItemCount=sqlite.prepare("SELECT COUNT(*) AS count FROM hermes_owner_work_items WHERE organization_scope='hermes_internal'").get().count;
+assert.equal(listPayload.work_items.length,Math.min(expectedWorkItemCount,100),"owner backlog list must include recovered history plus synthetic test work up to the page limit");
+assert.equal(listPayload.next_offset,expectedWorkItemCount>100?100:null,"next offset must reflect the canonical 100-row page boundary");
+const tailOffset=Math.max(0,expectedWorkItemCount-1);
+const offsetPage=await listWorkItems({request:request("/api/internal-command-center/work-items?offset="+tailOffset),env:{DB:db}});
 assert.equal(offsetPage.status,200,"owner paged tasks must be accepted");
-assert.equal((await offsetPage.json()).work_items.length,1,"offset must return remaining D1 tasks");
+const offsetPayload=await offsetPage.json();
+assert.equal(offsetPayload.work_items.length,expectedWorkItemCount?1:0,"tail offset must return exactly the remaining D1 row");
+assert.equal(offsetPayload.next_offset,null,"tail page must terminate pagination");
 const rejectedOffset=await listWorkItems({request:request("/api/internal-command-center/work-items?offset=nope"),env:{DB:db}});
 assert.equal(rejectedOffset.status,400,"invalid pagination offset must fail closed");
-assert(listPayload.work_items.every(item=>item.status==="planned"));
+assert.equal(listPayload.work_items.find(item=>item.id===first.id)?.status,"planned","synthetic first task remains planned before dispatch");
+assert.equal(listPayload.work_items.find(item=>item.id===second.id)?.status,"planned","synthetic second task remains planned before dispatch");
 assert.equal(listPayload.work_items.find(item=>item.id===first.id).project_id,"hermes-command-center","D1 list must include the selected project");
 
 const dispatched=await patch(first.id,"dispatch");
@@ -175,7 +241,7 @@ sqlite.prepare("UPDATE hermes_internal_ai_tasks SET status='completed',started_a
 const projectsAfterAiCompletion=(await (await listProjects({request:request("/api/internal-command-center/projects"),env:{DB:db}})).json()).projects;
 assert.deepEqual(
   projectsAfterAiCompletion.find(project=>project.id==="hermes-command-center")?.work_items_summary,
-  {total:1,open:1,done:0,blocked:0},
+  {total:canonicalBaseline.total+1,open:canonicalBaseline.open+1,done:canonicalBaseline.done,blocked:canonicalBaseline.blocked},
   "Projects GET must reconcile linked AI completion but keep work unfinished until explicit owner acceptance",
 );
 listResponse=await listWorkItems({request:request("/api/internal-command-center/work-items"),env:{DB:db}});
@@ -200,7 +266,7 @@ assert.ok(accepted.payload.work_item.completed_at);
 const projectsAfterAccept=(await (await listProjects({request:request("/api/internal-command-center/projects"),env:{DB:db}})).json()).projects;
 assert.deepEqual(
   projectsAfterAccept.find(project=>project.id==="hermes-command-center")?.work_items_summary,
-  {total:1,open:0,done:1,blocked:0},
+  {total:canonicalBaseline.total+1,open:canonicalBaseline.open,done:canonicalBaseline.done+1,blocked:canonicalBaseline.blocked},
   "project done count advances only after explicit owner acceptance",
 );
 
@@ -222,7 +288,7 @@ sqlite.prepare("UPDATE hermes_internal_ai_tasks SET status='failed',updated_at=?
 const projectsAfterAiFailure=(await (await listProjects({request:request("/api/internal-command-center/projects"),env:{DB:db}})).json()).projects;
 assert.deepEqual(
   projectsAfterAiFailure.find(project=>project.id==="hermes-command-center")?.work_items_summary,
-  {total:2,open:1,done:1,blocked:1},
+  {total:canonicalBaseline.total+2,open:canonicalBaseline.open+1,done:canonicalBaseline.done+1,blocked:canonicalBaseline.blocked+1},
   "Projects GET alone must reconcile a failed linked AI task into the blocked counter",
 );
 listResponse=await listWorkItems({request:request("/api/internal-command-center/work-items"),env:{DB:db}});

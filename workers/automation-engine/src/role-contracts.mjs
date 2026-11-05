@@ -291,6 +291,55 @@ export const ROLE_CONTRACTS = Object.freeze([
   Object.freeze({
     role_id: "hermes-agent-coordinator",
     plugin_version: pluginRuntimeVersion("hermes-agent-coordinator"),
+    contract_version: "owner-work-plan-v1",
+    job_type: "work.item.plan",
+    business_lane: "automation",
+    permission_class: "READ_ONLY",
+    semantic_required: true,
+    free_ai_policy: "free_only_wait_if_unavailable",
+    trigger: "hae_owner_work_intake",
+    input_schema: {
+      work_id: "canonical Command Center work item id",
+      project_id: "optional stable project id",
+      workstream: "canonical Command Center workstream",
+      priority: "p0 | p1 | p2 | p3",
+      title: "bounded owner task title",
+      details: "bounded internal task context or null",
+      next_action: "bounded current next action or null",
+      selected_owner_role: "server-selected plugin role",
+      selected_owner_version: "server-verified plugin version",
+      route_basis: "server routing basis",
+      available_execution_job_types: "bounded HAE READ_ONLY capabilities that have deterministic payload builders"
+    },
+    runtime_config: {
+      scheduled: false,
+      max_output_tokens: 700,
+      max_cost_usd: 0,
+      retry_seconds: 900
+    },
+    preconditions: [
+      "work item comes from canonical hermes_owner_work_items in the shared D1",
+      "server selected the plugin route before semantic planning",
+      "secret-like content fails closed before enqueue",
+      "planner may choose only the supplied execution job types",
+      "no external write, merge, deploy, credential, billing or destructive action is authorized"
+    ],
+    deterministic_steps: [
+      "validate bounded canonical work metadata",
+      "ask the zero-cost local semantic node for one conservative disposition",
+      "validate the recommendation against the supplied HAE capability allowlist",
+      "persist the semantic receipt before any follow-up job is created"
+    ],
+    output_schema: "disposition + recommended_job_type + rationale + next_action",
+    kpi: ["planned_work_item_count", "existing_capability_route_count", "capability_gap_count", "owner_gate_count"],
+    owner_gate: "none_for_read_only_planning; existing capability contract governs follow-up execution",
+    readback: "canonical HAE D1 result_json bound to WORK_ID",
+    failure: "WAITING_FREE_AI when local/free semantic capacity is unavailable; otherwise fail closed",
+    retention: "business_runtime_evidence",
+  }),
+  Object.freeze({
+    role_id: "hermes-agent-coordinator",
+    plugin_version: pluginRuntimeVersion("hermes-agent-coordinator"),
     contract_version: "work-portfolio-reconcile-v1",
     job_type: "work.portfolio.reconcile",
     business_lane: "automation",
@@ -333,7 +382,7 @@ export const ROLE_CONTRACTS = Object.freeze([
 
 export const ROLE_CONTRACT_JOB_TYPES = Object.freeze(ROLE_CONTRACTS.map((contract) => contract.job_type));
 
-const DORMANT_GRAPH_JOB_TYPES = new Set(["hae.self.patch.propose", "hae.self.release.verify"]);
+const DORMANT_GRAPH_JOB_TYPES = new Set(["hae.self.patch.propose", "hae.self.release.verify", "work.item.plan"]);
 export const CAPABILITY_GRAPH_ROLE_CONTRACT_JOB_TYPES = Object.freeze(
   ROLE_CONTRACT_JOB_TYPES.filter((jobType) => !DORMANT_GRAPH_JOB_TYPES.has(jobType)),
 );
@@ -637,7 +686,65 @@ function validateHaePatchDiff(diff, artifactKey) {
   return {changed_line_count:changed,hunk_count:hunks};
 }
 
+const OWNER_WORK_PLAN_DISPOSITIONS = new Set([
+  "EXECUTE_EXISTING_CAPABILITY",
+  "NEEDS_CAPABILITY",
+  "NEEDS_OWNER_GATE",
+  "BLOCKED_EVIDENCE",
+]);
+const OWNER_WORK_PLAN_SECRET_LIKE = /(?:sk-(?:proj-)?[A-Za-z0-9_-]{12,}|ghp_[A-Za-z0-9]{12,}|AIza[0-9A-Za-z_-]{20,}|xox[baprs]-[A-Za-z0-9-]{10,}|AKIA[0-9A-Z]{16}|Authorization:\\s*Bearer\\s+[A-Za-z0-9._-]{12,}|BEGIN [A-Z ]*PRIVATE KEY)/i;
+
+function validateOwnerWorkPlanPayload(payload) {
+  if (!payload || Array.isArray(payload) || typeof payload !== "object") throw new Error("owner_work_plan_payload_invalid");
+  const workId=cleanText(payload.work_id,160);
+  const projectId=cleanText(payload.project_id,160)||null;
+  const workstream=cleanText(payload.workstream,40);
+  const priority=cleanText(payload.priority,10).toLowerCase();
+  const title=cleanText(payload.title,160);
+  const details=payload.details==null?null:cleanText(payload.details,1800);
+  const nextAction=payload.next_action==null?null:cleanText(payload.next_action,1200);
+  const selectedOwnerRole=cleanText(payload.selected_owner_role,120);
+  const selectedOwnerVersion=cleanText(payload.selected_owner_version,80);
+  const routeBasis=cleanText(payload.route_basis,160);
+  const available=boundedArray(payload.available_execution_job_types,"available_execution_job_types")
+    .map((value)=>cleanText(value,120)).filter(Boolean);
+  if(!/^hcwi_[A-Za-z0-9._:-]{6,150}$/.test(workId)) throw new Error("owner_work_plan_work_id_invalid");
+  if(!["marketing","logistics","sales","technology","academy","finance","operations"].includes(workstream)) throw new Error("owner_work_plan_workstream_invalid");
+  if(!["p0","p1","p2","p3"].includes(priority)) throw new Error("owner_work_plan_priority_invalid");
+  if(!title||!selectedOwnerRole||!selectedOwnerVersion||!routeBasis) throw new Error("owner_work_plan_identity_invalid");
+  if(available.length<1||available.length>12||new Set(available).size!==available.length) throw new Error("owner_work_plan_capabilities_invalid");
+  const sensitive=[title,details,nextAction,projectId].filter(Boolean).join(" ");
+  if(OWNER_WORK_PLAN_SECRET_LIKE.test(sensitive)) throw new Error("owner_work_plan_secret_like");
+  return {
+    work_id:workId,project_id:projectId,workstream,priority,title,details,next_action:nextAction,
+    selected_owner_role:selectedOwnerRole,selected_owner_version:selectedOwnerVersion,
+    route_basis:routeBasis,available_execution_job_types:available,
+  };
+}
+
 export function buildRoleContractSemanticRequest(jobType, payload) {
+  if (jobType === "work.item.plan") {
+    const input=validateOwnerWorkPlanPayload(payload);
+    return {
+      system_prompt: [
+        "You are Hermes Agent Coordinator inside the canonical HAE runtime.",
+        "Choose exactly one conservative disposition for the supplied owner work item.",
+        "Return JSON only with exactly four keys: disposition, recommended_job_type, rationale, next_action.",
+        "The disposition value is an ENUM, never a job type. It MUST be exactly one of: EXECUTE_EXISTING_CAPABILITY, NEEDS_CAPABILITY, NEEDS_OWNER_GATE, BLOCKED_EVIDENCE.",
+        "If one available_execution_job_type clearly performs a useful bounded READ_ONLY step, set disposition exactly to EXECUTE_EXISTING_CAPABILITY.",
+        "When disposition is EXECUTE_EXISTING_CAPABILITY, recommended_job_type must be one exact string from available_execution_job_types.",
+        "For every other disposition, recommended_job_type must be null.",
+        "Example valid output when an existing capability applies: {\"disposition\":\"EXECUTE_EXISTING_CAPABILITY\",\"recommended_job_type\":\"ai.gateway.readiness.audit\",\"rationale\":\"Existing read-only audit matches the requested verification step.\",\"next_action\":\"Run the existing audit and persist its HAE receipt.\"}.",
+        "Never put a job type such as ai.gateway.readiness.audit into disposition.",
+        "Use NEEDS_CAPABILITY when the task is valid but HAE lacks a safe bounded capability.",
+        "Use NEEDS_OWNER_GATE for money, hiring, credentials, legal/commercial commitments, external communication, merge/deploy, production writes or destructive actions.",
+        "Use BLOCKED_EVIDENCE when required source truth is missing or contradictory.",
+        "Do not claim execution, completion, external research, source reads, code changes or business results."
+      ].join(" "),
+      user_prompt: JSON.stringify(input),
+      max_output_tokens: Number(roleContractForJobType(jobType)?.runtime_config?.max_output_tokens || 700),
+    };
+  }
   if (jobType === "hae.self.patch.propose") {
     const input=validateHaeSelfPatchPayload(payload);
     return {
@@ -681,6 +788,37 @@ export function buildRoleContractSemanticRequest(jobType, payload) {
 }
 
 export function validateRoleContractSemanticResult(jobType, payload, value) {
+  if (jobType === "work.item.plan") {
+    const input=validateOwnerWorkPlanPayload(payload);
+    if (!value || Array.isArray(value) || typeof value!=="object" ||
+        Object.keys(value).length!==4 ||
+        !Object.hasOwn(value,"disposition") || !Object.hasOwn(value,"recommended_job_type") ||
+        !Object.hasOwn(value,"rationale") || !Object.hasOwn(value,"next_action")) {
+      throw new Error("owner_work_plan_result_contract_invalid");
+    }
+    const disposition=cleanText(value.disposition,60);
+    const recommended=value.recommended_job_type==null?null:cleanText(value.recommended_job_type,120);
+    const rationale=cleanText(value.rationale,900);
+    const nextAction=cleanText(value.next_action,1200);
+    if(!OWNER_WORK_PLAN_DISPOSITIONS.has(disposition)||!rationale||!nextAction) throw new Error("owner_work_plan_result_invalid");
+    if(disposition==="EXECUTE_EXISTING_CAPABILITY") {
+      if(!recommended||!input.available_execution_job_types.includes(recommended)) throw new Error("owner_work_plan_capability_not_allowed");
+    } else if(recommended!==null) {
+      throw new Error("owner_work_plan_capability_must_be_null");
+    }
+    return {
+      work_id:input.work_id,
+      disposition,
+      recommended_job_type:recommended,
+      rationale,
+      next_action:nextAction,
+      selected_owner_role:input.selected_owner_role,
+      selected_owner_version:input.selected_owner_version,
+      route_basis:input.route_basis,
+      external_write:false,
+      paid_inference_cost_usd:0,
+    };
+  }
   if (jobType === "hae.self.patch.propose") {
     const input=validateHaeSelfPatchPayload(payload);
     if (!value || Array.isArray(value) || typeof value!=="object" ||
@@ -752,6 +890,7 @@ export function validateRoleContractInput(jobType, payload) {
   if (jobType === "marketing.content.dedupe.audit") return validateMarketingPayload(payload);
   if (jobType === "logistics.source.freshness.audit") return validateLogisticsPayload(payload);
   if (jobType === "search.defect.prioritize") return validateSearchDefectPayload(payload);
+  if (jobType === "work.item.plan") return validateOwnerWorkPlanPayload(payload);
   if (jobType === "hae.self.patch.propose") return validateHaeSelfPatchPayload(payload);
   if (jobType === "work.portfolio.reconcile") return normalizeWorkPortfolioSnapshot(payload);
   if (isZeroTokenPluginTask(jobType)) return validateZeroTokenPluginTaskInput(jobType, payload);
@@ -864,7 +1003,7 @@ export function runRoleContractPrimitive(jobType, payload, observedAt = new Date
   if (jobType === "search.snapshot.evaluate") return evaluateSearch(payload);
   if (jobType === "marketing.content.dedupe.audit") return evaluateMarketing(payload);
   if (jobType === "logistics.source.freshness.audit") return evaluateLogistics(payload, observedAt);
-  if (jobType === "search.defect.prioritize" || jobType === "hae.self.patch.propose") throw new Error("semantic_job_requires_free_ai");
+  if (jobType === "search.defect.prioritize" || jobType === "hae.self.patch.propose" || jobType === "work.item.plan") throw new Error("semantic_job_requires_free_ai");
   if (jobType === "work.portfolio.reconcile") {
     return reconcileWorkPortfolioSnapshot(payload, ROLE_CONTRACT_JOB_TYPES, ROLE_CONTRACTS);
   }
