@@ -17,11 +17,11 @@ export const COMMAND_CENTER_HISTORY_BACKLOG = Object.freeze([
   {
     id:"hcwi_hist_20261105_002", project_id:"hermes-command-center", workstream:"technology", priority:"p0",
     title:"Release Command Center closure PR #2236",
-    details:"Close remaining owner workspace and report gaps on the canonical Command Center branch. Current source evidence had exact-head CI green but no independent submitted approval.",
+    details:"Close remaining owner workspace and report gaps on the canonical Command Center branch. Source is consolidated on current HAE ancestry; exact-head CI and independent review remain release gates.",
     status:"blocked", created_at:"2026-11-01T00:00:00.000Z",
     source_kind:"github_pr", source_label:"GitHub PR #2236", source_ref:"https://github.com/officeus-create/Hermes/pull/2236",
-    blocked_reason:"Independent current-head APPROVED review is required before protected merge/deploy.",
-    next_action:"Obtain independent approval, re-read exact-head CI/mergeability, then owner-authorized protected merge/deploy and production readback."
+    blocked_reason:"Terminal exact-head CI plus independent current-head APPROVED review are required before protected merge/deploy.",
+    next_action:"Close any exact-head CI failures, obtain independent approval, then protected merge/deploy and authenticated owner readback."
   },
   {
     id:"hcwi_hist_20261105_003", project_id:"hae-runtime", workstream:"technology", priority:"p0",
@@ -29,26 +29,26 @@ export const COMMAND_CENTER_HISTORY_BACKLOG = Object.freeze([
     details:"Bind ecosystem auditors into HAE runtime contracts while preserving the fresh private-plugin registry and default-deny capability policy.",
     status:"blocked", created_at:"2026-11-03T00:00:00.000Z",
     source_kind:"github_pr", source_label:"GitHub PR #2270", source_ref:"https://github.com/officeus-create/Hermes/pull/2270",
-    blocked_reason:"Independent current-head APPROVED review is missing.",
-    next_action:"Keep provider/runtime registry fresh, obtain independent approval, then protected merge and merge-SHA acceptance."
+    blocked_reason:"Terminal exact-head CI plus independent current-head APPROVED review are required.",
+    next_action:"Keep the runtime registry fresh, close any exact-head CI failure, obtain independent approval, then protected merge and merge-SHA acceptance."
   },
   {
     id:"hcwi_hist_20261105_004", project_id:"plugin-workforce", workstream:"operations", priority:"p0",
     title:"Complete selected plugin → HAE → D1 receipt bridge",
     details:"Prove selected specialist plugin routing through the canonical HAE runtime to a durable D1 receipt and Command Center readback. PLUGIN_REGISTERED must not be treated as LIVE_VERIFIED.",
     status:"blocked", created_at:"2026-11-03T00:00:00.000Z",
-    source_kind:"github_pr", source_label:"GitHub PR #2283", source_ref:"https://github.com/officeus-create/Hermes/pull/2283",
-    blocked_reason:"PR #2283 depends on accepted #2270/#2236 ancestry and is currently not release-ready.",
-    next_action:"Stabilize accepted parent ancestry, resync #2283, rerun bridge/HAE checks, obtain independent review and prove a real WORK_ID→job→receipt→owner readback."
+    source_kind:"github_pr", source_label:"GitHub PR #2295", source_ref:"https://github.com/officeus-create/Hermes/pull/2295",
+    blocked_reason:"Clean bridge source exists on current ancestry, but independent review/protected release and authenticated HAE receipt readback remain.",
+    next_action:"Close exact-head CI, obtain independent review, release the parent chain, then prove one real WORK_ID→HAE job→D1 receipt→owner readback."
   },
   {
     id:"hcwi_hist_20261105_005", project_id:"windows-ai", workstream:"technology", priority:"p0",
     title:"Connect Hermes AI on Windows to HAE with one real read-only job",
     details:"Use the Windows Hermes AI/DeepSeek node as execution capacity while cloud HAE remains the only queue, scheduler and evidence owner.",
     status:"blocked", created_at:"2026-11-02T00:00:00.000Z",
-    source_kind:"github_pr", source_label:"GitHub PR #2250", source_ref:"https://github.com/officeus-create/Hermes/pull/2250",
-    blocked_reason:"Signed Windows edge/custom-domain release and independent approval remain required before the first canonical HAE canary.",
-    next_action:"Release #2250 through the protected path, verify DNS/TLS and signed node status, then run exactly one READ_ONLY $0 frozen-contract job with D1 receipt and independent QA."
+    source_kind:"github_pr", source_label:"GitHub PR #2296", source_ref:"https://github.com/officeus-create/Hermes/pull/2296",
+    blocked_reason:"PR #2296 is source-prepared but still needs independent review/protected release; the dedicated signed Windows edge remains unavailable until that release.",
+    next_action:"Release #2296 through the protected parent chain, verify DNS/TLS and signed node status, then run exactly one READ_ONLY $0 frozen-contract job with D1 receipt and independent QA."
   },
   {
     id:"hcwi_hist_20261105_006", project_id:"windows-ai", workstream:"technology", priority:"p1",
@@ -143,11 +143,11 @@ export const COMMAND_CENTER_HISTORY_BACKLOG = Object.freeze([
   },
   {
     id:"hcwi_hist_20261105_017", project_id:"hermes-command-center", workstream:"technology", priority:"p2",
-    title:"Verify private Command Center owner access and all seven sections in production",
-    details:"Today, Projects, Tasks, Automations, Agents, Evidence and Access must work under server-verified HERMES_INTERNAL_OWNER access; no plaintext credential storage.",
+    title:"Verify private Command Center owner access and all owner views in production",
+    details:"Today, Projects, Tasks, CRM, Social, HAE/Automations, Agents, Plugins, Executions, Evidence, Reports, Knowledge, Investor and Access must work under server-verified HERMES_INTERNAL_OWNER access; no plaintext credential storage.",
     status:"in_progress", created_at:"2026-10-30T00:00:00.000Z",
     source_kind:"chat_history", source_label:"Command Center owner access", source_ref:"Chat history · Oct 30–Nov 2 2026",
-    next_action:"After the current release train is accepted, perform an authenticated production owner readback of all seven sections."
+    next_action:"After the current release train is accepted, perform an authenticated production owner readback of every owner view and its canonical source state."
   },
   {
     id:"hcwi_hist_20261105_018", project_id:"hermes-command-center", workstream:"technology", priority:"p2",
@@ -464,10 +464,10 @@ export const COMMAND_CENTER_HISTORY_BACKLOG = Object.freeze([
   {
     id:"hcwi_hist_20261105_054", project_id:"hermes-command-center", workstream:"technology", priority:"p1",
     title:"Restore Hermes Connect CRM/Operator as the Command Center product specialist",
-    details:"Recover the existing Hermes Connect plugin lineage instead of recreating it. Historical private packages include Hermes Connect Operator v1.0/v1.2 and Hermes Connect CRM v1.3/v1.4, while the current 34-plugin inventory no longer exposes a Hermes Connect role. Use it as the CRM/product workflow specialist for Command Center together with Agent Coordinator, Technology Developer, Design Hub/UX, COO, HAE and independent QA; do not make it a second CRM, scheduler, runtime or receipt store.",
-    status:"ready", created_at:"2026-11-05T10:45:00.000Z",
-    source_kind:"plugin_recovery", source_label:"Hermes Connect CRM / Operator historical private packages", source_ref:"Library · /00 · C-level — CEO/hermes-connect-crm-v1.4.0.zip",
-    next_action:"Validate the latest recoverable internal Hermes Connect package against the current plugin schema and security boundaries, restore/update it as a private plugin, bind Agent Coordinator routing for Command Center/CRM tasks, and expose selected-role plus execution-receipt truth in Command Center."
+    details:"The existing private Hermes Connect CRM/Operator lineage was recovered by exact Plugin Creator identity. Current plugin is hermes-connect-operator v1.4.43; it is now registered in the runtime registry and selected server-side as the CRM/product helper for Command Center/Connect/admin work while Technology Developer remains the single writer.",
+    status:"in_progress", created_at:"2026-11-05T10:45:00.000Z",
+    source_kind:"plugin_recovery", source_label:"Hermes Connect Operator v1.4.43 · current private Plugin Creator release", source_ref:"https://chatgpt.com/plugins/Plugin_b1038b2f9cfc8191a81a96df9ee81186",
+    next_action:"Complete protected release/readback of the registry and routing changes; keep helper selection visibly distinct from real HAE execution receipts."
   }
 ]);
 
