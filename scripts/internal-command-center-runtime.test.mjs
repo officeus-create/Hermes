@@ -172,14 +172,19 @@ let listResponse=await listWorkItems({request:request("/api/internal-command-cen
 assert.equal(listResponse.status,200);
 assert.match(listResponse.headers.get("Cache-Control")||"",/no-store/);
 let listPayload=await listResponse.json();
-assert.equal(listPayload.work_items.length,2);
-assert.equal(listPayload.next_offset,null,"short cloud backlog must have no next page");
-const offsetPage=await listWorkItems({request:request("/api/internal-command-center/work-items?offset=1"),env:{DB:db}});
+const expectedWorkItemCount=sqlite.prepare("SELECT COUNT(*) AS count FROM hermes_owner_work_items WHERE organization_scope='hermes_internal'").get().count;
+assert.equal(listPayload.work_items.length,Math.min(expectedWorkItemCount,100),"owner backlog list must include recovered history plus synthetic test work up to the page limit");
+assert.equal(listPayload.next_offset,expectedWorkItemCount>100?100:null,"next offset must reflect the canonical 100-row page boundary");
+const tailOffset=Math.max(0,expectedWorkItemCount-1);
+const offsetPage=await listWorkItems({request:request("/api/internal-command-center/work-items?offset="+tailOffset),env:{DB:db}});
 assert.equal(offsetPage.status,200,"owner paged tasks must be accepted");
-assert.equal((await offsetPage.json()).work_items.length,1,"offset must return remaining D1 tasks");
+const offsetPayload=await offsetPage.json();
+assert.equal(offsetPayload.work_items.length,expectedWorkItemCount?1:0,"tail offset must return exactly the remaining D1 row");
+assert.equal(offsetPayload.next_offset,null,"tail page must terminate pagination");
 const rejectedOffset=await listWorkItems({request:request("/api/internal-command-center/work-items?offset=nope"),env:{DB:db}});
 assert.equal(rejectedOffset.status,400,"invalid pagination offset must fail closed");
-assert(listPayload.work_items.every(item=>item.status==="planned"));
+assert.equal(listPayload.work_items.find(item=>item.id===first.id)?.status,"planned","synthetic first task remains planned before dispatch");
+assert.equal(listPayload.work_items.find(item=>item.id===second.id)?.status,"planned","synthetic second task remains planned before dispatch");
 assert.equal(listPayload.work_items.find(item=>item.id===first.id).project_id,"hermes-command-center","D1 list must include the selected project");
 
 const dispatched=await patch(first.id,"dispatch");
