@@ -185,6 +185,17 @@ const functions=[
         <div class="owner-section-head"><div><p class="hcc-sample">{ru?"Локальные и облачные агенты":"Local & cloud agents"}</p><h2>{ru?"Исполнители и fallback":"Runners and fallback"}</h2></div></div>
         <HermesLocalAgentsLink ru={ru}/>
       </article>
+      <article class="hcc-panel owner-agent-panel">
+        <div class="owner-section-head"><div><p class="hcc-sample">VIKTOR · HAE node</p><h2>{ru?"Windows runtime":"Windows runtime"}</h2></div><span class="module-state" data-viktor-node-state>UNKNOWN</span></div>
+        <dl>
+          <div><dt>{ru?"Heartbeat":"Heartbeat"}</dt><dd data-viktor-node-seen>UNKNOWN</dd></div>
+          <div><dt>{ru?"Модель":"Model"}</dt><dd data-viktor-node-model>UNKNOWN</dd></div>
+          <div><dt>{ru?"Активный HAE job":"Active HAE job"}</dt><dd data-viktor-node-job>UNKNOWN</dd></div>
+          <div><dt>{ru?"Последний HAE receipt":"Last HAE receipt"}</dt><dd data-viktor-node-receipt>UNKNOWN</dd></div>
+          <div><dt>{ru?"Production writes":"Production writes"}</dt><dd data-viktor-node-writes>OFF</dd></div>
+        </dl>
+        <p class="muted">{ru?"Heartbeat показывает только доступность узла. Выполнение считается доказанным только после Windows HAE receipt; production writes для этого узла запрещены.":"Heartbeat proves node availability only. Execution is proven only by a Windows HAE receipt; production writes are forbidden for this node."}</p>
+      </article>
     </div>
     <section class="hcc-panel owner-agent-roster-panel">
       <div class="owner-section-head"><div><p class="hcc-sample">{ru?"Реестр AI-исполнителей":"AI executor roster"}</p><h2>{ru?"VIKTOR, DeepSeek и локальные роли":"VIKTOR, DeepSeek and local roles"}</h2><p>{ru?"Статус берётся из канонической карты проектов. Heartbeat, установленная модель или подготовленный sandbox не считаются выполнением без HAE receipt.":"Status comes from the canonical project map. A heartbeat, installed model or prepared sandbox is not execution without a HAE receipt."}</p></div><span class="owner-cloud-note">PROJECT MAP · HAE RECEIPT</span></div>
