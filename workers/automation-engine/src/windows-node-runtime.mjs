@@ -15,7 +15,7 @@ const LEASE_SECONDS = 5 * 60;
 const AUTH_MAX_SKEW_SECONDS = 3 * 60;
 const AUTH_NONCE_TTL_SECONDS = 10 * 60;
 const importedNodeKeys = new Map();
-const ELIGIBLE_JOB_TYPES = new Set(["search.defect.prioritize", "hae.self.patch.propose"]);
+const ELIGIBLE_JOB_TYPES = new Set(["search.defect.prioritize", "hae.self.patch.propose", "work.item.plan"]);
 
 function clean(value, max = 500) {
   return typeof value === "string"
