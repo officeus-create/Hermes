@@ -66,6 +66,9 @@ assert.match(historyBacklog,/hermes_command_center_imports/,"history import must
 assert.doesNotMatch(historyBacklog,/CREATE TABLE IF NOT EXISTS .*task_registry/is,"history import must not create a competing task registry");
 assert.match(page,/Источник:|Source:/,"owner task cards must show provenance");
 assert.match(page,/Дальше:|Next:/,"owner task cards must show the next action");
+assert.match(page,/plannedExecutionRoute/,"owner task cards must expose a deterministic planned specialist route without creating another registry");
+assert.match(page,/Плановая команда:|Planned route:/,"owner task cards must label the planned execution team");
+assert.match(page,/route only; execution requires a receipt|это маршрут, не доказательство запуска/,"planned routing must never be presented as execution proof");
 
 for(const source of [collection,item,access,processes,processItem]){
   assert.match(source,/requireInternalOwner/,"every command-center API must require HERMES_INTERNAL_OWNER");
