@@ -112,7 +112,9 @@ export async function windowsNodeAuthorized(request, env, rawBody="", now=new Da
   }
   const signature=base64UrlBytes(signatureText);
   if(signature.length!==64) return { ok:false,status:401,error:"windows_node_signature_invalid" };
-  const publicSpki=String(env?.HERMES_WINDOWS_NODE_PUBLIC_KEY_SPKI_B64||WINDOWS_NODE_PUBLIC_KEY_SPKI_B64);
+  const publicSpki=enabled(env?.HERMES_WINDOWS_NODE_PIN_BUILTIN_KEY)
+    ? WINDOWS_NODE_PUBLIC_KEY_SPKI_B64
+    : String(env?.HERMES_WINDOWS_NODE_PUBLIC_KEY_SPKI_B64||WINDOWS_NODE_PUBLIC_KEY_SPKI_B64);
   try {
     const key=await windowsNodePublicKey(publicSpki);
     const message=await buildWindowsNodeAuthMessage(request,rawBody,timestamp,nonce);

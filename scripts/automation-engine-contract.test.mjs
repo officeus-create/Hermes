@@ -73,6 +73,7 @@ assert.match(wrangler, /"pattern": "hae-node\.hermeslogisticsus\.com"[\s\S]*"cus
 assert.match(wrangler, /"HERMES_WINDOWS_NODE_ENABLED": "disabled"/, "Windows node remains disabled by default in versioned config");
 assert.match(wrangler, /"HERMES_WINDOWS_NODE_HOST": "hae-node\.hermeslogisticsus\.com"/, "Versioned config must bind the exact Windows node host");
 assert.match(wrangler, /"HERMES_WINDOWS_NODE_PUBLIC_KEY_SPKI_B64": "MCowBQYDK2VwAyEA[A-Za-z0-9+/]{40,}={0,2}"/, "Windows node activation must bind a concrete Ed25519 public trust anchor; the private key remains device-only");
+assert.match(wrangler, /"HERMES_WINDOWS_NODE_PIN_BUILTIN_KEY": "enabled"/, "Production must pin the versioned Windows public key so stale Cloudflare env overrides cannot replace node identity");
 assert.match(worker, /windowsNodeHost[\s\S]*!url\.pathname\.startsWith\("\/v1\/nodes\/windows\/"\)[\s\S]*not_found/, "Dedicated node host must not expose generic HAE endpoints");
 assert.match(releaseWorkflow, /windows_node_activate/, "HAE release workflow must have a bounded Windows activation operation");
 assert.match(releaseWorkflow, /HAE_WINDOWS_NODE_ACTIVATE/, "Owner issue-comment activation command must be explicit");

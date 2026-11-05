@@ -355,6 +355,9 @@ jobs:
             if (!/"HERMES_WINDOWS_NODE_PUBLIC_KEY_SPKI_B64":\s*"MCowBQYDK2VwAyEA[A-Za-z0-9+/]{40,}={0,2}"/.test(config)) {
               throw new Error("HAE_windows_node_public_key_missing");
             }
+            if (!/"HERMES_WINDOWS_NODE_PIN_BUILTIN_KEY":\s*"enabled"/.test(config)) {
+              throw new Error("HAE_windows_node_public_key_pin_missing");
+            }
           }
           if (config.includes("INJECT_EXACT_MAIN_SHA_AT_RELEASE")) {
             throw new Error("HAE_release_source_sha_placeholder_not_replaced");

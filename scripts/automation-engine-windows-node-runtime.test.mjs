@@ -108,6 +108,9 @@ async function signedNodeRequest(nonce,body=signedBody,signatureOverride=null) {
 }
 const signedRequest=await signedNodeRequest("nonce_signed_auth_00000001");
 assert.equal((await windowsNodeAuthorized(signedRequest,signedEnv,signedBody,t0)).ok,true);
+const pinRejectRequest=await signedNodeRequest("nonce_signed_auth_pin_000001");
+const pinReject=await windowsNodeAuthorized(pinRejectRequest,{...signedEnv,HERMES_WINDOWS_NODE_PIN_BUILTIN_KEY:"enabled"},signedBody,t0);
+assert.equal(pinReject.status,401,"production key pin must ignore a mismatched env test key");
 const replayRequest=await signedNodeRequest("nonce_signed_auth_00000001");
 const replayAuth=await windowsNodeAuthorized(replayRequest,signedEnv,signedBody,t0);
 assert.equal(replayAuth.status,409);
