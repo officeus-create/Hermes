@@ -36,7 +36,7 @@ const nav=[
 </BaseLayout>
 
 <script>
-type WorkItem={id:string;project_id?:string|null;workstream:string;priority:string;title:string;details:string;source:string;status:string;created_at?:string;updated_at?:string;completed_at?:string|null;accepted_by?:string|null;accepted_at?:string|null;linked_task_id?:string|null;linked_task_status?:string|null;linked_task_pr_url?:string|null;linked_task_output_summary?:string|null;blocked_reason?:string|null};
+type WorkItem={id:string;project_id?:string|null;workstream:string;priority:string;title:string;details:string;source:string;status:string;created_at?:string;updated_at?:string;completed_at?:string|null;accepted_by?:string|null;accepted_at?:string|null;linked_task_id?:string|null;linked_task_status?:string|null;linked_task_pr_url?:string|null;linked_task_output_summary?:string|null;blocked_reason?:string|null;source_kind?:string|null;source_label?:string|null;source_ref?:string|null;next_action?:string|null};
 type HaeProcess={id:string;name:string;job_type:string;business_lane:string;workstream:string;role_id:string;cadence_hours:number;status:string;next_run_at?:string|null;last_run_at?:string|null;last_job_id?:string|null;last_job_state?:string|null;last_job_completed_at?:string|null;last_error_class?:string|null;template_label:string;template_label_ru:string};
 const isRu=new URLSearchParams(location.search).get("lang")==="ru";
 const q=<T extends HTMLElement=HTMLElement>(s:string)=>document.querySelector<T>(s);
@@ -47,6 +47,7 @@ async function jsonFetch(url:string,options:RequestInit={}){const r=await fetch(
 function setText(sel:string,value:string){const n=q(sel);if(n)n.textContent=value}
 function showOwnerToast(message:string){const n=q<HTMLElement>("[data-owner-toast]");if(!n)return;n.textContent=message;n.hidden=false}
 function safePr(value?:string|null){if(!value)return null;try{const u=new URL(value);return u.protocol==="https:"&&u.hostname==="github.com"&&/^\/officeus-create\/Hermes\/pull\/\d+\/?$/.test(u.pathname)?u.href:null}catch{return null}}
+function safeSource(value?:string|null){if(!value)return null;try{const u=new URL(value);const allowed=new Set(["github.com","docs.google.com","drive.google.com"]);return u.protocol==="https:"&&allowed.has(u.hostname)?u.href:null}catch{return null}}
 async function loadAll(){
   const status=await jsonFetch("/api/internal-ai/status");
   if(!status.r.ok||!status.d.success){q("[data-private]")!.hidden=true;const access=q("[data-access]")!;access.hidden=false;access.querySelector("strong")!.textContent=status.r.status===401?t("Sign in required","Нужно войти"):t("Owner access required","Нужен доступ владельца");return}
@@ -144,7 +145,7 @@ function visible(item:WorkItem){
   if(projectFilter==="unassigned"&&item.project_id)return false;
   if(projectFilter!=="all"&&projectFilter!=="unassigned"&&item.project_id!==projectFilter)return false;
   const projectTitle=projects.find(project=>project.id===item.project_id)?.title||"";
-  const matches=searchTerm===""||[item.title,item.details,item.id,item.workstream,projectTitle].some(value=>value.toLocaleLowerCase().includes(searchTerm));
+  const matches=searchTerm===""||[item.title,item.details,item.id,item.workstream,projectTitle,item.source_label||"",item.source_ref||"",item.next_action||""].some(value=>value.toLocaleLowerCase().includes(searchTerm));
   if(!matches)return false;
   if(filter==="open")return !["done","cancelled"].includes(item.status);
   if(filter==="done")return item.status==="done";
@@ -155,7 +156,7 @@ function renderItems(){
  const box=q("[data-work-list]");if(!box)return;box.replaceChildren();const rows=items.filter(visible);
  if(!rows.length){const p=document.createElement("p");p.className="muted";p.textContent=t("No work items in this view.","В этом списке задач нет.");box.append(p);return}
  rows.forEach(item=>{const card=document.createElement("article");card.className="work-card";const top=document.createElement("div");top.className="work-top";const meta=document.createElement("div");const title=document.createElement("strong");title.textContent=item.title;const line=document.createElement("span");line.textContent=item.workstream.toUpperCase()+" · "+item.priority.toUpperCase()+" · "+item.status.replaceAll("_"," ");if(item.project_id){const name=projects.find(project=>project.id===item.project_id)?.title||item.project_id;line.textContent+=" · "+name;}meta.append(title,line);const time=document.createElement("small");time.textContent=stamp(item.updated_at||item.created_at);top.append(meta,time);
- const body=document.createElement("p");body.textContent=item.details;card.append(top,body);if(item.blocked_reason){const b=document.createElement("p");b.className="blocked";b.textContent=item.blocked_reason;card.append(b)}
+ const body=document.createElement("p");body.textContent=item.details;card.append(top,body);if(item.source_label||item.source_ref){const s=document.createElement("p");s.className="linked";s.textContent=t("Source: ","Источник: ")+(item.source_label||item.source_ref||"");const href=safeSource(item.source_ref);if(href){const a=document.createElement("a");a.href=href;a.target="_blank";a.rel="noopener";a.textContent=" ↗";s.append(a)}card.append(s)}if(item.next_action){const n=document.createElement("p");n.className="linked";n.textContent=t("Next: ","Дальше: ")+item.next_action;card.append(n)}if(item.blocked_reason){const b=document.createElement("p");b.className="blocked";b.textContent=item.blocked_reason;card.append(b)}
  if(item.linked_task_status){const l=document.createElement("p");l.className="linked";l.textContent=t("Execution: ","Выполнение: ")+item.linked_task_status;card.append(l)}
  if(item.status==="awaiting_acceptance"){const review=document.createElement("p");review.className="acceptance-note";review.textContent=t("Execution finished. Review the evidence before accepting the business result.","Выполнение закончено. Проверь результат и доказательства перед приёмкой.");card.append(review)}
  if(item.linked_task_output_summary){const output=document.createElement("p");output.className="output-summary";output.textContent=t("Result: ","Результат: ")+item.linked_task_output_summary;card.append(output)}
