@@ -31,7 +31,28 @@ assert.equal(connectRoute.basis,"technology_connect_intent");
 assert.ok(connectRoute.helpers.some(x=>x.role_id==="hermes-connect-operator"&&x.plugin_version===pluginRuntimeVersion("hermes-connect-operator")),"Hermes Connect operator must be a registry-backed CRM/product helper");
 // Backwards-compatible migration: real older D1 rows may have no project column.
 const legacySqlite=new DatabaseSync(":memory:");
-legacySqlite.exec("CREATE TABLE hermes_owner_work_items (id TEXT PRIMARY KEY,organization_scope TEXT,status TEXT,priority TEXT,created_at TEXT); INSERT INTO hermes_owner_work_items VALUES ('legacy','hermes_internal','planned','p2','2026-10-01');");
+legacySqlite.exec(`
+  CREATE TABLE hermes_owner_work_items (
+    id TEXT PRIMARY KEY,
+    organization_scope TEXT,
+    workstream TEXT,
+    priority TEXT,
+    title TEXT,
+    details TEXT,
+    source TEXT,
+    status TEXT,
+    created_by TEXT,
+    created_at TEXT,
+    updated_at TEXT,
+    linked_task_id TEXT,
+    completed_at TEXT,
+    blocked_reason TEXT
+  );
+  INSERT INTO hermes_owner_work_items
+    (id,organization_scope,workstream,priority,title,details,source,status,created_by,created_at,updated_at)
+  VALUES
+    ('legacy','hermes_internal','technology','p2','Legacy owner task','Legacy pre-project row','text','planned','owner','2026-10-01','2026-10-01');
+`);
 const legacyDB={prepare:sql=>new Statement(legacySqlite.prepare(sql))};
 await ensureCommandCenterSchema(legacyDB);
 assert(legacySqlite.prepare("PRAGMA table_info(hermes_owner_work_items)").all().some(x=>x.name==="project_id"),"migration must add nullable project_id");
