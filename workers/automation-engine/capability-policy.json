@@ -57,7 +57,7 @@
       "submission_auth": "HERMES_AUTOMATION_TOKEN",
       "retention_class": "technical_runtime_evidence",
       "role_id": "hermes-automatic-engineer",
-      "plugin_version": "0.1.39",
+      "plugin_version": "0.1.42",
       "contract_version": "ai-gateway-readiness-v1",
       "semantic_required": false,
       "free_ai_policy": "not_required"
@@ -176,7 +176,7 @@
       "submission_auth": "HERMES_AUTOMATION_TOKEN",
       "retention_class": "technical_runtime_evidence",
       "role_id": "hermes-automatic-engineer",
-      "plugin_version": "0.1.39",
+      "plugin_version": "0.1.42",
       "contract_version": "hae-self-improvement-audit-v1",
       "semantic_required": false,
       "free_ai_policy": "not_required"
@@ -193,7 +193,7 @@
       "submission_auth": "HERMES_AUTOMATION_TOKEN",
       "retention_class": "technical_runtime_evidence",
       "role_id": "hermes-automatic-engineer",
-      "plugin_version": "0.1.39",
+      "plugin_version": "0.1.42",
       "contract_version": "hae-self-patch-propose-v1",
       "semantic_required": true,
       "free_ai_policy": "free_only_wait_if_unavailable"
@@ -227,7 +227,7 @@
       "submission_auth": "HERMES_AUTOMATION_TOKEN",
       "retention_class": "technical_runtime_evidence",
       "role_id": "hermes-automatic-engineer",
-      "plugin_version": "0.1.39",
+      "plugin_version": "0.1.42",
       "contract_version": "hae-self-repair-packet-v1",
       "semantic_required": false,
       "free_ai_policy": "not_required"
@@ -449,7 +449,7 @@
       "submission_auth": "HERMES_AUTOMATION_TOKEN",
       "retention_class": "business_runtime_evidence",
       "role_id": "hermes-automatic-engineer",
-      "plugin_version": "0.1.39",
+      "plugin_version": "0.1.42",
       "contract_version": "technology-release-radar-v1",
       "semantic_required": false,
       "free_ai_policy": "not_required"
@@ -468,40 +468,6 @@
       "role_id": "hermes-agent-coordinator",
       "plugin_version": "0.1.102",
       "contract_version": "work-portfolio-reconcile-v1",
-      "semantic_required": false,
-      "free_ai_policy": "not_required"
-    },
-    {
-      "job_type": "report.hr-tech.weekly.build",
-      "permission_class": "READ_ONLY",
-      "execution_runtime": "canonical_hae_queue",
-      "external_provider_write": false,
-      "allowed_side_effects": [
-        "d1_job_state",
-        "d1_job_events"
-      ],
-      "submission_auth": "HERMES_AUTOMATION_TOKEN",
-      "retention_class": "business_runtime_evidence",
-      "role_id": "hermes-agent-coordinator",
-      "plugin_version": "0.1.102",
-      "contract_version": "hr-tech-weekly-radar-v1",
-      "semantic_required": false,
-      "free_ai_policy": "not_required"
-    },
-    {
-      "job_type": "report.catalog.weekly.build",
-      "permission_class": "READ_ONLY",
-      "execution_runtime": "canonical_hae_queue",
-      "external_provider_write": false,
-      "allowed_side_effects": [
-        "d1_job_state",
-        "d1_job_events"
-      ],
-      "submission_auth": "HERMES_AUTOMATION_TOKEN",
-      "retention_class": "business_runtime_evidence",
-      "role_id": "hermes-search-growth",
-      "plugin_version": "0.1.18",
-      "contract_version": "catalog-weekly-command-center-report-v1",
       "semantic_required": false,
       "free_ai_policy": "not_required"
     }
