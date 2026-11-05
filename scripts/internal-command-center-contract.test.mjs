@@ -56,6 +56,12 @@ assert.match(page,/renderCommandCenterLaunch/,"Today launch state must be render
 for(const selector of ["data-live-threads-state","data-live-hae-state","data-live-automation-state","data-live-ai-state"]) assert.match(ownerWorkspace,new RegExp(selector),`owner Overview must expose ${selector}`);
 assert.match(ownerWorkspace,/data-cc-view="hae"[\s\S]*data-hae-runtime-state/,"HAE must have a dedicated owner runtime view");
 assert.match(ownerWorkspace,/data-hae-events/,"HAE owner view must expose a bounded event timeline");
+assert.match(ownerWorkspace,/data-viktor-node-state/,"owner Agents view must expose VIKTOR HAE runtime state");
+assert.match(ownerWorkspace,/Heartbeat proves node availability only|Heartbeat показывает только доступность узла/,"VIKTOR card must not equate heartbeat with execution");
+assert.match(page,/data-viktor-node-receipt/,"owner page must render the last Windows HAE receipt separately from heartbeat");
+assert.match(intelligence,/job\.windows_node_succeeded/,"owner runtime read model must use the canonical Windows success event");
+assert.match(intelligence,/HEARTBEAT_IS_NOT_EXECUTION; WINDOWS_HAE_RECEIPT_REQUIRED/,"owner intelligence must preserve heartbeat-versus-execution truth semantics");
+assert.match(intelligence,/production_write_authorized:false/,"VIKTOR owner read model must keep production writes explicitly forbidden");
 assert.match(page,/renderHaeEventTimeline/,"HAE event timeline must render from the canonical execution-map read model");
 assert.match(commandCenterShell,/hcc-private-sidebar/,"private Command Center must use a persistent owner sidebar shell");
 for(const label of ["Work","Operations","System","Admin"]) assert.match(commandCenterShell,new RegExp(label),`private sidebar must expose ${label} grouping`);
