@@ -67,7 +67,24 @@ CREATE TABLE hermes_automation_jobs (
 await ensureOwnerWorkRuntimeSchema(DB);
 
 const seeded=await DB.prepare("SELECT COUNT(*) AS count FROM hermes_owner_work_items").first();
-assert.ok(Number(seeded.count)>=50,"historical Command Center backlog must be available to HAE without a ChatGPT scheduler");
+assert.ok(Number(seeded.count)>=178,"historical + 4-month revenue backlog must be available to HAE without a ChatGPT scheduler");
+const revenueCount=await DB.prepare("SELECT COUNT(*) AS count FROM hermes_owner_work_items WHERE source_work_id IS NOT NULL").first();
+assert.equal(Number(revenueCount.count),128);
+const selectedRevenue=await DB.prepare(`
+  SELECT source_work_id,title,status,revenue_gate_usd,actual_revenue_usd,financial_done,revenue_selected_now
+  FROM hermes_owner_work_items
+  WHERE revenue_selected_now=1
+  LIMIT 1
+`).first();
+assert.equal(selectedRevenue.source_work_id,"W-20261019-015");
+assert.equal(selectedRevenue.status,"ready");
+assert.equal(Number(selectedRevenue.revenue_gate_usd),1);
+assert.equal(Number(selectedRevenue.actual_revenue_usd),0);
+assert.equal(Number(selectedRevenue.financial_done),0);
+const revenueSnapshot=await ownerWorkRuntimeSnapshot(DB);
+assert.equal(revenueSnapshot.revenue_first,true);
+assert.equal(revenueSnapshot.next_items[0].source_work_id,"W-20261019-015");
+assert.equal(Number(revenueSnapshot.next_items[0].revenue_selected_now),1);
 await DB.prepare("UPDATE hermes_owner_work_items SET status='done',acceptance_status='accepted'").run();
 
 const now="2026-11-05T21:30:00.000Z";
