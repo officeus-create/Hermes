@@ -5,6 +5,7 @@ const root=resolve(import.meta.dirname,"..");
 const read=(path)=>readFileSync(resolve(root,path),"utf8");
 const page=read("src/pages/services/hermes-connect/internal/command-center/index.astro");
 const helper=read("functions/api/_lib/internal-command-center.mjs");
+const historyBacklog=read("functions/api/_lib/command-center-history-backlog.mjs");
 const collection=read("functions/api/internal-command-center/work-items.ts");
 const item=read("functions/api/internal-command-center/work-items/[id].ts");
 const access=read("functions/api/internal-command-center/access.ts");
@@ -56,6 +57,15 @@ assert.match(helper,/acceptance_status != 'awaiting'/,"reconciliation must not r
 assert.doesNotMatch(helper,/SET status = 'done'.*linked_task_id IN/s,"linked execution must never auto-accept owner work");
 assert.match(helper,/Reuse current Hermes architecture.*do not create a second CRM/s,"dispatched prompts must preserve single-system ownership");
 assert.match(helper,/external communications.*owner approval flow/i,"dispatched prompts must preserve consequential approval gates");
+assert.match(helper,/seedHistoricalCommandCenterBacklog/,"history recovery must seed the existing D1 owner backlog rather than invent a second registry");
+assert.match(helper,/source_ref TEXT/,"owner backlog must retain durable task provenance");
+assert.match(helper,/next_action TEXT/,"owner backlog must expose the next concrete action");
+assert.match(historyBacklog,/COMMAND_CENTER_HISTORY_BACKLOG/,"three-month recovered work must live in a bounded import manifest");
+assert.match(historyBacklog,/INSERT OR IGNORE INTO hermes_owner_work_items/,"history import must be idempotent and reuse the canonical work-item table");
+assert.match(historyBacklog,/hermes_command_center_imports/,"history import must record a one-time import receipt");
+assert.doesNotMatch(historyBacklog,/CREATE TABLE IF NOT EXISTS .*task_registry/is,"history import must not create a competing task registry");
+assert.match(page,/Источник:|Source:/,"owner task cards must show provenance");
+assert.match(page,/Дальше:|Next:/,"owner task cards must show the next action");
 
 for(const source of [collection,item,access,processes,processItem]){
   assert.match(source,/requireInternalOwner/,"every command-center API must require HERMES_INTERNAL_OWNER");
