@@ -131,9 +131,9 @@ assert.match(revenueBacklog,/FOUR_MONTH_REVENUE_BACKLOG/,"four-month revenue wor
 assert.match(revenueBacklog,/REV4M-20261011-DEALERCENTER/,"recovered four-month chat revenue missions must be preserved in the same bounded manifest");
 assert.match(revenueBacklog,/REV4M-20260707-CARRIER-CRM-TEMPLATES/,"distinct project/file revenue missions recovered inside the four-month window must also be preserved");
 assert.match(revenueBacklog,/REV4M-20260825-MEDIA-PARTNERSHIPS/,"media partnerships must remain a distinct revenue mission rather than disappearing into generic partnership routing");
-assert.match(revenueBacklog,/owner_revenue_backlog_2026-11-06_v4/,"revenue import must be versioned and idempotent");
+assert.match(revenueBacklog,/owner_revenue_backlog_2026-11-06_v5/,"revenue import must be versioned and idempotent");
 assert.match(revenueBacklog,/revenue_gate_usd:1/,"every revenue mission must require at least one dollar of verified financial benefit");
-assert.match(revenueBacklog,/W-20261026-109/,"current Website Pricing revenue mission must be the initial active source work item");
+assert.match(revenueBacklog,/W-20261019-015/,"the initial active source must be the HAE-startable SEO/GEO revenue mission");
 assert.match(helper,/seedFourMonthRevenueBacklog/,"revenue missions must seed the existing D1 work-item queue");
 assert.match(helper,/financial_done/,"Command Center read model must expose financial completion separately from technical state");
 assert.match(item,/action==="record_revenue"/,"owner API must record verified paid revenue");
