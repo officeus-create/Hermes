@@ -485,6 +485,13 @@ function renderIntelligence(data:any){
     }
     const governance=document.createElement("p");governance.className="muted";governance.textContent=knowledge.governance?.automatic_promotion===false?t("Lessons require independent review before One Brain/plugin promotion; runtime consumption requires a later separate receipt.","Уроки требуют независимой проверки до продвижения в One Brain/плагин; runtime-consumption требует отдельного последующего receipt."):t("Knowledge governance unavailable.","Knowledge governance недоступен.");learning.append(governance)
   }
+  const windows=data?.agents?.windows_node||{};
+  setText("[data-viktor-node-state]",String(windows.state||"UNKNOWN").replaceAll("_"," "));
+  setText("[data-viktor-node-seen]",windows.last_seen_at?stamp(windows.last_seen_at):"UNKNOWN");
+  setText("[data-viktor-node-model]",String(windows.model||"UNKNOWN"));
+  setText("[data-viktor-node-job]",String(windows.current_job_id||windows.active_lease?.job_id||"NONE"));
+  setText("[data-viktor-node-receipt]",windows.last_succeeded_job_id?String(windows.last_succeeded_job_id)+" · "+stamp(windows.last_succeeded_at):String(windows.execution_proof||"NO_WINDOWS_HAE_RECEIPT").replaceAll("_"," "));
+  setText("[data-viktor-node-writes]",windows.production_write_authorized===false?"OFF":"UNKNOWN");
   const investor=data.investor||{};setText("[data-investor-state]",String(investor.state||"UNKNOWN"));const box=q("[data-investor-details]");if(box){box.replaceChildren();const p=document.createElement("p");p.className="muted";p.textContent=investor.trigger_policy==="EVENT_TRIGGER_ONLY"?t("EVENT_TRIGGER_ONLY: no continuous polling. Fresh finance/legal/owner evidence is required before investor work resumes.","EVENT_TRIGGER_ONLY: постоянного polling нет. Для возобновления investor work нужен свежий finance/legal/owner evidence."):t("Investor trigger state unavailable.","Investor trigger state недоступен.");box.append(p);const project=investor.project;if(project?.blockers?.length){const b=document.createElement("p");b.textContent=t("Current hold: ","Текущий hold: ")+project.blockers.join(" ");box.append(b)}}
 }
 function renderOwners(data:any){
