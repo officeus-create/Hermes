@@ -2,6 +2,8 @@
 import { GraduationCap, Megaphone, Mic, PackageCheck, ShieldCheck, Truck, Users, Wrench, CircleDollarSign } from "@lucide/astro";
 import HermesLocalAgentsLink from "./HermesLocalAgentsLink.astro";
 import HermesOwnerProjectPortfolio from "./HermesOwnerProjectPortfolio.astro";
+import HermesAiArchitecture from "./HermesAiArchitecture.astro";
+import HermesExecutionMap from "./HermesExecutionMap.astro";
 import { HAE_OWNER_PROCESS_TEMPLATES } from "../lib/hae-process-control.mjs";
 interface Props{ru?:boolean}
 const {ru=false}=Astro.props;
@@ -20,6 +22,49 @@ const functions=[
 <div class="owner-workspace" data-private hidden>
   <div class="owner-toast" data-owner-toast role="status" hidden></div>
   <section class="owner-view is-active" data-cc-view="today">
+    <section class="hcc-panel owner-today-focus">
+      <div class="owner-section-head">
+        <div><p class="hcc-sample">Live Operations</p><h2>{ru?"Что реально работает сейчас":"What is actually running now"}</h2><p>{ru?"Четыре ключевых контура. UNKNOWN и блокеры показываются явно — без декоративных зелёных статусов.":"Four critical operating loops. UNKNOWN and blockers stay explicit — no decorative green states."}</p></div>
+        <button type="button" class="hcc-primary" data-new-task>+ {ru?"Новая задача":"New task"}</button>
+      </div>
+      <div class="owner-live-grid">
+        <article class="owner-live-card">
+          <div><span class="owner-live-kicker">Threads</span><strong data-live-threads-title>UNKNOWN</strong><small data-live-threads-detail>{ru?"Проверяем provider и HAE social readback…":"Checking provider and HAE social readback…"}</small></div>
+          <span class="owner-live-state" data-live-threads-state>UNKNOWN</span>
+          <button type="button" data-open-view="social">{ru?"Открыть Threads":"Open Threads"}</button>
+        </article>
+        <article class="owner-live-card">
+          <div><span class="owner-live-kicker">HAE</span><strong data-live-hae-title>UNKNOWN</strong><small data-live-hae-detail>{ru?"Проверяем канонический runtime и процессы…":"Checking canonical runtime and processes…"}</small></div>
+          <span class="owner-live-state" data-live-hae-state>UNKNOWN</span>
+          <button type="button" data-open-view="hae">{ru?"Открыть HAE":"Open HAE"}</button>
+        </article>
+        <article class="owner-live-card">
+          <div><span class="owner-live-kicker">{ru?"Автоматизации":"Automations"}</span><strong data-live-automation-title>UNKNOWN</strong><small data-live-automation-detail>{ru?"Проверяем активные процессы и следующий запуск…":"Checking active processes and next run…"}</small></div>
+          <span class="owner-live-state" data-live-automation-state>UNKNOWN</span>
+          <button type="button" data-open-view="automations">{ru?"Открыть автоматизации":"Open automations"}</button>
+        </article>
+        <article class="owner-live-card">
+          <div><span class="owner-live-kicker">Hermes AI</span><strong data-live-ai-title>UNKNOWN</strong><small data-live-ai-detail>{ru?"Проверяем executor heartbeat и активную задачу…":"Checking executor heartbeat and active task…"}</small></div>
+          <span class="owner-live-state" data-live-ai-state>UNKNOWN</span>
+          <button type="button" data-open-view="agents">{ru?"Открыть Hermes AI":"Open Hermes AI"}</button>
+        </article>
+      </div>
+    </section>
+
+    <section class="hcc-panel owner-today-focus" data-command-center-launch>
+      <div class="owner-section-head">
+        <div><p class="hcc-sample">{ru?"Готовность системы":"System launch readiness"}</p><h2>{ru?"Command Center → HAE → VIKTOR / DeepSeek":"Command Center → HAE → VIKTOR / DeepSeek"}</h2><p>{ru?"Процент считается только по объявленным доказуемым milestones. CI, review, deploy, runtime receipt и QA не объединяются в один зелёный статус.":"The percentage is derived only from declared evidence-backed milestones. CI, review, deploy, runtime receipt and QA never collapse into one green status."}</p></div>
+        <span class="owner-cloud-note" data-launch-state>UNKNOWN</span>
+      </div>
+      <div class="owner-decision-grid">
+        <article><span>{ru?"Прогресс":"Progress"}</span><strong data-launch-progress>UNKNOWN</strong><small>{ru?"По каноническим milestones":"Canonical milestones"}</small></article>
+        <article><span>{ru?"Закрыто":"Completed"}</span><strong data-launch-completed>UNKNOWN</strong><small data-launch-total>{ru?"из UNKNOWN":"of UNKNOWN"}</small></article>
+        <article><span>{ru?"Текущий hold":"Current hold"}</span><strong data-launch-hold>UNKNOWN</strong><small>{ru?"Первый доказанный блокер":"First source-backed blocker"}</small></article>
+        <article><span>ETA</span><strong>UNKNOWN</strong><small>{ru?"Пока нет принятой истории длительности":"No accepted duration history yet"}</small></article>
+      </div>
+      <div class="owner-today-list" data-launch-milestones><p class="muted">{ru?"Загружаем launch gates…":"Loading launch gates…"}</p></div>
+    </section>
+
     <div class="owner-decision-grid" aria-label={ru?"Сводка владельца":"Owner summary"}>
       <article><span>{ru?"Нужно моё решение":"Needs my decision"}</span><strong data-today-decision>0</strong><small>{ru?"Результаты ждут приёмки":"Results awaiting acceptance"}</small></article>
       <article><span>{ru?"Выполняется":"Running now"}</span><strong data-today-running>0</strong><small>{ru?"AI-задачи и активные процессы":"AI tasks and active processes"}</small></article>
@@ -28,7 +73,7 @@ const functions=[
     </div>
 
     <section class="hcc-panel owner-today-focus">
-      <div class="owner-section-head"><div><p class="hcc-sample">{ru?"Сегодня":"Today"}</p><h2>{ru?"Что требует внимания сейчас":"What needs attention now"}</h2></div><button type="button" class="hcc-primary" data-new-task>+ {ru?"Новая задача":"New task"}</button></div>
+      <div class="owner-section-head"><div><p class="hcc-sample">{ru?"Требует внимания":"Needs attention"}</p><h2>{ru?"Что требует решения сейчас":"What needs a decision now"}</h2></div></div>
       <div class="owner-today-list" data-today-list><p class="muted">{ru?"Загружаем текущую работу…":"Loading current work…"}</p></div>
     </section>
 
@@ -66,6 +111,54 @@ const functions=[
     </section>
   </section>
 
+  <section class="owner-view" data-cc-view="crm" hidden>
+    <section class="hcc-panel owner-account-panel">
+      <div class="owner-section-head"><div><p class="hcc-sample">Hermes Connect · CRM</p><h2>{ru?"Клиентские и операционные пространства":"Customer and operating workspaces"}</h2><p>{ru?"Command Center не создаёт второй CRM. Здесь маршрутизируются только уже существующие Hermes Connect workspaces, доступные текущему аккаунту.":"Command Center does not create a second CRM. This view routes only to existing Hermes Connect workspaces already available to the current account."}</p></div><span class="owner-cloud-note">{ru?"Один аккаунт · существующие CRM":"One account · existing CRMs"}</span></div>
+      <div class="workspace-grid" data-crm-workspaces><p class="muted">{ru?"Загружаем CRM-пространства…":"Loading CRM workspaces…"}</p></div>
+    </section>
+  </section>
+
+  <section class="owner-view" data-cc-view="social" hidden>
+    <section class="hcc-panel">
+      <div class="owner-section-head"><div><p class="hcc-sample">Social Acquisition</p><h2>{ru?"Соцсети → диалоги → лиды → доказательства":"Social → conversations → leads → evidence"}</h2><p>{ru?"Read-only обзор существующего HAE/social runtime. Публикация и ответы не включаются отсюда автоматически.":"Read-only view over the existing HAE/social runtime. Publishing and replies are never activated automatically from this view."}</p></div><span class="owner-cloud-note" data-social-state>UNKNOWN</span></div>
+      <div class="owner-decision-grid">
+        <article><span>{ru?"Контент в очереди":"Content queue"}</span><strong data-social-content-count>UNKNOWN</strong><small>{ru?"HAE D1 · без второго publisher":"HAE D1 · no second publisher"}</small></article>
+        <article><span>{ru?"Publication receipts":"Publication receipts"}</span><strong data-social-receipt-count>UNKNOWN</strong><small>{ru?"Provider ID / permalink при наличии":"Provider ID / permalink when verified"}</small></article>
+        <article><span>{ru?"Threads connections":"Threads connections"}</span><strong data-social-connection-count>UNKNOWN</strong><small>{ru?"OAuth/identity state без секретов":"OAuth/identity state without secrets"}</small></article>
+        <article><span>{ru?"Carrier Leads":"Carrier Leads"}</span><strong>UNKNOWN</strong><small>{ru?"Нет канонического агрегата — ноль не придумываем":"No canonical aggregate — never infer zero"}</small></article>
+      </div>
+      <div class="workspace-grid" data-social-connections><p class="muted">{ru?"Загружаем provider health…":"Loading provider health…"}</p></div>
+      <div class="owner-evidence-list" data-social-queue><p class="muted">{ru?"Загружаем Content Queue…":"Loading Content Queue…"}</p></div>
+      <div class="owner-evidence-list" data-social-receipts><p class="muted">{ru?"Загружаем publication receipts…":"Loading publication receipts…"}</p></div>
+      <div class="owner-head-actions">
+        <a class="hcc-secondary" href="/services/hermes-connect/internal/social-connections/">{ru?"Provider / OAuth":"Provider / OAuth"}</a>
+        <a class="hcc-secondary" href="/services/hermes-connect/unified-inbox/">{ru?"Unified Inbox":"Unified Inbox"}</a>
+        <a class="hcc-secondary" href="/paths/marketing/">{ru?"Marketing":"Marketing"}</a>
+        <a class="hcc-secondary" href="/load-board/">{ru?"Carrier / Load Board":"Carrier / Load Board"}</a>
+      </div>
+      <p class="muted">{ru?"Ответы остаются DRAFT_ONLY через social.reply.prepare. Внешняя публикация требует отдельного owner/provider gate.":"Replies remain DRAFT_ONLY through social.reply.prepare. External publication requires its separate owner/provider gate."}</p>
+    </section>
+  </section>
+
+  <section class="owner-view" data-cc-view="hae" hidden>
+    <section class="hcc-panel process-control">
+      <div class="owner-section-head">
+        <div><p class="hcc-sample">Hermes Automation Engine</p><h2>{ru?"Канонический runtime HAE":"Canonical HAE runtime"}</h2><p>{ru?"Один scheduler, одна D1/Queue/Worker цепочка. Локальный AI — только исполнитель поверх HAE, не второй runtime.":"One scheduler and one D1/Queue/Worker chain. Local AI is execution capacity on top of HAE, never a second runtime."}</p></div>
+        <span class="owner-cloud-note" data-hae-runtime-state>UNKNOWN</span>
+      </div>
+      <div class="owner-hae-runtime">
+        <article><span>{ru?"Runtime owner":"Runtime owner"}</span><strong data-hae-owner>UNKNOWN</strong></article>
+        <article><span>{ru?"Цикл":"Loop"}</span><strong data-hae-loop>UNKNOWN</strong></article>
+        <article><span>{ru?"Активные процессы":"Active processes"}</span><strong data-hae-active>UNKNOWN</strong></article>
+        <article><span>{ru?"Автоматический AI cost":"Automatic AI cost"}</span><strong data-hae-cost>UNKNOWN</strong></article>
+      </div>
+      <div class="owner-evidence-list" data-hae-recent><p class="muted">{ru?"Загружаем последние HAE процессы…":"Loading recent HAE processes…"}</p></div>
+      <div class="owner-section-head compact"><div><p class="hcc-sample">{ru?"События HAE":"HAE events"}</p><h3>{ru?"Безопасная event timeline":"Safe event timeline"}</h3><p>{ru?"Только job type, state, step, error class и timestamp. Payload/result и provider data здесь не выводятся.":"Only job type, state, step, error class and timestamp. Payload/result and provider data are not rendered here."}</p></div><span class="owner-cloud-note" data-hae-events-state>UNKNOWN</span></div>
+      <div class="owner-evidence-list" data-hae-events><p class="muted">{ru?"Загружаем HAE events…":"Loading HAE events…"}</p></div>
+      <div class="owner-head-actions"><button type="button" class="hcc-secondary" data-open-view="automations">{ru?"Открыть управление процессами":"Open process controls"}</button><button type="button" class="hcc-secondary" data-open-view="executions">{ru?"Открыть executions / receipts":"Open executions / receipts"}</button></div>
+    </section>
+  </section>
+
   <section class="owner-view" data-cc-view="automations" hidden>
     <section class="hcc-panel process-control" data-process-control>
       <div class="owner-section-head"><div><p class="hcc-sample">{ru?"Автоматизация":"Automation"}</p><h2>{ru?"Процессы HAE 24/7":"HAE 24/7 processes"}</h2><p>{ru?"Проверенные процессы создаются на паузе и включаются отдельно. Внешние отправки и платный AI в этом слое отключены.":"Verified processes start paused and are activated separately. External sends and paid AI are disabled in this layer."}</p></div><span class="owner-cloud-note">D1 · Queue · $0 default</span></div>
@@ -93,6 +186,22 @@ const functions=[
         <HermesLocalAgentsLink ru={ru}/>
       </article>
     </div>
+    <section class="hcc-panel owner-agent-roster-panel">
+      <div class="owner-section-head"><div><p class="hcc-sample">{ru?"Реестр AI-исполнителей":"AI executor roster"}</p><h2>{ru?"VIKTOR, DeepSeek и локальные роли":"VIKTOR, DeepSeek and local roles"}</h2><p>{ru?"Статус берётся из канонической карты проектов. Heartbeat, установленная модель или подготовленный sandbox не считаются выполнением без HAE receipt.":"Status comes from the canonical project map. A heartbeat, installed model or prepared sandbox is not execution without a HAE receipt."}</p></div><span class="owner-cloud-note">PROJECT MAP · HAE RECEIPT</span></div>
+      <div class="workspace-grid" data-agent-roster><p class="muted">{ru?"Загружаем роли AI…":"Loading AI roles…"}</p></div>
+    </section>
+    <section class="hcc-panel" data-ai-owner-map><HermesAiArchitecture ru={ru}/></section>
+  </section>
+
+  <section class="owner-view" data-cc-view="plugins" hidden>
+    <section class="hcc-panel">
+      <div class="owner-section-head"><div><p class="hcc-sample">Hermes Plugin Workforce</p><h2>{ru?"Плагины и текущие версии":"Plugins and current versions"}</h2><p>{ru?"Это реестр доступных возможностей. Выбор плагина не означает, что он был выполнен: execution подтверждается только отдельным HAE receipt.":"This is the capability registry. Selecting a plugin is not execution: execution is proven only by a separate HAE receipt."}</p></div><span class="owner-cloud-note" data-plugin-registry-state>UNKNOWN</span></div>
+      <div class="workspace-grid" data-plugin-registry><p class="muted">{ru?"Загружаем реестр плагинов…":"Loading plugin registry…"}</p></div>
+    </section>
+  </section>
+
+  <section class="owner-view" data-cc-view="executions" hidden>
+    <HermesExecutionMap ru={ru}/>
   </section>
 
   <section class="owner-view" data-cc-view="evidence" hidden>
@@ -102,15 +211,38 @@ const functions=[
     </section>
   </section>
 
+  <section class="owner-view" data-cc-view="reports" hidden>
+    <section class="hcc-panel">
+      <div class="owner-section-head"><div><p class="hcc-sample">{ru?"Отчёты HAE · $0":"HAE reports · $0"}</p><h2>{ru?"Регулярные owner-отчёты":"Recurring owner reports"}</h2><p>{ru?"Результат появляется только здесь, в Command Center. Email/публикация и платный AI отключены.":"Results appear only here in Command Center. Email/publication and paid AI are disabled."}</p></div><span class="owner-cloud-note">Europe/Kyiv · D1 receipt</span></div>
+      <div class="workspace-grid" data-report-schedules><p class="muted">{ru?"Загружаем расписания…":"Loading schedules…"}</p></div>
+      <div class="owner-evidence-list" data-report-list><p class="muted">{ru?"Пока нет подтверждённых report receipts.":"No verified report receipts yet."}</p></div>
+    </section>
+  </section>
+
+  <section class="owner-view" data-cc-view="knowledge" hidden>
+    <section class="hcc-panel">
+      <div class="owner-section-head"><div><p class="hcc-sample">One Brain</p><h2>{ru?"Знания, уроки и источник истины":"Knowledge, lessons and source authority"}</h2><p>{ru?"Здесь нет копии One Brain. Показывается только реестр канонических источников и состояние governance.":"This is not a copy of One Brain. It shows only the canonical source registry and governance state."}</p></div><span class="owner-cloud-note" data-knowledge-state>UNKNOWN</span></div>
+      <div class="workspace-grid" data-knowledge-sources><p class="muted">{ru?"Загружаем реестр источников…":"Loading source registry…"}</p></div>
+      <div class="owner-today-list" data-learning-state></div>
+    </section>
+  </section>
+
+  <section class="owner-view" data-cc-view="investor" hidden>
+    <section class="hcc-panel">
+      <div class="owner-section-head"><div><p class="hcc-sample">{ru?"Финансы · Investor Intelligence":"Finance · Investor Intelligence"}</p><h2>{ru?"Инвесторская готовность по событию":"Event-triggered investor readiness"}</h2><p>{ru?"Нет постоянного polling и нет выдуманных финансов. Работа активируется только при новом проверенном finance/legal/owner evidence.":"No continuous polling and no invented financials. Work activates only on fresh verified finance/legal/owner evidence."}</p></div><span class="owner-cloud-note" data-investor-state>UNKNOWN</span></div>
+      <div class="owner-today-list" data-investor-details><p class="muted">{ru?"Загружаем investor state…":"Loading investor state…"}</p></div>
+    </section>
+  </section>
+
   <section class="owner-view" data-cc-view="access" hidden>
     <section class="hcc-panel owner-account-panel">
       <div class="owner-section-head"><div><p class="hcc-sample">{ru?"Мой Hermes":"My Hermes"}</p><h2>{ru?"Подключённые рабочие пространства":"Connected workspaces"}</h2></div><span data-account-identity class="owner-cloud-note">—</span></div>
       <div class="workspace-grid" data-account-workspaces><p class="muted">{ru?"Загружаем доступы…":"Loading access…"}</p></div>
     </section>
     <section class="hcc-panel access-admin">
-      <div class="owner-section-head"><div><p class="hcc-sample">{ru?"Доступ":"Access"}</p><h2>{ru?"Владельцы Command Center":"Command Center owners"}</h2><p>{ru?"Доступ выдаётся только существующему Hermes-аккаунту и фиксируется в audit trail.":"Access can be granted only to an existing Hermes account and is written to the audit trail."}</p></div><ShieldCheck size={22}/></div>
+      <div class="owner-section-head"><div><p class="hcc-sample">{ru?"Доступ":"Access"}</p><h2>{ru?"Владельцы и командный просмотр":"Owners and Team View"}</h2><p>{ru?"Доступ выдаётся только существующему Hermes-аккаунту и фиксируется в audit trail.":"Access can be granted only to an existing Hermes account and is written to the audit trail."}</p></div><ShieldCheck size={22}/></div>
       <div class="owner-list" data-owner-list></div>
-      <form data-access-form><label>{ru?"Email существующего Hermes-аккаунта":"Existing Hermes account email"}<input name="email" type="email" autocomplete="off" required placeholder="team@example.com"/></label><div class="access-actions"><button type="submit" name="action" value="grant" class="primary">{ru?"Выдать доступ":"Grant access"}</button><button type="submit" name="action" value="revoke" class="danger">{ru?"Отозвать":"Revoke"}</button></div><p data-access-status role="status"></p></form>
+      <form data-access-form><label>{ru?"Email существующего Hermes-аккаунта":"Existing Hermes account email"}<input name="email" type="email" autocomplete="off" required placeholder="team@example.com"/></label><label>{ru?"Уровень доступа":"Permission"}<select name="capability"><option value="team_view">{ru?"Командный просмотр · только чтение":"Team View · read only"}</option><option value="owner">{ru?"Владелец · полный доступ":"Owner · full access"}</option></select></label><p class="muted">{ru?"Доступ сотрудника включает только безопасный статус AI. Полные права владельца выдаются отдельно.":"Team View can read only sanitized AI status. Full owner permissions require a separate selection."} <a href={"/services/hermes-connect/internal/team-view/"+(ru?"?lang=ru":"")}>{ru?"Открыть Team View":"Open Team View"}</a></p><div class="access-actions"><button type="submit" name="action" value="grant" class="primary">{ru?"Выдать доступ":"Grant access"}</button><button type="submit" name="action" value="revoke" class="danger">{ru?"Отозвать":"Revoke"}</button></div><p data-access-status role="status"></p></form>
     </section>
   </section>
 

@@ -256,6 +256,7 @@ import SiteFooter from "../../../../components/SiteFooter.astro";
       if (response.ok && data?.success && data?.capabilities?.internal_ai === true) return "/services/hermes-connect/internal/command-center/";
       const owned = Array.isArray(data?.owned_businesses) ? data.owned_businesses.filter((item: any) => item?.href) : [];
       if (response.ok && data?.success && owned.length === 1) return String(owned[0].href);
+      if (response.ok && data?.success && data?.capabilities?.client_view === true) return "/services/hermes-connect/client-view/";
     } catch {}
     return "/services/hermes-connect/";
   };

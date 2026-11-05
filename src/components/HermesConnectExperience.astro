@@ -310,7 +310,7 @@ const { loadBoardContext = false } = Astro.props;
     // The internal entry is deliberately capability-discovered server-side.
     // A customer, ordinary Hermes account, Academy account, or anonymous visitor
     // receives no link node at all; the internal endpoint returns no task data
-    // unless it has already verified HERMES_INTERNAL_OWNER. Repair Shop routes stay
+    // unless it has already verified the private owner capability. Repair Shop routes stay
     // task-focused even for the internal owner; account-level switching lives in
     // the shared account control instead of leaking unrelated capabilities here.
     if (!isRepair) void (async () => {

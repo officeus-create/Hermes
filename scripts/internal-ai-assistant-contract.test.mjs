@@ -154,5 +154,15 @@ assert.match(internalNav, /method:\s*"POST"/, "activation secret must never be p
 assert.match(internalNav, /input\.value = ""/, "activation UI must clear the one-time secret after success");
 const bootstrapRuntime = spawnSync(process.execPath, ["--experimental-strip-types", resolve(root, "scripts/internal-ai-bootstrap-owner-runtime.test.mjs")], { encoding: "utf8" });
 assert.equal(bootstrapRuntime.status, 0, `atomic owner bootstrap runtime probe must pass: ${bootstrapRuntime.stderr || bootstrapRuntime.stdout}`);
+const statusEndpoint=read("functions/api/internal-ai/status.ts");
+assert.match(helper,/requireInternalAiViewer/,"Team View must use explicit capability");
+assert.match(helper,/hermes_internal_team_view_access/,"Team View must use dedicated D1 table");
+assert.match(statusEndpoint,/access_level === "team"/,"AI status must have owner/team branches");
+assert.match(statusEndpoint,/teamStatusAllowlist/,"team status must be allowlisted");
+assert.match(statusEndpoint,/Task active — details private/,"owner current task must never be echoed to team");
+assert.match(statusEndpoint,/phase: null/,"team must hide free-form runner phase");
+assert.match(statusEndpoint,/model: null/,"team must hide raw model telemetry");
+assert.match(statusEndpoint,/access_level: "owner"/,"owner status must preserve capabilities");
+assert.match(runner,/HERMES_AI_STATUS_FILE/,"existing local runner may read a bounded local status file");
 await import("./internal-command-center-contract.test.mjs");
 console.log("Hermes internal AI Assistant contract: PASS");

@@ -22,6 +22,23 @@ const schema=[
 ---
 <BaseLayout title={title} description={description} robots="index,follow,max-image-preview:large" htmlLang="en" schema={schema}>
   <SiteHeader activePath="/services/hermes-connect/" />
+  <script is:inline>
+    // Install once on the stable page, BEFORE the localized template replaces its subtree.
+    // A component-local processed module may be removed before its handler is loaded.
+    document.addEventListener("click", (event) => {
+      const target = event.target;
+      if (!(target instanceof Element)) return;
+      const control = target.closest("[data-hcc-activity-toggle]");
+      const root = control?.closest("[data-hcc-activity-showcase]");
+      if (!control || !root) return;
+      const paused = root.classList.toggle("is-paused");
+      control.setAttribute("aria-pressed", String(paused));
+      control.textContent = paused
+        ? (control.dataset.labelPlay || "Play simulation")
+        : (control.dataset.labelPause || "Pause simulation");
+      control.setAttribute("aria-label", control.textContent);
+    });
+  </script>
   <div id="hcc-public-live"><HermesCommandCenterPublicContent ru={false}/></div>
   <template id="hcc-public-ru"><HermesCommandCenterPublicContent ru={true}/></template>
   <script is:inline>

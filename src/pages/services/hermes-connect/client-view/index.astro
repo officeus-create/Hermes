@@ -1,0 +1,96 @@
+---
+import BaseLayout from "../../../../layouts/BaseLayout.astro";
+import SiteHeader from "../../../../components/SiteHeader.astro";
+---
+
+<BaseLayout
+  title="Client View | Hermes Connect"
+  description="Private membership-scoped Hermes Connect client workspace."
+  robots="noindex,nofollow"
+>
+  <SiteHeader theme="light" activePath="/services/hermes-connect/" />
+  <main class="client-view-shell">
+    <section class="client-view-hero">
+      <small>HERMES CONNECT · CLIENT VIEW</small>
+      <h1>Your authorized workspaces</h1>
+      <p>This view is derived from your authenticated Hermes session and active company memberships. It does not expose Hermes owner operations, internal AI, or another tenant.</p>
+      <div class="client-view-state" data-client-view-state>Checking access…</div>
+    </section>
+
+    <section class="client-view-grid" data-client-view-grid aria-live="polite"></section>
+  </main>
+
+  <script>
+    const grid = document.querySelector<HTMLElement>("[data-client-view-grid]");
+    const state = document.querySelector<HTMLElement>("[data-client-view-state]");
+    const clean = (value: unknown) => String(value ?? "");
+    const row = (label: string, value: string) => {
+      const item = document.createElement("div");
+      const left = document.createElement("span");
+      const right = document.createElement("strong");
+      left.textContent = label;
+      right.textContent = value;
+      item.append(left, right);
+      return item;
+    };
+
+    const render = async () => {
+      if (!grid || !state) return;
+      try {
+        const response = await fetch("/api/hermes-connect/client-view", {
+          credentials: "same-origin",
+          cache: "no-store",
+          headers: { Accept: "application/json" },
+        });
+        const data = await response.json().catch(() => ({}));
+        if (response.status === 401) {
+          state.textContent = "Sign in is required.";
+          const link = document.createElement("a");
+          link.href = "/services/hermes-connect/access/";
+          link.textContent = "Sign in to Hermes Connect";
+          grid.replaceChildren(link);
+          return;
+        }
+        if (!response.ok || !data?.success) throw new Error(clean(data?.error || "client_view_unavailable"));
+
+        const workspaces = Array.isArray(data.workspaces) ? data.workspaces : [];
+        state.textContent = workspaces.length
+          ? `${workspaces.length} authorized workspace${workspaces.length === 1 ? "" : "s"}`
+          : "No active company membership";
+
+        grid.replaceChildren();
+        for (const workspace of workspaces) {
+          const card = document.createElement("article");
+          card.className = "client-view-card";
+          const eyebrow = document.createElement("small");
+          eyebrow.textContent = clean(workspace.role || "read_only").toUpperCase();
+          const title = document.createElement("h2");
+          title.textContent = clean(workspace.company?.name || "Authorized company");
+          const facts = document.createElement("div");
+          facts.className = "client-view-facts";
+          facts.append(
+            row("Business", clean(workspace.business_ref || "UNKNOWN")),
+            row("Workspace", clean(workspace.workspace_ref || "Default")),
+            row("Type", clean(workspace.company?.type || "UNKNOWN")),
+            row("Location", [workspace.company?.city, workspace.company?.state].filter(Boolean).join(", ") || "UNKNOWN"),
+          );
+          const boundary = document.createElement("p");
+          boundary.className = "client-view-boundary";
+          boundary.textContent = "Read-only client scope. Owner Command Center, Internal AI and cross-tenant search are not available here.";
+          card.append(eyebrow, title, facts, boundary);
+          grid.append(card);
+        }
+      } catch {
+        state.textContent = "Client View unavailable";
+        const note = document.createElement("p");
+        note.textContent = "No tenant state was inferred.";
+        grid?.replaceChildren(note);
+      }
+    };
+    render();
+  </script>
+
+  <style>
+    .client-view-shell{max-width:1120px;margin:0 auto;padding:6.5rem 1.25rem 4rem}.client-view-hero{max-width:760px}.client-view-hero small{font-size:.72rem;letter-spacing:.08em;color:#6f7888}.client-view-hero h1{font-size:clamp(2.2rem,6vw,4.4rem);line-height:.95;margin:.55rem 0 1rem}.client-view-hero p{font-size:1rem;line-height:1.65;color:#566174}.client-view-state{margin-top:1rem;display:inline-flex;border:1px solid #dfe5ed;border-radius:999px;padding:.5rem .75rem;font-weight:800;font-size:.78rem}.client-view-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.8rem;margin-top:1.5rem}.client-view-card{border:1px solid #dfe5ed;border-radius:1rem;padding:1rem;background:#fff}.client-view-card small{font-size:.62rem;color:#6f7888;letter-spacing:.06em}.client-view-card h2{margin:.28rem 0 .8rem;font-size:1.1rem}.client-view-facts{display:grid;gap:.4rem}.client-view-facts>div{display:flex;justify-content:space-between;gap:.8rem;border-top:1px solid #edf1f5;padding-top:.4rem}.client-view-facts span{font-size:.72rem;color:#748096}.client-view-facts strong{font-size:.72rem;text-align:right;overflow-wrap:anywhere}.client-view-boundary{margin:.8rem 0 0;font-size:.72rem;line-height:1.45;color:#6f7888}@media(max-width:720px){.client-view-grid{grid-template-columns:1fr}}
+  </style>
+</BaseLayout>

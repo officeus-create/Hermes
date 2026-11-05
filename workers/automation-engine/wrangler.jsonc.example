@@ -9,7 +9,7 @@
     "binding": "AI"
   },
   "triggers": {
-    "crons": ["17 * * * *"]
+    "crons": ["0 * * * *", "17 * * * *"]
   },
   "d1_databases": [
     {

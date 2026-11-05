@@ -1,4 +1,5 @@
 import { getAuthenticatedSpecialist, jsonResponse } from "../_lib/session.mjs";
+import { listActiveCompanyMemberships } from "../_lib/company-memberships.mjs";
 import { ensureRepairShopProfileSchema } from "../_lib/repair-shop-schema.mjs";
 import { getOwnedBeautySalon } from "../_lib/beauty-salon-context.mjs";
 import { ensureHermesCompanyProfilesSchema } from "../_lib/hermes-company-profiles.mjs";
@@ -25,7 +26,7 @@ type OwnedBusiness = {
 };
 
 type Workspace = {
-  key: "academy" | "internal_ai" | "hr" | "load_board";
+  key: "academy" | "internal_ai" | "hr" | "load_board" | "client_view";
   kind: "shared_workspace" | "capability_workspace" | "company_workspace";
   href: string;
   available: true;
@@ -89,7 +90,7 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
 
   await ensureAcademySchema(env.DB);
 
-  const [repairShop, beautySalon, academyBusiness, hermesCompany, academyProfile, academyEnrollments, academyReviewerAccess, internalAiAccess, hrReviewerAccess] = await Promise.all([
+  const [repairShop, beautySalon, academyBusiness, hermesCompany, academyProfile, academyEnrollments, academyReviewerAccess, internalAiAccess, hrReviewerAccess, companyMemberships] = await Promise.all([
     getOwnedRepairShop(env.DB, specialist.id),
     getOwnedBeautySalon(env.DB, specialist.id),
     getOwnedAcademyBusiness(env.DB, specialist.id),
@@ -99,6 +100,7 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
     getAcademyReviewerAccess(env.DB, specialist.id),
     getInternalAiAccess(env.DB, specialist.id),
     getHrReviewerAccess(env.DB, specialist.id),
+    listActiveCompanyMemberships(env.DB, { specialistId: specialist.id }),
   ]);
 
   const ownedBusinesses: OwnedBusiness[] = [];
@@ -191,6 +193,19 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
     });
   }
 
+  if (companyMemberships.length) {
+    workspaces.push({
+      key: "client_view",
+      kind: "company_workspace",
+      href: "/services/hermes-connect/client-view/",
+      available: true,
+      state: {
+        membership_count: companyMemberships.length,
+        roles: [...new Set(companyMemberships.map((item: any) => String(item.role || "read_only")))],
+      },
+    });
+  }
+
   if (hrReviewerAccess) {
     workspaces.push({
       key: "hr",
@@ -231,6 +246,7 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
       load_board: Boolean(hermesCompany && Number(hermesCompany.load_board_access) === 1),
       internal_ai: Boolean(internalAiAccess),
       hr_review: Boolean(hrReviewerAccess),
+      client_view: companyMemberships.length > 0,
     },
   }, privateHeaders);
 }

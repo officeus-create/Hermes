@@ -1,6 +1,6 @@
 # Hermes Owner Business Command Center — canonical contract
 
-Status: CURRENT PRIVATE FOUNDATION; public/private unification is implemented in PR #2198 on top of merged owner backlog/project work. Private foundation: canonical PR #2107. #2096 and #2105 remain superseded historical implementations.
+Status: CURRENT CANONICAL SOURCE TRAIN; private foundation originated in merged PR #2107. The former stacked completion train #2159 → #2170 → #2219 → #2221 → #2222 → #2232 → #2234 has been reconciled into the single current release candidate #2236 tracked by #2106. Those parent/replay PRs are provenance only; #2096, #2105 and other historical competing implementations remain superseded.
 Private route: /services/hermes-connect/internal/command-center/
 Public route: /services/hermes-connect/command-center/
 Private access: server-verified HERMES_INTERNAL_OWNER only; edge middleware must verify capability before serving the static owner workspace asset.
@@ -16,10 +16,19 @@ Public mode explains the product through sample data and never exposes owner rec
 - Today — decisions, running work, blockers and the next owner action;
 - Projects — project portfolio plus the four Hermes business pillars: Logistics, Marketing, Technology and Academy;
 - Tasks — the durable owner backlog;
+- CRM — a router to existing Hermes Connect vertical/company workspaces; never a second CRM database;
+- Social Acquisition — read-only HAE/social queue, provider/OAuth health, publication receipts and links to the existing Unified Inbox / social connection surfaces; no second publisher;
 - Automations — owner-managed HAE processes;
 - Agents — local/cloud execution state and fallbacks;
+- Plugins — current role/version capability registry; registered/selected never means executed;
+- Executions — the existing task → executor → capability → evidence map, provider health, department KPIs and GitHub/human-work enrichment;
 - Evidence — task-linked results, PRs and owner acceptance;
+- Reports — Command Center-only HAE receipts for bounded recurring $0 reports;
+- Knowledge — reviewed One Brain source registry and lesson-governance state without copying Drive content into D1;
+- Investor — event-triggered investor-readiness state; no continuous polling or invented finance facts;
 - Access — connected workspaces and owner permission management.
+
+Plugins and Executions are separate owner navigation views for clarity, but they still reuse the same owner-only execution read model and canonical HAE/plugin registry. They do not create another plugin store, execution database or runtime. Provider errors/health and department KPI evidence remain projections inside the execution read model. Client View is a separate membership-scoped Hermes Connect surface derived from authenticated active company membership and never exposes owner-only Command Center state.
 
 Sales, Finance and Operations remain operating functions inside the system. They are not additional Hermes business pillars or sub-brands.
 
@@ -29,23 +38,23 @@ The Command Center is a router and orchestration surface.
 
 It does not replace existing Hermes Connect vertical CRM records, Unified Inbox / lead records, Load Board / logistics records, Academy learner/business records, Internal AI task/event/runner records, canonical GitHub / One Brain evidence owners, or connected provider data.
 
-The only new durable owner-domain record is hermes_owner_work_items: a private planning backlog that links, when dispatched, to the existing hermes_internal_ai_tasks queue.
+The only new durable owner-domain record is hermes_owner_work_items: a private planning backlog that links, when dispatched, to the existing hermes_internal_ai_tasks queue. Owner-created projects extend the same Command Center D1 through `hermes_owner_projects`; they do not form another project system. Client View reuses `hermes_company_memberships` and existing Hermes session identity rather than creating another tenant/auth model.
 
 Owner-configured recurring execution remains inside the same canonical HAE data plane. `hermes_automation_processes` stores bounded process definitions and `hermes_automation_process_events` stores their immutable activation, pause, dispatch and error receipts. These tables reuse the existing Hermes Connect production D1 and the existing HAE Queue; they are not another scheduler or task registry.
 
-## Mac / outage behavior
+## Local executor / outage behavior
 
-Cloudflare Pages + D1 own command-center state. The Mac is an outbound AI runner, not the database and not the web server.
+Cloudflare Pages + D1 own command-center state. Hermes AI local execution is outbound-only: Windows YuraValentyuk is the assigned primary executor when connected, while Mac is a cold fallback/reference. Neither local host is the database, web server, scheduler or canonical HAE control plane.
 
-If the Mac loses power:
+If the assigned local executor is offline:
 1. the private web Command Center can remain reachable;
 2. owner work items remain durable in D1;
 3. owner may continue capturing/planning work;
 4. no new runner work is falsely reported as online;
 5. one existing active AI task remains canonical;
-6. when the Mac returns, it reconnects through the existing runner heartbeat/claim flow.
+6. when an assigned local executor returns, it reconnects through the existing runner heartbeat/claim flow and must prove canonical WORK_ID → lease → execution → durable receipt before being called HAE-integrated.
 
-Do not create a second scheduler just to compensate for a disconnected Mac.
+Do not create a second scheduler just to compensate for a disconnected local executor.
 
 ## Task flow
 
@@ -55,7 +64,7 @@ OWNER IDEA / DICTATION
 → optional ready
 → owner presses Run
 → existing Internal AI task (queued)
-→ outbound Mac runner
+→ outbound Hermes AI runner (Windows assigned primary; Mac fallback/reference)
 → isolated Codex task branch
 → sanitized result / PR / evidence
 → work item enters `awaiting_acceptance`
@@ -89,6 +98,22 @@ Activation means "due for the next HAE hourly tick"; it is not a promise of inst
 
 External communications, publishing, CRM/customer mutations, billing and other consequential jobs require separate versioned runtime contracts and their existing owner gates before they can appear in this catalog.
 
+### Recurring owner reports
+
+Recurring owner reports use the same HAE Worker, Queue and `hermes_automation_jobs` receipt model; there is no report scheduler or report database alongside HAE.
+
+The reviewed source schedule is:
+- HR-tech Radar — Monday 10:00 `Europe/Kyiv`;
+- Catalog Monday reminder — Monday 12:00 `Europe/Kyiv`;
+- Catalog weekly report — Friday 12:00 `Europe/Kyiv`.
+
+The Worker keeps the existing `:17` hourly wake for ordinary HAE maintenance and adds a `:00` wake reserved for exact-local-time Command Center reports. The report wake returns before normal maintenance so it cannot duplicate health/content/process work.
+
+Both report contracts are deterministic, `READ_ONLY`, `semantic_required=false`, `max_cost_usd=0`, `external_send=false`, and deliver only through the Command Center read model. The legacy scheduled Catalog weekly email path is superseded. Catalog inquiry email remains a separate explicit opt-in feature.
+
+HR-tech Radar reads a bounded allowlist of public official source pages, retains only minimized metadata plus SHA-256-style content fingerprints, and treats the first observation as a baseline rather than a change. Source errors/rate limits remain `UNKNOWN`. Catalog reporting preserves `UNKNOWN` for SEO duplicate risk and for open Catalog work counts until project/work mapping is exhaustively verified.
+
+
 The Command Center also provides a loopback-only link to the existing Hermes AI Agents interface at `127.0.0.1:8765`. It opens in a separate tab, so a phone or another computer can return to the unchanged Command Center and use the canonical cloud AI status/queue fallback. The online page does not probe localhost, weaken CSP, expose port 8765 through a tunnel, or make the local Cockpit the HAE runtime.
 
 ## Project portfolio and public/private product boundary
@@ -99,7 +124,7 @@ Every project record states its department, purpose, accountable role, execution
 
 The canonical public page is `/services/hermes-connect/command-center/`. It is a synthetic, read-only product demonstration using sample projects/tasks only. It exposes no internal project, customer, credential or authorization data. The historical `/services/hermes-connect/ai-command-center/` identity is retired as a competing product name and redirects/transitions to Business Command Center; Hermes Intelligence is a layer inside the product, not a second Command Center.
 
-The current registry records the unresolved AI Operations architecture collision between stacked PRs #2125 and #2159 as a blocker. Neither branch is silently selected as canonical. Owner/maintainer review must choose the surviving delta before merge.
+The historical AI Operations collision is resolved: #2125 is superseded, and #2159 plus its stacked completion children were reconciled into #2236. Do not reopen those old branches as competing writers; current release review occurs on #2236.
 
 ## Voice
 
@@ -137,7 +162,7 @@ The private default view is **Today**, not a long configuration page. The owner 
 - What is blocked?
 - What should I do next?
 
-Configuration is progressively disclosed through Projects, Tasks, Automations, Agents, Evidence and Access. Task capture opens on demand instead of permanently occupying the main page. HAE configuration is not mixed into the daily decision layer.
+Configuration is progressively disclosed through Projects, Tasks, CRM, Social, Automations, Agents, Plugins, Executions, Evidence, Reports, Knowledge, Investor and Access. Task capture opens on demand instead of permanently occupying the main page. HAE configuration is not mixed into the daily decision layer. On compact screens the shared shell keeps the primary four actions visible and moves secondary views into the existing More menu instead of adding a second mobile navigation system.
 
 The public and private surfaces share one Command Center shell and the canonical Hermes brand system so they cannot drift into separate products. Pearl/Paper/Ink are the base; violet is Intelligence; the four business-pillar colors are orientation cues only. Primary controls keep 44px touch targets. Large workspace panels use the canonical panel radius.
 

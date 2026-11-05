@@ -3,7 +3,7 @@ import { normalizeWorkItemProjectId, validWorkItemProject } from "../_lib/comman
 import { requireInternalOwner } from "../_lib/internal-ai.mjs";
 import {
   COMMAND_CENTER_SCOPE, ensureCommandCenterSchema, newWorkItemId, normalizePriority, normalizeWorkItemDetails,
-  normalizeWorkItemSource, normalizeWorkItemTitle, normalizeWorkstream, publicWorkItem, reconcileWorkItems, commandCenterNow,
+  normalizeWorkItemSource, normalizeWorkItemTitle, normalizeWorkstream, publicWorkItem, reconcileWorkItems, commandCenterNow, selectWorkItemPluginRoute,
 } from "../_lib/internal-command-center.mjs";
 type Env = { DB?: any };
 const headers={"Cache-Control":"private, no-store","X-Robots-Tag":"noindex, nofollow"};
@@ -16,7 +16,8 @@ export async function onRequestGet({request,env}:{request:Request;env:Env}){
   if(!/^\d{1,6}$/.test(offsetText))return jsonResponse(400,{success:false,error:"invalid_offset"},headers);
   const offset=Number(offsetText);
   if(!Number.isSafeInteger(offset)||offset>100000)return jsonResponse(400,{success:false,error:"invalid_offset"},headers);
-  const result=await env.DB.prepare(`SELECT w.*, t.status AS linked_task_status, t.updated_at AS linked_task_updated_at,
+  const result=await env.DB.prepare(`SELECT w.*, t.status AS linked_task_status, t.started_at AS linked_task_started_at,
+    t.completed_at AS linked_task_completed_at, t.updated_at AS linked_task_updated_at,
     t.pr_url AS linked_task_pr_url, t.output_summary AS linked_task_output_summary
     FROM hermes_owner_work_items w
     LEFT JOIN hermes_internal_ai_tasks t ON t.id = w.linked_task_id AND t.organization_scope = w.organization_scope
@@ -43,9 +44,10 @@ export async function onRequestPost({request,env}:{request:Request;env:Env}){
   const projectId=normalizeWorkItemProjectId(payload?.project_id??null);
   if(!(await validWorkItemProject(env.DB,projectId)))return jsonResponse(400,{success:false,error:"invalid_project_id"},headers);
   const id=newWorkItemId(), now=commandCenterNow();
+  const routeJson=JSON.stringify(selectWorkItemPluginRoute({workstream,title,details}));
   await env.DB.prepare(`INSERT INTO hermes_owner_work_items
-    (id,organization_scope,workstream,priority,title,details,source,status,created_by,created_at,updated_at,project_id)
-    VALUES (?,?,?,?,?,?,?,'planned',?,?,?,?)`).bind(id,COMMAND_CENTER_SCOPE,workstream,priority,title,details,source,String(owner.specialist.id),now,now,projectId).run();
+    (id,organization_scope,workstream,priority,title,details,source,status,created_by,created_at,updated_at,project_id,plugin_route_json)
+    VALUES (?,?,?,?,?,?,?,'planned',?,?,?,?,?)`).bind(id,COMMAND_CENTER_SCOPE,workstream,priority,title,details,source,String(owner.specialist.id),now,now,projectId,routeJson).run();
   const row=await env.DB.prepare("SELECT * FROM hermes_owner_work_items WHERE id = ? AND organization_scope = ?").bind(id,COMMAND_CENTER_SCOPE).first();
   return jsonResponse(201,{success:true,work_item:publicWorkItem(row)},headers);
 }

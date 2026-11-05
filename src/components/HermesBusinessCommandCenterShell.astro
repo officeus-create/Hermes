@@ -11,30 +11,94 @@ interface Props {
   activeKey?:string;
 }
 const { mode, ru=false, title, lead, eyebrow="Hermes Connect", badge, nav=[], activeKey } = Astro.props;
+const privateGroups = [
+  { label: ru?"Работа":"Work", keys:["today","projects","tasks"] },
+  { label: ru?"Операции":"Operations", keys:["social","hae","automations","agents"] },
+  { label: ru?"Система":"System", keys:["plugins","executions","evidence","knowledge","reports"] },
+  { label: ru?"Администрирование":"Admin", keys:["crm","access","investor"] },
+];
+const groupedPrivateNav = privateGroups
+  .map((group)=>({ ...group, items:group.keys.map((key)=>nav.find((item)=>item.key===key)).filter(Boolean) as NavItem[] }))
+  .filter((group)=>group.items.length>0);
 ---
 <main id="main-content" class={"hcc-page hcc-page--"+mode} data-command-center-mode={mode}>
-  <div class="hcc-shell">
-    <header class="hcc-hero">
-      <div class="hcc-hero-copy">
-        <p class="hcc-kicker">{eyebrow}</p>
-        <h1>{title}</h1>
-        <p class="hcc-lead">{lead}</p>
-        <slot name="hero-actions" />
+  {mode==="private" ? (
+    <div class="hcc-shell hcc-shell--private">
+      <div class="hcc-private-layout">
+        <aside class="hcc-private-sidebar" aria-label={ru?"Навигация Command Center":"Command Center navigation"}>
+          <div class="hcc-private-brand">
+            <p class="hcc-kicker">{eyebrow}</p>
+            <strong>{title}</strong>
+            {badge && <span class="hcc-badge">{badge}</span>}
+          </div>
+          <details class="hcc-private-nav-drawer" open>
+            <summary>{ru?"Меню":"Menu"}</summary>
+            <nav class="hcc-nav hcc-nav--sidebar">
+              {groupedPrivateNav.map((group)=>(
+                <section class="hcc-nav-group" aria-label={group.label}>
+                  <span class="hcc-nav-group-label">{group.label}</span>
+                  {group.items.map((item)=>
+                    <button type="button" class:list={["hcc-nav-item",activeKey===item.key&&"is-active"]} data-cc-nav={item.key}>{item.label}</button>
+                  )}
+                </section>
+              ))}
+            </nav>
+          </details>
+          <div class="hcc-private-sidebar-actions"><slot name="hero-actions" /></div>
+        </aside>
+        <section class="hcc-private-main">
+          <header class="hcc-private-topbar">
+            <div>
+              <p class="hcc-kicker">{ru?"Рабочее пространство владельца":"Owner workspace"}</p>
+              <h1>{title}</h1>
+              <p>{lead}</p>
+            </div>
+            <div class="hcc-private-topbar-side">
+              {badge && <span class="hcc-badge">{badge}</span>}
+            </div>
+          </header>
+          <slot />
+        </section>
       </div>
-      <div class="hcc-hero-side">
-        {badge && <span class="hcc-badge">{badge}</span>}
-        <slot name="hero-side" />
-      </div>
-    </header>
-    {nav.length>0 && (
-      <nav class="hcc-nav" aria-label={ru?"Навигация Command Center":"Command Center navigation"}>
-        {nav.map((item,index)=> mode==="private"
-          ? <button type="button" class:list={["hcc-nav-item",index>=4&&"hcc-nav-secondary",activeKey===item.key&&"is-active"]} data-cc-nav={item.key}>{item.label}</button>
-          : <a class:list={["hcc-nav-item",activeKey===item.key&&"is-active"]} href={item.href||("#"+item.key)}>{item.label}</a>
-        )}
-        {mode==="private" && nav.length>4 && <details class="hcc-nav-more"><summary>{ru?"Ещё":"More"}</summary><div>{nav.slice(4).map((item)=><button type="button" class:list={["hcc-nav-item",activeKey===item.key&&"is-active"]} data-cc-nav={item.key}>{item.label}</button>)}</div></details>}
-      </nav>
-    )}
-    <slot />
-  </div>
+    </div>
+  ) : (
+    <div class="hcc-shell">
+      <header class="hcc-hero">
+        <div class="hcc-hero-copy">
+          <p class="hcc-kicker">{eyebrow}</p>
+          <h1>{title}</h1>
+          <p class="hcc-lead">{lead}</p>
+          <slot name="hero-actions" />
+        </div>
+        <div class="hcc-hero-side">
+          {badge && <span class="hcc-badge">{badge}</span>}
+          <slot name="hero-side" />
+        </div>
+      </header>
+      {nav.length>0 && (
+        <nav class="hcc-nav" aria-label={ru?"Навигация Command Center":"Command Center navigation"}>
+          {nav.map((item)=><a class:list={["hcc-nav-item",activeKey===item.key&&"is-active"]} href={item.href||("#"+item.key)}>{item.label}</a>)}
+        </nav>
+      )}
+      <slot />
+    </div>
+  )}
 </main>
+
+<script>
+  const mobileNav = window.matchMedia("(max-width: 900px)");
+  const syncPrivateNav = () => {
+    document.querySelectorAll<HTMLDetailsElement>(".hcc-private-nav-drawer").forEach((drawer) => {
+      if (mobileNav.matches && !drawer.dataset.mobileInitialized) {
+        drawer.open = false;
+        drawer.dataset.mobileInitialized = "true";
+      }
+      if (!mobileNav.matches) {
+        drawer.open = true;
+        delete drawer.dataset.mobileInitialized;
+      }
+    });
+  };
+  syncPrivateNav();
+  mobileNav.addEventListener?.("change", syncPrivateNav);
+</script>

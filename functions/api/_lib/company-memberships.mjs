@@ -73,3 +73,20 @@ export async function getActiveCompanyMembership(db, { specialistId, businessRef
 
   return membershipRowAsPermission(row);
 }
+
+
+export async function listActiveCompanyMemberships(db, { specialistId }) {
+  await ensureCompanyMembershipSchema(db);
+  const actor = clean(specialistId, 180);
+  if (!actor) return [];
+
+  const result = await db.prepare(`
+    SELECT id,business_ref,workspace_ref,specialist_id,role,active,grant_source,granted_by,created_at,updated_at,revoked_at,revoked_by
+    FROM hermes_company_memberships
+    WHERE specialist_id = ? AND active = 1 AND revoked_at IS NULL
+    ORDER BY updated_at DESC, id ASC
+    LIMIT 100
+  `).bind(actor).all();
+
+  return (result?.results || []).map(membershipRowAsPermission).filter(Boolean);
+}

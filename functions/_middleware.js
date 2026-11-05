@@ -1,4 +1,4 @@
-import { requireInternalOwner } from "./api/_lib/internal-ai.mjs";
+import { requireInternalOwner, requireInternalAiViewer } from "./api/_lib/internal-ai.mjs";
 
 const CONNECT_HOST = "connect.hermeslogisticsus.com";
 const MAIN_HOST = "hermeslogisticsus.com";
@@ -416,6 +416,14 @@ async function routeMainAndCompatibilityHosts(context) {
   if (isPrivateCommandCenter) {
     const owner = await requireInternalOwner(context.request, context.env);
     if (owner.response) return withTransportSecurity(privateCommandCenterGateResponse(owner.response.status, incomingUrl));
+  }
+  // Employees with separately granted Team View must NEVER receive owner HTML.
+  // This separate read-only route is protected before the static asset is served.
+  const isTeamView = normalizedPrivatePath === "/services/hermes-connect/internal/team-view"
+    || normalizedPrivatePath === "/services/hermes-connect/internal/team-view/index.html";
+  if (isTeamView) {
+    const viewer = await requireInternalAiViewer(context.request, context.env);
+    if (viewer.response) return withTransportSecurity(privateCommandCenterGateResponse(viewer.response.status, incomingUrl));
   }
   if (canonicalGonePath(incomingUrl.pathname)) {
     return withTransportSecurity(goneSearchArtifactResponse());

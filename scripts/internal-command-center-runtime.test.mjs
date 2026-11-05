@@ -3,10 +3,14 @@ import { DatabaseSync } from "node:sqlite";
 import { onRequestGet as listWorkItems, onRequestPost as createWorkItem } from "../functions/api/internal-command-center/work-items.ts";
 import { onRequestPatch as mutateWorkItem } from "../functions/api/internal-command-center/work-items/[id].ts";
 import { onRequestGet as listAccess, onRequestPost as mutateAccess } from "../functions/api/internal-command-center/access.ts";
+import { onRequestGet as aiStatus } from "../functions/api/internal-ai/status.ts";
+import { onRequestGet as listAiTasks } from "../functions/api/internal-ai/tasks.ts";
 import { onRequestGet as listProjects, onRequestPost as createProject } from "../functions/api/internal-command-center/projects.ts";
 import { onRequestPatch as editProject } from "../functions/api/internal-command-center/projects/[id].ts";
 import { ensureInternalAiSchema } from "../functions/api/_lib/internal-ai.mjs";
-import { ensureCommandCenterSchema } from "../functions/api/_lib/internal-command-center.mjs";
+import { ensureCommandCenterSchema, selectWorkItemPluginRoute } from "../functions/api/_lib/internal-command-center.mjs";
+import { onRequest as commandCenterMiddleware } from "../functions/_middleware.js";
+import { pluginRuntimeVersion } from "../workers/automation-engine/src/plugin-runtime-registry.mjs";
 
 class Statement {
   constructor(statement,args=[]){this.statement=statement;this.args=args}
@@ -15,12 +19,22 @@ class Statement {
   async first(){return this.statement.get(...this.args)??null}
   async all(){return{results:this.statement.all(...this.args)}}
 }
+const seoRoute=selectWorkItemPluginRoute({workstream:"marketing",title:"Technical SEO Bing indexation",details:"Check canonical indexability"});
+assert.equal(seoRoute.owner.role_id,"hermes-search-growth","marketing/search intent must route to the verified search specialist");
+assert.equal(seoRoute.state,"PLUGIN_SELECTED_NOT_EXECUTED","selection alone must not imply execution");
+assert.ok(seoRoute.helpers.some(x=>x.role_id==="hermes-agent-coordinator"));
+assert.equal(selectWorkItemPluginRoute({workstream:"finance",title:"Reconcile invoices"}).owner.role_id,"hermes-agent-coordinator","workstreams without a verified runtime plugin use Coordinator, not a fictitious Finance worker");
+const connectRoute=selectWorkItemPluginRoute({workstream:"technology",title:"Command Center CRM admin",details:"Hermes Connect workspace and customer operations"});
+assert.equal(connectRoute.owner.role_id,"hermes-technology-developer","Technology Developer remains the single implementation writer");
+assert.equal(connectRoute.basis,"technology_connect_intent");
+assert.ok(connectRoute.helpers.some(x=>x.role_id==="hermes-connect-operator"&&x.plugin_version===pluginRuntimeVersion("hermes-connect-operator")),"Hermes Connect operator must be a registry-backed CRM/product helper");
 // Backwards-compatible migration: real older D1 rows may have no project column.
 const legacySqlite=new DatabaseSync(":memory:");
 legacySqlite.exec("CREATE TABLE hermes_owner_work_items (id TEXT PRIMARY KEY,organization_scope TEXT,status TEXT,priority TEXT,created_at TEXT); INSERT INTO hermes_owner_work_items VALUES ('legacy','hermes_internal','planned','p2','2026-10-01');");
 const legacyDB={prepare:sql=>new Statement(legacySqlite.prepare(sql))};
 await ensureCommandCenterSchema(legacyDB);
 assert(legacySqlite.prepare("PRAGMA table_info(hermes_owner_work_items)").all().some(x=>x.name==="project_id"),"migration must add nullable project_id");
+assert(legacySqlite.prepare("PRAGMA table_info(hermes_owner_work_items)").all().some(x=>x.name==="plugin_route_json"),"legacy D1 migration must add durable plugin route receipt");
 assert.equal(legacySqlite.prepare("SELECT project_id FROM hermes_owner_work_items WHERE id='legacy'").get().project_id,null,"older task remains unassigned");
 await ensureCommandCenterSchema(legacyDB);
 legacySqlite.close();
@@ -46,7 +60,10 @@ const request=(path,{method="GET",body,owner="owner"}={})=>new Request("https://
 });
 async function create(title,workstream="marketing",projectId=null){
   const response=await createWorkItem({request:request("/api/internal-command-center/work-items",{method:"POST",body:{workstream,priority:"p1",title,details:"Synthetic acceptance task: "+title,source:"text",project_id:projectId}}),env:{DB:db}});
-  assert.equal(response.status,201); const payload=await response.json(); assert.equal(payload.work_item.status,"planned"); return payload.work_item;
+  assert.equal(response.status,201); const payload=await response.json(); assert.equal(payload.work_item.status,"planned");
+   assert.equal(payload.work_item.plugin_route?.state,"PLUGIN_SELECTED_NOT_EXECUTED","selection must not claim execution");
+   assert.ok(payload.work_item.plugin_route?.owner?.role_id,"owner role must be selected on create");
+   return payload.work_item;
 }
 async function patch(id,action){
   const response=await mutateWorkItem({request:request("/api/internal-command-center/work-items/"+id,{method:"PATCH",body:{action}}),env:{DB:db},params:{id}});
@@ -143,13 +160,18 @@ assert.equal(dispatched.payload.state,"dispatched");
 assert.equal(dispatched.payload.work_item.status,"in_progress");
 assert.equal(dispatched.payload.task.status,"queued");
 assert(dispatched.payload.work_item.linked_task_id);
+assert.equal(dispatched.payload.work_item.plugin_route?.state,"PLUGIN_SELECTED_NOT_EXECUTED");
+const routedPrompt=sqlite.prepare("SELECT prompt FROM hermes_internal_ai_tasks WHERE id=?").get(dispatched.payload.task.id).prompt;
+assert.ok(routedPrompt.includes("Selected owner capability: hermes-technology-developer@" + pluginRuntimeVersion("hermes-technology-developer")));
+assert.match(routedPrompt,/PLUGIN_SELECTED_NOT_EXECUTED/);
 
 const blockedSecond=await patch(second.id,"dispatch");
 assert.equal(blockedSecond.response.status,409);
 assert.equal(blockedSecond.payload.error,"active_task_exists");
 
 const activeTaskId=dispatched.payload.task.id;
-sqlite.prepare("UPDATE hermes_internal_ai_tasks SET status='completed',completed_at=?,updated_at=?,output_summary='Synthetic completion evidence' WHERE id=?").run(now,now,activeTaskId);
+const syntheticStartedAt=new Date(Date.parse(now)-60000).toISOString();
+sqlite.prepare("UPDATE hermes_internal_ai_tasks SET status='completed',started_at=?,completed_at=?,updated_at=?,output_summary='Synthetic completion evidence' WHERE id=?").run(syntheticStartedAt,now,now,activeTaskId);
 const projectsAfterAiCompletion=(await (await listProjects({request:request("/api/internal-command-center/projects"),env:{DB:db}})).json()).projects;
 assert.deepEqual(
   projectsAfterAiCompletion.find(project=>project.id==="hermes-command-center")?.work_items_summary,
@@ -162,6 +184,8 @@ const firstAfter=listPayload.work_items.find(item=>item.id===first.id);
 const secondAfter=listPayload.work_items.find(item=>item.id===second.id);
 assert.equal(firstAfter.status,"awaiting_acceptance");
 assert.equal(firstAfter.linked_task_status,"completed");
+assert.equal(firstAfter.linked_task_started_at,syntheticStartedAt,"owner read model must expose real execution start time");
+assert.equal(firstAfter.linked_task_completed_at,now,"owner read model must expose real execution completion time");
 assert.equal(firstAfter.linked_task_output_summary,"Synthetic completion evidence");
 assert.equal(firstAfter.completed_at,null);
 assert.equal(firstAfter.accepted_at,null);
@@ -214,6 +238,104 @@ assert.equal(retriedSecond.response.status,200,
 assert.equal(retriedSecond.payload.work_item.status,"in_progress");
 assert.notEqual(retriedSecond.payload.task.id,failedTaskId);
 assert.equal(retriedSecond.payload.work_item.linked_task_id,retriedSecond.payload.task.id);
+
+sqlite.prepare("INSERT INTO hermes_internal_ai_runner_state (id,organization_scope,last_seen_at,repo_sha,runtime_version,telemetry_json) VALUES (?,?,?,?,?,?)").run(
+  "internal-ai-mac-runner","hermes_internal",new Date().toISOString(),"synthetic-sha","synthetic-runtime",
+  JSON.stringify({status:"RUNNING",phase:"AUTONOMOUS_OPERATIONS_AND_LEARNING",cycle:563,current_task:"Owner task Jane Doe jane@example.invalid at https://internal.example.invalid/tenant/123",next_action:"Owner-only next action",model:"qwen3.5:4b",last_training_phase:"DOCUMENTARY_REVIEW",autonomy:{external_actions:0,provider_writes:0}})
+);
+sqlite.prepare("INSERT INTO hermes_internal_ai_events (organization_scope,task_id,event_type,message,created_at) VALUES (?,?,?,?,?)").run("hermes_internal",retriedSecond.payload.task.id,"output","Synthetic latest log event",now);
+const taskHistoryResponse=await listAiTasks({request:request("/api/internal-ai/tasks"),env:{DB:db}});
+assert.equal(taskHistoryResponse.status,200);
+const taskHistory=await taskHistoryResponse.json();
+assert.equal(taskHistory.timing_policy,"timestamps_only");
+const currentExecution=taskHistory.tasks.find(task=>task.id===retriedSecond.payload.task.id);
+assert.equal(currentExecution.last_event.type,"output");
+assert.equal(currentExecution.progress_percent,null);
+assert.equal(currentExecution.eta_label,"UNKNOWN");
+
+let viewerStatus=await aiStatus({request:request("/api/internal-ai/status",{owner:"delegate"}),env:{DB:db}});
+assert.equal(viewerStatus.status,403,"generic Hermes account must not inherit Team View");
+const teamGrant=await mutateAccess({request:request("/api/internal-command-center/access",{method:"POST",body:{action:"grant",email:"delegate@example.invalid",capability:"team_view"}}),env:{DB:db}});
+assert.equal(teamGrant.status,200);
+viewerStatus=await aiStatus({request:request("/api/internal-ai/status",{owner:"delegate"}),env:{DB:db}});
+assert.equal(viewerStatus.status,200);
+const teamStatus=await viewerStatus.json();
+assert.equal(teamStatus.access_level,"team");
+assert.equal(teamStatus.runtime.operations.model,null,"Team View must hide raw model telemetry");
+assert.equal(teamStatus.runtime.operations.phase,null,"Team View must hide arbitrary phases");
+assert.equal(teamStatus.runtime.operations.status,"RUNNING");
+assert.equal(teamStatus.runtime.operations.current_task,"Task active — details private");
+for(const privateSnippet of ["Jane Doe","jane@example.invalid","internal.example.invalid","tenant/123"]){
+  assert.equal(JSON.stringify(teamStatus).includes(privateSnippet),false,"Team View must redact private owner telemetry: "+privateSnippet);
+}
+const ownerStatus=await aiStatus({request:request("/api/internal-ai/status"),env:{DB:db}});
+assert.equal(ownerStatus.status,200,"Owner must retain access to authorized telemetry");
+assert.match(JSON.stringify(await ownerStatus.json()),/Jane Doe/,"Owner-only telemetry stays available");
+assert.equal("repo_sha" in teamStatus.runtime,false,"Team View must hide repo metadata");
+assert.equal("active_task" in teamStatus,false,"Team View must hide owner task details");
+// The static employee HTML must be rejected at the edge before any asset body
+// is served. A viewer capability does not unlock the owner's private HTML.
+const middlewareRoute = commandCenterMiddleware[0];
+const edgeReq=(path,id=null)=>new Request("https://hermeslogisticsus.com"+path,{
+  headers:id?{Cookie:"hermes_session=session-"+id}:{},
+});
+async function edgeProbe(path,id=null){
+  let assetReads=0;
+  const response=await middlewareRoute({
+    request:edgeReq(path,id),env:{DB:db},
+    next:async()=>{assetReads++;return new Response("SYNTHETIC_PRIVATE_ASSET_SENTINEL")},
+  });
+  return {response,assetReads,text:await response.text()};
+}
+const anonTeam=await edgeProbe("/services/hermes-connect/internal/team-view/");
+assert.equal(anonTeam.response.status,401,"Team HTML anonymous access must fail closed");
+assert.equal(anonTeam.assetReads,0,"anonymous Team request must not reach static asset");
+assert(!anonTeam.text.includes("SYNTHETIC_PRIVATE_ASSET_SENTINEL"));
+const delegatedTeam=await edgeProbe("/services/hermes-connect/internal/team-view/","delegate");
+assert.equal(delegatedTeam.response.status,200,"explicitly authorized team viewer may load only the team HTML");
+assert.equal(delegatedTeam.assetReads,1);
+const delegatedOwner=await edgeProbe("/services/hermes-connect/internal/command-center/","delegate");
+assert.equal(delegatedOwner.response.status,403,"team capability must never grant owner HTML");
+assert.equal(delegatedOwner.assetReads,0);
+const directOwnerAsset=await edgeProbe("/services/hermes-connect/internal/command-center/index.html","delegate");
+assert.equal(directOwnerAsset.response.status,403,"team capability must never grant direct owner index.html");
+assert.equal(directOwnerAsset.assetReads,0);
+const realOwnerPage=await edgeProbe("/services/hermes-connect/internal/command-center/","owner");
+assert.equal(realOwnerPage.response.status,200,"explicit real owner capability retains owner page");
+assert.equal(realOwnerPage.assetReads,1);
+
+const teamRevoke=await mutateAccess({request:request("/api/internal-command-center/access",{method:"POST",body:{action:"revoke",email:"delegate@example.invalid",capability:"team_view"}}),env:{DB:db}});
+assert.equal(teamRevoke.status,200);
+viewerStatus=await aiStatus({request:request("/api/internal-ai/status",{owner:"delegate"}),env:{DB:db}});
+assert.equal(viewerStatus.status,403,"revoked Team View must fail closed");
+const revokedPage=await edgeProbe("/services/hermes-connect/internal/team-view/","delegate");
+assert.equal(revokedPage.response.status,403,"revoked employee must also lose HTML access");
+assert.equal(revokedPage.assetReads,0);
+
+
+const badCapability=await mutateAccess({request:request("/api/internal-command-center/access",{method:"POST",body:{action:"grant",email:"delegate@example.invalid",capability:"team_viwe"}}),env:{DB:db}});
+assert.equal(badCapability.status,400,"unknown explicit capability must fail closed");
+assert.equal((await badCapability.json()).error,"invalid_capability");
+
+const beforeFaultAudit=Number(sqlite.prepare("SELECT count(*) AS n FROM hermes_internal_team_view_access_audit").get().n);
+const faultDb={
+  prepare:sql=>new Statement(sqlite.prepare(sql)),
+  batch:async statements=>{
+    sqlite.exec("BEGIN IMMEDIATE");
+    try{
+      await statements[0].run();
+      throw new Error("synthetic_audit_failure");
+    }catch(error){
+      sqlite.exec("ROLLBACK");
+      throw error;
+    }
+  }
+};
+const failedAtomicGrant=await mutateAccess({request:request("/api/internal-command-center/access",{method:"POST",body:{action:"grant",email:"delegate@example.invalid",capability:"team_view"}}),env:{DB:faultDb}});
+assert.equal(failedAtomicGrant.status,503,"audit failure must fail the whole access mutation");
+assert.equal((await failedAtomicGrant.json()).error,"access_mutation_failed");
+assert.equal(sqlite.prepare("SELECT active FROM hermes_internal_team_view_access WHERE specialist_id='delegate'").get().active,0,"failed audit must roll back effective Team View permission");
+assert.equal(Number(sqlite.prepare("SELECT count(*) AS n FROM hermes_internal_team_view_access_audit").get().n),beforeFaultAudit,"failed atomic mutation must not create audit receipt");
 
 const grant=await mutateAccess({request:request("/api/internal-command-center/access",{method:"POST",body:{action:"grant",email:"delegate@example.invalid"}}),env:{DB:db}});
 assert.equal(grant.status,200);
