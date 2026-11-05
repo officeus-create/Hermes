@@ -71,7 +71,7 @@ export const COMMAND_CENTER_REVENUE_4M_BACKLOG = Object.freeze([
     "hae_ready": "",
     "priority": "p2",
     "source_ref": "personal Gmail 2019-12 credit-check thread",
-    "notes": "4-month revenue reconciliation; technical completion is not financial completion.",
+    "notes": "4-month revenue reconciliation; technical completion is not financial completion. | legacy_priority=blank",
     "workstream": "finance",
     "status": "planned"
   },
@@ -96,7 +96,7 @@ export const COMMAND_CENTER_REVENUE_4M_BACKLOG = Object.freeze([
     "hae_ready": "",
     "priority": "p2",
     "source_ref": "personal+shipper Gmail 2020 POD/BOL settlement threads",
-    "notes": "4-month revenue reconciliation; technical completion is not financial completion.",
+    "notes": "4-month revenue reconciliation; technical completion is not financial completion. | legacy_priority=blank",
     "workstream": "finance",
     "status": "planned"
   },
@@ -121,7 +121,7 @@ export const COMMAND_CENTER_REVENUE_4M_BACKLOG = Object.freeze([
     "hae_ready": "",
     "priority": "p2",
     "source_ref": "S158 enterprise shipper/procurement lineage",
-    "notes": "4-month revenue reconciliation; technical completion is not financial completion.",
+    "notes": "4-month revenue reconciliation; technical completion is not financial completion. | legacy_priority=blank",
     "workstream": "academy",
     "status": "planned"
   },
@@ -421,7 +421,7 @@ export const COMMAND_CENTER_REVENUE_4M_BACKLOG = Object.freeze([
     "hae_ready": "",
     "priority": "p2",
     "source_ref": "GitHub #1478/#1482; exact Catalog production subject mailbox check",
-    "notes": "4-month revenue reconciliation; technical completion is not financial completion.",
+    "notes": "4-month revenue reconciliation; technical completion is not financial completion. | legacy_priority=blank",
     "workstream": "operations",
     "status": "planned"
   },
@@ -671,7 +671,7 @@ export const COMMAND_CENTER_REVENUE_4M_BACKLOG = Object.freeze([
     "hae_ready": "",
     "priority": "p2",
     "source_ref": "Drive Finance Control Tower 18Kh1CJt4D45u6Ul5y0PP8680I1DJmSIulvU8a325S6k",
-    "notes": "4-month revenue reconciliation; technical completion is not financial completion.",
+    "notes": "4-month revenue reconciliation; technical completion is not financial completion. | legacy_priority=blank",
     "workstream": "finance",
     "status": "planned"
   },
@@ -819,9 +819,9 @@ export const COMMAND_CENTER_REVENUE_4M_BACKLOG = Object.freeze([
     "next_revenue_action": "Use #2252 as the current execution owner. Resolve material differences between historical August terms and the Nov-2 approved agreement; pin the selected immutable PDF/version/SHA and Appendix A contract; run exact-head CI + private synthetic e-sign/delivery/readback without a real customer send.",
     "system_can_start": "PREP_NOW",
     "hae_ready": "MANUAL_PIPELINE",
-    "priority": "hold",
+    "priority": "p2",
     "source_ref": "Hermes Carrier Contract Portal via WhatsApp/Telegram/SMS",
-    "notes": "4-month revenue reconciliation; technical completion is not financial completion.",
+    "notes": "4-month revenue reconciliation; technical completion is not financial completion. | legacy_priority=HOLD",
     "workstream": "logistics",
     "status": "planned"
   },
@@ -971,7 +971,7 @@ export const COMMAND_CENTER_REVENUE_4M_BACKLOG = Object.freeze([
     "hae_ready": "",
     "priority": "p2",
     "source_ref": "PR #2055; closed issue #1011",
-    "notes": "4-month revenue reconciliation; technical completion is not financial completion.",
+    "notes": "4-month revenue reconciliation; technical completion is not financial completion. | legacy_priority=blank",
     "workstream": "technology",
     "status": "planned"
   },
@@ -1144,9 +1144,9 @@ export const COMMAND_CENTER_REVENUE_4M_BACKLOG = Object.freeze([
     "next_revenue_action": "Hold all protected release actions. Wait for #2236 exact-head applicable CI to become terminal GREEN + independent current-head APPROVED review. Because #2236 advanced, #2283 is now stale/mergeable=false on old base 3bfdfb777; only after parent stability resync #2283, rerun bridge/HAE tests, then continue #2250 DNS/TLS signed canary. Keep source collectors running and security P0 gates separate.",
     "system_can_start": "PREP_NOW",
     "hae_ready": "REMEDIATION_ACTIVE",
-    "priority": "hold",
+    "priority": "p2",
     "source_ref": "CEO directive 2026-11-03 / W-20261103-120 / #2265 / audit plugins v0.1.1 / main 8fbc0e94 / live GSC / Windows VIKTOR",
-    "notes": "4-month revenue reconciliation; technical completion is not financial completion.",
+    "notes": "4-month revenue reconciliation; technical completion is not financial completion. | legacy_priority=HOLD",
     "workstream": "marketing",
     "status": "planned"
   },
@@ -1346,7 +1346,7 @@ export const COMMAND_CENTER_REVENUE_4M_BACKLOG = Object.freeze([
     "hae_ready": "",
     "priority": "p2",
     "source_ref": "Email Intelligence Audit / S150-S155",
-    "notes": "4-month revenue reconciliation; technical completion is not financial completion.",
+    "notes": "4-month revenue reconciliation; technical completion is not financial completion. | legacy_priority=blank",
     "workstream": "operations",
     "status": "planned"
   },
@@ -1696,7 +1696,7 @@ export const COMMAND_CENTER_REVENUE_4M_BACKLOG = Object.freeze([
     "hae_ready": "",
     "priority": "p2",
     "source_ref": "PR #2055 docs/investor-portal-release-contract.md",
-    "notes": "4-month revenue reconciliation; technical completion is not financial completion.",
+    "notes": "4-month revenue reconciliation; technical completion is not financial completion. | legacy_priority=blank",
     "workstream": "marketing",
     "status": "planned"
   },
@@ -2221,7 +2221,7 @@ export const COMMAND_CENTER_REVENUE_4M_BACKLOG = Object.freeze([
     "hae_ready": "",
     "priority": "p2",
     "source_ref": "Execution Ledger + HAE PR #2029 read-only proof",
-    "notes": "4-month revenue reconciliation; technical completion is not financial completion.",
+    "notes": "4-month revenue reconciliation; technical completion is not financial completion. | legacy_priority=blank",
     "workstream": "operations",
     "status": "planned"
   },
@@ -2744,9 +2744,9 @@ export const COMMAND_CENTER_REVENUE_4M_BACKLOG = Object.freeze([
     "next_revenue_action": "None for the old standalone program. Test the Path Engine acceptance model only when a current Home/direction/Sales/Connect change is already being made.",
     "system_can_start": "DO_NOT_START",
     "hae_ready": "MANUAL_PIPELINE",
-    "priority": "hold",
+    "priority": "p2",
     "source_ref": "Path Engine: direction -> role -> need -> situation -> recommendation -> action",
-    "notes": "Historical/superseded source. Retained for audit only; never auto-unlock or execute as a revenue mission.",
+    "notes": "Historical/superseded source. Retained for audit only; never auto-unlock or execute as a revenue mission. | legacy_priority=HOLD",
     "workstream": "marketing",
     "status": "blocked"
   },
@@ -2821,7 +2821,7 @@ export const COMMAND_CENTER_REVENUE_4M_BACKLOG = Object.freeze([
     "hae_ready": "",
     "priority": "p2",
     "source_ref": "Gmail real Academy application threads; GitHub #644",
-    "notes": "4-month revenue reconciliation; technical completion is not financial completion.",
+    "notes": "4-month revenue reconciliation; technical completion is not financial completion. | legacy_priority=blank",
     "workstream": "academy",
     "status": "blocked"
   },
