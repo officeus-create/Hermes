@@ -6,6 +6,7 @@ on:
     - cron: "23 * * * *"
 
 permissions:
+  actions: read
   contents: read
 
 concurrency:
@@ -123,3 +124,48 @@ jobs:
           if [[ "${{ steps.synthetic.outcome }}" != "success" ]]; then
             exit 1
           fi
+
+
+  hae-cloudflare-auditor-source:
+    if: always()
+    needs: verify-public-surfaces
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    environment: production
+    steps:
+      - name: Check out exact workflow main
+        uses: actions/checkout@v6
+        with:
+          ref: main
+          persist-credentials: false
+
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+
+      - name: Capture exact trusted main SHA
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "HAE_CLOUDFLARE_EXPECTED_MAIN_SHA=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+
+      - name: Validate Cloudflare auditor source adapter
+        run: node scripts/hae-cloudflare-auditor-source.test.mjs
+
+      - name: Enqueue minimized authenticated Cloudflare audit receipt
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CLOUDFLARE_HAE_RELEASE_TOKEN: ${{ secrets.CLOUDFLARE_HAE_RELEASE_TOKEN }}
+          HAE_CLOUDFLARE_RUN_ID: ${{ github.run_id }}
+          HAE_CLOUDFLARE_RUN_ATTEMPT: ${{ github.run_attempt }}
+          HAE_CLOUDFLARE_SYNTHETIC_RESULT: ${{ needs.verify-public-surfaces.result }}
+        run: node scripts/hae-cloudflare-auditor-source.mjs
+
+      - name: Retain sanitized Cloudflare auditor receipt
+        uses: actions/upload-artifact@v4
+        with:
+          name: hae-cloudflare-auditor-receipt
+          path: ${{ runner.temp }}/hae-cloudflare-auditor-receipt.json
+          if-no-files-found: error
+          retention-days: 90

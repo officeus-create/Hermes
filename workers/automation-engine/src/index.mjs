@@ -62,6 +62,7 @@ import {
 import { haeSelfRepairPacketReplayMatches } from "./hae-self-improvement.mjs";
 import { verifyGithubCIQueueEnvelope } from "./github-ci-runtime-intake.mjs";
 import { githubAuditorJobFromEnvelope } from "./github-auditor-runtime-intake.mjs";
+import { cloudflareAuditorJobFromEnvelope } from "./cloudflare-auditor-runtime-intake.mjs";
 import { verifyGithubCIPatchProposalEnvelope } from "./github-ci-patch-runtime-intake.mjs";
 import { verifyGithubCIIndependentQaEnvelope } from "./github-ci-independent-qa-runtime-intake.mjs";
 import { materializeIndependentQaReceipt } from "./hae-independent-qa-receipt.mjs";
@@ -2390,6 +2391,19 @@ export default {
       const payload = item.body || {};
       const messageType = clean(payload?.type, 80) || "UNKNOWN";
       try {
+        if (messageType === "cloudflare.audit.snapshot") {
+          // Authenticated Cloudflare provider + public synthetic receipt. This lane
+          // creates only the existing READ_ONLY auditor job and remains PARTIAL
+          // until provider resource telemetry/route-ownership coverage is complete.
+          if (!env.DB) throw new Error("database_not_configured");
+          await ensureSchema(env.DB);
+          const auditJob = cloudflareAuditorJobFromEnvelope(payload, {
+            deployedSourceSha: clean(env.HERMES_AUTOMATION_SOURCE_SHA, 80),
+          });
+          await createGenericJob(env, auditJob);
+          item.ack();
+          continue;
+        }
         if (messageType === "github.audit.snapshot") {
           // Separate read-only GitHub health receipt. This lane never creates repair
           // work and intentionally remains PARTIAL until broader GitHub coverage exists.
