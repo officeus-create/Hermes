@@ -1,5 +1,4 @@
 // GENERATED from Google Sheet HERMES EXECUTION & IDEAS LEDGER — REVENUE_4M_BACKLOG.
-// Do not hand-edit row content. Source spreadsheet id: 1Ya2fgHZVISV3XHd_w9JHSJBrizCy-LeKczD9H_qJErc
 export const COMMAND_CENTER_REVENUE_4M_BACKLOG = Object.freeze([
   {
     "id": "hcwi_rev4m_w_20261026_109",
@@ -705,11 +704,11 @@ export const COMMAND_CENTER_REVENUE_4M_BACKLOG = Object.freeze([
     "id": "hcwi_rev4m_w_20261019_015",
     "source_work_id": "W-20261019-015",
     "rank": 29,
-    "selected_now": false,
+    "selected_now": true,
     "created_at": "2026-10-19T00:00:00.000Z",
     "business": "Marketing",
     "department": "SEO/GEO/AEO/LLMO",
-    "original_status": "VALIDATING",
+    "original_status": "EXECUTING",
     "title": "Reconcile and finish the 150-task SEO/GEO program",
     "revenue_gate_usd": 1,
     "actual_revenue_usd": 0,
@@ -3005,11 +3004,11 @@ export const COMMAND_CENTER_REVENUE_4M_BACKLOG = Object.freeze([
     "id": "hcwi_rev4m_rev4m_20260921_citations",
     "source_work_id": "REV4M-20260921-CITATIONS",
     "rank": 121,
-    "selected_now": true,
+    "selected_now": false,
     "created_at": "2026-09-21T00:00:00.000Z",
     "business": "Hermes / ProgressoPro",
     "department": "SEO / Local Presence / Entity",
-    "original_status": "EXECUTING",
+    "original_status": "NOT_FINANCIAL_DONE",
     "title": "Business Profiles / Citations / Directories revenue system",
     "revenue_gate_usd": 1,
     "actual_revenue_usd": 0,
@@ -3202,9 +3201,4 @@ export const COMMAND_CENTER_REVENUE_4M_BACKLOG = Object.freeze([
     "status": "blocked"
   }
 ]);
-export const COMMAND_CENTER_REVENUE_4M_SOURCE = Object.freeze({
-  spreadsheet_id:"1Ya2fgHZVISV3XHd_w9JHSJBrizCy-LeKczD9H_qJErc",
-  sheet_name:"REVENUE_4M_BACKLOG",
-  generated_at:"2026-11-06T00:00:00.000Z",
-  financial_done_rule:"actual_revenue_usd >= revenue_gate_usd && actual_revenue_usd >= 1"
-});
+export const COMMAND_CENTER_REVENUE_4M_SOURCE = Object.freeze({spreadsheet_id:"1Ya2fgHZVISV3XHd_w9JHSJBrizCy-LeKczD9H_qJErc",sheet_name:"REVENUE_4M_BACKLOG",generated_at:"2026-11-06T00:00:00.000Z",financial_done_rule:"actual_revenue_usd >= revenue_gate_usd && actual_revenue_usd >= 1"});
