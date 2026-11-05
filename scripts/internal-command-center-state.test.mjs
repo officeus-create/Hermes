@@ -49,6 +49,10 @@ assert(migratedColumns.has("accepted_by"),"existing owner backlog must gain acce
 assert(migratedColumns.has("accepted_at"),"existing owner backlog must gain acceptance time receipt");
 assert(migratedColumns.has("source_ref"),"existing owner backlog must gain provenance reference");
 assert(migratedColumns.has("next_action"),"existing owner backlog must gain next-action guidance");
+assert(migratedColumns.has("revenue_gate_usd"),"owner backlog must gain financial completion gate");
+assert(migratedColumns.has("revenue_actual_usd"),"owner backlog must retain actual paid revenue");
+assert(migratedColumns.has("revenue_rank"),"owner backlog must retain revenue sequence rank");
+assert(migratedColumns.has("revenue_status"),"owner backlog must retain revenue mission state");
 const importedBefore=(await DB.prepare("SELECT COUNT(*) AS c FROM hermes_owner_work_items WHERE created_by='history_backlog_import'").first()).c;
 assert(importedBefore>=50,"history import must recover the expanded deduplicated backlog");
 const importedIds=(await DB.prepare("SELECT id FROM hermes_owner_work_items WHERE created_by='history_backlog_import' ORDER BY id").all()).results.map(row=>row.id);
@@ -63,6 +67,15 @@ assert.ok(importedCommandCenter?.next_action,"imported work must expose next act
 await ensureCommandCenterSchema(DB);
 const importedAfter=(await DB.prepare("SELECT COUNT(*) AS c FROM hermes_owner_work_items WHERE created_by='history_backlog_import'").first()).c;
 assert.equal(importedAfter,importedBefore,"history import must be idempotent across repeated schema ensures");
+const revenueCount=(await DB.prepare("SELECT COUNT(*) AS c FROM hermes_owner_work_items WHERE created_by='revenue_4m_import'").first()).c;
+assert.equal(Number(revenueCount),116,"four-month revenue reconciliation must seed all 116 source work items");
+const revenueActive=(await DB.prepare("SELECT id,revenue_source_work_id,revenue_gate_usd,revenue_target_usd,revenue_actual_usd,revenue_status,status FROM hermes_owner_work_items WHERE created_by='revenue_4m_import' AND revenue_status='active' ORDER BY revenue_rank").all()).results;
+assert.equal(revenueActive.length,1,"exactly one revenue mission must be active initially");
+assert.equal(revenueActive[0].revenue_source_work_id,"W-20261026-109");
+assert.equal(revenueActive[0].status,"ready");
+assert.equal(Number(revenueActive[0].revenue_gate_usd),1);
+assert.equal(Number(revenueActive[0].revenue_target_usd),990);
+assert.equal(Number(revenueActive[0].revenue_actual_usd),0);
 const now="2026-10-26T16:00:00.000Z";
 await DB.prepare("INSERT INTO hermes_internal_owner_access (specialist_id,active,capability,created_at,updated_at) VALUES ('owner-1',1,'HERMES_INTERNAL_OWNER',?,?)").bind(now,now).run();
 
@@ -77,6 +90,26 @@ const req=(path,method="GET",body=null,owner="owner-1")=>new Request("https://ex
   ...(body?{body:JSON.stringify(body)}:{})
 });
 const json=async(response)=>({status:response.status,body:await response.json()});
+
+const activeRevenueId=revenueActive[0].id;
+let revenueResult=await json(await mutateWork({request:req("/api/internal-command-center/work-items/"+activeRevenueId,"PATCH",{action:"complete"}),env:{DB},params:{id:activeRevenueId}}));
+assert.equal(revenueResult.status,409,"technical/manual completion must not close a revenue mission");
+assert.equal(revenueResult.body.error,"financial_result_required");
+revenueResult=await json(await mutateWork({request:req("/api/internal-command-center/work-items/"+activeRevenueId,"PATCH",{action:"record_revenue",amount_usd:0.5,evidence_ref:"payment:test:half-1"}),env:{DB},params:{id:activeRevenueId}}));
+assert.equal(revenueResult.status,200);
+assert.equal(revenueResult.body.financial_done,false);
+assert.equal(Number(revenueResult.body.revenue_total_usd),0.5);
+revenueResult=await json(await mutateWork({request:req("/api/internal-command-center/work-items/"+activeRevenueId,"PATCH",{action:"record_revenue",amount_usd:0.5,evidence_ref:"payment:test:half-2"}),env:{DB},params:{id:activeRevenueId}}));
+assert.equal(revenueResult.status,200);
+assert.equal(revenueResult.body.financial_done,true);
+assert.equal(Number(revenueResult.body.revenue_total_usd),1);
+assert.equal(revenueResult.body.work_item.status,"done");
+assert.equal(revenueResult.body.work_item.financial_done,true);
+assert.ok(revenueResult.body.next_revenue_work_item_id,"financial proof must unlock the next revenue mission");
+const unlockedRevenue=await DB.prepare("SELECT status,revenue_status,revenue_rank FROM hermes_owner_work_items WHERE id=?").bind(revenueResult.body.next_revenue_work_item_id).first();
+assert.equal(unlockedRevenue.status,"ready");
+assert.equal(unlockedRevenue.revenue_status,"active");
+
 
 let r=await json(await createWork({request:req("/api/internal-command-center/work-items","POST",{workstream:"marketing",priority:"p1",title:"Marketing task",details:"Improve one bounded marketing workflow.",source:"voice"}),env:{DB}}));
 assert.equal(r.status,201);
