@@ -175,9 +175,10 @@ assert.equal(roleContractForJobType("hae.self.release.verify").plugin_version, p
 assert.ok(ROLE_CONTRACT_JOB_TYPES.includes("hae.self.release.verify"), "Dormant self-release capability remains directly inspectable");
 assert.ok(!CAPABILITY_GRAPH_ROLE_CONTRACT_JOB_TYPES.includes("hae.self.release.verify"), "Dormant self-release capability must not be graph-routable before authenticated activation");
 assert.ok(!CAPABILITY_GRAPH_ROLE_CONTRACT_JOB_TYPES.includes("hae.self.patch.propose"), "Patch proposal must not be graph-routable before authenticated source adapter activation");
+assert.ok(!CAPABILITY_GRAPH_ROLE_CONTRACT_JOB_TYPES.includes("work.item.plan"), "Owner work planner must be reachable only from canonical HAE owner intake");
 assert.equal(roleContractForJobType("hae.self.patch.propose").role_id, "hermes-automatic-engineer");
 assert.equal(roleContractForJobType("hae.self.patch.propose").runtime_config.max_cost_usd, 0);
-assert.equal(CAPABILITY_GRAPH_ROLE_CONTRACT_JOB_TYPES.length, ROLE_CONTRACT_JOB_TYPES.length - 2);
+assert.equal(CAPABILITY_GRAPH_ROLE_CONTRACT_JOB_TYPES.length, ROLE_CONTRACT_JOB_TYPES.length - 3);
 assert.equal(roleContractForJobType("knowledge.evidence.audit").role_id, "hermes-knowledge-curator");
 assert.equal(roleContractForJobType("knowledge.evidence.audit").plugin_version, pluginRuntimeVersion("hermes-knowledge-curator"));
 assert.equal(roleContractForJobType("knowledge.lesson.evaluate").role_id, "hermes-knowledge-curator");
@@ -185,7 +186,7 @@ assert.equal(roleContractForJobType("knowledge.lesson.evaluate").plugin_version,
 assert.equal(roleContractForJobType("knowledge.lesson.evaluate").permission_class, "READ_ONLY");
 assert.equal(roleContractForJobType("knowledge.lesson.evaluate").runtime_config.max_cost_usd, 0);
 assert.ok(ROLE_CONTRACTS.filter((contract) => !contract.semantic_required).length >= 19);
-assert.equal(ROLE_CONTRACTS.filter((contract) => contract.semantic_required).length, 2);
+assert.equal(ROLE_CONTRACTS.filter((contract) => contract.semantic_required).length, 3);
 
 const searchInput = {
   pages: [
