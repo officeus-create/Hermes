@@ -39,8 +39,14 @@ for (const capability of policy.capabilities) {
   const expectedPermission = draftTypes.includes(capability.job_type) ? "DRAFT_ONLY" : "READ_ONLY";
   assert.equal(capability.permission_class, expectedPermission, `Capability class drift: ${capability.job_type}`);
   assert.equal(capability.external_provider_write, false, `Current capability must not write providers: ${capability.job_type}`);
-  assert.deepEqual(capability.allowed_side_effects, ["d1_job_state", "d1_job_events"]);
-  assert.equal(capability.submission_auth, "HERMES_AUTOMATION_TOKEN");
+  if (capability.job_type === "work.item.plan") {
+    assert.deepEqual(capability.allowed_side_effects, ["d1_job_state", "d1_job_events", "d1_ai_usage_receipt", "d1_owner_work_dispatch_binding"]);
+    assert.equal(capability.submission_auth, "INTERNAL_HAE_CRON_ONLY");
+    assert.equal(capability.max_cost_usd, 0);
+  } else {
+    assert.deepEqual(capability.allowed_side_effects, ["d1_job_state", "d1_job_events"]);
+    assert.equal(capability.submission_auth, "HERMES_AUTOMATION_TOKEN");
+  }
   assert.ok(["technical_runtime_evidence", "business_runtime_evidence"].includes(capability.retention_class));
   if (capability.job_type === "social.reply.prepare") {
     assert.equal(capability.owner_approval_required, true);
