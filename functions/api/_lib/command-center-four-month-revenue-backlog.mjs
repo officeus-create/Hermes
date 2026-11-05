@@ -3,17 +3,18 @@
 // Includes canonical ledger WORK_IDs plus distinct chat/project revenue missions recovered during the four-month reconciliation.
 // Same D1 owner-work queue; no second runtime/task registry.
 // Revenue rule: 100% only after verified financial benefit >= $1.
+// The selected active mission is chosen from Google Drive by SELECTED_NOW=YES and must be HAE-startable.
 // Superseded source WORK_IDs remain audit-only and can never enter the revenue execution sequence.
 
 export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
   {
-    id:"hcwi_rev4m_w_20261026_109", project_id:"revenue-website-progresso", workstream:"sales", priority:"p0",
+    id:"hcwi_rev4m_w_20261026_109", project_id:"revenue-website-progresso", workstream:"sales", priority:"p1",
     title:"[REVENUE] Website Pricing & Sales System — current package line", details:"Revenue reconciliation overlay for W-20261026-109. Original four-month source status: EXECUTING. CEO rule: 100% requires verified actual revenue/financial benefit >= $1; code, CI, deploy, lead, quote, training, research or technical acceptance alone are not completion. Estimated first-win target: $990. Monetization path: Convert one qualified business into the $990 Launch website offer (or the next approved higher package); record payment, not only quote/lead. Canonical planning source is One Brain REVENUE_4M_BACKLOG row 1; source work reference W-20261026-109.",
-    status:"ready", created_at:"2026-10-26T00:00:00.000Z",
+    status:"blocked", created_at:"2026-10-26T00:00:00.000Z",
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261026-109",
     revenue_gate_usd:1, revenue_target_usd:990, revenue_actual_usd:0, revenue_rank:1,
-    revenue_status:"active", revenue_source_work_id:"W-20261026-109",
-    
+    revenue_status:"queued", revenue_source_work_id:"W-20261026-109",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Use the current approved Website Pricing & Sales System to produce one genuine human-qualified quote and drive it to a paid $990 Launch sale; record actual payment/revenue receipt. Do not mark 100% for code/CI/deploy/quote alone."
   },
   {
@@ -23,7 +24,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261020-014",
     revenue_gate_usd:1, revenue_target_usd:37.5, revenue_actual_usd:0, revenue_rank:2,
     revenue_status:"queued", revenue_source_work_id:"W-20261020-014",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"After positive verification yield, formalize a reusable verification packet with source timestamps/conflict handling, then promote only deterministic discovery/dedupe to Automation Engineer; outbound remains separately authorized."
   },
   {
@@ -33,7 +34,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261028-112",
     revenue_gate_usd:1, revenue_target_usd:37.5, revenue_actual_usd:0, revenue_rank:3,
     revenue_status:"queued", revenue_source_work_id:"W-20261028-112",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Finance owns credit evidence; Sales/Dispatch cannot promote opportunity to committed/booked when credit=UNKNOWN/FAIL without explicit authorized override. Reuse existing CRM/HAE fields where possible; no new credit vendor purchase without approval."
   },
   {
@@ -43,7 +44,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261028-113",
     revenue_gate_usd:1, revenue_target_usd:37.5, revenue_actual_usd:0, revenue_rank:4,
     revenue_status:"queued", revenue_source_work_id:"W-20261028-113",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Dispatch OS owns document lifecycle; Finance owns settlement evidence; HAE may later alert on missing docs but never fabricate/alter POD/BOL or mark cash settled."
   },
   {
@@ -53,7 +54,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261028-116",
     revenue_gate_usd:1, revenue_target_usd:37.5, revenue_actual_usd:0, revenue_rank:5,
     revenue_status:"queued", revenue_source_work_id:"W-20261028-116",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Sales owns current buyer qualification; Dispatch owns load execution; Finance owns credit/payment; Academy may teach the workflow; HAE later automates deterministic checklist/status transitions only. Do not claim Maersk/FST/Outterra/Universal as Hermes clients."
   },
   {
@@ -63,7 +64,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261102-119",
     revenue_gate_usd:1, revenue_target_usd:990, revenue_actual_usd:0, revenue_rank:6,
     revenue_status:"queued", revenue_source_work_id:"W-20261102-119",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Command Center must distinguish INSTAGRAM_READ_LIVE from THREADS_DATA_PAUSED_PLAN_LIMIT. Preserve all current connections; no disconnect/upgrade. Publication/reply/DM remains separately gated."
   },
   {
@@ -73,7 +74,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261103-122",
     revenue_gate_usd:1, revenue_target_usd:37.5, revenue_actual_usd:0, revenue_rank:7,
     revenue_status:"queued", revenue_source_work_id:"W-20261103-122",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Use the existing owner profile only. Apply the already-approved minimum correction packet in Clutch Vendor Dashboard, then perform public readback. If Clutch field constraints force a legal/regulatory wording change, route that wording through Compliance before save."
   },
   {
@@ -83,7 +84,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261010-037",
     revenue_gate_usd:1, revenue_target_usd:37.5, revenue_actual_usd:0, revenue_rank:8,
     revenue_status:"queued", revenue_source_work_id:"W-20261010-037",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Sales owns customer-side qualification; Dispatch OS owns carrier/equipment intake. Synthetic QA and broker capacity offers remain excluded. No new customer funnel/code justified by a zero bounded mailbox result."
   },
   {
@@ -93,7 +94,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261012-028",
     revenue_gate_usd:1, revenue_target_usd:37.5, revenue_actual_usd:0, revenue_rank:9,
     revenue_status:"queued", revenue_source_work_id:"W-20261012-028",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Preserve existing parser; obtain sanitized true LOAD example and verify its authorized source→dedupe→expiry→D1→user readback. Never duplicate workspace PR."
   },
   {
@@ -103,7 +104,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261012-029",
     revenue_gate_usd:1, revenue_target_usd:37.5, revenue_actual_usd:0, revenue_rank:10,
     revenue_status:"queued", revenue_source_work_id:"W-20261012-029",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Resolve only missing login/entitlements or per-employee attribution inside existing role flow; log separately any source rights and actual shipment business acceptance."
   },
   {
@@ -113,7 +114,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261024-097",
     revenue_gate_usd:1, revenue_target_usd:500, revenue_actual_usd:0, revenue_rank:11,
     revenue_status:"queued", revenue_source_work_id:"W-20261024-097",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Route exact code changes to Technology; measure qualified demand separately from page indexing/traffic before scaling public content."
   },
   {
@@ -123,7 +124,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261024-099",
     revenue_gate_usd:1, revenue_target_usd:37.5, revenue_actual_usd:0, revenue_rank:12,
     revenue_status:"queued", revenue_source_work_id:"W-20261024-099",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Maintain 20-group ranked pool. Continue official/public transport-need validation asynchronously only via explicit future task; no outbound. Same-name prospect identity guard v0.1.18 is mandatory."
   },
   {
@@ -133,7 +134,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261027-111",
     revenue_gate_usd:1, revenue_target_usd:37.5, revenue_actual_usd:0, revenue_rank:13,
     revenue_status:"queued", revenue_source_work_id:"W-20261027-111",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Available corpus is complete enough to move to the next mailbox. Preserve HOLD_NATIVE_OAUTH_GAP; when OAuth arrives, run delta audit only. Native browser read has now been verified; next completeness upgrade is direct Gmail connector OAuth for archive delta comparison, not re-reading the already processed 509-message migrated corpus."
   },
   {
@@ -143,7 +144,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20260928-054",
     revenue_gate_usd:1, revenue_target_usd:990, revenue_actual_usd:0, revenue_rank:14,
     revenue_status:"queued", revenue_source_work_id:"W-20260928-054",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Coach current ProgressoPro reps with the new diagnostic-close rubric; route qualified handoffs to a Senior AE/Closer role and record real conversion evidence"
   },
   {
@@ -153,7 +154,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261004-046",
     revenue_gate_usd:1, revenue_target_usd:500, revenue_actual_usd:0, revenue_rank:15,
     revenue_status:"queued", revenue_source_work_id:"W-20261004-046",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Do not build another Worker/mail stack. Activate only the existing opt-in account-mail transport with scoped OAuth/secrets, then capture production proof and keep commercial/lead email on the existing EMAIL binding."
   },
   {
@@ -163,7 +164,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261005-045",
     revenue_gate_usd:1, revenue_target_usd:990, revenue_actual_usd:0, revenue_rank:16,
     revenue_status:"queued", revenue_source_work_id:"W-20261005-045",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Run one full cycle, document reusable inputs/outputs/stop rules; if repeatable positive signal emerges, produce HAE automation contract for deterministic collection/reporting steps"
   },
   {
@@ -173,7 +174,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261025-108",
     revenue_gate_usd:1, revenue_target_usd:990, revenue_actual_usd:0, revenue_rank:17,
     revenue_status:"queued", revenue_source_work_id:"W-20261025-108",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"No synthetic 'real' event, duplicate Catalog/CRM/receiver/email worker/account. HAE may later classify the receipt after it exists; it must not create demand."
   },
   {
@@ -183,7 +184,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261102-117",
     revenue_gate_usd:1, revenue_target_usd:990, revenue_actual_usd:0, revenue_rank:18,
     revenue_status:"queued", revenue_source_work_id:"W-20261102-117",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Sync #2236 to current main faea22626e3d2f8e39686f8ad25025f5664f6be2, rerun exact-head CI, obtain independent APPROVED review, protected merge, exact-merge-SHA HAE dry_run/publication=false acceptance, then wait for/trigger only the normal Monday 10:00 Europe/Kyiv scheduled path and verify one D1 report receipt + authenticated Command Center readback. No second scheduler."
   },
   {
@@ -193,7 +194,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261102-118",
     revenue_gate_usd:1, revenue_target_usd:990, revenue_actual_usd:0, revenue_rank:19,
     revenue_status:"queued", revenue_source_work_id:"W-20261102-118",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Do not reopen #2210 or duplicate the report. Sync #2236 to current main → exact-head CI → independent APPROVED review → protected merge → exact-merge-SHA HAE acceptance → real Friday/Monday D1 receipts → authenticated Command Center readback. Keep external send disabled for this internal owner report."
   },
   {
@@ -203,7 +204,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261104-125",
     revenue_gate_usd:1, revenue_target_usd:990, revenue_actual_usd:0, revenue_rank:20,
     revenue_status:"queued", revenue_source_work_id:"W-20261104-125",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Map both provider releases in Coordinator + HAE roster, Sales/Academy owners and Telegram Growth Manager transport. Link #2259 routing/receipt and #2224 project coverage; conduct approved DRAFT_ONLY dry-run -> QA -> source-backed Command Center readback. Resolve #932 security gate before any live Telegram delivery."
   },
   {
@@ -213,7 +214,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261018-018",
     revenue_gate_usd:1, revenue_target_usd:990, revenue_actual_usd:0, revenue_rank:21,
     revenue_status:"queued", revenue_source_work_id:"W-20261018-018",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Existing PR #2284 is code owner; NO duplicate PR. Zero approving reviews presently. Current open work: independent review -> protected merge -> deployment SHA readback -> live authenticated synthetic network smoke on required flows -> subsequent scheduled recurrence PASS. Maintain P0 PARTIAL_RESULT until proof, then independent QA may close #2280 and change ledger. Source/CI green ≠ live."
   },
   {
@@ -223,7 +224,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261021-007",
     revenue_gate_usd:1, revenue_target_usd:990, revenue_actual_usd:0, revenue_rank:22,
     revenue_status:"queued", revenue_source_work_id:"W-20261021-007",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Finish #2003 and prove one real Claude-authored bounded feature branch from current main"
   },
   {
@@ -233,7 +234,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261023-006",
     revenue_gate_usd:1, revenue_target_usd:1, revenue_actual_usd:0, revenue_rank:23,
     revenue_status:"queued", revenue_source_work_id:"W-20261023-006",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Автоматизировать статусы/эскалацию после стабилизации ledger"
   },
   {
@@ -243,7 +244,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261024-091",
     revenue_gate_usd:1, revenue_target_usd:37.5, revenue_actual_usd:0, revenue_rank:24,
     revenue_status:"queued", revenue_source_work_id:"W-20261024-091",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Feed only RIGHTS_VERIFIED + CURRENT_RECORD_VERIFIED sources into the first #1074 automation proof; route higher-risk carrier/dealer/shipper visibility to #2036. Keep #2034 provider access separate until official entitlement."
   },
   {
@@ -253,7 +254,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20260914-066",
     revenue_gate_usd:1, revenue_target_usd:37.5, revenue_actual_usd:0, revenue_rank:25,
     revenue_status:"queued", revenue_source_work_id:"W-20260914-066",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Restore/replace only the read-only mirror path if still needed; hand company-wide financial reconciliation to Finance plugin while Dispatch retains operational source truth"
   },
   {
@@ -263,7 +264,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261012-030",
     revenue_gate_usd:1, revenue_target_usd:37.5, revenue_actual_usd:0, revenue_rank:26,
     revenue_status:"queued", revenue_source_work_id:"W-20261012-030",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Keep existing W-20261012-030 / FIN-008 as owner. On-demand HAE candidate only AFTER real single-invoice finance proof: source Gmail metadata+invoice ID; manual trigger; READ_ONLY auth; idempotency key message-id + invoice-id + revision; bounded 37-message sample; deterministic parse; retry/report UNKNOWN; no outbound, duplicate scheduler, wallet changes or auto-collections."
   },
   {
@@ -273,7 +274,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261024-104",
     revenue_gate_usd:1, revenue_target_usd:37.5, revenue_actual_usd:0, revenue_rank:27,
     revenue_status:"queued", revenue_source_work_id:"W-20261024-104",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Finance owner maintains historical source/read-only evidence as-is; Investor Relations no public numbers while external approval pending. Continue GitHub/Cloudflare/Drive technical audit and technical stage map now."
   },
   {
@@ -283,17 +284,17 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261004-047",
     revenue_gate_usd:1, revenue_target_usd:990, revenue_actual_usd:0, revenue_rank:28,
     revenue_status:"queued", revenue_source_work_id:"W-20261004-047",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Marketing Growth owns content/provider policy; Search Growth owns GSC/Bing/index/SEO; Sales owns qualification; HAE may run only approved idempotent cadence. No second publisher and no merge of reach with qualified lead/revenue."
   },
   {
-    id:"hcwi_rev4m_w_20261019_015", project_id:"revenue-website-progresso", workstream:"marketing", priority:"p2",
+    id:"hcwi_rev4m_w_20261019_015", project_id:"revenue-website-progresso", workstream:"marketing", priority:"p0",
     title:"[REVENUE] Reconcile and finish the 150-task SEO/GEO program", details:"Revenue reconciliation overlay for W-20261019-015. Original four-month source status: EXECUTING. CEO rule: 100% requires verified actual revenue/financial benefit >= $1; code, CI, deploy, lead, quote, training, research or technical acceptance alone are not completion. Estimated first-win target: $990. Monetization path: Convert one qualified business into the $990 Launch website offer (or the next approved higher package); record payment, not only quote/lead. Canonical planning source is One Brain REVENUE_4M_BACKLOG row 29; source work reference W-20261019-015.",
-    status:"blocked", created_at:"2026-10-19T00:00:00.000Z",
+    status:"ready", created_at:"2026-10-19T00:00:00.000Z",
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261019-015",
     revenue_gate_usd:1, revenue_target_usd:990, revenue_actual_usd:0, revenue_rank:29,
-    revenue_status:"queued", revenue_source_work_id:"W-20261019-015",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    revenue_status:"active", revenue_source_work_id:"W-20261019-015",
+    
     next_action:"Do not create another SEO scheduler. HAE owns the recurring snapshot; Search Growth owns interpretation and current-money-page actions. Promote only this monitoring sub-lane after a real receipt; keep the broader 150-task reconciliation separate and current-main-first."
   },
   {
@@ -303,7 +304,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261023-003",
     revenue_gate_usd:1, revenue_target_usd:990, revenue_actual_usd:0, revenue_rank:30,
     revenue_status:"queued", revenue_source_work_id:"W-20261023-003",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Связать с One Brain Search router и доказать первый measurable improvement"
   },
   {
@@ -313,7 +314,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261024-103",
     revenue_gate_usd:1, revenue_target_usd:990, revenue_actual_usd:0, revenue_rank:31,
     revenue_status:"queued", revenue_source_work_id:"W-20261024-103",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Resume directly from C058: 1) Workers AI account-level Free-plan/binding/model assertion -> one PUBLIC/SYNTHETIC cost_usd=0 receipt; 2) Aiven $500 token-pass form/interview; 3) OVHcloud U.S. START form (up to $12k/12mo + 6h engineer) after legal-address/workload declarations; 4) AWS Activate after account/prior-credit/funding facts; 5) Microsoft after identity/legal/IP/billing gates; 6) Akamai commercial-account/workload route. Deepgram/OpenRouter remain conditional. Broad investor proposals remain held until P0 free-benefit lanes are submitted/received or precisely externally gated."
   },
   {
@@ -323,7 +324,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261027-110",
     revenue_gate_usd:1, revenue_target_usd:990, revenue_actual_usd:0, revenue_rank:32,
     revenue_status:"queued", revenue_source_work_id:"W-20261027-110",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Let PR #2152 run exact-head Search/website/QA checks. If green, independently review public wording/source parity and live pages, then promote evidence level from E1_DIRECTIVE to E2_IMPLEMENTED and scale the same evidence contract to the next city wave. Keep #2151 aligned with KEEP_AND_ENRICH. After Wave 1 #2152 is independently accepted on fresh main, implement Wave 2 as one bounded slice; do not open parallel city writers before that gate."
   },
   {
@@ -333,7 +334,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20260805-074",
     revenue_gate_usd:1, revenue_target_usd:37.5, revenue_actual_usd:0, revenue_rank:33,
     revenue_status:"queued", revenue_source_work_id:"W-20260805-074",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Use #2252 as the current execution owner. Resolve material differences between historical August terms and the Nov-2 approved agreement; pin the selected immutable PDF/version/SHA and Appendix A contract; run exact-head CI + private synthetic e-sign/delivery/readback without a real customer send."
   },
   {
@@ -343,7 +344,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20260906-068",
     revenue_gate_usd:1, revenue_target_usd:990, revenue_actual_usd:0, revenue_rank:34,
     revenue_status:"queued", revenue_source_work_id:"W-20260906-068",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Run one bounded real provider/render canary and ROI comparison; Technology owns runtime/adapters, Design Hub visual/rights QA, Marketing owns distribution/outcome"
   },
   {
@@ -353,7 +354,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261006-043",
     revenue_gate_usd:1, revenue_target_usd:1, revenue_actual_usd:0, revenue_rank:35,
     revenue_status:"queued", revenue_source_work_id:"W-20261006-043",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Complete one owner-approved authority/corroboration action -> published URL/provider readback -> referral/search/AI entity observation. Keep case/reference proof fail-closed unless rights and publication permission are verified."
   },
   {
@@ -363,7 +364,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261006-044",
     revenue_gate_usd:1, revenue_target_usd:37.5, revenue_actual_usd:0, revenue_rank:36,
     revenue_status:"queued", revenue_source_work_id:"W-20261006-044",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Build first evidence-backed finance reconciliation pack and measure unmatched count/amount, error rate and close-cycle time before HAE automation"
   },
   {
@@ -373,7 +374,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261009-039",
     revenue_gate_usd:1, revenue_target_usd:990, revenue_actual_usd:0, revenue_rank:37,
     revenue_status:"queued", revenue_source_work_id:"W-20261009-039",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Reuse existing HR/Academy/Sales/Marketing roles; identify exact leakage stage and only then automate stable handoffs"
   },
   {
@@ -383,7 +384,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261023-005",
     revenue_gate_usd:1, revenue_target_usd:990, revenue_actual_usd:0, revenue_rank:38,
     revenue_status:"queued", revenue_source_work_id:"W-20261023-005",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Продолжить canonical #1986 + performance child #1983 без второго visual writer"
   },
   {
@@ -393,7 +394,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261024-102",
     revenue_gate_usd:1, revenue_target_usd:990, revenue_actual_usd:0, revenue_rank:39,
     revenue_status:"queued", revenue_source_work_id:"W-20261024-102",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Active execution moves through W-20261024-103 applications/partnerships/readiness. Technology must not merge/deploy #2055 or create a second investor frontend. When release trigger exists, replay only the investor-specific 10-file delta onto current main and independently QA current evidence."
   },
   {
@@ -403,7 +404,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261104-126",
     revenue_gate_usd:1, revenue_target_usd:990, revenue_actual_usd:0, revenue_rank:40,
     revenue_status:"queued", revenue_source_work_id:"W-20261104-126",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Design Hub prepare approved original pricing concept; Technology build smallest isolated preview; independent QA inspect desktop/mobile, CTA→CRM and SEO; request owner visual approval before any live release."
   },
   {
@@ -413,7 +414,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261012-032",
     revenue_gate_usd:1, revenue_target_usd:1, revenue_actual_usd:0, revenue_rank:41,
     revenue_status:"queued", revenue_source_work_id:"W-20261012-032",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"No credential resend, no new account, no auth/CRM rebuild, no MRR claim. HAE may later read a sanitized event receipt but cannot create the event."
   },
   {
@@ -423,7 +424,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20260815-075",
     revenue_gate_usd:1, revenue_target_usd:1, revenue_actual_usd:0, revenue_rank:42,
     revenue_status:"queued", revenue_source_work_id:"W-20260815-075",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Close the exact security gap and add regression proof; do not paste secrets into Ledger/plugins/issues or rotate blindly without dependency/rollback review."
   },
   {
@@ -433,7 +434,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261015-024",
     revenue_gate_usd:1, revenue_target_usd:990, revenue_actual_usd:0, revenue_rank:43,
     revenue_status:"queued", revenue_source_work_id:"W-20261015-024",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Use the new role on the next current Marketing/SMM task; measure whether it improves routing and produces a clean HAE-ready experiment contract"
   },
   {
@@ -443,7 +444,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261018-017",
     revenue_gate_usd:1, revenue_target_usd:990, revenue_actual_usd:0, revenue_rank:44,
     revenue_status:"queued", revenue_source_work_id:"W-20261018-017",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Finish or close #2002 with current-main readback; never merge stale contrast branches wholesale"
   },
   {
@@ -453,7 +454,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261024-092",
     revenue_gate_usd:1, revenue_target_usd:37.5, revenue_actual_usd:0, revenue_rank:45,
     revenue_status:"queued", revenue_source_work_id:"W-20261024-092",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"If a repeatable low-false-positive rule emerges, implement deterministic recheck/auto-close through the existing Load Board/HAE path. Keep ambiguous records out of trusted-open views and preserve source-specific overrides."
   },
   {
@@ -463,7 +464,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261103-120",
     revenue_gate_usd:1, revenue_target_usd:990, revenue_actual_usd:0, revenue_rank:46,
     revenue_status:"queued", revenue_source_work_id:"W-20261103-120",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Hold all protected release actions. Wait for #2236 exact-head applicable CI to become terminal GREEN + independent current-head APPROVED review. Because #2236 advanced, #2283 is now stale/mergeable=false on old base 3bfdfb777; only after parent stability resync #2283, rerun bridge/HAE tests, then continue #2250 DNS/TLS signed canary. Keep source collectors running and security P0 gates separate."
   },
   {
@@ -473,7 +474,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261103-121",
     revenue_gate_usd:1, revenue_target_usd:990, revenue_actual_usd:0, revenue_rank:47,
     revenue_status:"queued", revenue_source_work_id:"W-20261103-121",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Record canonical IDs in source register / ledger; rename confirmed noncanonical copies SOURCE_ONLY with date; HOLD any non-identical ambiguous pair for owner/domain review."
   },
   {
@@ -483,7 +484,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261021-008",
     revenue_gate_usd:1, revenue_target_usd:1, revenue_actual_usd:0, revenue_rank:48,
     revenue_status:"queued", revenue_source_work_id:"W-20261021-008",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Do not merge/deploy/activate before independent review. Unattended startup remains ADMIN_ELEVATION_GATE because the safe S4U probe returned Access denied in the current remote session. Run the prepared elevated S4U bootstrap only from an administrator session, then require logout/reboot proof. Separately, after #2250 release, run one real READ_ONLY D1 canary and independent QA before HAE_CONNECTED."
   },
   {
@@ -493,7 +494,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261103-124",
     revenue_gate_usd:1, revenue_target_usd:1, revenue_actual_usd:0, revenue_rank:49,
     revenue_status:"queued", revenue_source_work_id:"W-20261103-124",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Implement only through existing HAE Queue/D1 and Gmail scopes after exact-current release gates. Route critical classes owner-visible; auto-archive only deterministic noncritical classes after independent QA. Preserve personal/tina mailboxes out of scope. Command Center consumes receipts, not a second mail database."
   },
   {
@@ -503,7 +504,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261104-128",
     revenue_gate_usd:1, revenue_target_usd:1, revenue_actual_usd:0, revenue_rank:50,
     revenue_status:"queued", revenue_source_work_id:"W-20261104-128",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Keep #513 as the current owner. Reconcile public role state -> current submission persistence/receipt -> HR reviewer -> Academy/direct route -> human readiness -> handoff/outcome. Do not revive #381, old Work.ua, 100Hires seed data or create a parallel ATS/runtime."
   },
   {
@@ -513,7 +514,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20260919-056",
     revenue_gate_usd:1, revenue_target_usd:1, revenue_actual_usd:0, revenue_rank:51,
     revenue_status:"queued", revenue_source_work_id:"W-20260919-056",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Complete #932 with sanitized evidence only; then verify current Telegram runtime/transport without reviving closed #1321"
   },
   {
@@ -523,7 +524,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261001-053",
     revenue_gate_usd:1, revenue_target_usd:990, revenue_actual_usd:0, revenue_rank:52,
     revenue_status:"queued", revenue_source_work_id:"W-20261001-053",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Sales must classify BUYER vs VENDOR/CANDIDATE vs ACADEMY/RECRUITING before opportunity counting. #1598 stays closed/merged; no new intake stack. Never use form wording alone as buyer proof when the human reply clarifies intent."
   },
   {
@@ -533,7 +534,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261020-009",
     revenue_gate_usd:1, revenue_target_usd:990, revenue_actual_usd:0, revenue_rank:53,
     revenue_status:"queued", revenue_source_work_id:"W-20261020-009",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Resolve current-main delta, then measure GSC/qualified inquiry path"
   },
   {
@@ -543,7 +544,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261028-115",
     revenue_gate_usd:1, revenue_target_usd:1, revenue_actual_usd:0, revenue_rank:54,
     revenue_status:"queued", revenue_source_work_id:"W-20261028-115",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Knowledge Curator maintains mailbox provenance and ranges; domain plugins consume only routed lessons. Do not claim exhaustive line-by-line archive completion, do not infer unconnected mailboxes, and do not publish PII/private contracts. Re-run mailbox delta only for new dates or unresolved source class."
   },
   {
@@ -553,7 +554,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20260917-060",
     revenue_gate_usd:1, revenue_target_usd:37.5, revenue_actual_usd:0, revenue_rank:55,
     revenue_status:"queued", revenue_source_work_id:"W-20260917-060",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Partnerships/Sales retains existing thread. Update stale Contacts next-action only when the Contacts owner is active; do not create a new opportunity record. Investment priority below the direct TMS buyer because no current concrete use case is waiting."
   },
   {
@@ -563,7 +564,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20260918-058",
     revenue_gate_usd:1, revenue_target_usd:37.5, revenue_actual_usd:0, revenue_rank:56,
     revenue_status:"queued", revenue_source_work_id:"W-20260918-058",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Mark follow-up as DUE_FOR_OWNER_REVIEW, not failed. Do not book a meeting or send automatically. If owner chooses not to pursue, record explicit supersession/negative rationale instead of silently dropping."
   },
   {
@@ -573,7 +574,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261007-042",
     revenue_gate_usd:1, revenue_target_usd:37.5, revenue_actual_usd:0, revenue_rank:57,
     revenue_status:"queued", revenue_source_work_id:"W-20261007-042",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Compliance owns current USDOT/FMCSA/entity evidence and filing gate; Dispatch supplies operational need. If status already satisfies the business need mark SUPERSEDED/NO_ACTION; otherwise prepare owner-approved filing checklist only."
   },
   {
@@ -583,7 +584,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261011-035",
     revenue_gate_usd:1, revenue_target_usd:1, revenue_actual_usd:0, revenue_rank:58,
     revenue_status:"queued", revenue_source_work_id:"W-20261011-035",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Academy owns learning/business semantics; Connect operator reuses shared Company/Workspace; QA distinguishes 401 boundary and merged APIs from AUTHENTICATED_TENANT_READBACK/REAL_LEARNER_USE. Commercial Telegram/payment evidence later."
   },
   {
@@ -593,7 +594,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261012-031",
     revenue_gate_usd:1, revenue_target_usd:37.5, revenue_actual_usd:0, revenue_rank:59,
     revenue_status:"queued", revenue_source_work_id:"W-20261012-031",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Sales/Technology keep one thread/one opportunity. Provider entitlement stays #2034. Do not create another draft, connector, CRM record or claim won revenue."
   },
   {
@@ -603,7 +604,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261012-101",
     revenue_gate_usd:1, revenue_target_usd:37.5, revenue_actual_usd:0, revenue_rank:60,
     revenue_status:"queued", revenue_source_work_id:"W-20261012-101",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"No reply/send yet. If evidence clears the vendor-fit gate, prepare owner-review partnership questions; otherwise mark NEGATIVE_TESTED/REJECTED_BY_EVIDENCE with reason."
   },
   {
@@ -613,7 +614,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261019-016",
     revenue_gate_usd:1, revenue_target_usd:1, revenue_actual_usd:0, revenue_rank:61,
     revenue_status:"queued", revenue_source_work_id:"W-20261019-016",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Do this after ChatGPT/Codex archive phases per current source order; preserve provenance and privacy"
   },
   {
@@ -623,7 +624,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261023-004",
     revenue_gate_usd:1, revenue_target_usd:1, revenue_actual_usd:0, revenue_rank:62,
     revenue_status:"queued", revenue_source_work_id:"W-20261023-004",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Для каждого нового источника dedupe → classify → add/update row"
   },
   {
@@ -633,7 +634,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261024-093",
     revenue_gate_usd:1, revenue_target_usd:37.5, revenue_actual_usd:0, revenue_rank:63,
     revenue_status:"queued", revenue_source_work_id:"W-20261024-093",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"After one provider read-only proof, standardize normalized vehicle/location event schema and security/revocation contract; Dispatch remains business owner."
   },
   {
@@ -643,7 +644,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261024-100",
     revenue_gate_usd:1, revenue_target_usd:37.5, revenue_actual_usd:0, revenue_rank:64,
     revenue_status:"queued", revenue_source_work_id:"W-20261024-100",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"If historical losses/exceptions show material value, evaluate one authorized credit source with ROI and provider terms; keep risk score advisory and human load-acceptance decision."
   },
   {
@@ -653,7 +654,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261011-034",
     revenue_gate_usd:1, revenue_target_usd:500, revenue_actual_usd:0, revenue_rank:65,
     revenue_status:"queued", revenue_source_work_id:"W-20261011-034",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Keep First-5 funnel stages explicit: PROVISIONED -> CLIENT_INVITED -> OWNER_ACK -> LOGIN/USE -> BOOKING/PROCESSING -> REPEAT/FEEDBACK -> COMMERCIAL_DECISION."
   },
   {
@@ -663,7 +664,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261024-094",
     revenue_gate_usd:1, revenue_target_usd:500, revenue_actual_usd:0, revenue_rank:66,
     revenue_status:"queued", revenue_source_work_id:"W-20261024-094",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"If accuracy and safety are repeatable, hand deterministic parse/dedupe stage to Technology/HAE; no outbound email or booking side effects."
   },
   {
@@ -673,7 +674,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261024-096",
     revenue_gate_usd:1, revenue_target_usd:500, revenue_actual_usd:0, revenue_rank:67,
     revenue_status:"queued", revenue_source_work_id:"W-20261024-096",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Only after provider-authorized positive signal define a bounded production pilot; booking/contract/payment actions remain separately gated."
   },
   {
@@ -683,7 +684,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261024-105",
     revenue_gate_usd:1, revenue_target_usd:1, revenue_actual_usd:0, revenue_rank:68,
     revenue_status:"queued", revenue_source_work_id:"W-20261024-105",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Investor Relations owns track-specific checklist; domain owners supply metadata/current refs only. Finance/Legal/Security approvals precede room release. Do not ask for every sensitive document for every investor."
   },
   {
@@ -693,7 +694,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20260831-069",
     revenue_gate_usd:1, revenue_target_usd:990, revenue_actual_usd:0, revenue_rank:69,
     revenue_status:"queued", revenue_source_work_id:"W-20260831-069",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Store current observations under the existing GEO/Search evidence contract; no fixed 240 quota and no new scorecard runtime. Promote only reproduced entity/citation gaps into current owners."
   },
   {
@@ -703,7 +704,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20260831-072",
     revenue_gate_usd:1, revenue_target_usd:990, revenue_actual_usd:0, revenue_rank:70,
     revenue_status:"queued", revenue_source_work_id:"W-20260831-072",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Execute/read back one end-to-end current slice under W-20260831-072 using #960/CRM/Sales/Finance evidence (and #1018 only for a social-attributed source), then record stage-by-stage counts and the stop reason. No new analytics property or duplicate attribution store."
   },
   {
@@ -713,7 +714,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20260914-065",
     revenue_gate_usd:1, revenue_target_usd:990, revenue_actual_usd:0, revenue_rank:71,
     revenue_status:"queued", revenue_source_work_id:"W-20260914-065",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Sales/Partnerships owns relationship state. EAEA: EVENT_WAIT after Nov3 reply; no duplicate follow-up while contact is OOO. If EAEA responds, draft one MoU discovery scope aligned to adult education/European context and obtain approval before publishing names/logos or implying partnership. Continue other association lanes separately by their actual rules; no universal 3–5 pilot and no auto-outbound."
   },
   {
@@ -723,7 +724,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20260915-063",
     revenue_gate_usd:1, revenue_target_usd:990, revenue_actual_usd:0, revenue_rank:72,
     revenue_status:"queued", revenue_source_work_id:"W-20260915-063",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"If still strategically useful, submit one owner-approved bounded acquisition experiment with UTM/source attribution; otherwise reject by evidence"
   },
   {
@@ -733,7 +734,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261003-051",
     revenue_gate_usd:1, revenue_target_usd:990, revenue_actual_usd:0, revenue_rank:73,
     revenue_status:"queued", revenue_source_work_id:"W-20261003-051",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"If repeated distinct scope persists, produce ROLE_REQUISITION for HR→COO→CEO; otherwise TRAIN_EXISTING/COO coordination"
   },
   {
@@ -743,7 +744,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261024-095",
     revenue_gate_usd:1, revenue_target_usd:990, revenue_actual_usd:0, revenue_rank:74,
     revenue_status:"queued", revenue_source_work_id:"W-20261024-095",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Select simplest method meeting latency/cost/correctness target; document D1 limit assumptions and recheck current plan before production."
   },
   {
@@ -753,7 +754,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261011-033",
     revenue_gate_usd:1, revenue_target_usd:1, revenue_actual_usd:0, revenue_rank:75,
     revenue_status:"queued", revenue_source_work_id:"W-20261011-033",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Fix only current acceptance defects under #1620; do not build a second membership/RBAC layer"
   },
   {
@@ -763,7 +764,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261014-026",
     revenue_gate_usd:1, revenue_target_usd:1, revenue_actual_usd:0, revenue_rank:76,
     revenue_status:"queued", revenue_source_work_id:"W-20261014-026",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Under #513, merge the still-applicable fix and close/supersede any obsolete PR only after current-main readback"
   },
   {
@@ -773,7 +774,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261023-001",
     revenue_gate_usd:1, revenue_target_usd:1, revenue_actual_usd:0, revenue_rank:77,
     revenue_status:"queued", revenue_source_work_id:"W-20261023-001",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"2026-11-04: Resume newest-first 2026-10-24..11-04 archive gap from actual readable message/source evidence; reconcile against 58 curator batches + 152 chat INDEX entries + 125 existing WORK_IDs, dedupe by objective and re-verify GitHub/Drive/runtime, classify why blocked and missed. Update current canonical Ledger and reviewed domain skills, then obtain independent QA + release/HAE receipt if applicable; do not open a second backlog or imply native full-export coverage."
   },
   {
@@ -783,7 +784,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261004-048",
     revenue_gate_usd:1, revenue_target_usd:1, revenue_actual_usd:0, revenue_rank:78,
     revenue_status:"queued", revenue_source_work_id:"W-20261004-048",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Stabilize deterministic event/dedupe/readback first; after HAE reliability gate, consider recurring alert/exception automation"
   },
   {
@@ -793,7 +794,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261008-041",
     revenue_gate_usd:1, revenue_target_usd:1, revenue_actual_usd:0, revenue_rank:79,
     revenue_status:"queued", revenue_source_work_id:"W-20261008-041",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Prove one end-to-end gateway journey before expanding platform list; route business outcome to Sales/CRM and keep discoverability separate"
   },
   {
@@ -803,7 +804,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261028-114",
     revenue_gate_usd:1, revenue_target_usd:1, revenue_actual_usd:0, revenue_rank:80,
     revenue_status:"queued", revenue_source_work_id:"W-20261028-114",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Hermes Recruiter owns candidate-message classification; HR owns qualification/hiring. HAE may automate only READ_ONLY message-type triage after independent QA threshold, with low-confidence => UNKNOWN/HUMAN_REVIEW and zero candidate eligibility/hire/reject/compensation decisions."
   },
   {
@@ -813,7 +814,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20260814-073",
     revenue_gate_usd:1, revenue_target_usd:1, revenue_actual_usd:0, revenue_rank:81,
     revenue_status:"queued", revenue_source_work_id:"W-20260814-073",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Read current Google Cloud billing/usage export or console evidence for hermes-connect-ai-dev and Aug-14 window; map cost to service/usage/workload/identity. Compare current budget/alerts/quotas and present cost. Preserve UNKNOWN if billing access is unavailable."
   },
   {
@@ -823,7 +824,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20260918-059",
     revenue_gate_usd:1, revenue_target_usd:990, revenue_actual_usd:0, revenue_rank:82,
     revenue_status:"queued", revenue_source_work_id:"W-20260918-059",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Preserve content/delivery positive signal; restore safe runtime only through existing gateway; scale community experiments only with qualified-outcome attribution"
   },
   {
@@ -833,7 +834,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261020-013",
     revenue_gate_usd:1, revenue_target_usd:1, revenue_actual_usd:0, revenue_rank:83,
     revenue_status:"queued", revenue_source_work_id:"W-20261020-013",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Process inventory in bounded batches and update ledger only after current-state check"
   },
   {
@@ -843,7 +844,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261104-127",
     revenue_gate_usd:1, revenue_target_usd:990, revenue_actual_usd:0, revenue_rank:84,
     revenue_status:"queued", revenue_source_work_id:"W-20261104-127",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Route local-service website projects through the new Search/SEO/GEO/Website Auditor lessons; capture baseline before edits and 28/56/84-day evidence after release. No MZM production change or external action without a separate explicit request."
   },
   {
@@ -853,7 +854,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20260927-055",
     revenue_gate_usd:1, revenue_target_usd:1, revenue_actual_usd:0, revenue_rank:85,
     revenue_status:"queued", revenue_source_work_id:"W-20260927-055",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Formalize completeness checklist in current Catalog/Connect flow and test one real permissioned activation without unsolicited contact"
   },
   {
@@ -863,7 +864,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261011-036",
     revenue_gate_usd:1, revenue_target_usd:1, revenue_actual_usd:0, revenue_rank:86,
     revenue_status:"queued", revenue_source_work_id:"W-20261011-036",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Finish salvage before any destructive local cleanup; dedupe only after provenance/readback"
   },
   {
@@ -873,7 +874,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261016-021",
     revenue_gate_usd:1, revenue_target_usd:990, revenue_actual_usd:0, revenue_rank:87,
     revenue_status:"queued", revenue_source_work_id:"W-20261016-021",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Keep existing monitor; do not create new incident work without fresh recurrence evidence"
   },
   {
@@ -883,7 +884,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261023-002",
     revenue_gate_usd:1, revenue_target_usd:1, revenue_actual_usd:0, revenue_rank:88,
     revenue_status:"queued", revenue_source_work_id:"W-20261023-002",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Сделать staffing council кандидатом на HAE после стабильного повторяемого цикла"
   },
   {
@@ -893,7 +894,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261024-106",
     revenue_gate_usd:1, revenue_target_usd:1, revenue_actual_usd:0, revenue_rank:89,
     revenue_status:"queued", revenue_source_work_id:"W-20261024-106",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Keep weekly investor report MANUAL/REVIEWED until Finance+QA+Legal+CEO approval and investor-room entitlements exist. HAE remains single runtime owner."
   },
   {
@@ -903,7 +904,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20260918-057",
     revenue_gate_usd:1, revenue_target_usd:37.5, revenue_actual_usd:0, revenue_rank:90,
     revenue_status:"queued", revenue_source_work_id:"W-20260918-057",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Run a bounded recruiting-market pilot before any housing/office/fixed infrastructure; HR human gate remains final"
   },
   {
@@ -913,7 +914,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20260916-061",
     revenue_gate_usd:1, revenue_target_usd:500, revenue_actual_usd:0, revenue_rank:91,
     revenue_status:"queued", revenue_source_work_id:"W-20260916-061",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Run one bounded current market validation; build only smallest missing product/localization/billing capability after positive signal"
   },
   {
@@ -923,7 +924,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261004-050",
     revenue_gate_usd:1, revenue_target_usd:1, revenue_actual_usd:0, revenue_rank:92,
     revenue_status:"queued", revenue_source_work_id:"W-20261004-050",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"If a gap exists, owner/admin performs the minimal remediation and verifies re-login; if already compliant, mark MEASURED/verified and close"
   },
   {
@@ -933,7 +934,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20260829-071",
     revenue_gate_usd:1, revenue_target_usd:1, revenue_actual_usd:0, revenue_rank:93,
     revenue_status:"queued", revenue_source_work_id:"W-20260829-071",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Close only the remaining current acceptance gap or mark SUPERSEDED by newer delegated-access/control-plane work with evidence."
   },
   {
@@ -943,7 +944,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20260916-064",
     revenue_gate_usd:1, revenue_target_usd:990, revenue_actual_usd:0, revenue_rank:94,
     revenue_status:"queued", revenue_source_work_id:"W-20260916-064",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Only if evidence supports it, prepare an owner-approved small affiliate content test with disclosure and attribution; otherwise mark rejected/superseded"
   },
   {
@@ -953,7 +954,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261017-019",
     revenue_gate_usd:1, revenue_target_usd:1, revenue_actual_usd:0, revenue_rank:95,
     revenue_status:"queued", revenue_source_work_id:"W-20261017-019",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Keep default OFF; complete #1938 host/provider gates before any departmental opt-in"
   },
   {
@@ -963,7 +964,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261017-020",
     revenue_gate_usd:1, revenue_target_usd:1, revenue_actual_usd:0, revenue_rank:96,
     revenue_status:"queued", revenue_source_work_id:"W-20261017-020",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Either close #1940 as unnecessary or keep a strictly read-only bounded probe; any 24/7 agent host is a separate gated experiment"
   },
   {
@@ -973,7 +974,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261020-012",
     revenue_gate_usd:1, revenue_target_usd:990, revenue_actual_usd:0, revenue_rank:97,
     revenue_status:"queued", revenue_source_work_id:"W-20261020-012",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Run one bounded visual experiment; if weak again, NEGATIVE_TESTED for that use case"
   },
   {
@@ -983,7 +984,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261024-098",
     revenue_gate_usd:1, revenue_target_usd:1, revenue_actual_usd:0, revenue_rank:98,
     revenue_status:"queued", revenue_source_work_id:"W-20261024-098",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"If no meaningful gap, close NEGATIVE_TESTED/SUPERSEDED. If a bounded gap exists, add it to the existing HAE/Coordinator rather than adopting a second control plane."
   },
   {
@@ -993,7 +994,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20260916-062",
     revenue_gate_usd:1, revenue_target_usd:1, revenue_actual_usd:0, revenue_rank:99,
     revenue_status:"queued", revenue_source_work_id:"W-20260916-062",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Use Technology v0.1.37 connector-build-vs-wrap gate; only promote Marketplace after stable multi-adapter evidence"
   },
   {
@@ -1003,7 +1004,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261103-123",
     revenue_gate_usd:1, revenue_target_usd:1, revenue_actual_usd:0, revenue_rank:100,
     revenue_status:"queued", revenue_source_work_id:"W-20261103-123",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"If still empty/unbilled/unreferenced, prepare owner-approved delete/archive; otherwise classify RETAIN with current purpose and move all Hermes development references to the canonical project. Never delete from historical August evidence alone."
   },
   {
@@ -1023,7 +1024,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261020-011",
     revenue_gate_usd:1, revenue_target_usd:1, revenue_actual_usd:0, revenue_rank:102,
     revenue_status:"queued", revenue_source_work_id:"W-20261020-011",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Scale only the isolated pilot; compare value against existing HAE/One Brain before any permanent adoption"
   },
   {
@@ -1043,7 +1044,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20260910-067",
     revenue_gate_usd:1, revenue_target_usd:1, revenue_actual_usd:0, revenue_rank:104,
     revenue_status:"queued", revenue_source_work_id:"W-20260910-067",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Build no dedicated Massage backend; if current core already supports it, mark capability proven with one safe test profile and owner review"
   },
   {
@@ -1053,7 +1054,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261008-040",
     revenue_gate_usd:1, revenue_target_usd:1, revenue_actual_usd:0, revenue_rank:105,
     revenue_status:"queued", revenue_source_work_id:"W-20261008-040",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Validate provider/legal feasibility first; then run one bounded MVP. Scale only on task-completion/context-reuse/verified-outcome evidence."
   },
   {
@@ -1063,7 +1064,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261020-010",
     revenue_gate_usd:1, revenue_target_usd:37.5, revenue_actual_usd:0, revenue_rank:106,
     revenue_status:"queued", revenue_source_work_id:"W-20261020-010",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"No outbound automation. A no-response is not an engineering defect. HAE may later detect thread-state only; it cannot qualify missing facts or contact prospect."
   },
   {
@@ -1093,7 +1094,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261016-022",
     revenue_gate_usd:1, revenue_target_usd:37.5, revenue_actual_usd:0, revenue_rank:109,
     revenue_status:"queued", revenue_source_work_id:"W-20261016-022",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Preserve missed-call/SLA requirements; resume provider/current-state evaluation only after explicit owner instruction"
   },
   {
@@ -1113,7 +1114,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261002-052",
     revenue_gate_usd:1, revenue_target_usd:990, revenue_actual_usd:0, revenue_rank:111,
     revenue_status:"queued", revenue_source_work_id:"W-20261002-052",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Do not work around missing Meta access. Preserve sync OFF until OAuth/provider ownership proof; route public publishing separately through approved owner flow"
   },
   {
@@ -1123,7 +1124,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261010-038",
     revenue_gate_usd:1, revenue_target_usd:990, revenue_actual_usd:0, revenue_rank:112,
     revenue_status:"queued", revenue_source_work_id:"W-20261010-038",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Use authenticated HR owner to correct only confirmed discrepancies; route SEO entity corroboration proof back to #204 lineage without reopening closed implementation or inventing employee counts."
   },
   {
@@ -1133,7 +1134,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261025-107",
     revenue_gate_usd:1, revenue_target_usd:1, revenue_actual_usd:0, revenue_rank:113,
     revenue_status:"queued", revenue_source_work_id:"W-20261025-107",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"OWNER_ACTION remains human reviewer assignment. In parallel, Technology/HR must route employment-intent GENERAL form submissions to HR review/dedupe rather than Sales; prove one exact-once ATS/canonical candidate receipt before claiming live intake."
   },
   {
@@ -1143,7 +1144,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261015-023",
     revenue_gate_usd:1, revenue_target_usd:1, revenue_actual_usd:0, revenue_rank:114,
     revenue_status:"queued", revenue_source_work_id:"W-20261015-023",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"OWNER_ADMIN_PERMISSION_REMOVAL_GATE: remove the anonymous writer at AI_COMMAND_CENTER through owner/admin sharing surface, then re-read parent + descendants and require NO_ANONYMOUS_WRITER. Connector lane can verify but cannot remove the folder permission safely."
   },
   {
@@ -1153,7 +1154,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261013-027",
     revenue_gate_usd:1, revenue_target_usd:1, revenue_actual_usd:0, revenue_rank:115,
     revenue_status:"queued", revenue_source_work_id:"W-20261013-027",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"If still active rotate/revoke immediately, replace consumer secret, sanitize current source/artifacts where authorized, rerun affected workflow and record history risk separately"
   },
   {
@@ -1163,7 +1164,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"W-20261004-049",
     revenue_gate_usd:1, revenue_target_usd:1, revenue_actual_usd:0, revenue_rank:116,
     revenue_status:"queued", revenue_source_work_id:"W-20261004-049",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Preserve deterministic eligibility engine as safety infrastructure; outbound execution remains disabled until explicit future CEO policy and transport/auth proofs"
   },
   {
@@ -1173,7 +1174,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"REV4M-20260910-CAND6",
     revenue_gate_usd:1, revenue_target_usd:37.5, revenue_actual_usd:0, revenue_rank:117,
     revenue_status:"queued", revenue_source_work_id:"REV4M-20260910-CAND6",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Analyze six candidates, activity/timezone and prior context; prepare role-fit offer, qualification, first assignment and measurable revenue attribution. External send remains owner-gated."
   },
   {
@@ -1183,7 +1184,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"REV4M-20260910-SALES-TRAIN",
     revenue_gate_usd:1, revenue_target_usd:37.5, revenue_actual_usd:0, revenue_rank:118,
     revenue_status:"queued", revenue_source_work_id:"REV4M-20260910-SALES-TRAIN",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Finish the two required training modules, test retention, assign live bounded sales work, and attribute first paid outcome."
   },
   {
@@ -1193,7 +1194,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"REV4M-20260911-TRAINEE",
     revenue_gate_usd:1, revenue_target_usd:37.5, revenue_actual_usd:0, revenue_rank:119,
     revenue_status:"queued", revenue_source_work_id:"REV4M-20260911-TRAINEE",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Build/finish canonical Trainee Card, completed/not-completed evidence, skills, schedule and first revenue-linked assignment."
   },
   {
@@ -1203,7 +1204,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"REV4M-20260902-GLOBAL-ACQ",
     revenue_gate_usd:1, revenue_target_usd:990, revenue_actual_usd:0, revenue_rank:120,
     revenue_status:"queued", revenue_source_work_id:"REV4M-20260902-GLOBAL-ACQ",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Reconcile approved countries/languages, truthful vacancy/academy/investor pages, forms and 24h SLA; measure lead→qualified→paid."
   },
   {
@@ -1213,7 +1214,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"REV4M-20260921-CITATIONS",
     revenue_gate_usd:1, revenue_target_usd:690, revenue_actual_usd:0, revenue_rank:121,
     revenue_status:"queued", revenue_source_work_id:"REV4M-20260921-CITATIONS",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Build quality-only registry, map each profile to business direction + UTM + money page, measure inquiry→payment; no mass spam."
   },
   {
@@ -1223,7 +1224,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"REV4M-20260814-REPAIR-OUTREACH",
     revenue_gate_usd:1, revenue_target_usd:990, revenue_actual_usd:0, revenue_rank:122,
     revenue_status:"queued", revenue_source_work_id:"REV4M-20260814-REPAIR-OUTREACH",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Build ranked repair-center list, hook/probing/solution/CTA, collect permissioned email, brief, review and quote; external outreach owner-gated."
   },
   {
@@ -1233,7 +1234,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"REV4M-20261005-OPPORTUNITIES",
     revenue_gate_usd:1, revenue_target_usd:500, revenue_actual_usd:0, revenue_rank:123,
     revenue_status:"queued", revenue_source_work_id:"REV4M-20261005-OPPORTUNITIES",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Finish evidence-safe intent pages and cross-division routing, then measure qualified inquiry→commercial outcome instead of page count."
   },
   {
@@ -1243,7 +1244,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"REV4M-20261003-CHA-ADS",
     revenue_gate_usd:1, revenue_target_usd:37.5, revenue_actual_usd:0, revenue_rank:124,
     revenue_status:"queued", revenue_source_work_id:"REV4M-20261003-CHA-ADS",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Fix/verify real lead persistence/delivery, then run bounded traffic only after end-to-end receipt exists; attribute carrier→load→margin."
   },
   {
@@ -1253,7 +1254,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"REV4M-20261011-DEALERCENTER",
     revenue_gate_usd:1, revenue_target_usd:37.5, revenue_actual_usd:0, revenue_rank:125,
     revenue_status:"queued", revenue_source_work_id:"REV4M-20261011-DEALERCENTER",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Reconcile calculator economics, qualify real dealer opportunity, move order through dispatch and payment; 8% only when carrier agreement supports it."
   },
   {
@@ -1263,7 +1264,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"REV4M-20260814-CARRIER-SIGN",
     revenue_gate_usd:1, revenue_target_usd:60, revenue_actual_usd:0, revenue_rank:126,
     revenue_status:"queued", revenue_source_work_id:"REV4M-20260814-CARRIER-SIGN",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Connect current presentation/intake to final agreement review/signing and onboarding; then dispatch first paid load with receipt."
   },
   {
@@ -1273,7 +1274,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"REV4M-20260729-LOADSYNC",
     revenue_gate_usd:1, revenue_target_usd:37.5, revenue_actual_usd:0, revenue_rank:127,
     revenue_status:"queued", revenue_source_work_id:"REV4M-20260729-LOADSYNC",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Use completed-trip history as route source, dedupe/normalize authorized loads into Hermes, then prove one load→dispatch→payment outcome."
   },
   {
@@ -1283,7 +1284,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"REV4M-20260929-SOCIAL",
     revenue_gate_usd:1, revenue_target_usd:690, revenue_actual_usd:0, revenue_rank:128,
     revenue_status:"queued", revenue_source_work_id:"REV4M-20260929-SOCIAL",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Run approved one-week timing/content experiment, collect platform analytics and attribution, optimize only on real qualified inquiries/revenue; external engagement remains policy-bounded."
   },
   {
@@ -1293,7 +1294,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"REV4M-20260707-CARRIER-CRM-TEMPLATES",
     revenue_gate_usd:1, revenue_target_usd:1, revenue_actual_usd:0, revenue_rank:129,
     revenue_status:"queued", revenue_source_work_id:"REV4M-20260707-CARRIER-CRM-TEMPLATES",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Reconcile the existing carrier CRM templates, validate one real carrier workflow, prepare the smallest sellable setup and record the first verified paid use; technical template completion alone is not 100%."
   },
   {
@@ -1303,7 +1304,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"REV4M-20260811-FR-LEADGEN",
     revenue_gate_usd:1, revenue_target_usd:1, revenue_actual_usd:0, revenue_rank:130,
     revenue_status:"queued", revenue_source_work_id:"REV4M-20260811-FR-LEADGEN",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Build the French-language channel/script/evidence plan, qualify real demand and prepare the smallest owner-approved outreach/offer path; measure qualified conversation → paid outcome."
   },
   {
@@ -1313,7 +1314,7 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"REV4M-20260813-COMPETITIVE-INTEL",
     revenue_gate_usd:1, revenue_target_usd:1, revenue_actual_usd:0, revenue_rank:131,
     revenue_status:"queued", revenue_source_work_id:"REV4M-20260813-COMPETITIVE-INTEL",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Consolidate the existing competitive-intelligence project into one current decision packet tied to an active revenue mission, then measure whether the resulting offer/targeting change contributes to paid revenue."
   },
   {
@@ -1323,12 +1324,12 @@ export const FOUR_MONTH_REVENUE_BACKLOG = Object.freeze([
     source_kind:"one_brain_revenue_4m", source_label:"REVENUE_4M_BACKLOG", source_ref:"REV4M-20260825-MEDIA-PARTNERSHIPS",
     revenue_gate_usd:1, revenue_target_usd:1, revenue_actual_usd:0, revenue_rank:132,
     revenue_status:"queued", revenue_source_work_id:"REV4M-20260825-MEDIA-PARTNERSHIPS",
-    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261026-109; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
+    blocked_reason:"REVENUE_SEQUENCE_WAIT: active=W-20261019-015; unlock only after verified $1+ receipt on the active mission or explicit owner reprioritization.",
     next_action:"Use the existing Partnerships identity and async/resource-first approach to prepare one evidence-safe partnership path; record the attributable commercial outcome before marking complete."
   }
 ]);
 
-const IMPORT_KEY="owner_revenue_backlog_2026-11-06_v4";
+const IMPORT_KEY="owner_revenue_backlog_2026-11-06_v5";
 function clean(value,max=10000){return typeof value==="string"?value.replace(/\u0000/g,"").trim().slice(0,max):"";}
 
 export async function seedFourMonthRevenueBacklog(db){
