@@ -1182,7 +1182,7 @@ export async function seedFourMonthRevenueBacklog(db){
       (id,organization_scope,workstream,priority,title,details,source,status,created_by,created_at,updated_at,project_id,
        completed_at,acceptance_status,blocked_reason,source_kind,source_label,source_ref,next_action,
        revenue_gate_usd,revenue_target_usd,revenue_actual_usd,revenue_rank,revenue_status,revenue_source_work_id)
-      VALUES (?,'hermes_internal',?,?,?,?,'imported',?,'revenue_4m_import',?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`)
+      VALUES (?,'hermes_internal',?,?,?,?,'imported',?,'revenue_4m_import',?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`)
       .bind(
         item.id,item.workstream,item.priority,clean(item.title,160),clean(item.details),item.status,
         item.created_at,item.created_at,item.project_id??null,null,"not_required",item.blocked_reason??null,
