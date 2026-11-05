@@ -1,5 +1,22 @@
 # Hermes AI — Architecture & Connections in Owner Command Center
 
+## Runtime ownership invariant — 2026-11-05
+
+Production business automation does **not** run on ChatGPT Automations, Codex scheduled tasks, or a chat session. ChatGPT/Codex may develop, inspect, review, repair, or approve source evidence, but they are not the scheduler, queue, worker, or durable task store.
+
+Canonical autonomous loop:
+
+`Command Center D1 hermes_owner_work_items -> HAE cron/Queue -> work.item.plan -> signed VIKTOR-WINDOWS lease -> local DeepSeek/Ollama -> HAE D1 receipt -> bounded existing HAE capability -> Command Center readback -> next WORK_ID`.
+
+Hard rules:
+- HAE is the only automation scheduler/runtime/control plane.
+- Command Center D1/One Brain are canonical task/evidence sources; no GitHub issue queue or chat automation may become a second permanent backlog.
+- VIKTOR is the Windows node/supervisor; DeepSeek is the local zero-cost semantic planner for the owner-work lane.
+- If Windows semantic capacity is unavailable, the HAE job remains durably `WAITING_FREE_AI`; no paid or ChatGPT fallback is permitted.
+- Runtime completion is not business completion: accepted receipts/QA determine final task acceptance.
+- External writes, money, hiring, credentials, legal/commercial commitments, merge/deploy, and destructive actions remain separately gated.
+
+
 **Canonical owner:** Hermes Business Command Center [issue #2106](https://github.com/officeus-create/Hermes/issues/2106); Hermes Automation Engine [issue #2033](https://github.com/officeus-create/Hermes/issues/2033).
 
 **Scope:** one new **AI System Architecture** section **inside the existing owner-gated Command Center** at `/services/hermes-connect/internal/command-center/?lang=ru`. No new planner, Worker, D1 database, second admin, credentials store, or public LLM endpoint.
