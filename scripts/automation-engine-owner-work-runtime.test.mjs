@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { DatabaseSync } from "node:sqlite";
 import {
+  deterministicOwnerWorkPlan,
   enqueueNextOwnerWorkPlan,
   ensureOwnerWorkRuntimeSchema,
   ownerWorkRuntimeSnapshot,
@@ -30,6 +31,28 @@ class D1Database {
     }
   }
 }
+
+const fallbackPlan=deterministicOwnerWorkPlan({
+  work_id:"hcwi_test_fallback_001",
+  workstream:"technology",
+  priority:"p1",
+  title:"Continue HAE Command Center runtime",
+  details:"Keep the canonical queue and D1 receipt chain moving.",
+  next_action:"Run a bounded self-improvement audit.",
+  selected_owner_role:"hermes-automatic-engineer",
+  selected_owner_version:"0.1.42",
+  route_basis:"workstream:technology",
+  available_execution_job_types:[
+    "ai.gateway.readiness.audit",
+    "hae.self.improvement.audit",
+    "search.snapshot.evaluate"
+  ]
+});
+assert.equal(fallbackPlan.disposition,"EXECUTE_EXISTING_CAPABILITY");
+assert.equal(fallbackPlan.recommended_job_type,"hae.self.improvement.audit");
+assert.equal(fallbackPlan.planner,"hae-deterministic-zero-token-v1");
+assert.equal(fallbackPlan.paid_inference_cost_usd,0);
+assert.equal(fallbackPlan.external_write,false);
 
 const DB=new D1Database();
 DB.database.exec(`
