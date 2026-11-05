@@ -352,6 +352,9 @@ jobs:
             .replace("INJECT_EXACT_MAIN_SHA_AT_RELEASE", targetSha);
           if (String(process.env.OPERATION || "") === "windows_node_activate") {
             config = config.replace('"HERMES_WINDOWS_NODE_ENABLED": "disabled"', '"HERMES_WINDOWS_NODE_ENABLED": "enabled"');
+            if (!/"HERMES_WINDOWS_NODE_PUBLIC_KEY_SPKI_B64":\s*"MCowBQYDK2VwAyEA[A-Za-z0-9+/]{40,}={0,2}"/.test(config)) {
+              throw new Error("HAE_windows_node_public_key_missing");
+            }
           }
           if (config.includes("INJECT_EXACT_MAIN_SHA_AT_RELEASE")) {
             throw new Error("HAE_release_source_sha_placeholder_not_replaced");
