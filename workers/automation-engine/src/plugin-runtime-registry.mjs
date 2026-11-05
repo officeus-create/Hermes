@@ -8,6 +8,7 @@ export const PLUGIN_RUNTIME_REGISTRY = Object.freeze({
   "hermes-automatic-engineer": Object.freeze({ version: "0.1.38", observed_at: OBSERVED_AT }),
   "hermes-agent-coordinator": Object.freeze({ version: "0.1.101", observed_at: OBSERVED_AT }),
   "hermes-technology-developer": Object.freeze({ version: "0.1.63", observed_at: OBSERVED_AT }),
+  "hermes-connect-operator": Object.freeze({ version: "1.4.43", observed_at: OBSERVED_AT }),
   "hermes-qa-evidence-auditor": Object.freeze({ version: "0.1.25", observed_at: OBSERVED_AT }),
   "hermes-knowledge-curator": Object.freeze({ version: "0.1.111", observed_at: OBSERVED_AT }),
   "hermes-marketing-growth": Object.freeze({ version: "0.1.20", observed_at: OBSERVED_AT }),
