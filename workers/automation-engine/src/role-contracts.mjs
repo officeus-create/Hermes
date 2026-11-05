@@ -886,7 +886,8 @@ export function validateRoleContractInput(jobType, payload) {
   if (jobType === "search.snapshot.evaluate") return validateSearchPayload(payload);
   if (jobType === "marketing.content.dedupe.audit") return validateMarketingPayload(payload);
   if (jobType === "logistics.source.freshness.audit") return validateLogisticsPayload(payload);
-  if (jobType === "search.defect.prioritize") return validateSearchDefectPayload(payload);\n  if (jobType === "work.item.plan") return validateOwnerWorkPlanPayload(payload);
+  if (jobType === "search.defect.prioritize") return validateSearchDefectPayload(payload);
+  if (jobType === "work.item.plan") return validateOwnerWorkPlanPayload(payload);
   if (jobType === "hae.self.patch.propose") return validateHaeSelfPatchPayload(payload);
   if (jobType === "work.portfolio.reconcile") return normalizeWorkPortfolioSnapshot(payload);
   if (isZeroTokenPluginTask(jobType)) return validateZeroTokenPluginTaskInput(jobType, payload);
