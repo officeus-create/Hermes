@@ -51,6 +51,11 @@ assert(migratedColumns.has("source_ref"),"existing owner backlog must gain prove
 assert(migratedColumns.has("next_action"),"existing owner backlog must gain next-action guidance");
 const importedBefore=(await DB.prepare("SELECT COUNT(*) AS c FROM hermes_owner_work_items WHERE created_by='history_backlog_import'").first()).c;
 assert(importedBefore>=50,"history import must recover the expanded deduplicated backlog");
+const importedIds=(await DB.prepare("SELECT id FROM hermes_owner_work_items WHERE created_by='history_backlog_import' ORDER BY id").all()).results.map(row=>row.id);
+assert.equal(new Set(importedIds).size,importedIds.length,"history import must keep every recovered work item id unique");
+const connectRecovery=await DB.prepare("SELECT id,title,status,next_action FROM hermes_owner_work_items WHERE created_by='history_backlog_import' AND title LIKE '%Hermes Connect CRM/Operator%' LIMIT 1").first();
+assert.ok(connectRecovery,"history backlog must retain the Hermes Connect CRM/Operator recovery task");
+assert.ok(connectRecovery.next_action,"Hermes Connect recovery task must retain a concrete next action");
 const importedCommandCenter=await DB.prepare("SELECT source_label,source_ref,next_action FROM hermes_owner_work_items WHERE id='hcwi_hist_20261105_002'").first();
 assert.match(String(importedCommandCenter?.source_label||""),/PR #2236/,"imported work must retain source label");
 assert.match(String(importedCommandCenter?.source_ref||""),/github\.com\/officeus-create\/Hermes\/pull\/2236/,"imported work must retain source link");
