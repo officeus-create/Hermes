@@ -5,6 +5,7 @@ const root=resolve(import.meta.dirname,"..");
 const read=(path)=>readFileSync(resolve(root,path),"utf8");
 const page=read("src/pages/services/hermes-connect/internal/command-center/index.astro");
 const helper=read("functions/api/_lib/internal-command-center.mjs");
+const haeBridge=read("functions/api/_lib/command-center-hae-bridge.mjs");
 const historyBacklog=read("functions/api/_lib/command-center-history-backlog.mjs");
 const collection=read("functions/api/internal-command-center/work-items.ts");
 const item=read("functions/api/internal-command-center/work-items/[id].ts");
@@ -89,6 +90,12 @@ assert.doesNotMatch(reports,/LEAD_EMAIL_SERVICE|send_email|OWNER_ALERT_EMAIL|fet
 assert.match(intelligence,/commandCenterProjectCoverageSnapshot/,"Knowledge view must reuse reviewed One Brain coverage instead of creating another knowledge store");
 assert.match(intelligence,/EVENT_TRIGGER_ONLY/,"Investor view must preserve event-trigger-only policy");
 assert.match(intelligence,/automatic_promotion:false/,"One Brain lessons must remain independently reviewed");
+assert.match(intelligence,/knowledge\.lesson\.evaluate/,"One Brain view must read the canonical HAE cross-plugin learning contract");
+assert.match(intelligence,/FROM hermes_automation_jobs/,"learning readback must reuse canonical HAE D1 jobs");
+assert.match(intelligence,/SEPARATE_RECEIPT_REQUIRED/,"plugin release must not be confused with runtime-consumed learning");
+assert.doesNotMatch(intelligence,/INSERT\s+INTO|UPDATE\s+hermes_automation|DELETE\s+FROM/i,"owner intelligence learning readback must remain read-only");
+assert.match(page,/knowledge\.learning_runtime/,"Command Center must render HAE learning receipts rather than a generic learning claim");
+assert.match(page,/QA REQUIRED/,"promotion candidates must remain visibly gated by independent QA");
 assert.doesNotMatch(intelligence,/Google_Drive|drive\.google|docs\.google/,"runtime intelligence endpoint must not carry Drive credentials or fetch documents directly");
 assert.match(commandCss,/min-height:44px/,"Command Center controls must keep 44px touch targets");
 assert.match(commandCss,/--hermes-radius-panel|var\(--hermes-radius-panel\)/,"Command Center must consume the canonical Hermes radius system");
@@ -101,6 +108,7 @@ assert.match(helper,/hermes_owner_work_items/,"work items need a durable D1 tabl
 assert.match(helper,/organization_scope TEXT NOT NULL CHECK \(organization_scope = 'hermes_internal'\)/,"owner backlog must remain internal-tenant scoped");
 assert.match(helper,/workstream IN \('marketing','logistics','sales','technology','academy','finance','operations'\)/,"workstream vocabulary must stay bounded");
 assert.match(helper,/linked_task_id/,"work items must link to the existing AI task queue");
+assert.match(helper,/hae_job_id/,"work items must retain the canonical HAE job receipt link");
 assert.match(helper,/reconcileWorkItems/,"work item state must reconcile linked task outcomes");
 assert.match(helper,/acceptance_status = 'awaiting'/,"completed execution must wait for explicit owner acceptance");
 assert.match(helper,/acceptance_status != 'awaiting'/,"reconciliation must not rewrite the review timestamp on every read");
@@ -116,6 +124,7 @@ assert.match(historyBacklog,/hermes_command_center_imports/,"history import must
 assert.doesNotMatch(historyBacklog,/CREATE TABLE IF NOT EXISTS .*task_registry/is,"history import must not create a competing task registry");
 assert.match(page,/Источник:|Source:/,"owner task cards must show provenance");
 assert.match(page,/Дальше:|Next:/,"owner task cards must show the next action");
+assert.match(page,/Plugin helpers \(selected, not executed\)|Помощники-плагины \(выбраны, не запущены\)/,"owner must see the selected helper team without confusing selection with execution");
 
 for(const source of [collection,item,access,processes,processItem,reports,intelligence,socialAcquisition]){
   assert.match(source,/requireInternalOwner/,"every command-center API must require HERMES_INTERNAL_OWNER");
@@ -130,6 +139,10 @@ assert.match(item,/WHERE NOT EXISTS \([\s\S]*status IN \(\'queued\',\'running\',
 assert.match(item,/INSERT INTO hermes_internal_ai_tasks/,"dispatch must reuse the canonical internal AI queue");
 assert.match(item,/agent_role,prompt,status/,"dispatch must preserve existing AI task shape");
 assert.match(item,/workItemPrompt/,"dispatch must add bounded direction/context rather than another queue");
+assert.match(item,/action==="execute_plugin"/,"owner work must expose one bounded HAE plugin execution action");
+assert.match(item,/submitCommandCenterHaeExecution/,"plugin execution must reuse the canonical HAE bridge");
+assert.match(item,/readCommandCenterHaeExecution/,"plugin execution state must come from HAE receipt readback");
+assert.match(haeBridge,/external_write/,"bridge receipts must preserve the no-external-write boundary");
 assert.match(item,/cancel_linked_ai_task_first/,"work-item cancellation must not orphan a running AI task");
 assert.match(item,/status IN \('planned','ready','blocked'\) AND \(linked_task_id IS NULL OR linked_task_id=\?\)/,"work-item linkage must be optimistic so a terminal linked task can be replaced without overwriting a concurrent owner action");
 assert.match(item,/work_item_linkage_unresolved/,"retry must fail closed when a prior linked task is not a known failed/cancelled terminal task");
