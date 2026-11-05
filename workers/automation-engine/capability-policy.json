@@ -304,7 +304,7 @@
       "submission_auth": "HERMES_AUTOMATION_TOKEN",
       "retention_class": "business_runtime_evidence",
       "role_id": "hermes-knowledge-curator",
-      "plugin_version": "0.1.112",
+      "plugin_version": "0.1.113",
       "contract_version": "knowledge-evidence-audit-v1",
       "semantic_required": false,
       "free_ai_policy": "not_required"
@@ -321,7 +321,7 @@
       "submission_auth": "HERMES_AUTOMATION_TOKEN",
       "retention_class": "business_runtime_evidence",
       "role_id": "hermes-knowledge-curator",
-      "plugin_version": "0.1.112",
+      "plugin_version": "0.1.113",
       "contract_version": "knowledge-lesson-evaluate-v1",
       "semantic_required": false,
       "free_ai_policy": "not_required"
