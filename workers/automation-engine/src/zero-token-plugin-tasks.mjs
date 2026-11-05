@@ -101,6 +101,17 @@ export const ZERO_TOKEN_PLUGIN_TASK_CONTRACTS = Object.freeze([
     kpi: ["unique_evidence_count", "duplicate_count", "stale_count", "unknown_count"],
   }),
   contract({
+    roleId: "hermes-knowledge-curator",
+    contractVersion: "knowledge-lesson-evaluate-v1",
+    jobType: "knowledge.lesson.evaluate",
+    lane: "knowledge",
+    trigger: "verified_lesson_candidate_snapshot",
+    input: { observed_at: "ISO-8601", candidates: "bounded lesson metadata with evidence/test deltas; no raw source content" },
+    steps: ["deduplicate lesson fingerprints", "require corroborating evidence plus positive and negative tests", "reject contradiction or permission expansion", "route accepted lesson ids and target roles for independent QA"],
+    output: "PROMOTION_CANDIDATE or HOLD per lesson; no plugin/One Brain mutation",
+    kpi: ["evaluated_count", "promotion_candidate_count", "hold_count", "quality_non_regression_count", "productivity_non_regression_count"],
+  }),
+  contract({
     roleId: "hermes-automatic-engineer",
     contractVersion: "technology-release-radar-v1",
     jobType: "technology.release.radar",
@@ -300,6 +311,92 @@ function runEvidence(payload) {
   const stale = unique.filter((item) => Date.parse(item.observed_at) < cutoff).map((item) => item.evidence_id);
   const unknown = unique.filter((item) => item.status === "UNKNOWN").map((item) => item.evidence_id);
   return { unique_evidence_count: unique.length, duplicate_count: duplicates.length, stale_count: stale.length, unknown_count: unknown.length, duplicate_evidence_ids: bounded(duplicates), stale_evidence_ids: bounded(stale), unknown_evidence_ids: bounded(unknown), raw_message_content_stored: false, cost_usd: 0 };
+}
+
+function normalizeLessonCandidates(payload) {
+  const observedAt = iso(payload?.observed_at, "lesson_observed_at");
+  const candidates = array(payload?.candidates, "lesson_candidates", 100).map((item) => {
+    const lessonId = clean(item?.lesson_id, 160);
+    const fingerprint = clean(item?.fingerprint, 80);
+    const sourceRole = clean(item?.source_role, 120);
+    const sourceRef = clean(item?.source_ref, 500);
+    const targetRoles = [...new Set(array(item?.target_roles, "lesson_target_roles", 20).map((role) => clean(role, 120)).filter(Boolean))];
+    if (!lessonId || !/^[0-9a-f]{64}$/.test(fingerprint) || !sourceRole || !targetRoles.length) throw new Error("lesson_identity_invalid");
+    if (!/^(?:github|drive|hae|plugin):\/\//.test(sourceRef)) throw new Error("lesson_source_ref_invalid");
+    if (![sourceRole, ...targetRoles].every((role) => /^[a-z0-9][a-z0-9-]{2,119}$/.test(role))) throw new Error("lesson_role_invalid");
+    return {
+      lesson_id: lessonId,
+      fingerprint,
+      source_role: sourceRole,
+      source_ref: sourceRef,
+      target_roles: targetRoles,
+      evidence_count: integer(item?.evidence_count, "lesson_evidence_count", 0, 1000),
+      positive_test_count: integer(item?.positive_test_count, "lesson_positive_test_count", 0, 1000),
+      negative_test_count: integer(item?.negative_test_count, "lesson_negative_test_count", 0, 1000),
+      quality_delta_pct: numberOrNull(item?.quality_delta_pct, "lesson_quality_delta_pct", -1000000),
+      productivity_delta_pct: numberOrNull(item?.productivity_delta_pct, "lesson_productivity_delta_pct", -1000000),
+      contradiction_open: boolean(item?.contradiction_open, "lesson_contradiction_open"),
+      permission_expansion: boolean(item?.permission_expansion, "lesson_permission_expansion"),
+    };
+  });
+  return { observed_at: observedAt, candidates };
+}
+
+function runLessonCandidates(payload) {
+  const input = normalizeLessonCandidates(payload);
+  const seen = new Set();
+  const promotion = [];
+  const holds = [];
+  let qualityNonRegression = 0;
+  let productivityNonRegression = 0;
+  for (const item of input.candidates) {
+    if (seen.has(item.fingerprint)) {
+      holds.push({ lesson_id: item.lesson_id, reasons: ["DUPLICATE_FINGERPRINT"] });
+      continue;
+    }
+    seen.add(item.fingerprint);
+    const reasons = [];
+    if (item.evidence_count < 2) reasons.push("INSUFFICIENT_CORROBORATING_EVIDENCE");
+    if (item.positive_test_count < 1) reasons.push("POSITIVE_TEST_REQUIRED");
+    if (item.negative_test_count < 1) reasons.push("NEGATIVE_TEST_REQUIRED");
+    if (item.quality_delta_pct == null) reasons.push("QUALITY_DELTA_UNKNOWN");
+    else if (item.quality_delta_pct < 0) reasons.push("QUALITY_REGRESSION");
+    else qualityNonRegression += 1;
+    if (item.productivity_delta_pct == null) reasons.push("PRODUCTIVITY_DELTA_UNKNOWN");
+    else if (item.productivity_delta_pct < 0) reasons.push("PRODUCTIVITY_REGRESSION");
+    else productivityNonRegression += 1;
+    if (item.contradiction_open) reasons.push("OPEN_CONTRADICTION");
+    if (item.permission_expansion) reasons.push("PERMISSION_EXPANSION_REQUIRES_OWNER_REVIEW");
+    if (reasons.length) holds.push({ lesson_id: item.lesson_id, reasons });
+    else promotion.push({
+      lesson_id: item.lesson_id,
+      fingerprint: item.fingerprint,
+      source_role: item.source_role,
+      target_roles: item.target_roles,
+      source_ref: item.source_ref,
+      evidence_count: item.evidence_count,
+      positive_test_count: item.positive_test_count,
+      negative_test_count: item.negative_test_count,
+      quality_delta_pct: item.quality_delta_pct,
+      productivity_delta_pct: item.productivity_delta_pct,
+    });
+  }
+  return {
+    observed_at: input.observed_at,
+    evaluated_count: input.candidates.length,
+    unique_candidate_count: seen.size,
+    promotion_candidate_count: promotion.length,
+    hold_count: holds.length,
+    quality_non_regression_count: qualityNonRegression,
+    productivity_non_regression_count: productivityNonRegression,
+    promotion_candidates: bounded(promotion, 100),
+    holds: bounded(holds, 100),
+    independent_qa_required: true,
+    automatic_plugin_update_performed: false,
+    automatic_one_brain_promotion_performed: false,
+    external_write: false,
+    cost_usd: 0,
+  };
 }
 
 function versionParts(value) {
@@ -647,6 +744,7 @@ function runSelfRepairPacket(payload) {
 export function validateZeroTokenPluginTaskInput(jobType, payload) {
   if (jobType === "dispatch.daily.closeout.audit") return normalizeDispatch(payload);
   if (jobType === "knowledge.evidence.audit") return normalizeEvidence(payload);
+  if (jobType === "knowledge.lesson.evaluate") return normalizeLessonCandidates(payload);
   if (jobType === "technology.release.radar") return normalizeTechnology(payload);
   if (jobType === "ai.gateway.readiness.audit") return normalizeGateway(payload);
   if (jobType === "growth.error.closure.audit") return normalizeErrors(payload);
@@ -664,6 +762,7 @@ export function validateZeroTokenPluginTaskInput(jobType, payload) {
 export function runZeroTokenPluginTask(jobType, payload) {
   if (jobType === "dispatch.daily.closeout.audit") return runDispatch(payload);
   if (jobType === "knowledge.evidence.audit") return runEvidence(payload);
+  if (jobType === "knowledge.lesson.evaluate") return runLessonCandidates(payload);
   if (jobType === "technology.release.radar") return runTechnology(payload);
   if (jobType === "ai.gateway.readiness.audit") return runGateway(payload);
   if (jobType === "growth.error.closure.audit") return runErrors(payload);
