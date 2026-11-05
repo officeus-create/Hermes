@@ -78,6 +78,7 @@ import {
   completeWindowsNodeJob,
   heartbeatWindowsNode,
   recoverExpiredWindowsNodeLeases,
+  windowsNodeAvailability,
   windowsNodeAuthorized,
   windowsNodeSnapshot,
 } from "./windows-node-runtime.mjs";
@@ -1007,8 +1008,8 @@ async function runReadOnlyGenericCapability(env, job) {
           output_tokens: 0,
           input_chars: JSON.stringify(executionPayload).length,
           output_chars: JSON.stringify(result).length,
-          windows_node_preferred: true,
-          fallback_reason: "windows_node_not_required_for_progress",
+          windows_node_preferred: false,
+          fallback_reason: "windows_node_unavailable_or_not_eligible",
         };
       } else {
         const semanticRequest = buildRoleContractSemanticRequest(job.job_type, executionPayload);
@@ -1139,6 +1140,26 @@ async function processGenericJob(env, message) {
     return { status: "SUCCEEDED", duplicate: true, job_id: jobId };
   }
   const now = new Date().toISOString();
+  if (before.job_type === "work.item.plan") {
+    const windows = await windowsNodeAvailability(env, now);
+    if (windows.available) {
+      const deferred = await transitionGenericJobWithEvent(env.DB, {
+        updateStatement: env.DB.prepare(`
+          UPDATE hermes_automation_jobs
+          SET state='WAITING_FREE_AI',current_step='windows_preferred',available_at=NULL,last_error_class=NULL,updated_at=?
+          WHERE job_id=? AND (state='QUEUED' OR state='RETRY_SCHEDULED' OR state='WAITING_FREE_AI')
+        `).bind(now, jobId),
+        jobId,
+        eventType: "job.waiting_windows_node",
+        fromState: String(before.state || "QUEUED"),
+        toState: "WAITING_FREE_AI",
+        step: "windows_preferred",
+        createdAt: now,
+        expectedAttemptCount: Number(before.attempt_count || 0),
+      });
+      return { status: deferred ? "WAITING_WINDOWS_NODE" : "transition_conflict", job_id: jobId };
+    }
+  }
   const currentAttempt = Number(before.attempt_count || 0) + 1;
   const claimed = await transitionGenericJobWithEvent(env.DB, {
     updateStatement: env.DB.prepare(`
