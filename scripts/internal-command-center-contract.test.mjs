@@ -7,6 +7,7 @@ const page=read("src/pages/services/hermes-connect/internal/command-center/index
 const helper=read("functions/api/_lib/internal-command-center.mjs");
 const haeBridge=read("functions/api/_lib/command-center-hae-bridge.mjs");
 const historyBacklog=read("functions/api/_lib/command-center-history-backlog.mjs");
+const revenueBacklog=read("functions/api/_lib/command-center-four-month-revenue-backlog.mjs");
 const collection=read("functions/api/internal-command-center/work-items.ts");
 const item=read("functions/api/internal-command-center/work-items/[id].ts");
 const access=read("functions/api/internal-command-center/access.ts");
@@ -125,6 +126,17 @@ assert.match(helper,/seedHistoricalCommandCenterBacklog/,"history recovery must 
 assert.match(helper,/source_ref TEXT/,"owner backlog must retain durable task provenance");
 assert.match(helper,/next_action TEXT/,"owner backlog must expose the next concrete action");
 assert.match(historyBacklog,/COMMAND_CENTER_HISTORY_BACKLOG/,"three-month recovered work must live in a bounded import manifest");
+assert.match(revenueBacklog,/FOUR_MONTH_REVENUE_BACKLOG/,"four-month revenue work must use a bounded import manifest");
+assert.match(revenueBacklog,/owner_revenue_backlog_2026-11-06_v2/,"revenue import must be versioned and idempotent");
+assert.match(revenueBacklog,/revenue_gate_usd:1/,"every revenue mission must require at least one dollar of verified financial benefit");
+assert.match(revenueBacklog,/W-20261026-109/,"current Website Pricing revenue mission must be the initial active source work item");
+assert.match(helper,/seedFourMonthRevenueBacklog/,"revenue missions must seed the existing D1 work-item queue");
+assert.match(helper,/financial_done/,"Command Center read model must expose financial completion separately from technical state");
+assert.match(item,/action==="record_revenue"/,"owner API must record verified paid revenue");
+assert.match(item,/financial_result_required/,"generic completion must fail closed until the revenue gate is met");
+assert.match(item,/next_revenue_work_item_id/,"a proven financial win must unlock the next ranked revenue mission");
+assert.match(page,/Record paid revenue|Записать оплату/,"owner UI must expose paid-revenue evidence entry");
+assert.match(page,/OPEN UNTIL PAYMENT|ОТКРЫТО ДО ОПЛАТЫ/,"owner UI must distinguish technical progress from financial completion");
 assert.match(historyBacklog,/INSERT OR IGNORE INTO hermes_owner_work_items/,"history import must be idempotent and reuse the canonical work-item table");
 assert.match(historyBacklog,/hermes_command_center_imports/,"history import must record a one-time import receipt");
 assert.doesNotMatch(historyBacklog,/CREATE TABLE IF NOT EXISTS .*task_registry/is,"history import must not create a competing task registry");
