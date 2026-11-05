@@ -1,5 +1,6 @@
 import { INTERNAL_AI_ORGANIZATION_SCOPE, nowIso } from "./internal-ai.mjs";
 import { seedHistoricalCommandCenterBacklog } from "./command-center-history-backlog.mjs";
+import { seedRevenue4mBacklog, revenueFinancialDone } from "./command-center-revenue-backlog.mjs";
 import { pluginRuntimeRegistrySnapshot } from "../../../workers/automation-engine/src/plugin-runtime-registry.mjs";
 
 export const COMMAND_CENTER_SCOPE = INTERNAL_AI_ORGANIZATION_SCOPE;
@@ -39,7 +40,18 @@ export async function ensureCommandCenterSchema(db) {
     source_kind TEXT,
     source_label TEXT,
     source_ref TEXT,
-    next_action TEXT
+    next_action TEXT,
+    revenue_gate_usd REAL NOT NULL DEFAULT 0,
+    actual_revenue_usd REAL NOT NULL DEFAULT 0,
+    financial_done INTEGER NOT NULL DEFAULT 0,
+    estimated_first_win_usd REAL NOT NULL DEFAULT 0,
+    revenue_rank INTEGER,
+    revenue_selected_now INTEGER NOT NULL DEFAULT 0,
+    monetization_lane TEXT,
+    monetization_path TEXT,
+    system_can_start TEXT,
+    hae_ready TEXT,
+    source_work_id TEXT
   )`).run();
   const columns=await db.prepare("PRAGMA table_info(hermes_owner_work_items)").all();
   const names=new Set((columns?.results||[]).map((column)=>String(column.name)));
@@ -58,6 +70,17 @@ export async function ensureCommandCenterSchema(db) {
     ["source_label","TEXT"],
     ["source_ref","TEXT"],
     ["next_action","TEXT"],
+    ["revenue_gate_usd","REAL NOT NULL DEFAULT 0"],
+    ["actual_revenue_usd","REAL NOT NULL DEFAULT 0"],
+    ["financial_done","INTEGER NOT NULL DEFAULT 0"],
+    ["estimated_first_win_usd","REAL NOT NULL DEFAULT 0"],
+    ["revenue_rank","INTEGER"],
+    ["revenue_selected_now","INTEGER NOT NULL DEFAULT 0"],
+    ["monetization_lane","TEXT"],
+    ["monetization_path","TEXT"],
+    ["system_can_start","TEXT"],
+    ["hae_ready","TEXT"],
+    ["source_work_id","TEXT"],
   ]) if(!names.has(name)) {
     try { await db.prepare(`ALTER TABLE hermes_owner_work_items ADD COLUMN ${name} ${definition}`).run(); }
     catch(error) {
@@ -68,6 +91,8 @@ export async function ensureCommandCenterSchema(db) {
   await db.prepare("CREATE INDEX IF NOT EXISTS idx_owner_work_items_scope_state_priority ON hermes_owner_work_items(organization_scope,status,priority,created_at)").run();
   await db.prepare("CREATE INDEX IF NOT EXISTS idx_owner_work_items_scope_project ON hermes_owner_work_items(organization_scope,project_id)").run();
   await seedHistoricalCommandCenterBacklog(db);
+  await seedRevenue4mBacklog(db);
+  await db.prepare("CREATE INDEX IF NOT EXISTS idx_owner_work_items_revenue ON hermes_owner_work_items(organization_scope,financial_done,revenue_selected_now,revenue_rank,status,priority)").run();
   await db.prepare(`CREATE TABLE IF NOT EXISTS hermes_internal_owner_access_audit (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     organization_scope TEXT NOT NULL CHECK (organization_scope = 'hermes_internal'),
@@ -116,6 +141,11 @@ export function publicWorkItem(row){
     linked_task_id:row.linked_task_id||null, completed_at:row.completed_at||null,
     accepted_by:row.accepted_by||null, accepted_at:row.accepted_at||null, blocked_reason:row.blocked_reason||null,
     source_kind:row.source_kind||null, source_label:row.source_label||null, source_ref:row.source_ref||null, next_action:row.next_action||null,
+    revenue_gate_usd:Number(row.revenue_gate_usd||0), actual_revenue_usd:Number(row.actual_revenue_usd||0),
+    financial_done:revenueFinancialDone(row), estimated_first_win_usd:Number(row.estimated_first_win_usd||0),
+    revenue_rank:row.revenue_rank==null?null:Number(row.revenue_rank), revenue_selected_now:Boolean(Number(row.revenue_selected_now||0)),
+    monetization_lane:row.monetization_lane||null, monetization_path:row.monetization_path||null,
+    system_can_start:row.system_can_start||null, hae_ready:row.hae_ready||null, source_work_id:row.source_work_id||null,
     linked_task_status:row.linked_task_status||null, linked_task_started_at:row.linked_task_started_at||null,
     linked_task_completed_at:row.linked_task_completed_at||null, linked_task_updated_at:row.linked_task_updated_at||null,
     linked_task_pr_url:row.linked_task_pr_url||null, linked_task_output_summary:row.linked_task_output_summary||null,
