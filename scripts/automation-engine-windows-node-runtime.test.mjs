@@ -262,6 +262,60 @@ await assert.rejects(
   /windows_node_output_replay_mismatch/
 );
 
+const ownerPlanContract=roleContractForJobType("work.item.plan");
+assert.ok(ownerPlanContract);
+const ownerPlanSha=await roleContractSha256(ownerPlanContract);
+const ownerPlanPayload={
+  work_id:"hcwi_test_windows_plan_001",
+  project_id:"hermes-command-center",
+  workstream:"technology",
+  priority:"p1",
+  title:"Continue autonomous Command Center work",
+  details:"Use HAE and the local semantic node without ChatGPT runtime.",
+  next_action:"Choose a safe existing capability or identify the missing capability.",
+  source_kind:"history",
+  source_label:"canonical owner backlog",
+  selected_owner_role:"hermes-technology-developer",
+  selected_owner_version:"0.1.63",
+  route_basis:"workstream:technology",
+  available_execution_job_types:["ai.gateway.readiness.audit","hae.self.improvement.audit"],
+  _role_contract:{
+    role_id:ownerPlanContract.role_id,
+    plugin_version:ownerPlanContract.plugin_version,
+    contract_version:ownerPlanContract.contract_version,
+    sha256:ownerPlanSha,
+  },
+};
+const ownerPlanAt=new Date(Date.parse(t0)+5000).toISOString();
+await DB.prepare(`INSERT INTO hermes_automation_jobs
+(job_id,job_type,business_lane,priority,state,current_step,available_at,attempt_count,max_attempts,idempotency_key,policy_version,payload_json,created_at,updated_at)
+VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)`).bind(
+  "job:owner-plan","work.item.plan","automation",90,"WAITING_FREE_AI","free_ai",ownerPlanAt,0,1,
+  "idem:owner-plan","command-center-hae-autonomous-v1",JSON.stringify(ownerPlanPayload),ownerPlanAt,ownerPlanAt
+).run();
+const ownerClaim=await claimWindowsNodeJob(env,{
+  node_id:WINDOWS_NODE_ID,contract_version:WINDOWS_NODE_CONTRACT_VERSION,model:"qwen2.5:1.5b-instruct",
+},ownerPlanAt);
+assert.equal(ownerClaim.status,"LEASE_ACCEPTED");
+assert.equal(ownerClaim.lease.job_id,"job:owner-plan");
+assert.equal(ownerClaim.lease.job_type,"work.item.plan");
+assert.match(ownerClaim.lease.semantic_request.system_prompt,/Hermes Agent Coordinator/);
+const ownerSemanticResult={
+  disposition:"EXECUTE_EXISTING_CAPABILITY",
+  recommended_job_type:"ai.gateway.readiness.audit",
+  rationale:"A bounded read-only capability already exists for this step.",
+  next_action:"Run the existing HAE readiness audit and persist its receipt.",
+};
+const ownerCompleted=await completeWindowsNodeJob(env,{
+  node_id:WINDOWS_NODE_ID,contract_version:WINDOWS_NODE_CONTRACT_VERSION,
+  job_id:ownerClaim.lease.job_id,lease_id:ownerClaim.lease.lease_id,fence:ownerClaim.lease.fence,
+  model:"qwen2.5:1.5b-instruct",cost_usd:0,semantic_result:ownerSemanticResult,
+  usage:{input_tokens:40,output_tokens:40,input_chars:500,output_chars:300},
+},new Date(Date.parse(ownerPlanAt)+3000).toISOString());
+assert.equal(ownerCompleted.status,"SUCCEEDED");
+assert.equal(ownerCompleted.result.result.work_id,"hcwi_test_windows_plan_001");
+assert.equal(ownerCompleted.result.result.recommended_job_type,"ai.gateway.readiness.audit");
+
 await DB.prepare(`INSERT INTO hermes_automation_jobs
 (job_id,job_type,business_lane,priority,state,current_step,available_at,attempt_count,max_attempts,idempotency_key,policy_version,payload_json,created_at,updated_at)
 VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)`).bind(
