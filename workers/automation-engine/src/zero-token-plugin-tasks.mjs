@@ -321,7 +321,10 @@ function normalizeLessonCandidates(payload) {
     const sourceRole = clean(item?.source_role, 120);
     const sourceRef = clean(item?.source_ref, 500);
     const targetRoles = [...new Set(array(item?.target_roles, "lesson_target_roles", 20).map((role) => clean(role, 120)).filter(Boolean))];
+    const baselineCaseFingerprint = clean(item?.baseline_case_fingerprint, 80);
+    const candidateCaseFingerprint = clean(item?.candidate_case_fingerprint, 80);
     if (!lessonId || !/^[0-9a-f]{64}$/.test(fingerprint) || !sourceRole || !targetRoles.length) throw new Error("lesson_identity_invalid");
+    if (!/^[0-9a-f]{64}$/.test(baselineCaseFingerprint) || !/^[0-9a-f]{64}$/.test(candidateCaseFingerprint)) throw new Error("lesson_case_fingerprint_invalid");
     if (!/^(?:github|drive|hae|plugin):\/\//.test(sourceRef)) throw new Error("lesson_source_ref_invalid");
     if (![sourceRole, ...targetRoles].every((role) => /^[a-z0-9][a-z0-9-]{2,119}$/.test(role))) throw new Error("lesson_role_invalid");
     return {
@@ -330,6 +333,8 @@ function normalizeLessonCandidates(payload) {
       source_role: sourceRole,
       source_ref: sourceRef,
       target_roles: targetRoles,
+      baseline_case_fingerprint: baselineCaseFingerprint,
+      candidate_case_fingerprint: candidateCaseFingerprint,
       evidence_count: integer(item?.evidence_count, "lesson_evidence_count", 0, 1000),
       positive_test_count: integer(item?.positive_test_count, "lesson_positive_test_count", 0, 1000),
       negative_test_count: integer(item?.negative_test_count, "lesson_negative_test_count", 0, 1000),
@@ -356,6 +361,7 @@ function runLessonCandidates(payload) {
     }
     seen.add(item.fingerprint);
     const reasons = [];
+    if (item.baseline_case_fingerprint !== item.candidate_case_fingerprint) reasons.push("CASE_SET_MISMATCH");
     if (item.evidence_count < 2) reasons.push("INSUFFICIENT_CORROBORATING_EVIDENCE");
     if (item.positive_test_count < 1) reasons.push("POSITIVE_TEST_REQUIRED");
     if (item.negative_test_count < 1) reasons.push("NEGATIVE_TEST_REQUIRED");
@@ -374,6 +380,7 @@ function runLessonCandidates(payload) {
       source_role: item.source_role,
       target_roles: item.target_roles,
       source_ref: item.source_ref,
+      evaluation_case_fingerprint: item.baseline_case_fingerprint,
       evidence_count: item.evidence_count,
       positive_test_count: item.positive_test_count,
       negative_test_count: item.negative_test_count,
