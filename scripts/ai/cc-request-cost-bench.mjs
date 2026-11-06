@@ -24,8 +24,16 @@
 
 import { DatabaseSync } from "node:sqlite";
 import { writeFileSync } from "node:fs";
-import { ensureCommandCenterSchema, reconcileWorkItems } from "../../functions/api/_lib/internal-command-center.mjs";
-import { ensureInternalAiSchema } from "../../functions/api/_lib/internal-ai.mjs";
+import * as commandCenter from "../../functions/api/_lib/internal-command-center.mjs";
+import * as internalAi from "../../functions/api/_lib/internal-ai.mjs";
+
+const ensureCommandCenterSchema = commandCenter.ensureCommandCenterSchema;
+const ensureInternalAiSchema = internalAi.ensureInternalAiSchema;
+const reconcileWorkItems = commandCenter.reconcileWorkItems;
+// Per-isolate wrappers exist only after the request-cost fix; on the pre-fix tree
+// the benchmark falls back to the plain functions so both states are comparable.
+const ensureCommandCenterSchemaOnce = commandCenter.ensureCommandCenterSchemaOnce || ensureCommandCenterSchema;
+const ensureInternalAiSchemaOnce = internalAi.ensureInternalAiSchemaOnce || ensureInternalAiSchema;
 
 const args = process.argv.slice(2);
 const outIndex = args.indexOf("--out");
@@ -156,6 +164,25 @@ evidence.summary = {
     .filter((phase) => phase.label.startsWith("cold_"))
     .reduce((sum, phase) => sum + phase.statements, 0),
   statement_samples: db.counter.samples,
+};
+
+// Post-fix path: the call sites use the per-isolate wrappers, so a cold isolate
+// pays the bootstrap once and every later request pays only the reconcile probe.
+evidence.phases.push(await measure("post_fix_first_request", db, async () => {
+  await ensureCommandCenterSchemaOnce(db);
+  await ensureInternalAiSchemaOnce(db);
+  await reconcileWorkItems(db);
+}));
+evidence.phases.push(await measure("post_fix_warm_request", db, async () => {
+  await ensureCommandCenterSchemaOnce(db);
+  await ensureInternalAiSchemaOnce(db);
+  await reconcileWorkItems(db);
+}));
+evidence.post_fix = {
+  has_per_isolate_wrappers: Boolean(commandCenter.ensureCommandCenterSchemaOnce && internalAi.ensureInternalAiSchemaOnce),
+  first_request_statements: evidence.phases.find((phase) => phase.label === "post_fix_first_request")?.statements ?? null,
+  warm_request_statements: evidence.phases.find((phase) => phase.label === "post_fix_warm_request")?.statements ?? null,
+  note: "With the per-isolate wrappers the bootstrap is paid once per isolate; the warm request keeps only the reconcile existence probe.",
 };
 
 evidence.acceptance = {
