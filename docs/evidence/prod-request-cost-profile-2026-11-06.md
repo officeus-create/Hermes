@@ -93,6 +93,43 @@ and `ROUTE_OWNERS` assigns it only for `sales` and `finance`. The revenue canon
 `safe_role_contract_mapping_missing`), and the other revenue rows are held by
 `REVENUE_SEQUENCE_WAIT: active=W-20261019-015`.
 
+## Pre-check: the dispatch payload passes HAE validation (code read)
+
+Before waiting on a live run, the payload that the Command Center sends for a fresh
+dispatch was checked field by field against the HAE validator
+(`workers/automation-engine/src/work-portfolio.mjs` → `normalizeWorkPortfolioSnapshot`,
+invoked by `validateRoleContractInput` for `work.portfolio.reconcile`):
+
+| HAE requirement | Command Center sends (`buildCommandCenterHaeJobRequest`) | Result |
+|---|---|---|
+| `source_kind ∈ {ONE_BRAIN, GITHUB, CHATGPT_SELECTED}` | `CHATGPT_SELECTED` | OK |
+| `coverage_complete` boolean | `true` | OK |
+| `snapshot_id` non-empty | `command-center:<work_item_id>:<linked_task_id>` | OK |
+| `observed_at` ISO-8601 | `new Date(observedAt).toISOString()` | OK |
+| `tasks[]` ≤ 500 | 1 task | OK |
+| task fields ⊆ allowlist | work_id, source_ref, status, priority, updated_at, permission_class, writer_key, dependencies | OK |
+| `source_ref` matches `^(github\|drive\|chatgpt-selected)://` | `chatgpt-selected://command-center/<id>` | OK |
+| `status ∈ {TODO, IN_PROGRESS, BLOCKED, DONE, UNKNOWN}` | `workStatus()` → same set | OK |
+| `priority` integer 0..100 | p0→100, p1→85, p2→60, p3→40 | OK |
+| `permission_class ∈ {READ_ONLY, …}` | `READ_ONLY` | OK |
+| `business_lane` = contract lane | contract lane `automation` | OK |
+| `project_key` free-form | `command-center-plugin-route` | OK (no allowlist in HAE) |
+
+Execution side, same reading:
+- HAE stores `_role_contract` into the job payload at enqueue time
+  (`workers/automation-engine/src/index.mjs`), and at execution re-verifies it against the
+  canonical contract (`role_contract_stale` otherwise) → the stored `payload_json` carries the
+  `_role_contract` block the receipt verifier requires.
+- The stored `result_json` carries `capability`, `external_write: false` and `role_contract`;
+  for a deterministic contract (`semantic_required: false`) no `semantic_execution` is attached,
+  which is exactly what the verifier demands.
+- Success writes one `job.succeeded` event with `to_state = SUCCEEDED`
+  → the verifier's `DURABLE_SUCCESS_EVENT_UNVERIFIED` gate is satisfiable.
+
+Conclusion: for a **fresh dispatch** the full verified path is reachable; the only remaining
+gate is availability of the route (the 1102 incident) and the job actually reaching
+`SUCCEEDED` in HAE.
+
 ## Status of each claim
 
 - Statement counts (bench, empty D1): MEASURED — `docs/evidence/cc-request-cost-2026-11-06.json`.
