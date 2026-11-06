@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import { commandCenterProjectPortfolio, validateCommandCenterProjects } from "../functions/api/_lib/command-center-projects.mjs";
 import { commandCenterProjectCoverageSnapshot } from "../functions/api/_lib/command-center-project-coverage.mjs";
+import { hermesPublicProjects } from "../src/data/hermes-projects-public.mjs";
 
 const api = fs.readFileSync("functions/api/internal-command-center/projects.ts", "utf8");
 const ownerWorkspace = fs.readFileSync("src/components/HermesCommandCenterOwnerWorkspace.astro", "utf8");
@@ -89,3 +90,22 @@ assert.doesNotMatch(publicDemo, /password|token|secret|credential/i);
 
 console.log("Command Center project portfolio: owner-gated registry + public-safe demo PASS");
 
+
+// Investment and partner projects must be in the same owner portfolio as the
+// existing Command Center/HAE projects; source stage is not revenue evidence.
+assert.ok(hermesPublicProjects.length >= 20, "public inventory must cover beyond the seven financing directions");
+assert.equal(new Set(hermesPublicProjects.map((p) => p.id)).size, hermesPublicProjects.length);
+assert.ok(hermesPublicProjects.every((p) => ["service","pilot","development","published","concept","vision"].includes(p.stage)));
+for (const id of ["i-am","hermes-logistics","progressopro","hermes-connect","load-board","academy","hermes-catalog","insights-engine","enterprise-pov","regional-jv"]) {
+  assert.ok(hermesPublicProjects.some((p)=>p.id===id),"missing public project: "+id);
+  assert.ok(portfolio.some((p)=>p.id===id),"missing owner Command Center project: "+id);
+}
+assert.equal(hermesPublicProjects.find((p)=>p.id==="i-am").stage,"concept","I AM must not be mislabeled live");
+assert.equal(new Set(portfolio.map((p)=>p.id)).size,portfolio.length,"shared project projection must not duplicate technical owners");
+const productsPage = fs.readFileSync("src/pages/products/index.astro","utf8");
+assert.match(productsPage,/hermesPublicProjects\.map/,"Products must render the same public project registry");
+assert.match(productsPage,/id="projects"/,"Products page must expose a Projects section");
+const editorialQueue = JSON.parse(fs.readFileSync("data/insights/project-portfolio-editorial-rotation-2026-11-06.json","utf8"));
+assert.equal(editorialQueue.release_mode,"DRAFT_PR_HUMAN_REVIEW_REQUIRED");
+assert.equal(editorialQueue.candidates.length, hermesPublicProjects.length);
+assert.ok(editorialQueue.candidates.every((c)=>c.status==="VERIFY_AND_DRAFT"&&c.published_url===null));
