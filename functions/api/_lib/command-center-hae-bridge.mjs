@@ -3,6 +3,18 @@ import { roleContractForJobType, roleContractSha256 } from "../../../workers/aut
 import { commandCenterHaeIdempotencyKey, verifyCommandCenterHaeReceipt } from "./command-center-hae-receipt-verifier.mjs";
 
 const BRIDGE_POLICY_VERSION="command-center-plugin-bridge-v1";
+// Every outbound HAE call is bounded. An unbounded provider wait holds the Worker
+// request until the platform limit turns it into an opaque 503, which is exactly the
+// failure the owner saw on execute_plugin. A bounded call fails closed with a typed
+// reason instead, and the owner surface can retry.
+const HAE_BRIDGE_TIMEOUT_MS=8000;
+const HAE_BRIDGE_TIMEOUT_MIN_MS=250;
+const HAE_BRIDGE_TIMEOUT_MAX_MS=30000;
+function haeBridgeTimeoutMs(env){
+  const raw=Number(env?.HERMES_COMMAND_CENTER_HAE_TIMEOUT_MS);
+  if(!Number.isFinite(raw)||raw<=0)return HAE_BRIDGE_TIMEOUT_MS;
+  return Math.min(HAE_BRIDGE_TIMEOUT_MAX_MS,Math.max(HAE_BRIDGE_TIMEOUT_MIN_MS,Math.round(raw)));
+}
 const ROLE_JOB_MAP=Object.freeze({
   "hermes-agent-coordinator":"work.portfolio.reconcile",
 });
@@ -48,9 +60,13 @@ async function haeJson(env,path,{method="GET",body=null}={}){
         ...(body===null?{}:{"Content-Type":"application/json"}),
       },
       ...(body===null?{}:{body:JSON.stringify(body)}),
+      signal:AbortSignal.timeout(haeBridgeTimeoutMs(env)),
     });
     return{ok:response.ok,status:response.status,payload:await response.json().catch(()=>({}))};
-  }catch{return{ok:false,status:502,payload:{error:"command_center_hae_bridge_unavailable"}};}
+  }catch(error){
+    const timedOut=error?.name==="TimeoutError"||error?.name==="AbortError";
+    return{ok:false,status:timedOut?504:502,payload:{error:timedOut?"command_center_hae_bridge_timeout":"command_center_hae_bridge_unavailable"}};
+  }
 }
 function registryVersion(roleId){
   const registry=pluginRuntimeRegistrySnapshot();

@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { selectWorkItemPluginRoute } from "../functions/api/_lib/internal-command-center.mjs";
-import { buildCommandCenterHaeJobRequest, readCommandCenterHaeExecution } from "../functions/api/_lib/command-center-hae-bridge.mjs";
+import { buildCommandCenterHaeJobRequest, readCommandCenterHaeExecution, submitCommandCenterHaeExecution } from "../functions/api/_lib/command-center-hae-bridge.mjs";
 import { verifyCommandCenterHaeReceipt } from "../functions/api/_lib/command-center-hae-receipt-verifier.mjs";
 import { pluginRuntimeRegistrySnapshot } from "../workers/automation-engine/src/plugin-runtime-registry.mjs";
 import { roleContractForJobType } from "../workers/automation-engine/src/role-contracts.mjs";
@@ -130,6 +130,28 @@ try{
   ]){
     const result=await readFake(job);
     assert.equal(result.receipt_verified,false,name+" must fail closed");
+  }
+
+  // A bounded outbound HAE call must fail closed with a typed reason instead of
+  // holding the Worker request until the platform turns it into an opaque 503.
+  const boundedEnv={...env,HERMES_COMMAND_CENTER_HAE_TIMEOUT_MS:"250"};
+  globalThis.fetch=async(_url,init)=>new Promise((_resolve,reject)=>{
+    const signal=init?.signal;
+    if(signal?.aborted)reject(Object.assign(new Error("aborted"),{name:"AbortError"}));
+    else signal?.addEventListener("abort",()=>reject(Object.assign(new Error("aborted"),{name:"AbortError"})));
+  });
+  // Node keeps an AbortSignal.timeout timer unref'd, so the loop would drain before
+  // the abort fires; a live Worker request keeps its isolate alive.
+  const keepAlive=setTimeout(()=>{},2000);
+  try{
+    const timedOutRead=await readCommandCenterHaeExecution(boundedEnv,boundItem,route);
+    assert.equal(timedOutRead.receipt_verified,false,"a timed out readback must not claim a verified receipt");
+    assert.equal(timedOutRead.reason,"command_center_hae_bridge_timeout","a timed out readback must report a typed reason");
+    const timedOutSubmit=await submitCommandCenterHaeExecution(boundedEnv,boundItem,route,boundItem.linked_task_id);
+    assert.equal(timedOutSubmit.ok,false,"a timed out submission must not report success");
+    assert.equal(timedOutSubmit.reason,"command_center_hae_bridge_timeout","a timed out submission must report a typed reason");
+  }finally{
+    clearTimeout(keepAlive);
   }
 }finally{
   globalThis.fetch=oldFetch;

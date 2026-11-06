@@ -12,6 +12,11 @@ import { pluginRuntimeRegistryEvidenceStatus, pluginRuntimeRegistrySnapshot } fr
 
 type Env = { DB?: any; CLICKUP_API_TOKEN?: string; HERMES_CLICKUP_COMPLETION_LIST_ID?: string; HERMES_GITHUB_READ_TOKEN?: string; GITHUB_READ_TOKEN?: string };
 const headers = { "Cache-Control": "private, no-store", "X-Robots-Tag": "noindex, nofollow" };
+// Bounded upstream reads: a hanging provider must degrade into the provider's own
+// unavailable state instead of holding the Worker request until the platform limit.
+const PROVIDER_READ_TIMEOUT_MS = 8000;
+const boundedFetch = (input: RequestInfo | URL, init?: RequestInit) =>
+  fetch(input, { ...(init || {}), signal: AbortSignal.timeout(PROVIDER_READ_TIMEOUT_MS) });
 
 export async function onRequestGet({ request, env }: { request: Request; env: Env }) {
   const owner = await requireInternalOwner(request, env); if (owner.response) return owner.response;
@@ -80,8 +85,10 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
   const [human_work_raw, github_developments, department_sources] = await Promise.all([
     // Outbound reads are cached per isolate: the private page polls this endpoint
     // repeatedly, and the upstream cost must not scale with the poll rate.
-    cachedValue("cc-clickup-human-tasks", () => readClickUpHumanTasks(env), { ttlMs: 60_000 }),
-    cachedValue("cc-github-developments", () => readGithubDevelopments(env), { ttlMs: 60_000 }),
+    // Each upstream read is also bounded: a hanging provider must degrade into the
+    // provider's own unavailable state instead of holding the Worker request.
+    cachedValue("cc-clickup-human-tasks", () => readClickUpHumanTasks(env, boundedFetch), { ttlMs: 60_000 }),
+    cachedValue("cc-github-developments", () => readGithubDevelopments(env, boundedFetch), { ttlMs: 60_000 }),
     readDepartmentKpiSources(env.DB, checkedAt),
   ]);
   const human_work = linkHumanWorkDevelopments(human_work_raw, github_developments);
