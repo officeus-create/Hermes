@@ -15,6 +15,38 @@ if OLLAMA in ("127.0.0.1:11434","localhost:11434"):
 NODE_ID="VIKTOR-WINDOWS"
 CONTRACT_VERSION="windows-node-v1"
 KEY_ID="viktor-windows-20261104"
+# Fixed allowlist of HAE machine error codes. Anything else — including provider
+# or Ollama error bodies — is never recorded, so customer content cannot leak
+# into the local advisory history.
+HAE_ERROR_CODES=frozenset({
+    "windows_node_lease_expired",
+    "windows_node_stale_fence",
+    "windows_node_lease_not_active",
+    "windows_node_lease_owner_mismatch",
+    "windows_node_lease_missing",
+    "windows_node_completion_conflict",
+    "windows_node_role_contract_drift",
+    "windows_node_output_sha_mismatch",
+    "windows_node_output_replay_mismatch",
+    "windows_node_semantic_result_required",
+    "windows_node_usage_chars_required",
+    "windows_node_model_required",
+    "windows_node_paid_inference_forbidden",
+    "windows_node_job_not_running",
+    "windows_node_lease_identity_invalid",
+    "windows_node_job_payload_invalid",
+    "windows_node_frozen_contract_invalid",
+    "windows_node_node_id_invalid",
+    "windows_node_contract_version_invalid",
+    "database_not_configured",
+    "runtime_not_configured",
+})
+# A rejected completion must not be retried against the same lease. The
+# server may re-lease the same job with a new fence after expiry, so the
+# suppression key binds job_id AND fence: a genuinely new lease is allowed,
+# a repeated attempt on the same one is not.
+REJECTED_COMPLETIONS=set()
+MAX_COMPLETION_ATTEMPTS=2
 SIGNER=os.environ.get("HERMES_HAE_WINDOWS_NODE_SIGNER",r"C:\Hermes\Viktor\hae_node_signer.mjs")
 PRIVATE_KEY=os.environ.get("HERMES_HAE_WINDOWS_NODE_PRIVATE_KEY",r"C:\Hermes\Secrets\viktor_hae_ed25519_private.pem")
 
@@ -186,6 +218,13 @@ def run_once():
     role=lease.get("role_contract") or {}
     if lease.get("node_id")!=NODE_ID or lease.get("node_contract_version")!=CONTRACT_VERSION: return emit("LEASE_IDENTITY_MISMATCH",job_id=job_id)
     if role.get("permission_class")!="READ_ONLY" or role.get("semantic_required") is not True or float(role.get("max_cost_usd",1))!=0: return emit("LEASE_CAPABILITY_DENIED",job_id=job_id)
+    fence=str(lease.get("fence") or "")
+    attempt_key=(job_id,fence)
+    if attempt_key in REJECTED_COMPLETIONS:
+        # This exact lease already produced a rejected completion. Do not spend
+        # another local model call on it; wait for a new fence from the server.
+        return emit("COMPLETION_REJECTED_SUPPRESSED",job_id=job_id,work_id=work_id,
+                    node_id=NODE_ID,cost_usd=0,external_write=False)
     if claim.get("status")=="LEASE_REPLAY":
         # A replay cannot extend the original five-minute lease.
         # Avoid spending local DeepSeek tokens when completion would be too late.
@@ -206,17 +245,23 @@ def run_once():
         _,done=http_json(API+"/v1/nodes/windows/complete","POST",completion,auth_token,30)
         return emit(str(done.get("status") or "COMPLETION_CONTRACT_ERROR"),job_id=job_id,work_id=work_id,node_id=NODE_ID,output_sha256=completion["output_sha256"],cost_usd=0,external_write=False)
     except urllib.error.HTTPError as exc:
-        # Record only the server's bounded machine error code, never a prompt or response body.
+        # Only an HAE completion rejection may surface a machine error code, and
+        # only from the fixed HAE allowlist. Provider/Ollama error bodies are
+        # never parsed, so customer content cannot reach local history.
+        if error_stage!="hae_completion":
+            return emit("PROVIDER_HTTP_ERROR",job_id=job_id,work_id=work_id,http_status=exc.code,
+                        error_stage=error_stage,node_id=NODE_ID,cost_usd=0,external_write=False)
         server_error_code=None
         try:
             response=json.loads(exc.read().decode("utf-8","replace"))
             candidate=str(response.get("error") or "")
-            if re.fullmatch(r"[a-z][a-z0-9_]{2,99}",candidate):
+            if candidate in HAE_ERROR_CODES:
                 server_error_code=candidate
         except (ValueError,TypeError,AttributeError):
             pass
+        REJECTED_COMPLETIONS.add(attempt_key)
         return emit("COMPLETION_REJECTED",job_id=job_id,work_id=work_id,http_status=exc.code,
-                    server_error_code=server_error_code,node_id=NODE_ID)
+                    error_stage=error_stage,server_error_code=server_error_code,node_id=NODE_ID)
     except Exception as exc:
         return emit("LOCAL_EXECUTION_ERROR",job_id=job_id,work_id=work_id,error_class=type(exc).__name__,error_stage=error_stage,node_id=NODE_ID)
 

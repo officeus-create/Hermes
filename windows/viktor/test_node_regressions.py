@@ -197,7 +197,7 @@ class WindowsViktorSourceRegression(unittest.TestCase):
                 raise urllib.error.HTTPError(
                     url, 409, "Conflict", None,
                     io.BytesIO(json.dumps({
-                        "error": "lease_expired",
+                        "error": "windows_node_lease_expired",
                         "secret": secret,
                     }).encode()),
                 )
@@ -214,8 +214,133 @@ class WindowsViktorSourceRegression(unittest.TestCase):
             result = module.run_once()
         self.assertEqual(result["status"], "COMPLETION_REJECTED")
         self.assertEqual(result["http_status"], 409)
-        self.assertEqual(result["server_error_code"], "lease_expired")
+        self.assertEqual(result["server_error_code"], "windows_node_lease_expired")
         self.assertNotIn(secret, json.dumps(result))
+
+    def test_provider_error_body_never_reaches_history_allowlist(self):
+        module = load_node()
+        lease = synthetic_lease()
+        secret = "PRIVATE_CUSTOMER_NAME_MUST_NOT_BE_LOGGED"
+
+        def fake_http(url, method="GET", payload=None, token=None, timeout=30):
+            action = url.rsplit("/", 1)[-1]
+            if action == "claim":
+                return 200, {"success": True, "status": "LEASE_ACCEPTED", "lease": lease}
+            if action == "chat":
+                raise urllib.error.HTTPError(
+                    url, 500, "Server Error", None,
+                    io.BytesIO(json.dumps({"error": secret}).encode()),
+                )
+            return 200, {"success": True}
+
+        module.http_json = fake_http
+        with contextlib.redirect_stdout(io.StringIO()):
+            result = module.run_once()
+        self.assertNotIn(secret, json.dumps(result))
+        self.assertNotIn(secret, module.HAE_ERROR_CODES)
+        # A provider failure is not an HAE completion rejection and must not
+        # be recorded as one.
+        self.assertEqual(result.get("server_error_code"), None)
+        self.assertNotEqual(result["status"], "COMPLETION_REJECTED")
+
+    def test_non_allowlisted_error_code_is_dropped(self):
+        module = load_node()
+        lease = synthetic_lease()
+
+        def fake_http(url, method="GET", payload=None, token=None, timeout=30):
+            action = url.rsplit("/", 1)[-1]
+            if action == "claim":
+                return 200, {"success": True, "status": "LEASE_ACCEPTED", "lease": lease}
+            if action == "complete":
+                raise urllib.error.HTTPError(
+                    url, 409, "Conflict", None,
+                    io.BytesIO(json.dumps({"error": "some_unlisted_provider_code"}).encode()),
+                )
+            return 200, {"success": True}
+
+        module.http_json = fake_http
+        module.ollama = lambda request, kind: (
+            {"disposition": "NEEDS_CAPABILITY", "recommended_job_type": None,
+             "rationale": "Not yet approved.", "next_action": "Review job contract."}, {},
+        )
+        with contextlib.redirect_stdout(io.StringIO()):
+            result = module.run_once()
+        self.assertEqual(result["status"], "COMPLETION_REJECTED")
+        self.assertEqual(result.get("server_error_code"), None)
+
+    def test_rejected_completion_is_not_retried_on_same_fence(self):
+        module = load_node()
+        lease = synthetic_lease()
+        model_calls = []
+
+        def fake_http(url, method="GET", payload=None, token=None, timeout=30):
+            action = url.rsplit("/", 1)[-1]
+            if action == "claim":
+                return 200, {"success": True, "status": "LEASE_ACCEPTED", "lease": lease}
+            if action == "complete":
+                raise urllib.error.HTTPError(
+                    url, 409, "Conflict", None,
+                    io.BytesIO(json.dumps({"error": "windows_node_lease_expired"}).encode()),
+                )
+            return 200, {"success": True}
+
+        module.http_json = fake_http
+
+        def fake_ollama(request, kind):
+            model_calls.append(kind)
+            return ({"disposition": "NEEDS_CAPABILITY", "recommended_job_type": None,
+                     "rationale": "Not yet approved.", "next_action": "Review job contract."}, {})
+
+        module.ollama = fake_ollama
+        statuses = []
+        for _ in range(3):
+            with contextlib.redirect_stdout(io.StringIO()):
+                statuses.append(module.run_once()["status"])
+        # The model must be invoked once for the rejected lease, not once per
+        # polling cycle.
+        self.assertEqual(len(model_calls), 1)
+        self.assertEqual(statuses[0], "COMPLETION_REJECTED")
+        self.assertEqual(statuses[1], "COMPLETION_REJECTED_SUPPRESSED")
+        self.assertEqual(statuses[2], "COMPLETION_REJECTED_SUPPRESSED")
+
+    def test_new_fence_after_rejection_is_allowed_again(self):
+        module = load_node()
+        lease = synthetic_lease()
+        model_calls = []
+        state = {"fence": 8}
+
+        def fake_http(url, method="GET", payload=None, token=None, timeout=30):
+            action = url.rsplit("/", 1)[-1]
+            if action == "claim":
+                current = dict(lease)
+                current["fence"] = state["fence"]
+                return 200, {"success": True, "status": "LEASE_ACCEPTED", "lease": current}
+            if action == "complete":
+                if state["fence"] == 8:
+                    raise urllib.error.HTTPError(
+                        url, 409, "Conflict", None,
+                        io.BytesIO(json.dumps({"error": "windows_node_lease_expired"}).encode()),
+                    )
+                return 200, {"success": True, "status": "SUCCEEDED"}
+            return 200, {"success": True}
+
+        module.http_json = fake_http
+
+        def fake_ollama(request, kind):
+            model_calls.append(kind)
+            return ({"disposition": "NEEDS_CAPABILITY", "recommended_job_type": None,
+                     "rationale": "Not yet approved.", "next_action": "Review job contract."}, {})
+
+        module.ollama = fake_ollama
+        with contextlib.redirect_stdout(io.StringIO()):
+            first = module.run_once()
+        self.assertEqual(first["status"], "COMPLETION_REJECTED")
+        state["fence"] = 9
+        with contextlib.redirect_stdout(io.StringIO()):
+            second = module.run_once()
+        # A genuinely new lease must still be executable.
+        self.assertEqual(second["status"], "SUCCEEDED")
+        self.assertEqual(len(model_calls), 2)
 
     def test_ttl_parser(self):
         module = load_node()

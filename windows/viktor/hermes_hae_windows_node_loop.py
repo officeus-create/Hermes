@@ -54,6 +54,14 @@ def main():
             time.sleep(15)
         elif status=="LEASE_REPLAY_TTL_LOW":
             time.sleep(30)
+        elif status=="COMPLETION_REJECTED_SUPPRESSED":
+            # The lease was already rejected; wait for the server to issue a
+            # new fence instead of polling the same lease every few seconds.
+            time.sleep(30)
+        elif status=="PROVIDER_HTTP_ERROR":
+            # The local provider failed; back off so a broken provider is not
+            # hammered in a tight loop.
+            time.sleep(30)
         else:
             time.sleep(5)
 
