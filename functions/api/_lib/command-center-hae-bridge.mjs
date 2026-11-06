@@ -192,7 +192,8 @@ export async function readCommandCenterHaeExecution(env,item,route){
   };
 
   const registry=pluginRuntimeRegistrySnapshot();
-  const registryEvidence=pluginRuntimeRegistryEvidenceStatus(new Date().toISOString(),24);
+  const now=new Date().toISOString();
+  const registryEvidence=pluginRuntimeRegistryEvidenceStatus(now,24);
   const workItem={
     ...item,
     organization_scope:"hermes_internal",
@@ -210,6 +211,9 @@ export async function readCommandCenterHaeExecution(env,item,route){
     workItem,
     registryEntries:registry.entries,
     registryEvidence,
+    registryObservedAt:registry.observed_at,
+    registrySourceClass:registry.source_class,
+    nowIso:now,
     binding,
     haeJob:job,
     jobEvents:response.payload?.events,
@@ -229,6 +233,11 @@ export async function readCommandCenterHaeExecution(env,item,route){
     plugin_version:verified?plan.plugin_version:null,
     contract_sha:verified?expectedSha:null,
     external_write:verified?false:null,
+    // Inventory liveness is reported to the owner surface instead of blocking a
+    // receipt for work that already ran. Stale evidence stays a P1 finding in the
+    // HAE self-improvement scheduler.
+    registry_evidence_fresh:registryEvidence?.fresh===true,
+    registry_observed_at:registry.observed_at,
   };
 }
 
