@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { DatabaseSync } from "node:sqlite";
+import vm from "node:vm";
 import { ensureCompanyMembershipSchema, listActiveCompanyMemberships } from "../functions/api/_lib/company-memberships.mjs";
 
 const [page, product, accountApi, clientApi, clientPage, membershipSource] = await Promise.all([
@@ -36,6 +37,92 @@ test("Command Center login shell bypasses Pages Functions, private auth never do
   assert.match(page,/fetch\("\/api\/auth\/me"/);
   assert.match(page,/fetch\("\/api\/auth\/login"/);
   assert.match(page,/robots="noindex,nofollow"/);
+});
+
+// PR #2303 serves this document statically, so the only canonical-host redirect
+// (functions/_middleware.js) no longer runs for it. The shell must canonicalise
+// alias hosts itself, and must do it before it issues any relative /api/auth/*
+// call, otherwise an alias host serves an authentication surface that can never
+// complete a sign-in.
+test("Static login shell canonicalises alias hosts before any auth request",()=>{
+  const guardBlock=page.split("<!-- canonical-host-guard -->")[1]?.split("</script>")[0]??"";
+  assert.ok(guardBlock,"login shell must carry the canonical-host guard");
+  const guardHostList=guardBlock.match(/NON_CANONICAL_HOSTS\s*=\s*\[([^\]]*)\]/);
+  assert.ok(guardHostList,"guard must declare the alias host list it canonicalises");
+  const guardHosts=[...guardHostList[1].matchAll(/"([^"]+)"/g)].map((match)=>match[1]);
+  const middlewareHosts=[...middleware.matchAll(/(?:PAGES_PRODUCTION_HOST|WWW_MAIN_HOST)\s*=\s*"([^"]+)"/g)].map((match)=>match[1]);
+  assert.deepEqual(guardHosts.slice().sort(),middlewareHosts.slice().sort(),
+    "client guard and middleware must canonicalise exactly the same alias hosts");
+  const guardCanonical=guardBlock.match(/CANONICAL_HOST\s*=\s*"([^"]+)"/);
+  const middlewareCanonical=middleware.match(/const MAIN_HOST\s*=\s*"([^"]+)"/);
+  assert.ok(guardCanonical&&middlewareCanonical,"guard and middleware must both declare a canonical host");
+  assert.equal(guardCanonical[1],middlewareCanonical[1],"guard must redirect to the middleware canonical host");
+  assert.match(guardBlock,/new URL\(window\.location\.href\)/,"guard must preserve path and query");
+  assert.match(guardBlock,/location\.replace/,"guard must replace so Back cannot loop on the alias URL");
+  assert.ok(page.indexOf("<!-- canonical-host-guard -->")<page.indexOf('fetch("/api/auth/me"'),
+    "guard must be emitted before the shell probes the session");
+});
+
+// The guard is executed, not merely pattern-matched: an alias host must be
+// redirected to the canonical host with path and query intact, and the
+// canonical host must be left completely alone.
+test("Canonical host guard redirects alias hosts and preserves path and query",()=>{
+  const guardScript=page.match(/<!-- canonical-host-guard -->\s*<script is:inline>([\s\S]*?)<\/script>/)?.[1];
+  assert.ok(guardScript,"login shell must ship an executable canonical host guard");
+
+  const runGuard=(href)=>{
+    const pageUrl=new URL(href);
+    const redirects=[];
+    const sandbox={
+      window:{
+        location:{
+          get hostname(){return pageUrl.hostname;},
+          get href(){return pageUrl.href;},
+          replace(next){redirects.push(next);},
+        },
+      },
+      URL,
+    };
+    vm.createContext(sandbox);
+    vm.runInContext(guardScript,sandbox);
+    return redirects;
+  };
+
+  assert.deepEqual(
+    runGuard("https://hermes-eu4.pages.dev/services/hermes-connect/access/?source=command-center&lang=ru"),
+    ["https://hermeslogisticsus.com/services/hermes-connect/access/?source=command-center&lang=ru"],
+    "alias host must be redirected to the canonical host with path and query preserved",
+  );
+  assert.deepEqual(
+    runGuard("https://www.hermeslogisticsus.com/services/hermes-connect/access/?lang=ru"),
+    ["https://hermeslogisticsus.com/services/hermes-connect/access/?lang=ru"],
+    "www host must be redirected to the canonical host",
+  );
+  assert.deepEqual(
+    runGuard("https://hermeslogisticsus.com/services/hermes-connect/access/?lang=ru"),
+    [],
+    "canonical host must never redirect",
+  );
+  assert.deepEqual(
+    runGuard("https://connect.hermeslogisticsus.com/services/hermes-connect/access/"),
+    [],
+    "a host outside the canonicalised alias set must be left untouched",
+  );
+});
+
+// A manifest shape assertion alone does not prove the deployment routes the way
+// the manifest claims. The build must carry public/_routes.json into dist/ and
+// fail when it does not, because a missing manifest silently falls back to
+// default Pages routing.
+test("Pages routing manifest is proven to reach the build output",async()=>{
+  const [pkg,verifier]=await Promise.all([
+    readFile(new URL("../package.json",import.meta.url),"utf8"),
+    readFile(new URL("../scripts/verify-routes-manifest-dist.mjs",import.meta.url),"utf8"),
+  ]);
+  assert.match(JSON.parse(pkg).scripts.build,/verify-routes-manifest-dist\.mjs/,
+    "build must fail when the routing manifest does not reach dist/");
+  assert.match(verifier,/dist\/_routes\.json/);
+  assert.match(verifier,/public\/_routes\.json/);
 });
 
 test("Hermes Connect access routes one account into vertical-specific CRM", () => {
