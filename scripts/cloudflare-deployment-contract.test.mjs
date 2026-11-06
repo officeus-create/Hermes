@@ -470,9 +470,18 @@ for (const surface of [
   "https://hermeslogisticsus.com/load-board/",
   "https://connect.hermeslogisticsus.com/",
   "https://app.hermeslogisticsus.com/",
+  "https://hermeslogisticsus.com/services/hermes-connect/access/?source=command-center&lang=ru",
+  "https://hermeslogisticsus.com/services/hermes-connect/internal/command-center/?lang=ru",
+  "https://hermeslogisticsus.com/api/auth/me",
 ]) {
   assert.ok(fiveSurfaceSyntheticWorkflow.includes(surface), `Five-surface synthetic is missing ${surface}`);
 }
+assert.match(fiveSurfaceSyntheticWorkflow, /status: 401, markers: \["Вход в Command Center"\]/,
+  "Anonymous owner route must report expected 401.");
+assert.match(fiveSurfaceSyntheticWorkflow, /status: 401, markers: \["not_authenticated"\]/,
+  "Anonymous session API must report expected 401.");
+assert.match(fiveSurfaceSyntheticWorkflow, /response\.headers\.get\("cf-ray"\)/,
+  "A 1102 observation should retain non-secret CF Ray for provider correlation.");
 assert.match(fiveSurfaceSyntheticWorkflow, /samplesPassed !== 3/, "All three samples must pass, even after a healthy retry.");
 assert.ok(fiveSurfaceSyntheticWorkflow.includes("Worker exceeded resource limits"), "1102 body must be explicitly detected.");
 assert.ok(fiveSurfaceSyntheticWorkflow.includes("firstFailure ??="), "Earlier failures must never be masked.");
@@ -500,9 +509,17 @@ async function runCloudflareSyntheticScenario(changeResponse) {
     const parsed = new URL(url);
     const target = parsed.hostname + parsed.pathname;
     const attempt = Number(parsed.searchParams.get("synthetic")?.split("-").at(-1));
+    if (parsed.pathname === "/services/hermes-connect/access/") {
+      assert.equal(parsed.searchParams.get("source"),"command-center");
+      assert.equal(parsed.searchParams.get("lang"),"ru");
+    }
+    assert.equal(options.headers.cookie,undefined,"No session cookie may be sent.");
+    assert.equal(options.headers.authorization,undefined,"No auth token may be sent.");
+    const anonymousGate=target==="hermeslogisticsus.com/services/hermes-connect/internal/command-center/"
+      || target==="hermeslogisticsus.com/api/auth/me";
     const baseline = {
-      status: target === "connect.hermeslogisticsus.com/" ? 308 : 200,
-      body: "Hermes Connect Founding Shop Plan Car Hauler Load Board",
+      status: anonymousGate ? 401 : target === "connect.hermeslogisticsus.com/" ? 308 : 200,
+      body: "Hermes Connect Founding Shop Plan Car Hauler Load Board Sign in and registration Вход в Command Center not_authenticated",
       location: target === "connect.hermeslogisticsus.com/"
         ? "https://hermeslogisticsus.com/services/hermes-connect/"
         : null,
@@ -527,8 +544,8 @@ async function runCloudflareSyntheticScenario(changeResponse) {
 }
 
 const syntheticClean = await runCloudflareSyntheticScenario();
-assert.equal(syntheticClean.exitCode, 0, "21 healthy observations across seven routes should pass.");
-assert.equal(syntheticClean.getRequests, 21, "Every route needs three samples, not early-exit on HTTP 200.");
+assert.equal(syntheticClean.exitCode, 0, "Thirty GET-only observations (7 public + 3 CC auth gates) should pass.");
+assert.equal(syntheticClean.getRequests, 30, "Every route and 401 auth gate needs three samples.");
 
 for (const failingAttempt of [1, 3]) {
   const res = await runCloudflareSyntheticScenario((target, attempt, baseline) =>
@@ -537,9 +554,28 @@ for (const failingAttempt of [1, 3]) {
       : baseline,
   );
   assert.equal(res.exitCode, 1, "Even a recovered or late Cloudflare 1102 must fail the run.");
-  assert.equal(res.getRequests, 21, "A failure must not skip other public surfaces.");
+  assert.equal(res.getRequests, 30, "A failure must not skip other public surfaces or auth gates.");
   assert.ok(res.observations.some((line) => line.includes("FAIL home stable=2/3 1102=1")));
 }
+
+for (const [path,expectedName] of [
+  ["hermeslogisticsus.com/services/hermes-connect/access/","cc-login"],
+  ["hermeslogisticsus.com/services/hermes-connect/internal/command-center/","cc-private-gate"],
+  ["hermeslogisticsus.com/api/auth/me","cc-session-gate"],
+]) {
+  const result=await runCloudflareSyntheticScenario((target,attempt,baseline)=>
+    target===path&&attempt===1 ? {...baseline,status:503,body:"Error 1102: Worker exceeded resource limits"} : baseline,
+  );
+  assert.equal(result.exitCode,1,"Cloudflare 1102 on "+expectedName+" must fail even after recovery");
+  assert.equal(result.getRequests,30,"A failed owner gate must not cancel other checks");
+  assert.ok(result.observations.some(line=>line.includes("FAIL "+expectedName+" stable=2/3 1102=1")));
+}
+const leakedOwnerRoute=await runCloudflareSyntheticScenario((target,attempt,baseline)=>
+  target==="hermeslogisticsus.com/services/hermes-connect/internal/command-center/"&&attempt===2
+   ? {...baseline,status:200,body:"publicly exposed private workspace"} : baseline,
+);
+assert.equal(leakedOwnerRoute.exitCode,1,"Unexpected public 200 on private owner route must fail");
+assert.ok(leakedOwnerRoute.observations.some(line=>line.includes("FAIL cc-private-gate")));
 
 const brokenRedirect = await runCloudflareSyntheticScenario((target, attempt, baseline) =>
   target === "connect.hermeslogisticsus.com/" && attempt === 2
