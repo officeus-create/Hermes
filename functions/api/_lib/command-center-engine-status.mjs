@@ -39,24 +39,49 @@ export const LAUNCHABLE_WORK_ITEMS_SQL = `SELECT id,status,title,priority,workst
     created_at ASC
   LIMIT 5`;
 
+/**
+ * @param {string|null|undefined} checkedAt
+ * @returns {string}
+ */
 export function revenueCooldownCutoff(checkedAt) {
   const base = Date.parse(String(checkedAt || ""));
   const nowMs = Number.isFinite(base) ? base : Date.now();
   return new Date(nowMs - ENGINE_REVENUE_COOLDOWN_MS).toISOString();
 }
 
+/**
+ * @param {unknown} value
+ * @param {number} max
+ * @returns {string|null}
+ */
 const cleanText = (value, max) => {
   const text = String(value == null ? "" : value).trim();
   if (!text) return null;
   return text.slice(0, max);
 };
 
+/**
+ * @param {unknown} value
+ * @returns {number|null}
+ */
 const cleanNumber = (value) => {
   if (value == null || value === "") return null;
   const num = Number(value);
   return Number.isFinite(num) ? num : null;
 };
 
+/**
+ * @typedef {{scheduled_at?: string|null, observed_at?: string|null, execution_lag_ms?: number|null, cron_expression?: string|null, eligible?: number|null, source_sha?: string|null, automation_mode?: string|null, publication_config?: string|null, publication_enabled?: number|null}} EngineHeartbeat
+ * @typedef {{id?: string|null, status?: string|null, title?: string|null, priority?: string|null, workstream?: string|null, revenue_gate_usd?: number|string|null, revenue_target_usd?: number|string|null, revenue_status?: string|null, next_action?: string|null}} LaunchableWorkItem
+ * @typedef {{job_id?: string|null, state?: string|null, current_step?: string|null, last_error_class?: string|null, attempt_count?: number|null, max_attempts?: number|null, updated_at?: string|null}} OwnerWorkJob
+ */
+
+/**
+ * Build the owner-facing engine status projection.
+ *
+ * @param {{heartbeat?: EngineHeartbeat|null, launchableRows?: LaunchableWorkItem[], lastJob?: OwnerWorkJob|null, checkedAt?: string|null, sourceAvailable?: boolean}} [options]
+ * @returns {Record<string, any>}
+ */
 export function buildEngineStatus({
   heartbeat = null,
   launchableRows = [],
