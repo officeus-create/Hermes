@@ -2,6 +2,16 @@ import { INTERNAL_AI_ORGANIZATION_SCOPE, nowIso } from "./internal-ai.mjs";
 import { seedHistoricalCommandCenterBacklog } from "./command-center-history-backlog.mjs";
 import { seedFourMonthRevenueBacklog } from "./command-center-four-month-revenue-backlog.mjs";
 import { pluginRuntimeRegistrySnapshot } from "../../../workers/automation-engine/src/plugin-runtime-registry.mjs";
+import { ensureOnce } from "./request-cost-guard.mjs";
+
+// Per-isolate bootstrap. The schema bootstrap also runs the canonical backlog
+// seeders (history + four-month revenue), so calling it on every request cost
+// roughly 190 statements per call and exhausted the Workers CPU limit: every
+// private Command Center route answered Cloudflare 1102 while the public site
+// stayed healthy (production incident, 2026-11-06).
+export function ensureCommandCenterSchemaOnce(db, options = {}) {
+  return ensureOnce(db, "command-center-schema", () => ensureCommandCenterSchema(db), options);
+}
 
 export const COMMAND_CENTER_SCOPE = INTERNAL_AI_ORGANIZATION_SCOPE;
 const WORKSTREAMS = new Set(["marketing","logistics","sales","technology","academy","finance","operations"]);
@@ -169,14 +179,26 @@ export function workItemPrompt(item){
   ].join("\n");
 }
 export const commandCenterNow=nowIso;
+// Writes stay off the hot read path without changing the contract: reconcile first
+// probes whether any row actually needs a transition, and only then writes. The
+// previous unconditional UPDATE pair ran on every request and contributed to the
+// 1102 private-surface incident on 2026-11-06.
 export async function reconcileWorkItems(db) {
   const now=nowIso();
-  await db.prepare(`UPDATE hermes_owner_work_items
+  const awaiting=await db.prepare(`SELECT 1 AS hit FROM hermes_owner_work_items
+    WHERE organization_scope = 'hermes_internal' AND status = 'in_progress' AND acceptance_status != 'awaiting' AND linked_task_id IN (
+      SELECT id FROM hermes_internal_ai_tasks WHERE organization_scope = 'hermes_internal' AND status = 'completed'
+    ) LIMIT 1`).first();
+  if(awaiting) await db.prepare(`UPDATE hermes_owner_work_items
     SET acceptance_status = 'awaiting', completed_at = NULL, accepted_by = NULL, accepted_at = NULL, updated_at = ?
     WHERE organization_scope = 'hermes_internal' AND status = 'in_progress' AND acceptance_status != 'awaiting' AND linked_task_id IN (
       SELECT id FROM hermes_internal_ai_tasks WHERE organization_scope = 'hermes_internal' AND status = 'completed'
     )`).bind(now).run();
-  await db.prepare(`UPDATE hermes_owner_work_items
+  const failed=await db.prepare(`SELECT 1 AS hit FROM hermes_owner_work_items
+    WHERE organization_scope = 'hermes_internal' AND status = 'in_progress' AND linked_task_id IN (
+      SELECT id FROM hermes_internal_ai_tasks WHERE organization_scope = 'hermes_internal' AND status IN ('failed','cancelled')
+    ) LIMIT 1`).first();
+  if(failed) await db.prepare(`UPDATE hermes_owner_work_items
     SET status = 'blocked', blocked_reason = COALESCE(blocked_reason, 'Linked AI task ended without completion; review evidence.'), updated_at = ?
     WHERE organization_scope = 'hermes_internal' AND status = 'in_progress' AND linked_task_id IN (
       SELECT id FROM hermes_internal_ai_tasks WHERE organization_scope = 'hermes_internal' AND status IN ('failed','cancelled')

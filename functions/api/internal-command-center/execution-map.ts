@@ -1,5 +1,6 @@
 import { jsonResponse } from "../_lib/session.mjs";
-import { ensureCommandCenterSchema } from "../_lib/internal-command-center.mjs";
+import { ensureCommandCenterSchemaOnce } from "../_lib/internal-command-center.mjs";
+import { cachedValue, ensureOnce } from "../_lib/request-cost-guard.mjs";
 import { developmentCatalog, executionProjection, linkHumanWorkDevelopments } from "../_lib/command-center-execution-map.mjs";
 import { buildDepartmentKpis, readDepartmentKpiSources } from "../_lib/command-center-department-kpis.mjs";
 import { buildProviderHealth } from "../_lib/command-center-provider-health.mjs";
@@ -14,8 +15,8 @@ const headers = { "Cache-Control": "private, no-store", "X-Robots-Tag": "noindex
 
 export async function onRequestGet({ request, env }: { request: Request; env: Env }) {
   const owner = await requireInternalOwner(request, env); if (owner.response) return owner.response;
-  await ensureCommandCenterSchema(env.DB);
-  await ensureHaeProcessSchema(env.DB);
+  await ensureCommandCenterSchemaOnce(env.DB);
+  await ensureOnce(env.DB, "hae-process-schema", () => ensureHaeProcessSchema(env.DB));
 
   const work = await env.DB.prepare(`SELECT w.*,
     t.status AS linked_task_status, t.started_at AS linked_task_started_at, t.updated_at AS linked_task_updated_at,
@@ -77,8 +78,10 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
   const tasks = (work.results || []).map((item: any) => executionProjection(item, registrySnapshot.entries, registryEvidence));
   const developments = developmentCatalog({ registrySnapshot, registryEvidence, processes, runner });
   const [human_work_raw, github_developments, department_sources] = await Promise.all([
-    readClickUpHumanTasks(env),
-    readGithubDevelopments(env),
+    // Outbound reads are cached per isolate: the private page polls this endpoint
+    // repeatedly, and the upstream cost must not scale with the poll rate.
+    cachedValue("cc-clickup-human-tasks", () => readClickUpHumanTasks(env), { ttlMs: 60_000 }),
+    cachedValue("cc-github-developments", () => readGithubDevelopments(env), { ttlMs: 60_000 }),
     readDepartmentKpiSources(env.DB, checkedAt),
   ]);
   const human_work = linkHumanWorkDevelopments(human_work_raw, github_developments);
