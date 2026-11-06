@@ -1,7 +1,7 @@
 import { jsonResponse } from "../../_lib/session.mjs";
 import { normalizeWorkItemProjectId, validWorkItemProject } from "../../_lib/command-center-work-item-projects.mjs";
-import { ensureInternalAiSchema, INTERNAL_AI_ORGANIZATION_SCOPE, newTaskId, normalizePrompt, nowIso, publicTask, requireInternalOwner } from "../../_lib/internal-ai.mjs";
-import { ensureCommandCenterSchema, normalizeWorkstream, normalizePriority, normalizeWorkItemTitle, normalizeWorkItemDetails, publicWorkItem, reconcileWorkItems, workItemPrompt, selectWorkItemPluginRoute, readWorkItemPluginRoute } from "../../_lib/internal-command-center.mjs";
+import { ensureInternalAiSchemaOnce, INTERNAL_AI_ORGANIZATION_SCOPE, newTaskId, normalizePrompt, nowIso, publicTask, requireInternalOwner } from "../../_lib/internal-ai.mjs";
+import { ensureCommandCenterSchemaOnce, normalizeWorkstream, normalizePriority, normalizeWorkItemTitle, normalizeWorkItemDetails, publicWorkItem, reconcileWorkItems, workItemPrompt, selectWorkItemPluginRoute, readWorkItemPluginRoute } from "../../_lib/internal-command-center.mjs";
 import { readCommandCenterHaeExecution, submitCommandCenterHaeExecution } from "../../_lib/command-center-hae-bridge.mjs";
 type Env={DB?:any;HERMES_AUTOMATION_BASE_URL?:string;HERMES_AUTOMATION_TOKEN?:string};
 const headers={"Cache-Control":"private, no-store","X-Robots-Tag":"noindex, nofollow"};
@@ -20,7 +20,7 @@ async function getItem(db:any,id:string){
 
 export async function onRequestGet({request,env,params}:{request:Request;env:Env;params:any}){
   const owner=await requireInternalOwner(request,env); if(owner.response)return owner.response;
-  await ensureCommandCenterSchema(env.DB); await reconcileWorkItems(env.DB);
+  await ensureCommandCenterSchemaOnce(env.DB); await reconcileWorkItems(env.DB);
   const row=await getItem(env.DB,String(params.id||""));
   if(!row)return jsonResponse(404,{success:false,error:"work_item_not_found"},headers);
   const route=readWorkItemPluginRoute(row);
@@ -31,7 +31,7 @@ export async function onRequestGet({request,env,params}:{request:Request;env:Env
 export async function onRequestPatch({request,env,params}:{request:Request;env:Env;params:any}){
   if(!sameOriginMutation(request))return jsonResponse(403,{success:false,error:"csrf_origin_mismatch"},headers);
   const owner=await requireInternalOwner(request,env); if(owner.response)return owner.response;
-  await ensureInternalAiSchema(env.DB); await ensureCommandCenterSchema(env.DB); await reconcileWorkItems(env.DB);
+  await ensureInternalAiSchemaOnce(env.DB); await ensureCommandCenterSchemaOnce(env.DB); await reconcileWorkItems(env.DB);
   const id=String(params.id||""); let row=await getItem(env.DB,id);
   if(!row)return jsonResponse(404,{success:false,error:"work_item_not_found"},headers);
   let payload:any; try{payload=await request.json()}catch{return jsonResponse(400,{success:false,error:"invalid_json"},headers)}

@@ -1,3 +1,5 @@
+import { ensureOnce } from "./request-cost-guard.mjs";
+
 const DAY_MS = 24 * 60 * 60 * 1000;
 const WEEK_MINUTES = 7 * 24 * 60;
 const ACTIVITY_WRITE_INTERVAL_MS = 15 * 60 * 1000;
@@ -91,9 +93,15 @@ export async function ensureAccountEngagementSchema(db) {
   await db.prepare("CREATE INDEX IF NOT EXISTS idx_account_engagement_due ON account_engagement(email_enabled, last_active_at, last_reminder_at)").run();
 }
 
+// Per-isolate bootstrap: this schema DDL ran on every authenticated request,
+// which contributed to the 1102 private-surface incident on 2026-11-06.
+export function ensureAccountEngagementSchemaOnce(db, options = {}) {
+  return ensureOnce(db, "account-engagement-schema", () => ensureAccountEngagementSchema(db), options);
+}
+
 export async function touchSpecialistActivity(db, specialistId, request, now = new Date()) {
   if (!db || !specialistId) return;
-  await ensureAccountEngagementSchema(db);
+  await ensureAccountEngagementSchemaOnce(db);
   const nowIso = now.toISOString();
   const writeCutoff = new Date(now.getTime() - ACTIVITY_WRITE_INTERVAL_MS).toISOString();
   const locale = localeFromRequest(request);

@@ -8,6 +8,9 @@ const HASH = /^[a-f0-9]{64}$/;
 const JOB_ID = /^job:[a-f0-9-]{36}$/i;
 const NONEMPTY = /^[a-zA-Z0-9][a-zA-Z0-9._:-]{2,239}$/;
 const ROUTE_POLICY = "command-center-route-v1";
+// Tolerance for clock skew between the attestation writer and this reader. A route
+// attested further in the future than that is fabricated evidence, not skew.
+const FUTURE_ATTESTATION_SKEW_MS = 300000;
 
 function hold(reason, extra = {}) {
   return Object.freeze({
@@ -54,9 +57,28 @@ export async function commandCenterHaeIdempotencyKey({ workItem, route, roleCont
 // route from the persisted owner item and HAE D1; browser fields are untrusted.
 // A MATCHED_SOURCE_ONLY outcome means the rows are structurally consistent,
 // not that a live authenticated D1 readback, independent QA or deploy occurred.
+/**
+ * @typedef {Object} ReceiptVerificationInput
+ * @property {any} [workItem]
+ * @property {any[]} [registryEntries]
+ * @property {any} [registryEvidence]
+ * @property {any} [binding]
+ * @property {any} [haeJob]
+ * @property {any[]} [jobEvents]
+ * @property {any} [roleContract]
+ * @property {string} [registryObservedAt]
+ * @property {string} [registrySourceClass]
+ * @property {string} [nowIso]
+ */
+
+/**
+ * @param {ReceiptVerificationInput} input
+ * @returns {Promise<any>}
+ */
 export async function verifyCommandCenterHaeReceipt({
   workItem, registryEntries, registryEvidence, binding, haeJob, jobEvents,
-  roleContract,
+  roleContract, registryObservedAt, registrySourceClass,
+  nowIso = new Date().toISOString(),
 } = {}) {
   if (workItem?.organization_scope !== "hermes_internal" ||
       !NONEMPTY.test(String(workItem?.id || "")) ||
@@ -70,9 +92,35 @@ export async function verifyCommandCenterHaeReceipt({
       !/^\d+\.\d+\.\d+$/.test(String(route?.owner?.plugin_version || ""))) {
     return hold("ROUTE_NOT_VERIFIED");
   }
-  if (registryEvidence?.fresh !== true || !Array.isArray(registryEntries)) {
+  if (!Array.isArray(registryEntries)) {
     return hold("REGISTRY_SNAPSHOT_UNVERIFIED");
   }
+  // A receipt is a HISTORICAL claim about a job that already ran. The evidence that the
+  // executed plugin version was attested is the attestation PINNED ON THE ROUTE by the
+  // server-side routing policy (source_class + registry_observed_at), NOT the wall-clock
+  // freshness of the shared registry snapshot. A source timestamp decays by construction
+  // every 24h, so a refresh gap would silently destroy durable receipts of work that
+  // already succeeded. Inventory liveness stays enforced where it belongs: the
+  // plugin-release drift preflight (HOLD_STALE_REGISTERED_REGISTRY) and the HAE
+  // self-improvement scheduler (P1 plugin-runtime-registry-evidence-stale).
+  const observedAt = String(registryObservedAt || registryEvidence?.observed_at || "");
+  const sourceClass = String(registrySourceClass || registryEvidence?.source_class || "");
+  const attestedAt = Date.parse(String(route.registry_observed_at || ""));
+  const currentObservedAt = Date.parse(observedAt);
+  const nowMs = Date.parse(String(nowIso || ""));
+  if (!Number.isFinite(attestedAt) || !Number.isFinite(currentObservedAt) ||
+      !Number.isFinite(nowMs) || !sourceClass ||
+      route.source_class !== sourceClass) {
+    return hold("ROUTE_REGISTRY_ATTESTATION_UNVERIFIED");
+  }
+  // A future-dated attestation is fabricated evidence and must fail closed.
+  if (attestedAt > nowMs + FUTURE_ATTESTATION_SKEW_MS) {
+    return hold("ROUTE_REGISTRY_ATTESTATION_UNVERIFIED");
+  }
+  // The pinned version must still be exactly the version the canonical inventory
+  // attests for that role. A version bump is a deliberate plugin release: it fails
+  // closed loudly (PLUGIN_ROUTE_VERSION_DRIFT) and the item is re-dispatched with a
+  // freshly pinned route, rather than silently re-attesting a historical job.
   const registered = registryEntries.filter(e => e?.role_id === route.owner.role_id);
   if (registered.length !== 1 ||
       registered[0].plugin_version !== route.owner.plugin_version) {
@@ -189,5 +237,11 @@ export async function verifyCommandCenterHaeReceipt({
     role_id: route.owner.role_id,
     plugin_version: route.owner.plugin_version,
     contract_sha256: binding.contract_sha256,
+    // The route's plugin version was attested by an inventory observation at the
+    // moment the server-side routing policy pinned it.
+    route_registry_observed_at: route.registry_observed_at,
+    // Live inventory freshness is reported, never used to rewind a completed
+    // execution. The HAE self-improvement scheduler raises it as a P1 finding.
+    registry_evidence_fresh: registryEvidence?.fresh === true,
   });
 }
