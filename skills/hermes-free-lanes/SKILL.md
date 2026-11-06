@@ -90,6 +90,20 @@ Read: on this Intel Mac the local model is ~2.5-3x slower and less precise on re
 Use it for bulk, private, repetitive work; do not route design or citation-critical reasoning to it.
 The local lane was additionally given grep output as context, so its accuracy was partly supplied.
 
+### HAE semantic-node lane (VIKTOR-WINDOWS role, measured 2026-11-06)
+
+Same model class, different task: the HAE node contract requires strict JSON
+(`disposition`, `recommended_job_type`, `rationale`, `next_action`), validated by the runtime.
+
+| Lane | Wall time | Result vs contract |
+| --- | --- | --- |
+| Ollama `deepseek-r1:1.5b` (canonical VIKTOR model) | ~40 s | **failed** — reasoning noise, output not parseable as JSON on both attempts |
+| Ollama `qwen2.5-coder:7b` | ~65 s | passed — contract-valid JSON, accepted by `completeWindowsNodeJob`, receipt at cost 0 |
+
+Read: a reasoning model is not a contract model. Until DeepSeek runs with JSON-constrained decoding
+or a repair prompt, the working free node lane is `qwen2.5-coder:7b` — still $0, still read-only.
+Full proof: `docs/AI_HAE_CHAIN_PROOF.md`, artifact `docs/evidence/hae-chain-proof-2026-11-06.json`.
+
 ## Provider-policy note
 
 The FCC router's ChatGPT lane authenticates with a ChatGPT session token and proxies it as a
