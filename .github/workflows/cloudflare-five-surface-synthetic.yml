@@ -70,7 +70,7 @@ jobs:
                 const body = target.markers || response.status >= 500 ? await response.text() : "";
                 const missing = (target.markers || []).filter((marker) => !body.includes(marker));
                 const location = response.headers.get("location");
-                const error1102 = /Error\s*1102|Worker exceeded resource limits/i.test(body);
+                const error1102 = /(?:error\s*(?:code\s*:?\s*)?1102|Worker exceeded resource limits)/i.test(body);
                 const ray = (response.headers.get("cf-ray") || "").match(/^[a-f0-9]{12,32}-[A-Z]{2,5}$/)?.[0] || null;
                 observation = { attempt, status: response.status, missing, location, error1102, ray: response.status >= 500 ? ray : null };
                 if (error1102) resourceErrors += 1;

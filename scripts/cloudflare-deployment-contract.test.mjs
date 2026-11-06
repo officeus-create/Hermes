@@ -570,6 +570,16 @@ for (const [path,expectedName] of [
   assert.equal(result.getRequests,30,"A failed owner gate must not cancel other checks");
   assert.ok(result.observations.some(line=>line.includes("FAIL "+expectedName+" stable=2/3 1102=1")));
 }
+const canonicalProviderBody = await runCloudflareSyntheticScenario((target,attempt,baseline)=>
+  target==="hermeslogisticsus.com/services/hermes-connect/access/"&&attempt===2
+    ? {...baseline,status:503,body:"error code: 1102"} : baseline,
+);
+assert.equal(canonicalProviderBody.exitCode,1,
+  "Cloudflare's actual short 'error code: 1102' body must fail");
+assert.ok(canonicalProviderBody.observations.some(line=>
+  line.includes("FAIL cc-login stable=2/3 1102=1")),
+  "The exact short 1102 message must count as Worker exhaustion, not only generic HTTP 503");
+
 const leakedOwnerRoute=await runCloudflareSyntheticScenario((target,attempt,baseline)=>
   target==="hermeslogisticsus.com/services/hermes-connect/internal/command-center/"&&attempt===2
    ? {...baseline,status:200,body:"publicly exposed private workspace"} : baseline,
