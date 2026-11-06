@@ -1,3 +1,5 @@
+import { hermesPublicProjects, HERMES_PORTFOLIO_OBSERVED_AT } from "../../../src/data/hermes-projects-public.mjs";
+
 const DONE_STATES = new Set(["done", "accepted"]);
 
 export const PROJECT_PORTFOLIO_SNAPSHOT_OBSERVED_AT = "2026-11-04T13:19:00.000Z";
@@ -350,6 +352,35 @@ const projects = Object.freeze([
   },
 ]);
 
+
+// Same public-safe portfolio source as /products/#projects, projected into the existing
+// owner-only Command Center registry. The original 12 technical projects keep their
+// established status and milestones; these additions are a partial commercial map.
+const additionalPortfolioProjects = Object.freeze(hermesPublicProjects
+  .filter((project) => !projects.some((existing) => existing.id === project.id))
+  .map((project) => Object.freeze({
+    id: project.id,
+    title: project.title,
+    department: project.direction,
+    purpose: project.summary,
+    owner_role: project.direction === "logistics" ? "hermes-logistics-operations" : project.direction === "marketing" ? "hermes-marketing" : project.direction === "academy" ? "hermes-academy" : "hermes-technology-developer",
+    agent_role: "Hermes project portfolio",
+    plugin_roles: ["hermes-investor-relations"],
+    parent_id: null,
+    dependency_ids: [],
+    related_ids: ["investor-intelligence"],
+    started_at: null,
+    target_at: null,
+    blockers: ["Stage-specific owner evidence, commercial KPI and project completion proof remain separate; public snapshot as of " + HERMES_PORTFOLIO_OBSERVED_AT + "."],
+    evidence_level: "PUBLIC_STAGE_" + project.stage.toUpperCase(),
+    links: [],
+    milestones: [
+      milestone("portfolio-registration", "Project represented in the shared portfolio", "done", project.href),
+      milestone("stage-source-readback", "Current stage reviewed against authoritative product evidence", project.stage === "vision" || project.stage === "concept" ? "planned" : "active", project.href),
+      milestone("next-commercial-proof", "Next product-specific customer, partner or release outcome", "planned"),
+    ],
+  })));
+
 function progressFor(project) {
   const total = project.milestones.length;
   const completed = project.milestones.filter((item) => DONE_STATES.has(item.state)).length;
@@ -364,7 +395,7 @@ function statusFor(project, progress) {
 }
 
 export function commandCenterProjectPortfolio() {
-  return projects.map((project) => {
+  return [...projects, ...additionalPortfolioProjects].map((project) => {
     const progress = progressFor(project);
     return Object.freeze({
       ...project,
