@@ -1,0 +1,137 @@
+#!/usr/bin/env bash
+# Hermes free execution lanes.
+#
+# Dispatch a bounded task to a lane that does NOT consume MiniMax tokens.
+# This is a runtime adapter only: it does not replace HAE, One Brain, AGENTS.md,
+# task ownership, branch rules or evidence gates.
+#
+# Usage:
+#   scripts/ai/free-lanes status
+#   scripts/ai/free-lanes ask <lane> "<prompt>"
+#   scripts/ai/free-lanes ask auto "<prompt>"
+#
+# Lanes: fcc | codex | claude | ollama | gemini | drive | auto
+#
+# Governance:
+#   - A lane answer is INPUT, never truth. Same evidence rules as any agent.
+#   - This script never merges, deploys, sends, deletes or changes permissions.
+#   - Provider credentials stay in their own stores; never pass them here.
+
+set -uo pipefail
+
+FCC_URL="${HERMES_FCC_URL:-http://127.0.0.1:8082}"
+# Default route is the LOCAL model: free, unlimited, private, and free of any provider-policy
+# question. The ChatGPT-OAuth route stays available but opt-in only, because using a ChatGPT
+# session token through a third-party proxy is not confirmed to match the provider's terms.
+FCC_MODEL="${HERMES_FCC_MODEL:-ollama/qwen2.5-coder:7b}"
+FCC_TIMEOUT="${HERMES_FCC_TIMEOUT:-300}"
+OLLAMA_MODEL="${HERMES_OLLAMA_MODEL:-qwen2.5-coder:7b}"
+export PATH="/Users/a1/.local/bin:/Users/a1/.nvm/versions/node/v24.21.0/bin:$PATH"
+
+usage() {
+  sed -n '2,18p' "$0" | sed 's/^# \{0,1\}//'
+}
+
+json_msg() {
+  python3 - "$1" "$2" <<'PY'
+import json, sys
+print(json.dumps({
+    "model": sys.argv[1],
+    "max_tokens": 4096,
+    "messages": [{"role": "user", "content": sys.argv[2]}],
+}))
+PY
+}
+
+cmd_status() {
+  printf '%-10s ' "ollama"
+  if curl -s --max-time 4 http://127.0.0.1:11434/api/tags >/dev/null 2>&1; then
+    printf 'up  models: %s\n' "$(ollama list 2>/dev/null | tail -n +2 | awk '{printf "%s ", $1}')"
+  else
+    printf 'down (launch agent: com.ollama.server)\n'
+  fi
+
+  printf '%-10s ' "fcc"
+  if curl -s --max-time 4 "$FCC_URL/health" >/dev/null 2>&1; then
+    route="$(python3 - <<'PY'
+import json, urllib.request
+try:
+    with urllib.request.urlopen("http://127.0.0.1:8082/admin/api/config", timeout=5) as r:
+        d = json.loads(r.read().decode())
+    vals = {f.get("key"): f.get("value") for f in d.get("fields", [])}
+    print(f"{vals.get('MODEL')} (fallbacks: {vals.get('MODEL_FALLBACKS') or 'none'})")
+except Exception:
+    print("route unknown")
+PY
+)"
+    printf 'up  route: %s\n' "$route"
+  else
+    printf 'down (launch agent: com.hermes.fcc-router)\n'
+  fi
+
+  printf '%-10s ' "claude"
+  claude auth status 2>/dev/null | python3 -c "
+import json,sys
+try:
+    d=json.load(sys.stdin)
+    print('up' if d.get('loggedIn') else 'down', d.get('subscriptionType',''), d.get('loginExpiresAt','')[:10])
+except Exception:
+    print('unknown')
+" 2>/dev/null || printf 'unknown\n'
+
+  printf '%-10s ' "codex"
+  command -v codex >/dev/null 2>&1 && printf 'up  %s\n' "$(codex --version 2>/dev/null | head -1)" || printf 'down\n'
+
+  printf '%-10s ' "gemini"
+  command -v gemini >/dev/null 2>&1 && printf 'cli present (auth?)\n' || printf 'cli missing\n'
+
+  printf '%-10s ' "drive"
+  rclone listremotes 2>/dev/null | grep -q '^gdrive:' && printf 'up  remote gdrive:\n' || printf 'no gdrive remote\n'
+}
+
+cmd_ask() {
+  local lane="${1:-}"; shift || true
+  local prompt="$*"
+  case "$lane" in
+    fcc)
+      curl -s --max-time "$FCC_TIMEOUT" "$FCC_URL/v1/messages" \
+        -H 'content-type: application/json' \
+        -d "$(json_msg "$FCC_MODEL" "$prompt")"
+      ;;
+    codex)
+      codex exec --skip-git-repo-check "$prompt" 2>&1
+      ;;
+    claude)
+      claude -p "$prompt" --allowedTools "Read,Grep,Glob" --permission-mode acceptEdits 2>&1
+      ;;
+    ollama)
+      ollama run "$OLLAMA_MODEL" "$prompt" 2>&1
+      ;;
+    gemini)
+      gemini -p "$prompt" 2>&1
+      ;;
+    drive)
+      rclone cat "gdrive:${prompt}" 2>&1
+      ;;
+    auto)
+      # Cheapest capable lane for the shape of the task: bulk/长-form work on internal
+      # documents stays local (private + unlimited); code and review go to the routed
+      # ChatGPT lane; everything else uses the same default.
+      local lower; lower="$(printf '%s' "$prompt" | tr '[:upper:]' '[:lower:]')"
+      case "$lower" in
+        *summar*|*extract*|*classif*|*list*|*count*|*grep*|*scan*|*catalog*)
+          cmd_ask ollama "$prompt" ;;
+        *)
+          cmd_ask fcc "$prompt" ;;
+      esac
+      ;;
+    *)
+      usage; exit 2 ;;
+  esac
+}
+
+case "${1:-}" in
+  status) cmd_status ;;
+  ask) shift; cmd_ask "$@" ;;
+  *) usage; exit 2 ;;
+esac
