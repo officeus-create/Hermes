@@ -5,6 +5,7 @@ import { commandCenterHaeIdempotencyKey, verifyCommandCenterHaeReceipt } from ".
 const BRIDGE_POLICY_VERSION="command-center-plugin-bridge-v1";
 const ROLE_JOB_MAP=Object.freeze({
   "hermes-agent-coordinator":"work.portfolio.reconcile",
+  "hermes-marketing-growth":"work.portfolio.marketing.reconcile",
 });
 const PRIORITY=Object.freeze({p0:100,p1:85,p2:60,p3:40});
 

@@ -49,6 +49,7 @@ assert.deepEqual(
     "technology.release.radar",
     "work.item.plan",
     "work.portfolio.reconcile",
+    "work.portfolio.marketing.reconcile",
   ].sort(),
 );
 
@@ -169,6 +170,8 @@ assert.equal(roleContractForJobType("report.hr-tech.weekly.build").runtime_confi
 assert.equal(roleContractForJobType("report.catalog.weekly.build").runtime_config.max_cost_usd,0);
 assert.equal(roleContractForJobType("report.hr-tech.weekly.build").runtime_config.max_cost_usd,0);
 assert.equal(roleContractForJobType("work.portfolio.reconcile").plugin_version, pluginRuntimeVersion("hermes-agent-coordinator"));
+assert.equal(roleContractForJobType("work.portfolio.marketing.reconcile").plugin_version, pluginRuntimeVersion("hermes-marketing-growth"));
+assert.equal(roleContractForJobType("work.portfolio.marketing.reconcile").semantic_required,false);
 assert.equal(roleContractForJobType("hae.self.improvement.audit").plugin_version, pluginRuntimeVersion("hermes-automatic-engineer"));
 assert.equal(roleContractForJobType("hae.self.release.verify").role_id, "hermes-qa-evidence-auditor");
 assert.equal(roleContractForJobType("hae.self.release.verify").plugin_version, pluginRuntimeVersion("hermes-qa-evidence-auditor"));

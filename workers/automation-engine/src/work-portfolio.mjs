@@ -147,6 +147,7 @@ export function reconcileWorkPortfolioSnapshot(input = {}, allowedReadOnlyJobTyp
       && task.capability_job_type
       && allowed.has(task.capability_job_type)
       && task.capability_job_type !== "work.portfolio.reconcile"
+      && task.capability_job_type !== "work.portfolio.marketing.reconcile"
     ) {
       routingCandidates.push(task.work_id);
     }
@@ -173,7 +174,7 @@ export function reconcileWorkPortfolioSnapshot(input = {}, allowedReadOnlyJobTyp
     } else if (!task.capability_job_type) {
       decision = "HOLD";
       reason = "CAPABILITY_JOB_TYPE_MISSING";
-    } else if (task.capability_job_type === "work.portfolio.reconcile") {
+    } else if (task.capability_job_type === "work.portfolio.reconcile" || task.capability_job_type === "work.portfolio.marketing.reconcile") {
       decision = "HOLD";
       reason = "COORDINATOR_RECURSION_DENIED";
     } else if (!allowed.has(task.capability_job_type) || !contract) {

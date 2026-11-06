@@ -53,6 +53,15 @@ const completeResult = reconcileWorkPortfolioSnapshot({ ...input, coverage_compl
 ], routeContracts);
 assert.deepEqual(completeResult.routing_candidate_work_ids, ["W-2"]);
 assert.equal(completeResult.routing_blocked_reason, null);
+const marketingRecursion=reconcileWorkPortfolioSnapshot({
+  ...input,coverage_complete:true,
+  tasks:[input.tasks[0],{...input.tasks[1],capability_job_type:"work.portfolio.marketing.reconcile"}],
+},["work.portfolio.marketing.reconcile"],[{
+  job_type:"work.portfolio.marketing.reconcile",role_id:"hermes-marketing-growth",
+  plugin_version:"0.1.20",permission_class:"READ_ONLY",semantic_required:false,runtime_config:{max_cost_usd:0},
+}]);
+assert.equal(marketingRecursion.routing_candidate_count,0,"portfolio reconciliation must never recursively dispatch itself");
+assert.equal(marketingRecursion.routing_decisions.find((item)=>item.work_id==="W-2").route_reason,"COORDINATOR_RECURSION_DENIED");
 const w2Route=completeResult.routing_decisions.find((item)=>item.work_id==="W-2");
 assert.deepEqual(w2Route,{
   work_id:"W-2",

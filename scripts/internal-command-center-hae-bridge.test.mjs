@@ -50,7 +50,16 @@ assert.equal(stale.state,"PLUGIN_ROUTE_VERSION_DRIFT");
 const marketingItem={...item,id:"hcwi_marketing",workstream:"marketing",title:"Campaign plan",details:"Generic campaign"};
 const marketingRoute=selectWorkItemPluginRoute(marketingItem);
 assert.equal(marketingRoute.owner.role_id,"hermes-marketing-growth");
-const unsupported=await buildCommandCenterHaeJobRequest(marketingItem,marketingRoute,"aitask_test_002",observedAt);
+const marketingPlan=await buildCommandCenterHaeJobRequest(marketingItem,marketingRoute,"aitask_test_002",observedAt);
+assert.equal(marketingPlan.ok,true);
+assert.equal(marketingPlan.request.job_type,"work.portfolio.marketing.reconcile");
+assert.equal(marketingPlan.expected.role_id,"hermes-marketing-growth");
+assert.equal(marketingPlan.expected.plugin_version,marketingRoute.owner.plugin_version);
+assert.equal(marketingPlan.request.payload.tasks[0].permission_class,"READ_ONLY");
+assert.equal(JSON.stringify(marketingPlan.request).includes(marketingItem.title),false);
+const unsupportedItem={...item,id:"hcwi_technology",workstream:"technology"};
+const unsupportedRoute=selectWorkItemPluginRoute(unsupportedItem);
+const unsupported=await buildCommandCenterHaeJobRequest(unsupportedItem,unsupportedRoute,"aitask_test_003",observedAt);
 assert.equal(unsupported.ok,false);
 assert.equal(unsupported.state,"PLUGIN_EXECUTION_UNAVAILABLE");
 assert.equal(unsupported.reason,"safe_role_contract_mapping_missing");
@@ -116,6 +125,40 @@ try{
   const success=await readFake();
   assert.equal(success.receipt_verified,true);
   assert.equal(success.state,"PLUGIN_EXECUTION_SUCCEEDED_RECEIPT_VERIFIED");
+
+  const marketingContract=roleContractForJobType(marketingPlan.request.job_type);
+  const marketingBoundItem={
+    ...marketingItem,
+    organization_scope:"hermes_internal",
+    linked_task_id:"aitask_test_002",
+    hae_job_id:"job:22222222-2222-4222-8222-222222222222",
+    plugin_route_json:JSON.stringify(marketingRoute),
+  };
+  const marketingContractIdentity={
+    role_id:marketingPlan.expected.role_id,
+    plugin_version:marketingPlan.expected.plugin_version,
+    contract_version:marketingContract.contract_version,
+    sha256:marketingPlan.expected.contract_sha,
+  };
+  const marketingJob={
+    job_id:marketingBoundItem.hae_job_id,
+    job_type:marketingPlan.request.job_type,
+    business_lane:marketingPlan.request.business_lane,
+    account_key:marketingPlan.request.account_key,
+    project_key:marketingPlan.request.project_key,
+    idempotency_key:marketingPlan.request.idempotency_key,
+    policy_version:marketingPlan.request.policy_version,
+    state:"SUCCEEDED",
+    payload_json:JSON.stringify({...marketingPlan.request.payload,_role_contract:marketingContractIdentity}),
+    result_json:JSON.stringify({capability:marketingPlan.request.job_type,external_write:false,role_contract:marketingContractIdentity,result:{}}),
+  };
+  const marketingEvent={job_id:marketingBoundItem.hae_job_id,event_type:"job.succeeded",to_state:"SUCCEEDED"};
+  globalThis.fetch=async()=>new Response(JSON.stringify({job:marketingJob,events:[marketingEvent]}),{status:200,headers:{"Content-Type":"application/json"}});
+  const marketingReceipt=await readCommandCenterHaeExecution(env,marketingBoundItem,marketingRoute);
+  assert.equal(marketingReceipt.receipt_verified,true,"marketing receipt must be verified with exact role/version and durable event");
+  assert.equal(marketingReceipt.state,"PLUGIN_EXECUTION_SUCCEEDED_RECEIPT_VERIFIED");
+  globalThis.fetch=async()=>new Response(JSON.stringify({job:marketingJob,events:[]}),{status:200,headers:{"Content-Type":"application/json"}});
+  assert.equal((await readCommandCenterHaeExecution(env,marketingBoundItem,marketingRoute)).receipt_verified,false,"marketing receipt without durable event fails closed");
 
   for(const events of [[],[successEvent,successEvent]]){
     const result=await readFake(canonicalJob,events);
