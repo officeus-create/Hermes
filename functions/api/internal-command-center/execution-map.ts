@@ -4,6 +4,7 @@ import { cachedValue, ensureOnce } from "../_lib/request-cost-guard.mjs";
 import { developmentCatalog, executionProjection, linkHumanWorkDevelopments } from "../_lib/command-center-execution-map.mjs";
 import { buildDepartmentKpis, readDepartmentKpiSources } from "../_lib/command-center-department-kpis.mjs";
 import { buildProviderHealth } from "../_lib/command-center-provider-health.mjs";
+import { buildEngineStatus, LAUNCHABLE_WORK_ITEMS_SQL, revenueCooldownCutoff } from "../_lib/command-center-engine-status.mjs";
 import { readClickUpHumanTasks } from "../_lib/command-center-clickup.mjs";
 import { readGithubDevelopments } from "../_lib/command-center-github.mjs";
 import { isRunnerHeartbeatFresh, parseRunnerTelemetry, requireInternalOwner } from "../_lib/internal-ai.mjs";
@@ -77,6 +78,38 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
   } catch {
     hae_recent_events={source_state:"UNAVAILABLE_OR_NOT_MIGRATED",items:[]};
   }
+
+  // Engine liveness and launch readiness. The HAE worker owns scheduling; this
+  // read model only reports whether its cron pulse is alive and which owner
+  // work item is the next launch candidate. Missing HAE tables degrade to an
+  // explicit unavailable state instead of failing the whole owner read model.
+  let engineHeartbeat:any=null,engineLaunchable:any[]=[],engineLastJob:any=null,engineSourceAvailable=true;
+  try {
+    engineHeartbeat=await env.DB.prepare(`SELECT trigger_type,cron_expression,scheduled_at,observed_at,execution_lag_ms,chicago_slot_key,eligible,source_sha,automation_mode,publication_config,publication_enabled
+      FROM hermes_automation_heartbeats ORDER BY scheduled_at DESC LIMIT 1`).first();
+  } catch {
+    engineSourceAvailable=false;
+  }
+  try {
+    const launchableRows=await env.DB.prepare(LAUNCHABLE_WORK_ITEMS_SQL).bind(revenueCooldownCutoff(checkedAt)).all();
+    engineLaunchable=launchableRows?.results||[];
+  } catch {
+    engineSourceAvailable=false;
+  }
+  try {
+    engineLastJob=await env.DB.prepare(`SELECT job_id,job_type,state,current_step,last_error_class,attempt_count,max_attempts,updated_at
+      FROM hermes_automation_jobs WHERE job_type='work.item.plan' ORDER BY updated_at DESC LIMIT 1`).first();
+  } catch {
+    engineSourceAvailable=false;
+  }
+  const engine_status=buildEngineStatus({
+    heartbeat:engineHeartbeat,
+    launchableRows:engineLaunchable,
+    lastJob:engineLastJob,
+    checkedAt,
+    sourceAvailable:engineSourceAvailable,
+  });
+
   const registrySnapshot = pluginRuntimeRegistrySnapshot();
   const registryEvidence = pluginRuntimeRegistryEvidenceStatus(checkedAt);
   const processes = (processRows.results || []).map(publicHaeProcess);
@@ -115,6 +148,7 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
     department_kpis,
     provider_health,
     hae_recent_events,
+    engine_status,
     plugin_registry: registrySnapshot.entries.map(({ role_id, plugin_version, observed_at }) => ({
       role_id,
       plugin_version,
