@@ -1,7 +1,47 @@
 # HAE chain proof — WORK_ID → HAE job → VIKTOR-WINDOWS → completion → D1 receipt
 
-Status: **RUNTIME_VERIFIED locally** on the owner Mac, 2026-11-06.
+Status: **RUNTIME_VERIFIED in production** (HAE runtime leg, 2026-11-06) and **RUNTIME_VERIFIED locally** for the
+full chain including the VIKTOR-WINDOWS semantic node (2026-11-06).
 Harness: `scripts/ai/hae-chain-proof.mjs` (reproducible, offline except the local Ollama inference).
+
+## Production proof (closed)
+
+The repository already owns the canonical production proof operation, so no new mechanism was created:
+`.github/workflows/automation-engine-release.yml`, operation `runtime_readonly_proof` (read-only by construction —
+the deploy steps are gated to the other operations).
+
+Run: <https://github.com/officeus-create/Hermes/actions/runs/42289080275> · target SHA `c74bc7835` (current main).
+
+```
+HAE runtime read-only proof PASS job=job:ac64c6a3-2781-44a2-a562-482e92fe5781 attempts=1 duplicate_receipts=1 queue=0 dlq=0
+```
+
+Facts proven in production (independent QA job passed and attested the package):
+
+| Fact | Value |
+|---|---|
+| Deployed worker source | `source_sha = c74bc7835…` = current `main` |
+| Runtime mode | `automation_mode = dry_run`, `publication_enabled = false` |
+| Real production job | `job:ac64c6a3-2781-44a2-a562-482e92fe5781`, `system.health.snapshot`, `READ_ONLY`, `SUCCEEDED` |
+| Production D1 | `d1://hermes-connect-prototype/hermes_automation_jobs/job:ac64c6a3-…` |
+| Attempts / external write | `attempt_count = 1`, `external_write = false` |
+| Idempotent replay | `duplicate_execution_count = 0`, `duplicate_suppressed_receipt_count = 1`, no second side effect |
+| Transport | queue `hermes-automation` backlog `0`, DLQ `hermes-automation-dlq` backlog `0` |
+
+Artifact: `docs/evidence/hae-runtime-proof-production-2026-11-06.json` (executor + independently attested QA package).
+
+Two production signals worth the owner's attention, taken from the same read-only snapshot:
+
+- **The VIKTOR-WINDOWS node is live in production**: `job.windows_node_leased = 81`, `job.windows_node_succeeded = 13`,
+  `job.windows_node_lease_expired = 68`, `job.waiting_free_ai = 153`. The node claims jobs; many leases expire
+  before completion, so node completion is the bottleneck, not job creation.
+- **`cron.role_contract_submit_failed = 52` and `job.failed = 2`** while `job.succeeded = 535`. The runtime is healthy
+  overall, but the role-contract cron path is failing repeatedly and needs a separate fix.
+
+Still open in production: a work-item receipt **displayed in the Command Center UI** requires the owner session
+(`hermes_session`); the API answers `401 not_authenticated` without it. The runtime proof above therefore proves the
+HAE/D1/Queue leg end to end, while the Command Center display leg is verified in the repository's own bridge contract
+(`functions/api/_lib/command-center-hae-bridge.mjs`) and locally, not yet in a live owner session.
 
 ## What this proves
 
@@ -33,16 +73,20 @@ WORK_ID (canonical Command Center backlog)
 
 ## What this does NOT prove
 
-- **Nothing about the deployed production HAE.** `POST /v1/jobs` needs `HERMES_AUTOMATION_TOKEN` and the
-  Windows node needs its Ed25519 **private** key; both live in Cloudflare secrets / on the node device and
-  do not exist on this Mac. The deployed edge still refuses unauthenticated access
-  (`GET https://hae-node.hermeslogisticsus.com/v1/nodes/windows/status` → `401 windows_node_auth_required`),
-  which is the correct fail-closed gate, not a bypass.
-- The node role ran on the owner Mac, not on the VIKTOR-WINDOWS machine.
-- D1 here is a local SQLite emulator, not the canonical production `hermes-connect-prototype` database.
+- **The local harness says nothing about production** on its own — it runs the real worker code against a local
+  SQLite D1 and a local Ollama model. The production leg above is a separate CI proof.
+- **A Command Center receipt visible to the owner in the UI still needs an owner session.** The production API
+  (`GET /api/internal-command-center/work-items`) answers `401 not_authenticated` without the `hermes_session` cookie,
+  so no work-item receipt could be read back into the private workspace from this Mac.
+- The local harness played the node role on the owner Mac, not on the VIKTOR-WINDOWS machine. (In production the real
+  node is already active — see the production signals above.)
+- The local D1 is an SQLite emulator, not the canonical production `hermes-connect-prototype` database.
 - The production control-plane base URL is the Pages secret `HERMES_AUTOMATION_BASE_URL`
   (`functions/api/_lib/command-center-hae-bridge.mjs`); it is not publicly discoverable, so the harness
   uses a stand-in control host while the node edge keeps the real custom domain.
+- The deployed node edge still refuses unauthenticated access
+  (`GET https://hae-node.hermeslogisticsus.com/v1/nodes/windows/status` → `401 windows_node_auth_required`) —
+  the correct fail-closed gate, not a bypass.
 
 ## Measured result
 
@@ -114,12 +158,15 @@ Requirements: Node 24 (`node:sqlite`), Ollama with `qwen2.5-coder:7b` (and optio
 The harness never touches production credentials, never writes outside its in-memory D1, and performs no
 external write — the only network call besides the local Ollama is the read-only 401 probe of the deployed edge.
 
-## Owner action still required for production parity
+## What the owner still has to decide or do
 
-1. Put `HERMES_AUTOMATION_TOKEN` on the Mac (or a runner that may create HAE jobs) — it is a Cloudflare
-   secret and is intentionally not in the repository.
-2. Put the VIKTOR-WINDOWS Ed25519 **private** key on the node device, or issue a node credential that the
-   owner can place there. The public key is already versioned in the worker
-   (`workers/automation-engine/src/windows-node-runtime.mjs`, `WINDOWS_NODE_PUBLIC_KEY_SPKI_B64`).
-3. Enable the Windows node in the deployed worker vars (`HERMES_WINDOWS_NODE_ENABLED=enabled`) and run one
-   READ_ONLY canary through the deployed edge.
+1. **Command Center display leg** — to see a work-item receipt inside the private workspace, an owner session is
+   required (`hermes_session`); the API answers `401 not_authenticated` without it. The production receipt itself
+   already exists in D1 (`job:ac64c6a3-2781-44a2-a562-482e92fe5781`).
+2. **Node completion bottleneck** — production shows 81 leases but only 13 completions and 68 expired leases.
+   The node claims work it does not finish; that gap, not job creation, is what limits throughput.
+3. **`cron.role_contract_submit_failed = 52`** — the scheduled role-contract path fails repeatedly in production
+   and needs a separate, reviewed fix.
+4. **Owner-gated credentials for local parity** — `HERMES_AUTOMATION_TOKEN` and the VIKTOR-WINDOWS Ed25519
+   **private** key exist only in Cloudflare secrets and on the node device. The public key is already versioned in
+   the worker (`workers/automation-engine/src/windows-node-runtime.mjs`, `WINDOWS_NODE_PUBLIC_KEY_SPKI_B64`).
