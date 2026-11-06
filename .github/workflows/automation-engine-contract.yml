@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - "workers/automation-engine/**"
+      - "scripts/windows/viktor-hae/**"
       - "scripts/automation-engine-contract.test.mjs"
       - "scripts/hae-meta-threads-transport.test.mjs"
       - "scripts/meta-threads-provider-contract.test.mjs"
@@ -65,6 +66,7 @@ jobs:
           node-version: "22"
       - name: Run automation engine contract
         run: |
+          python3 scripts/windows/viktor-hae/test_runtime.py
           node scripts/automation-engine-contract.test.mjs
           node scripts/hae-meta-threads-transport.test.mjs
           node scripts/meta-threads-provider-contract.test.mjs
