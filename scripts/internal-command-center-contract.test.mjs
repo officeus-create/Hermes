@@ -7,6 +7,7 @@ const page=read("src/pages/services/hermes-connect/internal/command-center/index
 const helper=read("functions/api/_lib/internal-command-center.mjs");
 const haeBridge=read("functions/api/_lib/command-center-hae-bridge.mjs");
 const historyBacklog=read("functions/api/_lib/command-center-history-backlog.mjs");
+const revenueBacklog=read("functions/api/_lib/command-center-four-month-revenue-backlog.mjs");
 const collection=read("functions/api/internal-command-center/work-items.ts");
 const item=read("functions/api/internal-command-center/work-items/[id].ts");
 const access=read("functions/api/internal-command-center/access.ts");
@@ -17,6 +18,7 @@ const socialAcquisition=read("functions/api/internal-command-center/social-acqui
 const processItem=read("functions/api/internal-command-center/processes/[id].ts");
 const processControl=read("src/lib/hae-process-control.mjs");
 const processRuntime=read("workers/automation-engine/src/owner-process-runtime.mjs");
+const ownerWorkRuntime=read("workers/automation-engine/src/owner-work-runtime.mjs");
 const haeWorker=read("workers/automation-engine/src/index.mjs");
 const nav=read("src/components/HermesConnectInternalAiNav.astro");
 const ownerWorkspace=read("src/components/HermesCommandCenterOwnerWorkspace.astro");
@@ -125,6 +127,20 @@ assert.match(helper,/seedHistoricalCommandCenterBacklog/,"history recovery must 
 assert.match(helper,/source_ref TEXT/,"owner backlog must retain durable task provenance");
 assert.match(helper,/next_action TEXT/,"owner backlog must expose the next concrete action");
 assert.match(historyBacklog,/COMMAND_CENTER_HISTORY_BACKLOG/,"three-month recovered work must live in a bounded import manifest");
+assert.match(revenueBacklog,/FOUR_MONTH_REVENUE_BACKLOG/,"four-month revenue work must use a bounded import manifest");
+assert.match(revenueBacklog,/REV4M-20261011-DEALERCENTER/,"recovered four-month chat revenue missions must be preserved in the same bounded manifest");
+assert.match(revenueBacklog,/REV4M-20260707-CARRIER-CRM-TEMPLATES/,"distinct project/file revenue missions recovered inside the four-month window must also be preserved");
+assert.match(revenueBacklog,/REV4M-20260825-MEDIA-PARTNERSHIPS/,"media partnerships must remain a distinct revenue mission rather than disappearing into generic partnership routing");
+assert.match(revenueBacklog,/owner_revenue_backlog_2026-11-06_v5/,"revenue import must be versioned and idempotent");
+assert.match(revenueBacklog,/revenue_gate_usd:1/,"every revenue mission must require at least one dollar of verified financial benefit");
+assert.match(revenueBacklog,/W-20261019-015/,"the initial active source must be the HAE-startable SEO/GEO revenue mission");
+assert.match(helper,/seedFourMonthRevenueBacklog/,"revenue missions must seed the existing D1 work-item queue");
+assert.match(helper,/financial_done/,"Command Center read model must expose financial completion separately from technical state");
+assert.match(item,/action==="record_revenue"/,"owner API must record verified paid revenue");
+assert.match(item,/financial_result_required/,"generic completion must fail closed until the revenue gate is met");
+assert.match(item,/next_revenue_work_item_id/,"a proven financial win must unlock the next ranked revenue mission");
+assert.match(page,/Record paid revenue|Записать оплату/,"owner UI must expose paid-revenue evidence entry");
+assert.match(page,/OPEN UNTIL PAYMENT|ОТКРЫТО ДО ОПЛАТЫ/,"owner UI must distinguish technical progress from financial completion");
 assert.match(historyBacklog,/INSERT OR IGNORE INTO hermes_owner_work_items/,"history import must be idempotent and reuse the canonical work-item table");
 assert.match(historyBacklog,/hermes_command_center_imports/,"history import must record a one-time import receipt");
 assert.doesNotMatch(historyBacklog,/CREATE TABLE IF NOT EXISTS .*task_registry/is,"history import must not create a competing task registry");
@@ -172,6 +188,7 @@ assert.match(processItem,/action === "pause"/,"owner must be able to stop future
 assert.match(processRuntime,/owner_process_contract_not_allowed/,"runtime must fail closed on a non-read-only or semantic contract");
 assert.match(processRuntime,/idempotency_key: `hae:process:/,"every recurring process run must have a durable idempotency key");
 assert.match(processRuntime,/lease_until/,"HAE must atomically lease a due process before dispatch");
+assert.match(ownerWorkRuntime,/CASE WHEN revenue_status='active' THEN 0 ELSE 1 END/,"HAE owner-work intake must prioritize the active revenue mission before ordinary technical work");
 assert.match(haeWorker,/ownerManagedJobTypes/,"owner-managed capabilities must replace their static schedule instead of duplicating it");
 assert.match(haeWorker,/enqueueDueOwnerProcesses/,"the existing HAE cron must own process dispatch");
 

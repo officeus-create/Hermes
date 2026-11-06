@@ -1,5 +1,6 @@
 import { INTERNAL_AI_ORGANIZATION_SCOPE, nowIso } from "./internal-ai.mjs";
 import { seedHistoricalCommandCenterBacklog } from "./command-center-history-backlog.mjs";
+import { seedFourMonthRevenueBacklog } from "./command-center-four-month-revenue-backlog.mjs";
 import { pluginRuntimeRegistrySnapshot } from "../../../workers/automation-engine/src/plugin-runtime-registry.mjs";
 
 export const COMMAND_CENTER_SCOPE = INTERNAL_AI_ORGANIZATION_SCOPE;
@@ -39,7 +40,15 @@ export async function ensureCommandCenterSchema(db) {
     source_kind TEXT,
     source_label TEXT,
     source_ref TEXT,
-    next_action TEXT
+    next_action TEXT,
+    revenue_gate_usd REAL,
+    revenue_target_usd REAL,
+    revenue_actual_usd REAL,
+    revenue_rank INTEGER,
+    revenue_status TEXT,
+    revenue_source_work_id TEXT,
+    revenue_evidence_ref TEXT,
+    revenue_recorded_at TEXT
   )`).run();
   const columns=await db.prepare("PRAGMA table_info(hermes_owner_work_items)").all();
   const names=new Set((columns?.results||[]).map((column)=>String(column.name)));
@@ -58,6 +67,14 @@ export async function ensureCommandCenterSchema(db) {
     ["source_label","TEXT"],
     ["source_ref","TEXT"],
     ["next_action","TEXT"],
+    ["revenue_gate_usd","REAL"],
+    ["revenue_target_usd","REAL"],
+    ["revenue_actual_usd","REAL"],
+    ["revenue_rank","INTEGER"],
+    ["revenue_status","TEXT"],
+    ["revenue_source_work_id","TEXT"],
+    ["revenue_evidence_ref","TEXT"],
+    ["revenue_recorded_at","TEXT"],
   ]) if(!names.has(name)) {
     try { await db.prepare(`ALTER TABLE hermes_owner_work_items ADD COLUMN ${name} ${definition}`).run(); }
     catch(error) {
@@ -68,6 +85,8 @@ export async function ensureCommandCenterSchema(db) {
   await db.prepare("CREATE INDEX IF NOT EXISTS idx_owner_work_items_scope_state_priority ON hermes_owner_work_items(organization_scope,status,priority,created_at)").run();
   await db.prepare("CREATE INDEX IF NOT EXISTS idx_owner_work_items_scope_project ON hermes_owner_work_items(organization_scope,project_id)").run();
   await seedHistoricalCommandCenterBacklog(db);
+  await seedFourMonthRevenueBacklog(db);
+  await db.prepare("CREATE INDEX IF NOT EXISTS idx_owner_work_items_revenue_queue ON hermes_owner_work_items(organization_scope,revenue_status,revenue_rank)").run();
   await db.prepare(`CREATE TABLE IF NOT EXISTS hermes_internal_owner_access_audit (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     organization_scope TEXT NOT NULL CHECK (organization_scope = 'hermes_internal'),
@@ -116,6 +135,13 @@ export function publicWorkItem(row){
     linked_task_id:row.linked_task_id||null, completed_at:row.completed_at||null,
     accepted_by:row.accepted_by||null, accepted_at:row.accepted_at||null, blocked_reason:row.blocked_reason||null,
     source_kind:row.source_kind||null, source_label:row.source_label||null, source_ref:row.source_ref||null, next_action:row.next_action||null,
+    revenue_gate_usd:row.revenue_gate_usd==null?null:Number(row.revenue_gate_usd),
+    revenue_target_usd:row.revenue_target_usd==null?null:Number(row.revenue_target_usd),
+    revenue_actual_usd:row.revenue_actual_usd==null?null:Number(row.revenue_actual_usd),
+    revenue_rank:row.revenue_rank==null?null:Number(row.revenue_rank),
+    revenue_status:row.revenue_status||null, revenue_source_work_id:row.revenue_source_work_id||null,
+    revenue_evidence_ref:row.revenue_evidence_ref||null, revenue_recorded_at:row.revenue_recorded_at||null,
+    financial_done:row.revenue_gate_usd==null?null:Number(row.revenue_actual_usd||0)>=Number(row.revenue_gate_usd||1),
     linked_task_status:row.linked_task_status||null, linked_task_started_at:row.linked_task_started_at||null,
     linked_task_completed_at:row.linked_task_completed_at||null, linked_task_updated_at:row.linked_task_updated_at||null,
     linked_task_pr_url:row.linked_task_pr_url||null, linked_task_output_summary:row.linked_task_output_summary||null,

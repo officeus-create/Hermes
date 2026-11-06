@@ -76,6 +76,11 @@ function minimizedWorkItemPayload(item, route) {
     next_action: nextAction || null,
     source_kind: sourceKind || null,
     source_label: sourceLabel || null,
+    revenue_mission: String(item?.revenue_status || "") === "active",
+    revenue_gate_usd: item?.revenue_gate_usd == null ? null : Number(item.revenue_gate_usd),
+    revenue_target_usd: item?.revenue_target_usd == null ? null : Number(item.revenue_target_usd),
+    revenue_actual_usd: item?.revenue_actual_usd == null ? null : Number(item.revenue_actual_usd),
+    revenue_source_work_id: clean(item?.revenue_source_work_id, 160) || null,
     selected_owner_role: clean(route?.owner?.role_id, 120),
     selected_owner_version: clean(route?.owner?.plugin_version, 80),
     route_basis: clean(route?.basis, 160),
@@ -88,6 +93,7 @@ function itemPriority(value) {
 }
 
 async function reserveNextItem(db, now) {
+  const revenueRetryCutoff = new Date(Date.parse(now) - 6 * 60 * 60 * 1000).toISOString();
   const candidate = await db.prepare(`
     SELECT *
     FROM hermes_owner_work_items
@@ -95,13 +101,16 @@ async function reserveNextItem(db, now) {
       AND status IN ('ready','planned')
       AND (hae_plan_job_id IS NULL OR hae_plan_job_id='')
       AND (hae_execution_job_id IS NULL OR hae_execution_job_id='')
-      AND (hae_dispatch_state IS NULL OR hae_dispatch_state IN ('','RETRY_READY'))
+      AND (hae_dispatch_state IS NULL OR hae_dispatch_state IN ('','RETRY_READY','REVENUE_NEEDS_CAPABILITY','REVENUE_CYCLE_SUCCEEDED'))
+      AND (revenue_status IS NULL OR revenue_status!='active' OR updated_at<=?)
     ORDER BY
+      CASE WHEN revenue_status='active' THEN 0 ELSE 1 END,
       CASE status WHEN 'ready' THEN 0 ELSE 1 END,
       CASE priority WHEN 'p0' THEN 0 WHEN 'p1' THEN 1 WHEN 'p2' THEN 2 ELSE 3 END,
+      CASE WHEN revenue_rank IS NULL THEN 999999 ELSE revenue_rank END ASC,
       created_at ASC
     LIMIT 1
-  `).first();
+  `).bind(revenueRetryCutoff).first();
   if (!candidate) return null;
   const reserved = await db.prepare(`
     UPDATE hermes_owner_work_items
@@ -109,7 +118,7 @@ async function reserveNextItem(db, now) {
     WHERE id=? AND organization_scope='hermes_internal'
       AND status IN ('ready','planned')
       AND (hae_plan_job_id IS NULL OR hae_plan_job_id='')
-      AND (hae_dispatch_state IS NULL OR hae_dispatch_state IN ('','RETRY_READY'))
+      AND (hae_dispatch_state IS NULL OR hae_dispatch_state IN ('','RETRY_READY','REVENUE_NEEDS_CAPABILITY','REVENUE_CYCLE_SUCCEEDED'))
   `).bind(now, candidate.id).run();
   return Number(reserved?.meta?.changes || 0) === 1 ? candidate : null;
 }
@@ -231,6 +240,8 @@ async function reconcilePlan(env, item, scheduledAt, deps) {
     return 1;
   }
 
+  const revenueActive = String(item?.revenue_status || "") === "active"
+    && Number(item?.revenue_actual_usd || 0) < Math.max(1, Number(item?.revenue_gate_usd || 1));
   const stateMap = {
     NEEDS_CAPABILITY: "NEEDS_CAPABILITY",
     NEEDS_OWNER_GATE: "NEEDS_OWNER_GATE",
@@ -238,6 +249,16 @@ async function reconcilePlan(env, item, scheduledAt, deps) {
   };
   const dispatchState = stateMap[plan.disposition] || "PLAN_COMPLETE_NO_SAFE_EXECUTION";
   const blocked = dispatchState === "NEEDS_OWNER_GATE" || dispatchState === "BLOCKED_EVIDENCE";
+  if (revenueActive && dispatchState === "NEEDS_CAPABILITY") {
+    await env.DB.prepare(`
+      UPDATE hermes_owner_work_items
+      SET status='ready',hae_plan_job_id=NULL,hae_execution_job_id=NULL,
+          hae_dispatch_state='REVENUE_NEEDS_CAPABILITY',hae_dispatch_result_json=?,next_action=?,
+          blocked_reason=NULL,updated_at=?
+      WHERE id=? AND organization_scope='hermes_internal' AND hae_plan_job_id=?
+    `).bind(resultJson, plan.next_action || null, now, item.id, planJobId).run();
+    return 1;
+  }
   await env.DB.prepare(`
     UPDATE hermes_owner_work_items
     SET status=?,hae_dispatch_state=?,hae_dispatch_result_json=?,next_action=?,
@@ -277,6 +298,19 @@ async function reconcileExecution(env, item, scheduledAt) {
     return 0;
   }
   if (state === "SUCCEEDED") {
+    const revenueActive = String(item?.revenue_status || "") === "active"
+      && Number(item?.revenue_actual_usd || 0) < Math.max(1, Number(item?.revenue_gate_usd || 1));
+    if (revenueActive) {
+      await env.DB.prepare(`
+        UPDATE hermes_owner_work_items
+        SET status='ready',acceptance_status='not_required',
+            hae_plan_job_id=NULL,hae_execution_job_id=NULL,hae_job_id=?,
+            hae_dispatch_state='REVENUE_CYCLE_SUCCEEDED',
+            completed_at=NULL,blocked_reason=NULL,updated_at=?
+        WHERE id=? AND organization_scope='hermes_internal' AND hae_execution_job_id=?
+      `).bind(executionJobId, now, item.id, executionJobId).run();
+      return 1;
+    }
     await env.DB.prepare(`
       UPDATE hermes_owner_work_items
       SET status='in_progress',acceptance_status='awaiting',hae_dispatch_state='EXECUTION_SUCCEEDED',
@@ -300,7 +334,8 @@ export async function reconcileOwnerWorkRuntime(env, scheduledAt, deps) {
   if (!env?.DB) throw new Error("owner_work_runtime_not_configured");
   await ensureOwnerWorkRuntimeSchema(env.DB);
   const rows = await env.DB.prepare(`
-    SELECT id,priority,hae_plan_job_id,hae_execution_job_id,hae_dispatch_state
+    SELECT id,priority,hae_plan_job_id,hae_execution_job_id,hae_dispatch_state,
+           revenue_status,revenue_gate_usd,revenue_actual_usd,revenue_rank
     FROM hermes_owner_work_items
     WHERE organization_scope='hermes_internal'
       AND (hae_plan_job_id IS NOT NULL OR hae_execution_job_id IS NOT NULL)
