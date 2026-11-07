@@ -155,15 +155,15 @@ LESSON: `SUCCEEDED` is execution evidence; `ACCEPTED` is a separate owner decisi
 
 REUSE_RULE: Every HAE/plugin/agent workflow must preserve execution, independent evidence, and business acceptance as separate receipts. Never infer acceptance from a terminal worker state, PR, test, or plugin release.
 
-## ERR-E2E-INTERACTION-STABILITY-20261027 — unrelated public-page controls never become stable in local full-suite preview
+## ERR-E2E-INTERACTION-STABILITY-20261027 — historical public-page interaction instability
 
-STATUS: OPEN / OUTSIDE COMMAND CENTER SCOPE.
+STATUS: RESOLVED / HISTORICAL.
 
-EVIDENCE: The required 2,544-scenario Playwright run completed with 2,518 PASS, 16 expected skips, and 10 timeouts: the same five interaction scenarios on desktop/mobile (`catalog-knb-client-strategy`, `hermes-connect-hub-locale-seo-safe`, `load-board-carrier-operating-path`, and two `repair-public-entry-context` cases). A sequential one-worker rerun reproduced all five desktop timeouts while waiting for already-visible controls to become stable. The focused Command Center browser suite passed 14/14 on the same build and preview. The autonomous-process continuation reproduced the same 10 desktop/mobile timeouts with 2,520 PASS and 16 expected skips; its expanded focused Command Center suite passed 16/16. The project-portfolio continuation ran 2,552 scenarios: 2,525 PASS, 16 expected skips and the same 10 known interaction timeouts plus one concurrent Repair booking i18n timeout. A one-worker rerun of all five affected files produced 42 PASS, reproduced the same 10 known timeouts, and passed the Repair booking i18n scenario on desktop and mobile. Its Command Center suite passed 22/22 independently and inside the full matrix.
+EVIDENCE: Earlier full-suite runs reproduced 10 timeouts across five desktop/mobile interaction scenarios (`catalog-knb-client-strategy`, `hermes-connect-hub-locale-seo-safe`, `load-board-carrier-operating-path`, and two `repair-public-entry-context` cases), including a one-worker rerun where already-visible controls did not become stable. That evidence remains valid for the affected historical snapshots. It is superseded by the final exact-head Website checks for PR #2107: run `40857775989` completed SUCCESS with `contracts`, browser-regression shards `1/3`, `2/3`, `3/3`, and `build-and-test` all successful before #2107 merged to main as `e1a44ffd4e2d75320c3f0c584f431a9d6742a9c1`.
 
-BOUNDARY: None of the failing files, selectors, routes, or shared components changed in the Command Center acceptance slice. Do not weaken or rewrite those public/design tests in PR #2107.
+BOUNDARY: No speculative page-specific motion/CSS repair is justified from the older traces while a newer exact-head full browser gate is green. Preserve the affected public/design tests and their actionability checks.
 
-NEXT: The active visual owner should inspect the retained traces for perpetual layout/motion instability and repair the shared public interaction boundary on its own branch; then rerun the five files and full E2E.
+NEXT: Reopen only if a newer exact-head run reproduces one of the same interaction failures. If it does, use that newer trace to repair the smallest shared layout/motion boundary; do not weaken the test or revive the old snapshot as current evidence.
 
 
 ## 2026-09-12 — Load Board source setup release reconciliation
