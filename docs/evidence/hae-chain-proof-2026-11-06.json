@@ -1,0 +1,355 @@
+{
+  "started_at": "2026-11-06T19:22:39.174Z",
+  "phases": {
+    "phase1_create": {
+      "status": 202,
+      "job_id": "job:f7a0085c-4cc7-4312-a50d-460de4baccf6"
+    },
+    "phase1_receipt": {
+      "state": "SUCCEEDED",
+      "queue_messages": 1,
+      "has_result": true
+    },
+    "phase1_events": [
+      {
+        "event_type": "job.created",
+        "to_state": "QUEUED"
+      },
+      {
+        "event_type": "job.started",
+        "to_state": "RUNNING"
+      },
+      {
+        "event_type": "job.succeeded",
+        "to_state": "SUCCEEDED"
+      }
+    ],
+    "phase2_work_item": {
+      "id": "hcwi_rev4m_w_20261019_015",
+      "status": "in_progress",
+      "hae_plan_job_id": "job:e1ca350c-dbf0-4dd8-bdf2-0800a281e1fb",
+      "hae_job_id": "job:e1ca350c-dbf0-4dd8-bdf2-0800a281e1fb",
+      "hae_dispatch_state": "PLAN_QUEUED",
+      "workstream": "marketing",
+      "priority": "p0",
+      "title": "[REVENUE] Reconcile and finish the 150-task SEO/GEO program"
+    },
+    "phase2_job": {
+      "state": "WAITING_FREE_AI",
+      "current_step": "free_ai",
+      "error_class": "windows_node_required",
+      "attempt_count": 0
+    },
+    "phase3_heartbeat": {
+      "success": true,
+      "status": "HEARTBEAT_ACCEPTED",
+      "node_id": "VIKTOR-WINDOWS",
+      "observed_at": "2026-11-06T19:22:39.339Z",
+      "production_write_authorized": false
+    },
+    "phase3_claim": {
+      "status": "LEASE_ACCEPTED",
+      "job_id": "job:e1ca350c-dbf0-4dd8-bdf2-0800a281e1fb",
+      "work_id": "hcwi_rev4m_w_20261019_015",
+      "role_contract": {
+        "role_id": "hermes-agent-coordinator",
+        "plugin_version": "0.1.102",
+        "contract_version": "owner-work-plan-v1",
+        "sha256": "e314010ee93d247eff75f76212db851f6ffcda98ec0c17a8de18e608de84f768",
+        "permission_class": "READ_ONLY",
+        "semantic_required": true,
+        "max_cost_usd": 0
+      }
+    },
+    "phase3_inference": {
+      "model": "qwen2.5-coder:7b",
+      "attempts": [
+        {
+          "model": "qwen2.5-coder:7b",
+          "prompt_chars": 3334,
+          "output_chars": 321,
+          "output_tokens": 70,
+          "duration_ms": 13888
+        }
+      ],
+      "failed_lanes": [
+        {
+          "model": "deepseek-r1:1.5b",
+          "error": "semantic_result_invalid: output was not valid JSON"
+        }
+      ],
+      "result": {
+        "disposition": "EXECUTE_EXISTING_CAPABILITY",
+        "recommended_job_type": "search.snapshot.evaluate",
+        "rationale": "Existing read-only evaluation of the search snapshot matches the requested verification step.",
+        "next_action": "Run the existing search snapshot evaluation and persist its HAE receipt."
+      }
+    },
+    "phase3_complete": {
+      "status": "SUCCEEDED",
+      "job_id": "job:e1ca350c-dbf0-4dd8-bdf2-0800a281e1fb"
+    },
+    "phase3_receipt": {
+      "state": "SUCCEEDED",
+      "provider_id": "viktor-windows-ollama",
+      "cost_usd": 0,
+      "external_write": false,
+      "disposition": "EXECUTE_EXISTING_CAPABILITY",
+      "recommended_job_type": "search.snapshot.evaluate"
+    },
+    "phase3_events": [
+      {
+        "event_type": "job.created"
+      },
+      {
+        "event_type": "job.started"
+      },
+      {
+        "event_type": "job.waiting_free_ai"
+      },
+      {
+        "event_type": "job.windows_node_leased"
+      },
+      {
+        "event_type": "job.windows_node_succeeded"
+      },
+      {
+        "event_type": "job.succeeded"
+      }
+    ],
+    "phase3_usage": [
+      {
+        "provider_id": "viktor-windows-ollama",
+        "model": "qwen2.5-coder:7b",
+        "cost_usd": 0,
+        "budget_usd": 0,
+        "status": "PROVIDER_RETURNED"
+      }
+    ],
+    "phase3_status": {
+      "success": true,
+      "configured": true,
+      "node_id": "VIKTOR-WINDOWS",
+      "online": true,
+      "last_seen_at": "2026-11-06T19:24:42.767Z",
+      "model": "qwen2.5-coder:7b",
+      "status": "IDLE",
+      "current_job_id": null,
+      "active_lease": null,
+      "inbound_exposure_required": false,
+      "production_write_authorized": false
+    },
+    "phase4_work_item": {
+      "id": "hcwi_rev4m_w_20261019_015",
+      "status": "in_progress",
+      "hae_dispatch_state": "EXECUTION_QUEUED",
+      "hae_plan_job_id": "job:e1ca350c-dbf0-4dd8-bdf2-0800a281e1fb",
+      "hae_execution_job_id": "job:8e09199a-6c44-4862-8c53-9f70bb121223",
+      "next_action": "Run the existing search snapshot evaluation and persist its HAE receipt.",
+      "blocked_reason": null
+    },
+    "phase4_final": {
+      "id": "hcwi_rev4m_w_20261019_015",
+      "status": "ready",
+      "acceptance_status": "not_required",
+      "hae_dispatch_state": "REVENUE_CYCLE_SUCCEEDED",
+      "hae_execution_job_id": null
+    },
+    "phase4_execution_job": {
+      "job_id": "job:8e09199a-6c44-4862-8c53-9f70bb121223",
+      "job_type": "search.snapshot.evaluate",
+      "state": "SUCCEEDED"
+    },
+    "phase4_job_states": [
+      {
+        "state": "QUEUED",
+        "count": 1
+      },
+      {
+        "state": "SUCCEEDED",
+        "count": 3
+      },
+      {
+        "state": "WAITING_FREE_AI",
+        "count": 1
+      }
+    ],
+    "phase5_production": {
+      "status": 401,
+      "body": "{\"success\":false,\"error\":\"windows_node_auth_required\"}"
+    }
+  },
+  "checks": [
+    {
+      "name": "POST /v1/jobs accepts an authorized HAE job (202)",
+      "passed": true,
+      "detail": "status=202"
+    },
+    {
+      "name": "HAE job row persisted in D1 before execution",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "POST /v1/jobs without the right token is rejected (401)",
+      "passed": true,
+      "detail": "status=401"
+    },
+    {
+      "name": "Queue consumer ran the job.execute message",
+      "passed": true,
+      "detail": "[{\"type\":\"job.execute\",\"job_id\":\"job:f7a0085c-4cc7-4312-a50d-460de4baccf6\",\"acked\":true}]"
+    },
+    {
+      "name": "D1 receipt: job state is SUCCEEDED",
+      "passed": true,
+      "detail": "state=SUCCEEDED error=null"
+    },
+    {
+      "name": "D1 receipt: result_json persisted",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "D1 receipt: canonical job.succeeded event recorded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "GET /v1/jobs/<id> readback shows the persisted receipt",
+      "passed": true,
+      "detail": "status=200"
+    },
+    {
+      "name": "Canonical Command Center backlog is seeded in D1",
+      "passed": true,
+      "detail": "rows=186"
+    },
+    {
+      "name": "Cron intake created an HAE plan job for a real WORK_ID",
+      "passed": true,
+      "detail": "work_id=hcwi_rev4m_w_20261019_015 job=job:e1ca350c-dbf0-4dd8-bdf2-0800a281e1fb"
+    },
+    {
+      "name": "Work item moved to in_progress / PLAN_QUEUED",
+      "passed": true,
+      "detail": "status=in_progress dispatch=PLAN_QUEUED"
+    },
+    {
+      "name": "Semantic job waits for the free-AI node (WAITING_FREE_AI / windows_node_required)",
+      "passed": true,
+      "detail": "state=WAITING_FREE_AI error=windows_node_required"
+    },
+    {
+      "name": "Semantic job did not consume its single attempt",
+      "passed": true,
+      "detail": "attempts=0"
+    },
+    {
+      "name": "Unauthenticated node call is rejected (401)",
+      "passed": true,
+      "detail": "status=401"
+    },
+    {
+      "name": "Signed Ed25519 heartbeat accepted",
+      "passed": true,
+      "detail": "{\"success\":true,\"status\":\"HEARTBEAT_ACCEPTED\",\"node_id\":\"VIKTOR-WINDOWS\",\"observed_at\":\"2026-11-06T19:22:39.339Z\",\"production_write_authorized\":false}"
+    },
+    {
+      "name": "Signed claim leases the semantic job",
+      "passed": true,
+      "detail": "\"LEASE_ACCEPTED\""
+    },
+    {
+      "name": "Lease carries the frozen role contract (READ_ONLY, max_cost_usd 0)",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Lease carries the semantic prompt for the node",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Lease binds the same WORK_ID as the backlog item",
+      "passed": true,
+      "detail": "lease=hcwi_rev4m_w_20261019_015 item=hcwi_rev4m_w_20261019_015"
+    },
+    {
+      "name": "Local free model produced a contract-valid semantic result",
+      "passed": true,
+      "detail": "semantic_result_invalid: output was not valid JSON"
+    },
+    {
+      "name": "Completion accepted by HAE (SUCCEEDED)",
+      "passed": true,
+      "detail": "\"SUCCEEDED\""
+    },
+    {
+      "name": "D1 receipt: job is SUCCEEDED after the node completion",
+      "passed": true,
+      "detail": "state=SUCCEEDED"
+    },
+    {
+      "name": "D1 receipt: provider is the windows node, cost 0, no external write",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "D1 receipt: job.windows_node_succeeded event recorded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "D1 receipt: canonical job.succeeded event recorded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "AI usage ledger row: provider viktor-windows-ollama, cost 0",
+      "passed": true,
+      "detail": "[{\"provider_id\":\"viktor-windows-ollama\",\"model\":\"qwen2.5-coder:7b\",\"cost_usd\":0,\"budget_usd\":0,\"status\":\"PROVIDER_RETURNED\"}]"
+    },
+    {
+      "name": "Idempotent replay of the completion does not duplicate the receipt",
+      "passed": true,
+      "detail": "status=IDEMPOTENT_REPLAY usage_rows=1"
+    },
+    {
+      "name": "Node status readback: online, production writes still unauthorized",
+      "passed": true,
+      "detail": "{\"online\":true,\"production_write_authorized\":false}"
+    },
+    {
+      "name": "Work item reconciled from the plan receipt (dispatch state advanced, not stuck)",
+      "passed": true,
+      "detail": "dispatch=EXECUTION_QUEUED"
+    },
+    {
+      "name": "Execution capability job (read-only) ran and produced its own D1 receipt",
+      "passed": true,
+      "detail": "search.snapshot.evaluate=SUCCEEDED"
+    },
+    {
+      "name": "Work item reached a terminal canonical dispatch state after the receipt",
+      "passed": true,
+      "detail": "dispatch=REVENUE_CYCLE_SUCCEEDED status=ready acceptance=not_required"
+    },
+    {
+      "name": "No failed jobs and no DLQ traffic in the local proof run",
+      "passed": true,
+      "detail": "[{\"state\":\"QUEUED\",\"count\":1},{\"state\":\"SUCCEEDED\",\"count\":3},{\"state\":\"WAITING_FREE_AI\",\"count\":1}]"
+    },
+    {
+      "name": "Deployed HAE still refuses unauthenticated node access (401)",
+      "passed": true,
+      "detail": "status=401"
+    }
+  ],
+  "finished_at": "2026-11-06T19:24:43.284Z",
+  "summary": {
+    "passed": 33,
+    "failed": 0,
+    "total": 33
+  }
+}

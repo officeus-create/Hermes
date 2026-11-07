@@ -117,7 +117,8 @@ Claude's write access, when provisioned, must be **least-privilege, repository-s
 The owner is the only CEO and final decision-maker. Agents are specialists operating from the same repository memory.
 
 - Codex: primary coding agent when available.
-- Claude Code: local execution only when a fresh authorized endpoint exists for the current task; the retired owner Mac is not a current execution source. On an authorized endpoint it may handle shell, code, tests, commits, feature-branch pushes, and PR creation, and may become primary implementation agent when Codex is unavailable.
+- Claude Code: local execution only when a fresh authorized endpoint exists for the current task; the retired owner Mac is not a current execution source. On an authorized endpoint it may handle shell, code, tests, commits, feature-branch pushes, and PR creation, and may become primary implementation agent when Codex is unavailable. Authorized endpoint as of 2026-11-06: the current owner Mac runs Claude Code 2.1.319 as MCP server `claude-local`, and One Brain (Drive) is reachable locally through the `gdrive:` rclone remote — see `docs/AI_LOCAL_RUNTIME_CONNECTIONS.md`.
+- MiniMax Code (mavis): local coordinator/runtime on the owner Mac. Connected as an MCP client to Claude Code (`claude-local`) and Codex (`codex-local`), with One Brain (Drive) read access through `gdrive:`. The Command Center contract, plugin routing map and local-connection commands live in the `hermes-command-center` skill.
 - Claude Web/Cowork: SEO/live-site audit, architecture and PR review, browser-connected checks, research, and precise implementation briefs; may write when repository access is available.
 - ChatGPT: coordination, explanation, public research, connected GitHub/Drive/Gmail work, review, and bounded overflow execution.
 - Other approved AI tools: specialist research or second opinions; verified conclusions must be written into the repository before implementation.

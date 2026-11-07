@@ -1,0 +1,106 @@
+{
+  "generated_at": "2026-11-06T21:43:32.380Z",
+  "source": "scripts/ai/cc-request-cost-bench.mjs",
+  "note": "D1 is emulated with node:sqlite; wall-clock is indicative only, statement counts are portable.",
+  "phases": [
+    {
+      "label": "cold_ensure_command_center_schema",
+      "error": null,
+      "elapsed_ms": 20.337,
+      "statements": 198,
+      "ddl": 8,
+      "dml": 188,
+      "select": 2
+    },
+    {
+      "label": "cold_ensure_internal_ai_schema",
+      "error": null,
+      "elapsed_ms": 1.008,
+      "statements": 10,
+      "ddl": 10,
+      "dml": 0,
+      "select": 0
+    },
+    {
+      "label": "warm_ensure_command_center_schema",
+      "error": null,
+      "elapsed_ms": 0.266,
+      "statements": 10,
+      "ddl": 8,
+      "dml": 0,
+      "select": 2
+    },
+    {
+      "label": "warm_ensure_internal_ai_schema",
+      "error": null,
+      "elapsed_ms": 0.201,
+      "statements": 10,
+      "ddl": 10,
+      "dml": 0,
+      "select": 0
+    },
+    {
+      "label": "warm_reconcile_work_items",
+      "error": null,
+      "elapsed_ms": 0.249,
+      "statements": 2,
+      "ddl": 0,
+      "dml": 2,
+      "select": 0
+    },
+    {
+      "label": "post_fix_first_request",
+      "error": null,
+      "elapsed_ms": 2.214,
+      "statements": 22,
+      "ddl": 18,
+      "dml": 2,
+      "select": 2
+    },
+    {
+      "label": "post_fix_warm_request",
+      "error": null,
+      "elapsed_ms": 0.553,
+      "statements": 22,
+      "ddl": 18,
+      "dml": 2,
+      "select": 2
+    }
+  ],
+  "backlog": {
+    "work_items": 186,
+    "internal_ai_tasks": 0
+  },
+  "summary": {
+    "warm_request_statements": 22,
+    "warm_request_ddl": 18,
+    "warm_request_dml": 2,
+    "cold_bootstrap_statements": 208,
+    "statement_samples": [
+      "CREATE TABLE IF NOT EXISTS hermes_owner_work_items ( id TEXT PRIMARY KEY, organization_scope TEXT NOT NULL CHECK (organi",
+      "PRAGMA table_info(hermes_owner_work_items)",
+      "CREATE INDEX IF NOT EXISTS idx_owner_work_items_scope_state_priority ON hermes_owner_work_items(organization_scope,statu",
+      "CREATE INDEX IF NOT EXISTS idx_owner_work_items_scope_project ON hermes_owner_work_items(organization_scope,project_id)",
+      "CREATE TABLE IF NOT EXISTS hermes_command_center_imports ( import_key TEXT PRIMARY KEY, imported_at TEXT NOT NULL )",
+      "SELECT import_key FROM hermes_command_center_imports WHERE import_key=? LIMIT 1",
+      "INSERT OR IGNORE INTO hermes_owner_work_items (id,organization_scope,workstream,priority,title,details,source,status,cre",
+      "INSERT OR IGNORE INTO hermes_owner_work_items (id,organization_scope,workstream,priority,title,details,source,status,cre",
+      "INSERT OR IGNORE INTO hermes_owner_work_items (id,organization_scope,workstream,priority,title,details,source,status,cre",
+      "INSERT OR IGNORE INTO hermes_owner_work_items (id,organization_scope,workstream,priority,title,details,source,status,cre",
+      "INSERT OR IGNORE INTO hermes_owner_work_items (id,organization_scope,workstream,priority,title,details,source,status,cre",
+      "INSERT OR IGNORE INTO hermes_owner_work_items (id,organization_scope,workstream,priority,title,details,source,status,cre"
+    ]
+  },
+  "post_fix": {
+    "has_per_isolate_wrappers": false,
+    "first_request_statements": 22,
+    "warm_request_statements": 22,
+    "note": "With the per-isolate wrappers the bootstrap is paid once per isolate; the warm request keeps only the reconcile existence probe."
+  },
+  "acceptance": {
+    "warm_request_statements_before": 22,
+    "warm_request_statements_target": "<= 10 (schema bootstrap cached per isolate, reconcile writes behind an existence probe)",
+    "cold_bootstrap_statements": 208,
+    "cold_bootstrap_note": "A cold isolate still pays the bootstrap once; if it does not fit the Workers CPU limit, the first request per isolate keeps failing with 1102."
+  }
+}

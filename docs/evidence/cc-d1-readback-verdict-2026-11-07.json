@@ -1,0 +1,231 @@
+{
+  "started_at": "2026-11-07T12:00:13.931Z",
+  "sources": {
+    "engine": "/tmp/hae-main2",
+    "command_center_candidate": "/tmp/hae-cc-d1b",
+    "command_center_previous": "/tmp/hae-main2"
+  },
+  "checks": [
+    {
+      "name": "fixture_work_item_inserted",
+      "passed": true,
+      "detail": "columns=id,organization_scope,workstream,priority,title,details,next_action,source_kind,source_label,status,acceptance_status,revenue_status,created_by,plugin_route_json,created_at,updated_at"
+    },
+    {
+      "name": "fixture_is_the_only_intake_candidate",
+      "passed": true,
+      "detail": "retired_rows=186"
+    },
+    {
+      "name": "engine_intake_created_plan_job",
+      "passed": true,
+      "detail": "job:ff5fdd6d-aa75-4363-b75a-a50104b9d7e8"
+    },
+    {
+      "name": "plan_job_project_key",
+      "passed": true,
+      "detail": "command-center-owner-work"
+    },
+    {
+      "name": "plan_job_idempotency_shape",
+      "passed": true,
+      "detail": "hae:owner-work-plan:hcwi_proof_20261107_001:2026-11-07T12_00_14.006Z"
+    },
+    {
+      "name": "plan_job_succeeded",
+      "passed": true,
+      "detail": "SUCCEEDED "
+    },
+    {
+      "name": "plan_disposition_executes_capability",
+      "passed": true,
+      "detail": "EXECUTE_EXISTING_CAPABILITY -> search.snapshot.evaluate"
+    },
+    {
+      "name": "plan_capability_is_bounded_read_only",
+      "passed": true,
+      "detail": "search.snapshot.evaluate"
+    },
+    {
+      "name": "work_item_has_execution_job",
+      "passed": true,
+      "detail": "job:76d3779f-4bff-44a9-81b4-f09cdca2e5e8"
+    },
+    {
+      "name": "work_item_dispatch_state_execution_queued",
+      "passed": true,
+      "detail": "EXECUTION_QUEUED"
+    },
+    {
+      "name": "execution_job_project_key",
+      "passed": true,
+      "detail": "command-center-owner-work-execution"
+    },
+    {
+      "name": "execution_job_policy_version",
+      "passed": true,
+      "detail": "command-center-hae-autonomous-v1"
+    },
+    {
+      "name": "execution_job_idempotency_shape",
+      "passed": true,
+      "detail": "hae:owner-work-exec:hcwi_proof_20261107_001:job:ff5fdd6d-aa75-4363-b75a-a50104b9d7e8:search.snapshot.evaluate"
+    },
+    {
+      "name": "execution_payload_binds_work_item",
+      "passed": true,
+      "detail": "hcwi_proof_20261107_001"
+    },
+    {
+      "name": "execution_payload_binds_plan_job",
+      "passed": true,
+      "detail": "job:ff5fdd6d-aa75-4363-b75a-a50104b9d7e8"
+    },
+    {
+      "name": "execution_job_succeeded",
+      "passed": true,
+      "detail": "SUCCEEDED "
+    },
+    {
+      "name": "execution_receipt_capability",
+      "passed": true,
+      "detail": "search.snapshot.evaluate"
+    },
+    {
+      "name": "execution_receipt_no_external_write",
+      "passed": true,
+      "detail": "false"
+    },
+    {
+      "name": "execution_receipt_role_contract_sha",
+      "passed": true,
+      "detail": "887624ad2b760adb10c1e1370814e0909117dbf7f186d81f7af88c2810082b8c"
+    },
+    {
+      "name": "execution_receipt_not_semantic",
+      "passed": true,
+      "detail": "null"
+    },
+    {
+      "name": "durable_success_event_exactly_one",
+      "passed": true,
+      "detail": "count=1"
+    },
+    {
+      "name": "candidate_readback_verifies_receipt",
+      "passed": true,
+      "detail": "PLUGIN_EXECUTION_SUCCEEDED_RECEIPT_VERIFIED / no reason"
+    },
+    {
+      "name": "candidate_reports_owner_work_identity",
+      "passed": true,
+      "detail": "owner_work"
+    },
+    {
+      "name": "candidate_readback_source_is_canonical_d1",
+      "passed": true,
+      "detail": "HAE_CANONICAL_D1"
+    },
+    {
+      "name": "candidate_no_external_write",
+      "passed": true,
+      "detail": "false"
+    },
+    {
+      "name": "candidate_contract_sha_matches_engine",
+      "passed": true,
+      "detail": "887624ad2b760adb10c1e1370814e0909117dbf7f186d81f7af88c2810082b8c"
+    },
+    {
+      "name": "previous_path_does_not_verify",
+      "passed": true,
+      "detail": "PLUGIN_ROUTE_VERSION_DRIFT / command_center_idempotency_identity_invalid"
+    },
+    {
+      "name": "previous_path_names_a_concrete_gap",
+      "passed": true,
+      "detail": "command_center_idempotency_identity_invalid"
+    },
+    {
+      "name": "previous_verifier_cannot_bind_engine_receipt",
+      "passed": true,
+      "detail": "PLUGIN_EXECUTION_UNAVAILABLE / OWNER_WORK_ITEM_UNVERIFIED"
+    },
+    {
+      "name": "tamper_work_item_binding_rejected",
+      "passed": true,
+      "detail": "PLUGIN_EXECUTION_UNAVAILABLE / SOURCE_PAYLOAD_BINDING_MISMATCH"
+    },
+    {
+      "name": "tamper_idempotency_rejected",
+      "passed": true,
+      "detail": "PLUGIN_EXECUTION_UNAVAILABLE / IDEMPOTENCY_BINDING_MISMATCH"
+    },
+    {
+      "name": "tamper_state_rejected",
+      "passed": true,
+      "detail": "PLUGIN_EXECUTION_UNAVAILABLE / NO_SUCCEEDED_HAE_JOB"
+    },
+    {
+      "name": "tamper_duplicate_success_event_rejected",
+      "passed": true,
+      "detail": "PLUGIN_EXECUTION_UNAVAILABLE / DURABLE_SUCCESS_EVENT_UNVERIFIED"
+    },
+    {
+      "name": "semantic_capability_rejected",
+      "passed": true,
+      "detail": "PLUGIN_EXECUTION_UNAVAILABLE / ROLE_CONTRACT_NOT_ELIGIBLE"
+    },
+    {
+      "name": "tamper_external_write_rejected",
+      "passed": true,
+      "detail": "PLUGIN_EXECUTION_UNAVAILABLE / RECEIPT_COST_OR_PROVIDER_WRITE_UNVERIFIED"
+    },
+    {
+      "name": "tamper_receipt_role_contract_rejected",
+      "passed": true,
+      "detail": "PLUGIN_EXECUTION_UNAVAILABLE / RECEIPT_ROLE_CONTRACT_MISMATCH"
+    }
+  ],
+  "facts": {
+    "candidate_plugin_execution": {
+      "state": "PLUGIN_EXECUTION_SUCCEEDED_RECEIPT_VERIFIED",
+      "reason": null,
+      "job_id": "job:76d3779f-4bff-44a9-81b4-f09cdca2e5e8",
+      "job_state": "SUCCEEDED",
+      "receipt_verified": true,
+      "source_verification_state": "MATCHED_SOURCE_ONLY",
+      "independent_qa_verified": false,
+      "capability": "search.snapshot.evaluate",
+      "role_id": "hermes-search-growth",
+      "plugin_version": "0.1.18",
+      "contract_sha": "887624ad2b760adb10c1e1370814e0909117dbf7f186d81f7af88c2810082b8c",
+      "external_write": false,
+      "identity_scheme": "owner_work",
+      "readback_source": "HAE_CANONICAL_D1"
+    },
+    "previous_plugin_execution": {
+      "state": "PLUGIN_ROUTE_VERSION_DRIFT",
+      "reason": "command_center_idempotency_identity_invalid",
+      "job_id": "job:76d3779f-4bff-44a9-81b4-f09cdca2e5e8",
+      "receipt_verified": false
+    },
+    "previous_verifier_verdict": {
+      "state": "PLUGIN_EXECUTION_UNAVAILABLE",
+      "reason": "OWNER_WORK_ITEM_UNVERIFIED",
+      "source_only": true,
+      "provider_write_performed": false,
+      "helper_execution_verified": false
+    }
+  },
+  "finished_at": "2026-11-07T12:00:14.774Z",
+  "summary": {
+    "checks": 36,
+    "passed": 36,
+    "failed": 0,
+    "capability": "search.snapshot.evaluate",
+    "plan_job_id": "job:ff5fdd6d-aa75-4363-b75a-a50104b9d7e8",
+    "execution_job_id": "job:76d3779f-4bff-44a9-81b4-f09cdca2e5e8",
+    "work_item_id": "hcwi_proof_20261107_001"
+  }
+}

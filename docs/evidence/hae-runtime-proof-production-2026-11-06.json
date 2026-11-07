@@ -1,0 +1,130 @@
+{
+  "target_sha": "c74bc7835c17a30da7ccc4ead8618f0388b90d61",
+  "database_binding_fingerprint": "sha256:00dfd9d715ebb9755dde5a5c461f69de3578fb6f5a843e326fbb47a0e5572b1f",
+  "deployment": {
+    "evidence_ref": "github-actions://officeus-create/Hermes/runs/42289080275/deployed-worker",
+    "source_sha": "c74bc7835c17a30da7ccc4ead8618f0388b90d61"
+  },
+  "runtime": {
+    "automation_mode": "dry_run",
+    "publication_enabled": false
+  },
+  "health": {
+    "database": "ok",
+    "source_sha": "c74bc7835c17a30da7ccc4ead8618f0388b90d61",
+    "automation_mode": "dry_run",
+    "publication_config": "disabled",
+    "publication_enabled": false,
+    "ready_content": 508,
+    "unknown_outcomes": 0,
+    "failed_publications": 0,
+    "pending_readbacks": 0,
+    "unverified_readbacks": 0,
+    "plan_enqueue_failures": 0,
+    "generic_jobs_by_state": {
+      "FAILED": 2,
+      "RUNNING": 1,
+      "SUCCEEDED": 535
+    },
+    "runtime_events_by_type": {
+      "cron.role_contract_submit_failed": 52,
+      "dlq.processed": 2,
+      "queue.message_retry": 4
+    },
+    "generic_job_events_by_type": {
+      "job.created": 538,
+      "job.duplicate_suppressed": 19,
+      "job.failed": 2,
+      "job.started": 678,
+      "job.succeeded": 535,
+      "job.waiting_free_ai": 153,
+      "job.windows_node_lease_expired": 68,
+      "job.windows_node_leased": 81,
+      "job.windows_node_succeeded": 13
+    },
+    "queue": {
+      "status": "ok",
+      "backlog_count": 1,
+      "backlog_bytes": 74,
+      "oldest_message_at": "2026-11-06T20:32:11.650Z"
+    },
+    "dlq": {
+      "status": "ok",
+      "backlog_count": 0,
+      "backlog_bytes": 0,
+      "oldest_message_at": null
+    },
+    "last_cron_wake": {
+      "trigger_type": "cron",
+      "cron_expression": "17 * * * *",
+      "scheduled_at": "2026-11-06T20:17:42.954Z",
+      "observed_at": "2026-11-06T20:17:44.173Z",
+      "execution_lag_ms": 1219,
+      "chicago_slot_key": "2026-11-06T14",
+      "eligible": true,
+      "source_sha": "c74bc7835c17a30da7ccc4ead8618f0388b90d61",
+      "automation_mode": "dry_run",
+      "publication_config": "disabled",
+      "publication_enabled": false
+    },
+    "last_success": {
+      "slot_key": "2026-11-06T14",
+      "status": "dry_run_ready",
+      "updated_at": "2026-11-06T20:18:03.489Z"
+    },
+    "last_failure": null,
+    "last_run": {
+      "slot_key": "2026-11-06T14",
+      "status": "dry_run_ready",
+      "updated_at": "2026-11-06T20:18:03.489Z",
+      "last_error_class": null
+    },
+    "evidence_ref": "github-actions://officeus-create/Hermes/runs/42289080275/runtime-readonly-proof/health"
+  },
+  "transport": {
+    "queue": {
+      "evidence_ref": "cloudflare://queues/hermes-automation/metrics/run-42289080275",
+      "exists": true,
+      "backlog_count": 0
+    },
+    "dlq": {
+      "evidence_ref": "cloudflare://queues/hermes-automation-dlq/metrics/run-42289080275",
+      "exists": true,
+      "backlog_count": 0
+    }
+  },
+  "read_only_job": {
+    "evidence_ref": "d1://hermes-connect-prototype/hermes_automation_jobs/job:ac64c6a3-2781-44a2-a562-482e92fe5781",
+    "job_id": "job:ac64c6a3-2781-44a2-a562-482e92fe5781",
+    "job_type": "system.health.snapshot",
+    "idempotency_key": "hae:runtime-proof:c74bc7835c17a30da7ccc4ead8618f0388b90d61:42289080275:1",
+    "permission_class": "READ_ONLY",
+    "state": "SUCCEEDED",
+    "attempt_count": 1,
+    "external_write": false
+  },
+  "replay": {
+    "evidence_ref": "d1://hermes-connect-prototype/hermes_automation_job_events/job:ac64c6a3-2781-44a2-a562-482e92fe5781",
+    "idempotency_key": "hae:runtime-proof:c74bc7835c17a30da7ccc4ead8618f0388b90d61:42289080275:1",
+    "same_idempotency_key": true,
+    "reused_existing_job": true,
+    "duplicate_execution_count": 0,
+    "duplicate_suppressed_receipt_count": 1,
+    "second_external_side_effect": false
+  },
+  "independent_qa": {
+    "evidence_ref": "github-actions://officeus-create/Hermes/runs/42289080275/runtime-evidence-qa",
+    "status": "PASS",
+    "independent_from_executor": true,
+    "reviewer": "github-actions/hae-runtime-evidence-qa"
+  },
+  "_provenance": {
+    "workflow_run": "https://github.com/officeus-create/Hermes/actions/runs/42289080275",
+    "operation": "runtime_readonly_proof",
+    "target_sha": "c74bc7835c17a30da7ccc4ead8618f0388b90d61",
+    "artifact_executor": "hae-runtime-evidence",
+    "artifact_independent_qa": "hae-runtime-evidence-accepted",
+    "captured_at": "2026-11-06T20:32:43Z",
+    "production_job_id": "job:ac64c6a3-2781-44a2-a562-482e92fe5781"
+  }
+}
