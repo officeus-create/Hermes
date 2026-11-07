@@ -26,7 +26,7 @@ Do not replace One Brain Ledger, the existing Insights pipeline, or the canonica
 ## Investment / funding routing
 - Seven investable directions in #2055 are not the complete public project inventory.
 - Public `/products/#projects` is an informational overview, not an open securities offering. Private investor rooms remain guarded and on hold.
-- Current program priorities from C080: Cloudflare Tier 3 official form first (provider says bootstrapped can be eligible), Together AI official form, Databricks, OVHcloud US form; the exact eligibility and current provider state must be rechecked. Do not equate emails with application receipts.
+- Current investment execution authority is C088/C094 in the canonical Investment Intelligence Master, not the older C080 snapshot. Provider order is dynamic and must be recovered from current receipts/fact gates before action. As of 2026-11-07: Cloudflare Tier 3 is waiting on a working official application URL plus authoritative Hermes funding facts; OVHcloud US START has an official form route but still needs interactive form execution and verified fields; Aiven remains at inquiry/form gates; NVIDIA/Intel have a usable current pitch-deck URL but still require authoritative employee/developer/contact/funding fields. Do not equate inquiry emails, draft packets or eligibility clarification with official submission, approval, activation or VALUE_USED.
 - Volvo CampX track selection remains on factual gates; corporate PoV is a proposal template, not a secured paid pilot. Realized value means activated credits, real signed pilot/revenue or completed evidence-backed result.
 
 ## Post-mortem / what improves
@@ -38,7 +38,7 @@ Better benchmark: editorial release trains use one content registry, separation 
 - [x] Existing Products page source updated on feature branch
 - [x] Existing Command Center source projection added on feature branch
 - [x] Twenty-three proposed daily candidate slots (not automatic publication)
-- [ ] Exact-head Node/build/CI and current-owner source readback
+- [x] Exact-head Node/build/CI and current-owner source readback completed for head `1d330bcebd9a78c0bf44a5463d8271e89497fc4c` before the C094 routing-doc refresh; rerun exact-head CI after this documentation commit before review
 - [ ] Independent privacy, stage truth, UX, Search and business-owner review
 - [ ] Protected merge, deploy, production readback, GSC search verification
 - [ ] Existing HAE scheduling integration and one real end-to-end daily-run receipt
