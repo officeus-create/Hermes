@@ -72,6 +72,30 @@ function registryVersion(roleId){
   const registry=pluginRuntimeRegistrySnapshot();
   return registry.entries.find((entry)=>entry.role_id===roleId)?.plugin_version||null;
 }
+// Receipt readback is a per-job upstream read, and the private page asks for it once
+// per card. Without a cache, one UI tick turns into one outbound HAE call per card.
+// A short window per job collapses that fan-out; failures expire much faster so a
+// transient upstream fault is not remembered for the whole window.
+const HAE_READBACK_CACHE_TTL_MS=90000;
+const HAE_READBACK_FAILURE_TTL_MS=5000;
+const HAE_READBACK_CACHE_MAX=500;
+/** @type {Map<string, { response: any, expiresAt: number }>} */
+const haeJobReadbackCache=new Map();
+async function readHaeJob(env,jobId){
+  const now=Date.now();
+  const cached=haeJobReadbackCache.get(jobId);
+  if(cached&&cached.expiresAt>now)return cached.response;
+  const response=await haeJson(env,"/v1/jobs/"+encodeURIComponent(jobId));
+  if(haeJobReadbackCache.size>=HAE_READBACK_CACHE_MAX){
+    const oldest=haeJobReadbackCache.keys().next().value;
+    if(oldest)haeJobReadbackCache.delete(oldest);
+  }
+  haeJobReadbackCache.set(jobId,{
+    response,
+    expiresAt:now+(response.ok?HAE_READBACK_CACHE_TTL_MS:HAE_READBACK_FAILURE_TTL_MS),
+  });
+  return response;
+}
 function routePlan(route){
   const roleId=clean(route?.owner?.role_id,120);
   const pluginVersion=clean(route?.owner?.plugin_version,120);
@@ -182,7 +206,7 @@ export async function readCommandCenterHaeExecution(env,item,route){
   const expectedKey=await expectedIdempotencyKey(item,route,plan,item?.linked_task_id,expectedSha);
   if(!expectedKey)return{state:"PLUGIN_ROUTE_VERSION_DRIFT",reason:"command_center_idempotency_identity_invalid",job_id:jobId,receipt_verified:false};
 
-  const response=await haeJson(env,"/v1/jobs/"+encodeURIComponent(jobId));
+  const response=await readHaeJob(env,jobId);
   if(!response.ok)return{
     state:"PLUGIN_EXECUTION_UNAVAILABLE",
     reason:clean(response.payload?.error,160)||"hae_job_readback_unavailable",
@@ -258,3 +282,11 @@ export async function readCommandCenterHaeExecution(env,item,route){
 }
 
 export const COMMAND_CENTER_HAE_BRIDGE_POLICY_VERSION=BRIDGE_POLICY_VERSION;
+
+/**
+ * Test-only: clear the per-isolate receipt readback cache.
+ * @returns {void}
+ */
+export function resetCommandCenterHaeReadbackCache(){
+  haeJobReadbackCache.clear();
+}

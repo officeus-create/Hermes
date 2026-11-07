@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { selectWorkItemPluginRoute } from "../functions/api/_lib/internal-command-center.mjs";
-import { buildCommandCenterHaeJobRequest, readCommandCenterHaeExecution, submitCommandCenterHaeExecution } from "../functions/api/_lib/command-center-hae-bridge.mjs";
+import { buildCommandCenterHaeJobRequest, readCommandCenterHaeExecution, resetCommandCenterHaeReadbackCache, submitCommandCenterHaeExecution } from "../functions/api/_lib/command-center-hae-bridge.mjs";
 import { verifyCommandCenterHaeReceipt } from "../functions/api/_lib/command-center-hae-receipt-verifier.mjs";
 import { pluginRuntimeRegistrySnapshot } from "../workers/automation-engine/src/plugin-runtime-registry.mjs";
 import { roleContractForJobType } from "../workers/automation-engine/src/role-contracts.mjs";
@@ -111,6 +111,7 @@ const successEvent={job_id:boundItem.hae_job_id,event_type:"job.succeeded",to_st
 const oldFetch=globalThis.fetch;
 const env={HERMES_AUTOMATION_BASE_URL:"https://hae.example",HERMES_AUTOMATION_TOKEN:"read-only-test-token-1234567890"};
 const readFake=async(job=canonicalJob,events=[successEvent])=>{
+  resetCommandCenterHaeReadbackCache();
   globalThis.fetch=async()=>new Response(JSON.stringify({success:true,job,events}),{status:200,headers:{"Content-Type":"application/json"}});
   return readCommandCenterHaeExecution(env,boundItem,route);
 };
@@ -135,6 +136,7 @@ try{
   // A bounded outbound HAE call must fail closed with a typed reason instead of
   // holding the Worker request until the platform turns it into an opaque 503.
   const boundedEnv={...env,HERMES_COMMAND_CENTER_HAE_TIMEOUT_MS:"250"};
+  resetCommandCenterHaeReadbackCache();
   globalThis.fetch=async(_url,init)=>new Promise((_resolve,reject)=>{
     const signal=init?.signal;
     if(signal?.aborted)reject(Object.assign(new Error("aborted"),{name:"AbortError"}));
@@ -155,6 +157,27 @@ try{
   }
 }finally{
   globalThis.fetch=oldFetch;
+}
+
+// One UI tick must not fan out into one outbound HAE call per card: the receipt
+// readback is cached per job, so repeated reads of the same job cost one call.
+{
+  resetCommandCenterHaeReadbackCache();
+  let fetchCalls=0;
+  globalThis.fetch=async()=>{
+    fetchCalls+=1;
+    return new Response(JSON.stringify({success:true,job:canonicalJob,events:[successEvent]}),{status:200,headers:{"Content-Type":"application/json"}});
+  };
+  try{
+    const first=await readCommandCenterHaeExecution(env,boundItem,route);
+    const second=await readCommandCenterHaeExecution(env,boundItem,route);
+    assert.equal(first.receipt_verified,true);
+    assert.equal(second.receipt_verified,true);
+    assert.equal(fetchCalls,1,"the receipt readback must be cached per job so one UI tick is not one HAE call per card");
+  }finally{
+    globalThis.fetch=oldFetch;
+    resetCommandCenterHaeReadbackCache();
+  }
 }
 
 // A receipt is a historical claim about a job that already ran. The inventory snapshot
