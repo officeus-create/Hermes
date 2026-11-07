@@ -586,10 +586,10 @@
       "path": "src/assets/hermes-ecosystem-hero.jpg",
       "sha256": "b71800c1cef40c0f1b76464063b1b270422b8310735977a7bfe8177794b358b7",
       "firstTrackedCommit": "00b14909a71dee4b41510462700e43bf46a4d27e",
-      "classification": "CURRENT_REPO_ASSET",
-      "provenanceStatus": "NEEDS_OWNER_PROVENANCE",
-      "source": null,
-      "rightsEvidence": null,
+      "classification": "OWNER_CONTROLLED_DRIVE_SOURCE_EXACT_BYTES",
+      "provenanceStatus": "REPOSITORY_SOURCE_VERIFIED",
+      "source": "Owner-controlled Drive original 1WI0wTn18iQWeU4I4K7XO7qAmdBITrU0t; exact bytes also preserved as review copy 1yCFFVfkuq9wnadCWoPY8_JYCV0h5zFen; exact-byte match to repo asset verified 2026-11-07.",
+      "rightsEvidence": "Canonical Design archive states 02_SOURCE_VISUALS contains review copies of real Drive files and identifies the Hermes ecosystem hero original. This proves source identity / owner-controlled custody, not third-party license clearance or owner approval. Keep existing-use-only boundary pending separate legal/IP review.",
       "publicationDecision": "PRESERVE_EXISTING_USE_NO_EXPANDED_REUSE"
     },
     {
