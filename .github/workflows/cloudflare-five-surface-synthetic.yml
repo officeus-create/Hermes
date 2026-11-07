@@ -20,7 +20,7 @@ jobs:
       - name: Check out synthetic contract
         uses: actions/checkout@v6
 
-      - name: Verify five public surfaces
+      - name: Verify public surfaces and anonymous Command Center auth gates
         id: synthetic
         continue-on-error: true
         shell: bash
@@ -35,6 +35,11 @@ jobs:
             { name: "load-board", url: "https://hermeslogisticsus.com/load-board/", status: 200, markers: ["Car Hauler Load Board"] },
             { name: "connect", url: "https://connect.hermeslogisticsus.com/", status: 308, location: "https://hermeslogisticsus.com/services/hermes-connect/" },
             { name: "app", url: "https://app.hermeslogisticsus.com/", status: 200, markers: ["Hermes Connect"] },
+            // The exact P0 Command Center entry failed at 2026-11-06 10:35:56 UTC
+            // with Cloudflare 1102. Only credential-free GET responses are checked.
+            { name: "cc-login", url: "https://hermeslogisticsus.com/services/hermes-connect/access/?source=command-center&lang=ru", status: 200, markers: ["Sign in and registration"] },
+            { name: "cc-private-gate", url: "https://hermeslogisticsus.com/services/hermes-connect/internal/command-center/?lang=ru", status: 401, markers: ["Вход в Command Center"] },
+            { name: "cc-session-gate", url: "https://hermeslogisticsus.com/api/auth/me", status: 401, markers: ["not_authenticated"] },
           ];
 
           const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -65,8 +70,9 @@ jobs:
                 const body = target.markers || response.status >= 500 ? await response.text() : "";
                 const missing = (target.markers || []).filter((marker) => !body.includes(marker));
                 const location = response.headers.get("location");
-                const error1102 = /Error\s*1102|Worker exceeded resource limits/i.test(body);
-                observation = { attempt, status: response.status, missing, location, error1102 };
+                const error1102 = /(?:error\s*(?:code\s*:?\s*)?1102|Worker exceeded resource limits)/i.test(body);
+                const ray = (response.headers.get("cf-ray") || "").match(/^[a-f0-9]{12,32}-[A-Z]{2,5}$/)?.[0] || null;
+                observation = { attempt, status: response.status, missing, location, error1102, ray: response.status >= 500 ? ray : null };
                 if (error1102) resourceErrors += 1;
 
                 if (
@@ -111,7 +117,7 @@ jobs:
             echo
             echo "At least one of three samples failed on one or more public surfaces in scheduled run `${GITHUB_RUN_ID}`."
             echo
-            echo "Checked seven public GET-only surfaces (home, Logistics, Academy, Repair Shops, Load Board, Connect, app), three spaced samples each. A recovered retry never clears an observed 1102. No customer payload, production mutation, Cloudflare credential, or private identifier was used."
+            echo "Checked seven existing public surfaces plus the exact Command Center login URL and two anonymous access-denial gates (expected HTTP 401), three spaced GET-only samples each. A recovered retry never clears an observed 1102. No sessions, credentials, customer payload or production mutations."
             echo
             echo "Evidence: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
           } >> "$GITHUB_STEP_SUMMARY"
