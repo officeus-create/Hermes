@@ -1334,12 +1334,19 @@ function clean(value,max=10000){return typeof value==="string"?value.replace(/\u
 
 export async function seedFourMonthRevenueBacklog(db){
   if(!db?.prepare)return;
-  await db.prepare(`CREATE TABLE IF NOT EXISTS hermes_command_center_imports (
-    import_key TEXT PRIMARY KEY,
-    imported_at TEXT NOT NULL
-  )`).run();
-  const already=await db.prepare("SELECT import_key FROM hermes_command_center_imports WHERE import_key=? LIMIT 1").bind(IMPORT_KEY).first();
-  if(already)return;
+  // Reading the import key must not take the write lock of the shared database:
+  // CREATE TABLE IF NOT EXISTS writes even when the table already exists, and
+  // the HAE cron writes the same database every five minutes.
+  const importTable=await db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='hermes_command_center_imports' LIMIT 1").first();
+  if(importTable){
+    const already=await db.prepare("SELECT import_key FROM hermes_command_center_imports WHERE import_key=? LIMIT 1").bind(IMPORT_KEY).first();
+    if(already)return;
+  }else{
+    await db.prepare(`CREATE TABLE IF NOT EXISTS hermes_command_center_imports (
+      import_key TEXT PRIMARY KEY,
+      imported_at TEXT NOT NULL
+    )`).run();
+  }
   // Same livelock guard as the history backlog: a CPU-limited Worker killed mid-import
   // leaves no import key, so the next request replays all 132 inserts and gets killed
   // again. One count statement turns that loop into a single write.

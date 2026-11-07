@@ -74,6 +74,24 @@ export function cachedValue(key, factory, options = {}) {
 }
 
 /**
+ * Check with READS whether the expected schema objects already exist.
+ *
+ * DDL takes the write lock of the whole database, and the HAE cron writes that
+ * same database every five minutes. A cold isolate that re-runs DDL on every
+ * request therefore serialises against the cron and the request hangs until
+ * the platform gives up. Verify first and take the write lock only when the
+ * schema is actually incomplete.
+ *
+ * The implementation lives in `src/lib/schema-readiness.mjs` because the same
+ * probe is needed from the Astro build side (`src/lib/hae-process-control.mjs`).
+ *
+ * @param {any} db
+ * @param {{tables?:string[], indexes?:string[], tableColumns?:Record<string,string[]>}} [spec]
+ * @returns {Promise<boolean>}
+ */
+export { schemaReady } from "../../../src/lib/schema-readiness.mjs";
+
+/**
  * Test-only: reset the per-isolate caches.
  * @returns {void}
  */

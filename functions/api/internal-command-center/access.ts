@@ -1,6 +1,6 @@
 import { jsonResponse } from "../_lib/session.mjs";
-import { INTERNAL_AI_ORGANIZATION_SCOPE, ensureInternalAiSchema, nowIso, requireInternalOwner } from "../_lib/internal-ai.mjs";
-import { ensureCommandCenterSchema } from "../_lib/internal-command-center.mjs";
+import { INTERNAL_AI_ORGANIZATION_SCOPE, ensureInternalAiSchemaOnce, nowIso, requireInternalOwner } from "../_lib/internal-ai.mjs";
+import { ensureCommandCenterSchemaOnce } from "../_lib/internal-command-center.mjs";
 type Env={DB?:any};
 const headers={"Cache-Control":"private, no-store","X-Robots-Tag":"noindex, nofollow"};
 const sameOriginMutation=(request:Request)=>request.headers.get("Sec-Fetch-Site")!=="cross-site"&&(!request.headers.get("Origin")||request.headers.get("Origin")===new URL(request.url).origin);
@@ -9,7 +9,7 @@ const publicAccessRow=(row:any)=>({specialist_id:String(row.specialist_id),activ
 
 export async function onRequestGet({request,env}:{request:Request;env:Env}){
  const owner=await requireInternalOwner(request,env); if(owner.response)return owner.response;
- await ensureCommandCenterSchema(env.DB);
+ await ensureCommandCenterSchemaOnce(env.DB);
  const owners=await env.DB.prepare(`SELECT a.specialist_id,a.active,a.created_at,a.updated_at,s.email,s.name,s.role
    FROM hermes_internal_owner_access a LEFT JOIN specialists s ON s.id=a.specialist_id
    WHERE a.capability='HERMES_INTERNAL_OWNER' ORDER BY a.active DESC, a.updated_at DESC`).all();
@@ -22,7 +22,7 @@ export async function onRequestGet({request,env}:{request:Request;env:Env}){
 export async function onRequestPost({request,env}:{request:Request;env:Env}){
  if(!sameOriginMutation(request))return jsonResponse(403,{success:false,error:"csrf_origin_mismatch"},headers);
  const owner=await requireInternalOwner(request,env); if(owner.response)return owner.response;
- await ensureInternalAiSchema(env.DB); await ensureCommandCenterSchema(env.DB);
+ await ensureInternalAiSchemaOnce(env.DB); await ensureCommandCenterSchemaOnce(env.DB);
  let payload:any;try{payload=await request.json()}catch{return jsonResponse(400,{success:false,error:"invalid_json"},headers)}
  const action=String(payload?.action||"").trim(),email=normalizeEmail(payload?.email);
  const hasCapability=Object.prototype.hasOwnProperty.call(payload||{},"capability");

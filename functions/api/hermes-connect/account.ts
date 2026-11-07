@@ -9,7 +9,7 @@ import {
   getAcademyReviewerAccess,
   listAcademyEnrollments,
 } from "../_lib/academy.mjs";
-import { ensureInternalAiSchema } from "../_lib/internal-ai.mjs";
+import { ensureInternalAiSchemaOnce } from "../_lib/internal-ai.mjs";
 import { ensureAcademyBusinessProfilesSchema } from "../_lib/academy-business-profiles.mjs";
 import { getHrReviewerAccess } from "../_lib/hr.mjs";
 
@@ -68,7 +68,7 @@ async function getOwnedAcademyBusiness(db: any, ownerId: string) {
 }
 
 async function getInternalAiAccess(db: any, specialistId: string) {
-  await ensureInternalAiSchema(db);
+  await ensureInternalAiSchemaOnce(db);
   return db.prepare(`
     SELECT specialist_id,capability
     FROM hermes_internal_owner_access

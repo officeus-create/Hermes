@@ -13,6 +13,7 @@ import {
   cachedValue,
   ensureOnce,
   resetRequestCostGuard,
+  schemaReady,
 } from "../functions/api/_lib/request-cost-guard.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -143,6 +144,241 @@ const read = (relative) => fs.readFileSync(path.join(root, relative), "utf8");
   );
   assert.ok(/document\.hidden/.test(page), "the private page must skip polling while the tab is hidden");
   assert.ok(/IntersectionObserver/.test(page), "plugin receipts must load lazily for visible cards");
+}
+
+
+// --- the read path must not take the write lock of the shared database ---------
+// The HAE cron writes the same D1 every five minutes. DDL takes that database's
+// write lock, so a cold isolate that re-runs DDL on every request serialises
+// against the cron and the request hangs until the platform gives up (production
+// incident 2026-11-07: authenticated private routes answered 524 after 125-145s).
+{
+  const makeSchemaDb = ({ tables = [], indexes = [], columns = {}, keyPresent = true } = {}) => {
+    const ddl = [];
+    const db = {
+      prepare(sql) {
+        const text = String(sql);
+        const statement = {
+          bind() { return statement; },
+          async run() {
+            if (/^\s*CREATE (TABLE|INDEX)|^\s*ALTER TABLE/i.test(text)) ddl.push(text.trim().slice(0, 60));
+            return { success: true, meta: { changes: 0 } };
+          },
+          async first() {
+            if (/FROM sqlite_master WHERE name IN/i.test(text)) {
+              const wanted = text.match(/\?/g) || [];
+              const found = [...tables, ...indexes].filter(name => wanted.length);
+              return { name: found[0] || null };
+            }
+            if (/FROM sqlite_master WHERE type='table' AND name='hermes_command_center_imports'/i.test(text)) {
+              return { name: "hermes_command_center_imports" };
+            }
+            if (/SELECT import_key FROM hermes_command_center_imports/i.test(text)) {
+              return keyPresent ? { import_key: "present" } : null;
+            }
+            if (/SELECT COUNT\(\*\) AS n FROM hermes_owner_work_items/i.test(text)) return { n: 0 };
+            return null;
+          },
+          async all() {
+            if (/FROM sqlite_master WHERE name IN/i.test(text)) {
+              const wanted = text.match(/\?/g) || [];
+              void wanted;
+              return { results: [...tables, ...indexes].map(name => ({ name })) };
+            }
+            if (/PRAGMA table_info/i.test(text)) {
+              const table = text.match(/table_info\((\w+)\)/i)?.[1] || "";
+              return { results: (columns[table] || []).map(name => ({ name })) };
+            }
+            return { results: [] };
+          },
+        };
+        return statement;
+      },
+    };
+    return { db, ddl };
+  };
+
+  // schemaReady answers from reads only and is false when anything is missing.
+  const ready = await schemaReady(makeSchemaDb({ tables: ["a"], indexes: ["i"], columns: { t: ["c"] } }).db, {
+    tables: ["a"],
+    indexes: ["i"],
+    tableColumns: { t: ["c"] },
+  });
+  assert.equal(ready, true, "a complete schema must be detected with reads");
+  const missingColumn = await schemaReady(makeSchemaDb({ tables: ["a"], indexes: ["i"], columns: { t: ["c"] } }).db, {
+    tables: ["a"],
+    indexes: ["i"],
+    tableColumns: { t: ["c", "d"] },
+  });
+  assert.equal(missingColumn, false, "a missing column must not be reported as ready");
+  const missingTable = await schemaReady(makeSchemaDb({ tables: [], indexes: [], columns: {} }).db, { tables: ["a"] });
+  assert.equal(missingTable, false, "a missing table must not be reported as ready");
+
+  // The internal AI schema bootstrap must skip DDL when the schema is present.
+  const { ensureInternalAiSchema } = await import("../functions/api/_lib/internal-ai.mjs");
+  const internalAiSource = read("functions/api/_lib/internal-ai.mjs");
+  const internalAiTables = [
+    "hermes_internal_owner_access",
+    "hermes_internal_team_view_access",
+    "hermes_internal_team_view_access_audit",
+    "hermes_internal_ai_tasks",
+    "hermes_internal_ai_events",
+    "hermes_internal_ai_runner_state",
+  ];
+  const internalAiIndexes = ["idx_internal_ai_tasks_scope_status_created", "idx_internal_ai_events_scope_task"];
+  const internalAiColumns = {
+    hermes_internal_ai_tasks: ["approval_granted_at", "approval_granted_by", "approval_attempt"],
+    hermes_internal_ai_runner_state: ["telemetry_json"],
+  };
+  const complete = makeSchemaDb({
+    tables: internalAiTables,
+    indexes: internalAiIndexes,
+    columns: internalAiColumns,
+  });
+  await ensureInternalAiSchema(complete.db);
+  assert.equal(complete.ddl.length, 0, "a present internal AI schema must not run DDL on a cold isolate");
+
+  const incomplete = makeSchemaDb({ tables: internalAiTables.slice(1), indexes: internalAiIndexes, columns: internalAiColumns });
+  await ensureInternalAiSchema(incomplete.db);
+  assert.ok(incomplete.ddl.length > 0, "an incomplete internal AI schema must still run the DDL");
+
+  // The Command Center schema bootstrap must skip DDL when the schema is present.
+  const { ensureCommandCenterSchema } = await import("../functions/api/_lib/internal-command-center.mjs");
+  const ccSource = read("functions/api/_lib/internal-command-center.mjs");
+  const ccTables = ["hermes_owner_work_items", "hermes_internal_owner_access_audit"];
+  const ccIndexes = [
+    "idx_owner_work_items_scope_state_priority",
+    "idx_owner_work_items_scope_project",
+    "idx_owner_work_items_revenue_queue",
+  ];
+  const ccColumns = {
+    hermes_owner_work_items: [
+      "acceptance_status", "accepted_by", "accepted_at", "project_id", "plugin_route_json",
+      "hae_job_id", "hae_plan_job_id", "hae_execution_job_id", "hae_dispatch_state",
+      "hae_dispatch_result_json", "source_kind", "source_label", "source_ref", "next_action",
+      "revenue_gate_usd", "revenue_target_usd", "revenue_actual_usd", "revenue_rank",
+      "revenue_status", "revenue_source_work_id", "revenue_evidence_ref", "revenue_recorded_at",
+    ],
+  };
+  const ccComplete = makeSchemaDb({ tables: ccTables, indexes: ccIndexes, columns: ccColumns });
+  await ensureCommandCenterSchema(ccComplete.db);
+  assert.equal(ccComplete.ddl.length, 0, "a present Command Center schema must not run DDL on a cold isolate");
+
+  const ccIncomplete = makeSchemaDb({ tables: ccTables, indexes: ccIndexes.slice(1), columns: ccColumns });
+  await ensureCommandCenterSchema(ccIncomplete.db);
+  assert.ok(ccIncomplete.ddl.length > 0, "an incomplete Command Center schema must still run the DDL");
+
+  // The readiness lists and the DDL must not drift apart.
+  assert.ok(
+    /OWNER_WORK_ITEM_COLUMNS\.map\(\(\[name\]\) => name\)/.test(ccSource),
+    "the Command Center readiness check must read the same column list the DDL applies",
+  );
+  assert.ok(/OPTIONAL_TASK_COLUMNS/.test(internalAiSource), "the internal AI readiness check must read the same column list the DDL applies");
+  assert.ok(
+    /schemaReady\(/.test(internalAiSource) && /schemaReady\(/.test(ccSource),
+    "both schema bootstraps must verify with reads before taking the write lock",
+  );
+
+  // The owner-projects schema bootstrap must skip DDL when the schema is present.
+  // `CREATE TABLE IF NOT EXISTS` still executes a write statement when the table
+  // exists, so the `/projects` route used to take the shared D1 write lock on
+  // every request even though nothing had to change.
+  const { ensureOwnerProjectSchema } = await import("../functions/api/_lib/command-center-owner-projects.mjs");
+  const ownerProjectSource = read("functions/api/_lib/command-center-owner-projects.mjs");
+  const ownerProjectTables = ["hermes_owner_projects"];
+  const ownerProjectIndexes = ["idx_hermes_owner_projects_scope_updated"];
+  const ownerProjectColumns = {
+    hermes_owner_projects: [
+      "id", "organization_scope", "title", "department", "purpose", "status",
+      "created_by", "created_at", "updated_at",
+    ],
+  };
+  const ownerProjectComplete = makeSchemaDb({
+    tables: ownerProjectTables,
+    indexes: ownerProjectIndexes,
+    columns: ownerProjectColumns,
+  });
+  await ensureOwnerProjectSchema(ownerProjectComplete.db);
+  assert.equal(
+    ownerProjectComplete.ddl.length,
+    0,
+    "a present owner-projects schema must not run DDL on a cold isolate",
+  );
+
+  const ownerProjectIncomplete = makeSchemaDb({
+    tables: ownerProjectTables,
+    indexes: ownerProjectIndexes.slice(1),
+    columns: ownerProjectColumns,
+  });
+  await ensureOwnerProjectSchema(ownerProjectIncomplete.db);
+  assert.ok(
+    ownerProjectIncomplete.ddl.length > 0,
+    "an incomplete owner-projects schema must still run the DDL",
+  );
+  assert.ok(
+    /schemaReady\(/.test(ownerProjectSource),
+    "the owner-projects bootstrap must verify with reads before taking the write lock",
+  );
+
+  // No owner-facing route may call a schema bootstrap without the per-isolate cache.
+  const ownerRoutes = [
+    "functions/api/internal-command-center/projects.ts",
+    "functions/api/internal-command-center/projects/[id].ts",
+    "functions/api/internal-command-center/access.ts",
+    "functions/api/internal-command-center/work-items.ts",
+    "functions/api/internal-command-center/work-items/[id].ts",
+    "functions/api/internal-command-center/execution-map.ts",
+  ];
+  for (const route of ownerRoutes) {
+    const source = read(route);
+    assert.ok(
+      !/await ensureCommandCenterSchema\(/.test(source)
+      && !/await ensureInternalAiSchema\(/.test(source)
+      && !/await ensureOwnerProjectSchema\(/.test(source),
+      `${route} must not bootstrap a schema without the per-isolate cache`,
+    );
+  }
+
+  // The authentication-path schema bootstrap must skip DDL when the schema is present.
+  const { ensureAccountEngagementSchema } = await import("../functions/api/_lib/account-engagement.mjs");
+  const engagementComplete = makeSchemaDb({
+    tables: ["account_engagement"],
+    indexes: ["idx_account_engagement_due"],
+    columns: {
+      account_engagement: ["specialist_id", "last_active_at", "last_reminder_at", "email_enabled", "locale", "updated_at"],
+    },
+  });
+  await ensureAccountEngagementSchema(engagementComplete.db);
+  assert.equal(engagementComplete.ddl.length, 0, "a present account-engagement schema must not run DDL on a cold isolate");
+
+  const engagementIncomplete = makeSchemaDb({
+    tables: ["account_engagement"],
+    indexes: [],
+    columns: {
+      account_engagement: ["specialist_id", "last_active_at", "last_reminder_at", "email_enabled", "locale", "updated_at"],
+    },
+  });
+  await ensureAccountEngagementSchema(engagementIncomplete.db);
+  assert.ok(engagementIncomplete.ddl.length > 0, "an incomplete account-engagement schema must still run the DDL");
+
+  // The HAE process schema bootstrap must skip DDL when the schema is present.
+  const { ensureHaeProcessSchema } = await import("../src/lib/hae-process-control.mjs");
+  const processTables = ["hermes_automation_processes", "hermes_automation_process_events"];
+  const processIndexes = ["idx_hae_processes_due", "idx_hae_process_events_process_created"];
+  const processColumns = {
+    hermes_automation_processes: [
+      "process_id", "organization_scope", "name", "job_type", "business_lane", "workstream",
+      "role_id", "cadence_hours", "timezone", "status", "max_cost_usd_cents", "next_run_at",
+      "lease_until", "last_run_at", "last_job_id", "last_error_class", "created_by", "created_at", "updated_at",
+    ],
+  };
+  const processComplete = makeSchemaDb({ tables: processTables, indexes: processIndexes, columns: processColumns });
+  await ensureHaeProcessSchema(processComplete.db);
+  assert.equal(processComplete.ddl.length, 0, "a present HAE process schema must not run DDL on a cold isolate");
+
+  const processIncomplete = makeSchemaDb({ tables: processTables, indexes: processIndexes.slice(1), columns: processColumns });
+  await ensureHaeProcessSchema(processIncomplete.db);
+  assert.ok(processIncomplete.ddl.length > 0, "an incomplete HAE process schema must still run the DDL");
 }
 
 console.log("internal-command-center-request-cost: PASS");

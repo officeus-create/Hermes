@@ -1,6 +1,6 @@
 import { jsonResponse } from "../../_lib/session.mjs";
 import { requireInternalOwner } from "../../_lib/internal-ai.mjs";
-import { ensureOwnerProjectSchema, normalizeOwnerProjectFields, normalizeOwnerProjectStatus, publicOwnerProject, OWNER_PROJECT_SCOPE } from "../../_lib/command-center-owner-projects.mjs";
+import { ensureOwnerProjectSchemaOnce, normalizeOwnerProjectFields, normalizeOwnerProjectStatus, publicOwnerProject, OWNER_PROJECT_SCOPE } from "../../_lib/command-center-owner-projects.mjs";
 
 type Env={DB?:any};
 const headers={"Cache-Control":"private, no-store","X-Robots-Tag":"noindex, nofollow"};
@@ -9,7 +9,7 @@ const sameOriginMutation=(request:Request)=>request.headers.get("Sec-Fetch-Site"
 export async function onRequestPatch({request,env,params}:{request:Request;env:Env;params:any}){
   if(!sameOriginMutation(request))return jsonResponse(403,{success:false,error:"csrf_origin_mismatch"},headers);
   const owner=await requireInternalOwner(request,env);if(owner.response)return owner.response;
-  await ensureOwnerProjectSchema(env.DB);
+  await ensureOwnerProjectSchemaOnce(env.DB);
   const id=String(params.id||"");
   if(!/^hcpr_[0-9a-f-]{36}$/i.test(id))return jsonResponse(404,{success:false,error:"project_not_editable"},headers);
   const old=await env.DB.prepare("SELECT * FROM hermes_owner_projects WHERE organization_scope=? AND id=?").bind(OWNER_PROJECT_SCOPE,id).first();

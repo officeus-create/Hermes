@@ -2,7 +2,7 @@ import { INTERNAL_AI_ORGANIZATION_SCOPE, nowIso } from "./internal-ai.mjs";
 import { seedHistoricalCommandCenterBacklog } from "./command-center-history-backlog.mjs";
 import { seedFourMonthRevenueBacklog } from "./command-center-four-month-revenue-backlog.mjs";
 import { pluginRuntimeRegistrySnapshot } from "../../../workers/automation-engine/src/plugin-runtime-registry.mjs";
-import { ensureOnce } from "./request-cost-guard.mjs";
+import { ensureOnce, schemaReady } from "./request-cost-guard.mjs";
 
 // Per-isolate bootstrap. The schema bootstrap also runs the canonical backlog
 // seeders (history + four-month revenue), so calling it on every request cost
@@ -21,7 +21,53 @@ const SOURCES = new Set(["text","voice","imported"]);
 const MAX_TITLE = 160;
 const MAX_DETAILS = 10000;
 
+const OWNER_WORK_ITEM_COLUMNS = Object.freeze([
+    ["acceptance_status","TEXT NOT NULL DEFAULT 'not_required' CHECK (acceptance_status IN ('not_required','awaiting','accepted'))"],
+    ["accepted_by","TEXT"],
+    ["accepted_at","TEXT"],
+    ["project_id","TEXT"],
+    ["plugin_route_json","TEXT"],
+    ["hae_job_id","TEXT"],
+    ["hae_plan_job_id","TEXT"],
+    ["hae_execution_job_id","TEXT"],
+    ["hae_dispatch_state","TEXT"],
+    ["hae_dispatch_result_json","TEXT"],
+    ["source_kind","TEXT"],
+    ["source_label","TEXT"],
+    ["source_ref","TEXT"],
+    ["next_action","TEXT"],
+    ["revenue_gate_usd","REAL"],
+    ["revenue_target_usd","REAL"],
+    ["revenue_actual_usd","REAL"],
+    ["revenue_rank","INTEGER"],
+    ["revenue_status","TEXT"],
+    ["revenue_source_work_id","TEXT"],
+    ["revenue_evidence_ref","TEXT"],
+    ["revenue_recorded_at","TEXT"],
+]);
+const COMMAND_CENTER_SCHEMA_TABLES = Object.freeze([
+  "hermes_owner_work_items",
+  "hermes_internal_owner_access_audit",
+]);
+const COMMAND_CENTER_SCHEMA_INDEXES = Object.freeze([
+  "idx_owner_work_items_scope_state_priority",
+  "idx_owner_work_items_scope_project",
+  "idx_owner_work_items_revenue_queue",
+]);
+
 export async function ensureCommandCenterSchema(db) {
+  // DDL takes the write lock of the shared database that the HAE cron writes
+  // every five minutes. Verify the schema with reads first, so a cold isolate
+  // does not serialise against the cron on every request.
+  if (await schemaReady(db, {
+    tables: COMMAND_CENTER_SCHEMA_TABLES,
+    indexes: COMMAND_CENTER_SCHEMA_INDEXES,
+    tableColumns: { hermes_owner_work_items: OWNER_WORK_ITEM_COLUMNS.map(([name]) => name) },
+  })) {
+    await seedHistoricalCommandCenterBacklog(db);
+    await seedFourMonthRevenueBacklog(db);
+    return;
+  }
   await db.prepare(`CREATE TABLE IF NOT EXISTS hermes_owner_work_items (
     id TEXT PRIMARY KEY,
     organization_scope TEXT NOT NULL CHECK (organization_scope = 'hermes_internal'),
@@ -62,30 +108,7 @@ export async function ensureCommandCenterSchema(db) {
   )`).run();
   const columns=await db.prepare("PRAGMA table_info(hermes_owner_work_items)").all();
   const names=new Set((columns?.results||[]).map((column)=>String(column.name)));
-  for(const [name,definition] of [
-    ["acceptance_status","TEXT NOT NULL DEFAULT 'not_required' CHECK (acceptance_status IN ('not_required','awaiting','accepted'))"],
-    ["accepted_by","TEXT"],
-    ["accepted_at","TEXT"],
-    ["project_id","TEXT"],
-    ["plugin_route_json","TEXT"],
-    ["hae_job_id","TEXT"],
-    ["hae_plan_job_id","TEXT"],
-    ["hae_execution_job_id","TEXT"],
-    ["hae_dispatch_state","TEXT"],
-    ["hae_dispatch_result_json","TEXT"],
-    ["source_kind","TEXT"],
-    ["source_label","TEXT"],
-    ["source_ref","TEXT"],
-    ["next_action","TEXT"],
-    ["revenue_gate_usd","REAL"],
-    ["revenue_target_usd","REAL"],
-    ["revenue_actual_usd","REAL"],
-    ["revenue_rank","INTEGER"],
-    ["revenue_status","TEXT"],
-    ["revenue_source_work_id","TEXT"],
-    ["revenue_evidence_ref","TEXT"],
-    ["revenue_recorded_at","TEXT"],
-  ]) if(!names.has(name)) {
+  for(const [name,definition] of OWNER_WORK_ITEM_COLUMNS) if(!names.has(name)) {
     try { await db.prepare(`ALTER TABLE hermes_owner_work_items ADD COLUMN ${name} ${definition}`).run(); }
     catch(error) {
       const current=await db.prepare("PRAGMA table_info(hermes_owner_work_items)").all();
