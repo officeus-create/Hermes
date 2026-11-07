@@ -382,6 +382,42 @@ export const ROLE_CONTRACTS = Object.freeze([
     failure: "fail_closed_on_invalid_or_sensitive_payload",
     retention: "business_runtime_evidence",
   }),
+  Object.freeze({
+    role_id: "hermes-marketing-growth",
+    plugin_version: pluginRuntimeVersion("hermes-marketing-growth"),
+    contract_version: "work-portfolio-marketing-reconcile-v1",
+    job_type: "work.portfolio.marketing.reconcile",
+    business_lane: "automation",
+    permission_class: "READ_ONLY",
+    semantic_required: false,
+    free_ai_policy: "not_required",
+    trigger: "authorized_selected_work_item",
+    input_schema: {
+      source_kind: "CHATGPT_SELECTED",
+      snapshot_id: "non-secret stable snapshot identifier",
+      observed_at: "ISO-8601 timestamp",
+      coverage_complete: "boolean",
+      tasks: "minimized task metadata only",
+    },
+    runtime_config: { max_items: 500, scheduled: false },
+    preconditions: [
+      "authenticated owner selected a persisted marketing work item",
+      "CHATGPT_SELECTED contains only minimal task identity/status metadata",
+      "no titles, prompts, chat bodies, PII, credentials, customer data or provider writes",
+    ],
+    deterministic_steps: [
+      "validate and deduplicate selected work identifiers",
+      "classify dependencies and writer conflicts",
+      "preserve UNKNOWN and incomplete coverage",
+      "return one bounded advisory routing decision, never execute SEO or publish content",
+    ],
+    output_schema: "coverage + ready/blocked/stale/conflict ids + routing decisions",
+    kpi: ["unfinished_count", "ready_count", "blocked_count", "writer_conflict_count", "unknown_count"],
+    owner_gate: "authorized_source_adapter_required",
+    readback: "result_json bound to source_kind and snapshot_id",
+    failure: "fail_closed_on_invalid_or_sensitive_payload",
+    retention: "business_runtime_evidence",
+  }),
   ...ZERO_TOKEN_PLUGIN_TASK_CONTRACTS,
 ]);
 
@@ -908,7 +944,7 @@ export function validateRoleContractInput(jobType, payload) {
   if (jobType === "search.defect.prioritize") return validateSearchDefectPayload(payload);
   if (jobType === "work.item.plan") return validateOwnerWorkPlanPayload(payload);
   if (jobType === "hae.self.patch.propose") return validateHaeSelfPatchPayload(payload);
-  if (jobType === "work.portfolio.reconcile") return normalizeWorkPortfolioSnapshot(payload);
+  if (jobType === "work.portfolio.reconcile" || jobType === "work.portfolio.marketing.reconcile") return normalizeWorkPortfolioSnapshot(payload);
   if (isZeroTokenPluginTask(jobType)) return validateZeroTokenPluginTaskInput(jobType, payload);
   throw new Error("role_contract_job_type_not_allowed");
 }
@@ -1020,7 +1056,7 @@ export function runRoleContractPrimitive(jobType, payload, observedAt = new Date
   if (jobType === "marketing.content.dedupe.audit") return evaluateMarketing(payload);
   if (jobType === "logistics.source.freshness.audit") return evaluateLogistics(payload, observedAt);
   if (jobType === "search.defect.prioritize" || jobType === "hae.self.patch.propose" || jobType === "work.item.plan") throw new Error("semantic_job_requires_free_ai");
-  if (jobType === "work.portfolio.reconcile") {
+  if (jobType === "work.portfolio.reconcile" || jobType === "work.portfolio.marketing.reconcile") {
     return reconcileWorkPortfolioSnapshot(payload, ROLE_CONTRACT_JOB_TYPES, ROLE_CONTRACTS);
   }
   if (isZeroTokenPluginTask(jobType)) return runZeroTokenPluginTask(jobType, payload);

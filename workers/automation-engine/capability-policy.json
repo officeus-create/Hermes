@@ -509,6 +509,23 @@
       "free_ai_policy": "not_required"
     },
     {
+      "job_type": "work.portfolio.marketing.reconcile",
+      "permission_class": "READ_ONLY",
+      "execution_runtime": "canonical_hae_queue",
+      "external_provider_write": false,
+      "allowed_side_effects": [
+        "d1_job_state",
+        "d1_job_events"
+      ],
+      "submission_auth": "HERMES_AUTOMATION_TOKEN",
+      "retention_class": "business_runtime_evidence",
+      "role_id": "hermes-marketing-growth",
+      "plugin_version": "0.1.20",
+      "contract_version": "work-portfolio-marketing-reconcile-v1",
+      "semantic_required": false,
+      "free_ai_policy": "not_required"
+    },
+    {
       "job_type": "report.hr-tech.weekly.build",
       "permission_class": "READ_ONLY",
       "execution_runtime": "canonical_hae_queue",
