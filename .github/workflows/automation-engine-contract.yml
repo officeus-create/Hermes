@@ -37,6 +37,8 @@ on:
       - "scripts/hae-bounded-repair-preflight.test.mjs"
       - "scripts/hae-evidence-lesson-preflight.test.mjs"
       - "scripts/hae-github-ci-*.mjs"
+      - "scripts/hae-github-auditor-*.mjs"
+      - "workers/automation-engine/src/github-auditor-runtime-intake.mjs"
       - ".github/workflows/hae-github-ci-sensor.yml"
       - "docs/HERMES_AUTOMATION_ENGINE_*.md"
       - ".github/workflows/automation-engine-contract.yml"
@@ -93,6 +95,7 @@ jobs:
           node scripts/hae-bounded-repair-preflight.test.mjs
           node scripts/hae-evidence-lesson-preflight.test.mjs
           node scripts/hae-github-ci-event-sensor.test.mjs
+          node scripts/hae-github-auditor-source.test.mjs
           node scripts/hae-github-ci-runtime-intake.test.mjs
           node scripts/hae-github-ci-source.test.mjs
           node scripts/hae-github-ci-patch-runtime-intake.test.mjs
