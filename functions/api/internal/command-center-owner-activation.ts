@@ -1,6 +1,6 @@
 import { hashPassword, verifyPassword } from "../../../src/legacy-prototype/auth.mjs";
 import { bearerToken, verifyGitHubFirst5ActivationOidcToken } from "../_lib/github-oidc.mjs";
-import { ensureInternalAiSchema, nowIso } from "../_lib/internal-ai.mjs";
+import { ensureInternalAiSchemaOnce, nowIso } from "../_lib/internal-ai.mjs";
 import { jsonResponse } from "../_lib/session.mjs";
 
 type ServiceFetcher = { fetch(input: RequestInfo | URL, init?: RequestInit): Promise<Response> };
@@ -242,7 +242,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     return jsonResponse(400, { success: false, error: "unsupported_operation" }, noStore);
   }
 
-  await ensureInternalAiSchema(env.DB);
+  await ensureInternalAiSchemaOnce(env.DB);
 
   if (operation === RECOVER_OPERATION_ID) {
     return recoverExistingOwner(request, env);

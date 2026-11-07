@@ -1,6 +1,6 @@
 import { getAuthenticatedSpecialist } from "./session.mjs";
 import { ensureHermesCompanyProfilesSchema } from "./hermes-company-profiles.mjs";
-import { ensureInternalAiSchema } from "./internal-ai.mjs";
+import { ensureInternalAiSchemaOnce } from "./internal-ai.mjs";
 
 const CONTROL_CHARS = new RegExp("[<>" + String.fromCharCode(0) + "-" + String.fromCharCode(31) + String.fromCharCode(127) + "]", "g");
 export const HOME_SERVICE_SUBTYPES = new Set(["junk_removal", "cleaning", "landscaping", "moving", "handyman", "other"]);
@@ -162,7 +162,7 @@ export async function getHomeServiceContext(request, env) {
     if (!company) return { error: { status: 404, code: "managed_home_service_not_found" } };
 
     await ensureManagedClientAccessSchema(env.DB);
-    await ensureInternalAiSchema(env.DB);
+    await ensureInternalAiSchemaOnce(env.DB);
     const [internalAccess, clientAccess] = await Promise.all([
       env.DB.prepare(`
         SELECT specialist_id

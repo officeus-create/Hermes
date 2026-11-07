@@ -1,5 +1,5 @@
 import { ensureAcademyLearnerProfile, ensureAcademySchema, getAcademyEnrollment } from "./academy.mjs";
-import { ensureInternalAiSchema } from "./internal-ai.mjs";
+import { ensureInternalAiSchemaOnce } from "./internal-ai.mjs";
 
 export const HR_TRACKS = Object.freeze(["logistics", "sales", "marketing"]);
 export const HR_REVIEW_OUTCOMES = Object.freeze(["ACADEMY", "MORE_EVIDENCE", "SUPERVISED_TEST"]);
@@ -333,7 +333,7 @@ export async function getHrReviewerAccess(db, specialistId) {
   `).bind(specialistId).first();
   if (explicit) return { source: "hr_reviewer_access", ...explicit };
 
-  await ensureInternalAiSchema(db);
+  await ensureInternalAiSchemaOnce(db);
   const owner = await db.prepare(`
     SELECT specialist_id,active,capability,created_at,updated_at
     FROM hermes_internal_owner_access

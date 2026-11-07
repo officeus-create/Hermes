@@ -1,9 +1,9 @@
 import { jsonResponse } from "../../_lib/session.mjs";
-import { ensureInternalAiSchema, internalAiTaskBranch, INTERNAL_AI_ORGANIZATION_SCOPE, nowIso, publicTask, requireInternalAiRunner, sanitizeTaskResult } from "../../_lib/internal-ai.mjs";
+import { ensureInternalAiSchemaOnce, internalAiTaskBranch, INTERNAL_AI_ORGANIZATION_SCOPE, nowIso, publicTask, requireInternalAiRunner, sanitizeTaskResult } from "../../_lib/internal-ai.mjs";
 type Env = { DB?: any; HERMES_INTERNAL_AI_RUNNER_TOKEN?: string };
 export async function onRequestPost({ request, env }: { request: Request; env: Env }) {
   const auth = requireInternalAiRunner(request, env); if (auth.response) return auth.response; if (!env.DB) return jsonResponse(503, { success: false, error: "database_not_configured" });
-  await ensureInternalAiSchema(env.DB);
+  await ensureInternalAiSchemaOnce(env.DB);
   let payload: any; try { payload = await request.json(); } catch { return jsonResponse(400, { success: false, error: "invalid_json" }); }
   const taskId = String(payload?.task_id || "").trim(); if (!taskId) return jsonResponse(400, { success: false, error: "task_id_required" });
   const existing = await env.DB.prepare("SELECT * FROM hermes_internal_ai_tasks WHERE id = ? AND organization_scope = ?").bind(taskId, INTERNAL_AI_ORGANIZATION_SCOPE).first(); if (!existing) return jsonResponse(404, { success: false, error: "task_not_found" });

@@ -1,5 +1,37 @@
 const PROCESS_STATES = new Set(["paused", "active", "blocked"]);
 
+import { schemaReady } from "./schema-readiness.mjs";
+
+const HAE_PROCESS_SCHEMA_TABLES = Object.freeze([
+  "hermes_automation_processes",
+  "hermes_automation_process_events",
+]);
+const HAE_PROCESS_SCHEMA_INDEXES = Object.freeze([
+  "idx_hae_processes_due",
+  "idx_hae_process_events_process_created",
+]);
+const HAE_PROCESS_SCHEMA_COLUMNS = Object.freeze([
+  "process_id",
+  "organization_scope",
+  "name",
+  "job_type",
+  "business_lane",
+  "workstream",
+  "role_id",
+  "cadence_hours",
+  "timezone",
+  "status",
+  "max_cost_usd_cents",
+  "next_run_at",
+  "lease_until",
+  "last_run_at",
+  "last_job_id",
+  "last_error_class",
+  "created_by",
+  "created_at",
+  "updated_at",
+]);
+
 export const HAE_OWNER_PROCESS_TEMPLATES = Object.freeze([
   Object.freeze({
     job_type: "logistics.source.freshness.audit",
@@ -83,6 +115,19 @@ export function newHaeProcessId() {
 }
 
 export async function ensureHaeProcessSchema(db) {
+  // DDL takes the write lock of the shared D1 that the HAE cron writes every
+  // five minutes. `CREATE TABLE IF NOT EXISTS` still executes a write statement
+  // when the table already exists, so verify with reads first and only take
+  // the write lock when the schema is actually incomplete.
+  if (await schemaReady(db, {
+    tables: HAE_PROCESS_SCHEMA_TABLES,
+    indexes: HAE_PROCESS_SCHEMA_INDEXES,
+    tableColumns: {
+      hermes_automation_processes: HAE_PROCESS_SCHEMA_COLUMNS,
+    },
+  })) {
+    return;
+  }
   await db.prepare(`CREATE TABLE IF NOT EXISTS hermes_automation_processes (
     process_id TEXT PRIMARY KEY,
     organization_scope TEXT NOT NULL CHECK (organization_scope = 'hermes_internal'),

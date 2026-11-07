@@ -1,6 +1,6 @@
 import { jsonResponse } from "../_lib/session.mjs";
 import { requireInternalOwner } from "../_lib/internal-ai.mjs";
-import { ensureCommandCenterSchema, reconcileWorkItems } from "../_lib/internal-command-center.mjs";
+import { ensureCommandCenterSchemaOnce, reconcileWorkItems } from "../_lib/internal-command-center.mjs";
 import {
   commandCenterProjectPortfolio,
   PROJECT_PORTFOLIO_COVERAGE_NOTE,
@@ -8,7 +8,7 @@ import {
   PROJECT_PORTFOLIO_SNAPSHOT_OBSERVED_AT,
   validateCommandCenterProjects,
 } from "../_lib/command-center-projects.mjs";
-import { ensureOwnerProjectSchema, normalizeOwnerProjectFields, publicOwnerProject, OWNER_PROJECT_SCOPE } from "../_lib/command-center-owner-projects.mjs";
+import { ensureOwnerProjectSchemaOnce, normalizeOwnerProjectFields, publicOwnerProject, OWNER_PROJECT_SCOPE } from "../_lib/command-center-owner-projects.mjs";
 import { commandCenterProjectCoverageSnapshot } from "../_lib/command-center-project-coverage.mjs";
 
 type Env = { DB?: any };
@@ -24,8 +24,8 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
   const checkedAt = new Date().toISOString();
   const canonical = commandCenterProjectPortfolio();
   if (validateCommandCenterProjects(canonical).length) return jsonResponse(503, { success:false,error:"project_registry_invalid" },headers);
-  await ensureOwnerProjectSchema(env.DB);
-  await ensureCommandCenterSchema(env.DB);
+  await ensureOwnerProjectSchemaOnce(env.DB);
+  await ensureCommandCenterSchemaOnce(env.DB);
   await reconcileWorkItems(env.DB);
   const offset=parseOffset(request);
   if(offset===null)return jsonResponse(400,{success:false,error:"invalid_offset"},headers);
@@ -63,7 +63,7 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
 export async function onRequestPost({request,env}:{request:Request;env:Env}){
   if(!sameOriginMutation(request))return jsonResponse(403,{success:false,error:"csrf_origin_mismatch"},headers);
   const owner=await requireInternalOwner(request,env);if(owner.response)return owner.response;
-  await ensureOwnerProjectSchema(env.DB);
+  await ensureOwnerProjectSchemaOnce(env.DB);
   let payload:any;try{payload=await request.json()}catch{return jsonResponse(400,{success:false,error:"invalid_json"},headers)}
   const fields=normalizeOwnerProjectFields(payload);
   if(!fields)return jsonResponse(400,{success:false,error:"invalid_project_fields"},headers);

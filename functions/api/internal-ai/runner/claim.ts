@@ -1,9 +1,9 @@
 import { jsonResponse } from "../../_lib/session.mjs";
-import { ensureInternalAiSchema, INTERNAL_AI_ORGANIZATION_SCOPE, normalizeApprovalGate, nowIso, runnerTask, requireInternalAiRunner, sanitizeExecutionText, sanitizeRunnerTelemetry } from "../../_lib/internal-ai.mjs";
+import { ensureInternalAiSchemaOnce, INTERNAL_AI_ORGANIZATION_SCOPE, normalizeApprovalGate, nowIso, runnerTask, requireInternalAiRunner, sanitizeExecutionText, sanitizeRunnerTelemetry } from "../../_lib/internal-ai.mjs";
 type Env = { DB?: any; HERMES_INTERNAL_AI_RUNNER_TOKEN?: string };
 export async function onRequestPost({ request, env }: { request: Request; env: Env }) {
   const auth = requireInternalAiRunner(request, env); if (auth.response) return auth.response; if (!env.DB) return jsonResponse(503, { success: false, error: "database_not_configured" });
-  await ensureInternalAiSchema(env.DB);
+  await ensureInternalAiSchemaOnce(env.DB);
   let payload: any = {}; try { payload = await request.json(); } catch {}
   const now = nowIso(); const repoSha = sanitizeExecutionText(payload?.repo_sha, 80) || null; const runtimeVersion = sanitizeExecutionText(payload?.runtime_version, 120) || null;
   const telemetry = sanitizeRunnerTelemetry(payload?.telemetry);

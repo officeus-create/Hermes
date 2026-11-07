@@ -1,4 +1,19 @@
-import { ensureOnce } from "./request-cost-guard.mjs";
+import { ensureOnce, schemaReady } from "./request-cost-guard.mjs";
+
+const ACCOUNT_ENGAGEMENT_SCHEMA_TABLES = Object.freeze([
+  "account_engagement",
+]);
+const ACCOUNT_ENGAGEMENT_SCHEMA_INDEXES = Object.freeze([
+  "idx_account_engagement_due",
+]);
+const ACCOUNT_ENGAGEMENT_SCHEMA_COLUMNS = Object.freeze([
+  "specialist_id",
+  "last_active_at",
+  "last_reminder_at",
+  "email_enabled",
+  "locale",
+  "updated_at",
+]);
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 const WEEK_MINUTES = 7 * 24 * 60;
@@ -80,6 +95,17 @@ function localeFromRequest(request) {
 }
 
 export async function ensureAccountEngagementSchema(db) {
+  // This schema is on the authentication path of every owner request. DDL takes
+  // the write lock of the shared D1 that the HAE cron writes every five
+  // minutes, so verify with reads first and only take the write lock when the
+  // schema is actually incomplete.
+  if (await schemaReady(db, {
+    tables: ACCOUNT_ENGAGEMENT_SCHEMA_TABLES,
+    indexes: ACCOUNT_ENGAGEMENT_SCHEMA_INDEXES,
+    tableColumns: { account_engagement: ACCOUNT_ENGAGEMENT_SCHEMA_COLUMNS },
+  })) {
+    return;
+  }
   await db.prepare(`
     CREATE TABLE IF NOT EXISTS account_engagement (
       specialist_id TEXT PRIMARY KEY,

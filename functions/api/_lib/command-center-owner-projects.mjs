@@ -1,9 +1,45 @@
 // Owner-created projects extend the ONE Hermes Command Center D1; canonical snapshot projects stay immutable.
+import { ensureOnce, schemaReady } from "./request-cost-guard.mjs";
+
 export const OWNER_PROJECT_SCOPE = "hermes_internal";
 const DEPARTMENTS = new Set(["marketing","logistics","sales","technology","academy","finance","operations"]);
 const STATES = new Set(["planned","in_progress","blocked","done"]);
 
+const OWNER_PROJECT_SCHEMA_TABLES = Object.freeze([
+  "hermes_owner_projects",
+]);
+const OWNER_PROJECT_SCHEMA_INDEXES = Object.freeze([
+  "idx_hermes_owner_projects_scope_updated",
+]);
+const OWNER_PROJECT_SCHEMA_COLUMNS = Object.freeze([
+  "id",
+  "organization_scope",
+  "title",
+  "department",
+  "purpose",
+  "status",
+  "created_by",
+  "created_at",
+  "updated_at",
+]);
+
+// Per-isolate bootstrap for the owner-projects schema.
+export function ensureOwnerProjectSchemaOnce(db, options = {}) {
+  return ensureOnce(db, "owner-project-schema", () => ensureOwnerProjectSchema(db), options);
+}
+
 export async function ensureOwnerProjectSchema(db) {
+  // DDL takes the write lock of the shared database that the HAE cron writes
+  // every five minutes. `CREATE TABLE IF NOT EXISTS` still executes a write
+  // statement when the table already exists, so verifying with reads first is
+  // what actually keeps this route off the write lock.
+  if (await schemaReady(db, {
+    tables: OWNER_PROJECT_SCHEMA_TABLES,
+    indexes: OWNER_PROJECT_SCHEMA_INDEXES,
+    tableColumns: { hermes_owner_projects: OWNER_PROJECT_SCHEMA_COLUMNS },
+  })) {
+    return;
+  }
   await db.prepare(`CREATE TABLE IF NOT EXISTS hermes_owner_projects (
     id TEXT PRIMARY KEY,
     organization_scope TEXT NOT NULL CHECK(organization_scope = 'hermes_internal'),

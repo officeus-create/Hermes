@@ -1,4 +1,4 @@
-import { ensureInternalAiSchema, nowIso } from "../_lib/internal-ai.mjs";
+import { ensureInternalAiSchemaOnce, nowIso } from "../_lib/internal-ai.mjs";
 import { getAuthenticatedSpecialist, jsonResponse } from "../_lib/session.mjs";
 
 type Env = {
@@ -35,7 +35,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
   const specialist = await getAuthenticatedSpecialist(request, env.DB);
   if (!specialist) return jsonResponse(401, { success: false, error: "not_authenticated" }, noStore);
 
-  await ensureInternalAiSchema(env.DB);
+  await ensureInternalAiSchemaOnce(env.DB);
   const current = await env.DB
     .prepare("SELECT specialist_id FROM hermes_internal_owner_access WHERE specialist_id = ? AND active = 1 AND capability = 'HERMES_INTERNAL_OWNER' LIMIT 1")
     .bind(specialist.id)

@@ -1,5 +1,5 @@
 import { ensureHermesCompanyProfilesSchema } from "./hermes-company-profiles.mjs";
-import { ensureInternalAiSchema } from "./internal-ai.mjs";
+import { ensureInternalAiSchemaOnce } from "./internal-ai.mjs";
 
 const CONTROL_CHARS = /[\u0000-\u001f\u007f<>]/g;
 export const LOAD_POST_COMPANY_TYPES = new Set(["broker", "shipper", "dealer"]);
@@ -46,7 +46,7 @@ export async function getOwnedHermesCompany(db, specialistId) {
 
 export async function specialistHasInternalOwnerCapability(db, specialistId) {
   if (!db || !specialistId) return false;
-  await ensureInternalAiSchema(db);
+  await ensureInternalAiSchemaOnce(db);
   const row = await db.prepare(`
     SELECT specialist_id
     FROM hermes_internal_owner_access

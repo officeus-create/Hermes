@@ -278,6 +278,107 @@ const read = (relative) => fs.readFileSync(path.join(root, relative), "utf8");
     /schemaReady\(/.test(internalAiSource) && /schemaReady\(/.test(ccSource),
     "both schema bootstraps must verify with reads before taking the write lock",
   );
+
+  // The owner-projects schema bootstrap must skip DDL when the schema is present.
+  // `CREATE TABLE IF NOT EXISTS` still executes a write statement when the table
+  // exists, so the `/projects` route used to take the shared D1 write lock on
+  // every request even though nothing had to change.
+  const { ensureOwnerProjectSchema } = await import("../functions/api/_lib/command-center-owner-projects.mjs");
+  const ownerProjectSource = read("functions/api/_lib/command-center-owner-projects.mjs");
+  const ownerProjectTables = ["hermes_owner_projects"];
+  const ownerProjectIndexes = ["idx_hermes_owner_projects_scope_updated"];
+  const ownerProjectColumns = {
+    hermes_owner_projects: [
+      "id", "organization_scope", "title", "department", "purpose", "status",
+      "created_by", "created_at", "updated_at",
+    ],
+  };
+  const ownerProjectComplete = makeSchemaDb({
+    tables: ownerProjectTables,
+    indexes: ownerProjectIndexes,
+    columns: ownerProjectColumns,
+  });
+  await ensureOwnerProjectSchema(ownerProjectComplete.db);
+  assert.equal(
+    ownerProjectComplete.ddl.length,
+    0,
+    "a present owner-projects schema must not run DDL on a cold isolate",
+  );
+
+  const ownerProjectIncomplete = makeSchemaDb({
+    tables: ownerProjectTables,
+    indexes: ownerProjectIndexes.slice(1),
+    columns: ownerProjectColumns,
+  });
+  await ensureOwnerProjectSchema(ownerProjectIncomplete.db);
+  assert.ok(
+    ownerProjectIncomplete.ddl.length > 0,
+    "an incomplete owner-projects schema must still run the DDL",
+  );
+  assert.ok(
+    /schemaReady\(/.test(ownerProjectSource),
+    "the owner-projects bootstrap must verify with reads before taking the write lock",
+  );
+
+  // No owner-facing route may call a schema bootstrap without the per-isolate cache.
+  const ownerRoutes = [
+    "functions/api/internal-command-center/projects.ts",
+    "functions/api/internal-command-center/projects/[id].ts",
+    "functions/api/internal-command-center/access.ts",
+    "functions/api/internal-command-center/work-items.ts",
+    "functions/api/internal-command-center/work-items/[id].ts",
+    "functions/api/internal-command-center/execution-map.ts",
+  ];
+  for (const route of ownerRoutes) {
+    const source = read(route);
+    assert.ok(
+      !/await ensureCommandCenterSchema\(/.test(source)
+      && !/await ensureInternalAiSchema\(/.test(source)
+      && !/await ensureOwnerProjectSchema\(/.test(source),
+      `${route} must not bootstrap a schema without the per-isolate cache`,
+    );
+  }
+
+  // The authentication-path schema bootstrap must skip DDL when the schema is present.
+  const { ensureAccountEngagementSchema } = await import("../functions/api/_lib/account-engagement.mjs");
+  const engagementComplete = makeSchemaDb({
+    tables: ["account_engagement"],
+    indexes: ["idx_account_engagement_due"],
+    columns: {
+      account_engagement: ["specialist_id", "last_active_at", "last_reminder_at", "email_enabled", "locale", "updated_at"],
+    },
+  });
+  await ensureAccountEngagementSchema(engagementComplete.db);
+  assert.equal(engagementComplete.ddl.length, 0, "a present account-engagement schema must not run DDL on a cold isolate");
+
+  const engagementIncomplete = makeSchemaDb({
+    tables: ["account_engagement"],
+    indexes: [],
+    columns: {
+      account_engagement: ["specialist_id", "last_active_at", "last_reminder_at", "email_enabled", "locale", "updated_at"],
+    },
+  });
+  await ensureAccountEngagementSchema(engagementIncomplete.db);
+  assert.ok(engagementIncomplete.ddl.length > 0, "an incomplete account-engagement schema must still run the DDL");
+
+  // The HAE process schema bootstrap must skip DDL when the schema is present.
+  const { ensureHaeProcessSchema } = await import("../src/lib/hae-process-control.mjs");
+  const processTables = ["hermes_automation_processes", "hermes_automation_process_events"];
+  const processIndexes = ["idx_hae_processes_due", "idx_hae_process_events_process_created"];
+  const processColumns = {
+    hermes_automation_processes: [
+      "process_id", "organization_scope", "name", "job_type", "business_lane", "workstream",
+      "role_id", "cadence_hours", "timezone", "status", "max_cost_usd_cents", "next_run_at",
+      "lease_until", "last_run_at", "last_job_id", "last_error_class", "created_by", "created_at", "updated_at",
+    ],
+  };
+  const processComplete = makeSchemaDb({ tables: processTables, indexes: processIndexes, columns: processColumns });
+  await ensureHaeProcessSchema(processComplete.db);
+  assert.equal(processComplete.ddl.length, 0, "a present HAE process schema must not run DDL on a cold isolate");
+
+  const processIncomplete = makeSchemaDb({ tables: processTables, indexes: processIndexes.slice(1), columns: processColumns });
+  await ensureHaeProcessSchema(processIncomplete.db);
+  assert.ok(processIncomplete.ddl.length > 0, "an incomplete HAE process schema must still run the DDL");
 }
 
 console.log("internal-command-center-request-cost: PASS");
