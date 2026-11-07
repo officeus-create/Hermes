@@ -477,12 +477,19 @@ const IMPORT_KEY="owner_history_backlog_2026-11-05_v2";
 
 export async function seedHistoricalCommandCenterBacklog(db){
   if(!db?.prepare)return;
-  await db.prepare(`CREATE TABLE IF NOT EXISTS hermes_command_center_imports (
-    import_key TEXT PRIMARY KEY,
-    imported_at TEXT NOT NULL
-  )`).run();
-  const already=await db.prepare("SELECT import_key FROM hermes_command_center_imports WHERE import_key=? LIMIT 1").bind(IMPORT_KEY).first();
-  if(already)return;
+  // Reading the import key must not take the write lock of the shared database:
+  // CREATE TABLE IF NOT EXISTS writes even when the table already exists, and
+  // the HAE cron writes the same database every five minutes.
+  const importTable=await db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='hermes_command_center_imports' LIMIT 1").first();
+  if(importTable){
+    const already=await db.prepare("SELECT import_key FROM hermes_command_center_imports WHERE import_key=? LIMIT 1").bind(IMPORT_KEY).first();
+    if(already)return;
+  }else{
+    await db.prepare(`CREATE TABLE IF NOT EXISTS hermes_command_center_imports (
+      import_key TEXT PRIMARY KEY,
+      imported_at TEXT NOT NULL
+    )`).run();
+  }
   // The import key is written only after the whole backlog has landed. A platform CPU
   // limit can kill the Worker in the middle of the import, and then the key never
   // appears: every later request would replay all 54 inserts and be killed again, which

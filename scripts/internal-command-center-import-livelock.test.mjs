@@ -27,8 +27,9 @@ import {
  */
 function makeDb(state = {}) {
   const importKeyPresent = state.importKeyPresent === true;
+  const importTablePresent = state.importTablePresent !== false;
   const importedRows = Number(state.importedRows || 0);
-  const counts = { workItemInserts: 0, importKeyInserts: 0, counts: 0 };
+  const counts = { workItemInserts: 0, importKeyInserts: 0, counts: 0, createTable: 0 };
   const db = {
     prepare(sql) {
       const text = String(sql);
@@ -37,9 +38,13 @@ function makeDb(state = {}) {
         async run() {
           if (/INSERT OR IGNORE INTO hermes_owner_work_items/i.test(text)) counts.workItemInserts += 1;
           else if (/INSERT OR IGNORE INTO hermes_command_center_imports/i.test(text)) counts.importKeyInserts += 1;
+          else if (/CREATE TABLE IF NOT EXISTS hermes_command_center_imports/i.test(text)) counts.createTable += 1;
           return { success: true, meta: { changes: 1 } };
         },
         async first() {
+          if (/FROM sqlite_master WHERE type='table' AND name='hermes_command_center_imports'/i.test(text)) {
+            return importTablePresent ? { name: "hermes_command_center_imports" } : null;
+          }
           if (/SELECT import_key FROM hermes_command_center_imports/i.test(text)) {
             return importKeyPresent ? { import_key: "present" } : null;
           }
@@ -80,6 +85,16 @@ function makeDb(state = {}) {
   assert.equal(counts.workItemInserts, 0);
   assert.equal(counts.importKeyInserts, 0);
   assert.equal(counts.counts, 0, "a present import key must short-circuit before the count guard");
+  assert.equal(counts.createTable, 0, "reading the import key must not take the write lock of the shared database");
+}
+
+// --- the import table itself is missing: it must be created exactly once -------
+{
+  const { db, counts } = makeDb({ importKeyPresent: false, importTablePresent: false, importedRows: COMMAND_CENTER_HISTORY_BACKLOG.length });
+  await seedHistoricalCommandCenterBacklog(db);
+  assert.equal(counts.createTable, 1, "a missing import table must be created");
+  assert.equal(counts.importKeyInserts, 1, "the import key must still be written after the table is created");
+  assert.equal(counts.workItemInserts, 0, "an already imported backlog must not be replayed row by row");
 }
 
 // --- an incomplete import must still complete ---------------------------------

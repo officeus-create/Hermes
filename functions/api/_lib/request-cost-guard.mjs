@@ -74,6 +74,40 @@ export function cachedValue(key, factory, options = {}) {
 }
 
 /**
+ * Check with READS whether the expected schema objects already exist.
+ *
+ * DDL takes the write lock of the whole database, and the HAE cron writes that
+ * same database every five minutes. A cold isolate that re-runs DDL on every
+ * request therefore serialises against the cron and the request hangs until
+ * the platform gives up. Verify first and take the write lock only when the
+ * schema is actually incomplete.
+ *
+ * @param {any} db
+ * @param {{tables?:string[], indexes?:string[], tableColumns?:Record<string,string[]>}} [spec]
+ * @returns {Promise<boolean>}
+ */
+export async function schemaReady(db, spec = {}) {
+  if (!db || typeof db.prepare !== "function") return false;
+  const tables = Array.isArray(spec.tables) ? spec.tables : [];
+  const indexes = Array.isArray(spec.indexes) ? spec.indexes : [];
+  const tableColumns = spec.tableColumns && typeof spec.tableColumns === "object" ? spec.tableColumns : {};
+  const names = [...tables, ...indexes];
+  if (names.length) {
+    const placeholders = names.map(() => "?").join(",");
+    const rows = await db.prepare(`SELECT name FROM sqlite_master WHERE name IN (${placeholders})`).bind(...names).all();
+    const found = new Set((rows?.results || []).map(row => String(row?.name || "")));
+    if (names.some(name => !found.has(name))) return false;
+  }
+  for (const [table, expected] of Object.entries(tableColumns)) {
+    if (!/^[a-z_][a-z0-9_]*$/.test(String(table || ""))) throw new Error("invalid_schema_table_name");
+    const columns = await db.prepare(`PRAGMA table_info(${table})`).all();
+    const found = new Set((columns?.results || []).map(column => String(column?.name || "")));
+    if (expected.some(name => !found.has(name))) return false;
+  }
+  return true;
+}
+
+/**
  * Test-only: reset the per-isolate caches.
  * @returns {void}
  */

@@ -1,5 +1,5 @@
 import { getAuthenticatedSpecialist, jsonResponse } from "./session.mjs";
-import { ensureOnce } from "./request-cost-guard.mjs";
+import { ensureOnce, schemaReady } from "./request-cost-guard.mjs";
 
 export const INTERNAL_AI_ORGANIZATION_SCOPE = "hermes_internal";
 const TASK_STATES = new Set(["queued", "running", "completed", "failed", "cancelled", "needs_approval"]);
@@ -8,7 +8,37 @@ const MAX_PROMPT_LENGTH = 12000;
 const MAX_EVENT_LENGTH = 4000;
 const MAX_OUTPUT_LENGTH = 20000;
 
+const INTERNAL_AI_SCHEMA_TABLES = Object.freeze([
+  "hermes_internal_owner_access",
+  "hermes_internal_team_view_access",
+  "hermes_internal_team_view_access_audit",
+  "hermes_internal_ai_tasks",
+  "hermes_internal_ai_events",
+  "hermes_internal_ai_runner_state",
+]);
+const INTERNAL_AI_SCHEMA_INDEXES = Object.freeze([
+  "idx_internal_ai_tasks_scope_status_created",
+  "idx_internal_ai_events_scope_task",
+]);
+const OPTIONAL_TASK_COLUMNS = Object.freeze({
+  approval_granted_at: "TEXT",
+  approval_granted_by: "TEXT",
+  approval_attempt: "INTEGER NOT NULL DEFAULT 0",
+});
+const OPTIONAL_RUNNER_COLUMNS = Object.freeze({ telemetry_json: "TEXT" });
+
 export async function ensureInternalAiSchema(db) {
+  // DDL takes the write lock of the shared database that the HAE cron writes
+  // every five minutes. Verify the schema with reads first, so a cold isolate
+  // does not serialise against the cron on every authenticated request.
+  if (await schemaReady(db, {
+    tables: INTERNAL_AI_SCHEMA_TABLES,
+    indexes: INTERNAL_AI_SCHEMA_INDEXES,
+    tableColumns: {
+      hermes_internal_ai_tasks: Object.keys(OPTIONAL_TASK_COLUMNS),
+      hermes_internal_ai_runner_state: Object.keys(OPTIONAL_RUNNER_COLUMNS),
+    },
+  })) return;
   await db.prepare(`CREATE TABLE IF NOT EXISTS hermes_internal_owner_access (
     specialist_id TEXT PRIMARY KEY,
     active INTEGER NOT NULL DEFAULT 0 CHECK (active IN (0,1)),
@@ -55,12 +85,7 @@ export async function ensureInternalAiSchema(db) {
   )`).run();
   const taskColumns = await db.prepare("PRAGMA table_info(hermes_internal_ai_tasks)").all();
   const taskColumnNames = new Set((taskColumns.results || []).map((column) => column.name));
-  const optionalTaskColumns = {
-    approval_granted_at: "TEXT",
-    approval_granted_by: "TEXT",
-    approval_attempt: "INTEGER NOT NULL DEFAULT 0",
-  };
-  for (const [name, definition] of Object.entries(optionalTaskColumns)) {
+  for (const [name, definition] of Object.entries(OPTIONAL_TASK_COLUMNS)) {
     if (!taskColumnNames.has(name)) await db.prepare(`ALTER TABLE hermes_internal_ai_tasks ADD COLUMN ${name} ${definition}`).run();
   }
   await db.prepare("CREATE INDEX IF NOT EXISTS idx_internal_ai_tasks_scope_status_created ON hermes_internal_ai_tasks(organization_scope, status, created_at)").run();
@@ -83,7 +108,9 @@ export async function ensureInternalAiSchema(db) {
   )`).run();
   const runnerColumns = await db.prepare("PRAGMA table_info(hermes_internal_ai_runner_state)").all();
   const runnerColumnNames = new Set((runnerColumns.results || []).map((column) => column.name));
-  if (!runnerColumnNames.has("telemetry_json")) await db.prepare("ALTER TABLE hermes_internal_ai_runner_state ADD COLUMN telemetry_json TEXT").run();
+  for (const [name, definition] of Object.entries(OPTIONAL_RUNNER_COLUMNS)) {
+    if (!runnerColumnNames.has(name)) await db.prepare(`ALTER TABLE hermes_internal_ai_runner_state ADD COLUMN ${name} ${definition}`).run();
+  }
 }
 
 // Per-isolate bootstrap. The internal AI schema DDL ran on every authenticated
