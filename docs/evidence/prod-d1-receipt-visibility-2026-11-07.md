@@ -125,7 +125,39 @@ The deployed bridge already bounds the call with `AbortSignal.timeout(haeBridgeT
 1102 persists. So the stall is **not** covered by the fetch timeout (DNS/connect phase or platform CPU
 accounting) — bounding the call further does not fix it. The outbound readback has to go away.
 
-### 4.2 The two job identity schemes do not match
+### 4.2 The engine read model does not return `payload_json` — the verifier can never pass
+
+`verifyCommandCenterHaeReceipt` requires the job payload:
+`command-center-hae-receipt-verifier.mjs:131-133`
+(`const payload = parseObject(haeJob.payload_json); const receipt = parseObject(haeJob.result_json);
+if (!payload || !receipt) return hold("RECEIPT_MISSING_OR_INVALID")`).
+
+The engine's read model — the one the HTTP bridge consumes — is `getGenericJob`
+(`workers/automation-engine/src/index.mjs:1454-1465`):
+
+```sql
+SELECT job_id,job_type,business_lane,account_key,project_key,state,current_step,available_at,
+       attempt_count,max_attempts,idempotency_key,policy_version,payload_json,result_json,
+       last_error_class,created_at,updated_at,completed_at
+FROM hermes_automation_jobs WHERE job_id=? LIMIT 1;
+```
+
+(`payload_json` is mandatory — see §4.2.)
+
+`payload_json` is **not** in that list, so `parseObject(undefined)` returns `null` and the verdict is
+always `RECEIPT_MISSING_OR_INVALID` — **even if a control-plane route existed and the bridge call
+succeeded.** The payload itself *is* persisted correctly: `createGenericJob` injects
+`_role_contract` into the payload (`index.mjs:739-746`) and stores it in `payload_json`
+(`index.mjs:769-782`).
+
+⇒ A D1 readback must select `payload_json` explicitly. That makes the direct-D1 path not merely
+cheaper than the HTTP path, but the only path that can currently satisfy the verifier. The HTTP path
+would additionally need an engine change (add `payload_json` to `getGenericJob`) plus a HAE deploy.
+
+Governance note: `payload_json` contains work-item text for engine-created jobs. It must be used
+server-side for verification only and never rendered into the page.
+
+### 4.3 The two job identity schemes do not match
 
 The engine's own intake creates jobs (`workers/automation-engine/src/owner-work-runtime.mjs`):
 
@@ -207,6 +239,7 @@ secrets — keeps the bridge shape untouched but is a Cloudflare/DNS decision (o
 | No public control-plane host for the engine | CODE_READ + live probe (404) |
 | Per-item endpoint 1102 on items with `hae_job_id` | RUNTIME_VERIFIED (Ray `a5696f3dbe6e24c5-KBP`) |
 | Two incompatible job identity schemes | CODE_READ |
+| Engine read model omits `payload_json` → verifier always holds `RECEIPT_MISSING_OR_INVALID` | CODE_READ |
 | D1 readback needs no owner infrastructure | CODE_READ (Pages already reads the same D1) |
 | Per-card **verified** receipt (`PLUGIN_EXECUTION_SUCCEEDED_RECEIPT_VERIFIED`) | NOT OBSERVED — requires the Command Center code change in §5 (and/or a Cloudflare route) |
 
