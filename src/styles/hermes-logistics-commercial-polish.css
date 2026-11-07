@@ -122,7 +122,7 @@ body:has(.detail-page-logistics) .logistics-commercial-links .logistics-path-col
 
 body:has(.detail-page-logistics) .logistics-commercial-links .logistics-commercial-footer { display:flex; flex-wrap:wrap; align-items:center; gap:10px; margin-top:22px; padding-top:22px; border-top:1px solid var(--hermes-line-light); }
 body:has(.detail-page-logistics) .logistics-commercial-links .logistics-commercial-footer p { flex:1 0 100%; margin:0 0 2px; }
-body:has(.detail-page-logistics) .logistics-commercial-links .logistics-commercial-footer .button { min-height:48px; border-radius:var(--hermes-radius-control); }
+body:has(.detail-page-logistics) .logistics-commercial-links .logistics-commercial-footer .button { min-height:48px; border-radius:var(--hermes-radius-pill); }
 body:has(.detail-page-logistics) .logistics-commercial-links .logistics-commercial-footer .button-primary,
 body:has(.detail-page-logistics) .logistics-commercial-links .logistics-commercial-footer .logistics-customer-review { border:1px solid var(--hermes-obsidian); color:#fff; background:var(--hermes-obsidian); box-shadow:none; }
 body:has(.detail-page-logistics) .logistics-commercial-links .logistics-commercial-footer .button-primary:hover,

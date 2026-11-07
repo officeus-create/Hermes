@@ -186,13 +186,13 @@
 }
 .detail-page-technology .it-screen .button-primary {
   border: 1px solid var(--hermes-obsidian);
-  border-radius: var(--hermes-radius-control);
+  border-radius: var(--hermes-radius-pill);
   color: #fff;
   background: var(--hermes-obsidian);
 }
 .detail-page-technology .it-screen .button-ghost {
   border: 1px solid var(--hermes-line-light);
-  border-radius: var(--hermes-radius-control);
+  border-radius: var(--hermes-radius-pill);
   color: var(--hermes-ink);
   background: var(--hermes-paper);
 }

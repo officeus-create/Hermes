@@ -131,7 +131,7 @@ body:has(.detail-page) .site-header .desktop-nav a:focus-visible {
 .detail-page .detail-hero .button-primary {
   min-height: 48px;
   border: 1px solid var(--hermes-obsidian);
-  border-radius: var(--hermes-radius-control);
+  border-radius: var(--hermes-radius-pill);
   color: #fff;
   background: var(--hermes-obsidian);
   box-shadow: 0 10px 28px rgba(11, 13, 18, .15);

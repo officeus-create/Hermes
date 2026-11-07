@@ -396,7 +396,7 @@
 .detail-page-academy .academy-screen-actions .button-primary {
   min-height: 48px;
   border: 1px solid var(--hermes-obsidian);
-  border-radius: var(--hermes-radius-control);
+  border-radius: var(--hermes-radius-pill);
   color: #fff;
   background: var(--hermes-obsidian);
   box-shadow: none;
@@ -414,7 +414,7 @@
 .detail-page-academy .academy-text-button {
   min-height: 44px;
   border: 1px solid var(--hermes-line-light);
-  border-radius: var(--hermes-radius-control);
+  border-radius: var(--hermes-radius-pill);
   color: var(--hermes-ink);
   background: var(--hermes-paper);
 }
