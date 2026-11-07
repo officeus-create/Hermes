@@ -3,7 +3,7 @@ import {readFileSync} from "node:fs";
 
 const source=readFileSync(new URL("../functions/api/load-board/summary.ts", import.meta.url), "utf8");
 assert.match(source, /getAuthenticatedSpecialist\(request, env\.DB\)/);
-assert.match(source, /specialistHasLoadBoardAccess\(env\.DB, specialist\)/);
+assert.match(source, /authorizedCarrier\(env\.DB, specialist\)/);
 assert.match(source, /const audiencePredicate = carrierAccess/);
 assert.match(source, /r\.visibility IN \('public', 'carrier_only'\)/);
 assert.match(source, /r\.visibility = 'public' AND r\.record_type = 'capacity'/);

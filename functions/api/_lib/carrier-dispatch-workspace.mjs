@@ -1,6 +1,7 @@
 import { ensureHermesCompanyProfilesSchema } from "./hermes-company-profiles.mjs";
 import { ensureLoadBoardSchema } from "./load-board-schema.mjs";
 import { specialistHasInternalOwnerCapability } from "./load-board-market-posts.mjs";
+import { ensureCompanyMembershipSchema } from "./company-memberships.mjs";
 
 export const privateWorkspaceHeaders = Object.freeze({
   "Cache-Control": "private, no-store",
@@ -25,8 +26,39 @@ export async function ensureCarrierDispatchWorkspaceSchema(db) {
       status TEXT NOT NULL CHECK(status IN ('active','revoked')),
       reviewed_by_specialist_id TEXT NOT NULL,
       reviewed_at TEXT NOT NULL,
-      note TEXT
+      note TEXT,
+      agreement_state TEXT NOT NULL DEFAULT 'PENDING_CONTRACT',
+      agreement_version TEXT,
+      agreement_sha256 TEXT,
+      agreement_effective_at TEXT,
+      trial_start_date TEXT,
+      trial_end_date TEXT,
+      no_auto_continuation_confirmed INTEGER NOT NULL DEFAULT 0,
+      authority_status TEXT NOT NULL DEFAULT 'pending',
+      insurance_status TEXT NOT NULL DEFAULT 'pending',
+      source_rights_status TEXT NOT NULL DEFAULT 'pending',
+      evidence_id TEXT,
+      revoked_at TEXT
     )`).run();
+  const entitlementInfo=await db.prepare("PRAGMA table_info(hermes_carrier_board_entitlements)").all();
+  const entitlementColumns=new Set((entitlementInfo.results||[]).map((row)=>String(row.name)));
+  const entitlementMigrations=[
+    ["agreement_state","TEXT NOT NULL DEFAULT 'PENDING_CONTRACT'"],
+    ["agreement_version","TEXT"],
+    ["agreement_sha256","TEXT"],
+    ["agreement_effective_at","TEXT"],
+    ["trial_start_date","TEXT"],
+    ["trial_end_date","TEXT"],
+    ["no_auto_continuation_confirmed","INTEGER NOT NULL DEFAULT 0"],
+    ["authority_status","TEXT NOT NULL DEFAULT 'pending'"],
+    ["insurance_status","TEXT NOT NULL DEFAULT 'pending'"],
+    ["source_rights_status","TEXT NOT NULL DEFAULT 'pending'"],
+    ["evidence_id","TEXT"],
+    ["revoked_at","TEXT"],
+  ];
+  for(const [column,definition] of entitlementMigrations){
+    if(!entitlementColumns.has(column)) await db.prepare(`ALTER TABLE hermes_carrier_board_entitlements ADD COLUMN ${column} ${definition}`).run();
+  }
   await db.prepare(`
     CREATE TABLE IF NOT EXISTS hermes_carrier_dispatch_assignments (
       carrier_company_id TEXT PRIMARY KEY,
@@ -68,17 +100,66 @@ export async function ensureCarrierDispatchWorkspaceSchema(db) {
 export async function getOwnedCarrier(db, specialist) {
   if (!specialist) return null;
   await ensureCarrierDispatchWorkspaceSchema(db);
-  const result = await db.prepare(`
-    SELECT c.id,c.company_name,c.company_type,c.load_board_access,e.status AS entitlement_status
+  const columns=`
+    c.id,c.company_name,c.company_type,c.load_board_access,e.status AS entitlement_status,
+    e.agreement_state,e.agreement_version,e.agreement_sha256,e.agreement_effective_at,
+    e.trial_start_date,e.trial_end_date,e.no_auto_continuation_confirmed,e.authority_status,e.insurance_status,e.source_rights_status,e.evidence_id
+  `;
+  const owned=await db.prepare(`
+    SELECT ${columns}, 'owner' AS access_role, 'owner_relation' AS access_source
     FROM hermes_company_profiles c
     LEFT JOIN hermes_carrier_board_entitlements e ON e.company_id=c.id
     WHERE c.owner_specialist_id=? LIMIT 1
   `).bind(specialist.id).first();
-  return result && CARRIER_TYPES.has(String(result.company_type)) ? result : null;
+  if(owned && CARRIER_TYPES.has(String(owned.company_type))) return owned;
+
+  // Drivers never self-select a carrier tenant. They inherit only one active,
+  // non-revoked company membership and the carrier's effective entitlement.
+  if(!/\bdriver\b/i.test(String(specialist.role||""))) return null;
+  await ensureCompanyMembershipSchema(db);
+  const delegated=await db.prepare(`
+    SELECT ${columns},m.role AS access_role,'delegated_driver_membership' AS access_source
+    FROM hermes_company_memberships m
+    JOIN hermes_company_profiles c ON m.business_ref=('company:' || c.id)
+    LEFT JOIN hermes_carrier_board_entitlements e ON e.company_id=c.id
+    WHERE m.specialist_id=? AND m.active=1 AND m.revoked_at IS NULL
+      AND m.role IN ('member','read_only')
+      AND c.company_type IN ('carrier','owner_operator','fleet')
+    ORDER BY m.updated_at DESC LIMIT 2
+  `).bind(specialist.id).all();
+  const rows=delegated.results||[];
+  return rows.length===1 ? rows[0] : null;
+}
+function validDateOnly(value) {
+  const raw=String(value||"");
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(raw)) return null;
+  const [year,month,day]=raw.split("-").map(Number);
+  const date=new Date(Date.UTC(year,month-1,day));
+  if(date.getUTCFullYear()!==year || date.getUTCMonth()!==month-1 || date.getUTCDate()!==day) return null;
+  return date;
 }
 export async function authorizedCarrier(db, specialist) {
   const company = await getOwnedCarrier(db, specialist);
-  return company && Number(company.load_board_access) === 1 && company.entitlement_status === "active" ? company : null;
+  if(!company || Number(company.load_board_access)!==1 || company.entitlement_status!=="active") return null;
+  if(company.authority_status!=="verified" || company.insurance_status!=="verified" || company.source_rights_status!=="verified") return null;
+  if(!/^[a-f0-9]{64}$/.test(String(company.agreement_sha256||"")) || !String(company.agreement_version||"") || /draft|review/i.test(String(company.agreement_version||"")) || !String(company.evidence_id||"")) return null;
+  const now=new Date();
+  const today=now.toISOString().slice(0,10);
+  const effectiveAtMs=Date.parse(String(company.agreement_effective_at||""));
+  const ongoingEffective=company.agreement_state==="ONGOING_EFFECTIVE" &&
+    Number.isFinite(effectiveAtMs) && effectiveAtMs<=now.getTime();
+  const trialStart=validDateOnly(company.trial_start_date);
+  const trialEnd=validDateOnly(company.trial_end_date);
+  const expectedTrialEnd=trialStart ? new Date(trialStart.getTime()+13*86400000).toISOString().slice(0,10) : "";
+  const trialEffective=company.agreement_state==="TRIAL_ACTIVE" &&
+    trialStart && trialEnd &&
+    String(company.trial_end_date)===expectedTrialEnd &&
+    Number(company.no_auto_continuation_confirmed)===1 &&
+    String(company.trial_start_date)<=today && String(company.trial_end_date)>=today;
+  const effective=ongoingEffective||trialEffective;
+  if(!effective) return null;
+  const assignment=await verifiedAssignment(db,company.id);
+  return assignment ? company : null;
 }
 export async function verifiedAssignment(db, carrierCompanyId) {
   const row = await db.prepare(`

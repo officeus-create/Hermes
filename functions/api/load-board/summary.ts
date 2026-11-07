@@ -1,5 +1,5 @@
 import { getAuthenticatedSpecialist, jsonResponse } from "../_lib/session.mjs";
-import { specialistHasLoadBoardAccess } from "../_lib/hermes-company-profiles.mjs";
+import { authorizedCarrier } from "../_lib/carrier-dispatch-workspace.mjs";
 import { ensureLoadBoardSchema } from "../_lib/load-board-schema.mjs";
 
 type Env = { DB?: any };
@@ -8,7 +8,7 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
   if (!env.DB) return jsonResponse(503, { success: false, error: "database_not_configured" });
   await ensureLoadBoardSchema(env.DB);
   const specialist = await getAuthenticatedSpecialist(request, env.DB);
-  const carrierAccess = await specialistHasLoadBoardAccess(env.DB, specialist);
+  const carrierAccess = Boolean(await authorizedCarrier(env.DB, specialist));
   // The public board must not reveal aggregate counts of restricted carrier-only
   // freight or capacity. Broker and guest access cannot infer restricted supply.
   const audiencePredicate = carrierAccess

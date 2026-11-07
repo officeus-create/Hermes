@@ -115,7 +115,7 @@ assert.match(summaryApi, /"Cache-Control": "private, no-store"/);
 assert.doesNotMatch(summaryApi, /SELECT \*/);
 
 for (const api of [activeApi, opportunitiesApi, dispatchPlanApi]) {
-  assert.match(api, /specialistHasLoadBoardAccess/);
+  assert.match(api, /authorizedCarrier/);
   assert.match(api, /carrier_only/);
 }
 assert.match(activeApi, /company_registration_unlocks_access: false/);

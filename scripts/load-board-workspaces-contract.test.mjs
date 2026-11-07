@@ -44,6 +44,7 @@ const scripted={
   plan:read("functions/api/load-board/dispatch-plan.ts"),
   interest:read("functions/api/load-board/interest.ts"),
   dealers:read("functions/api/load-board/posts.ts"),
+  workspaceLib:read("functions/api/_lib/carrier-dispatch-workspace.mjs"),
 };
 assert.match(scripted.carrier,/authorizedCarrier/);
 assert.match(scripted.carrier,/verifiedAssignment/);
@@ -62,9 +63,37 @@ for(const key of ["active","opportunities","plan"]){
 }
 assert.match(scripted.admin,/specialistHasInternalOwnerCapability/);
 assert.match(scripted.admin,/identityVerified/);
-assert.match(scripted.access,/entitlement==='active'/);
+assert.match(scripted.workspaceLib,/PENDING_CONTRACT/);
+assert.match(scripted.workspaceLib,/TRIAL_ACTIVE/);
+assert.match(scripted.workspaceLib,/ONGOING_EFFECTIVE/);
+assert.match(scripted.workspaceLib,/authority_status!==\"verified\"/);
+assert.match(scripted.workspaceLib,/insurance_status!==\"verified\"/);
+assert.match(scripted.workspaceLib,/source_rights_status!==\"verified\"/);
+assert.match(scripted.workspaceLib,/verifiedAssignment\(db,company\.id\)/,
+  "Restricted carrier access must require an active assigned dispatcher.");
+assert.match(scripted.admin,/effective_agreement_state_required/);
+assert.match(scripted.admin,/signed_agreement_authority_insurance_source_rights_evidence_required/);
+assert.match(scripted.admin,/no_automatic_continuation_confirmation_required/);
+assert.match(scripted.admin,/trial_not_current_or_not_14_days/);
+assert.match(scripted.admin,/trialStartDate>now\.slice/,"Future trials must not grant early access.");
+assert.match(scripted.admin,/effectiveMs>Date\.now/,"Future ongoing effective timestamps must fail closed.");
+assert.match(scripted.workspaceLib,/trial_start_date\)\<=today/,"Runtime trial access must not begin before the trial start date.");
+assert.match(scripted.workspaceLib,/effectiveAtMs\<=now\.getTime/,"Runtime ongoing access must not begin before the effective timestamp.");
+assert.match(scripted.workspaceLib,/no_auto_continuation_confirmed/,"Trial no-auto-continuation confirmation must be durable.");
+assert.match(scripted.workspaceLib,/validDateOnly/,"Runtime must reject impossible calendar dates.");
+assert.match(scripted.workspaceLib,/expectedTrialEnd/,"Runtime must re-prove the exact 14-day trial window.");
+assert.match(scripted.workspaceLib,/draft\|review/i,"Runtime must reject draft/review agreement versions.");
+assert.match(scripted.admin,/noAutomaticContinuationConfirmed:Boolean/,"Owner readback must expose durable trial continuation evidence.");
+assert.match(scripted.admin,/no_auto_continuation_confirmed=excluded\.no_auto_continuation_confirmed/,"Grant must persist trial continuation evidence.");
+assert.match(scripted.admin,/Number\(entitlement\?\.no_auto_continuation_confirmed\)===1/,"Assignment must revalidate no-auto-continuation evidence.");
+assert.match(scripted.admin,/expectedTrialEnd/,"Assignment must revalidate the exact 14-day trial window.");
+assert.match(scripted.admin,/CARRIER_REVOKED/);
+assert.match(scripted.admin,/effective_carrier_agreement_and_verification_required/);
+assert.doesNotMatch(scripted.admin,/agreementState.*=\s*["']ONGOING_EFFECTIVE["']/,
+  "No automatic post-trial conversion may be encoded.");
+assert.match(scripted.access,/authorizedCarrier/);
 for(const key of ["active","opportunities","plan"]){
- assert.match(scripted[key],/specialistHasLoadBoardAccess/);
+ assert.match(scripted[key],/authorizedCarrier/);
  assert.match(scripted[key],/redistribution_permission/);
  assert.match(scripted[key],/carrier_only/);
 }

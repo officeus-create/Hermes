@@ -187,7 +187,7 @@ assert.ok(
 );
 
 assert.match(active, /getAuthenticatedSpecialist/);
-assert.match(active, /specialistHasLoadBoardAccess/);
+assert.match(active, /authorizedCarrier/);
 assert.match(active, /visibility IN \('public', 'carrier_only'\)/);
 assert.match(active, /visibility = 'public'/);
 assert.match(active, /company_registration_unlocks_access: false/);
@@ -206,7 +206,7 @@ assert.match(active, /X-Robots-Tag/);
 assert.doesNotMatch(active, forbiddenContactFields);
 assert.doesNotMatch(active, /hermes_load_quarantine/);
 
-assert.match(opportunities, /specialistHasLoadBoardAccess/);
+assert.match(opportunities, /authorizedCarrier/);
 assert.match(opportunities, /deduplicated: true/);
 assert.match(opportunities, /score_version: "hermes_opportunity_v1"/);
 assert.match(opportunities, /company_registration_unlocks_access: false/);
@@ -221,7 +221,7 @@ assert.match(opportunities, /X-Robots-Tag/);
 assert.doesNotMatch(opportunities, forbiddenContactFields);
 assert.match(opportunities, /"email"/);
 
-assert.match(dispatchPlan, /specialistHasLoadBoardAccess/);
+assert.match(dispatchPlan, /authorizedCarrier/);
 assert.match(dispatchPlan, /planner_version: "hermes_chain_v1"/);
 assert.match(dispatchPlan, /planning_only: true/);
 assert.match(dispatchPlan, /booking_performed: false/);
