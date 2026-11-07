@@ -340,7 +340,7 @@ const isCapacityListEmail = (subject, body) => {
 };
 
 const dayHeading = (line) => {
-  const match = clean(line, 80).match(/^(monday|tuesday|wednesday|thursday|friday|saturday|sunday)(?:'s)?\s*:?$/i);
+  const match = clean(line, 80).match(/^(monday|tuesday|wednesday|thursday|friday|saturday|sunday)(?:'s|s)?\s*:?$/i);
   return match ? `${match[1][0].toUpperCase()}${match[1].slice(1).toLowerCase()}` : "";
 };
 
@@ -395,7 +395,7 @@ const parseCapacityListEmail = async ({ subject, body, receivedAt, observedAt, s
     const headingEquipment = /\bempty\b.*\blist\b/i.test(line) ? capacityListEquipment(line) : "";
     if (headingEquipment) {
       defaultEquipment = headingEquipment;
-      const headingDay = clean(line, 80).match(/^(monday|tuesday|wednesday|thursday|friday|saturday|sunday)(?:'s)?\b/i)?.[1] || "";
+      const headingDay = clean(line, 80).match(/^(monday|tuesday|wednesday|thursday|friday|saturday|sunday)(?:'s|s)?\b/i)?.[1] || "";
       if (headingDay) currentDay = `${headingDay[0].toUpperCase()}${headingDay.slice(1).toLowerCase()}`;
       listStarted = true;
       continue;
