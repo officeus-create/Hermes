@@ -1,9 +1,9 @@
 {
-  "started_at": "2026-11-07T04:33:21.586Z",
+  "started_at": "2026-11-07T12:00:13.931Z",
   "sources": {
-    "engine": "/tmp/hae-2299",
-    "command_center_candidate": "/tmp/hae-cc-d1",
-    "command_center_previous": "/tmp/hae-main"
+    "engine": "/tmp/hae-main2",
+    "command_center_candidate": "/tmp/hae-cc-d1b",
+    "command_center_previous": "/tmp/hae-main2"
   },
   "checks": [
     {
@@ -19,7 +19,7 @@
     {
       "name": "engine_intake_created_plan_job",
       "passed": true,
-      "detail": "job:763513f9-aeca-49ac-ada2-10e22e532296"
+      "detail": "job:ff5fdd6d-aa75-4363-b75a-a50104b9d7e8"
     },
     {
       "name": "plan_job_project_key",
@@ -29,7 +29,7 @@
     {
       "name": "plan_job_idempotency_shape",
       "passed": true,
-      "detail": "hae:owner-work-plan:hcwi_proof_20261107_001:2026-11-07T04_33_21.661Z"
+      "detail": "hae:owner-work-plan:hcwi_proof_20261107_001:2026-11-07T12_00_14.006Z"
     },
     {
       "name": "plan_job_succeeded",
@@ -49,7 +49,7 @@
     {
       "name": "work_item_has_execution_job",
       "passed": true,
-      "detail": "job:59fcc21f-422b-44e0-a85c-0dda7647ea00"
+      "detail": "job:76d3779f-4bff-44a9-81b4-f09cdca2e5e8"
     },
     {
       "name": "work_item_dispatch_state_execution_queued",
@@ -69,7 +69,7 @@
     {
       "name": "execution_job_idempotency_shape",
       "passed": true,
-      "detail": "hae:owner-work-exec:hcwi_proof_20261107_001:job:763513f9-aeca-49ac-ada2-10e22e532296:search.snapshot.evaluate"
+      "detail": "hae:owner-work-exec:hcwi_proof_20261107_001:job:ff5fdd6d-aa75-4363-b75a-a50104b9d7e8:search.snapshot.evaluate"
     },
     {
       "name": "execution_payload_binds_work_item",
@@ -79,7 +79,7 @@
     {
       "name": "execution_payload_binds_plan_job",
       "passed": true,
-      "detail": "job:763513f9-aeca-49ac-ada2-10e22e532296"
+      "detail": "job:ff5fdd6d-aa75-4363-b75a-a50104b9d7e8"
     },
     {
       "name": "execution_job_succeeded",
@@ -191,7 +191,7 @@
     "candidate_plugin_execution": {
       "state": "PLUGIN_EXECUTION_SUCCEEDED_RECEIPT_VERIFIED",
       "reason": null,
-      "job_id": "job:59fcc21f-422b-44e0-a85c-0dda7647ea00",
+      "job_id": "job:76d3779f-4bff-44a9-81b4-f09cdca2e5e8",
       "job_state": "SUCCEEDED",
       "receipt_verified": true,
       "source_verification_state": "MATCHED_SOURCE_ONLY",
@@ -207,7 +207,7 @@
     "previous_plugin_execution": {
       "state": "PLUGIN_ROUTE_VERSION_DRIFT",
       "reason": "command_center_idempotency_identity_invalid",
-      "job_id": "job:59fcc21f-422b-44e0-a85c-0dda7647ea00",
+      "job_id": "job:76d3779f-4bff-44a9-81b4-f09cdca2e5e8",
       "receipt_verified": false
     },
     "previous_verifier_verdict": {
@@ -218,14 +218,14 @@
       "helper_execution_verified": false
     }
   },
-  "finished_at": "2026-11-07T04:33:21.965Z",
+  "finished_at": "2026-11-07T12:00:14.774Z",
   "summary": {
     "checks": 36,
     "passed": 36,
     "failed": 0,
     "capability": "search.snapshot.evaluate",
-    "plan_job_id": "job:763513f9-aeca-49ac-ada2-10e22e532296",
-    "execution_job_id": "job:59fcc21f-422b-44e0-a85c-0dda7647ea00",
+    "plan_job_id": "job:ff5fdd6d-aa75-4363-b75a-a50104b9d7e8",
+    "execution_job_id": "job:76d3779f-4bff-44a9-81b4-f09cdca2e5e8",
     "work_item_id": "hcwi_proof_20261107_001"
   }
 }
