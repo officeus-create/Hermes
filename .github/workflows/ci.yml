@@ -12,6 +12,7 @@ concurrency:
 
 permissions:
   contents: read
+  pull-requests: read
 
 jobs:
   contracts:
@@ -27,6 +28,27 @@ jobs:
         with:
           node-version-file: .nvmrc
           cache: npm
+
+      - name: Read exact-head PR release evidence
+        if: github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          set -euo pipefail
+          gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}" > "${RUNNER_TEMP}/pr-readiness.json"
+          base_sha="$(jq -r '.base.sha' "${RUNNER_TEMP}/pr-readiness.json")"
+          head_sha="$(jq -r '.head.sha' "${RUNNER_TEMP}/pr-readiness.json")"
+          gh api "repos/${GITHUB_REPOSITORY}/compare/${base_sha}...${head_sha}" > "${RUNNER_TEMP}/compare-readiness.json"
+          gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}/reviews?per_page=100" > "${RUNNER_TEMP}/reviews-readiness.json"
+
+      - name: Enforce independent exact-head approval in required contracts gate
+        if: github.event_name == 'pull_request'
+        env:
+          HAE_PR_JSON_PATH: ${{ runner.temp }}/pr-readiness.json
+          HAE_COMPARE_JSON_PATH: ${{ runner.temp }}/compare-readiness.json
+          HAE_REVIEWS_JSON_PATH: ${{ runner.temp }}/reviews-readiness.json
+        run: node scripts/hae-pr-readiness-check.mjs
 
       - name: Install dependencies
         run: npm ci
