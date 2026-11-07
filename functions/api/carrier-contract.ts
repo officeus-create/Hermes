@@ -136,6 +136,9 @@ const normalizeInput = (input: ContractInput): NormalizedContract | null => {
   if(!isRequestId(requestId)||!["essential","pro","custom"].includes(plan)) return null;
   const percentage=normalizePercentage(input.service_percentage);
   if(!percentage) return null;
+  // Standard packages are immutable commercial selections. Never let a direct API request
+  // relabel an arbitrary 1–15% as 6% Dispatch Support or 8% Full Partnership.
+  if ((plan === "essential" && percentage.key !== "6.00") || (plan === "pro" && percentage.key !== "8.00")) return null;
   const legalCompanyName=clean(input.legal_company_name,140);
   const signerName=clean(input.signer_name,120);
   const signerTitle=clean(input.signer_title,100);
