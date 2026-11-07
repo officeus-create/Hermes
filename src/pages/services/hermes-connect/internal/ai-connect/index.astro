@@ -12,7 +12,7 @@ const isRu=Astro.url.searchParams.get("lang")==="ru";const suffix=isRu?"?lang=ru
   <SiteHeader activePath="/paths/technology/"/>
   <HermesConnectExperience/>
   <HermesConnectInternalAiNav/>
-  <main class="ai-control-page"><div class="shell">
+  <main id="main-content" tabindex="-1" class="ai-control-page"><div class="shell">
     <header class="hero"><div><p class="kicker"><Sparkles size={15}/>Hermes Connect · {isRu?"внутренний AI":"internal AI"}</p><h1>{isRu?"AI Control Center":"AI Control Center"}</h1><p>{isRu?"Твой приватный кабинет управления Hermes AI: поставить задачу, увидеть runner, следить за выполнением, branch/PR/evidence и безопасными остановками на подтверждение.":"Your private Hermes AI control room: start a task, see the runner, follow execution, branch/PR/evidence and safe approval stops."}</p></div><span class="badge"><ShieldCheck size={16}/>{isRu?"HERMES_INTERNAL_OWNER":"HERMES_INTERNAL_OWNER"}</span></header>
     <HermesConnectAccountSwitcher current="ai"/>
     <section class="access" data-access role="status"><strong data-access-title>{isRu?"Проверяем внутренний доступ…":"Checking internal access…"}</strong><p data-access-copy>{isRu?"Control Center откроется только после серверной проверки capability владельца.":"Control Center opens only after server-side owner capability verification."}</p></section>
