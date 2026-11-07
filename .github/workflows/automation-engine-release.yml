@@ -13,10 +13,15 @@ on:
           - provision_dry_run
           - windows_node_activate
           - runtime_readonly_proof
+          - owner_work_readback
           - schema_snapshot
       target_sha:
         description: Exact current main SHA
         required: true
+        type: string
+      job_ids:
+        description: Optional comma-separated HAE job ids to include in the owner_work_readback evidence
+        required: false
         type: string
   issue_comment:
     types: [created]
@@ -41,7 +46,8 @@ jobs:
               startsWith(github.event.comment.body, 'HAE_VERIFY ') ||
               startsWith(github.event.comment.body, 'HAE_PROVISION_DRY_RUN ') ||
               startsWith(github.event.comment.body, 'HAE_WINDOWS_NODE_ACTIVATE ') ||
-              startsWith(github.event.comment.body, 'HAE_RUNTIME_READONLY_PROOF ')
+              startsWith(github.event.comment.body, 'HAE_RUNTIME_READONLY_PROOF ') ||
+              startsWith(github.event.comment.body, 'HAE_OWNER_WORK_READBACK ')
             )
           ) ||
           (
@@ -56,6 +62,7 @@ jobs:
     outputs:
       operation: ${{ steps.request.outputs.operation }}
       target_sha: ${{ steps.request.outputs.target_sha }}
+      job_ids: ${{ steps.request.outputs.job_ids }}
     env:
       GH_TOKEN: ${{ github.token }}
       CLOUDFLARE_HAE_RELEASE_TOKEN: ${{ secrets.CLOUDFLARE_HAE_RELEASE_TOKEN }}
@@ -68,19 +75,23 @@ jobs:
           EVENT_NAME: ${{ github.event_name }}
           DISPATCH_OPERATION: ${{ inputs.operation }}
           DISPATCH_SHA: ${{ inputs.target_sha }}
+          DISPATCH_JOB_IDS: ${{ inputs.job_ids }}
           COMMENT_BODY: ${{ github.event.comment.body }}
         run: |
           set -euo pipefail
+          REQUESTED_JOB_IDS=""
           if [[ "$EVENT_NAME" == "workflow_dispatch" ]]; then
             case "$DISPATCH_OPERATION" in
               verify) OPERATION="verify" ;;
               provision_dry_run) OPERATION="provision_dry_run" ;;
               windows_node_activate) OPERATION="windows_node_activate" ;;
               runtime_readonly_proof) OPERATION="runtime_readonly_proof" ;;
+              owner_work_readback) OPERATION="owner_work_readback" ;;
               schema_snapshot) OPERATION="schema_snapshot" ;;
               *) echo "unsupported_operation"; exit 1 ;;
             esac
             TARGET_SHA="$DISPATCH_SHA"
+            REQUESTED_JOB_IDS="$(printf '%s' "${DISPATCH_JOB_IDS:-}" | tr ',' '\n' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | grep -v '^$' || true)"
           else
             COMMAND="$(awk '{print $1}' <<<"$COMMENT_BODY")"
             TARGET_SHA="$(awk '{print $2}' <<<"$COMMENT_BODY")"
@@ -89,16 +100,25 @@ jobs:
               HAE_PROVISION_DRY_RUN) OPERATION="provision_dry_run" ;;
               HAE_WINDOWS_NODE_ACTIVATE) OPERATION="windows_node_activate" ;;
               HAE_RUNTIME_READONLY_PROOF) OPERATION="runtime_readonly_proof" ;;
+              HAE_OWNER_WORK_READBACK) OPERATION="owner_work_readback" ;;
               HAE_SCHEMA_SNAPSHOT) OPERATION="schema_snapshot" ;;
               *) echo "unsupported_comment_command"; exit 1 ;;
             esac
+            REQUESTED_JOB_IDS="$(printf '%s' "${DISPATCH_JOB_IDS:-}" | tr ',' '\n' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | grep -v '^$' || true)"
           fi
           if [[ ! "$TARGET_SHA" =~ ^[0-9a-f]{40}$ ]]; then
             echo "invalid_target_sha"
             exit 1
           fi
+          while IFS= read -r requested_id; do
+            if [[ -n "$requested_id" && ! "$requested_id" =~ ^[A-Za-z0-9:._-]{1,160}$ ]]; then
+              echo "invalid_requested_job_id"
+              exit 1
+            fi
+          done <<< "$REQUESTED_JOB_IDS"
           echo "operation=$OPERATION" >> "$GITHUB_OUTPUT"
           echo "target_sha=$TARGET_SHA" >> "$GITHUB_OUTPUT"
+          echo "job_ids=$(printf '%s' "$REQUESTED_JOB_IDS" | tr '\n' ',')" >> "$GITHUB_OUTPUT"
 
       - name: Verify exact current main
         shell: bash
@@ -787,6 +807,180 @@ jobs:
           if-no-files-found: error
           retention-days: 7
 
+      - name: Run owner-work read-only readback
+        if: steps.request.outputs.operation == 'owner_work_readback'
+        id: owner_work_readback
+        shell: bash
+        env:
+          DB_ID: ${{ steps.d1.outputs.database_id }}
+          DB_BINDING_FINGERPRINT: ${{ steps.d1.outputs.database_binding_fingerprint }}
+          TARGET_SHA: ${{ steps.request.outputs.target_sha }}
+          REQUESTED_JOB_IDS: ${{ steps.request.outputs.job_ids }}
+        run: |
+          set -euo pipefail
+
+          CURRENT_MAIN="$(gh api "repos/${GITHUB_REPOSITORY}/branches/main" --jq '.commit.sha')"
+          if [[ "$CURRENT_MAIN" != "$TARGET_SHA" ]]; then
+            echo "stale_main_before_owner_work_readback target=$TARGET_SHA current=$CURRENT_MAIN"
+            exit 1
+          fi
+
+          d1_query() {
+            local sql="$1"
+            local params_json="$2"
+            local output="$3"
+            local body
+            local http
+            if [[ "${sql^^}" != SELECT* ]]; then
+              echo "hae_owner_work_readback_non_select_rejected"
+              exit 1
+            fi
+            body="$(jq -nc --arg sql "$sql" --argjson params "$params_json" '{sql:$sql,params:$params}')"
+            http="$(curl -sS -o "$output" -w '%{http_code}' \
+              -X POST \
+              "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/d1/database/${DB_ID}/query" \
+              -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+              -H 'Content-Type: application/json' \
+              --data "$body")"
+            if [[ "$http" != "200" ]] || [[ "$(jq -r '.success // false' "$output")" != "true" ]]; then
+              echo "hae_owner_work_readback_d1_query_failed http=$http"
+              cat "$output"
+              exit 1
+            fi
+            if [[ "$(jq -r '.result[0].success // true' "$output")" != "true" ]]; then
+              echo "hae_owner_work_readback_d1_statement_failed"
+              cat "$output"
+              exit 1
+            fi
+          }
+
+          proof_dir="${RUNNER_TEMP}/hae-owner-work-readback"
+          mkdir -p "$proof_dir"
+          READBACK_AT="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+
+          items_sql="SELECT id,workstream,priority,status,acceptance_status,hae_dispatch_state,hae_job_id,hae_plan_job_id,hae_execution_job_id,updated_at,completed_at FROM hermes_owner_work_items WHERE organization_scope='hermes_internal' ORDER BY updated_at DESC LIMIT 200"
+          items_count_sql="SELECT COUNT(*) AS total FROM hermes_owner_work_items WHERE organization_scope='hermes_internal'"
+          jobs_sql="SELECT job_id,job_type,project_key,state,attempt_count,idempotency_key,last_error_class,created_at,updated_at,completed_at,CASE WHEN result_json IS NOT NULL AND result_json<>'' THEN 1 ELSE 0 END AS result_present FROM hermes_automation_jobs WHERE idempotency_key LIKE 'hae:owner-work-%' ORDER BY created_at DESC LIMIT 500"
+          jobs_count_sql="SELECT COUNT(*) AS total FROM hermes_automation_jobs WHERE idempotency_key LIKE 'hae:owner-work-%'"
+          deployed_sql="SELECT MIN(scheduled_at) AS deployed_since FROM hermes_automation_heartbeats WHERE source_sha=?"
+
+          d1_query "$items_sql" '[]' "$proof_dir/items.json"
+          d1_query "$items_count_sql" '[]' "$proof_dir/items-count.json"
+          d1_query "$jobs_sql" '[]' "$proof_dir/jobs.json"
+          d1_query "$jobs_count_sql" '[]' "$proof_dir/jobs-count.json"
+          d1_query "$deployed_sql" "$(jq -nc --arg sha "$TARGET_SHA" '[$sha]')" "$proof_dir/deployed.json"
+
+          REQUESTED_IDS_JSON="$(printf '%s' "${REQUESTED_JOB_IDS:-}" | tr ',' '\n' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | grep -v '^$' | jq -R . | jq -s . || echo '[]')"
+          REQUESTED_JOBS_JSON='[]'
+          NOT_FOUND_JSON='[]'
+          requested_count="$(printf '%s' "$REQUESTED_IDS_JSON" | jq 'length')"
+          if [[ "$requested_count" -gt 0 ]]; then
+            placeholders="$(printf '%s' "$REQUESTED_IDS_JSON" | jq -r 'map("?") | join(",")')"
+            requested_sql="SELECT job_id,job_type,project_key,state,attempt_count,idempotency_key,last_error_class,created_at,updated_at,completed_at,CASE WHEN result_json IS NOT NULL AND result_json<>'' THEN 1 ELSE 0 END AS result_present FROM hermes_automation_jobs WHERE job_id IN ($placeholders)"
+            d1_query "$requested_sql" "$REQUESTED_IDS_JSON" "$proof_dir/requested-jobs.json"
+            REQUESTED_JOBS_JSON="$(jq -c '.result[0].results // []' "$proof_dir/requested-jobs.json")"
+            NOT_FOUND_JSON="$(printf '%s' "$REQUESTED_IDS_JSON" | jq -c --argjson jobs "$REQUESTED_JOBS_JSON" '. - ($jobs | map(.job_id))')"
+          fi
+
+          ITEMS_JSON="$(jq -c '.result[0].results // []' "$proof_dir/items.json")"
+          ITEMS_TOTAL="$(jq -r '.result[0].results[0].total // 0' "$proof_dir/items-count.json")"
+          JOBS_JSON="$(jq -c '.result[0].results // []' "$proof_dir/jobs.json")"
+          JOBS_TOTAL="$(jq -r '.result[0].results[0].total // 0' "$proof_dir/jobs-count.json")"
+          DEPLOYED_SINCE="$(jq -r '.result[0].results[0].deployed_since // ""' "$proof_dir/deployed.json")"
+
+          jq -n \
+            --arg target_sha "$TARGET_SHA" \
+            --arg fingerprint "$DB_BINDING_FINGERPRINT" \
+            --arg readback_at "$READBACK_AT" \
+            --arg deployed_since "$DEPLOYED_SINCE" \
+            --arg run_id "$GITHUB_RUN_ID" \
+            --arg repository "$GITHUB_REPOSITORY" \
+            --argjson items "$ITEMS_JSON" \
+            --argjson items_total "$ITEMS_TOTAL" \
+            --argjson jobs "$JOBS_JSON" \
+            --argjson jobs_total "$JOBS_TOTAL" \
+            --argjson requested_ids "$REQUESTED_IDS_JSON" \
+            --argjson requested_jobs "$REQUESTED_JOBS_JSON" \
+            --argjson not_found "$NOT_FOUND_JSON" \
+            '
+            ($jobs + $requested_jobs) | group_by(.job_id) | map(.[0]) as $known
+            | ([ $items[] | select((.hae_execution_job_id // "") != "") ] | map(
+                . as $item
+                | ($known | map(select(.job_id == $item.hae_execution_job_id))) as $match
+                | select(($match | length) == 1)
+                | select($match[0].state == "SUCCEEDED")
+                | select(($match[0].completed_at // "") != "")
+                | select(($match[0].result_present // 0) == 1)
+                | { id: $item.id, job: $match[0] }
+              )) as $executed
+            | ($deployed_since != "") as $has_deployed_since
+            | (if $has_deployed_since
+               then ([ $executed[]
+                        | select(((.job.completed_at | sub("\\.[0-9]+Z$"; "Z") | fromdateiso8601)
+                                >= ($deployed_since | sub("\\.[0-9]+Z$"; "Z") | fromdateiso8601)))
+                      ] | length) > 0
+               else false end) as $code_attributed
+            | {
+                target_sha: $target_sha,
+                database_binding_fingerprint: $fingerprint,
+                deployment: {
+                  evidence_ref: ("github-actions://" + $repository + "/runs/" + $run_id + "/deployed-worker"),
+                  source_sha: $target_sha,
+                  deployed_since: (if $deployed_since == "" then null else $deployed_since end)
+                },
+                readback: {
+                  evidence_ref: "d1://hermes-connect-prototype/hermes_owner_work_items",
+                  mode: "read_only",
+                  organization_scope: "hermes_internal",
+                  items_total: $items_total,
+                  items_returned: ($items | length),
+                  items_truncated: (($items | length) < $items_total),
+                  items: $items
+                },
+                jobs: {
+                  evidence_ref: "d1://hermes-connect-prototype/hermes_automation_jobs",
+                  mode: "read_only",
+                  owner_work_jobs_total: $jobs_total,
+                  owner_work_jobs_returned: ($jobs | length),
+                  owner_work_jobs_truncated: (($jobs | length) < $jobs_total),
+                  state_counts: ($jobs | group_by(.state) | map({key: (.[0].state // "UNKNOWN"), value: length}) | from_entries),
+                  owner_work_jobs: $jobs
+                },
+                requested_job_ids: $requested_ids,
+                requested_jobs: $requested_jobs,
+                requested_jobs_not_found: $not_found,
+                readback_at: $readback_at,
+                autonomous_execution: {
+                  executed_items: ($executed | length),
+                  proven: (($executed | length) > 0),
+                  code_attribution: (if $code_attributed then "proven" else "unproven" end),
+                  executed_item_ids: ($executed | map(.id)),
+                  succeeded_execution_jobs: ($executed | map(.job.job_id))
+                },
+                independent_qa: {
+                  evidence_ref: ("github-actions://" + $repository + "/runs/" + $run_id + "/owner-work-readback-qa"),
+                  status: "PENDING",
+                  independent_from_executor: false,
+                  reviewer: ""
+                }
+              }
+            ' > "${RUNNER_TEMP}/hae-owner-work-readback-evidence.json"
+
+          EXECUTED_ITEMS="$(jq -r '.autonomous_execution.executed_items' "${RUNNER_TEMP}/hae-owner-work-readback-evidence.json")"
+          CODE_ATTRIBUTION="$(jq -r '.autonomous_execution.code_attribution' "${RUNNER_TEMP}/hae-owner-work-readback-evidence.json")"
+          echo "owner_work_execution_status=$(jq -r 'if .autonomous_execution.proven then "PROVEN" else "NOT_PROVEN" end' "${RUNNER_TEMP}/hae-owner-work-readback-evidence.json") executed_items=$EXECUTED_ITEMS code_attribution=$CODE_ATTRIBUTION"
+          echo "executed_items=$EXECUTED_ITEMS" >> "$GITHUB_OUTPUT"
+          echo "code_attribution=$CODE_ATTRIBUTION" >> "$GITHUB_OUTPUT"
+
+      - name: Upload sanitized owner-work readback evidence
+        if: steps.request.outputs.operation == 'owner_work_readback'
+        uses: actions/upload-artifact@v4
+        with:
+          name: hae-owner-work-readback-evidence
+          path: ${{ runner.temp }}/hae-owner-work-readback-evidence.json
+          if-no-files-found: error
+          retention-days: 7
+
       - name: Remove generated config
         if: always()
         run: rm -f workers/automation-engine/wrangler.production.generated.jsonc
@@ -862,6 +1056,80 @@ jobs:
         with:
           name: hae-runtime-evidence-accepted
           path: ${{ runner.temp }}/hae-runtime-evidence/hae-runtime-evidence.json
+          if-no-files-found: error
+          retention-days: 14
+
+  owner-work-readback-qa:
+    name: HAE owner-work readback independent QA
+    needs: release
+    if: needs.release.result == 'success' && needs.release.outputs.operation == 'owner_work_readback'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out exact target
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ needs.release.outputs.target_sha }}
+          fetch-depth: 1
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+
+      - name: Download sanitized owner-work readback evidence
+        uses: actions/download-artifact@v5
+        with:
+          name: hae-owner-work-readback-evidence
+          path: ${{ runner.temp }}/hae-owner-work-readback-evidence
+
+      - name: Independently validate owner-work readback evidence and attest QA
+        env:
+          EVIDENCE_PATH: ${{ runner.temp }}/hae-owner-work-readback-evidence/hae-owner-work-readback-evidence.json
+          TARGET_SHA: ${{ needs.release.outputs.target_sha }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          CURRENT_MAIN="$(gh api "repos/${GITHUB_REPOSITORY}/branches/main" --jq '.commit.sha')"
+          if [[ "$CURRENT_MAIN" != "$TARGET_SHA" ]]; then
+            echo "stale_main_during_owner_work_readback_qa target=$TARGET_SHA current=$CURRENT_MAIN"
+            exit 1
+          fi
+          node --input-type=module - <<'NODE'
+          import fs from "node:fs";
+          import { evaluateHaeOwnerWorkReadback } from "./scripts/hae-owner-work-readback-check.mjs";
+
+          const path = process.env.EVIDENCE_PATH;
+          const evidence = JSON.parse(fs.readFileSync(path, "utf8"));
+          const preliminary = evaluateHaeOwnerWorkReadback(evidence);
+          const allowedQaBlockers = new Set([
+            "INDEPENDENT_QA_EVIDENCE_REF_MISSING",
+            "INDEPENDENT_QA_NOT_PASS",
+            "QA_INDEPENDENCE_NOT_ATTESTED",
+            "QA_REVIEWER_MISSING",
+          ]);
+          const unexpected = preliminary.blockers.filter((item) => !allowedQaBlockers.has(item.code));
+          if (unexpected.length) {
+            console.error(JSON.stringify({ status: "BLOCKED", unexpected }, null, 2));
+            process.exit(1);
+          }
+
+          evidence.independent_qa = {
+            evidence_ref: `github-actions://${process.env.GITHUB_REPOSITORY}/runs/${process.env.GITHUB_RUN_ID}/owner-work-readback-qa`,
+            status: "PASS",
+            independent_from_executor: true,
+            reviewer: "github-actions/hae-owner-work-readback-qa",
+          };
+          fs.writeFileSync(path, JSON.stringify(evidence, null, 2) + "\n");
+          NODE
+
+          node scripts/hae-owner-work-readback-check.mjs "$EVIDENCE_PATH"
+
+      - name: Upload accepted owner-work readback evidence package
+        uses: actions/upload-artifact@v4
+        with:
+          name: hae-owner-work-readback-evidence-accepted
+          path: ${{ runner.temp }}/hae-owner-work-readback-evidence/hae-owner-work-readback-evidence.json
           if-no-files-found: error
           retention-days: 14
 
