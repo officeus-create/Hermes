@@ -161,10 +161,15 @@ const conciseDescription = (value: string, maxLength = 160) => {
   );
   if (sentenceEnd >= 100) return sentenceWindow.slice(0, sentenceEnd + 1).trim();
 
-  const wordWindow = normalized.slice(0, maxLength - 1);
+  // Search snippets may still be shortened by a provider, but our source description must
+  // remain a complete phrase. Fall back to the last safe word boundary and close it with
+  // punctuation instead of publishing a mechanically truncated ellipsis.
+  const punctuationRoom = 1;
+  const wordWindow = normalized.slice(0, Math.max(1, maxLength - punctuationRoom));
   const wordEnd = wordWindow.lastIndexOf(" ");
-  const trimmed = wordWindow.slice(0, wordEnd > 100 ? wordEnd : wordWindow.length).replace(/[,:;\-–—\s]+$/g, "").trim();
-  return `${trimmed}…`;
+  const cut = wordEnd >= 80 ? wordEnd : wordWindow.length;
+  const trimmed = wordWindow.slice(0, cut).replace(/[,:;\-–—…\.\s]+$/g, "").trim();
+  return `${trimmed}.`;
 };
 
 const metaDescription = conciseDescription(String(replaceRetiredPublicText(description)));
