@@ -261,7 +261,7 @@ test('all four Home directions keep accessible workflows behind quiet visual por
 });
 
 
-test('Home Logistics keeps a camera-locked mobile environment across weather states',async({page})=>{
+test('Home Logistics keeps a camera-locked mobile environment without synthetic weather',async({page})=>{
  await page.emulateMedia({reducedMotion:'no-preference'});
  await page.setViewportSize({width:390,height:844});
  await page.goto('/');
@@ -273,16 +273,9 @@ test('Home Logistics keeps a camera-locked mobile environment across weather sta
  await expect(scene).toHaveCSS('transform','none');
  await expect(echo).toHaveAttribute('data-logistics-echo-motion','running');
  await expect(route.locator('[data-home-motion="truck"]')).toHaveCount(0);
- // Sample the weather style synchronously: the 5.2s scene timer can otherwise
- // switch equipment during a multi-second Playwright style poll.
- const rainStyle=await echo.evaluate(node=>{
-   node.setAttribute('data-logistics-weather-state','rain');
-   const weather=node.querySelector('.home-logistics-weather')!;
-   return {animation:getComputedStyle(weather).animationName,transform:getComputedStyle(weather).transform};
- });
- expect(rainStyle.animation).toBe('home-logistics-rain');
- expect(rainStyle.transform).toBe('none');
- await echo.evaluate(node=>node.setAttribute('data-logistics-weather-state','sun'));
+ await expect(echo.locator('.home-logistics-weather')).toHaveCount(0);
+ await expect(echo).not.toHaveAttribute('data-logistics-weather-cycle-ms',/\d+/);
+ await expect(echo).not.toHaveAttribute('data-logistics-weather-state',/.+/);
  await page.evaluate(()=>document.fonts.ready);
  const before=await route.boundingBox();
  expect(before).not.toBeNull();
@@ -294,7 +287,7 @@ test('Home Logistics keeps a camera-locked mobile environment across weather sta
  expect(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth)).toBe(false);
 });
 
-test('Home Logistics carries six owned equipment and weather states without changing the route',async({browser,page},testInfo)=>{
+test('Home Logistics carries six owned equipment states without changing the route',async({browser,page},testInfo)=>{
  await page.emulateMedia({reducedMotion:'no-preference'});
  await page.setViewportSize({width:1440,height:1000});
  await page.goto('/');
@@ -321,7 +314,9 @@ test('Home Logistics carries six owned equipment and weather states without chan
  await page.locator('#paths').scrollIntoViewIfNeeded();
  await expect(echo).toHaveAttribute('data-logistics-echo-motion','running');
  await expect(echo).toHaveAttribute('data-logistics-equipment-cycle-ms','15600');
- await expect(echo).toHaveAttribute('data-logistics-weather-cycle-ms','5200');
+ await expect(echo).not.toHaveAttribute('data-logistics-weather-cycle-ms',/\d+/);
+ await expect(echo).not.toHaveAttribute('data-logistics-weather-state',/.+/);
+ await expect(echo.locator('.home-logistics-weather')).toHaveCount(0);
  const settledScene=await scene.getAttribute('data-logistics-scene-ready');
  expect(['car-hauler','dry-van','reefer','flatbed','step-deck','hotshot']).toContain(settledScene);
  expect(settledScene).toBe(await echo.getAttribute('data-logistics-echo-scene'));

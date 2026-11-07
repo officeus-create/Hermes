@@ -81,7 +81,7 @@ const routeMeta: Record<string, { accent: string; detail: string; searchDetail?:
                     width="887"
                     height="1590"
                     aria-hidden="true"
-                    alt="Illustrative aerial U.S. logistics route with changing freight equipment and weather"
+                    alt="Illustrative aerial U.S. logistics route with changing freight equipment"
                     loading="eager"
                     decoding="async"
                     fetchpriority="high"
@@ -189,15 +189,11 @@ const routeMeta: Record<string, { accent: string; detail: string; searchDetail?:
                 aria-hidden="true"
                 data-home-logistics-echo
                 data-logistics-echo-scene="car-hauler"
-                data-logistics-weather-state="sun"
                 data-logistics-echo-count="6"
                 data-logistics-equipment-cycle-ms="15600"
-                data-logistics-weather-cycle-ms="5200"
                 data-logistics-echo-scenes="car-hauler,dry-van,reefer,flatbed,step-deck,hotshot"
                 data-logistics-echo-motion="idle"
-              >
-                <span class="home-logistics-weather"></span>
-              </span>
+              ></span>
             )}
             
             <span class={`home-live-explainer home-live-explainer-${path.id}`} data-home-explainer={path.id} aria-hidden="true">
@@ -403,7 +399,6 @@ const routeMeta: Record<string, { accent: string; detail: string; searchDetail?:
   const logisticsEcho = document.querySelector<HTMLElement>("[data-home-logistics-echo]");
   if (logisticsEcho && window.IntersectionObserver) {
     const scenes = ["car-hauler", "dry-van", "reefer", "flatbed", "step-deck", "hotshot"] as const;
-    const weatherStates = ["sun", "fog", "dusk", "rain"] as const;
     const sceneImage = document.querySelector<HTMLImageElement>("[data-home-logistics-scene-image]");
     const cinematicVideo = document.querySelector<HTMLVideoElement>('[data-home-cinematic-video="logistics"]');
     const cinematicSource = cinematicVideo?.querySelector<HTMLSourceElement>("[data-cinematic-src]");
@@ -415,9 +410,7 @@ const routeMeta: Record<string, { accent: string; detail: string; searchDetail?:
     let cinematicSourceAttached = false;
     let cinematicAvailable = Boolean(cinematicVideo);
     let sceneIndex = 0;
-    let weatherIndex = 0;
     let sceneTimer: number | undefined;
-    let weatherTimer: number | undefined;
     let visible = false;
 
     const setMotionState = (state: "running" | "paused" | "reduced") => {
@@ -454,14 +447,9 @@ const routeMeta: Record<string, { accent: string; detail: string; searchDetail?:
       }
       logisticsEcho.dataset.logisticsEchoScene = scene;
     };
-    const applyWeather = () => {
-      logisticsEcho.dataset.logisticsWeatherState = weatherStates[weatherIndex];
-    };
     const stop = () => {
       if (sceneTimer) window.clearInterval(sceneTimer);
-      if (weatherTimer) window.clearInterval(weatherTimer);
       sceneTimer = undefined;
-      weatherTimer = undefined;
     };
     const syncCinematic = () => {
       if (!cinematicVideo) return;
@@ -493,8 +481,6 @@ const routeMeta: Record<string, { accent: string; detail: string; searchDetail?:
       if (reduced.matches) {
         stop();
         sceneIndex = 0;
-        weatherIndex = 0;
-        applyWeather();
         sceneRequest += 1;
         if (sceneImage && sceneImage.dataset.logisticsSceneReady !== scenes[0]) {
           sceneImage.src = `/images/logistics-living/${scenes[0]}-512.webp`;
@@ -523,12 +509,6 @@ const routeMeta: Record<string, { accent: string; detail: string; searchDetail?:
         window.clearInterval(sceneTimer);
         sceneTimer = undefined;
       }
-      if (!weatherTimer) {
-        weatherTimer = window.setInterval(() => {
-          weatherIndex = (weatherIndex + 1) % weatherStates.length;
-          applyWeather();
-        }, 5200);
-      }
     };
 
     const observer = new IntersectionObserver((entries) => {
@@ -536,16 +516,6 @@ const routeMeta: Record<string, { accent: string; detail: string; searchDetail?:
       update();
     }, { threshold: .2 });
     observer.observe(logisticsEcho);
-    const nudgeWeather = () => {
-      if (reduced.matches) return;
-      weatherIndex = (weatherIndex + 1) % weatherStates.length;
-      applyWeather();
-      if (weatherTimer) {
-        window.clearInterval(weatherTimer);
-        weatherTimer = undefined;
-      }
-      update();
-    };
     cinematicVideo?.addEventListener("canplay", () => {
       cinematicAvailable = true;
       cinematicVideo.dataset.cinematicReady = "true";
@@ -559,8 +529,6 @@ const routeMeta: Record<string, { accent: string; detail: string; searchDetail?:
       logisticsRoute?.setAttribute("data-logistics-cinematic", "fallback");
       update();
     });
-    logisticsRoute?.addEventListener("pointerenter", nudgeWeather);
-    logisticsRoute?.addEventListener("focusin", nudgeWeather);
     reduced.addEventListener("change", update);
     connection?.addEventListener?.("change", update);
     document.addEventListener("visibilitychange", update);
@@ -687,20 +655,6 @@ const routeMeta: Record<string, { accent: string; detail: string; searchDetail?:
 .home-logistics-cinematic{z-index:1;object-position:center 61%;background:#203140}
 .home-logistics-cinematic[hidden]{display:none}
 .home-logistics-living{position:absolute;z-index:-1;inset:0;display:block;overflow:hidden;pointer-events:none}
-.home-logistics-weather{position:absolute;z-index:1;inset:0;display:block;opacity:.28;transition:background .9s ease,opacity .9s ease,filter .9s ease}
-.home-logistics-living::before{content:"";position:absolute;z-index:1;inset:0;background:linear-gradient(180deg,rgba(5,22,38,.04),rgba(5,22,38,.18));opacity:.45;transition:background .9s ease,opacity .9s ease}
-[data-logistics-weather-state="sun"] .home-logistics-weather{background:radial-gradient(circle at 20% 13%,rgba(255,229,165,.75),transparent 28%),linear-gradient(132deg,transparent 54%,rgba(255,255,255,.12));opacity:.46}
-[data-logistics-weather-state="fog"] .home-logistics-weather{background:radial-gradient(ellipse at 22% 25%,rgba(245,250,250,.42),transparent 28%),radial-gradient(ellipse at 72% 19%,rgba(235,243,245,.46),transparent 35%),linear-gradient(180deg,rgba(232,242,245,.12),rgba(111,139,151,.16));animation:home-logistics-cloud 6.8s ease-in-out infinite alternate;opacity:.72;filter:blur(.25px)}
-[data-logistics-weather-state="fog"]::before{background:linear-gradient(180deg,rgba(224,237,241,.05),rgba(75,105,119,.18));opacity:.58}
-[data-logistics-weather-state="dusk"] .home-logistics-weather{background:radial-gradient(circle at 80% 19%,rgba(251,174,126,.38),transparent 26%),linear-gradient(180deg,rgba(31,43,68,.05),rgba(7,16,28,.46));opacity:.8}
-[data-logistics-weather-state="dusk"]::before{background:linear-gradient(180deg,rgba(8,25,45,.10),rgba(5,12,26,.5));opacity:.82}
-[data-logistics-weather-state="rain"] .home-logistics-weather{background:
-linear-gradient(180deg,rgba(180,207,219,.16),rgba(33,61,74,.06)),
-radial-gradient(ellipse,rgba(229,244,250,.52) 0 .7px,transparent 1px) 0 0/23px 38px,
-radial-gradient(ellipse,rgba(211,235,245,.34) 0 .65px,transparent 1px) 11px 13px/31px 48px;
-animation:home-logistics-rain 1.45s linear infinite;opacity:.28;filter:blur(.18px)}
-[data-logistics-weather-state="rain"]::before{background:linear-gradient(180deg,rgba(13,36,52,.16),rgba(3,18,29,.35));opacity:.58}
-
 .home-scene-detail{position:absolute;z-index:-2;display:block;pointer-events:none}
 .home-live-explainer{position:absolute;z-index:1;inset:9% 5% 37%;pointer-events:none;opacity:0;transform:translateY(7px);transition:opacity .28s ease .08s,transform .38s cubic-bezier(.16,1,.3,1) .08s}
 .home-live-kicker{position:absolute;left:1%;top:0;padding:5px 8px;border:1px solid var(--flow-border);border-radius:999px;background:var(--flow-kicker);box-shadow:0 7px 18px #0715272e;backdrop-filter:blur(7px);color:#fff;font:700 .5rem/1 var(--font-body);letter-spacing:.12em;text-transform:uppercase}
@@ -839,10 +793,6 @@ animation:home-logistics-rain 1.45s linear infinite;opacity:.28;filter:blur(.18p
 .home-academy-living[data-motion-state="running"] .home-academy-gate{animation-delay:-6s}
 .home-academy-living[data-motion-state="running"] .home-academy-progress>i{animation:home-academy-progress-pulse 6s ease-in-out infinite}
 @keyframes home-live-route{to{stroke-dashoffset:0}}
-@keyframes home-logistics-rain{from{background-position:0 0,0 0,11px 13px}to{background-position:0 0,-5px 38px,5px 61px}}
-@keyframes home-logistics-snow{to{background-position:0 46px,10px 58px}}
-@keyframes home-logistics-heat{from{transform:translateY(0) scaleY(1);filter:blur(0)}to{transform:translateY(-3px) scaleY(1.03);filter:blur(.35px)}}
-@keyframes home-logistics-cloud{from{transform:translateX(-2%)}to{transform:translateX(2.5%)}}
 @keyframes home-underline-draw{from{transform:rotate(-2deg) scaleX(0)}to{transform:rotate(-2deg) scaleX(1)}}
 @keyframes home-road-streak{0%,100%{opacity:0;translate:0 0}22%,65%{opacity:.8}75%{opacity:0;translate:-25px 42px}}
 
@@ -878,7 +828,7 @@ animation:home-logistics-rain 1.45s linear infinite;opacity:.28;filter:blur(.18p
 }
 @media(hover:none){.home-live-explainer,.home-live-step{opacity:1;transform:none}.home-live-path path{stroke-dashoffset:0}}
 @media(max-width:700px) and (hover:none){.home-master-route-arrow{display:grid;width:44px;height:44px}.home-master-route-copy strong{padding-right:52px}}
-@media(prefers-reduced-motion:reduce){.home-master-route:is(:hover,:focus-visible){transform:none!important;box-shadow:none!important;transition:none!important}.home-master-route:is(:hover,:focus-visible)::before{transition:none!important;animation:none!important}.home-logistics-cinematic{display:none!important}.home-master-route-logistics .home-portal-art img{animation:none!important;transform:none!important}.home-logistics-weather{animation:none!important;transition:none!important}.home-portal-art img{transition:none!important}.home-display-i,.home-display-i::after,.home-master-script::after,.home-scene-detail,.home-scene-detail *{animation:none!important;transition:none!important}.home-live-explainer,.home-live-step{opacity:1!important;transform:none!important;transition:none!important}.home-live-path path{stroke-dashoffset:0!important;animation:none!important}}
+@media(prefers-reduced-motion:reduce){.home-master-route:is(:hover,:focus-visible){transform:none!important;box-shadow:none!important;transition:none!important}.home-master-route:is(:hover,:focus-visible)::before{transition:none!important;animation:none!important}.home-logistics-cinematic{display:none!important}.home-master-route-logistics .home-portal-art img{animation:none!important;transform:none!important}.home-portal-art img{transition:none!important}.home-display-i,.home-display-i::after,.home-master-script::after,.home-scene-detail,.home-scene-detail *{animation:none!important;transition:none!important}.home-live-explainer,.home-live-step{opacity:1!important;transform:none!important;transition:none!important}.home-live-path path{stroke-dashoffset:0!important;animation:none!important}}
 /* Phase 1: the real creative process is the visual proof, without decorative mock dashboards. */
 :is(.home-marketing-layer-stack,.home-cinematic-layer-stack){position:absolute;inset:0;display:block;overflow:hidden;background:#cdc8c5}
 :is(.home-marketing-layer-stack,.home-cinematic-layer-stack)>img,
