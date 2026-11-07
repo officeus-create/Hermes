@@ -1,4 +1,4 @@
-type Env = { DB?: any };
+type Env = { DB?: any; MCP_ALLOWED_ORIGINS?: string; MCP_PUBLIC_PREVIEW_ONLY?: string };
 type Context = { request: Request; env: Env };
 
 type JsonRpcRequest = {
@@ -186,6 +186,60 @@ const publicToolDefinitions = [
         "execution_sequence",
         "continuity_rule",
         "authorization_rule",
+      ],
+      additionalProperties: false,
+    },
+    annotations: { readOnlyHint: true, destructiveHint: false, openWorldHint: false },
+  },
+  {
+    name: "preview_crm_funnel",
+    title: "Preview a Hermes CRM funnel before connecting accounts",
+    description:
+      "Build a tangible read-only five-stage funnel preview from a generic business type, goal, and intake channel. No real customer data, account linking, messages, CRM writes, or background jobs. The response is an illustration of what an approved authenticated agent could later execute.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        business_type: { type: "string", minLength: 2, maxLength: 80 },
+        goal: { type: "string", minLength: 3, maxLength: 160 },
+        entry_channel: {
+          type: "string",
+          enum: ["website", "phone", "email", "instagram", "marketplace", "other"],
+        },
+      },
+      required: ["business_type", "goal"],
+      additionalProperties: false,
+    },
+    outputSchema: {
+      type: "object",
+      properties: {
+        status: { type: "string", enum: ["PREVIEW_ONLY"] },
+        business_type: { type: "string" },
+        goal: { type: "string" },
+        entry_channel: { type: "string" },
+        stages: {
+          type: "array",
+          items: {
+            type: "object",
+            properties: {
+              name: { type: "string" },
+              trigger: { type: "string" },
+              owner: { type: "string" },
+              next_action: { type: "string" },
+              automation_state: { type: "string" },
+            },
+            required: ["name", "trigger", "owner", "next_action", "automation_state"],
+            additionalProperties: false,
+          },
+        },
+        first_connection: { type: "string" },
+        first_kpi: { type: "string" },
+        trial_in_chat: { type: "string" },
+        not_performed: { type: "array", items: { type: "string" } },
+        live_activation_gate: { type: "string" },
+      },
+      required: [
+        "status", "business_type", "goal", "entry_channel", "stages",
+        "first_connection", "first_kpi", "trial_in_chat", "not_performed", "live_activation_gate",
       ],
       additionalProperties: false,
     },
@@ -532,6 +586,79 @@ function buildCrmOnboardingPlan(args: Record<string, unknown>) {
   };
 }
 
+function previewCrmFunnel(args: Record<string, unknown>) {
+  // Enforce the declared schema on the raw input BEFORE truncation. Otherwise
+  // secrets/personal data past the character cap could be silently accepted.
+  const rawBusinessType = args.business_type;
+  const rawGoal = args.goal;
+  const businessType = typeof rawBusinessType === "string" ? normalize(rawBusinessType, 80) : "";
+  const goal = typeof rawGoal === "string" ? normalize(rawGoal, 160) : "";
+  const rawChannel = typeof args.entry_channel === "string" ? args.entry_channel : "website";
+  const allowedChannels = new Set(["website", "phone", "email", "instagram", "marketplace", "other"]);
+  // The unauthenticated preview may accept generic business context only.
+  if (typeof rawBusinessType !== "string" || rawBusinessType.length > 80 ||
+      typeof rawGoal !== "string" || rawGoal.length > 160 ||
+      !allowedChannels.has(rawChannel) ||
+      businessType.length < 2 || goal.length < 3 ||
+      [rawBusinessType, rawGoal, businessType, goal].some(containsSensitivePattern)) {
+    throw new Error("invalid_preview_input");
+  }
+  const subject = businessType.toLowerCase();
+  const carrier = /car.?haul|carrier|trucking|dispatch|auto transport|logistics/.test(subject);
+  const repair = /repair|auto shop|garage|mechanic|service center/.test(subject);
+  const stages = carrier
+    ? [
+        ["Carrier inquiry", "New opt-in carrier inquiry", "Sales / carrier intake", "Record source, equipment and preferred lanes"],
+        ["Qualification", "Carrier responds with operating facts", "Carrier operations", "Verify authority, insurance, equipment and contact before commercial access"],
+        ["Offer", "Qualified carrier requests service", "Authorized sales owner", "Explain actual service model; do not promise available loads"],
+        ["Agreement", "Carrier requests to proceed", "Contract owner", "Present approved contract for review; no autonomous sending"],
+        ["Onboarding", "Signed approval recorded", "Dispatch coordinator", "Assign handoff only to permitted staff; keep dispatch inbox undisturbed"],
+      ]
+    : repair
+      ? [
+          ["New request", "Customer opts in through an intake channel", "Reception", "Capture requested service without duplicating existing CRM"],
+          ["Qualification", "Service type and timing identified", "Service advisor", "Determine vehicle/service fit and priority"],
+          ["Estimate", "Qualified inquiry requires quote", "Service advisor", "Prepare draft estimate; price approval stays with shop"],
+          ["Booking", "Customer agrees to an offered slot", "Shop scheduler", "Confirm actual availability before creating appointment"],
+          ["Follow-up", "Completed service is confirmed", "Shop owner", "Propose an opt-in feedback request; no messages sent by preview"],
+        ]
+      : [
+          ["New inquiry", "Opt-in inquiry received", "Sales intake", "Capture source and requested result"],
+          ["Qualification", "Problem and budget range understood", "Account manager", "Confirm scope, priority and decision owner"],
+          ["Proposal", "Fit and scope validated", "Sales owner", "Draft a scoped offer for approval"],
+          ["Delivery handoff", "Explicit acceptance recorded", "Operations", "Assign a task to the approved delivery team"],
+          ["Outcome review", "Work has a measured outcome", "Account manager", "Record evidence and next improvement"],
+        ];
+  return {
+    status: "PREVIEW_ONLY",
+    business_type: businessType,
+    goal,
+    entry_channel: rawChannel,
+    stages: stages.map(([name, trigger, owner, next_action]) => ({
+      name, trigger, owner, next_action, automation_state: "NOT_CONNECTED",
+    })),
+    first_connection: carrier
+      ? "Existing, owner-approved carrier CRM or intake table (read only)"
+      : repair
+        ? "Existing, owner-approved repair-shop CRM (read only)"
+        : "Existing, owner-approved CRM or intake source (read only)",
+    first_kpi: carrier
+      ? "Verified qualified carrier inquiries per week (exclude synthetic leads)"
+      : repair
+        ? "Qualified inquiries that become confirmed appointments"
+        : "Qualified inquiries converted to a recorded next action",
+    trial_in_chat:
+      "Review these five stages in ChatGPT or Claude, choose one bottleneck, and approve only the minimum relevant connector. A real CRM workflow requires separately authenticated and authorized Hermes MCP tools.",
+    not_performed: [
+      "No customer records were accessed, created or changed",
+      "No emails, social messages, calls, invitations or contracts were sent",
+      "No integrations were installed and no background job was started",
+    ],
+    live_activation_gate:
+      "Authenticated Hermes identity -> active company/workspace membership -> explicit tool capability -> source connection consent -> reviewed write permissions -> audit and readback. No automatic production activation.",
+  };
+}
+
 function getHermesBusinessRoutes() {
   return {
     routes: HERMES_ROUTES.map((route) => ({ ...route })),
@@ -637,6 +764,7 @@ async function callTool(env: Env, name: string, args: Record<string, unknown>) {
   if (name === "get_product_overview") return getOverview();
   if (name === "recommend_start_path") return recommendStartPath(args);
   if (name === "build_crm_onboarding_plan") return buildCrmOnboardingPlan(args);
+  if (name === "preview_crm_funnel") return previewCrmFunnel(args);
   if (name === "get_hermes_business_routes") return getHermesBusinessRoutes();
   if (name === "get_product_learning_policy") return getProductLearningPolicy();
   if (name === "submit_product_feedback") return submitProductFeedback(env, args);
@@ -644,11 +772,34 @@ async function callTool(env: Env, name: string, args: Record<string, unknown>) {
 }
 
 export async function onRequest({ request, env }: Context) {
+  // MCP Streamable HTTP (2026-07-28) requires Origin checking for DNS-rebinding
+  // resistance. Default to same-origin; additional host/browser origins must
+  // be explicitly authorized in configuration. Remote server-to-server MCP
+  // clients usually omit Origin and do not need any cross-origin allowance.
+  const origin = request.headers.get("Origin");
+  // Do not derive a trusted Origin from request.url or its Host header:
+  // a malicious DNS-rebinding client can control both. The canonical public
+  // domain is fixed, and additional HTTPS origins are operator-allowlisted.
+  const allowed = new Set([
+    "https://hermeslogisticsus.com",
+    ...String(env.MCP_ALLOWED_ORIGINS || "").split(",").map((x) => x.trim()).filter((x) =>
+      /^https:\/\/[^\/\s]+$/.test(x) && x !== "https://null"
+    ),
+  ]);
+  if (origin !== null && !allowed.has(origin)) {
+    return responseJson(403, rpcError(null, -32000, "Untrusted Origin"));
+  }
   if (request.method === "GET") {
     return responseJson(405, { error: "method_not_allowed", message: "Use MCP Streamable HTTP POST requests." }, { Allow: "POST" });
   }
   if (request.method !== "POST") {
     return responseJson(405, { error: "method_not_allowed" }, { Allow: "POST" });
+  }
+  // Streamable HTTP accepts JSON-RPC as application/json only.
+  // Reject browser form/text requests before parsing or invoking any tool.
+  const mimeType = (request.headers.get("Content-Type") || "").split(";")[0].trim().toLowerCase();
+  if (mimeType !== "application/json") {
+    return responseJson(415, rpcError(null, -32600, "Unsupported Media Type"));
   }
 
   const declaredLength = Number(request.headers.get("Content-Length") || "0");
@@ -656,13 +807,74 @@ export async function onRequest({ request, env }: Context) {
 
   let message: JsonRpcRequest;
   try {
-    message = (await request.json()) as JsonRpcRequest;
+    // Content-Length is client-controlled and may be absent. Enforce the same
+    // 64 KiB ceiling on actual streamed bytes before parsing public JSON-RPC.
+    const reader = request.body?.getReader();
+    if (!reader) return responseJson(400, rpcError(null, -32700, "Parse error"));
+    const decoder = new TextDecoder("utf-8", { fatal: true });
+    let jsonText = "";
+    let actualBytes = 0;
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      actualBytes += value.byteLength;
+      if (actualBytes > 65536) {
+        await reader.cancel().catch(() => {});
+        return responseJson(413, rpcError(null, -32600, "Request body too large"));
+      }
+      jsonText += decoder.decode(value, { stream: true });
+    }
+    jsonText += decoder.decode();
+    message = JSON.parse(jsonText) as JsonRpcRequest;
   } catch {
     return responseJson(400, rpcError(null, -32700, "Parse error"));
   }
 
   if (!message || Array.isArray(message) || message.jsonrpc !== "2.0" || typeof message.method !== "string") {
     return responseJson(400, rpcError(message?.id ?? null, -32600, "Invalid Request"));
+  }
+
+  // Only modern 2026-07-28 requests require strict per-call header/body
+  // matching. Keep legacy 2025 callers working until explicit migration.
+  const headerVersion = request.headers.get("MCP-Protocol-Version");
+  const payloadVersion = message.params?._meta?.["io.modelcontextprotocol/protocolVersion"];
+  // Modern clients distinguish unsupported versions (-32022, with supported
+  // versions) from mismatched headers (-32020). Return the modern sentinel
+  // instead of silently attempting legacy or telling clients to re-probe.
+  const supported = [MODERN_PROTOCOL, LEGACY_PROTOCOL];
+  const unknownVersion = [headerVersion, payloadVersion].find((v) =>
+    v != null && !supported.includes(v));
+  if (unknownVersion != null) {
+    return responseJson(400, rpcError(message.id, -32022, "Unsupported protocol version", {
+      supported, requested: unknownVersion,
+    }));
+  }
+  // Even if a client omits the modern version in both places, presence of a
+  // modern routing header is a modern-protocol attempt, not a legacy escape.
+  // Otherwise an attacker could bypass header/body parity by dropping _meta.
+  const modernIntent = headerVersion === MODERN_PROTOCOL || payloadVersion === MODERN_PROTOCOL ||
+    request.headers.has("Mcp-Method") || request.headers.has("Mcp-Name") ||
+    message.method === "server/discover";
+  if (modernIntent) {
+    const expectedName = message.method === "tools/call" ? message.params?.name : undefined;
+    const gotName = request.headers.get("Mcp-Name");
+    if (headerVersion !== MODERN_PROTOCOL || payloadVersion !== MODERN_PROTOCOL ||
+        request.headers.get("Mcp-Method") !== message.method ||
+        (expectedName != null && (typeof expectedName !== "string" || gotName !== expectedName)) ||
+        (expectedName == null && gotName !== null)) {
+      return responseJson(400, rpcError(message.id, -32020, "HeaderMismatch"));
+    }
+    // 2026-07-28 requires per-request clientCapabilities even if empty.
+    // Never infer permissions from a previous request/session or let malformed
+    // metadata silently fall back to a 2025-era call.
+    const clientCapabilities = message.params?._meta?.["io.modelcontextprotocol/clientCapabilities"];
+    if (!clientCapabilities || typeof clientCapabilities !== "object" ||
+        Array.isArray(clientCapabilities)) {
+      return responseJson(400, rpcError(message.id, -32602, "Missing or invalid client capabilities"));
+    }
+    if (message.method === "initialize" || message.method === "notifications/initialized") {
+      return responseJson(400, rpcError(message.id, -32601, "Legacy handshake is not part of MCP 2026-07-28"));
+    }
   }
 
   if (message.id == null && message.method === "notifications/initialized") {
@@ -679,6 +891,11 @@ export async function onRequest({ request, env }: Context) {
         {
           supportedVersions: [MODERN_PROTOCOL, LEGACY_PROTOCOL],
           capabilities: { tools: { listChanged: false } },
+          // Required by the 2026-07-28 DiscoverResult schema. This
+          // public-only endpoint opts out of shared caching now, so a future
+          // authenticated toolset cannot inherit a cross-user cache policy.
+          ttlMs: 0,
+          cacheScope: "private",
           instructions,
         },
         true
@@ -698,10 +915,27 @@ export async function onRequest({ request, env }: Context) {
     );
   }
 
-  if (message.method === "ping") return responseJson(200, rpcResult(message.id, {}, modern));
+  // 2026-07-28 removed core "ping". Keep it only for the supported
+  // legacy 2025 client protocol so new clients do not see false capability.
+  if (message.method === "ping") {
+    if (modern) return responseJson(400, rpcError(message.id, -32601, "Method not found"));
+    return responseJson(200, rpcResult(message.id, {}, false));
+  }
 
   if (message.method === "tools/list") {
-    return responseJson(200, rpcResult(message.id, { tools: publicToolDefinitions }, modern));
+    // The existing public product feedback tool can WRITE consent-flagged
+    // product-learning rows to D1. For an owner-approved external host pilot,
+    // opt into a server-enforced read-only catalog without breaking existing
+    // feedback on environments where the feature flag is not configured.
+    // Client hints/annotations are not authorization.
+    const previewOnly = env.MCP_PUBLIC_PREVIEW_ONLY === "true";
+    const tools = previewOnly
+      ? publicToolDefinitions.filter((tool) => tool.name !== "submit_product_feedback")
+      : publicToolDefinitions;
+    return responseJson(200, rpcResult(message.id, {
+      tools,
+      ...(modern ? { ttlMs: 0, cacheScope: "private" } : {}),
+    }, modern));
   }
 
   if (message.method === "tools/call") {
@@ -709,6 +943,12 @@ export async function onRequest({ request, env }: Context) {
     const args = message.params?.arguments;
     if (!name || (args != null && (typeof args !== "object" || Array.isArray(args)))) {
       return responseJson(400, rpcError(message.id, -32602, "Invalid tool call parameters"));
+    }
+    // Enforce preview mode at the executable boundary, not merely tools/list:
+    // a model or direct HTTP caller can request an undisclosed tool by name.
+    // Deny BEFORE touching D1, interpreting consent or invoking the writer.
+    if (env.MCP_PUBLIC_PREVIEW_ONLY === "true" && name === "submit_product_feedback") {
+      return responseJson(403, rpcError(message.id, -32000, "Write tool unavailable in preview-only mode"));
     }
     try {
       const structuredContent = await callTool(env, name, (args || {}) as Record<string, unknown>);
