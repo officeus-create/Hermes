@@ -10,8 +10,21 @@ test.beforeEach(async ({ page, baseURL }) => {
     await route.fulfill({ response });
   });
   await page.goto("https://hermeslogisticsus.com/paths/logistics/", { waitUntil: "domcontentloaded" });
-  await expect(page.locator("[data-contact-form]")).toHaveAttribute("data-contact-mode", "live");
-  await expect(page.locator("[data-contact-form]")).toHaveAttribute("data-contact-endpoint", "/api/logistics-lead");
+  const form = page.locator("[data-contact-form]");
+  // Production hostname alone is not authorization to send. The local CI build is expected
+  // to remain preview-only unless a server-side release config explicitly enables delivery.
+  await expect(form).toHaveAttribute("data-contact-mode", "preview");
+  await expect(form).toHaveAttribute("data-contact-endpoint", "");
+
+  // These tests exercise the already-authorized live delivery client path with an explicit
+  // synthetic fixture rather than relying on hostname-driven Preview -> Live promotion.
+  await form.evaluate((element) => {
+    const liveForm = element as HTMLFormElement;
+    liveForm.dataset.contactMode = "live";
+    liveForm.dataset.contactEndpoint = "/api/logistics-lead";
+  });
+  await expect(form).toHaveAttribute("data-contact-mode", "live");
+  await expect(form).toHaveAttribute("data-contact-endpoint", "/api/logistics-lead");
 });
 
 const fillSyntheticRequest = async (page: import("@playwright/test").Page) => {

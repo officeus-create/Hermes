@@ -38,7 +38,7 @@ test("SEO preview explains the explicit handoff at 390px", async ({ page }, test
   await expect(page.locator("[data-submit-label]")).toHaveText("Preview request");
 });
 
-test("SEO live mode copy follows the production override at 390px without submitting", async ({ page }, testInfo) => {
+test("SEO production hostname cannot override server preview mode at 390px", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "mobile");
   const localOrigin = `http://127.0.0.1:${process.env.HERMES_E2E_PORT ?? "4321"}`;
   await page.route("https://hermeslogisticsus.com/**", async (route) => {
@@ -46,6 +46,36 @@ test("SEO live mode copy follows the production override at 390px without submit
     const local = `${localOrigin}${url.pathname}${url.search}`;
     const response = await route.fetch({ url: local });
     await route.fulfill({ response });
+  });
+  await page.goto("https://hermeslogisticsus.com/paths/marketing/?service=seo#contact");
+  await checkIntake(page, "preview");
+  await expect(page.locator("[data-contact-form]")).toHaveAttribute("data-contact-endpoint", "");
+  await expect(page.locator(".seo-intake-boundary")).toContainText("This preview does not send or store your answers");
+  await expect(page.locator("[data-submit-label]")).toHaveText("Preview request");
+});
+
+test("SEO explicit server-authorized live copy renders at 390px without submitting", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "mobile");
+  const localOrigin = `http://127.0.0.1:${process.env.HERMES_E2E_PORT ?? "4321"}`;
+  await page.route("https://hermeslogisticsus.com/**", async (route) => {
+    const url = new URL(route.request().url());
+    const local = `${localOrigin}${url.pathname}${url.search}`;
+    const response = await route.fetch({ url: local });
+    const contentType = response.headers()["content-type"] || "application/octet-stream";
+    if (url.pathname !== "/paths/marketing/" || !contentType.includes("text/html")) {
+      await route.fulfill({ response });
+      return;
+    }
+    const html = await response.text();
+    expect(html).toContain('data-contact-mode="preview"');
+    expect(html).toContain('data-contact-endpoint=""');
+    await route.fulfill({
+      status: response.status(),
+      headers: response.headers(),
+      body: html
+        .replace('data-contact-mode="preview"', 'data-contact-mode="live"')
+        .replace('data-contact-endpoint=""', 'data-contact-endpoint="/api/logistics-lead"'),
+    });
   });
   await page.goto("https://hermeslogisticsus.com/paths/marketing/?service=seo#contact");
   await checkIntake(page, "live");

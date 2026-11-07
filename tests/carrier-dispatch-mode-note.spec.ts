@@ -94,25 +94,25 @@ test("preview note matches email-only review without automatic delivery", () => 
   expect(view.requests).toHaveLength(0);
 });
 
-test("canonical host override and configured live mode show the explicit-send note", async () => {
-  for (const [origin, mode] of [["https://hermeslogisticsus.com", "preview"], ["https://preview.example.invalid", "live"]]) {
-    const view = fixture(origin, mode);
-    expect(view.form.dataset.leadMode).toBe("live");
-    expect(view.form.dataset.leadEndpoint).toBe("/api/logistics-lead");
-    expect(view.note.textContent).toBe(liveNote);
-    await view.send();
-    expect(view.requests).toHaveLength(0);
-    view.review();
-    expect(view.nodes["[data-send-vehicle-lead]"].hidden).toBe(false);
-    expect(view.nodes["[data-vehicle-email]"].hidden).toBe(false);
-    expect(view.requests).toHaveLength(0);
-    await view.send(false);
-    expect(view.requests).toHaveLength(0);
-    await view.send();
-    expect(view.requests).toHaveLength(1);
-    expect(view.requests[0].options.method).toBe("POST");
-    expect(view.requests[0].url).toBe(`${origin}/api/logistics-lead`);
-  }
+test("canonical hostname cannot override preview; explicit configured live mode can send", async () => {
+  const preview = fixture("https://hermeslogisticsus.com", "preview");
+  expect(preview.form.dataset.leadMode).toBe("preview");
+  expect(preview.note.textContent).toBe(previewNote);
+  preview.review();
+  expect(preview.nodes["[data-send-vehicle-lead]"].hidden).toBe(true);
+  await preview.send();
+  expect(preview.requests).toHaveLength(0);
+
+  const live = fixture("https://preview.example.invalid", "live");
+  expect(live.form.dataset.leadMode).toBe("live");
+  expect(live.form.dataset.leadEndpoint).toBe("/api/logistics-lead");
+  expect(live.note.textContent).toBe(liveNote);
+  live.review();
+  expect(live.nodes["[data-send-vehicle-lead]"].hidden).toBe(false);
+  await live.send();
+  expect(live.requests).toHaveLength(1);
+  expect(live.requests[0].options.method).toBe("POST");
+  expect(live.requests[0].url).toBe("https://preview.example.invalid/api/logistics-lead");
 });
 
 test("qualification gate still blocks incomplete and rejected requests", async () => {
@@ -157,7 +157,7 @@ test("a delivery retry reuses the same idempotency key until the form changes", 
 test("an absent optional mode note leaves review functional", () => {
   const view = fixture("https://hermeslogisticsus.com", "preview", {}, true);
   view.review();
-  expect(view.nodes["[data-send-vehicle-lead]"].hidden).toBe(false);
+  expect(view.nodes["[data-send-vehicle-lead]"].hidden).toBe(true);
   expect(view.requests).toHaveLength(0);
 });
 

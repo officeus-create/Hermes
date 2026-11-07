@@ -237,13 +237,22 @@ for (const retiredMarker of [
 ]) {
   assert.ok(productionWorkflow.includes(retiredMarker), `Retired car-hauling marker must remain explicitly forbidden in production verification: ${retiredMarker}`);
 }
-for (const marker of [
-  'new Set(["hermeslogisticsus.com", "www.hermeslogisticsus.com"])',
-  'form.dataset.contactMode = "live"',
-  'form.dataset.contactEndpoint = "/api/logistics-lead"',
-  'label.textContent = "Send request"',
+assert.ok(
+  productionContactMode.includes('new Set(["hermeslogisticsus.com", "www.hermeslogisticsus.com"])'),
+  "Production attribution bridge must remain scoped to approved production hosts.",
+);
+assert.ok(productionContactMode.includes("installAttributionBridge(form)"));
+assert.doesNotMatch(productionContactMode, /form\.dataset\.contactMode\s*=\s*"live"/,
+  "Production browser may not promote SSR preview into live.");
+assert.doesNotMatch(productionContactMode, /form\.dataset\.contactEndpoint\s*=\s*"\/api\/logistics-lead"/,
+  "Production browser may not invent an outbound receiver.");
+for (const [file, pattern] of [
+  ["src/components/BusinessLeadForm.astro", /form\.dataset\.contactMode\s*=\s*"live"/],
+  ["src/pages/load-board.astro", /leadForm\.dataset\.leadMode\s*=\s*"live"/],
+  ["src/components/VehicleTransportRequestEnhancer.astro", /form\.dataset\.leadMode\s*=\s*"live"/],
+  ["src/components/CarrierDispatchIntakeEnhancer.astro", /form\.dataset\.leadMode\s*=\s*"live"/],
 ]) {
-  assert.ok(productionContactMode.includes(marker), `Production contact runtime activation marker is missing: ${marker}`);
+  assert.doesNotMatch(read(file), pattern, `Hostname must not override SSR form state in ${file}`);
 }
 for (const marker of [
   "npx playwright install --with-deps chromium",
@@ -292,9 +301,9 @@ for (const marker of [
   'rawForm.mode !== "preview"',
   '(rawForm.endpoint ?? "").trim() !== ""',
   'rawForm.label !== "Preview request"',
-  'form?.getAttribute("data-contact-mode") === "live"',
-  'form?.getAttribute("data-contact-endpoint") === "/api/logistics-lead"',
-  'label?.textContent?.trim() === "Send request"',
+  'runtime.mode !== rawForm.mode',
+  'runtime.endpoint !== rawForm.endpoint',
+  'runtime.label !== rawForm.label',
 ]) {
   assert.ok(productionContactRuntimeCheck.includes(marker), `Production browser runtime assertion is missing: ${marker}`);
 }
@@ -304,7 +313,7 @@ assert.doesNotMatch(
   "Production contact runtime verification must remain read-only and must not submit the form.",
 );
 assert.ok(
-  productionWorkflow.includes("preview-safe Logistics contact shell and its live browser runtime activation"),
+  productionWorkflow.includes("preview-safe server shell and matching hydrated preview gate"),
   "Production release reporting must describe the raw-shell plus browser runtime contract accurately.",
 );
 assert.doesNotMatch(

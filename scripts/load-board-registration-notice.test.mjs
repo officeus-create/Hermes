@@ -112,14 +112,13 @@ test("an invalid callback phone is rejected before anything is saved or sent", a
   assert.equal(calls.length, 0);
 });
 
-test("through the real lead-email Worker: Sales, the dispatch department copy and the owner alert", async () => {
+test("through the real lead-email Worker: registration reaches Sales without automatic dispatcher copy", async () => {
   const { db } = makeD1();
   const sent = [];
   const workerEnv = {
     LEAD_SERVICE_TOKEN: "t0ken",
     SALES_DESTINATION: "officeus@hermeslogisticsus.com",
     SALES_SENDER: "website@hermeslogisticsus.com",
-    CARRIER_DISPATCH_RECIPIENTS: "dispatchtruck107@gmail.com",
     OWNER_LEAD_ALERT_RECIPIENT: "owner-alerts@example.com",
     EMAIL: { async send(message) { sent.push(message); return { messageId: `m-${sent.length}` }; } },
   };
@@ -128,9 +127,5 @@ test("through the real lead-email Worker: Sales, the dispatch department copy an
   assert.equal(response.status, 200);
   const recipients = sent.map((message) => message.to).sort();
   assert.ok(recipients.includes("officeus@hermeslogisticsus.com"), "Logistics Sales receives the registration");
-  assert.ok(recipients.includes("dispatchtruck107@gmail.com"), "the dispatch department receives a copy");
-  const dispatchCopy = sent.find((message) => message.to === "dispatchtruck107@gmail.com");
-  assert.equal(dispatchCopy.from, "website@hermeslogisticsus.com");
-  assert.match(dispatchCopy.text, /^Hermes Logistics — Dispatch Department\n/);
-  assert.match(dispatchCopy.text, /Company: Test Haulers LLC/);
+  assert.ok(!recipients.some((recipient) => /^dispatchtruck\d+@gmail\.com$/i.test(recipient)), "registration must not auto-copy dispatcher inboxes");
 });

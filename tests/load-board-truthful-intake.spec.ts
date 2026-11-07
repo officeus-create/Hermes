@@ -38,7 +38,24 @@ test("production transport form rejects generic 2xx and preserves retries with s
       return;
     }
     const response = await fetch(`http://127.0.0.1:${process.env.HERMES_E2E_PORT ?? "4321"}${url.pathname}${url.search}`);
-    await route.fulfill({ status: response.status, headers: { "content-type": response.headers.get("content-type") || "application/octet-stream" }, body: Buffer.from(await response.arrayBuffer()) });
+    const contentType = response.headers.get("content-type") || "application/octet-stream";
+    let body = Buffer.from(await response.arrayBuffer());
+    if (url.pathname === "/logistics/request-vehicle-transport/" && contentType.includes("text/html")) {
+      const html = body.toString("utf8");
+      expect(html).toContain('data-lead-mode="preview"');
+      // Preview is fail-closed whether the receiver attribute is omitted or explicitly empty.
+      expect(html).not.toMatch(/data-lead-endpoint="[^"]+"/);
+      const liveHtml = html.includes('data-lead-endpoint=""')
+        ? html
+            .replace('data-lead-mode="preview"', 'data-lead-mode="live"')
+            .replace('data-lead-endpoint=""', 'data-lead-endpoint="/api/logistics-lead"')
+        : html.replace(
+            'data-lead-mode="preview"',
+            'data-lead-mode="live" data-lead-endpoint="/api/logistics-lead"',
+          );
+      body = Buffer.from(liveHtml);
+    }
+    await route.fulfill({ status: response.status, headers: { "content-type": contentType }, body });
   });
   await page.goto(`${origin}/logistics/request-vehicle-transport/?role=customer`);
   await expect(page.locator("[data-transport-mode-note]")).toContainText("Live request intake");
