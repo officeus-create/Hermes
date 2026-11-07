@@ -26,6 +26,16 @@ assert.match(layout, /CLARITY_BLOCKED_PATH_PREFIXES/); assert.match(layout, /\/s
 assert.match(consent, /CLARITY_PRODUCTION_HOSTS/); assert.match(consent, /clarityDeliveryStatus/); assert.match(consent, /_hermes_clarity_smoke/); assert.match(consent, /clarityProjectId\s*=\s*"yiumce2dne"/); assert.match(consent, /dataset\.hermesClarity/); assert.match(consent, /consentv2/); assert.match(consent, /ad_Storage:\s*"denied"/); assert.match(consent, /analytics_Storage:\s*"granted"/); assert.match(consent, /analytics_Storage:\s*"denied"/);
 for (const requiredAnalyticsCspHost of ["https://www.google.com", "https://*.clarity.ms", "https://c.bing.com"]) assert.ok(headers.includes(requiredAnalyticsCspHost));
 assert.match(connectConsent, /PRODUCTION_ANALYTICS_HOSTS/); assert.match(connectConsent, /analyticsDeliveryAllowed/); assert.match(connectConsent, /disabled-non-production/); assert.match(connectConsent, /if \(!canDeliver\)/);
+const mainWithdrawal=consent.slice(consent.indexOf('decline?.addEventListener("click"'),consent.indexOf('settings?.addEventListener("click"'));
+assert.ok(mainWithdrawal.includes("setGoogleAnalyticsDisabled(true)"),"withdrawal must set the GA kill switch");
+assert.ok(mainWithdrawal.indexOf("setGoogleAnalyticsDisabled(true)")<mainWithdrawal.indexOf('saveChoice("denied")'),"GA kill switch must precede persisted denial");
+assert.doesNotMatch(mainWithdrawal,/gtag\s*\(|denyGoogleConsent/,"withdrawal must never call gtag after the hard-stop boundary");
+const connectDisable=connectConsent.slice(connectConsent.indexOf("function disableAnalytics()"),connectConsent.indexOf("function ensureStyles()"));
+assert.match(connectDisable,/ga-disable-\$\{MEASUREMENT_ID\}.*= true/s,"Connect withdrawal must set the GA kill switch");
+assert.doesNotMatch(connectDisable,/gtag\s*\(/,"Connect withdrawal teardown must never call gtag");
+const connectDecline=connectConsent.slice(connectConsent.indexOf('decline.addEventListener("click"'),connectConsent.indexOf('manage.addEventListener("click"'));
+assert.ok(connectDecline.indexOf("disableAnalytics()")<connectDecline.indexOf('writeConsent("denied")'),"Connect must hard-stop GA before persisting withdrawal");
+assert.match(connectDecline,/window\.location\.reload\(\)/,"already-loaded Connect GA must reload after withdrawal");
 assert.match(connectConsent, /CONSENT_KEY\s*=\s*"hermes-analytics-consent"/); assert.match(connectConsent, /window\.dataLayer\s*=\s*createDiscardingLayer\(\)/); assert.match(connectConsent, /analytics_storage:\s*"denied"/); assert.match(connectConsent, /analytics_storage:\s*"granted"/); assert.match(connectConsent, /ad_storage:\s*"denied"/); assert.match(connectConsent, /allow_google_signals",\s*false/); assert.match(connectConsent, /allow_ad_personalization_signals",\s*false/); assert.doesNotMatch(connectConsent, /window\.location\.(?:href|search|hash)/);
 assert.match(analytics, /localStorage\.getItem\(ANALYTICS_CONSENT_KEY\)\s*===\s*"granted"/);
 assert.match(analytics, /Object\.entries\(payload\)\.filter\(\(\[, value\]\)\s*=>\s*value\s*!==\s*undefined\)/);
