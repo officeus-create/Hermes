@@ -21,6 +21,7 @@ on:
       - "functions/api/internal-command-center/work-items/**"
       - "scripts/automation-engine-free-ai-runtime.test.mjs"
       - "scripts/automation-engine-windows-node-runtime.test.mjs"
+      - "windows/viktor/**"
       - "scripts/automation-engine-work-portfolio.test.mjs"
       - "scripts/automation-engine-owner-work-runtime.test.mjs"
       - "workers/automation-engine/src/owner-work-runtime.mjs"
@@ -63,6 +64,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
       - name: Run automation engine contract
         run: |
           node scripts/automation-engine-contract.test.mjs
@@ -79,6 +83,7 @@ jobs:
           node scripts/internal-command-center-hae-bridge.test.mjs
           node scripts/automation-engine-free-ai-runtime.test.mjs
           node scripts/automation-engine-windows-node-runtime.test.mjs
+          python3 windows/viktor/test_node_regressions.py
           node scripts/automation-engine-work-portfolio.test.mjs
           node scripts/automation-engine-owner-work-runtime.test.mjs
           node scripts/automation-engine-zero-token-plugin-tasks.test.mjs
