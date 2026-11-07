@@ -100,9 +100,15 @@ export async function verifyCommandCenterOwnerWorkReceipt({ workItem, haeJob, jo
   const workItemId = clean(workItem?.id, 160);
   const executionJobId = clean(workItem?.hae_execution_job_id, 180);
   const planJobId = clean(workItem?.hae_plan_job_id, 180);
-  if (!workItemId || !executionJobId || !planJobId) return hold("OWNER_WORK_ITEM_UNVERIFIED");
-  if (!haeJob || clean(haeJob.job_id, 180) !== executionJobId) {
-    return hold("CANONICAL_JOB_BINDING_UNVERIFIED", { hae_job_id: executionJobId });
+  const fallbackJobId = clean(workItem?.hae_job_id, 180);
+  if (!workItemId) return hold("OWNER_WORK_ITEM_UNVERIFIED");
+  // The revenue cycle clears the plan and execution columns and keeps only the
+  // job id, so the binding that survives must be recomputed from the work item
+  // id inside the engine-written idempotency key.
+  const boundJobId = executionJobId || fallbackJobId;
+  if (!boundJobId) return hold("OWNER_WORK_ITEM_UNVERIFIED");
+  if (!haeJob || clean(haeJob.job_id, 180) !== boundJobId) {
+    return hold("CANONICAL_JOB_BINDING_UNVERIFIED", { hae_job_id: boundJobId });
   }
   const jobType = clean(haeJob.job_type, 120);
   if (!jobType || !NONEMPTY.test(jobType)) return hold("CANONICAL_JOB_IDENTITY_MISMATCH");
@@ -119,19 +125,34 @@ export async function verifyCommandCenterOwnerWorkReceipt({ workItem, haeJob, jo
       clean(haeJob.policy_version, 120) !== HAE_OWNER_WORK_DISPATCH_POLICY) {
     return hold("CANONICAL_JOB_IDENTITY_MISMATCH");
   }
-  const expectedKey = ownerWorkExecutionIdempotencyKey({ workItemId, planJobId, jobType });
-  if (!expectedKey || clean(haeJob.idempotency_key, 240) !== expectedKey) {
-    return hold("IDEMPOTENCY_BINDING_MISMATCH");
-  }
   const payload = parseObject(haeJob.payload_json);
   if (!payload) return hold("RECEIPT_MISSING_OR_INVALID");
-  if (clean(payload.owner_work_id, 160) !== workItemId ||
-      clean(payload.owner_plan_job_id, 180) !== planJobId) {
+  if (clean(payload.owner_work_id, 160) !== workItemId) {
     return hold("SOURCE_PAYLOAD_BINDING_MISMATCH");
+  }
+  const jobKey = clean(haeJob.idempotency_key, 240);
+  if (executionJobId) {
+    const expectedKey = ownerWorkExecutionIdempotencyKey({ workItemId, planJobId, jobType });
+    if (!expectedKey || jobKey !== expectedKey) return hold("IDEMPOTENCY_BINDING_MISMATCH");
+    if (clean(payload.owner_plan_job_id, 180) !== planJobId) {
+      return hold("SOURCE_PAYLOAD_BINDING_MISMATCH");
+    }
+  } else {
+    // The work item id is the segment of the engine-written key that the Command
+    // Center can still recompute; the plan job segment is cross-checked against
+    // the independently written payload instead of being taken on trust.
+    const prefix = `hae:owner-work-exec:${clean(workItemId, 120)}:`;
+    if (!jobKey.startsWith(prefix) || !jobKey.endsWith(`:${jobType}`)) {
+      return hold("IDEMPOTENCY_BINDING_MISMATCH");
+    }
+    const planSegment = jobKey.slice(prefix.length, jobKey.length - jobType.length - 1);
+    if (!planSegment || clean(payload.owner_plan_job_id, 180) !== planSegment) {
+      return hold("SOURCE_PAYLOAD_BINDING_MISMATCH");
+    }
   }
   const jobState = clean(haeJob.state, 40).toUpperCase();
   if (jobState !== "SUCCEEDED") {
-    return hold("NO_SUCCEEDED_HAE_JOB", { hae_job_id: executionJobId, job_state: jobState });
+    return hold("NO_SUCCEEDED_HAE_JOB", { hae_job_id: boundJobId, job_state: jobState });
   }
   const receipt = parseObject(haeJob.result_json);
   if (!receipt) return hold("RECEIPT_MISSING_OR_INVALID");
@@ -156,7 +177,7 @@ export async function verifyCommandCenterOwnerWorkReceipt({ workItem, haeJob, jo
     return hold("RECEIPT_COST_OR_PROVIDER_WRITE_UNVERIFIED");
   }
   const successEvents = (Array.isArray(jobEvents) ? jobEvents : []).filter(event =>
-    clean(event?.job_id, 180) === executionJobId &&
+    clean(event?.job_id, 180) === boundJobId &&
     clean(event?.event_type, 80) === "job.succeeded" &&
     clean(event?.to_state, 40).toUpperCase() === "SUCCEEDED");
   if (successEvents.length !== 1) return hold("DURABLE_SUCCESS_EVENT_UNVERIFIED");
@@ -167,7 +188,7 @@ export async function verifyCommandCenterOwnerWorkReceipt({ workItem, haeJob, jo
     provider_write_performed: false,
     helper_execution_verified: false,
     receipt_verified: true,
-    hae_job_id: executionJobId,
+    hae_job_id: boundJobId,
     job_type: jobType,
     capability: jobType,
     role_id: contract.role_id,

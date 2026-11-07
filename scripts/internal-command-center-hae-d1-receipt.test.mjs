@@ -140,6 +140,31 @@ try {
   }
 
   // 5) A failed execution is reported, never as a verified receipt.
+  // 4b) The revenue cycle clears the plan and execution columns and keeps only
+  //     the job id. The binding that survives is recomputed from the work item
+  //     id inside the engine-written key and cross-checked against the payload.
+  {
+    const revenueItem = { ...workItem, hae_plan_job_id: null, hae_execution_job_id: null };
+    const verdict = await verifyCommandCenterOwnerWorkReceipt({ workItem: revenueItem, haeJob: executionJob, jobEvents: [successEvent] });
+    assert.equal(verdict.receipt_verified, true, "a cleared revenue-cycle binding must still verify from the work item id");
+    assert.equal(verdict.hae_job_id, EXECUTION_JOB_ID);
+
+    const foreignKey = await verifyCommandCenterOwnerWorkReceipt({
+      workItem: revenueItem,
+      haeJob: { ...executionJob, idempotency_key: `hae:owner-work-exec:hcwi_other:${PLAN_JOB_ID}:${JOB_TYPE}` },
+      jobEvents: [successEvent],
+    });
+    assert.equal(foreignKey.receipt_verified, false, "a key bound to another work item must fail closed");
+    assert.equal(foreignKey.reason, "IDEMPOTENCY_BINDING_MISMATCH");
+
+    const foreignPlan = await verifyCommandCenterOwnerWorkReceipt({
+      workItem: revenueItem,
+      haeJob: { ...executionJob, payload_json: JSON.stringify({ owner_work_id: workItem.id, owner_plan_job_id: "job:00000000-0000-4000-8000-000000000000" }) },
+      jobEvents: [successEvent],
+    });
+    assert.equal(foreignPlan.receipt_verified, false, "a key that disagrees with the payload must fail closed");
+    assert.equal(foreignPlan.reason, "SOURCE_PAYLOAD_BINDING_MISMATCH");
+  }
   {
     const failedJob = { ...executionJob, state: "FAILED", last_error_class: "owner_work_execution_failed" };
     const env = { DB: d1Stub({ jobs: [failedJob], events: [] }) };
