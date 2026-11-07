@@ -119,3 +119,32 @@ test("carrier GEO pages wait for explicit analytics consent, then emit privacy-s
   const serialized = JSON.stringify({ geoCtas, reportableStartReview, commercialCtas });
   expect(serialized).not.toMatch(/MC\s*\d+|USDOT\s*\d+|@|\+1|Puyallup.*Tacoma/i);
 });
+
+test("five evidence-backed Car Hauler markets expose official, distinct corridor guidance without changing SEO owners", async ({ page }) => {
+  const markets = [
+    { slug: "denver-co", city: "Denver", sources: 2, phrase: /I-270/ },
+    { slug: "colorado-springs-co", city: "Colorado Springs", sources: 2, phrase: /Fillmore Street/ },
+    { slug: "seattle-wa", city: "Seattle", sources: 5, phrase: /I-405/ },
+    { slug: "kansas-city-mo-ks", city: "Kansas City", sources: 3, phrase: /I-29/ },
+    { slug: "chicago-il", city: "Chicago", sources: 3, phrase: /interstate highways/ },
+  ] as const;
+
+  for (const { slug, city, sources, phrase } of markets) {
+    const path = `/logistics/car-hauler-loads/${slug}/`;
+    await page.goto(path);
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", `https://hermeslogisticsus.com${path}`);
+    await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", /index,follow/);
+    await expect(page.getByRole("heading", { level: 1 })).toContainText(city);
+    await expect(page.locator('[data-commercial-primary-cta][data-service-group="car_hauler_geo"]').first()).toHaveAttribute(
+      "href",
+      "/logistics/start-car-hauling-dispatch/",
+    );
+
+    const context = page.locator('[data-carrier-geo-section="local_operating_context"]');
+    await expect(context).toBeVisible();
+    await expect(context.locator(".carrier-geo-local-notes > li")).toHaveCount(3);
+    await expect(context.locator(".carrier-geo-official-sources a")).toHaveCount(sources);
+    await expect(context).toContainText(phrase);
+    await expect(context).not.toContainText(/Hermes' private operating records|guaranteed loads|current live inventory/i);
+  }
+});
