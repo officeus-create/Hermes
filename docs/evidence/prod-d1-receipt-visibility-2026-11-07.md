@@ -125,7 +125,19 @@ The deployed bridge already bounds the call with `AbortSignal.timeout(haeBridgeT
 1102 persists. So the stall is **not** covered by the fetch timeout (DNS/connect phase or platform CPU
 accounting) — bounding the call further does not fix it. The outbound readback has to go away.
 
-### 4.2 The engine read model does not return `payload_json` — the verifier can never pass
+### 4.2 ~~The engine read model does not return `payload_json`~~ — **RETRACTED, see §7.1**
+
+> **Retraction (2026-11-07, ~04:20 UTC).** This subsection was written from a stale copy of
+> `workers/automation-engine/src/index.mjs` on this branch and is **factually wrong for the
+> deployed code**. In `origin/main` = `214978d10c268008e4acc2499e56a1e7f99b8103` (the deployed
+> SHA), `getGenericJob` **does** select `payload_json` — added by commit `15f02eb5b`
+> ("feat(automation): execute generic read-only HAE jobs (#1868)") and verified directly:
+> `git show origin/main:workers/automation-engine/src/index.mjs | sed -n '1454,1466p'`.
+> The engine's read model is therefore identical to the readback SQL proposed in §5, and a
+> receipt **can** verify over HTTP once a control plane is reachable. The remaining blockers are
+> only §2 (no published control-plane host) and §4.3 (two identity schemes). Do not spend work on
+> "the engine never returns payload_json".
+
 
 `verifyCommandCenterHaeReceipt` requires the job payload:
 `command-center-hae-receipt-verifier.mjs:131-133`
@@ -244,3 +256,76 @@ secrets — keeps the bridge shape untouched but is a Cloudflare/DNS decision (o
 | Per-card **verified** receipt (`PLUGIN_EXECUTION_SUCCEEDED_RECEIPT_VERIFIED`) | NOT OBSERVED — requires the Command Center code change in §5 (and/or a Cloudflare route) |
 
 No production write, no credential use, no deploy and no merge was performed to produce this evidence.
+
+---
+
+## 7. Corrections and live production state
+
+### 7.1 Retraction — the "engine never returns `payload_json`" claim was wrong
+
+§4.2 is retracted. Verified against the deployed SHA
+`214978d10c268008e4acc2499e56a1e7f99b8103`:
+
+```
+$ git show origin/main:workers/automation-engine/src/index.mjs | sed -n '1454,1466p'
+async function getGenericJob(env, jobId) {
+  ...
+    "SELECT job_id,job_type,business_lane,account_key,project_key,priority,state,current_step,available_at,attempt_count,max_attempts,idempotency_key,policy_version,payload_json,result_json,last_error_class,created_at,updated_at,completed_at FROM hermes_automation_jobs WHERE job_id=? LIMIT 1"
+  ...
+    "SELECT event_id,job_id,event_type,from_state,to_state,step,evidence_ref,provider_ref,error_class,created_at FROM hermes_automation_job_events WHERE job_id=? ORDER BY created_at ASC LIMIT 100"
+```
+
+`payload_json` was added to the engine read model by `15f02eb5b`
+("feat(automation): execute generic read-only HAE jobs (#1868)"). The mistake was reading a stale
+copy of `workers/automation-engine/src/index.mjs` from this branch instead of `origin/main`.
+
+Consequences:
+* the engine read model is **identical** to the readback SQL proposed in §5 — the D1 readback is
+  not a workaround, it is the same projection, minus the unreachable network hop;
+* a receipt **can** verify over HTTP once a control plane is reachable; the only structural
+  blockers are §2 (no published control-plane host) and §4.3 (two identity schemes);
+* nothing needs to change in the engine's read model. Do not spend work on it.
+
+### 7.2 Live P1 observed at 04:11–04:18 UTC: the authenticated Command Center API times out
+
+Measured in the owner's browser session (network panel of the live Command Center tab):
+
+| endpoint | outcome | duration | window |
+|---|---|---|---|
+| `GET /api/internal-command-center/projects` | **524** | 125–145 s | 03:49:57 → 04:17:57 UTC, retried every 30 s (network sequences 477–501) |
+| `GET /api/internal-ai/status` | **524** | 125–145 s | same window |
+
+Because the initial data load fails, the page renders the owner gate
+("Нужен доступ владельца / The workspace opens only after server-side owner verification") — the
+workspace does not open for the owner at the moment of writing.
+
+Isolating probes (no cookies, so auth is expected to reject them):
+
+```
+GET /api/internal-command-center/work-items   → 401 in 0.134 s
+GET /api/internal-command-center/projects     → 401 in 0.106 s
+GET /api/internal-ai/status                   → 401 in 0.239 s
+GET https://hae-node.../v1/nodes/windows/status → 401 windows_node_auth_required in 0.107 s
+```
+
+⇒ the Pages function starts and the owner gate rejects in ~0.1 s; the stall is **inside the
+authenticated D1 path**, not in cold start, routing or the HAE edge (which answers in 0.107 s).
+
+Earlier authenticated `GET /api/internal-command-center/work-items` from the same tab:
+
+```
+03:13:27 UTC  200 in 499 ms      03:19:27 UTC  503 in 551 ms
+03:13:29 UTC  200 in 422 ms      03:20:27 UTC  503 in 475 ms
+03:14:27 UTC  200 in 462 ms      03:22:27 UTC  200 in 269 ms
+03:14:30 UTC  200 in 513 ms      03:22:28 UTC  200 in 211 ms
+```
+
+Note on readback quality: an anonymous readback (`401` in ~0.11 s) never touches D1 and therefore
+cannot demonstrate that the database path is healthy. Any prod readback of this surface must be
+authenticated.
+
+This also blocks the exact capture requested by the Command Center session (the body of the
+`execute_plugin` PATCH for `hcwi_hist_20261105_037`): while the API path stalls, the PATCH stalls
+with it. It can be captured as soon as the authenticated path recovers — the readback is
+idempotent-safe (a failed submit writes no `hae_job_id`).
+
