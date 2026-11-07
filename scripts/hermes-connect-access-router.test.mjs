@@ -13,6 +13,31 @@ const [page, product, accountApi, clientApi, clientPage, membershipSource] = awa
   readFile(new URL("../functions/api/_lib/company-memberships.mjs", import.meta.url), "utf8"),
 ]);
 
+// A static login shell must never consume a Pages Function invocation just to
+// render HTML. This contains intermittent Cloudflare Worker 1102 without
+// bypassing any account/session/API/owner access check.
+const routeManifest=JSON.parse(await readFile(new URL("../public/_routes.json",import.meta.url),"utf8"));
+const middleware=await readFile(new URL("../functions/_middleware.js",import.meta.url),"utf8");
+test("Command Center login shell bypasses Pages Functions, private auth never does",()=>{
+  assert.equal(routeManifest.version,1);
+  assert.deepEqual(routeManifest.include,["/*"]);
+  assert.deepEqual(routeManifest.exclude,[
+    "/services/hermes-connect/access",
+    "/services/hermes-connect/access/",
+    "/services/hermes-connect/access/index.html",
+  ],"Only exact, public, already-static login document paths may bypass Functions");
+  assert.ok(!routeManifest.exclude.some(path=>
+    path.includes("*")||path.startsWith("/api/")||
+    path.startsWith("/services/hermes-connect/internal/")||
+    path.startsWith("/services/hermes-connect/repair-shops/auth/")),
+  "Protected, API, and nested routes must always remain on Functions");
+  assert.match(middleware,/isPrivateCommandCenter/);
+  assert.match(middleware,/await requireInternalOwner\(context\.request, context\.env\)/);
+  assert.match(page,/fetch\("\/api\/auth\/me"/);
+  assert.match(page,/fetch\("\/api\/auth\/login"/);
+  assert.match(page,/robots="noindex,nofollow"/);
+});
+
 test("Hermes Connect access routes one account into vertical-specific CRM", () => {
   assert.match(page, /Один вхід\. CRM — під ваш тип бізнесу\./);
   assert.match(page, /\/services\/hermes-connect\/repair-shops\/auth\/\?mode=register/);
