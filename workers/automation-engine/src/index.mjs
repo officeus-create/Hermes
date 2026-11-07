@@ -56,6 +56,7 @@ import {
   ownerManagedJobTypes,
 } from "./owner-process-runtime.mjs";
 import {
+  deterministicOwnerWorkPlan,
   enqueueNextOwnerWorkPlan,
   ownerWorkRuntimeSnapshot,
   reconcileOwnerWorkRuntime,
@@ -77,6 +78,7 @@ import {
   completeWindowsNodeJob,
   heartbeatWindowsNode,
   recoverExpiredWindowsNodeLeases,
+  windowsNodeAvailability,
   windowsNodeAuthorized,
   windowsNodeSnapshot,
 } from "./windows-node-runtime.mjs";
@@ -995,9 +997,22 @@ async function runReadOnlyGenericCapability(env, job) {
     let semanticExecution = null;
     if (contract.semantic_required) {
       if (job.job_type === "work.item.plan") {
-        throw new FreeAiUnavailableError("windows_node_required", 60);
-      }
-      const semanticRequest = buildRoleContractSemanticRequest(job.job_type, executionPayload);
+        result = deterministicOwnerWorkPlan(executionPayload);
+        semanticExecution = {
+          provider_id: "hae-deterministic-zero-token-v1",
+          model: "none",
+          budget_usd: 0,
+          cost_usd: 0,
+          usage_id: null,
+          input_tokens: 0,
+          output_tokens: 0,
+          input_chars: JSON.stringify(executionPayload).length,
+          output_chars: JSON.stringify(result).length,
+          windows_node_preferred: false,
+          fallback_reason: "windows_node_unavailable_or_not_eligible",
+        };
+      } else {
+        const semanticRequest = buildRoleContractSemanticRequest(job.job_type, executionPayload);
       const budgetUsd = Number(contract?.runtime_config?.max_cost_usd);
       if (!Number.isFinite(budgetUsd) || budgetUsd < 0) throw new Error("semantic_budget_invalid");
       const freeResult = await runFreeSemanticJson(env, semanticRequest);
@@ -1029,6 +1044,7 @@ async function runReadOnlyGenericCapability(env, job) {
         input_chars: usageReceipt.input_chars,
         output_chars: usageReceipt.output_chars,
       };
+      }
     } else {
       result = runRoleContractPrimitive(job.job_type, executionPayload, observedAt);
     }
@@ -1124,6 +1140,26 @@ async function processGenericJob(env, message) {
     return { status: "SUCCEEDED", duplicate: true, job_id: jobId };
   }
   const now = new Date().toISOString();
+  if (before.job_type === "work.item.plan") {
+    const windows = await windowsNodeAvailability(env, now);
+    if (windows.available) {
+      const deferred = await transitionGenericJobWithEvent(env.DB, {
+        updateStatement: env.DB.prepare(`
+          UPDATE hermes_automation_jobs
+          SET state='WAITING_FREE_AI',current_step='windows_preferred',available_at=NULL,last_error_class=NULL,updated_at=?
+          WHERE job_id=? AND (state='QUEUED' OR state='RETRY_SCHEDULED' OR state='WAITING_FREE_AI')
+        `).bind(now, jobId),
+        jobId,
+        eventType: "job.waiting_windows_node",
+        fromState: String(before.state || "QUEUED"),
+        toState: "WAITING_FREE_AI",
+        step: "windows_preferred",
+        createdAt: now,
+        expectedAttemptCount: Number(before.attempt_count || 0),
+      });
+      return { status: deferred ? "WAITING_WINDOWS_NODE" : "transition_conflict", job_id: jobId };
+    }
+  }
   const currentAttempt = Number(before.attempt_count || 0) + 1;
   const claimed = await transitionGenericJobWithEvent(env.DB, {
     updateStatement: env.DB.prepare(`

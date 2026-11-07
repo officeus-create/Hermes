@@ -477,6 +477,8 @@ assert.match(worker, /HISTORICAL_READ_ONLY_JOB_TYPES\.includes\(job\.job_type\)[
 assert.doesNotMatch(worker, /READ_ONLY_GENERIC_JOB_TYPES[\s\S]{0,240}"social\.publish"/, "Live social writes must not be allowed through the first generic read-only executor");
 assert.match(worker, /type: "job\.execute"/, "Generic jobs must execute through the existing canonical automation queue");
 assert.match(worker, /job\.duplicate_suppressed/, "Same-job replay after SUCCEEDED must leave a durable duplicate-suppression receipt");
+assert.match(worker, /before\.job_type === "work\.item\.plan"[\s\S]*windowsNodeAvailability[\s\S]*job\.waiting_windows_node/, "A fresh Windows node must receive owner-work planning before the deterministic fallback");
+assert.match(worker, /windows_node_unavailable_or_not_eligible/, "Deterministic owner-work receipts must state that Windows was unavailable or ineligible, never claim a Windows result");
 assert.match(worker, /String\(before\.state\) === "SUCCEEDED"[\s\S]*appendGenericJobEvent[\s\S]*job\.duplicate_suppressed/, "Terminal replay must be suppressed before any second capability execution");
 assert.match(worker, /processGenericJob/, "Queue consumer must execute generic durable jobs");
 assert.match(worker, /url\.pathname === "\/v1\/jobs"/, "Private API must accept owner-controlled generic jobs");

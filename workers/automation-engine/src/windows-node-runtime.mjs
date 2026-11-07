@@ -12,6 +12,7 @@ export const WINDOWS_NODE_KEY_ID = "viktor-windows-20261104";
 export const WINDOWS_NODE_PUBLIC_KEY_SPKI_B64 = "MCowBQYDK2VwAyEAy17ps0O6s7Hj1iN01RuKCYNBZdoN0m2EeEu2xk7DSEQ=";
 const WINDOWS_NODE_PROVIDER_ID = "viktor-windows-ollama";
 const LEASE_SECONDS = 5 * 60;
+export const WINDOWS_NODE_HEARTBEAT_TTL_SECONDS = 2 * 60;
 const AUTH_MAX_SKEW_SECONDS = 3 * 60;
 const AUTH_NONCE_TTL_SECONDS = 10 * 60;
 const importedNodeKeys = new Map();
@@ -169,6 +170,35 @@ export async function ensureWindowsNodeSchema(db) {
     expires_at TEXT NOT NULL
   )`).run();
   await db.prepare("CREATE INDEX IF NOT EXISTS idx_hae_node_auth_nonce_expiry ON hermes_automation_node_auth_nonces(expires_at)").run();
+}
+
+// The Windows node uses outbound polling.  A fresh, idle heartbeat therefore
+// means HAE should leave a semantic owner-work job for that node to claim;
+// otherwise the existing deterministic, zero-token path keeps owner work moving.
+export async function windowsNodeAvailability(env, now = new Date().toISOString()) {
+  if (!env?.DB) return { available: false, reason: "windows_node_runtime_not_configured" };
+  if (!nodeEnabled(env)) return { available: false, reason: "windows_node_disabled" };
+  await ensureWindowsNodeSchema(env.DB);
+  const node = await env.DB.prepare(
+    "SELECT node_id,contract_version,status,current_job_id,last_seen_at FROM hermes_automation_nodes WHERE node_id=? LIMIT 1"
+  ).bind(WINDOWS_NODE_ID).first();
+  if (!node || node.contract_version !== WINDOWS_NODE_CONTRACT_VERSION) {
+    return { available: false, reason: "windows_node_not_registered" };
+  }
+  const observedAt = Date.parse(String(node.last_seen_at || ""));
+  const referenceAt = Date.parse(now);
+  if (
+    !Number.isFinite(observedAt)
+    || !Number.isFinite(referenceAt)
+    || observedAt > referenceAt
+    || referenceAt - observedAt > WINDOWS_NODE_HEARTBEAT_TTL_SECONDS * 1000
+  ) {
+    return { available: false, reason: "windows_node_stale" };
+  }
+  if (node.status !== "IDLE" || node.current_job_id) {
+    return { available: false, reason: "windows_node_busy" };
+  }
+  return { available: true, reason: null, last_seen_at: node.last_seen_at };
 }
 
 async function appendEvent(db, { jobId, eventType, fromState, toState, step, errorClass = null, createdAt = new Date().toISOString() }) {
