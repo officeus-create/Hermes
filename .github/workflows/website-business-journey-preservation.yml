@@ -1,0 +1,32 @@
+name: Website business journey preservation
+
+# Cheap source-level guard on every PR; the separate visual workflow captures
+# five responsive viewports on changes to critical design/contract routes.
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ecosystem-journey-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  source-journey-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Protect business paths and role boundaries from redesign losses
+        run: node scripts/ecosystem-business-journey-preservation.test.mjs
+      - name: Preserve responsive visual screenshot route matrix
+        run: node scripts/route-screenshot-contract.test.mjs
