@@ -9,7 +9,7 @@
   "scripts": {
     "pretest": "node scripts/http-cache-semantics-security.test.mjs && node --experimental-strip-types scripts/contact-delivery-dedupe.test.mjs && node scripts/registration-alert-claim.test.mjs",
     "dev": "astro dev",
-    "build": "astro check && astro build",
+    "build": "astro check && astro build && node scripts/verify-routes-manifest-dist.mjs",
     "preview": "astro preview",
     "sync:product-demos": "node scripts/sync-product-demos.mjs",
     "capture:screenshots": "node scripts/capture-route-screenshots.mjs",
