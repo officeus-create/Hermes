@@ -1,0 +1,3 @@
+# Windows VIKTOR runtime dependencies that are not guaranteed by the Python stdlib on Windows
+# Pin IANA timezone database so ZoneInfo('Europe/Kyiv') is stable across hosts.
+tzdata==2026.6
