@@ -98,6 +98,62 @@ Alternative hypotheses that were checked and excluded by code reading:
   persists `linked_task_id` before the submit, and the payload passes every validator in
   `workers/automation-engine/src/work-portfolio.mjs`.
 
+## Follow-up: #2312 merged and deployed, P0 closed, receipt still gated on bridge config
+
+| Time (UTC) | Event | Status |
+|---|---|---|
+| 2026-11-07 03:34:17 | PR #2312 (`fix/command-center-import-livelock-20261107`, head `215935a8`) merged; `main` = `214978d10c268008e4acc2499e56a1e7f99b8103` | MERGED |
+| 2026-11-07 03:38:07 | Pages production deploy run `42334612128` → `completed success` | **DEPLOYED** |
+| 2026-11-07 ~03:39 | private Command Center page renders again (was 1102 on every load); `GET /api/internal-command-center/work-items` → 200; the work queue loads | RUNTIME_VERIFIED |
+| 2026-11-07 ~03:40 | `PATCH action=execute_plugin` on `hcwi_hist_20261105_037` → 409 (UI raised an alert with `plugin_execution.reason`); after re-read `hae_job_id` is still `null` | RUNTIME_VERIFIED (failure) |
+
+The count-guard fix does what it was designed to do: after the deploy the private surface is no
+longer killed by the CPU limit, so the livelock is closed. What remains is a **configuration**
+gate, not an availability gate.
+
+### External probe of the HAE host (no token, read-only)
+
+| Path | Result |
+|---|---|
+| `hae-node.hermeslogisticsus.com/v1/nodes/windows/status` | 401 `windows_node_auth_required` (router alive) |
+| `hae-node.hermeslogisticsus.com/v1/jobs` | 404 `not_found` |
+| `hae-node.hermeslogisticsus.com/v1/jobs/job:83651a18-…` | 404 `not_found` (not 401) |
+| `hae-node.hermeslogisticsus.com/v1/plugin-runtime-registry` | 404 `not_found` |
+
+`hae-node` serves only the node-facing surface. The engine's generic-job routes are not routed
+there, and the repository contains no other engine hostname
+(`workers/automation-engine/wrangler.jsonc.example` → `routes: [hae-node…]`, production config is
+deliberately not committed). The Command Center bridge therefore needs a Pages production
+variable `HERMES_AUTOMATION_BASE_URL` pointing at the **engine** host, plus
+`HERMES_AUTOMATION_TOKEN` matching the worker's `submission_auth`
+(`workers/automation-engine/capability-policy.json` → `submission_auth: HERMES_AUTOMATION_TOKEN`
+for `work.portfolio.reconcile`).
+
+Without that, `automationConfig(env)` returns `null` and the bridge fails closed with
+`503 command_center_hae_bridge_not_configured` (no network call at all — which matches the
+sub-second PATCH), or with the upstream `404`/`401` if the host or token is wrong.
+
+### Why the failure is invisible in the product surface
+
+`mutate()` in the Command Center UI alerts only on a non-2xx PATCH, and the card's receipt line
+is rendered from the **readback**, which — while `hae_job_id` is null — always shows
+"Плагин выбран (не запущен)". The typed reason from the submit attempt therefore never reaches
+the card. Two independent improvements belong to the Command Center lane:
+surface `plugin_execution.reason` on the card, and configure the two Pages variables.
+
+### Status labels (final for this round)
+
+- #2311 merge + deploy: **DEPLOYED** (`3b703a35`, run `42301103192`).
+- #2312 merge + deploy: **DEPLOYED** (`214978d1`, run `42334612128`).
+- Private Command Center availability after #2312: **RUNTIME_VERIFIED** (page renders, list 200).
+- Dispatch of the next WORK_ID `hcwi_hist_20261105_037`: **RUNTIME_VERIFIED** (PATCH 200, task
+  `hcai_e2961db4-11e7-4968-ba3c-1128a7a91846` queued, route pinned).
+- HAE job creation through the Command Center bridge: **NOT WORKING** in production —
+  `hae_job_id` stays null, reason pending from the Cloudflare owner lane.
+- `PLUGIN_EXECUTION_SUCCEEDED_RECEIPT_VERIFIED`: **NOT OBSERVED** — blocked solely by the bridge
+  configuration above; the code path itself was verified line by line and the HAE-side
+  prerequisites (payload validation, role contract binding, `job.succeeded` event) all hold.
+
 ## Status labels
 
 - Merge + deploy of #2311: **DEPLOYED** (main `3b703a35`, Pages run `42301103192` success).
