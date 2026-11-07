@@ -123,6 +123,18 @@ async function patch(id,action){
   const response=await mutateWorkItem({request:request("/api/internal-command-center/work-items/"+id,{method:"PATCH",body:{action}}),env:{DB:db},params:{id}});
   return {response,payload:await response.json()};
 }
+async function listAllWorkItems(){
+  const workItems=[];
+  let offset=0;
+  while(offset!==null){
+    const response=await listWorkItems({request:request("/api/internal-command-center/work-items?offset="+offset),env:{DB:db}});
+    assert.equal(response.status,200,"owner backlog page must remain readable");
+    const payload=await response.json();
+    workItems.push(...payload.work_items);
+    offset=payload.next_offset;
+  }
+  return workItems;
+}
 
 // Owner-built projects share the canonical D1 and cannot overwrite the static project snapshot.
 const createProjectResponse=await createProject({request:request("/api/internal-command-center/projects",{method:"POST",body:{title:"  Land    CRM  ",department:"technology",purpose:"Track verified land opportunities."}}),env:{DB:db}});
@@ -291,9 +303,7 @@ assert.deepEqual(
   {total:canonicalBaseline.total+2,open:canonicalBaseline.open+1,done:canonicalBaseline.done+1,blocked:canonicalBaseline.blocked+1},
   "Projects GET alone must reconcile a failed linked AI task into the blocked counter",
 );
-listResponse=await listWorkItems({request:request("/api/internal-command-center/work-items"),env:{DB:db}});
-listPayload=await listResponse.json();
-const secondBlocked=listPayload.work_items.find(item=>item.id===second.id);
+const secondBlocked=(await listAllWorkItems()).find(item=>item.id===second.id);
 assert.equal(secondBlocked.status,"blocked");
 assert.equal(secondBlocked.linked_task_id,failedTaskId);
 assert.equal(secondBlocked.linked_task_status,"failed");

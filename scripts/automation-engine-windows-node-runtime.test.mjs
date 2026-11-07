@@ -9,6 +9,7 @@ import {
   WINDOWS_NODE_CONTRACT_VERSION,
   WINDOWS_NODE_ID,
   buildWindowsNodeAuthMessage,
+  windowsNodeAvailability,
   windowsNodeAuthorized,
   windowsNodeSnapshot,
 } from "../workers/automation-engine/src/windows-node-runtime.mjs";
@@ -125,6 +126,11 @@ const heartbeat=await heartbeatWindowsNode(env,{
   status:"IDLE",
 },t0);
 assert.equal(heartbeat.status,"HEARTBEAT_ACCEPTED");
+const availability=await windowsNodeAvailability(env,t0);
+assert.equal(availability.available,true,"fresh idle Windows node must remain the preferred owner-work planner");
+const staleAvailability=await windowsNodeAvailability(env,new Date(Date.parse(t0)+121_000).toISOString());
+assert.equal(staleAvailability.available,false,"stale Windows heartbeat must release owner work to the zero-token fallback");
+assert.equal(staleAvailability.reason,"windows_node_stale");
 let snapshot=await windowsNodeSnapshot(env);
 assert.equal(snapshot.node_id,WINDOWS_NODE_ID);
 assert.equal(snapshot.production_write_authorized,false);

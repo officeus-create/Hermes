@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { DatabaseSync } from "node:sqlite";
 import {
+  deterministicOwnerWorkPlan,
   enqueueNextOwnerWorkPlan,
   ensureOwnerWorkRuntimeSchema,
   ownerWorkRuntimeSnapshot,
@@ -31,6 +32,28 @@ class D1Database {
   }
 }
 
+const fallbackPlan=deterministicOwnerWorkPlan({
+  work_id:"hcwi_test_fallback_001",
+  workstream:"technology",
+  priority:"p1",
+  title:"Continue HAE Command Center runtime",
+  details:"Keep the canonical queue and D1 receipt chain moving.",
+  next_action:"Run a bounded self-improvement audit.",
+  selected_owner_role:"hermes-automatic-engineer",
+  selected_owner_version:"0.1.42",
+  route_basis:"workstream:technology",
+  available_execution_job_types:[
+    "ai.gateway.readiness.audit",
+    "hae.self.improvement.audit",
+    "search.snapshot.evaluate"
+  ]
+});
+assert.equal(fallbackPlan.disposition,"EXECUTE_EXISTING_CAPABILITY");
+assert.equal(fallbackPlan.recommended_job_type,"hae.self.improvement.audit");
+assert.equal(fallbackPlan.planner,"hae-deterministic-zero-token-v1");
+assert.equal(fallbackPlan.paid_inference_cost_usd,0);
+assert.equal(fallbackPlan.external_write,false);
+
 const DB=new D1Database();
 DB.database.exec(`
 CREATE TABLE hermes_automation_jobs (
@@ -44,7 +67,23 @@ CREATE TABLE hermes_automation_jobs (
 await ensureOwnerWorkRuntimeSchema(DB);
 
 const seeded=await DB.prepare("SELECT COUNT(*) AS count FROM hermes_owner_work_items").first();
-assert.ok(Number(seeded.count)>=50,"historical Command Center backlog must be available to HAE without a ChatGPT scheduler");
+assert.ok(Number(seeded.count)>=182,"historical + 4-month revenue backlog must be available to HAE without a ChatGPT scheduler");
+const revenueCount=await DB.prepare("SELECT COUNT(*) AS count FROM hermes_owner_work_items WHERE revenue_source_work_id IS NOT NULL").first();
+assert.equal(Number(revenueCount.count),132);
+const selectedRevenue=await DB.prepare(`
+  SELECT revenue_source_work_id,title,status,revenue_gate_usd,revenue_actual_usd,revenue_status
+  FROM hermes_owner_work_items
+  WHERE revenue_status='active'
+  LIMIT 1
+`).first();
+assert.equal(selectedRevenue.revenue_source_work_id,"W-20261019-015");
+assert.equal(selectedRevenue.status,"ready");
+assert.equal(Number(selectedRevenue.revenue_gate_usd),1);
+assert.equal(Number(selectedRevenue.revenue_actual_usd),0);
+const revenueSnapshot=await ownerWorkRuntimeSnapshot(DB);
+assert.equal(revenueSnapshot.revenue_first,true);
+assert.equal(revenueSnapshot.next_items[0].revenue_source_work_id,"W-20261019-015");
+assert.equal(revenueSnapshot.next_items[0].revenue_status,"active");
 await DB.prepare("UPDATE hermes_owner_work_items SET status='done',acceptance_status='accepted'").run();
 
 const now="2026-11-05T21:30:00.000Z";
