@@ -22,7 +22,7 @@ function sourceSetup(row: any) {
       identity_configured: Boolean(row.provider && row.source_name && row.source_type),
       connection_pointer_present: Boolean(row.connection_pointer_present),
       ingestion_enabled: canIngest,
-      redistribution_rule_defined: ["internal_only", "carrier_only", "public"].includes(redistribution),
+      redistribution_rule_defined: ["internal_only", "carrier_scoped", "carrier_only", "public"].includes(redistribution),
       contact_rule_defined: Boolean(contactMode),
       sync_proven: Boolean(row.last_successful_sync),
       error_free: !row.last_error,
@@ -30,7 +30,7 @@ function sourceSetup(row: any) {
     action_rules: {
       ingest_internal: canIngest,
       configured_max_visibility: redistribution,
-      carrier_distribution_configured: canIngest && ["carrier_only", "public"].includes(redistribution),
+      carrier_distribution_configured: canIngest && ["carrier_scoped", "carrier_only", "public"].includes(redistribution),
       public_distribution_configured: canIngest && redistribution === "public",
       contact_reveal_mode: contactMode,
       outbound_send: false,
@@ -213,21 +213,25 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
   if (model === "lanes") {
     const result = await env.DB.prepare(`
       SELECT
-        origin_state,
-        destination_state,
-        equipment,
+        r.origin_state AS origin_state,
+        r.destination_state AS destination_state,
+        r.equipment AS equipment,
         COUNT(*) AS active_loads,
-        AVG(rate_amount) AS avg_rate,
-        AVG(rate_per_mile) AS avg_rpm,
-        AVG(deadhead_miles) AS avg_known_deadhead,
-        MAX(observed_at) AS freshest_observed_at
-      FROM hermes_load_records
-      WHERE record_type = 'load'
-        AND status = 'active'
-        AND expires_at > ?
-        AND origin_state IS NOT NULL
-        AND destination_state IS NOT NULL
-      GROUP BY origin_state, destination_state, equipment
+        AVG(r.rate_amount) AS avg_rate,
+        AVG(r.rate_per_mile) AS avg_rpm,
+        AVG(r.deadhead_miles) AS avg_known_deadhead,
+        MAX(r.observed_at) AS freshest_observed_at
+      FROM hermes_load_records r
+      JOIN hermes_load_sources s ON s.id=r.source_id
+      WHERE r.record_type = 'load'
+        AND r.status = 'active'
+        AND r.expires_at > ?
+        AND s.status='active' AND s.read_enabled=1
+        AND s.redistribution_permission IN ('public','carrier_only')
+        AND r.visibility IN ('public','carrier_only')
+        AND r.origin_state IS NOT NULL
+        AND r.destination_state IS NOT NULL
+      GROUP BY r.origin_state, r.destination_state, r.equipment
       ORDER BY active_loads DESC, freshest_observed_at DESC
       LIMIT ?
     `).bind(now, limit).all();
@@ -260,6 +264,9 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
     FROM hermes_load_records r
     LEFT JOIN hermes_load_sources s ON s.id = r.source_id
     WHERE r.record_type = 'load' AND r.status = 'active' AND r.expires_at > ?
+      AND s.status='active' AND s.read_enabled=1
+      AND r.visibility IN ('public','carrier_only')
+      AND s.redistribution_permission IN ('public','carrier_only')
     ORDER BY COALESCE(r.source_quality_score, 0) DESC, r.observed_at DESC
     LIMIT ?
   `).bind(now, limit).all();

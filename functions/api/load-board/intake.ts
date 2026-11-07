@@ -18,7 +18,7 @@ type SourceType = "email" | "api" | "csv" | "manual" | "webhook";
 
 const VISIBILITY = new Set<Visibility>(["internal_only", "carrier_only", "public"]);
 const RECORD_TYPES = new Set<RecordType>(["load", "capacity"]);
-const REDISTRIBUTION = new Set(["internal_only", "carrier_only", "public"]);
+const REDISTRIBUTION = new Set(["internal_only", "carrier_scoped", "carrier_only", "public"]);
 const SOURCE_TYPES = new Set<SourceType>(["email", "api", "csv", "manual", "webhook"]);
 
 function text(value: unknown, max = 240) {
@@ -68,6 +68,7 @@ function stateCode(value: unknown, fallback: string | null) {
 function clampVisibility(requested: Visibility, permission: string): Visibility {
   if (permission === "public") return requested;
   if (permission === "carrier_only") return requested === "public" ? "carrier_only" : requested;
+  if (permission === "carrier_scoped") return requested === "internal_only" ? "internal_only" : "carrier_only";
   return "internal_only";
 }
 

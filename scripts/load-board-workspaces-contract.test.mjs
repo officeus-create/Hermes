@@ -14,7 +14,15 @@ for(const [name,script] of Object.entries({
  const page=read(pageRoot+name+"/index.astro");
  assert.match(page,/noindex,nofollow/);
  assert.match(page,new RegExp("/scripts/workspaces/"+script+"\\.js"));
+ if(name==="dispatcher"){
+  assert.match(page,/dispatcher-loads/);
+  assert.match(page,/dispatcher-load-search/);
+ }
  execFileSync(process.execPath,["--check",decodeURIComponent(new URL("../public/scripts/workspaces/"+script+".js",import.meta.url).pathname)]);
+ if(name==="dispatcher"){
+  assert.match(read("public/scripts/workspaces/dispatcher-workspace.js"),/Authorized carrier:/);
+  assert.match(read("public/scripts/workspaces/dispatcher-workspace.js"),/30000/);
+ }
 }
 assert(CARRIER_TYPES.has("carrier")&&CARRIER_TYPES.has("fleet")&&CARRIER_TYPES.has("owner_operator"));
 assert(!CARRIER_TYPES.has("broker")&&!CARRIER_TYPES.has("dealer"));
@@ -54,6 +62,19 @@ assert.match(scripted.carrier,/existing_request_terminal/);
 assert.match(scripted.carrier,/existing_request_dispatcher_changed/);
 assert.match(scripted.carrier,/queuedForDispatcher:false/);
 assert.match(scripted.dispatcher,/dispatcher_specialist_id/);
+assert.match(scripted.dispatcher,/carrierSafeLoad/);
+assert.match(scripted.dispatcher,/r\.record_type='load'/);
+assert.match(scripted.dispatcher,/r\.visibility IN \('public','carrier_only'\)/);
+assert.match(scripted.dispatcher,/s\.redistribution_permission IN \('public','carrier_only'\)/);
+assert.match(scripted.dispatcher,/sourceContactsExposed:false/);
+assert.match(scripted.dispatcher,/authorized_carrier_name/);
+assert.match(scripted.dispatcher,/carrierScope/);
+assert.match(scripted.dispatcher,/carrier_scoped/);
+assert.match(scripted.dispatcher,/authorized_carrier_company_id/);
+assert.match(scripted.dispatcher,/scoped_assignment\.carrier_company_id=scoped_company\.id/);
+assert.match(scripted.dispatcher,/specialistHasInternalOwnerCapability/);
+assert.match(scripted.carrier,/carrier_scoped/);
+assert.match(scripted.carrier,/authorized_carrier_company_id/);
 for(const key of ["active","opportunities","plan"]){
  assert.match(scripted[key],/r\.visibility='public' AND s\.redistribution_permission='public'/,
    key+" must require public/public for any broader visibility path");
@@ -64,9 +85,11 @@ assert.match(scripted.admin,/specialistHasInternalOwnerCapability/);
 assert.match(scripted.admin,/identityVerified/);
 assert.match(scripted.access,/entitlement==='active'/);
 for(const key of ["active","opportunities","plan"]){
- assert.match(scripted[key],/specialistHasLoadBoardAccess/);
+ assert.match(scripted[key],/getSpecialistLoadBoardCompany/);
  assert.match(scripted[key],/redistribution_permission/);
  assert.match(scripted[key],/carrier_only/);
+ assert.match(scripted[key],/carrier_scoped/);
+ assert.match(scripted[key],/authorized_carrier_company_id/);
 }
 assert.match(scripted.active,/r\.record_type = 'capacity' AND r\.visibility = 'public'/,
   "Guests and brokers cannot read any live LOAD record through the active feed.");

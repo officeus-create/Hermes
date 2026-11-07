@@ -1,6 +1,6 @@
 import { getAuthenticatedSpecialist, jsonResponse } from "../_lib/session.mjs";
 import { ensureLoadBoardSchema } from "../_lib/load-board-schema.mjs";
-import { specialistHasLoadBoardAccess } from "../_lib/hermes-company-profiles.mjs";
+import { getSpecialistLoadBoardCompany } from "../_lib/hermes-company-profiles.mjs";
 import { finiteNumber, normalizeEquipment, scoreOpportunity } from "../_lib/load-board-opportunity.mjs";
 
 type Env = { DB?: any };
@@ -31,7 +31,8 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
   await ensureLoadBoardSchema(env.DB);
 
   const specialist = await getAuthenticatedSpecialist(request, env.DB);
-  const carrierCandidate = await specialistHasLoadBoardAccess(env.DB, specialist);
+  const carrierCompany = await getSpecialistLoadBoardCompany(env.DB, specialist);
+  const carrierCandidate = Boolean(carrierCompany);
   const url = new URL(request.url);
   const rawEquipment = String(url.searchParams.get("equipment") || "").trim();
   const equipment = rawEquipment ? normalizeEquipment(rawEquipment) : "";
@@ -51,8 +52,8 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
 
   const conditions = ["r.record_type = 'load'", "r.status = 'active'", "r.expires_at > ?",
     "s.status = 'active'", "s.read_enabled = 1",
-    "((r.visibility='public' AND s.redistribution_permission='public') OR (r.visibility='carrier_only' AND s.redistribution_permission IN ('carrier_only','public')))"];
-  const bindings: any[] = [new Date().toISOString()];
+    "((r.visibility='public' AND s.redistribution_permission='public') OR (r.visibility='carrier_only' AND s.redistribution_permission IN ('carrier_only','public')) OR (r.visibility='carrier_only' AND s.redistribution_permission='carrier_scoped' AND s.authorized_carrier_company_id=?))"];
+  const bindings: any[] = [new Date().toISOString(), carrierCompany?.id || "__no_verified_carrier__"];
   if (carrierCandidate) conditions.push("r.visibility IN ('public', 'carrier_only')");
   // LOAD details are carrier-only even if an upstream source permits public reuse.
   // Keep public discovery on the static /load-board/ and explicit preview examples.

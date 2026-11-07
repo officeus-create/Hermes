@@ -1,14 +1,14 @@
 import { jsonResponse } from "../_lib/session.mjs";
 import { requireInternalOwner } from "../_lib/internal-ai.mjs";
-import { ensureLoadBoardSchema } from "../_lib/load-board-schema.mjs";
+import { CARRIER_TYPES, ensureCarrierDispatchWorkspaceSchema } from "../_lib/carrier-dispatch-workspace.mjs";
 
 type Env = { DB?: any };
 
 const privateHeaders = { "Cache-Control": "private, no-store", "X-Robots-Tag": "noindex, nofollow" };
 const ACTIONS = new Set(["initialize", "verify_connection", "enable_ingest", "verify_first_record", "revoke"]);
-const REDISTRIBUTION = new Set(["internal_only", "carrier_only", "public"]);
+const REDISTRIBUTION = new Set(["internal_only", "carrier_scoped", "carrier_only", "public"]);
 const CONTACT_MODES = new Set(["hidden", "hermes_review", "source_direct"]);
-const REDISTRIBUTION_RANK: Record<string, number> = { internal_only: 0, carrier_only: 1, public: 2 };
+const REDISTRIBUTION_RANK: Record<string, number> = { internal_only: 0, carrier_scoped: 1, carrier_only: 2, public: 3 };
 const CONTACT_RANK: Record<string, number> = { hidden: 0, hermes_review: 1, source_direct: 2 };
 const SECRET_PATTERN = /(?:bearer\s+|api[_ -]?key\s*[:=]|password\s*[:=]|secret\s*[:=]|token\s*[:=]|access[_ -]?token|refresh[_ -]?token)/i;
 
@@ -65,7 +65,7 @@ async function loadSource(db: any, sourceId: string) {
   return db.prepare(`
     SELECT id, provider, source_name, source_type, read_enabled, send_enabled, ingest_enabled,
            car_hauling_ingest_allowed, car_hauling_outreach_hold,
-           redistribution_permission, contact_reveal_permission,
+           redistribution_permission, contact_reveal_permission, authorized_carrier_company_id,
            last_successful_sync, last_error, status, created_at, updated_at
     FROM hermes_load_sources
     WHERE id = ?
@@ -87,6 +87,7 @@ function safeSource(row: any) {
     car_hauling_outreach_hold: Number(row.car_hauling_outreach_hold || 0) === 1,
     redistribution_permission: row.redistribution_permission,
     contact_reveal_permission: row.contact_reveal_permission,
+    carrier_scope: row.authorized_carrier_company_id ? { company_id: row.authorized_carrier_company_id } : null,
     status: row.status,
     last_successful_sync: row.last_successful_sync || null,
     last_error_present: Boolean(row.last_error),
@@ -98,7 +99,7 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
   if (!env.DB) return jsonResponse(503, { success: false, error: "database_not_configured" }, privateHeaders);
   const owner = await requireInternalOwner(request, env);
   if (owner.response) return owner.response;
-  await ensureLoadBoardSchema(env.DB);
+  await ensureCarrierDispatchWorkspaceSchema(env.DB);
 
   const requestId = clean(new URL(request.url).searchParams.get("request_id"), 160).replace(/[^a-zA-Z0-9_:-]/g, "");
   if (!requestId) return jsonResponse(400, { success: false, error: "request_id_required" }, privateHeaders);
@@ -120,7 +121,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
   if (!sameOriginMutation(request)) return jsonResponse(403, { success: false, error: "cross_site_mutation_blocked" }, privateHeaders);
   const owner = await requireInternalOwner(request, env);
   if (owner.response) return owner.response;
-  await ensureLoadBoardSchema(env.DB);
+  await ensureCarrierDispatchWorkspaceSchema(env.DB);
 
   let body: Record<string, unknown>;
   try { body = await request.json() as Record<string, unknown>; }
@@ -163,6 +164,30 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
       return jsonResponse(400, { success: false, error: "approved_contact_mode_exceeds_request" }, privateHeaders);
     }
 
+    const authorizedCarrierCompanyId = clean(
+      body.authorized_carrier_company_id ?? body.authorizedCarrierCompanyId,
+      160,
+    ).replace(/[^a-zA-Z0-9_:-]/g, "");
+    let carrierScope: string | null = null;
+    if (approvedRedistribution === "carrier_scoped") {
+      if (!authorizedCarrierCompanyId) {
+        return jsonResponse(400, { success: false, error: "authorized_carrier_company_required" }, privateHeaders);
+      }
+      const scopedCompany = await env.DB.prepare(`
+        SELECT c.id,c.company_type,c.load_board_access,e.status AS entitlement
+        FROM hermes_company_profiles c
+        LEFT JOIN hermes_carrier_board_entitlements e ON e.company_id=c.id
+        WHERE c.id=? LIMIT 1
+      `).bind(authorizedCarrierCompanyId).first();
+      if (!scopedCompany || !CARRIER_TYPES.has(String(scopedCompany.company_type)) ||
+          Number(scopedCompany.load_board_access)!==1 || scopedCompany.entitlement!=="active") {
+        return jsonResponse(409, { success: false, error: "verified_carrier_company_scope_required" }, privateHeaders);
+      }
+      carrierScope = authorizedCarrierCompanyId;
+    } else if (authorizedCarrierCompanyId) {
+      return jsonResponse(400, { success: false, error: "carrier_scope_requires_carrier_scoped_redistribution" }, privateHeaders);
+    }
+
     const dataRightsEvidenceRef = clean(body.data_rights_evidence_ref ?? body.dataRightsEvidenceRef, 500);
     const retentionRule = clean(body.retention_rule ?? body.retentionRule, 500);
     const revocationRule = clean(body.revocation_rule ?? body.revocationRule, 500);
@@ -184,12 +209,12 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
         id, provider, source_name, source_type,
         read_enabled, send_enabled, ingest_enabled,
         car_hauling_ingest_allowed, car_hauling_outreach_hold,
-        redistribution_permission, contact_reveal_permission,
+        redistribution_permission, contact_reveal_permission, authorized_carrier_company_id,
         status, created_at, updated_at
-      ) VALUES (?, ?, ?, ?, 0, 0, 0, ?, 1, ?, ?, 'connection_pending', ?, ?)
+      ) VALUES (?, ?, ?, ?, 0, 0, 0, ?, 1, ?, ?, ?, 'connection_pending', ?, ?)
     `).bind(
       sourceId, provider, sourceName, sourceType, carHaulingAllowed,
-      approvedRedistribution, approvedContactMode,
+      approvedRedistribution, approvedContactMode, carrierScope,
       now, now,
     ).run();
 

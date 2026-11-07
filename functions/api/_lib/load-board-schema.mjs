@@ -33,6 +33,11 @@ export async function ensureLoadBoardSchema(db) {
     )
   `).run();
 
+  await ensureColumns(db, "hermes_load_sources", {
+    authorized_carrier_company_id: "TEXT",
+  });
+  await db.prepare("CREATE INDEX IF NOT EXISTS idx_load_sources_carrier_scope ON hermes_load_sources(authorized_carrier_company_id, status, read_enabled)").run();
+
   await db.prepare(`
     CREATE TABLE IF NOT EXISTS hermes_load_records (
       id TEXT PRIMARY KEY,

@@ -1,6 +1,6 @@
 import { getAuthenticatedSpecialist, jsonResponse } from "../_lib/session.mjs";
 import { ensureLoadBoardSchema } from "../_lib/load-board-schema.mjs";
-import { specialistHasLoadBoardAccess } from "../_lib/hermes-company-profiles.mjs";
+import { getSpecialistLoadBoardCompany } from "../_lib/hermes-company-profiles.mjs";
 
 type Env = { DB?: any };
 
@@ -23,15 +23,16 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
   await ensureLoadBoardSchema(env.DB);
 
   const specialist = await getAuthenticatedSpecialist(request, env.DB);
-  const carrierCandidate = await specialistHasLoadBoardAccess(env.DB, specialist);
+  const carrierCompany = await getSpecialistLoadBoardCompany(env.DB, specialist);
+  const carrierCandidate = Boolean(carrierCompany);
   const url = new URL(request.url);
   const recordType = String(url.searchParams.get("type") || "").trim();
   const equipment = String(url.searchParams.get("equipment") || "").trim();
 
   const conditions = ["r.status = 'active'", "r.expires_at > ?",
     "s.status = 'active'", "s.read_enabled = 1",
-    "((r.visibility='public' AND s.redistribution_permission='public') OR (r.visibility='carrier_only' AND s.redistribution_permission IN ('carrier_only','public')))"];
-  const bindings: any[] = [new Date().toISOString()];
+    "((r.visibility='public' AND s.redistribution_permission='public') OR (r.visibility='carrier_only' AND s.redistribution_permission IN ('carrier_only','public')) OR (r.visibility='carrier_only' AND s.redistribution_permission='carrier_scoped' AND s.authorized_carrier_company_id=?))"];
+  const bindings: any[] = [new Date().toISOString(), carrierCompany?.id || "__no_verified_carrier__"];
 
   if (carrierCandidate) conditions.push("r.visibility IN ('public', 'carrier_only')");
   // Public visitors and broker accounts receive no LOAD inventory. Public CAPACITY
