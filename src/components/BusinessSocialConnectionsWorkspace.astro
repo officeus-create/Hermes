@@ -7,7 +7,7 @@ interface Props {
 const { vertical, backHref, backLabel } = Astro.props;
 ---
 
-<main class:list={["business-social-page", vertical === "repair_shop" && "company-page"]} data-business-social data-vertical={vertical}>
+<main id="main-content" tabindex="-1" class:list={["business-social-page", vertical === "repair_shop" && "company-page"]} data-business-social data-vertical={vertical}>
   <div class="social-shell">
     <a class="back-link" href={backHref}>← {backLabel}</a>
 
