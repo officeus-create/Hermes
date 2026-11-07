@@ -84,6 +84,8 @@ assert.ok(uaAcademy.includes('href="/ua/academy/apply/"'), "Ukrainian Academy ow
 const ruAcademy = readRoute("/ru/academy/");
 assert.ok(ruAcademy.includes('href="/ru/academy/us-logistics-operations/"'), "Russian Academy owner must link to the Russian U.S. Logistics course owner");
 const ruCourse = readRoute("/ru/academy/us-logistics-operations/");
+const ruLogistics = readRoute("/ru/logistics/");
+assert.ok(ruLogistics.includes('href="/ru/logistics/dispetcher-dlya-avtovoza/"'), "Russian Logistics owner must link to the indexable Russian car-hauler dispatch owner");
 assert.ok(ruCourse.includes("Курсы логистики США"), "Russian course owner must state the natural Russian logistics-course intent");
 assert.ok(ruCourse.includes("Hermes"), "Russian course owner must identify Hermes");
 
