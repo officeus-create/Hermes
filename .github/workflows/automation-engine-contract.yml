@@ -39,6 +39,7 @@ on:
       - "scripts/automation-engine-ai-usage-ledger.test.mjs"
       - "scripts/automation-engine-capability-graph.test.mjs"
       - "scripts/hae-d1-schema-snapshot*.mjs"
+      - "scripts/hae-owner-work-readback-check*.mjs"
       - "scripts/hae-migration-baseline-candidate*.mjs"
       - "scripts/hae-t4-*.mjs"
       - "scripts/hae-bounded-repair-preflight.test.mjs"
@@ -66,6 +67,7 @@ jobs:
       - name: Run automation engine contract
         run: |
           node scripts/automation-engine-contract.test.mjs
+          node scripts/hae-owner-work-readback-check.test.mjs
           node scripts/hae-meta-threads-transport.test.mjs
           node scripts/meta-threads-provider-contract.test.mjs
           node scripts/hae-social-account-readiness.test.mjs
