@@ -329,3 +329,46 @@ This also blocks the exact capture requested by the Command Center session (the 
 with it. It can be captured as soon as the authenticated path recovers — the readback is
 idempotent-safe (a failed submit writes no `hae_job_id`).
 
+### 7.3 D1 is not the stall: an external read of the same database answers in ~1.1 s
+
+Dispatched the repository's own read-only operation to read the canonical production D1 directly
+through the Cloudflare API (bypassing Pages entirely):
+
+```
+workflow: automation-engine-release.yml · operation=schema_snapshot · ref=main
+target_sha=214978d10c268008e4acc2499e56a1e7f99b8103 · run 42338214002 · 2026-11-07T04:23:07Z
+step 10 "Discover canonical Hermes Connect production D1"  → success
+step 11 "Capture authenticated read-only D1 schema snapshot" → FAILED, but only in the verify phase:
+        schema_snapshot_built objects=232 fingerprint=sha256:5f8f517f7357448fa05b9017912d56767ade5f2b3dd216b877adf351dedc32db
+        migration_baseline_not_pending            (exit 1)
+```
+
+The read itself succeeded in ~1.1 s and returned 232 schema objects. The failure is in the
+operation's baseline comparison (`migration_baseline_not_pending`), and this operation had never
+been executed before — so it is a pre-existing defect in that workflow step, **not** a database
+outage and **not** a regression caused by this dispatch.
+
+Combining the three measurements:
+
+| path | result | reads or writes D1 |
+|---|---|---|
+| Cloudflare D1 API from a GitHub runner | 232 objects in ~1.1 s | SELECT only |
+| Pages, unauthenticated | 401 in 0.106–0.239 s | no DB access |
+| Pages, authenticated | 524 after 125–145 s | DDL + **two UPDATEs** |
+
+`reconcileWorkItems` performs exactly two UPDATE statements per call
+(`functions/api/_lib/internal-command-center.mjs:172-184`) and every authenticated read path calls
+it after `ensureCommandCenterSchemaOnce`. Reads that bypass the writer lock (the API read above)
+are fast; the Pages path that must acquire the single D1 writer lock stalls.
+
+⇒ Working hypothesis (testable by the owner, who has Cloudflare access): **writer-lock contention**
+between the Command Center's read paths and the HAE worker's cron writes to the same shared D1.
+Check D1 write-queue metrics for 04:00–04:20 UTC, the HAE worker logs at 04:00/04:05/04:10 UTC,
+and Pages logs where the request starts and never finishes.
+
+Code-level mitigation belongs to the Command Center session: read paths must not write. Moving
+`reconcileWorkItems` out of the GET path, bounding it, or wrapping it in a timeout with fail-open
+addresses both this incident and the earlier 1102 livelock, which had the same root shape
+(a read path performing unbounded writes).
+
+
