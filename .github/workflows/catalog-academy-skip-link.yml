@@ -1,0 +1,27 @@
+name: Academy Catalog skip-link contract
+on:
+  pull_request:
+    paths:
+      - "src/components/AcademyCountryPage.astro"
+      - "src/components/InternationalBusinessProfile.astro"
+      - "scripts/catalog-academy-skip-link.test.mjs"
+      - ".github/workflows/catalog-academy-skip-link.yml"
+  push:
+    branches: [main]
+    paths:
+      - "src/components/AcademyCountryPage.astro"
+      - "src/components/InternationalBusinessProfile.astro"
+      - "scripts/catalog-academy-skip-link.test.mjs"
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: node scripts/catalog-academy-skip-link.test.mjs

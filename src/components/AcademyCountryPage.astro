@@ -155,7 +155,7 @@ const schema=[
 <BaseLayout title={copy.title} description={copy.description} htmlLang={pageLang} ogLocaleOverride={english ? "en_US" : (copy as any).ogLocale} alternates={alternates} schema={schema}>
  <SiteHeader theme="light" />
  <DirectionProductNav direction="academy" theme="light" />
- <main class="country-page" data-academy-country={profile.slug} data-country-language={pageLang}>
+ <main id="main-content" tabindex="-1" class="country-page" data-academy-country={profile.slug} data-country-language={pageLang}>
   <div class="shell">
    <nav class="crumb"><a href="/paths/academy/">Hermes Academy</a><span>→</span><a href="/businesses/#global-markets">{english || !localFramework ? "110-country registry" : localFramework.registryLabel}</a><span>→</span><strong>{english ? profile.country : localizedCountryName}</strong></nav>
    <header class="country-hero">
