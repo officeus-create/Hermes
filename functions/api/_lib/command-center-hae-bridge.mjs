@@ -1,6 +1,7 @@
 import { pluginRuntimeRegistryEvidenceStatus, pluginRuntimeRegistrySnapshot } from "../../../workers/automation-engine/src/plugin-runtime-registry.mjs";
 import { roleContractForJobType, roleContractSha256 } from "../../../workers/automation-engine/src/role-contracts.mjs";
 import { commandCenterHaeIdempotencyKey, verifyCommandCenterHaeReceipt } from "./command-center-hae-receipt-verifier.mjs";
+import { haeJobKind, readHaeJobFromD1, verifyCommandCenterOwnerWorkReceipt } from "./command-center-hae-d1-receipt.mjs";
 
 const BRIDGE_POLICY_VERSION="command-center-plugin-bridge-v1";
 // Every outbound HAE call is bounded. An unbounded provider wait holds the Worker
@@ -53,7 +54,7 @@ async function haeJson(env,path,{method="GET",body=null}={}){
   const endpoint=new URL(path,config.base);
   try{
     const response=await fetch(endpoint.toString(),{
-      method,redirect:"error",
+      method,redirect:"manual",
       headers:{
         Authorization:"Bearer "+config.token,
         Accept:"application/json",
@@ -62,6 +63,20 @@ async function haeJson(env,path,{method="GET",body=null}={}){
       ...(body===null?{}:{body:JSON.stringify(body)}),
       signal:AbortSignal.timeout(haeBridgeTimeoutMs(env)),
     });
+    // An identity gate in front of HAE answers a redirect, not a JSON error, and
+    // a bearer token alone cannot satisfy it. Name that failure instead of
+    // reporting an opaque "unavailable", so the owner gets the exact missing
+    // configuration instead of a transport symptom.
+    if(response.status===0||(response.status>=300&&response.status<400)){
+      const challenge=String(response.headers?.get?.("www-authenticate")||"");
+      const location=String(response.headers?.get?.("location")||"");
+      const accessGate=/cloudflare-access/i.test(challenge)||/cloudflareaccess\.com/i.test(location);
+      return{ok:false,status:response.status,payload:{error:accessGate?"command_center_hae_bridge_access_redirect":"command_center_hae_bridge_redirect_blocked"}};
+    }
+    // The HAE worker publishes no public control-plane route: every /v1/jobs path
+    // on the only published host answers 404. Name that once, instead of
+    // reporting a missing route as a missing job.
+    if(response.status===404)return{ok:false,status:404,payload:{error:"command_center_hae_control_plane_not_published"}};
     return{ok:response.ok,status:response.status,payload:await response.json().catch(()=>({}))};
   }catch(error){
     const timedOut=error?.name==="TimeoutError"||error?.name==="AbortError";
@@ -198,6 +213,52 @@ export async function submitCommandCenterHaeExecution(env,item,route,linkedTaskI
 }
 
 export async function readCommandCenterHaeExecution(env,item,route){
+  // The canonical D1 holds every HAE job and its durable events, and the
+  // Command Center reads that same D1. Prefer it: a finished execution stays
+  // verifiable and a failed one stays explainable even when the outbound
+  // Pages -> HAE hop is unavailable. This only READS: HAE stays the only
+  // scheduler, writer and control plane.
+  const d1JobId=clean(item?.hae_execution_job_id,180)||clean(item?.hae_job_id,180);
+  const d1=d1JobId?await readHaeJobFromD1(env?.DB,d1JobId):null;
+  const kind=haeJobKind(d1?.job);
+
+  if(kind==="owner_work_execution"){
+    const verdict=await verifyCommandCenterOwnerWorkReceipt({workItem:item,haeJob:d1.job,jobEvents:d1.events});
+    const verified=verdict.receipt_verified===true;
+    return{
+      state:verified?"PLUGIN_EXECUTION_SUCCEEDED_RECEIPT_VERIFIED":routeStateFromJob(clean(d1.job.state,40).toUpperCase()),
+      reason:verified?null:verdict.reason||"hae_receipt_verification_failed",
+      job_id:d1JobId,
+      job_state:clean(d1.job.state,40).toUpperCase(),
+      receipt_verified:verified,
+      source_verification_state:verdict.state,
+      independent_qa_verified:false,
+      capability:verified?verdict.capability:null,
+      role_id:verified?verdict.role_id:null,
+      plugin_version:verified?verdict.plugin_version:null,
+      contract_sha:verified?verdict.contract_sha256:null,
+      external_write:verified?false:null,
+      identity_scheme:"owner_work",
+      readback_source:"HAE_CANONICAL_D1",
+    };
+  }
+  if(kind==="owner_work_plan"){
+    const planState=clean(d1.job.state,40).toUpperCase();
+    const failed=["FAILED","DEAD_LETTER","CANCELLED"].includes(planState);
+    return{
+      state:routeStateFromJob(planState),
+      reason:failed?(clean(d1.job.last_error_class,160)||"hae_plan_job_failed"):null,
+      job_id:d1JobId,
+      job_state:planState,
+      receipt_verified:false,
+      source_verification_state:"PLAN_STATE_REPORTED",
+      independent_qa_verified:false,
+      capability:null,
+      identity_scheme:"owner_work",
+      readback_source:"HAE_CANONICAL_D1",
+    };
+  }
+
   const plan=routePlan(route);
   if(!plan.ok)return{state:plan.state,reason:plan.reason,job_id:item?.hae_job_id||null,receipt_verified:false};
   const jobId=clean(item?.hae_job_id,180);
@@ -206,13 +267,18 @@ export async function readCommandCenterHaeExecution(env,item,route){
   const expectedKey=await expectedIdempotencyKey(item,route,plan,item?.linked_task_id,expectedSha);
   if(!expectedKey)return{state:"PLUGIN_ROUTE_VERSION_DRIFT",reason:"command_center_idempotency_identity_invalid",job_id:jobId,receipt_verified:false};
 
-  const response=await readHaeJob(env,jobId);
-  if(!response.ok)return{
-    state:"PLUGIN_EXECUTION_UNAVAILABLE",
-    reason:clean(response.payload?.error,160)||"hae_job_readback_unavailable",
-    job_id:jobId,receipt_verified:false,
-  };
-  const job=response.payload?.job||{};
+  let job=null,jobEvents=null;
+  if(kind==="plugin_route"){job=d1.job;jobEvents=d1.events;}
+  else{
+    const response=await readHaeJob(env,jobId);
+    if(!response.ok)return{
+      state:"PLUGIN_EXECUTION_UNAVAILABLE",
+      reason:clean(response.payload?.error,160)||"hae_job_readback_unavailable",
+      job_id:jobId,receipt_verified:false,
+    };
+    job=response.payload?.job||{};
+    jobEvents=response.payload?.events;
+  }
   const basicBindingMatches=Boolean(
     clean(job.job_id,180)===jobId&&
     clean(job.job_type,120)===plan.job_type&&
@@ -256,7 +322,7 @@ export async function readCommandCenterHaeExecution(env,item,route){
     nowIso:now,
     binding,
     haeJob:job,
-    jobEvents:response.payload?.events,
+    jobEvents,
     roleContract:plan.contract,
   });
   const verified=verdict.state==="MATCHED_SOURCE_ONLY";
@@ -273,6 +339,7 @@ export async function readCommandCenterHaeExecution(env,item,route){
     plugin_version:verified?plan.plugin_version:null,
     contract_sha:verified?expectedSha:null,
     external_write:verified?false:null,
+    identity_scheme:"bridge",
     // Inventory liveness is reported to the owner surface instead of blocking a
     // receipt for work that already ran. Stale evidence stays a P1 finding in the
     // HAE self-improvement scheduler.
