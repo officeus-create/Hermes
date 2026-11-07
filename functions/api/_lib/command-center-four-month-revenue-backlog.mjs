@@ -1340,6 +1340,15 @@ export async function seedFourMonthRevenueBacklog(db){
   )`).run();
   const already=await db.prepare("SELECT import_key FROM hermes_command_center_imports WHERE import_key=? LIMIT 1").bind(IMPORT_KEY).first();
   if(already)return;
+  // Same livelock guard as the history backlog: a CPU-limited Worker killed mid-import
+  // leaves no import key, so the next request replays all 132 inserts and gets killed
+  // again. One count statement turns that loop into a single write.
+  const imported=await db.prepare("SELECT COUNT(*) AS n FROM hermes_owner_work_items WHERE created_by='revenue_4m_import'").first();
+  if(Number(imported?.n||0)>=FOUR_MONTH_REVENUE_BACKLOG.length){
+    await db.prepare("INSERT OR IGNORE INTO hermes_command_center_imports (import_key,imported_at) VALUES (?,?)")
+      .bind(IMPORT_KEY,"2026-11-06T00:00:00.000Z").run();
+    return;
+  }
   for(const item of FOUR_MONTH_REVENUE_BACKLOG){
     await db.prepare(`INSERT OR IGNORE INTO hermes_owner_work_items
       (id,organization_scope,workstream,priority,title,details,source,status,created_by,created_at,updated_at,project_id,

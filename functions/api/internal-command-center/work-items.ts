@@ -2,7 +2,7 @@ import { jsonResponse } from "../_lib/session.mjs";
 import { normalizeWorkItemProjectId, validWorkItemProject } from "../_lib/command-center-work-item-projects.mjs";
 import { requireInternalOwner } from "../_lib/internal-ai.mjs";
 import {
-  COMMAND_CENTER_SCOPE, ensureCommandCenterSchema, newWorkItemId, normalizePriority, normalizeWorkItemDetails,
+  COMMAND_CENTER_SCOPE, ensureCommandCenterSchemaOnce, newWorkItemId, normalizePriority, normalizeWorkItemDetails,
   normalizeWorkItemSource, normalizeWorkItemTitle, normalizeWorkstream, publicWorkItem, reconcileWorkItems, commandCenterNow, selectWorkItemPluginRoute,
 } from "../_lib/internal-command-center.mjs";
 type Env = { DB?: any };
@@ -11,7 +11,7 @@ const sameOriginMutation=(request:Request)=>request.headers.get("Sec-Fetch-Site"
 
 export async function onRequestGet({request,env}:{request:Request;env:Env}){
   const owner=await requireInternalOwner(request,env); if(owner.response)return owner.response;
-  await ensureCommandCenterSchema(env.DB); await reconcileWorkItems(env.DB);
+  await ensureCommandCenterSchemaOnce(env.DB); await reconcileWorkItems(env.DB);
   const offsetText=new URL(request.url).searchParams.get("offset")||"0";
   if(!/^\d{1,6}$/.test(offsetText))return jsonResponse(400,{success:false,error:"invalid_offset"},headers);
   const offset=Number(offsetText);
@@ -31,7 +31,7 @@ export async function onRequestGet({request,env}:{request:Request;env:Env}){
 export async function onRequestPost({request,env}:{request:Request;env:Env}){
   if(!sameOriginMutation(request))return jsonResponse(403,{success:false,error:"csrf_origin_mismatch"},headers);
   const owner=await requireInternalOwner(request,env); if(owner.response)return owner.response;
-  await ensureCommandCenterSchema(env.DB);
+  await ensureCommandCenterSchemaOnce(env.DB);
   let payload:any; try{payload=await request.json()}catch{return jsonResponse(400,{success:false,error:"invalid_json"},headers)}
   const workstream=normalizeWorkstream(payload?.workstream), priority=normalizePriority(payload?.priority||"p2");
   const details=normalizeWorkItemDetails(payload?.details);

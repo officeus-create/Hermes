@@ -1,4 +1,5 @@
 import { getAuthenticatedSpecialist, jsonResponse } from "./session.mjs";
+import { ensureOnce } from "./request-cost-guard.mjs";
 
 export const INTERNAL_AI_ORGANIZATION_SCOPE = "hermes_internal";
 const TASK_STATES = new Set(["queued", "running", "completed", "failed", "cancelled", "needs_approval"]);
@@ -85,11 +86,18 @@ export async function ensureInternalAiSchema(db) {
   if (!runnerColumnNames.has("telemetry_json")) await db.prepare("ALTER TABLE hermes_internal_ai_runner_state ADD COLUMN telemetry_json TEXT").run();
 }
 
+// Per-isolate bootstrap. The internal AI schema DDL ran on every authenticated
+// request, which is one of the costs that produced the 1102 private-surface
+// incident on 2026-11-06.
+export function ensureInternalAiSchemaOnce(db, options = {}) {
+  return ensureOnce(db, "internal-ai-schema", () => ensureInternalAiSchema(db), options);
+}
+
 export async function requireInternalOwner(request, env) {
   if (!env.DB) return { response: jsonResponse(503, { success: false, error: "database_not_configured" }) };
   const specialist = await getAuthenticatedSpecialist(request, env.DB);
   if (!specialist) return { response: jsonResponse(401, { success: false, error: "not_authenticated" }) };
-  await ensureInternalAiSchema(env.DB);
+  await ensureInternalAiSchemaOnce(env.DB);
   const access = await env.DB.prepare(`SELECT specialist_id, capability FROM hermes_internal_owner_access WHERE specialist_id = ? AND active = 1 AND capability = 'HERMES_INTERNAL_OWNER' LIMIT 1`).bind(specialist.id).first();
   if (!access) return { response: jsonResponse(403, { success: false, error: "hermes_internal_owner_required" }) };
   return { specialist, access };
@@ -99,7 +107,7 @@ export async function requireInternalAiViewer(request, env) {
   if (!env.DB) return { response: jsonResponse(503, { success: false, error: "database_not_configured" }) };
   const specialist = await getAuthenticatedSpecialist(request, env.DB);
   if (!specialist) return { response: jsonResponse(401, { success: false, error: "not_authenticated" }) };
-  await ensureInternalAiSchema(env.DB);
+  await ensureInternalAiSchemaOnce(env.DB);
   const ownerAccess = await env.DB.prepare("SELECT specialist_id FROM hermes_internal_owner_access WHERE specialist_id = ? AND active = 1 AND capability = 'HERMES_INTERNAL_OWNER' LIMIT 1").bind(specialist.id).first();
   if (ownerAccess) return { specialist, access_level: "owner" };
   const teamAccess = await env.DB.prepare("SELECT specialist_id FROM hermes_internal_team_view_access WHERE specialist_id = ? AND active = 1 LIMIT 1").bind(specialist.id).first();

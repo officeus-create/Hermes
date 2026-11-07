@@ -483,6 +483,17 @@ export async function seedHistoricalCommandCenterBacklog(db){
   )`).run();
   const already=await db.prepare("SELECT import_key FROM hermes_command_center_imports WHERE import_key=? LIMIT 1").bind(IMPORT_KEY).first();
   if(already)return;
+  // The import key is written only after the whole backlog has landed. A platform CPU
+  // limit can kill the Worker in the middle of the import, and then the key never
+  // appears: every later request would replay all 54 inserts and be killed again, which
+  // is a self-sustaining livelock that shows up as a 503 on a cold isolate. Counting the
+  // already-imported rows is one cheap statement and closes that loop.
+  const imported=await db.prepare("SELECT COUNT(*) AS n FROM hermes_owner_work_items WHERE created_by='history_backlog_import'").first();
+  if(Number(imported?.n||0)>=COMMAND_CENTER_HISTORY_BACKLOG.length){
+    await db.prepare("INSERT OR IGNORE INTO hermes_command_center_imports (import_key,imported_at) VALUES (?,?)")
+      .bind(IMPORT_KEY,"2026-11-05T10:30:00.000Z").run();
+    return;
+  }
   for(const item of COMMAND_CENTER_HISTORY_BACKLOG){
     const completed=item.status==="done"?item.created_at:null;
     const acceptance=item.status==="done"?"accepted":"not_required";
