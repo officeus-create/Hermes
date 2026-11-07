@@ -269,7 +269,7 @@ test("Load Board access flow is private to search and explains account company C
 test("Load Board v1 pilot still shows multiple equipment types and keeps private operational data gated", async ({ page }) => {
   await page.goto("/load-board/live-pilot/");
 
-  await expect(page).toHaveTitle("Hermes Load Board | Live Freight Marketplace Pilot");
+  await expect(page).toHaveTitle("Hermes Load Board | Carrier Dispatch Pilot");
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", "noindex,nofollow");
   await expect(page.getByRole("heading", { name: "Live freight. One board. Less deadhead." })).toBeVisible();
 
