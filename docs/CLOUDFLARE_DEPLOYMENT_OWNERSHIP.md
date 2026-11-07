@@ -1,6 +1,6 @@
 # Cloudflare deployment ownership
 
-Status: current authenticated topology reconciled on 2026-09-18. Issue #226 is completed. This document records the surviving ownership contract and the aligned Pages runtime source-of-truth baseline; it must not revive historical duplicate-deployment work without fresh evidence.
+Status: baseline authenticated topology reconciled on 2026-09-18, with later authenticated changes carried by dated receipts and `docs/ERROR_REGISTER.md`. Issue #226 is completed. This document records the surviving ownership contract and the aligned Pages runtime source-of-truth baseline; it must not revive historical duplicate-deployment work without fresh evidence.
 
 ## Evidence precedence
 
@@ -8,7 +8,7 @@ For Cloudflare ownership questions, use this order:
 
 1. authenticated current Cloudflare dashboard/API evidence;
 2. current GitHub `main` plus exact-SHA deployment/workflow evidence;
-3. this document and the current Cloudflare remediation tracker (#1349);
+3. this document plus `docs/ERROR_REGISTER.md`; closed tracker #1349 is historical remediation provenance only;
 4. historical Cloudflare bot comments/issues only as provenance.
 
 A historical bot deployment comment or Security Center recommendation is not current topology evidence by itself.
@@ -172,7 +172,7 @@ Do not change Google Workspace apex MX while solving password reset. Do not crea
 - HTTP→HTTPS is already effective on apex, `www`, `connect` and `app`; dashboard `Always Use HTTPS=OFF` alone is not evidence of an HTTP defect.
 - Application HSTS is present on apex and `connect`; keep zone-level HSTS/includeSubDomains/preload OFF until every owned hostname is intentionally covered.
 - TLS 1.3 and Universal SSL remain enabled.
-- Surviving zone hardening is tracked in #1349: raise Minimum TLS from 1.0 to 1.2 and enable Certificate Transparency Monitoring with readback/smoke.
+- Historical #1349 TLS/CT remediation is provenance only. Do not recreate those items from this document; use current authenticated Cloudflare readback plus `docs/ERROR_REGISTER.md` for any fresh regression.
 
 ## Current canonical trackers
 
@@ -222,12 +222,18 @@ Rules:
 6. Investigate 401/403/404/429/5xx patterns by host/path/agent before changing security policy.
 7. Cloudflare runtime changes remain subject to the normal owner gate; this documentation policy does not itself change WAF, DNS, cache or bot settings.
 
-### Crawler Hints current state — 2026-10-06
+### Crawler Hints current state — RESOLVED 2026-10-07
 
-Authenticated Cloudflare Caching > Configuration readback shows **Crawler Hints enabled**. Fresh Bing owner exports show 5,286 IndexNow submitted-URL events in the observed period and non-HTML coverage examples (`robots.txt`, SVG, WOFF2) even though the current repository IndexNow submitter rejects non-HTML URLs.
+The 2026-10-06 authenticated readback that showed **Crawler Hints enabled** is historical provenance only.
 
-Cloudflare's current Crawler Hints design uses cache-change signals and supports IndexNow notifications. With Hermes already maintaining a canonical page-only IndexNow transport, the current state creates redundant/over-broad notification noise.
+On 2026-10-07, Cloudflare Crawler Hints was changed from ON to **OFF** in the authenticated owner UI and immediately read back as `Value: 0`. The durable repository receipt is `data/seo/indexnow-crawler-hints-setting-2026-10-07.json`; `docs/ERROR_REGISTER.md` records `ERR-CLOUDFLARE-CRAWLER-HINTS-20261006` as `RESOLVED`.
 
-Target state: **Crawler Hints OFF; controlled repository IndexNow ON**.
+Current policy:
 
-The owner authorized search cleanup in the current workstream. This environment can read the authenticated Cloudflare setting but exposes no supported Cloudflare write action for this toggle, so the mutation remains `ACCESS_GAP / WRITE_CAPABILITY_MISSING`, not `OWNER_ACTION_REQUIRED`. Do not substitute a broad API token, cookie extraction, WAF rule, DNS change or second deployment mechanism. After a supported toggle path exists, turn Crawler Hints off, read it back, and compare a settled 72-hour Bing IndexNow/crawl window.
+- **Crawler Hints OFF**;
+- canonical repository-controlled IndexNow remains ON;
+- no broad/full recurring submissions;
+- do not re-enable Crawler Hints from an older audit, handoff, chat, branch or dashboard screenshot;
+- judge crawl/notification effects only from a settled post-change Bing interval tied to the 2026-10-07 receipt.
+
+The prior `ACCESS_GAP / WRITE_CAPABILITY_MISSING` status is superseded. Do not recreate a Cloudflare mutation task unless a fresh authenticated readback proves that Crawler Hints has regressed to ON.
